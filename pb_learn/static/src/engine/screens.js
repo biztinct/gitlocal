@@ -1770,9 +1770,15 @@ export const SCREENS = {
                 <button class="lrn-btn sm pri" data-coach="ig-connect">${ic("plug")}${
                     esc(tx(B("Connect a system", "Kết nối một hệ thống")))}</button></div>
             <div data-coach="ig-kpis">${quietNums(nums, "")}<div class="lrn-ynums">${feeds}</div></div>
+            <!-- FILTER W6 (2026-10-31): the shared filter panel over the
+                 connectors — view tabs, a Filters button (Connection, System,
+                 Last synced…), the search. -->
             <div class="lrn-tabs" data-coach="ig-filters">
-                ${[B("All", "Tất cả"), B("Connected", "Đã kết nối"), B("Error", "Lỗi"), B("Disconnected", "Đã ngắt kết nối")].map(
+                ${[B("All connectors", "Tất cả bộ kết nối"), B("Needs attention", "Cần xử lý"), B("Never synced", "Chưa đồng bộ lần nào"),
+                   B("Synced today", "Đồng bộ hôm nay")].map(
                     (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search connectors…", "Tìm bộ kết nối…")))}</span>
             </div>
             <div class="lrn-ywf">
                 <div class="lrn-ywfmain">

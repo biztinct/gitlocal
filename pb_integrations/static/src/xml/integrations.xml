@@ -32,7 +32,7 @@
         <div data-coach="ig-kpis">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.view === 'connectors' and state.status !== 'all' ? state.status : ''"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
         </div>
 
@@ -52,38 +52,12 @@
         </div>
 
         <!-- ======================= connectors ======================= -->
+        <!-- ==== the shared filter panel over the connectors (FILTER W6) ====
+             data-coach="ig-filters" is drawn on the panel's bar. -->
         <t t-if="state.view === 'connectors'">
-          <div class="pbim-panel ppl-filters" data-coach="ig-filters">
-            <div class="ppl-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="statusChips" t-as="c" t-key="c.id"
-                        t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
-                  <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
-                </button>
-              </div>
-              <div class="ppl-search">
-                <span class="ic"><t t-out="ic('search',15)"/></span>
-                <input placeholder="Search connectors…" t-on-input="onSearch"/>
-              </div>
-            </div>
-            <div class="ppl-filter-row">
-              <div class="pbim-chips ppl-dates">
-                <button t-foreach="recencyChips" t-as="r" t-key="r.id"
-                        t-attf-class="pbim-fchip {{ state.recency === r.id ? 'on' : '' }}" t-on-click="() => this.setRecency(r.id)">
-                  <t t-out="ic('refresh',12)"/> <t t-esc="r.label"/>
-                </button>
-              </div>
-              <div t-if="state.types.length" class="pbim-chips ppl-depts">
-                <button t-foreach="state.types" t-as="t" t-key="t_index"
-                        t-attf-class="pbim-fchip {{ state.type === t.type ? 'on' : '' }}" t-on-click="() => this.setType(t.type)">
-                  <t t-esc="t.name"/> <span class="c" t-esc="t.count"/>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div t-if="filtered.length" class="ppl-roster" data-coach="ig-roster">
-            <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openConnector(c.id)">
+          <PbFilterLayout kit="ckit" coach="'ig-filters'" searchPlaceholder="'Search connectors…'">
+          <div t-if="state.crows.length" class="ppl-roster" data-coach="ig-roster">
+            <div t-foreach="state.crows" t-as="c" t-key="c.id" class="ppl-card" t-att-class="{ 'itg-archived': c.archived }" t-on-click="() => this.openConnector(c.id)">
               <div class="ppl-av"><t t-out="ic(c.icon,20)"/></div>
               <div class="ppl-id">
                 <div class="nm" t-esc="c.name"/>
@@ -101,11 +75,38 @@
                 <span class="itg-counts__rest"> · <t t-esc="cardCounts(c)"/></span>
               </div>
               <div class="ppl-meta">
-                <span t-attf-class="pbim-badge {{ c.status_cls }}"><span class="d"/><t t-esc="c.status_label"/></span>
+                <span t-if="c.archived" class="pbim-badge muted"><span class="d"/>Archived</span>
+                <span t-else="" t-attf-class="pbim-badge {{ c.status_cls }}"><span class="d"/><t t-esc="c.status_label"/></span>
               </div>
             </div>
           </div>
-          <div t-else="" class="pbim-panel"><div class="pbim-empty">No connectors match these filters.</div></div>
+
+          <!-- still loading the first page -->
+          <div t-elif="!state.clistLoaded" class="ppl-roster itg-skel" aria-label="Loading">
+            <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="ppl-card itg-card--ghost"><span/></div>
+          </div>
+
+          <!-- nothing to list: say why, and the way back -->
+          <div t-else="" class="pbim-panel itg-empty">
+            <span class="itg-empty-ic"><t t-out="ic(ckit.total ? 'search' : 'plug', 24)"/></span>
+            <p t-esc="connectorsEmptyText"/>
+            <button t-if="ckit.total" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="showAllConnectors">
+              <t t-out="ic('x', 14)"/> Show every connector
+            </button>
+            <button t-else="" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="connectSystem">
+              <t t-out="ic('plug', 14)"/> Connect a system
+            </button>
+          </div>
+
+          <div t-if="state.crows.length" class="itg-foot">
+            <span t-esc="connectorsFootLabel"/>
+            <button t-if="connectorsHasMore" type="button" class="pbim-btn outline pbim-btn-sm"
+                    t-att-disabled="state.cloadingMore" t-on-click="loadMoreConnectors">
+              <t t-if="state.cloadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="connectorsNextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
         </t>
 
         <!-- The Data view is an explicit `t-if`, not a `t-else`: `t-else` binds
@@ -136,63 +137,16 @@
               </button>
             </div>
 
-            <!-- A connector deep-link is a SCOPE, and it says so, and it can be
-                 dropped. A filter you cannot see is a table that lies. -->
-            <div t-if="state.connectorId" class="itg-scope">
-              <span class="itg-scope__ic" t-out="ic('plug',13)"/>
-              <!-- ONE getter, ONE sentence, ONE msgid: a translator cannot
-                   reorder fragments assembled out of `t` nodes, and word order
-                   is exactly what differs between languages (W80). -->
-              <span t-esc="scopeLabel"/>
-              <button class="itg-scope__x" t-on-click="clearConnectorScope"
-                      title="Show every connector">
-                <t t-out="ic('x',12)"/> Show all
-              </button>
-            </div>
+            <div t-if="state.ledgerLoading and !state.ledger" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
 
-            <div t-if="feedScopeActive" class="itg-scope">
-              <span class="itg-scope__ic" t-out="ic('database',13)"/>
-              <span t-esc="feedScopeLabel"/>
-              <button class="itg-scope__x" t-on-click="clearDataTypeScope"
-                      title="Show every feed">
-                <t t-out="ic('x',12)"/> Every feed
-              </button>
-            </div>
-
-            <div t-if="state.ledgerLoading" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
-
+            <!-- ==== the shared filter panel over the table (FILTER W6) ====
+                 A connector / feed deep link arrives as a chip on this panel
+                 (Connector, Feed, Data type) — visible, and dropped with its
+                 x; the server keeps it inside the connectors this reader may
+                 read. data-coach="ig-data-filters" is drawn on the bar. -->
             <t t-elif="state.ledger">
-              <div class="itg-lfilters">
-                <div class="pbim-chips itg-facets">
-                  <t t-foreach="state.ledger.facets or []" t-as="fac" t-key="fac.key">
-                    <t t-if="fac.chips.length > 1">
-                      <t t-if="fac.kind === 'chips'">
-                        <button t-foreach="fac.chips" t-as="c" t-key="c.id"
-                                t-attf-class="pbim-fchip {{ state.f[fac.key] === c.id ? 'on' : '' }}"
-                                t-on-click="() => this.setFacet(fac.key, c.id)">
-                          <t t-esc="c.label"/> <span class="c" t-esc="chipCount(fac.key, c.id)"/>
-                        </button>
-                      </t>
-                      <t t-else="">
-                        <select class="itg-select" t-on-change="(ev) => this.onFacetSelect(fac.key, ev)">
-                          <option value="">All</option>
-                          <option t-foreach="fac.chips" t-as="c" t-key="c.id" t-att-value="c.id"
-                                  t-att-selected="state.f[fac.key] === c.id" t-esc="c.label"/>
-                        </select>
-                      </t>
-                    </t>
-                  </t>
-                  <button t-if="ledgerDirty" class="pbim-fchip itg-clear" t-on-click="clearLedgerFilters">
-                    <t t-out="ic('x',13)"/> Clear
-                  </button>
-                </div>
-                <div class="ppl-search">
-                  <span class="ic"><t t-out="ic('search',15)"/></span>
-                  <input t-att-placeholder="state.ledger.search_ph" t-on-input="onLedgerSearch"/>
-                </div>
-              </div>
-
-              <div t-if="ledgerRows.length" class="pbim-tablewrap itg-tw">
+              <PbFilterLayout kit="dkit" coach="'ig-data-filters'" searchPlaceholder="state.ledger.search_ph">
+              <div t-if="state.lrows.length" class="pbim-tablewrap itg-tw">
                 <table class="pbim-table">
                   <thead>
                     <tr>
@@ -202,7 +156,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr t-foreach="ledgerRows" t-as="r" t-key="r.id" class="click"
+                    <tr t-foreach="state.lrows" t-as="r" t-key="r.id" class="click"
                         t-on-click="() => this.openRow(r)">
                       <td t-foreach="r.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
                       <td class="itg-td-badge">
@@ -212,11 +166,30 @@
                   </tbody>
                 </table>
               </div>
-              <div t-else="" class="pbim-empty" t-esc="state.ledger.empty"/>
 
-              <!-- Honest in both directions: what is on screen, and what exists
-                   behind the row cap. A paged table can lie two ways (W45). -->
-              <div class="itg-foot" t-esc="footLabel"/>
+              <!-- still loading the first page -->
+              <div t-elif="!state.llistLoaded" class="itg-skel itg-skel--rows" aria-label="Loading">
+                <span t-foreach="[1,2,3,4,5]" t-as="i" t-key="i"/>
+              </div>
+
+              <!-- nothing to list: say why, and the way back -->
+              <div t-else="" class="itg-empty">
+                <span class="itg-empty-ic"><t t-out="ic(dkit.total ? 'search' : 'inbox', 24)"/></span>
+                <p t-esc="ledgerEmptyText"/>
+                <button t-if="dkit.total" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="showAllLedger">
+                  <t t-out="ic('x', 14)"/> Show the whole table
+                </button>
+              </div>
+
+              <div t-if="state.lrows.length" class="itg-foot">
+                <span t-esc="footLabel"/>
+                <button t-if="ledgerHasMore" type="button" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.lloadingMore" t-on-click="loadMoreLedger">
+                  <t t-if="state.lloadingMore">Loading…</t>
+                  <t t-else="">Show <t t-esc="ledgerNextPage"/> more</t>
+                </button>
+              </div>
+              </PbFilterLayout>
             </t>
 
             <div t-else="" class="pbim-empty">This table could not be loaded.</div>

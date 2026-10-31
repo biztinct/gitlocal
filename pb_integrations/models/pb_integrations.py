@@ -40,6 +40,8 @@ STATUS_CLS = {'connected': 'ok', 'error': 'err', 'connecting': 'warn', 'disconne
 # The same row budget the pay-run ledgers use. A config table is not a report:
 # past a few hundred rows the answer is the search box, not a longer scroll.
 LIMIT = 400
+#: Rows per page on the filter panel's lists (FILTER W6).
+PAGE_SIZE = 60
 
 # The three ledgers, each naming its model and the legacy act_window it
 # REPLACED AS A DOOR. The xmlid is carried so the one-door test can assert that
@@ -96,6 +98,9 @@ def _payload_preview(value, cap=12):
 
 class PbIntegrations(models.AbstractModel):
     _name = 'pb.integrations'
+    # FILTER W6: the connector cards and the three Data tables are on the
+    # shared filter panel (see "filter panel" below).
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook integrations cockpit'
 
     @api.model
@@ -143,17 +148,7 @@ class PbIntegrations(models.AbstractModel):
                 nfeeds, nstale = self._feed_summary(c, now) if has_feeds else (0, 0)
                 feeds += nfeeds
                 feeds_stale += nstale
-                rows.append({
-                    'feeds': nfeeds, 'feeds_stale': nstale,
-                    'id': c.id, 'name': c.name or '—',
-                    'type': c.connector_type or '', 'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
-                    'icon': TYPE_ICON.get(c.connector_type, 'plug'),
-                    'status': status, 'status_label': STATUS_LABEL.get(status, status),
-                    'status_cls': STATUS_CLS.get(status, 'muted'),
-                    'country': c.country_code or '',
-                    'last_sync': str(c.last_sync or ''),
-                    'mappings': mc, 'staged': dc, 'synced': sr,
-                })
+                rows.append(self._connector_row(c, now, has_feeds, (nfeeds, nstale)))
             except Exception as ex:
                 _logger.debug("Connector row failed: %s", ex)
                 continue
@@ -185,6 +180,30 @@ class PbIntegrations(models.AbstractModel):
             # with an empty catalogue. The client hides the phrase rather than
             # printing a number it was never given.
             'feeds_known': has_feeds,
+        }
+
+    @api.model
+    def _connector_row(self, c, now, has_feeds, feed_summary=None):
+        """One connector card (the board's list and the filter panel's page)."""
+        status = c.connection_status or 'disconnected'
+        mc = getattr(c, 'mapping_count', 0) or len(c.field_mapping_ids)
+        dc = getattr(c, 'data_store_count', 0) or len(c.data_store_ids)
+        sr = getattr(c, 'total_synced_records', 0) or 0
+        if feed_summary is None:
+            feed_summary = self._feed_summary(c, now) if has_feeds else (0, 0)
+        nfeeds, nstale = feed_summary
+        return {
+            'feeds': nfeeds, 'feeds_stale': nstale,
+            'id': c.id, 'name': c.name or '—',
+            'type': c.connector_type or '', 'type_label': TYPE_LABEL.get(c.connector_type, c.connector_type or '—'),
+            'icon': TYPE_ICON.get(c.connector_type, 'plug'),
+            'status': status, 'status_label': STATUS_LABEL.get(status, status),
+            'status_cls': STATUS_CLS.get(status, 'muted'),
+            'country': c.country_code or '',
+            'last_sync': str(c.last_sync or ''),
+            'mappings': mc, 'staged': dc, 'synced': sr,
+            # the filter panel lists archived connectors too (FILTER W6)
+            'archived': not c.active,
         }
 
     @api.model
@@ -235,6 +254,322 @@ class PbIntegrations(models.AbstractModel):
         it is refusing to ask a question whose answer would raise.
         """
         return self.env['hr.integration.connector'].search([]).ids
+
+    # ============================================================ filter panel
+    # FILTER W6 (2026-10-31). The connector cards and the three Data tables
+    # are on the shared filter panel, one record type per call
+    # (`pbf_ctx.kind`: connectors / mapping / store / rule; screens
+    # `connectors` and `integrations:<kind>`). They used to be filtered in the
+    # browser — the cards over every connector, the tables over their newest
+    # 400 rows with chips counted from those rows (the count lie People
+    # fixed). Read with the caller's own rights, as everything in this file.
+
+    @api.model
+    def _pbf_kind(self):
+        kind = self._pbf_ctx().get('kind')
+        if kind in LEDGERS and LEDGERS[kind]['model'] in self.env:
+            return kind
+        return 'connectors'
+
+    @api.model
+    def _has_feeds(self):
+        """Is the feed table really there on THIS database (see get_board)?"""
+        return ('hr.integration.endpoint' in self.env
+                and self.env['hr.integration.endpoint']._schema_ready())
+
+    def _pbf_model(self):
+        kind = self._pbf_kind()
+        return 'hr.integration.connector' if kind == 'connectors' else LEDGERS[kind]['model']
+
+    def _pbf_screen(self):
+        kind = self._pbf_kind()
+        return 'connectors' if kind == 'connectors' else 'integrations:%s' % kind
+
+    def _pbf_records(self):
+        Rec = self.env[self._pbf_model()]
+        # archived connectors and switched-off rules are listed too: a rule
+        # that is off is exactly the thing somebody comes looking for
+        if self._pbf_kind() in ('connectors', 'rule'):
+            return Rec.with_context(active_test=False)
+        return Rec
+
+    def _pbf_base_domain(self):
+        if self._pbf_kind() == 'connectors':
+            return []
+        # The satellites reach a connector the caller may not read (see
+        # `_readable_connectors`); a subquery with the record rules applied.
+        return [('connector_id', 'in', self.env['hr.integration.connector']._search([]))]
+
+    def _pbf_search_fields(self):
+        kind = self._pbf_kind()
+        if kind == 'connectors':
+            return ['name', 'description']
+        if kind == 'mapping':
+            out = ['source_field', 'source_field_label', 'target_rule_code', 'connector_id.name']
+            return out + (['endpoint_id.name'] if self._has_feeds() else [])
+        if kind == 'store':
+            return ['employee_external_id', 'employee_id.name', 'connector_id.name']
+        return ['name', 'output_key', 'plain_summary', 'last_error', 'connector_id.name']
+
+    def _pbf_sorts(self):
+        kind = self._pbf_kind()
+        if kind == 'connectors':
+            return [
+                {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+                {'key': 'recent', 'label': _('Synced most recently'), 'order': 'last_sync desc nulls last, name'},
+                {'key': 'stale', 'label': _('Longest since a sync'), 'order': 'last_sync asc nulls first, name'},
+                {'key': 'records', 'label': _('Most records pulled'),
+                 'order': 'total_synced_records desc nulls last, name'},
+            ]
+        if kind == 'mapping':
+            return [
+                {'key': 'connector', 'label': _('By connector'),
+                 'order': 'connector_id, sequence, source_field'},
+                {'key': 'field', 'label': _('Source field, A to Z'), 'order': 'source_field asc, id asc'},
+            ]
+        if kind == 'store':
+            return [
+                {'key': 'newest', 'label': _('Newest pull first'), 'order': 'pull_date desc, id desc'},
+                {'key': 'oldest', 'label': _('Oldest pull first'), 'order': 'pull_date asc, id asc'},
+            ]
+        return [
+            {'key': 'connector', 'label': _('By connector'), 'order': 'connector_id, sequence, id'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+            {'key': 'failed', 'label': _('Failed most recently'),
+             'order': 'last_error_at desc nulls last, id desc'},
+        ]
+
+    @api.model
+    def _pbf_sec_connector(self):
+        return {'key': 'connector', 'label': _('Connector'), 'icon': 'plug',
+                'group': 'other', 'type': 'many2one', 'path': 'connector_id', 'pinned': True}
+
+    def _pbf_spec(self):
+        kind = self._pbf_kind()
+        company = {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+                   'group': 'other', 'type': 'many2one', 'path': 'company_id',
+                   'none_label': _('Every company')}
+        if kind == 'connectors':
+            spec = [
+                {'key': 'status', 'label': _('Connection'), 'icon': 'plug',
+                 'group': 'other', 'type': 'selection', 'path': 'connection_status', 'pinned': True},
+                {'key': 'type', 'label': _('System'), 'icon': 'server',
+                 'group': 'other', 'type': 'selection', 'path': 'connector_type', 'pinned': True},
+                {'key': 'synced', 'label': _('Last synced'), 'icon': 'refresh',
+                 'group': 'dates', 'type': 'date', 'path': 'last_sync', 'pinned': True,
+                 'presets': ['today', 'this_week', 'this_month', 'last_month', 'last_90',
+                             'this_year', 'none'],
+                 'none_label': _('Never synced')},
+                {'key': 'sync_result', 'label': _('Last sync result'), 'icon': 'activity',
+                 'group': 'other', 'type': 'selection', 'path': 'last_sync_status',
+                 'none_label': _('No sync yet')},
+                {'key': 'records', 'label': _('Records pulled'), 'icon': 'database',
+                 'group': 'other', 'type': 'number', 'path': 'total_synced_records'},
+                {'key': 'auth', 'label': _('Sign-in method'), 'icon': 'key',
+                 'group': 'other', 'type': 'selection', 'path': 'auth_type'},
+                {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+                 'group': 'other', 'type': 'selection', 'path': 'country_code',
+                 'none_label': _('Every country')},
+                company,
+                {'key': 'active', 'label': _('In use or archived'), 'icon': 'archive',
+                 'group': 'other', 'type': 'choice', 'requires': ['active'],
+                 'options': [
+                     {'value': 'yes', 'label': _('In use'), 'tone': 'green', 'domain': [('active', '=', True)]},
+                     {'value': 'no', 'label': _('Archived'), 'tone': 'slate', 'domain': [('active', '=', False)]},
+                 ]},
+            ]
+            if self._has_feeds():
+                spec.insert(4, {
+                    'key': 'feeds', 'label': _('Feeds'), 'icon': 'layers',
+                    'group': 'other', 'type': 'choice',
+                    'options': [
+                        {'value': 'yes', 'label': _('Has feeds'), 'tone': 'green',
+                         'domain': [('endpoint_ids', '!=', False)]},
+                        {'value': 'no', 'label': _('No feeds yet'), 'tone': 'slate',
+                         'domain': [('endpoint_ids', '=', False)]},
+                    ]})
+            return spec
+        if kind == 'mapping':
+            spec = [
+                self._pbf_sec_connector(),
+                {'key': 'state', 'label': _('Mapping state'), 'icon': 'gitBranch',
+                 'group': 'other', 'type': 'selection', 'path': 'active_state', 'pinned': True},
+                {'key': 'health', 'label': _('Health'), 'icon': 'shieldCheck',
+                 'group': 'other', 'type': 'choice', 'requires': ['has_transform_error', 'is_severed'],
+                 'options': [
+                     {'value': 'error', 'label': _('Transform error'), 'tone': 'rose',
+                      'domain': [('has_transform_error', '=', True)]},
+                     {'value': 'severed', 'label': _('Severed'), 'tone': 'amber',
+                      'domain': [('is_severed', '=', True)]},
+                     {'value': 'ok', 'label': _('Healthy'), 'tone': 'green',
+                      'domain': [('has_transform_error', '=', False), ('is_severed', '=', False)]},
+                 ]},
+                {'key': 'target', 'label': _('Target rule'), 'icon': 'sigma',
+                 'group': 'pay', 'type': 'many2one', 'path': 'target_rule_id',
+                 'none_label': _('No target')},
+                {'key': 'transform', 'label': _('Transform'), 'icon': 'wrench',
+                 'group': 'other', 'type': 'selection', 'path': 'transformation_type'},
+                {'key': 'source_type', 'label': _('Source data type'), 'icon': 'hash',
+                 'group': 'other', 'type': 'selection', 'path': 'source_data_type'},
+                {'key': 'required', 'label': _('Required'), 'icon': 'flag',
+                 'group': 'other', 'type': 'choice', 'requires': ['is_required'],
+                 'options': [
+                     {'value': 'yes', 'label': _('Required'), 'tone': 'amber', 'domain': [('is_required', '=', True)]},
+                     {'value': 'no', 'label': _('Optional'), 'tone': 'slate', 'domain': [('is_required', '=', False)]},
+                 ]},
+            ]
+            if self._has_feeds():
+                spec.insert(2, {'key': 'feed', 'label': _('Feed'), 'icon': 'layers',
+                                'group': 'other', 'type': 'many2one', 'path': 'endpoint_id',
+                                'pinned': True, 'none_label': _('Unassigned')})
+            return spec
+        if kind == 'store':
+            spec = [
+                self._pbf_sec_connector(),
+                {'key': 'state', 'label': _('Status'), 'icon': 'gitBranch',
+                 'group': 'other', 'type': 'selection', 'path': 'state', 'pinned': True},
+                {'key': 'data_type', 'label': _('Data type'), 'icon': 'table',
+                 'group': 'other', 'type': 'selection', 'path': 'data_type', 'pinned': True},
+                {'key': 'employee', 'label': _('Matched employee'), 'icon': 'user',
+                 'group': 'people', 'type': 'many2one', 'path': 'employee_id',
+                 'none_label': _('Not matched to anyone')},
+                {'key': 'pulled', 'label': _('Pulled'), 'icon': 'download',
+                 'group': 'dates', 'type': 'date', 'path': 'pull_date',
+                 'presets': ['today', 'this_week', 'this_month', 'last_month', 'last_90', 'this_year']},
+                {'key': 'period', 'label': _('Period from'), 'icon': 'calendar',
+                 'group': 'dates', 'type': 'date', 'path': 'period_from', 'presets': 'past',
+                 'none_label': _('No period')},
+                {'key': 'trigger', 'label': _('Pulled by'), 'icon': 'play',
+                 'group': 'other', 'type': 'selection', 'path': 'pull_triggered_by'},
+                {'key': 'changes', 'label': _('Changed since last pull'), 'icon': 'history',
+                 'group': 'other', 'type': 'choice', 'requires': ['has_changes'],
+                 'options': [
+                     {'value': 'yes', 'label': _('Changed'), 'tone': 'amber', 'domain': [('has_changes', '=', True)]},
+                     {'value': 'no', 'label': _('Unchanged'), 'tone': 'slate', 'domain': [('has_changes', '=', False)]},
+                 ]},
+                {'key': 'batch', 'label': _('Used in batch'), 'icon': 'database',
+                 'group': 'pay', 'type': 'many2one', 'path': 'import_batch_id',
+                 'none_label': _('Not used yet')},
+                company,
+            ]
+            S = self.env['hr.api.data.store']
+            if self._has_feeds() and column_exists(self.env.cr, S._table, 'endpoint_id'):
+                spec.insert(3, {'key': 'feed', 'label': _('Feed'), 'icon': 'layers',
+                                'group': 'other', 'type': 'many2one', 'path': 'endpoint_id',
+                                'none_label': _('Unassigned')})
+            return spec
+        return [
+            self._pbf_sec_connector(),
+            {'key': 'active', 'label': _('On or off'), 'icon': 'powerOff',
+             'group': 'other', 'type': 'choice', 'pinned': True, 'requires': ['active'],
+             'options': [
+                 {'value': 'on', 'label': _('On'), 'tone': 'green', 'domain': [('active', '=', True)]},
+                 {'value': 'off', 'label': _('Off'), 'tone': 'slate', 'domain': [('active', '=', False)]},
+             ]},
+            {'key': 'failing', 'label': _('Errors'), 'icon': 'triangleAlert',
+             'group': 'other', 'type': 'choice', 'pinned': True, 'requires': ['last_error'],
+             'options': [
+                 {'value': 'yes', 'label': _('Failing'), 'tone': 'rose', 'domain': [('last_error', '!=', False)]},
+                 {'value': 'no', 'label': _('No error'), 'tone': 'green', 'domain': [('last_error', '=', False)]},
+             ]},
+            {'key': 'rule_type', 'label': _('Kind of rule'), 'icon': 'sigma',
+             'group': 'other', 'type': 'selection', 'path': 'rule_type'},
+            {'key': 'source_type', 'label': _('Reads'), 'icon': 'table',
+             'group': 'other', 'type': 'selection', 'path': 'source_data_type'},
+            {'key': 'builder', 'label': _('Built with'), 'icon': 'wrench',
+             'group': 'other', 'type': 'selection', 'path': 'builder_mode'},
+            {'key': 'records', 'label': _('Source records'), 'icon': 'layers',
+             'group': 'other', 'type': 'selection', 'path': 'record_source'},
+            {'key': 'failed_at', 'label': _('Last failed'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'last_error_at', 'presets': 'past',
+             'none_label': _('Never failed')},
+        ]
+
+    def _pbf_builtin_views(self):
+        kind = self._pbf_kind()
+        if kind == 'connectors':
+            return [
+                {'key': 'all', 'label': _('All connectors'), 'icon': 'layoutList', 'filters': {}},
+                {'key': 'attention', 'label': _('Needs attention'), 'filters': {'status': ['error']}},
+                {'key': 'never', 'label': _('Never synced'), 'filters': {'synced': {'preset': 'none'}}},
+                {'key': 'today', 'label': _('Synced today'), 'filters': {'synced': {'preset': 'today'}}},
+                {'key': 'excel', 'label': _('Spreadsheet feeds'), 'filters': {'type': ['excel']}},
+            ]
+        if kind == 'mapping':
+            return [
+                {'key': 'all', 'label': _('All mappings'), 'icon': 'layoutList', 'filters': {}},
+                {'key': 'active', 'label': _('Active'), 'filters': {'state': ['active']}},
+                {'key': 'severed', 'label': _('Severed'), 'filters': {'health': ['severed']}},
+                {'key': 'error', 'label': _('With a transform error'), 'filters': {'health': ['error']}},
+            ]
+        if kind == 'store':
+            return [
+                {'key': 'all', 'label': _('Everything'), 'icon': 'layoutList', 'filters': {}},
+                {'key': 'today', 'label': _('Pulled today'), 'filters': {'pulled': {'preset': 'today'}}},
+                {'key': 'failed', 'label': _('Failed pulls'), 'filters': {'state': ['error']}},
+                {'key': 'unmatched', 'label': _('Not matched to anyone'), 'filters': {'employee': [False]}},
+                {'key': 'changed', 'label': _('Changed since last pull'), 'filters': {'changes': ['yes']}},
+            ]
+        return [
+            {'key': 'all', 'label': _('All rules'), 'icon': 'layoutList', 'filters': {}},
+            {'key': 'active', 'label': _('Active'), 'filters': {'active': ['on']}},
+            {'key': 'failing', 'label': _('Failing'), 'filters': {'failing': ['yes']}},
+        ]
+
+    @api.model
+    def _page_args(self, offset, limit):
+        try:
+            return max(0, int(offset or 0)), max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            return 0, PAGE_SIZE
+
+    @api.model
+    def get_connector_page(self, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
+        """One page of connector cards for the filter panel's state."""
+        if 'hr.integration.connector' not in self.env:
+            return {'rows': [], 'total': 0, 'offset': 0}
+        M = self.with_context(pbf_ctx={'kind': 'connectors'})
+        Rec = M._pbf_records()
+        offset, limit = self._page_args(offset, limit)
+        domain = M.pbf_domain(filters or {}, search)
+        has_feeds = self._has_feeds()
+        now = fields.Datetime.now()
+        rows = []
+        for c in Rec.search(domain, order=M.pbf_order(sort) or 'name', offset=offset, limit=limit):
+            try:
+                rows.append(self._connector_row(c, now, has_feeds))
+            except Exception as ex:  # noqa: BLE001 — one bad card never blanks the list
+                _logger.debug("Connector row failed: %s", ex)
+        return {'rows': rows, 'total': Rec.search_count(domain), 'offset': offset}
+
+    @api.model
+    def get_ledger_head(self, kind):
+        """A Data table's words and columns, without its rows."""
+        spec = LEDGERS.get(kind)
+        if not spec or spec['model'] not in self.env:
+            return {'columns': [], 'total': 0, 'empty': _('This table does not exist on this database.')}
+        head = getattr(self, '_words_%s' % kind)()
+        M = self.with_context(pbf_ctx={'kind': kind})
+        head['total'] = M._pbf_records().search_count(M._pbf_base_domain())
+        return head
+
+    @api.model
+    def get_ledger_page(self, kind, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
+        """One page of a Data table for the filter panel's state. The
+        connector / feed / data-type deep links arrive as filters on the
+        panel (droppable chips), inside the same readable-connector scope —
+        a deep link can never widen it."""
+        spec = LEDGERS.get(kind)
+        if not spec or spec['model'] not in self.env:
+            return {'rows': [], 'total': 0, 'offset': 0}
+        M = self.with_context(pbf_ctx={'kind': kind})
+        Rec = M._pbf_records()
+        offset, limit = self._page_args(offset, limit)
+        domain = M.pbf_domain(filters or {}, search)
+        recs = Rec.search(domain, order=M.pbf_order(sort) or 'id desc', offset=offset, limit=limit)
+        ctx = getattr(self, '_row_ctx_%s' % kind)()
+        build = getattr(self, '_row_%s' % kind)
+        return {'rows': [build(r, ctx) for r in recs], 'total': Rec.search_count(domain), 'offset': offset}
 
     @api.model
     def get_ledger(self, kind, connector_id=None, data_type=None,
@@ -338,66 +673,72 @@ class PbIntegrations(models.AbstractModel):
 
     # ------------------------------------------------------- field mappings
     @api.model
-    def _ledger_mapping(self, dom):
-        M = self.env['hr.integration.field.mapping']
-        total = M.search_count(dom)
-        recs = M.search(dom, order='connector_id, sequence, source_field', limit=LIMIT)
-        # Integrations Cycle 2 — the feed a mapping belongs to, as a column and
-        # a facet, so the studio's per-feed counts and this table are answering
-        # the same question. Behind Cycle 1's schema probe, not behind
+    def _row_ctx_mapping(self):
+        # Integrations Cycle 2 — the feed a mapping belongs to, as a column, so
+        # the studio's per-feed counts and this table are answering the same
+        # question. Behind Cycle 1's schema probe, not behind
         # `'hr.integration.endpoint' in self.env`: the addons tree is shared and
         # the COLUMN arrives with a database's own upgrade, so on a tenant that
         # has not had one this read would raise UndefinedColumn and leave the
         # whole request's transaction aborted.
-        has_feeds = ('hr.integration.endpoint' in self.env
-                     and self.env['hr.integration.endpoint']._schema_ready())
-        rows = []
-        for r in recs:
-            state = r.active_state or 'active'
-            tone = {'active': 'ok', 'suggested': 'warn', 'ignored': 'muted'}.get(state, 'muted')
-            if r.has_transform_error:
-                tone = 'err'
-            # "Unassigned" and not "—": a mapping drawn before feeds existed is
-            # a real, working mapping with no feed named, which is a different
-            # thing from a missing value (W79).
-            feed = (r.endpoint_id.name or r.endpoint_id.code or 'Unassigned') \
-                if has_feeds else ''
-            cells = [
-                r.source_field_label or r.source_field or '—',
-                r.target_rule_id.name or r.target_rule_code or '—',
-                _sel(M, 'transformation_type', r.transformation_type),
-                r.connector_id.name or '—',
-            ]
-            facets = {'connector': r.connector_id.name or '', 'state': state}
-            if has_feeds:
-                cells.append(feed)
-                facets['feed'] = feed
-            rows.append({
-                'id': r.id,
-                'cells': cells,
-                'badge': {'label': _sel(M, 'active_state', state), 'tone': tone},
-                '_f': facets,
-                '_s': ' '.join(x for x in [r.source_field or '', r.source_field_label or '',
-                                           r.target_rule_code or '',
-                                           r.connector_id.name or '', feed] if x),
-            })
-        columns = [{'label': 'Source field', 'wide': True},
-                   {'label': 'Target rule'},
-                   {'label': 'Transform'},
-                   {'label': 'Connector'}]
-        facet_spec = [('connector', 'Connector'), ('state', 'State')]
+        return {'has_feeds': self._has_feeds()}
+
+    @api.model
+    def _row_mapping(self, r, ctx):
+        M = self.env['hr.integration.field.mapping']
+        has_feeds = ctx['has_feeds']
+        state = r.active_state or 'active'
+        tone = {'active': 'ok', 'suggested': 'warn', 'ignored': 'muted'}.get(state, 'muted')
+        if r.has_transform_error:
+            tone = 'err'
+        # "Unassigned" and not "—": a mapping drawn before feeds existed is
+        # a real, working mapping with no feed named, which is a different
+        # thing from a missing value (W79).
+        feed = (r.endpoint_id.name or r.endpoint_id.code or _('Unassigned')) \
+            if has_feeds else ''
+        cells = [
+            r.source_field_label or r.source_field or '—',
+            r.target_rule_id.name or r.target_rule_code or '—',
+            _sel(M, 'transformation_type', r.transformation_type),
+            r.connector_id.name or '—',
+        ]
         if has_feeds:
-            columns.append({'label': 'Feed'})
-            facet_spec.append(('feed', 'Feed'))
+            cells.append(feed)
         return {
-            'title': 'Field mappings',
-            'subtitle': 'Which source field feeds which formula input, and how it is transformed.',
-            'search_ph': 'Search source field, target code, connector, feed…',
-            'empty': 'No field mappings match these filters.',
-            'columns': columns,
-            'facets': self._facets(rows, facet_spec),
-            'rows': rows, 'total': total, 'shown': len(rows),
+            'id': r.id,
+            'cells': cells,
+            'badge': {'label': _sel(M, 'active_state', state), 'tone': tone},
+            '_s': ' '.join(x for x in [r.source_field or '', r.source_field_label or '',
+                                       r.target_rule_code or '',
+                                       r.connector_id.name or '', feed] if x),
         }
+
+    @api.model
+    def _words_mapping(self):
+        columns = [{'label': _('Source field'), 'wide': True},
+                   {'label': _('Target rule')},
+                   {'label': _('Transform')},
+                   {'label': _('Connector')}]
+        if self._has_feeds():
+            columns.append({'label': _('Feed')})
+        return {
+            'title': _('Field mappings'),
+            'subtitle': _('Which source field feeds which formula input, and how it is transformed.'),
+            'search_ph': _('Search source field, target code, connector, feed…'),
+            'empty': _('No field mappings on these connectors yet.'),
+            'columns': columns,
+        }
+
+    @api.model
+    def _ledger_mapping(self, dom):
+        """The old one-shot grid (newest 400); the screen reads
+        get_ledger_head + get_ledger_page now (kept for its tests, R4)."""
+        M = self.env['hr.integration.field.mapping']
+        total = M.search_count(dom)
+        recs = M.search(dom, order='connector_id, sequence, source_field', limit=LIMIT)
+        ctx = self._row_ctx_mapping()
+        rows = [self._row_mapping(r, ctx) for r in recs]
+        return dict(self._words_mapping(), rows=rows, total=total, shown=len(rows))
 
     @api.model
     def _detail_feed_name(self, r):
@@ -466,52 +807,59 @@ class PbIntegrations(models.AbstractModel):
 
     # ---------------------------------------------------------- api data store
     @api.model
-    def _ledger_store(self, dom):
+    def _row_ctx_store(self):
         S = self.env['hr.api.data.store']
-        has_feed = column_exists(self.env.cr, S._table, 'endpoint_id')
+        return {'has_feed': column_exists(self.env.cr, S._table, 'endpoint_id')}
+
+    @api.model
+    def _row_store(self, r, ctx):
+        S = self.env['hr.api.data.store']
+        has_feed = ctx['has_feed']
+        state = r.state or 'raw'
+        tone = {'extracted': 'ok', 'consumed': 'info', 'error': 'err',
+                'archived': 'muted'}.get(state, 'muted')
+        feed = (r.endpoint_id.name or r.endpoint_id.code or _('Unassigned')) \
+            if has_feed else ''
+        cells = [
+            r.employee_external_id or (r.employee_id.name if r.employee_id else '—'),
+            _sel(S, 'data_type', r.data_type),
+            r.connector_id.name or '—',
+            _s(r.pull_date)[:16],
+        ]
+        if has_feed:
+            cells.insert(2, feed)
+        return {
+            'id': r.id,
+            'cells': cells,
+            'badge': {'label': _sel(S, 'state', state), 'tone': tone},
+            '_s': ' '.join(x for x in [r.employee_external_id or '',
+                                       r.employee_id.name if r.employee_id else '',
+                                       r.connector_id.name or '', feed] if x),
+        }
+
+    @api.model
+    def _words_store(self):
+        columns = [{'label': _('Key'), 'wide': True}, {'label': _('Data type')}]
+        if self._row_ctx_store()['has_feed']:
+            columns.append({'label': _('Feed')})
+        columns.extend([{'label': _('Connector')}, {'label': _('Pulled')}])
+        return {
+            'title': _('API data store'),
+            'subtitle': _('Everything the connectors have pulled — raw, extracted and versioned.'),
+            'search_ph': _('Search external id, employee, connector…'),
+            'empty': _('Nothing has been pulled into the store yet.'),
+            'columns': columns,
+        }
+
+    @api.model
+    def _ledger_store(self, dom):
+        """The old one-shot grid (newest 400; kept for its tests, R4)."""
+        S = self.env['hr.api.data.store']
         total = S.search_count(dom)
         recs = S.search(dom, order='pull_date desc, id desc', limit=LIMIT)
-        rows = []
-        for r in recs:
-            state = r.state or 'raw'
-            tone = {'extracted': 'ok', 'consumed': 'info', 'error': 'err',
-                    'archived': 'muted'}.get(state, 'muted')
-            feed = (r.endpoint_id.name or r.endpoint_id.code or 'Unassigned') \
-                if has_feed else ''
-            cells = [
-                r.employee_external_id or (r.employee_id.name if r.employee_id else '—'),
-                _sel(S, 'data_type', r.data_type),
-                r.connector_id.name or '—',
-                _s(r.pull_date)[:16],
-            ]
-            facets = {'connector': r.connector_id.name or '', 'state': state}
-            if has_feed:
-                cells.insert(2, feed)
-                facets['feed'] = feed
-            rows.append({
-                'id': r.id,
-                'cells': cells,
-                'badge': {'label': _sel(S, 'state', state), 'tone': tone},
-                '_f': facets,
-                '_s': ' '.join(x for x in [r.employee_external_id or '',
-                                           r.employee_id.name if r.employee_id else '',
-                                           r.connector_id.name or '', feed] if x),
-            })
-        columns = [{'label': 'Key', 'wide': True}, {'label': 'Data type'}]
-        facet_spec = [('connector', 'Connector'), ('state', 'State')]
-        if has_feed:
-            columns.append({'label': 'Feed'})
-            facet_spec.append(('feed', 'Feed'))
-        columns.extend([{'label': 'Connector'}, {'label': 'Pulled'}])
-        return {
-            'title': 'API data store',
-            'subtitle': 'Everything the connectors have pulled — raw, extracted and versioned.',
-            'search_ph': 'Search external id, employee, connector…',
-            'empty': 'Nothing has been pulled into the store yet.',
-            'columns': columns,
-            'facets': self._facets(rows, facet_spec),
-            'rows': rows, 'total': total, 'shown': len(rows),
-        }
+        ctx = self._row_ctx_store()
+        rows = [self._row_store(r, ctx) for r in recs]
+        return dict(self._words_store(), rows=rows, total=total, shown=len(rows))
 
     @api.model
     def _detail_store(self, r):
@@ -573,56 +921,63 @@ class PbIntegrations(models.AbstractModel):
         recs = R.with_context(active_test=False).search(
             dom, order='connector_id, sequence, id', limit=LIMIT)
         total = R.with_context(active_test=False).search_count(dom)
-        rows = []
-        for r in recs:
-            error = getattr(r, 'last_error', '') or ''
-            # The KIND column prints the rule's own SENTENCE (Cycle 8). "Sum
-            # Field Across Records" is a selection label, true of half the
-            # table and an answer to nobody's question; "Adds up Actual Pay Hour
-            # where OT Type is 150%" is what the reader came to find out. The
-            # selection label is the fallback for a row whose summary has not
-            # been computed yet — a blank cell would read as a broken rule.
-            summary = (getattr(r, 'plain_summary', '') or ''
-                       or _sel(R, 'rule_type', r.rule_type))
-            rows.append({
-                'id': r.id,
-                # The composer opens on a CONNECTOR, and the row is the only
-                # thing the client has when it is clicked.
-                'connector_id': r.connector_id.id,
-                'cells': [
-                    r.name or '—',
-                    r.output_key or '—',
-                    summary,
-                    # SOURCING S5 — a rule that feeds nothing is now visible in
-                    # the LIST, without opening a single row.
-                    str(len(self._rule_consumers(r))),
-                    r.connector_id.name or '—',
-                ],
-                # An error outranks "off": a rule that is on and failing is the
-                # row somebody is looking for, and "Active" beside a silent
-                # failure is the badge telling the lie (W149's shape).
-                'badge': ({'label': 'Error', 'tone': 'err'} if error else
-                          {'label': 'Active' if r.active else 'Off',
-                           'tone': 'ok' if r.active else 'muted'}),
-                '_f': {'connector': r.connector_id.name or '',
-                       'state': ('error' if error else
-                                 'active' if r.active else 'off')},
-                '_s': ' '.join(x for x in [r.name or '', r.output_key or '',
-                                           summary, error,
-                                           r.connector_id.name or ''] if x),
-            })
+        ctx = self._row_ctx_rule()
+        rows = [self._row_rule(r, ctx) for r in recs]
+        return dict(self._words_rule(), rows=rows, total=total, shown=len(rows))
+
+    @api.model
+    def _row_ctx_rule(self):
+        return {}
+
+    @api.model
+    def _row_rule(self, r, ctx):
+        R = self.env['hr.api.transformation.rule']
+        error = getattr(r, 'last_error', '') or ''
+        # The KIND column prints the rule's own SENTENCE (Cycle 8). "Sum
+        # Field Across Records" is a selection label, true of half the
+        # table and an answer to nobody's question; "Adds up Actual Pay Hour
+        # where OT Type is 150%" is what the reader came to find out. The
+        # selection label is the fallback for a row whose summary has not
+        # been computed yet — a blank cell would read as a broken rule.
+        summary = (getattr(r, 'plain_summary', '') or ''
+                   or _sel(R, 'rule_type', r.rule_type))
         return {
-            'title': 'Transformation rules',
-            'subtitle': 'Values derived from the stored records before mapping runs.',
-            'search_ph': 'Search rule name, output key, what it does…',
-            'empty': 'No transformation rules on these connectors.',
-            'columns': [{'label': 'Rule', 'wide': True},
-                        {'label': 'Output key'},
-                        {'label': 'What it does', 'wide': True},
-                        {'label': 'Feeds'},
-                        {'label': 'Connector'}],
-            'facets': self._facets(rows, [('connector', 'Connector'), ('state', 'State')]),
-            'rows': rows, 'total': total, 'shown': len(rows),
+            'id': r.id,
+            # The composer opens on a CONNECTOR, and the row is the only
+            # thing the client has when it is clicked.
+            'connector_id': r.connector_id.id,
+            'cells': [
+                r.name or '—',
+                r.output_key or '—',
+                summary,
+                # SOURCING S5 — a rule that feeds nothing is now visible in
+                # the LIST, without opening a single row.
+                str(len(self._rule_consumers(r))),
+                r.connector_id.name or '—',
+            ],
+            # An error outranks "off": a rule that is on and failing is the
+            # row somebody is looking for, and "Active" beside a silent
+            # failure is the badge telling the lie (W149's shape).
+            'badge': ({'label': _('Error'), 'tone': 'err'} if error else
+                      {'label': _('Active') if r.active else _('Off'),
+                       'tone': 'ok' if r.active else 'muted'}),
+            '_s': ' '.join(x for x in [r.name or '', r.output_key or '',
+                                       summary, error,
+                                       r.connector_id.name or ''] if x),
+        }
+
+    @api.model
+    def _words_rule(self):
+        return {
+            'title': _('Transformation rules'),
+            'subtitle': _('Values derived from the stored records before mapping runs.'),
+            'search_ph': _('Search rule name, output key, what it does…'),
+            'empty': _('No transformation rules on these connectors.'),
+            'columns': [{'label': _('Rule'), 'wide': True},
+                        {'label': _('Output key')},
+                        {'label': _('What it does'), 'wide': True},
+                        {'label': _('Feeds')},
+                        {'label': _('Connector')}],
         }
 
     # ==================================================================
@@ -820,21 +1175,6 @@ class PbIntegrations(models.AbstractModel):
             ] if s],
         }
 
-    # ------------------------------------------------------------------ facets
-    @api.model
-    def _facets(self, rows, spec):
-        """Facets built from the LOADED rows, so a chip always matches rows.
-
-        Rendered as a dropdown past eight distinct values, and the template
-        drops a facet with 0 or 1 value entirely — a filter with one option is a
-        control that cannot change anything. Same helper shape as the pay-run
-        ledgers', deliberately: two ledgers that behave differently under the
-        same-looking chips is a worse cost than one duplicated function.
-        """
-        out = []
-        for key, label in spec:
-            vals = sorted({(r['_f'].get(key) or '') for r in rows} - {''})
-            out.append({'key': key, 'label': label,
-                        'kind': 'chips' if len(vals) <= 8 else 'select',
-                        'chips': [{'id': v, 'label': v} for v in vals]})
-        return out
+    # The `_facets` helper that lived here (chips counted from the loaded
+    # rows) is gone: the filter panel counts every section over the whole
+    # table on the server (FILTER W6).

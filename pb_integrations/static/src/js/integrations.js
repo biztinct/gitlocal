@@ -35,29 +35,23 @@ import { user } from "@web/core/user";
 import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
 import { WfDrawer } from "@pb_wf_kit/js/wf_drawer";
 import { RuleComposer } from "@pb_integrations/js/rule_composer";
-
-const STATUS_CHIPS = [
-    { id: "all", label: _t("All") }, { id: "connected", label: _t("Connected") },
-    { id: "error", label: _t("Error") }, { id: "disconnected", label: _t("Disconnected") },
-];
-const RECENCY_CHIPS = [
-    { id: "all", label: _t("Any time") }, { id: "1h", label: _t("Synced ≤1h") },
-    { id: "1d", label: _t("Synced ≤1d") }, { id: "old", label: _t("Older") }, { id: "never", label: _t("Never") },
-];
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 /**
  * The three tables the raw-list tiles used to open, in the order an operator
  * meets them: what you mapped, what you pulled, what you derived from it.
  */
 const LEDGER_TABS = [
-    { id: "mapping", icon: "link", label: _t("Field mappings") },
-    { id: "store", icon: "database", label: _t("Data store") },
-    { id: "rule", icon: "sigma", label: _t("Transformation rules") },
+    { id: "mapping", icon: "link", label: _t("Field mappings"), noun: () => _t("mappings") },
+    { id: "store", icon: "database", label: _t("Data store"), noun: () => _t("stored records") },
+    { id: "rule", icon: "sigma", label: _t("Transformation rules"), noun: () => _t("rules") },
 ];
+const PAGE = 60;
 
 export class PbIntegrations extends Component {
     static template = "pb_integrations.PbIntegrations";
-    static components = { HubBackChip, WfDrawer, RuleComposer };
+    static components = { HubBackChip, WfDrawer, RuleComposer, PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -74,26 +68,14 @@ export class PbIntegrations extends Component {
 
         this.state = useState({
             loaded: false, kpis: {}, connectors: [], types: [], total: 0,
-            search: "", status: "all", type: "", recency: "all",
+            // the connector cards: one page at a time for the panel's state
+            crows: [], ctotal: 0, clistLoaded: false, cloadingMore: false,
 
             // ---- the Data view ----
             view: askedKind ? "data" : "connectors",
             kind: askedKind || "mapping",
-            // A connector deep-link SCOPES the ledger. It is a filter, not a
-            // selection — the same distinction `pb_focus` draws in the hub
-            // arrival protocol (W26): arriving from a connector must not also
-            // pop a drawer over the table you were sent to read.
-            connectorId: ctx.pb_connector ? Number(ctx.pb_connector) : 0,
-            connectorName: ctx.pb_connector_name || "",
-            // A FEED scope, from the connector cockpit's "View data" button.
-            // Same shape and same rules as the connector one: it is a filter,
-            // it says so on screen, and it can be dropped.
-            dataType: ctx.pb_data_type || "",
-            dataTypeName: ctx.pb_data_type_name || "",
-            endpointId: ctx.pb_endpoint ? Number(ctx.pb_endpoint) : 0,
-            endpointName: ctx.pb_endpoint_name || "",
             ledger: null, ledgerLoading: false,
-            lsearch: "", f: {},
+            lrows: [], ltotal: 0, llistLoaded: false, lloadingMore: false,
             drawer: null, drawerLoading: false,
 
             // ---- the Rule Composer (Cycle 8) ----
@@ -107,14 +89,50 @@ export class PbIntegrations extends Component {
         // One navigation at a time (C1's flag).
         this._opening = false;
 
+        // FILTER W6 — two shared filter panels, one per view: the connector
+        // cards (screen `connectors`) and the Data tables (one record type at
+        // a time, screens `integrations:<kind>`; a tab switch points the
+        // panel at the next table). Both load the first time their view
+        // opens.
+        //
+        // A deep link (a connector, a feed, a data type) arrives as FILTERS on
+        // the Data panel — chips the reader can see and drop — never a hidden
+        // scope; the server keeps them inside the connectors this reader may
+        // read, so a link can never widen what is shown (W26).
+        this._arrival = {
+            connector: ctx.pb_connector ? Number(ctx.pb_connector) : 0,
+            endpoint: ctx.pb_endpoint ? Number(ctx.pb_endpoint) : 0,
+            dataType: ctx.pb_data_type || "",
+        };
+        this._dataStarted = false;
+        this.ckit = useFilterKit({
+            model: "pb.integrations",
+            noun: _t("connectors"),
+            ctx: { kind: "connectors" },
+            defer: true,
+            onChange: () => this.loadConnectors(),
+        });
+        this.dkit = useFilterKit({
+            model: "pb.integrations",
+            noun: this.kindNoun(this.state.kind),
+            ctx: { kind: this.state.kind },
+            defer: true,
+            onChange: () => this.loadLedgerPage(),
+        });
+
         onWillStart(async () => {
             await this.load();
             // Asked ONCE, and only about a group — the write itself is gated
             // server-side by `rule_save`, which fails CLOSED. This flag decides
             // whether a button is drawn, and a hidden control is never a gate.
             this.state.canEditRules = await this._readRuleRights();
-            if (this.state.view === "data") { await this.loadLedger(); }
+            if (this.state.view === "data") { await this.loadLedger(); } else { await this.ckit.load(); }
         });
+    }
+
+    kindNoun(kind) {
+        const t = LEDGER_TABS.find((x) => x.id === kind);
+        return t ? t.noun() : _t("rows");
     }
 
     // ================================================================== board
@@ -129,15 +147,47 @@ export class PbIntegrations extends Component {
         });
     }
 
-    ic(n, s = 16) { return ic(n, s); }
-    get statusChips() { return STATUS_CHIPS; }
-    get recencyChips() { return RECENCY_CHIPS; }
-    get ledgerTabs() { return LEDGER_TABS; }
+    /** One page of connector cards for the panel's current filters. */
+    async loadConnectors({ more = false } = {}) {
+        const q = this.ckit.query;
+        const offset = more ? this.state.crows.length : 0;
+        if (more) { this.state.cloadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.integrations", "get_connector_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.ckit.isCurrent(q.seq)) { return; }
+            this.state.crows = more ? [...this.state.crows, ...d.rows] : d.rows;
+            this.state.ctotal = d.total;
+            this.state.clistLoaded = true;
+        } catch (e) {
+            console.warn("pb_integrations: could not load the connectors", e);
+            if (this.ckit.isCurrent(q.seq)) {
+                this.notif.add(_t("The connectors could not be loaded. Try again in a moment."), { type: "warning" });
+                this.state.clistLoaded = true;
+            }
+        } finally {
+            this.state.cloadingMore = false;
+        }
+    }
+    loadMoreConnectors() { if (!this.state.cloadingMore) { this.loadConnectors({ more: true }); } }
+    get connectorsHasMore() { return this.state.crows.length < this.state.ctotal; }
+    get connectorsNextPage() { return Math.min(PAGE, this.state.ctotal - this.state.crows.length); }
+    showAllConnectors() { this.ckit.home(); }
 
-    setStatus(s) { this.state.status = s; }
-    setType(t) { this.state.type = this.state.type === t ? "" : t; }
-    setRecency(r) { this.state.recency = r; }
-    onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
+    /** Why the connector list is empty — one sentence each (R34). */
+    get connectorsEmptyText() {
+        if (!this.ckit.total) {
+            return _t("No system is connected yet. Connect one to start pulling people and pay data.");
+        }
+        if (this.ckit.search && !this.ckit.chips.length) {
+            return _t("No connector matches “%s”. Check the spelling, or search by name.", this.ckit.search);
+        }
+        return _t("No connector fits every filter you have set. Remove a filter above, or show every connector.");
+    }
+
+    ic(n, s = 16) { return ic(n, s); }
+    get ledgerTabs() { return LEDGER_TABS; }
 
     _hoursSince(iso) {
         if (!iso) return null;
@@ -152,29 +202,6 @@ export class PbIntegrations extends Component {
         if (h < 24) return _t("Synced %(hours)s hours ago", { hours: Math.round(h) });
         return _t("Synced %(days)s days ago", { days: Math.round(h / 24) });
     }
-    _matchStatus(c, st) { return st === "all" ? true : c.status === st; }
-    _matchRecency(c) {
-        const r = this.state.recency;
-        if (r === "all") return true;
-        const h = this._hoursSince(c.last_sync);
-        if (r === "never") return h === null;
-        if (h === null) return false;
-        if (r === "1h") return h <= 1;
-        if (r === "1d") return h <= 24;
-        if (r === "old") return h > 24;
-        return true;
-    }
-    get filtered() {
-        const q = this.state.search, ty = this.state.type;
-        return this.state.connectors.filter(c => {
-            if (ty && c.type !== ty) return false;
-            if (!this._matchStatus(c, this.state.status)) return false;
-            if (!this._matchRecency(c)) return false;
-            if (q && !((c.name || "").toLowerCase().includes(q) || (c.type_label || "").toLowerCase().includes(q))) return false;
-            return true;
-        });
-    }
-    countStatus(id) { return this.state.connectors.filter(c => this._matchStatus(c, id)).length; }
 
     /**
      * The card's counts — minus the mappings, which are a DOOR now.
@@ -254,9 +281,11 @@ export class PbIntegrations extends Component {
      */
     get glance() {
         const k = this.state.kpis || {};
-        const pick = (id) => () => {
-            if (this.state.view !== "connectors") { this.setView("connectors"); }
-            this.setStatus(this.state.status === id ? "all" : id);
+        // a figure ticks "Connection" in the connector panel (switching back
+        // from Data first); pressing the lit one again shows every connector
+        const pick = (id) => async () => {
+            if (this.state.view !== "connectors") { await this.setView("connectors"); }
+            this.ckit.toggleFilters({ status: [id] });
         };
         const rows = [
             { key: "all", n: k.connectors || 0, label: _t("Connectors"), tone: "", run: null },
@@ -272,6 +301,15 @@ export class PbIntegrations extends Component {
         return rows;
     }
 
+    /** The figure that is lit: the one whose filter is exactly what is on. */
+    get glanceOn() {
+        if (this.state.view !== "connectors" || !this.ckit.loaded) { return ""; }
+        for (const id of ["connected", "error"]) {
+            if (this.ckit.isExactly({ status: [id] })) { return id; }
+        }
+        return "";
+    }
+
     /** "Feeds", or "Feeds · N stale" when any of them are overdue. */
     get feedsKpiLabel() {
         const stale = (this.state.kpis && this.state.kpis.feeds_stale) || 0;
@@ -285,50 +323,49 @@ export class PbIntegrations extends Component {
         this.state.view = view;
         this.state.drawer = null;
         if (view === "data" && !this.state.ledger) { await this.loadLedger(); }
+        if (view === "connectors" && !this.ckit.loaded) { await this.ckit.load(); }
     }
 
     async setKind(kind) {
         if (this.state.kind === kind) { return; }
         this.state.kind = kind;
         this.state.drawer = null;
-        this.state.lsearch = "";
-        this.state.f = {};
         await this.loadLedger();
     }
 
-    /** Drop the connector scope a deep link arrived with. */
-    async clearConnectorScope() {
-        if (!this.state.connectorId) { return; }
-        this.state.connectorId = 0;
-        this.state.connectorName = "";
-        this.state.dataType = "";
-        this.state.dataTypeName = "";
-        this.state.endpointId = 0;
-        this.state.endpointName = "";
-        await this.loadLedger();
+    /**
+     * The filters a Data table opens with. The connector a deep link (or the
+     * previous tab) narrowed to carries across the three tables — the same
+     * section on each — until the reader drops its chip; a feed / data type
+     * only means anything on the store, and applies the first time it opens.
+     */
+    _dataInitial(kind) {
+        const f = {};
+        const conn = this._dataStarted
+            ? this.dkit.values("connector")
+            : (this._arrival.connector ? [this._arrival.connector] : []);
+        if (conn.length) { f.connector = [...conn]; }
+        if (kind === "store") {
+            if (this._arrival.endpoint) { f.feed = [this._arrival.endpoint]; }
+            else if (this._arrival.dataType) { f.data_type = [this._arrival.dataType]; }
+            this._arrival.endpoint = 0;
+            this._arrival.dataType = "";
+        }
+        return Object.keys(f).length ? { filters: f } : null;
     }
 
-    /** Drop the feed scope, keeping the connector one. */
-    async clearDataTypeScope() {
-        if (!this.state.dataType && !this.state.endpointId) { return; }
-        this.state.dataType = "";
-        this.state.dataTypeName = "";
-        this.state.endpointId = 0;
-        this.state.endpointName = "";
-        await this.loadLedger();
-    }
-
+    /** The table's words and columns, and the Data panel pointed at it. */
     async loadLedger() {
+        const kind = this.state.kind;
         this.state.ledgerLoading = true;
+        this.state.llistLoaded = false;
+        this.state.lrows = [];
+        const initial = this._dataInitial(kind);
+        this._dataStarted = true;
+        const panel = this.dkit.reconfigure({ ctx: { kind }, noun: this.kindNoun(kind), initial });
         try {
-            const d = await this.orm.call(
-                "pb.integrations", "get_ledger",
-                [this.state.kind, this.state.connectorId || false,
-                 this.state.dataType || false, this.state.endpointId || false]);
-            this.state.ledger = d;
-            const f = {};
-            for (const fac of (d.facets || [])) { f[fac.key] = ""; }
-            this.state.f = f;
+            const d = await this.orm.call("pb.integrations", "get_ledger_head", [kind]);
+            if (kind === this.state.kind) { this.state.ledger = d; }
         } catch (e) {
             // Reported, never swallowed into an empty table (W40): an empty
             // grid and a failed read look identical and mean opposite things.
@@ -338,74 +375,63 @@ export class PbIntegrations extends Component {
         } finally {
             this.state.ledgerLoading = false;
         }
+        await panel;
     }
 
-    // ---------------------------------------------------------- ledger filters
-    onLedgerSearch(ev) { this.state.lsearch = (ev.target.value || "").toLowerCase(); }
-    setFacet(key, val) { this.state.f[key] = this.state.f[key] === val ? "" : val; }
-    onFacetSelect(key, ev) { this.state.f[key] = ev.target.value || ""; }
-
-    _matchRow(r) {
-        for (const [k, v] of Object.entries(this.state.f)) {
-            if (v && String((r._f || {})[k]) !== String(v)) { return false; }
+    /** One page of the table for the Data panel's current filters. */
+    async loadLedgerPage({ more = false } = {}) {
+        const q = this.dkit.query;
+        const kind = this.state.kind;
+        const offset = more ? this.state.lrows.length : 0;
+        if (more) { this.state.lloadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.integrations", "get_ledger_page", [kind], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.dkit.isCurrent(q.seq) || kind !== this.state.kind) { return; }
+            this.state.lrows = more ? [...this.state.lrows, ...d.rows] : d.rows;
+            this.state.ltotal = d.total;
+            this.state.llistLoaded = true;
+        } catch (e) {
+            console.warn("pb_integrations: could not load the rows", e);
+            if (this.dkit.isCurrent(q.seq)) {
+                this.notif.add(_t("The rows could not be loaded. Try again in a moment."), { type: "warning" });
+                this.state.llistLoaded = true;
+            }
+        } finally {
+            this.state.lloadingMore = false;
         }
-        const q = this.state.lsearch;
-        if (q && !(r._s || "").toLowerCase().includes(q)) { return false; }
-        return true;
     }
-    get ledgerRows() {
-        return ((this.state.ledger && this.state.ledger.rows) || [])
-            .filter((r) => this._matchRow(r));
-    }
-    chipCount(key, val) {
-        return ((this.state.ledger && this.state.ledger.rows) || [])
-            .filter((r) => String((r._f || {})[key]) === String(val)).length;
-    }
-    get ledgerDirty() {
-        return !!(this.state.lsearch || Object.values(this.state.f).some((v) => v));
-    }
-    clearLedgerFilters() {
-        const f = {};
-        for (const k of Object.keys(this.state.f)) { f[k] = ""; }
-        this.state.f = f;
-        this.state.lsearch = "";
+    loadMoreLedger() { if (!this.state.lloadingMore) { this.loadLedgerPage({ more: true }); } }
+    get ledgerHasMore() { return this.state.lrows.length < this.state.ltotal; }
+    get ledgerNextPage() { return Math.min(PAGE, this.state.ltotal - this.state.lrows.length); }
+    showAllLedger() { this.dkit.home(); }
+
+    /** The connector the Data panel is narrowed to, when exactly one. */
+    get dataConnectorId() {
+        const v = this.dkit.values("connector");
+        return v.length === 1 ? Number(v[0]) || 0 : 0;
     }
 
-    // ---------------------------------------------------------- ledger labels
-    /**
-     * One sentence, one msgid.
-     *
-     * Both of these used to be the obvious thing — a chain of `<t t-esc>`
-     * fragments in the template — and both are exactly what W80 forbids: a
-     * translator cannot reorder fragments, and word order is the first thing
-     * that differs. They are also the two strings on this surface that CARRY
-     * numbers, so they are the two that must not silently stay English.
-     */
-    get scopeLabel() {
-        return _t("Showing only %s", this.state.connectorName || _t("this connector"));
+    /** Why the table is empty — one translatable sentence each (R34). */
+    get ledgerEmptyText() {
+        if (!this.dkit.total) { return (this.state.ledger && this.state.ledger.empty) || _t("Nothing here yet."); }
+        if (this.dkit.search && !this.dkit.chips.length) {
+            return _t("Nothing matches “%s”. Check the spelling, or search by another word on the row.", this.dkit.search);
+        }
+        return _t("Nothing in this table fits every filter you have set. Remove a filter above, or show the whole table.");
     }
 
-    /** The feed scope's sentence — one getter, one msgid (W80). */
-    get feedScopeLabel() {
-        return _t("Feed: %s", this.state.endpointName ||
-                  this.state.dataTypeName || this.state.dataType);
-    }
-
-    /** The feed scope only means anything on the store tab. */
-    get feedScopeActive() {
-        return !!((this.state.endpointId || this.state.dataType) &&
-                  this.state.kind === "store");
-    }
-
+    /** One sentence, one msgid (W80). */
     get footLabel() {
-        const d = this.state.ledger || {};
-        const shown = this.ledgerRows.length;
-        if ((d.total || 0) > (d.shown || 0)) {
-            return _t("Showing %(shown)s of %(total)s · the newest %(loaded)s are "
-                      + "loaded, so narrow the search to reach the rest.",
-                      { shown, total: d.total, loaded: d.shown });
-        }
-        return _t("Showing %(shown)s of %(total)s", { shown, total: d.total || 0 });
+        return _t("Showing %(shown)s of %(total)s",
+                  { shown: this.state.lrows.length.toLocaleString("en-US"),
+                    total: (this.state.ltotal || 0).toLocaleString("en-US") });
+    }
+    get connectorsFootLabel() {
+        return _t("Showing %(shown)s of %(total)s",
+                  { shown: this.state.crows.length.toLocaleString("en-US"),
+                    total: (this.state.ctotal || 0).toLocaleString("en-US") });
     }
 
     // ================================================================= drawer
@@ -422,7 +448,7 @@ export class PbIntegrations extends Component {
             this.state.drawer = null;
             this.state.composer = {
                 ruleId: r.id,
-                connectorId: r.connector_id || this.state.connectorId || 0,
+                connectorId: r.connector_id || this.dataConnectorId || 0,
             };
             return;
         }
@@ -491,7 +517,7 @@ export class PbIntegrations extends Component {
 
     newRule() {
         this.state.drawer = null;
-        this.state.composer = { ruleId: 0, connectorId: this.state.connectorId || 0 };
+        this.state.composer = { ruleId: 0, connectorId: this.dataConnectorId || 0 };
     }
 
     closeComposer() { this.state.composer = null; }
@@ -503,7 +529,8 @@ export class PbIntegrations extends Component {
      */
     async onRuleSaved() {
         this.state.composer = null;
-        await this.loadLedger();
+        // the counts and the page again — the filters and the tab stay
+        await this.dkit.refresh();
     }
 
     // ================================================================== doors

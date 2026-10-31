@@ -533,7 +533,19 @@
     "ig-filters": {
       "screen": "integrations",
       "file": "pb_integrations/static/src/xml/integrations.xml",
-      "desc": "Status, search, recency and type chips over the connector roster.",
+      "desc": "Integrations › Connectors, the shared filter panel: view tabs (All connectors, Needs attention, Never synced, Synced today, Spreadsheet feeds), the Filters button that opens the left panel (Connection, System, Last synced, and more under More filters) with a count beside every value, the search, and the applied filters as chips. Connected and Errors on the numbers line still filter.",
+      "reserved": true
+    },
+    "ig-data": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Integrations › Data: the three tables the connectors produce (Field mappings, Data store, Transformation rules) behind a tab strip, a page at a time; a row opens the drawer, a rule opens the Rule Composer.",
+      "reserved": true
+    },
+    "ig-data-filters": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Integrations › Data, the shared filter panel over the open table: view tabs per table (mappings: Active, Severed, With a transform error; data store: Pulled today, Failed pulls, Not matched to anyone, Changed since last pull; rules: Active, Failing), the Filters button, the search, and the applied filters as chips — a connector or feed you arrived with is one of those chips.",
       "reserved": true
     },
     "ig-roster": {
@@ -2093,7 +2105,6 @@
   },
   "foreign": {
     "im-connectors": "pb_import — the \"Manage connectors\" deep link the IA redesign's Cycle 3 left behind when it closed Import's five duplicate connector doors. pb_learn neither laid it nor teaches it; the im-* family in that template is otherwise pb_learn's, which is exactly why it has to be named rather than wildcarded.",
-    "ig-data": "pb_integrations — the in-cockpit Data section (field mappings, data store, transformation rules) that replaced three raw list views in Cycle 3. Same shape as im-connectors: a new sibling in a family pb_learn owns, laid by somebody else.",
     "st-data": "pb_statutory — the in-cockpit Data section that replaced four legacy VN list tiles in Cycle 4. Same shape again.",
     "payai-pill": "pb_payroll_ai_insights — the PayAI launcher. Named by scenario sc_welcome's last step.",
     "find-panel": "pb_formula_studio command layer",
