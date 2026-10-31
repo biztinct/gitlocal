@@ -2302,6 +2302,15 @@ export const SCREENS = {
                     <div class="lrn-ynums">${otn}</div>
                     <div data-coach="wf-ot-queue">
                         <span class="lrn-sub2">${esc(tx(B("Approval queue", "Hàng chờ duyệt")))}</span>
+                        <!-- FILTER wave 8 (2026-10-31): the queue sits on the
+                             shared filter panel: view tabs (To approve first),
+                             the Filters button and the search. -->
+                        <div class="lrn-strip" data-coach="wf-ot-filters">
+                            <span class="lrn-chip b">${esc(tx(B("To approve", "Chờ duyệt")))}</span>
+                            <span class="lrn-chip">${esc(tx(B("This week", "Tuần này")))}</span>
+                            <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                            <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a name, a department or a reason", "Tìm theo tên, phòng ban hoặc lý do")))}</span>
+                        </div>
                         <div class="lrn-rows">${ot}</div>
                     </div>
                     <div class="lrn-yrules" data-coach="wf-ot-rules">${caps}</div>

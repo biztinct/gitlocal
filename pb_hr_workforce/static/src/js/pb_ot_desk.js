@@ -11,11 +11,16 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_hr_workforce/js/pbot_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const MODEL = "pb.ot.desk";
+/** Queue cards per page of the filter panel (server: `_QUEUE_PAGE`). */
+const PAGE = 40;
 
 export class PbOtDesk extends Component {
     static template = "pb_hr_workforce.PbOtDesk";
+    static components = { PbFilterLayout };
     static props = {
         action: { type: Object, optional: true },
         // W17 (P3a): Mission Control owns the page identity, so `embedded`
@@ -41,6 +46,11 @@ export class PbOtDesk extends Component {
             busy: false,
             view: "board",             // board | bonus
             data: null,
+            // the approval queue, one page at a time for the filter panel
+            rows: [],
+            total: 0,
+            listLoaded: false,
+            loadingMore: false,
             selected: {},              // id -> true (bulk tray)
             rowResults: {},            // id -> {ok, error} after a bulk act
             refuseOpen: false,
@@ -51,6 +61,14 @@ export class PbOtDesk extends Component {
         // The Bonus door is gated on `can_view_bonus`, which only exists once
         // the board has loaded — so the instruction is consumed AFTER it.
         this._cmdNonce = 0;
+        // FILTER wave 8: the queue sits on the shared filter panel. The panel
+        // owns the filters, the counts and the views; this desk loads one page
+        // of cards for kit.query. The Bonus Hours review keeps its own rail.
+        this.kit = useFilterKit({
+            model: MODEL,
+            noun: _t("requests"),
+            onChange: () => this.loadQueue(),
+        });
         onWillUpdateProps((next) => { this._applyPbCmd(next.pbCmd); });
         onWillStart(async () => {
             await this.load();
@@ -76,7 +94,7 @@ export class PbOtDesk extends Component {
 
     async load() {
         try {
-            this.state.data = await this.orm.call(MODEL, "get_desk", []);
+            this.state.data = await this.orm.call(MODEL, "get_desk", [], { with_queue: false });
             this.state.loaded = true;
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
@@ -85,8 +103,68 @@ export class PbOtDesk extends Component {
     }
 
     // -------------------------------------------------------------- queue
-    get queue() { return (this.state.data && this.state.data.queue) || []; }
+    /** One page of the queue for the panel's current filters. */
+    async loadQueue({ more = false } = {}) {
+        if (this.kit.refusal) {
+            // a pure bonus viewer: the desk shows its own sentence instead
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call(MODEL, "get_queue_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.total = d.total;
+            this.state.listLoaded = true;
+            if (!more) {
+                // The filters changed: a tick on a card nobody can see any
+                // more would be an approval nobody asked for (R6).
+                const ids = new Set(d.rows.map((r) => String(r.id)));
+                for (const id of Object.keys(this.state.selected)) {
+                    if (!ids.has(id)) { delete this.state.selected[id]; }
+                }
+            }
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The queue could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+    loadMore() { if (!this.state.loadingMore) { this.loadQueue({ more: true }); } }
+    get hasMore() { return this.state.rows.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.rows.length); }
+    get showingLine() {
+        return _t("Showing %(shown)s of %(total)s", {
+            shown: this.fmtInt(this.state.rows.length), total: this.fmtInt(this.state.total) });
+    }
+    get nextLabel() { return _t("Show %s more", this.fmtInt(this.nextPage)); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    get queue() { return this.state.rows; }
+    /** Cards that can still be decided: the ones a tick or a button acts on. */
+    get actable() { return this.state.rows.filter((q) => q.can_act); }
     get kpis() { return (this.state.data && this.state.data.kpis) || {}; }
+
+    /** Is the panel on its start view (To approve) with nothing typed? */
+    get atHome() {
+        const v = this.kit.views[0];
+        return !!v && this.kit.isExactly(v.filters || {});
+    }
+    get emptyKind() {
+        if (this.atHome) { return "clear"; }
+        if (this.kit.search && !this.kit.activeCount) { return "search"; }
+        return "filters";
+    }
+    get searchEmptyTitle() { return _t("Nothing matches “%s”", this.kit.search); }
+    startAgain() { this.kit.home(); }
 
     /**
      * The four tiles as one quiet line. The month's hours by overtime type,
@@ -95,8 +173,14 @@ export class PbOtDesk extends Component {
      */
     get glance() {
         const k = this.kpis;
+        // The figures that are filters press the panel (FILTER wave 8); "near
+        // or over the ceiling" is a Python fact about people, not a field of a
+        // request, so it stays a plain figure.
+        const f = this.glanceFilters;
+        const live = this.kit.loaded && !this.kit.failed;
         const rows = [
-            { key: "pending", n: k.pending || 0, label: _t("pending approvals"), tone: k.pending ? "amber" : "", run: null },
+            { key: "pending", n: k.pending || 0, label: _t("pending approvals"), tone: k.pending ? "amber" : "",
+              run: live ? () => this.kit.toggleFilters(f.pending) : null },
             { key: "ceiling", n: k.over_ceiling || 0, label: _t("near or over the ceiling"), tone: k.over_ceiling > 0 ? "rose" : "", run: null },
         ];
         if (this.state.data && this.state.data.can_view_bonus) {
@@ -104,10 +188,27 @@ export class PbOtDesk extends Component {
         }
         for (const b of k.by_type || []) {
             if (b.hours > 0) {
-                rows.push({ key: "t-" + b.type, n: this.fmt(b.hours) + "h", label: _t("%s this month", b.label), tone: "", run: null });
+                const tf = f["t-" + b.type];
+                rows.push({ key: "t-" + b.type, n: this.fmt(b.hours) + "h", label: _t("%s this month", this.typeLabel(b.type)), tone: "",
+                            run: live && tf ? () => this.kit.toggleFilters(tf) : null });
             }
         }
         return rows;
+    }
+    get glanceFilters() {
+        const out = { pending: { status: ["submitted"] } };
+        for (const t of ["weekday", "weekend", "holiday", "night"]) {
+            // the month's hours by type count what waits and what was approved
+            out["t-" + t] = { type: [t], status: ["approved", "submitted"], day: { preset: "this_month" } };
+        }
+        return out;
+    }
+    get glanceOn() {
+        if (!this.kit.loaded || this.kit.failed) { return ""; }
+        for (const [key, f] of Object.entries(this.glanceFilters)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
     get selectedIds() {
         return Object.keys(this.state.selected).filter((k) => this.state.selected[k]).map(Number);
@@ -116,9 +217,19 @@ export class PbOtDesk extends Component {
 
     isSelected(id) { return !!this.state.selected[id]; }
     toggle(id) { this.state.selected[id] = !this.state.selected[id]; }
+    /** The kit's page (R6): every card shown that can still be decided. */
     selectAll() {
-        const all = this.queue.every((q) => this.state.selected[q.id]);
-        for (const q of this.queue) { this.state.selected[q.id] = !all; }
+        const rows = this.actable;
+        const all = this.allSelected;
+        for (const q of rows) { this.state.selected[q.id] = !all; }
+    }
+    get allSelected() {
+        const rows = this.actable;
+        return !!rows.length && rows.every((q) => this.state.selected[q.id]);
+    }
+    get selectAllLabel() {
+        return this.allSelected ? _t("Clear the selection")
+            : _t("Select the %s waiting here", this.fmtInt(this.actable.length));
     }
     clearSel() { this.state.selected = {}; }
 
@@ -182,7 +293,9 @@ export class PbOtDesk extends Component {
                     { type: "warning", sticky: fails.length > 1 });
             }
             this.clearSel();
+            // the numbers, then the counts and the page, in place
             await this.load();
+            await this.kit.refresh();
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {

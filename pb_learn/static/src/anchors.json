@@ -1714,6 +1714,12 @@
       "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
       "desc": "Overtime rules & ceilings."
     },
+    "wf-ot-filters": {
+      "screen": "wfovertime",
+      "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",
+      "desc": "Overtime › Approval queue, the shared filter panel: view tabs (To approve, Approved this month, With bonus hours for payroll managers, Weekend and holiday, This week), the Filters button that opens the left panel (department, kind of overtime, day worked, where it is, person, manager, hours asked for, overtime rule, company) with a count beside every value, the search, the order, Select the ones waiting here, and the applied filters as chips. Pending approvals on the numbers line is the To approve view.",
+      "reserved": true
+    },
     "wf-close": {
       "screen": "wfclose",
       "file": "pb_mission/static/src/xml/pb_close_lens.xml",
