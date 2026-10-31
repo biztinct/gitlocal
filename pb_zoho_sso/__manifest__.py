@@ -13,7 +13,7 @@ existing Payobook user or must wait for approval.
 
 The engineering README beside this file has the full set-up walkthrough.
 """,
-    "version": "19.0.1.0.1",
+    "version": "19.0.1.1.0",
     "category": "Administration/Authentication",
     "license": "LGPL-3",
     "author": "Payobook",
