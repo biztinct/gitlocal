@@ -348,6 +348,7 @@ export class PbRecordsDesk extends Component {
                 field_ids: this.state.picked,
                 offset,
                 limit: PAGE,
+                context: this.pbfContext,
             });
             // a reply for an older filter state (or an older reload) is dropped
             if (!this.kit.isCurrent(q.seq) || pages !== this._pages) { return; }
@@ -376,6 +377,16 @@ export class PbRecordsDesk extends Component {
     plainFilters() {
         const q = this.kit.query;
         return { pbf: q.filters, search: q.search, sort: q.sort };
+    }
+
+    /**
+     * The panel's own context (`pbf_ctx`: the hand-picked ids an arrival
+     * from People carries). The kit sends it on its own calls; every call of
+     * the desk that runs `pbf_domain` must send it too, or the server builds
+     * the sections without "Hand-picked" and quietly ignores that filter.
+     */
+    get pbfContext() {
+        return this.kit.ctx ? { pbf_ctx: this.kit.ctx } : {};
     }
 
     onNeedPage(offset) { this.fetchPage(offset); }
@@ -467,6 +478,7 @@ export class PbRecordsDesk extends Component {
     async onSelectAllMatching() {
         const ids = await this.orm.call("pb.records.desk", "matching_ids", [], {
             filters: this.plainFilters(),
+            context: this.pbfContext,
         });
         this.grid.selected = ids;
         this.grid.allMatching = true;
@@ -730,6 +742,7 @@ export class PbRecordsDesk extends Component {
                 filters: this.plainFilters(),
                 field_ids: this.state.picked,
                 mode,
+                context: this.pbfContext,
             });
         } catch (e) {
             this.state.exporting = "";
