@@ -22,6 +22,7 @@ from datetime import date, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
+from odoo.fields import Domain
 
 from .offboarding_common import (
     CLEARANCE_DEPT_LABEL, CLEARANCE_ORDER, GROUP_ADMIN, GROUP_MANAGER,
@@ -30,7 +31,14 @@ from .offboarding_common import (
 
 _logger = logging.getLogger(__name__)
 
+#: The old `get_board` payload's cap. The board itself now pages (FILTER W2).
 BOARD_LIMIT = 300
+
+#: Cards per page on the filtered board ("Show N more" loads the next page).
+PAGE_SIZE = 60
+
+#: A checklist that is still going (the board's own states, and the gate's).
+CASE_OPEN = ('draft', 'active', 'on_hold')
 
 #: A leaver stays on this board for this long after their last day. Past it the
 #: checklist may still have a stray step on it, but the person has gone and a
@@ -40,6 +48,7 @@ LEAVING_FOR_DAYS = 120
 
 class PbExits(models.AbstractModel):
     _name = 'pb.exits'
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook Exits cockpit data'
 
     # ------------------------------------------------------------------ gates
@@ -210,6 +219,422 @@ class PbExits(models.AbstractModel):
             'farewell_task_id': farewell.id if farewell else 0,
             'farewell_state': farewell.state if farewell else '',
         }
+
+    # =====================================================================
+    #  THE FILTER PANEL (pb_filter_kit, FILTER wave 2)
+    #
+    #  The board used to read 300 leavers, count its chips from them and
+    #  filter them in the browser. Now every count is a server count over
+    #  everybody leaving, and the cards come a page at a time. `get_board`
+    #  above still answers the old payload (ruling R4).
+    #
+    #  Half of what a card says lives on OTHER models and has no path from
+    #  the checklist: the settlement (found by employee), what the person is
+    #  still holding, the steps and desks that hold the money. Those become
+    #  `domain_method`s over ONE batch of facts (`_ex_facts`): five queries
+    #  over the whole board, never one per card, cached for the request.
+    # =====================================================================
+    def _pbf_model(self):
+        return 'pb.journey.case'
+
+    def _pbf_screen(self):
+        return 'exits'
+
+    def _pbf_base_domain(self):
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        floor = self._pbf_today() - timedelta(days=LEAVING_FOR_DAYS)
+        return [('company_id', 'in', co_ids),
+                ('case_type', '=', 'offboarding'),
+                ('state', 'in', list(CASE_OPEN)),
+                '|', ('anchor_date', '=', False),
+                ('anchor_date', '>=', fields.Date.to_string(floor))]
+
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'employee_id.job_title',
+                'employee_id.department_id.name']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'last_day', 'label': _('Last day, soonest first'),
+             'order': 'anchor_date asc nulls last, id asc'},
+            {'key': 'last_day_late', 'label': _('Last day, latest first'),
+             'order': 'anchor_date desc nulls last, id desc'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'employee_id, id'},
+            {'key': 'progress', 'label': _('Least done first'),
+             'order': 'progress asc, anchor_date asc nulls last, id asc'},
+        ]
+
+    @api.model
+    def _ex_facts(self):
+        """The settlement and gate facts for EVERY leaver on the board.
+
+        `pb_gate_for` answers them for one person (and the cards still use
+        it); this answers them for all of them at once, by employee, with the
+        same three gate probes `hr.full.final.settlement._pb_blocker_list`
+        makes — blocking steps, open clearances, items not back — read under
+        sudo exactly as the gate reads them, because a gate a reader's own
+        access can soften is not a gate. Five queries in all, cached on the
+        cursor for the rest of this request (every count in one panel load
+        asks the same question).
+        """
+        key = ('pb_exits_facts', self.env.uid, tuple(self.env.companies.ids),
+               str(self._pbf_today()))
+        cache = self.env.cr.cache
+        if key in cache:
+            return cache[key]
+        Case = self.env['pb.journey.case']
+        cases = Case.search_fetch(self._pbf_base_domain(), ['employee_id'])
+        emp_of = {c.id: c.employee_id.id for c in cases}
+        emp_ids = sorted({e for e in emp_of.values() if e})
+        settle, blocked, items = {}, set(), {}
+        if emp_ids:
+            FF = self.env['hr.full.final.settlement'].sudo()
+            wanted = ['employee_id', 'pb_closed']
+            has_check = 'pb_to_check' in FF._fields
+            if has_check:
+                wanted.append('pb_to_check')
+            # the settlement `pb_gate_for` picks: closed first, then newest
+            for s in FF.search_fetch([('employee_id', 'in', emp_ids)], wanted,
+                                     order='pb_closed desc, settlement_date desc, id desc'):
+                settle.setdefault(s.employee_id.id, {
+                    'closed': bool(s.pb_closed),
+                    'to_check': bool(has_check and s.pb_to_check),
+                })
+            # 1. steps on any open checklist marked as holding the money
+            tasks = self.env['pb.journey.task'].sudo().search_fetch([
+                ('case_id.employee_id', 'in', emp_ids),
+                ('case_id.state', 'in', list(CASE_OPEN)),
+                ('blocking_ff', '=', True),
+                ('state', 'not in', ('done', 'skipped')),
+            ], ['case_id'])
+            blocked |= set(tasks.mapped('case_id.employee_id').ids)
+            # 2. clearances still owed
+            blocked |= set(self.env['pb.exit.clearance'].sudo().search_fetch([
+                ('employee_id', 'in', emp_ids),
+                ('case_id.state', 'in', list(CASE_OPEN)),
+                ('state', '=', 'pending'),
+            ], ['employee_id']).mapped('employee_id').ids)
+            # 3. what they still physically hold (the tangible half only:
+            #    `open_items_for` puts everything that is not digital there)
+            for row in self.env['pb.asset.assignment'].sudo().search_fetch([
+                ('employee_id', 'in', emp_ids),
+                ('state', '=', 'open'),
+                ('asset_id.kind', '!=', 'digital'),
+            ], ['employee_id']):
+                eid = row.employee_id.id
+                items[eid] = items.get(eid, 0) + 1
+            blocked |= set(items)
+        out = {k: set() for k in ('none', 'closed', 'ready', 'held', 'to_check', 'assets')}
+        out['item_count'] = 0
+        for case_id, emp in emp_of.items():
+            ff = settle.get(emp)
+            if items.get(emp):
+                out['assets'].add(case_id)
+                out['item_count'] += items[emp]
+            if not ff:
+                out['none'].add(case_id)
+                continue
+            if ff['to_check']:
+                out['to_check'].add(case_id)
+            if ff['closed']:
+                out['closed'].add(case_id)
+            elif emp in blocked:
+                out['held'].add(case_id)
+            else:
+                out['ready'].add(case_id)
+        cache[key] = out
+        return out
+
+    # ---- the facts as domains (choice options name these by `domain_method`)
+    def _ex_ids(self, *keys):
+        facts = self._ex_facts()
+        ids = set()
+        for k in keys:
+            ids |= facts[k]
+        return [('id', 'in', sorted(ids))]
+
+    def _pbf_dm_ff_ready(self):
+        return self._ex_ids('ready')
+
+    def _pbf_dm_ff_held(self):
+        return self._ex_ids('held')
+
+    def _pbf_dm_ff_check(self):
+        return self._ex_ids('to_check')
+
+    def _pbf_dm_ff_closed(self):
+        return self._ex_ids('closed')
+
+    def _pbf_dm_ff_none(self):
+        return self._ex_ids('none')
+
+    def _pbf_dm_assets_yes(self):
+        return self._ex_ids('assets')
+
+    def _pbf_dm_assets_no(self):
+        return [('id', 'not in', self._ex_ids('assets')[0][2])]
+
+    def _ex_gone(self):
+        return Domain('anchor_date', '<', fields.Date.to_string(self._pbf_today()))
+
+    def _pbf_dm_step_notice(self):
+        """Last day still ahead (or not set), settlement neither ready nor closed."""
+        done = self._ex_ids('ready', 'closed')[0][2]
+        return Domain('id', 'not in', done) & ~self._ex_gone()
+
+    def _pbf_dm_step_signoff(self):
+        """Gone, and the settlement is neither ready nor closed."""
+        done = self._ex_ids('ready', 'closed')[0][2]
+        return Domain('id', 'not in', done) & self._ex_gone()
+
+    def _ex_literal(self):
+        today = fields.Date.to_string(self._pbf_today())
+        return {
+            'pending': Domain('clearance_ids', 'any', [('state', '=', 'pending')]),
+            'kt_open': Domain('kt_item_ids', 'any', [('state', '!=', 'done')]),
+            'overdue': Domain('task_ids', 'any', [
+                ('state', 'in', ['pending', 'in_progress', 'blocked']),
+                ('due_date', '<', today)]),
+        }
+
+    def _pbf_dm_held_yes(self):
+        """"Something is holding it up" — the old chip (exits_board.js
+        isBlocked): items not back, a clearance open, a step overdue or a
+        handover item open, and the settlement not closed."""
+        lit = self._ex_literal()
+        return (Domain(self._ex_ids('assets')) | lit['pending'] | lit['overdue']
+                | lit['kt_open']) & ~Domain(self._ex_ids('closed'))
+
+    def _pbf_dm_held_no(self):
+        return ~self._pbf_dm_held_yes()
+
+    @api.model
+    def _ex_glance_filters(self):
+        """What each figure on the numbers line means as a filter — the SAME
+        filters as the built-in views, so pressing one lights its tab."""
+        today = self._pbf_today()
+        return {
+            # "Leaving this month" has always meant the next 31 days
+            'leaving': {'last_day': {'from': fields.Date.to_string(today),
+                                     'to': fields.Date.to_string(today + timedelta(days=31))}},
+            'gone': {'last_day': {'preset': 'passed'}},
+            'blocked': {'settlement': ['held']},
+            'clearances': {'clearances': ['pending']},
+            'assets': {'assets': ['yes']},
+            'to_check': {'settlement': ['to_check']},
+        }
+
+    def _pbf_spec(self):
+        lit = self._ex_literal()
+        desks = [('it', _('IT')), ('hr', _('HR')), ('finance', _('Finance')),
+                 ('admin', _('Admin'))]
+        return [
+            # ---- pinned: when they go, which team, who still has to sign
+            {'key': 'last_day', 'label': _('Last day'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'anchor_date',
+             'presets': 'future', 'pinned': True, 'none_label': _('No last day set')},
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one',
+             'path': 'employee_id.department_id', 'pinned': True,
+             'none_label': _('No team')},
+            {'key': 'clearances', 'label': _('Clearances'), 'icon': 'shieldCheck',
+             'group': 'other', 'type': 'choice', 'pinned': True,
+             'requires': ['clearance_ids'],
+             'options': [
+                 {'value': 'pending', 'label': _('Still open'), 'tone': 'amber',
+                  'domain': lit['pending']},
+                 {'value': 'clear', 'label': _('Nothing open'), 'tone': 'green',
+                  'domain': ~lit['pending']},
+             ]},
+            # ---- more filters
+            {'key': 'step', 'label': _('Where they are'), 'icon': 'listChecks',
+             'group': 'other', 'type': 'choice',
+             'options': [
+                 {'value': 'notice', 'label': _('Working their notice'), 'tone': 'slate',
+                  'domain_method': '_pbf_dm_step_notice'},
+                 {'value': 'signoff', 'label': _('Signing off'), 'tone': 'amber',
+                  'domain_method': '_pbf_dm_step_signoff'},
+                 {'value': 'ready', 'label': _('Ready to settle'), 'tone': 'blue',
+                  'domain_method': '_pbf_dm_ff_ready'},
+                 {'value': 'settled', 'label': _('Settled'), 'tone': 'green',
+                  'domain_method': '_pbf_dm_ff_closed'},
+             ]},
+            {'key': 'settlement', 'label': _('Final settlement'), 'icon': 'wallet',
+             'group': 'pay', 'type': 'choice',
+             'help': _('The last payment, and whether anything still stands in front of it.'),
+             'options': [
+                 {'value': 'ready', 'label': _('Ready to settle'), 'tone': 'blue',
+                  'domain_method': '_pbf_dm_ff_ready'},
+                 {'value': 'held', 'label': _('Held up'), 'tone': 'rose',
+                  'domain_method': '_pbf_dm_ff_held'},
+                 {'value': 'to_check', 'label': _('Worked out, to check'), 'tone': 'amber',
+                  'domain_method': '_pbf_dm_ff_check'},
+                 {'value': 'closed', 'label': _('Settled'), 'tone': 'green',
+                  'domain_method': '_pbf_dm_ff_closed'},
+                 {'value': 'none', 'label': _('No settlement yet'), 'tone': 'slate',
+                  'domain_method': '_pbf_dm_ff_none'},
+             ]},
+            {'key': 'held', 'label': _('Held up'), 'icon': 'alert',
+             'group': 'other', 'type': 'choice',
+             'help': _('Items not back, a clearance open, a step overdue or a handover item open.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Something is holding it up'), 'tone': 'rose',
+                  'domain_method': '_pbf_dm_held_yes'},
+                 {'value': 'no', 'label': _('Nothing in the way'), 'tone': 'green',
+                  'domain_method': '_pbf_dm_held_no'},
+             ]},
+            {'key': 'assets', 'label': _('Items not back'), 'icon': 'package',
+             'group': 'other', 'type': 'choice',
+             'options': [
+                 {'value': 'yes', 'label': _('Still holding something'), 'tone': 'amber',
+                  'domain_method': '_pbf_dm_assets_yes'},
+                 {'value': 'no', 'label': _('Nothing to hand back'), 'tone': 'green',
+                  'domain_method': '_pbf_dm_assets_no'},
+             ]},
+            {'key': 'desk', 'label': _('Desk still open'), 'icon': 'shieldCheck',
+             'group': 'other', 'type': 'choice', 'requires': ['clearance_ids'],
+             'options': [{'value': d, 'label': label, 'tone': 'amber',
+                          'domain': [('clearance_ids', 'any',
+                                      [('dept', '=', d), ('state', '=', 'pending')])]}
+                         for d, label in desks]},
+            {'key': 'handover', 'label': _('Handover'), 'icon': 'repeat',
+             'group': 'other', 'type': 'choice', 'requires': ['kt_item_ids'],
+             'options': [
+                 {'value': 'open', 'label': _('Items still to hand over'), 'tone': 'amber',
+                  'domain': lit['kt_open']},
+                 {'value': 'done', 'label': _('All handed over'), 'tone': 'green',
+                  'domain': Domain('kt_item_ids', '!=', False) & ~lit['kt_open']},
+                 {'value': 'none', 'label': _('No handover items'), 'tone': 'slate',
+                  'domain': [('kt_item_ids', '=', False)]},
+             ]},
+            {'key': 'overdue', 'label': _('Steps overdue'), 'icon': 'clock',
+             'group': 'other', 'type': 'choice', 'requires': ['task_ids'],
+             'options': [
+                 {'value': 'yes', 'label': _('A step is overdue'), 'tone': 'rose',
+                  'domain': lit['overdue']},
+                 {'value': 'no', 'label': _('Nothing overdue'), 'tone': 'green',
+                  'domain': ~lit['overdue']},
+             ]},
+            {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.country_id',
+             'none_label': _('Not recorded')},
+            {'key': 'manager', 'label': _('Manager'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.parent_id',
+             'none_label': _('Nobody named')},
+            {'key': 'status', 'label': _('Checklist status'), 'icon': 'listChecks',
+             'group': 'other', 'type': 'selection', 'path': 'state'},
+            {'key': 'checklist', 'label': _('Checklist used'), 'icon': 'fileText',
+             'group': 'other', 'type': 'many2one', 'path': 'template_id',
+             'none_label': _('No checklist')},
+            {'key': 'source', 'label': _('Started by'), 'icon': 'route',
+             'group': 'other', 'type': 'selection', 'path': 'source'},
+        ]
+
+    def _pbf_builtin_views(self):
+        glance = self._ex_glance_filters()
+        return [
+            {'key': 'all', 'label': _('All leaving'), 'icon': 'logOut', 'filters': {}},
+            {'key': 'leaving', 'label': _('Leaving this month'), 'filters': glance['leaving']},
+            {'key': 'gone', 'label': _('Last day has passed'), 'filters': glance['gone']},
+            {'key': 'clearances', 'label': _('Clearances still open'),
+             'filters': glance['clearances']},
+            {'key': 'ready', 'label': _('Ready to settle'), 'filters': {'settlement': ['ready']}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        if not self._can_read():
+            # the board shows its own "looked after by the HR team" panel
+            return {'refused': _("Exits are looked after by the HR team.")}
+        return super().pbf_layout()
+
+    @api.model
+    def get_board_head(self):
+        """The numbers line and the flags, counted over EVERYBODY leaving.
+        The cards come from `get_board_page`, a page at a time."""
+        if not self._can_read():
+            return {'allowed': False, 'can_write': False, 'kpis': {},
+                    'total': 0, 'glance_filters': {}, 'depts': []}
+        Case = self.env['pb.journey.case']
+        base = Domain(self._pbf_base_domain())
+        today = self._pbf_today()
+        ds = fields.Date.to_string
+        facts = self._safe(lambda: self._ex_facts(), default=None)
+
+        def count(dom):
+            return self._safe(lambda: Case.search_count(base & Domain(dom)))
+
+        kpis = {
+            'leaving': count(Domain('anchor_date', '>=', ds(today))
+                             & Domain('anchor_date', '<=', ds(today + timedelta(days=31)))),
+            'gone': count(self._ex_gone()),
+            'blocked': len(facts['held']) if facts else 0,
+            'clearances': self._safe(lambda: self.env['pb.exit.clearance'].search_count([
+                ('case_id', 'any', self._pbf_base_domain()),
+                ('state', '=', 'pending')])),
+            'assets': facts['item_count'] if facts else 0,
+            'to_check': len(facts['to_check']) if facts else 0,
+        }
+        return {
+            'allowed': True,
+            'can_write': self._can_write(),
+            'kpis': kpis,
+            'total': self._safe(lambda: Case.search_count(base)),
+            'glance_filters': self._ex_glance_filters(),
+            'depts': [{'id': d, 'label': CLEARANCE_DEPT_LABEL[d]}
+                      for d in CLEARANCE_ORDER],
+        }
+
+    @api.model
+    def get_board_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=PAGE_SIZE):
+        """One page of cards for the panel's filters, plus — on the first
+        page — the four step counts for those same filters (ruling R1)."""
+        if not self._can_read():
+            return {'rows': [], 'total': 0, 'offset': 0, 'steps': {}}
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        Case = self._pbf_records()
+        spec = self._pbf_clean_spec()
+        domain = self.pbf_domain(filters or {}, search, spec=spec)
+        cases = Case.search(domain, order=self.pbf_order(sort) or 'anchor_date, id',
+                            offset=offset, limit=limit)
+        today = date.today()
+        rows = []
+        for case in cases:
+            try:
+                rows.append(self._row(case, today))
+            except Exception:           # noqa: BLE001 — one bad card never blanks the board
+                _logger.exception('Exits row for case %s', case.id)
+        out = {'rows': rows, 'total': Case.search_count(domain), 'offset': offset}
+        if not offset:
+            out['steps'] = self._ex_step_counts(filters or {}, search, spec)
+        return out
+
+    @api.model
+    def _ex_step_counts(self, filters, search, spec):
+        """{step: {n, waiting}} for the panel's filters minus the step."""
+        Case = self._pbf_records()
+        dom = self.pbf_domain(filters, search, skip='step', spec=spec)
+        pending = self._ex_literal()['pending']
+        steps = {
+            'notice': self._pbf_dm_step_notice(),
+            'signoff': self._pbf_dm_step_signoff(),
+            'ready': Domain(self._pbf_dm_ff_ready()),
+            'settled': Domain(self._pbf_dm_ff_closed()),
+        }
+        out = {}
+        for key, step_dom in steps.items():
+            at = dom & step_dom
+            out[key] = {
+                'n': self._safe(lambda at=at: Case.search_count(at)),
+                # the strip's flag: how many there wait for a desk to sign off
+                'waiting': self._safe(lambda at=at: Case.search_count(at & pending)),
+            }
+        return out
 
     # -------------------------------------------------------------- one exit
     @api.model
