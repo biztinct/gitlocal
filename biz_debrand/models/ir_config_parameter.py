@@ -17,6 +17,8 @@ _logger = logging.getLogger(__name__)
 WATCHED_KEYS = (
     "biz_debrand.brand_name",
     "biz_debrand.brand_website",
+    "biz_debrand.product_name",
+    "biz_debrand.powered_by",
     "web_debranding.new_name",
     "web_debranding.new_website",
 )
@@ -30,6 +32,21 @@ class IrConfigParameter(models.Model):
         # served — so current_brand() is primed by the time anything renders.
         res = super()._register_hook()
         brand_mod.cache_brand(self.env)
+        # WHITELABEL 2026-10-31. The stored-row scrub runs while THIS module
+        # upgrades — 121st of 266 on rize — and every module loaded after it
+        # re-imports its own data from source: cron names, group comments,
+        # model descriptions, constraint messages, seeded rule notes. Measured
+        # on 2026-10-31: 1,269 rows rewritten, then 70-odd written back by the
+        # modules that followed. So on a registry load that UPGRADED anything
+        # the scrub runs once more here, at the very end, after the last
+        # module. A plain server start (nothing updated) pays nothing, and the
+        # scrub is idempotent, so a second pass over clean rows is a handful
+        # of pre-filtered SELECTs. Wrapped: a scrub must never stop a boot.
+        if getattr(self.env.registry, "updated_modules", None):
+            try:
+                self.env["res.config.settings"]._biz_debrand_scrub_data()
+            except Exception:  # noqa: BLE001
+                _logger.warning("biz_debrand: post-upgrade scrub skipped", exc_info=True)
         return res
 
     def _biz_debrand_refresh(self):

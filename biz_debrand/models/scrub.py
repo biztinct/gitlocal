@@ -66,7 +66,7 @@ TEXT_TARGETS = [
     ("pb_journey_template_step", ["description"]),
     ("hr_formula_rule", ["application_source_note", "validation_message"]),
     ("hr_integration_mapping_template", ["note"]),
-    ("pb_asset", ["notes", "supplier_note", "movable_note"]),
+    ("pb_asset", ["notes", "supplier_note", "movable_note", "model_name"]),
 ]
 
 # (table, [jsonb translated columns])
