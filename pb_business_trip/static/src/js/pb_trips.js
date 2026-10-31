@@ -2,16 +2,32 @@
 /**
  * Business Trips cockpit — a kanban pipeline (Draft · Manager · Finance · HR ·
  * Authorized) under a quiet numbers line and a numbered step strip, with per-card approve/refuse affordances and a New-trip
- * composer. RPC facade: pb.trips.get_pipeline_data(); approvals go straight to
- * the pb.business.trip action methods. pbim-tokenized (.pbim.pbtr).
+ * composer. RPC facade: pb.trips (get_trips_head + get_trip_page, on the shared
+ * filter panel); approvals go straight to the pb.business.trip action methods.
+ * pbim-tokenized (.pbim.pbtr).
+ *
+ * FILTER wave 7 (2026-10-31): the board sits on the shared filter panel
+ * (pb_filter_kit). The five lanes stay; they ARE the panel's "Where the trip
+ * is" section — a lane's count is the panel's count (it follows every other
+ * filter), a lane the filters leave out folds to a slim column that still
+ * says how many it would hold, and pressing it adds it back. The cards come
+ * one page at a time for all lanes together; the refused / cancelled footer
+ * is the view "Refused or cancelled".
  */
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.trips";
 const TRIP = "pb.business.trip";
+const PAGE = 120;
+const LANES = ["draft", "submitted", "manager_approved", "finance_approved", "approved"];
+const OPEN = ["draft", "submitted", "manager_approved", "finance_approved"];
+const CLOSED = ["refused", "cancelled"];
 
 // which action + toast advances a given pending state
 const ADVANCE = {
@@ -22,12 +38,13 @@ const ADVANCE = {
 
 export class PbTrips extends Component {
     static template = "pb_business_trip.PbTrips";
+    static components = { PbFilterLayout };
     static props = {
         action: { type: Object, optional: true },
         // W17 (P3a): Mission Control owns the page identity, so `embedded`
-        // suppresses the toolbar's title only. `get_pipeline_data()` takes no
-        // scope arguments at all, so there is nothing here for the shared
-        // context to drive yet — binding it is explicitly out of P3a's scope.
+        // suppresses the toolbar's title only. The trips facade takes no
+        // scope arguments from the shared context — binding it is explicitly
+        // out of P3a's scope; the filter panel is the board's own.
         embedded: { type: Boolean, optional: true },
         "*": true,
     };
@@ -37,32 +54,85 @@ export class PbTrips extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notif = useService("notification");
+        this.ic = ic;
         this.state = useState({
             loaded: false,
-            lanes: [],
-            closed: [],
-            kpis: { open: 0, awaiting_me: 0, days_mtd: 0, advance_outstanding: 0 },
+            head: { kpis: {}, mine_by_state: {} },
             currency: "",
             currency_position: "after",
-            showClosed: false,
+            // the cards the panel produced, one page at a time
+            cards: [],
+            total: 0,
+            laneAdvance: {},
+            listLoaded: false,
+            loadingMore: false,
             refuseCard: null,
             refuseNote: "",
-            // the quiet board: the step being shown, and "waiting on me"
-            step: "",
-            mine: false,
         });
-        onWillStart(async () => { await this.load(); });
+        // The shared filter panel: it owns the filters, the counts and the
+        // views. "step" is counted on every refresh, folded or not, because
+        // the lane heads and the step strip read it (kit 1.2.0 `always`).
+        this.kit = useFilterKit({
+            model: MODEL,
+            noun: _t("trips"),
+            always: ["step"],
+            onChange: () => this.loadPage(),
+        });
+        onWillStart(async () => { await this.loadHead(); });
     }
 
-    async load() {
-        const d = await this.orm.call(MODEL, "get_pipeline_data", []);
-        this.state.lanes = d.lanes || [];
-        this.state.closed = d.closed || [];
-        this.state.kpis = d.kpis || this.state.kpis;
-        this.state.currency = d.currency || "";
-        this.state.currency_position = d.currency_position || "after";
-        this.state.loaded = true;
+    // ------------------------------------------------------------------ read
+    async loadHead() {
+        try {
+            const d = await this.orm.call(MODEL, "get_trips_head", []);
+            this.state.head = d;
+            this.state.currency = d.currency || "";
+            this.state.currency_position = d.currency_position || "after";
+        } catch (e) {
+            this.notif.add(_t("The trip numbers could not be read. Try again in a moment."), { type: "warning" });
+        } finally {
+            this.state.loaded = true;
+        }
     }
+
+    /** One page of cards for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.failed) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.cards.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call(MODEL, "get_trip_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.cards = more ? [...this.state.cards, ...d.cards] : d.cards;
+            this.state.total = d.total;
+            if (!more) { this.state.laneAdvance = d.lane_advance || {}; }
+            this.state.listLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The trips could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    /** After an approval, a refusal or the form: numbers, counts and cards. */
+    async reload() {
+        await Promise.all([this.loadHead(), this.kit.refresh()]);
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.cards.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.cards.length); }
 
     // ------------------------------------------------------------ formatting
     money(v) {
@@ -92,7 +162,7 @@ export class PbTrips extends Component {
                 views: [[false, "form"]],
                 target: "new",
             },
-            { onClose: () => this.load() },
+            { onClose: () => this.reload() },
         );
     }
     newTrip() { this._openForm(false); }
@@ -108,7 +178,7 @@ export class PbTrips extends Component {
                 ? _t("Trip authorized — attendance will be marked automatically.")
                 : _t("Approved.");
             this.notif.add(msg, { type: "success" });
-            await this.load();
+            await this.reload();
         } catch (e) {
             this.notif.add(e.data ? e.data.message : (e.message || _t("Action failed.")),
                 { type: "danger" });
@@ -127,21 +197,19 @@ export class PbTrips extends Component {
                 { note: this.state.refuseNote || false });
             this.notif.add(_t("Trip refused."), { type: "warning" });
             this.cancelRefuse();
-            await this.load();
+            await this.reload();
         } catch (e) {
             this.notif.add(e.data ? e.data.message : (e.message || _t("Refuse failed.")),
                 { type: "danger" });
         }
     }
 
-    toggleClosed() { this.state.showClosed = !this.state.showClosed; }
-
     // ------------------------------------------------------ the quiet board
     //
     // The Hiring look: one slim line of numbers instead of the KPI band, and
     // a numbered strip of the five steps a trip moves through. A trip is at
-    // EXACTLY one step (its lane), so the counts add up to the trips on the
-    // board; refused and cancelled ones stay in the footer below.
+    // EXACTLY one step (its lane); the counts are the panel's, so they follow
+    // the other filters (ruling R1).
     get stepTitles() {
         return {
             draft: _t("Draft"),
@@ -151,68 +219,171 @@ export class PbTrips extends Component {
             approved: _t("Authorized"),
         };
     }
+    get laneLabels() {
+        return {
+            draft: _t("Draft"),
+            submitted: _t("Manager"),
+            manager_approved: _t("Finance"),
+            finance_approved: _t("HR"),
+            approved: _t("Authorized"),
+        };
+    }
+
+    /** The panel's count for one state (0 while it is still counting). */
+    stepCount(key) {
+        const c = this.kit.counts.step;
+        const row = c && (c.values || []).find((r) => r.v === key);
+        return row ? row.n : 0;
+    }
+    get countsReady() {
+        const c = this.kit.counts.step;
+        return !!(c && c.values);
+    }
+    get ticked() { return this.kit.values("step"); }
 
     get steps() {
         const titles = this.stepTitles;
-        return this.state.lanes.map((lane, i) => {
-            const mine = lane.cards.filter((c) => c.can_act).length;
+        const mineBy = (this.state.head && this.state.head.mine_by_state) || {};
+        const ticked = this.ticked;
+        return LANES.map((key, i) => {
+            const count = this.stepCount(key);
+            const mine = mineBy[key] || 0;
             return {
-                key: lane.key,
+                key,
                 n: String(i + 1).padStart(2, "0"),
-                title: titles[lane.key] || lane.label,
-                count: lane.count,
-                countLabel: lane.count === 1 ? _t("1 trip") : _t("%s trips", lane.count),
+                title: titles[key],
+                count,
+                countLabel: count === 1 ? _t("1 trip") : _t("%s trips", count),
                 sub: "",
                 flag: mine ? _t("%s waiting on you", mine) : "",
-                on: this.state.step === lane.key,
+                mine: !!mine,
+                on: ticked.length === 1 && ticked[0] === key,
             };
         });
     }
 
+    /** Press a step: that lane only, the other filters kept. Press the lit
+     *  step again: every open lane, as the board starts. */
     pickStep(key) {
-        this.state.step = this.state.step === key ? "" : key;
+        const ticked = this.ticked;
+        const next = { ...this.kit.filters };
+        next.step = ticked.length === 1 && ticked[0] === key ? [...OPEN] : [key];
+        this.kit.setFilters(next, { search: this.kit.search });
     }
 
+    // ---------------------------------------------------------- the numbers
+    viewFilters(key) {
+        const v = this.kit.views.find((x) => x.key === key);
+        return v ? v.filters : null;
+    }
+    /** What each figure means as a filter (the same filters as its view). */
+    get glanceFilters() {
+        return {
+            open: { step: [...OPEN] },
+            mine: { mine: ["yes"] },
+            advance: this.viewFilters("advance"),
+        };
+    }
+    glancePick(key) {
+        const f = this.glanceFilters[key];
+        return f && this.kit.loaded && !this.kit.failed ? () => this.kit.toggleFilters(f) : null;
+    }
     get glance() {
-        const k = this.state.kpis || {};
+        const k = (this.state.head && this.state.head.kpis) || {};
         return [
-            { key: "open", n: k.open || 0, label: _t("Open trips"), tone: "", run: null },
+            { key: "open", n: k.open || 0, label: _t("Open trips"), tone: "", run: this.glancePick("open") },
             { key: "mine", n: k.awaiting_me || 0, label: _t("Awaiting my approval"), tone: k.awaiting_me ? "amber" : "",
-              run: () => { this.state.mine = !this.state.mine; } },
+              run: this.glancePick("mine") },
             { key: "days", n: k.days_mtd || 0, label: _t("Days travelled this month"), tone: "", run: null },
-            { key: "advance", n: k.advance_outstanding ? this.money(k.advance_outstanding) : 0, label: _t("Advance outstanding"), tone: "", run: null },
+            { key: "advance", n: k.advance_outstanding ? this.money(k.advance_outstanding) : 0, label: _t("Advance outstanding"), tone: "",
+              run: this.glancePick("advance") },
         ];
     }
-
-    /** The lanes on screen: one lane when a step is picked, and only the
-     *  trips waiting on the reader when that number is pressed. */
-    get visibleLanes() {
-        return this.state.lanes
-            .filter((lane) => !this.state.step || lane.key === this.state.step)
-            .map((lane) => {
-                if (!this.state.mine) { return lane; }
-                const cards = lane.cards.filter((c) => c.can_act);
-                return { ...lane, cards, count: cards.length };
-            });
-    }
-
-    get showingLine() {
-        const all = this.state.lanes.reduce((sum, lane) => sum + lane.count, 0);
-        if (!this.state.step && !this.state.mine) {
-            return { all: true, text: !all ? _t("No trips on the board yet")
-                : all === 1 ? _t("Showing the 1 trip · press a step or a number to narrow it")
-                : _t("Showing all %s trips · press a step or a number to narrow it", all) };
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.glanceFilters)) {
+            if (f && this.kit.isExactly(f)) { return key; }
         }
-        const shown = this.visibleLanes.reduce((sum, lane) => sum + lane.cards.length, 0);
-        const where = this.state.step ? (this.stepTitles[this.state.step] || "") : "";
-        return { all: false, text: where
-            ? _t("Showing %s of %s trips at %s", shown, all, where)
-            : _t("Showing %s of %s trips", shown, all) };
+        return "";
     }
 
-    showAll() {
-        this.state.step = "";
-        this.state.mine = false;
+    // ------------------------------------------------------------- the lanes
+    /** The five lanes. A lane the step filter leaves out folds to a slim
+     *  column with its count (what it WOULD hold under the other filters). */
+    get lanes() {
+        const labels = this.laneLabels;
+        const ticked = this.ticked;
+        return LANES.map((key) => {
+            const cards = this.state.cards.filter((c) => c.state === key);
+            const count = this.stepCount(key);
+            const on = !ticked.length || ticked.includes(key);
+            return {
+                key,
+                label: labels[key],
+                on,
+                count,
+                cards,
+                advance: on ? (this.state.laneAdvance[key] || 0) : 0,
+                // cards of this lane further down the order (next pages)
+                below: on ? Math.max(0, count - cards.length) : 0,
+            };
+        });
+    }
+    laneTitle(lane) {
+        return lane.count === 1
+            ? _t("%s: 1 trip with these filters. Press to add this step.", lane.label)
+            : _t("%(lane)s: %(n)s trips with these filters. Press to add this step.", { lane: lane.label, n: lane.count });
+    }
+    addLane(key) {
+        this.kit.toggle("step", key);
+    }
+
+    /** The footer: refused and cancelled trips. */
+    get closedOn() {
+        const t = this.ticked;
+        return !t.length || CLOSED.some((s) => t.includes(s));
+    }
+    get closedCards() {
+        return this.closedOn ? this.state.cards.filter((c) => CLOSED.includes(c.state)) : [];
+    }
+    get closedCount() {
+        return CLOSED.reduce((sum, s) => sum + this.stepCount(s), 0);
+    }
+    get closedLabel() {
+        const n = this.closedCount;
+        return n === 1 ? _t("Show the 1 refused or cancelled trip") : _t("Show the %s refused or cancelled trips", n);
+    }
+    showClosed() {
+        const v = this.kit.views.find((x) => x.key === "closed");
+        if (v) {
+            this.kit.useView("closed");
+        } else {
+            this.kit.setFilters({ ...this.kit.filters, step: [...CLOSED] }, { search: this.kit.search });
+        }
+    }
+    stateWord(s) {
+        return { refused: _t("Refused"), cancelled: _t("Cancelled") }[s] || s;
+    }
+
+    // ------------------------------------------------------- empty states
+    /** "" (cards to show) · "none" (no trip at all yet) · "search" · "filters". */
+    get emptyKind() {
+        if (!this.state.listLoaded || this.state.total) { return ""; }
+        if (!this.kit.total && !this.kit.search) { return "none"; }
+        if (this.kit.search && !this.kit.activeCount) { return "search"; }
+        return "filters";
+    }
+    startAgain() { this.kit.home(); }
+    clearAll() { this.kit.clearAll(); }
+
+    // translated words handed to templates (a literal inside a template
+    // expression is never extracted, ledger F29)
+    get searchHint() { return _t("Find a trip, a person or a place"); }
+    get stepsLabel() { return _t("Where every trip is"); }
+
+    /** A key that changes with the filters, so the board slides in once. */
+    get boardKey() {
+        return JSON.stringify(this.kit.filters) + ":" + this.kit.search + ":" + this.kit.sort;
     }
 }
 

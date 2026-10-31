@@ -32,11 +32,11 @@ msgstr "<span> – </span>"
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
 msgid ""
-"A trip can only be reset to draft from Submitted or Refused. An authorized trip must "
-"be cancelled."
+"A trip can only be reset to draft from Submitted or Refused. An authorized "
+"trip must be cancelled."
 msgstr ""
-"Một chuyến đi chỉ có thể được đặt lại thành bản nháp từ Đã gửi hoặc Từ chối. Chuyến đi"
-" được ủy quyền phải bị hủy bỏ."
+"Một chuyến đi chỉ có thể được đặt lại thành bản nháp từ Đã gửi hoặc Từ chối."
+" Chuyến đi được ủy quyền phải bị hủy bỏ."
 
 #. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__message_needaction
@@ -46,7 +46,6 @@ msgstr "Hành động Cần"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:110
 msgid "Action failed."
 msgstr "Thao tác thất bại."
 
@@ -84,11 +83,13 @@ msgstr "Tạm ứng"
 
 #. module: pb_business_trip
 #. odoo-javascript
-#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Advance outstanding"
 msgstr "tạm ứng chưa thanh toán"
 
 #. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_business_trip_approval.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip_line__amount
 msgid "Amount"
 msgstr "Số tiền"
@@ -96,10 +97,11 @@ msgstr "Số tiền"
 #. module: pb_business_trip
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
-msgid "An authorized trip is immutable. Cancel it to make changes (field: %s)."
+msgid ""
+"An authorized trip is immutable. Cancel it to make changes (field: %s)."
 msgstr ""
-"Một chuyến đi được ủy quyền là bất biến. Hãy hủy nó để thực hiện thay đổi (trường: "
-"%s)."
+"Một chuyến đi được ủy quyền là bất biến. Hãy hủy nó để thực hiện thay đổi "
+"(trường: %s)."
 
 #. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__approval_widget_json
@@ -110,8 +112,6 @@ msgstr "Đường mòn phê duyệt"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:72
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:76
 msgid "Approve"
 msgstr "Duyệt"
 
@@ -119,7 +119,6 @@ msgstr "Duyệt"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:19
 msgid "Approve as Finance"
 msgstr "Duyệt (Tài chính)"
 
@@ -127,14 +126,12 @@ msgstr "Duyệt (Tài chính)"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:18
 msgid "Approve as Manager"
 msgstr "Duyệt (Quản lý)"
 
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:106
 msgid "Approved."
 msgstr "Đã duyệt."
 
@@ -152,13 +149,15 @@ msgstr "API thẻ chấm công"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:20
 msgid "Authorize"
 msgstr "Phê duyệt"
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__approved
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_search
 msgid "Authorized"
@@ -171,7 +170,7 @@ msgstr "Đang chờ phê duyệt"
 
 #. module: pb_business_trip
 #. odoo-javascript
-#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Awaiting my approval"
 msgstr "Đang chờ sự chấp thuận của tôi"
 
@@ -262,8 +261,11 @@ msgid "Cancel"
 msgstr "Hủy bỏ"
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__cancelled
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
 msgid "Cancelled"
@@ -285,12 +287,17 @@ msgid "City Tier"
 msgstr "Cấp thành phố"
 
 #. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__company_id
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_trip_policy__company_id
 msgid "Company"
 msgstr "Công ty"
 
 #. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__destination_country_id
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_trip_policy__country_id
 msgid "Country"
@@ -325,6 +332,7 @@ msgid "Date"
 msgstr "Ngày"
 
 #. module: pb_business_trip
+#. odoo-python
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__duration_days
 msgid "Days"
 msgstr "Số ngày"
@@ -336,6 +344,8 @@ msgid "Days travelled (MTD)"
 msgstr "Số ngày đi du lịch (MTD)"
 
 #. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__department_id
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_search
 msgid "Department"
@@ -369,6 +379,10 @@ msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__draft
 msgid "Draft"
 msgstr "Nháp"
@@ -380,6 +394,7 @@ msgid "Drop receipt or click"
 msgstr "Thả biên lai hoặc nhấp vào"
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__employee_id
@@ -412,14 +427,17 @@ msgstr "Yêu cầu chi phí"
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
 msgid ""
-"Expense lines of an authorized trip are immutable — cancel the trip to make changes."
+"Expense lines of an authorized trip are immutable — cancel the trip to make "
+"changes."
 msgstr ""
-"Dòng chi phí của chuyến đi được ủy quyền là không thay đổi - hãy hủy chuyến đi để thực"
-" hiện thay đổi."
+"Dòng chi phí của chuyến đi được ủy quyền là không thay đổi - hãy hủy chuyến "
+"đi để thực hiện thay đổi."
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Finance"
 msgstr "Tài chính"
 
@@ -444,13 +462,18 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Phông chữ tuyệt vời biểu tượng e.g. fa-tasks"
 
 #. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_business_trip_approval.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__date_from
 msgid "From"
 msgstr "Từ"
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "HR"
 msgstr "Nhân sự"
 
@@ -546,8 +569,10 @@ msgid "Lodging"
 msgstr "Chỗ ở"
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__manager_id
 msgid "Manager"
 msgstr "Quản lý"
@@ -666,13 +691,14 @@ msgstr "Đang trong chuyến công tác đã duyệt — chấm công tự độ
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
-#: code:addons/pb_business_trip/static/src/js/trip_composer.js:103
 msgid "Only JPG, PNG or PDF receipts are accepted."
 msgstr "Chỉ chấp nhận hóa đơn dạng JPG, PNG hoặc PDF."
 
 #. module: pb_business_trip
 #. odoo-javascript
-#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Open trips"
 msgstr "Chuyến đi mở"
 
@@ -748,7 +774,6 @@ msgstr "Biên lai"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
-#: code:addons/pb_business_trip/static/src/js/trip_composer.js:107
 msgid "Receipt is larger than 10 MB."
 msgstr "Hóa đơn lớn hơn 10 MB."
 
@@ -767,7 +792,6 @@ msgstr "Từ chối"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:129
 msgid "Refuse failed."
 msgstr "Từ chối thất bại."
 
@@ -778,6 +802,10 @@ msgid "Refuse trip"
 msgstr "Chuyến đi từ chối"
 
 #. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__refused
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
 msgid "Refused"
@@ -829,6 +857,8 @@ msgid "Set the dates and a per-diem rate to see the trip allowance."
 msgstr "Đặt ngày và tỷ lệ công tác phí để xem phụ cấp chuyến đi."
 
 #. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__state
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_search
 msgid "Status"
@@ -848,11 +878,13 @@ msgstr ""
 "Planned: Tương lai hoạt động."
 
 #. module: pb_business_trip
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_business_trip.view_pb_business_trip_form
 msgid "Submit"
 msgstr "Gửi"
 
 #. module: pb_business_trip
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__submitted
@@ -863,11 +895,11 @@ msgstr "Đã gửi"
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
 msgid ""
-"The per-diem rate is locked once a trip is submitted. Reset it to draft to change the "
-"rate."
+"The per-diem rate is locked once a trip is submitted. Reset it to draft to "
+"change the rate."
 msgstr ""
-"Mức phụ cấp bị khóa sau khi gửi chuyến công tác. Đặt lại về nháp để thay đổi mức phụ "
-"cấp."
+"Mức phụ cấp bị khóa sau khi gửi chuyến công tác. Đặt lại về nháp để thay đổi"
+" mức phụ cấp."
 
 #. module: pb_business_trip
 #. odoo-python
@@ -891,11 +923,11 @@ msgstr "Chuyến đi này đã kết thúc."
 #. odoo-python
 #: code:addons/pb_business_trip/models/pb_business_trip.py:0
 msgid ""
-"This trip overlaps an approved leave (%s). Submitted anyway — HR should reconcile the "
-"overlap."
+"This trip overlaps an approved leave (%s). Submitted anyway — HR should "
+"reconcile the overlap."
 msgstr ""
-"Chuyến đi này trùng với kỳ nghỉ phép đã được phê duyệt (%s). Vẫn gửi - Nhân sự nên "
-"điều chỉnh sự chồng chéo."
+"Chuyến đi này trùng với kỳ nghỉ phép đã được phê duyệt (%s). Vẫn gửi - Nhân "
+"sự nên điều chỉnh sự chồng chéo."
 
 #. module: pb_business_trip
 #. odoo-python
@@ -914,6 +946,9 @@ msgid "Tier 2 (other)"
 msgstr "Cấp 2 (khác)"
 
 #. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_business_trip_approval.py:0
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__date_to
 msgid "To"
 msgstr "Để"
@@ -938,18 +973,18 @@ msgstr "Hạng mục chi phí chuyến đi"
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:105
 msgid "Trip authorized — attendance will be marked automatically."
-msgstr "Chuyến công tác đã được phê duyệt — chấm công sẽ được ghi nhận tự động."
+msgstr ""
+"Chuyến công tác đã được phê duyệt — chấm công sẽ được ghi nhận tự động."
 
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
-#: code:addons/pb_business_trip/static/src/js/pb_trips.js:125
 msgid "Trip refused."
 msgstr "Chuyến công tác bị từ chối."
 
 #. module: pb_business_trip
+#. odoo-javascript
 #: model:pb.sidebar.item,name:pb_business_trip.item_wf_trips
 msgid "Trips"
 msgstr "Chuyến đi"
@@ -962,7 +997,6 @@ msgstr "Loại của ngoại lệ hoạt động trên bản ghi."
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
-#: code:addons/pb_business_trip/static/src/js/trip_composer.js:128
 msgid "Upload failed."
 msgstr "Tải lên thất bại."
 
@@ -990,11 +1024,12 @@ msgstr "API lưới mục nhập hàng tuần"
 #. module: pb_business_trip
 #: model:ir.model.fields,help:pb_business_trip.field_pb_trip_policy__per_diem_channel
 msgid ""
-"Where the per-diem is paid. Exclusive — a trip never yields both a payroll allowance "
-"AND an expense claim for the same per-diem."
+"Where the per-diem is paid. Exclusive — a trip never yields both a payroll "
+"allowance AND an expense claim for the same per-diem."
 msgstr ""
-"Nơi mà công tác phí được trả. Độc quyền - một chuyến đi không bao giờ mang lại cả "
-"khoản trợ cấp tiền lương VÀ yêu cầu chi phí cho cùng một khoản công tác phí."
+"Nơi mà công tác phí được trả. Độc quyền - một chuyến đi không bao giờ mang "
+"lại cả khoản trợ cấp tiền lương VÀ yêu cầu chi phí cho cùng một khoản công "
+"tác phí."
 
 #. module: pb_business_trip
 #: model:ir.model,name:pb_business_trip.model_hr_workforce_dashboard
@@ -1027,7 +1062,6 @@ msgstr "từ chối/hủy bỏ ("
 # ===================================================================
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
-
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
@@ -1074,28 +1108,37 @@ msgstr "Đang hiển thị %s trên %s chuyến công tác"
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Showing all %s trips · press a step or a number to narrow it"
-msgstr "Đang hiển thị tất cả %s chuyến công tác · bấm một bước hoặc một con số để thu hẹp"
+msgstr ""
+"Đang hiển thị tất cả %s chuyến công tác · bấm một bước hoặc một con số để "
+"thu hẹp"
 
 #. module: pb_business_trip
 #. odoo-javascript
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Showing the 1 trip · press a step or a number to narrow it"
-msgstr "Đang hiển thị 1 chuyến công tác · bấm một bước hoặc một con số để thu hẹp"
+msgstr ""
+"Đang hiển thị 1 chuyến công tác · bấm một bước hoặc một con số để thu hẹp"
 
 #. module: pb_business_trip
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "With HR"
 msgstr "Ở bộ phận nhân sự"
 
 #. module: pb_business_trip
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "With finance"
 msgstr "Ở bộ phận tài chính"
 
 #. module: pb_business_trip
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "With the manager"
 msgstr "Ở quản lý"
@@ -1105,3 +1148,337 @@ msgstr "Ở quản lý"
 #: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
 msgid "Show all"
 msgstr "Hiện tất cả"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "%(lane)s: %(n)s trips with these filters. Press to add this step."
+msgstr "%(lane)s: %(n)s chuyến đi với các bộ lọc này. Nhấn để thêm bước này."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "%s: 1 trip with these filters. Press to add this step."
+msgstr "%s: 1 chuyến đi với các bộ lọc này. Nhấn để thêm bước này."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid ""
+"A trip request goes to the manager, then finance, then HR. Start one for "
+"yourself or for someone on your team."
+msgstr ""
+"Yêu cầu công tác đi qua quản lý, rồi tài chính, rồi nhân sự. Hãy tạo một yêu"
+" cầu cho bạn hoặc cho người trong nhóm."
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Awaiting authorisation"
+msgstr "Chờ phê duyệt cuối"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Back on"
+msgstr "Ngày về"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Biggest cash advance first"
+msgstr "Tạm ứng lớn nhất trước"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_business_trip_approval.py:0
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Cash advance"
+msgstr "Tạm ứng"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Earliest start first"
+msgstr "Ngày đi sớm nhất trước"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Expected cost"
+msgstr "Chi phí dự kiến"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Find a trip, a person or a place"
+msgstr "Tìm chuyến đi, người hoặc địa điểm"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Latest start first"
+msgstr "Ngày đi muộn nhất trước"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Leaves on"
+msgstr "Ngày đi"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Loading trips"
+msgstr "Đang tải chuyến đi"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Most expensive first"
+msgstr "Chi phí cao nhất trước"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "No country given"
+msgstr "Chưa có quốc gia"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "No policy"
+msgstr "Không có chính sách"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "No trip matches these filters"
+msgstr "Không có chuyến đi nào khớp với các bộ lọc này"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "No trip matches “"
+msgstr "Không có chuyến đi nào khớp với “"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "No trips yet"
+msgstr "Chưa có chuyến đi nào"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Nothing here"
+msgstr "Chưa có gì"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Per-diem policy"
+msgstr "Chính sách công tác phí"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Refused or cancelled"
+msgstr "Bị từ chối hoặc đã hủy"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid ""
+"Reload the page to try again. If it keeps happening, tell your "
+"administrator."
+msgstr "Tải lại trang để thử lại. Nếu vẫn lỗi, hãy báo quản trị viên."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Remove a filter above, or start again from the open trips."
+msgstr "Bỏ một bộ lọc ở trên, hoặc bắt đầu lại từ các chuyến đi đang mở."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Show every trip"
+msgstr "Hiện mọi chuyến đi"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Show the %s refused or cancelled trips"
+msgstr "Hiện %s chuyến đi bị từ chối hoặc đã hủy"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Show the 1 refused or cancelled trip"
+msgstr "Hiện 1 chuyến đi bị từ chối hoặc đã hủy"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "The trip numbers could not be read. Try again in a moment."
+msgstr "Không đọc được số liệu chuyến đi. Hãy thử lại sau giây lát."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "The trips could not be listed. Try again in a moment."
+msgstr "Không liệt kê được các chuyến đi. Hãy thử lại sau giây lát."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "The trips could not be loaded"
+msgstr "Không tải được các chuyến đi"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Travelling this month"
+msgstr "Đi công tác trong tháng này"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Trips at a step you can approve now."
+msgstr "Các chuyến đi đang ở bước bạn có thể duyệt ngay."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Try a trip reference, the traveller’s name, a city or a country."
+msgstr "Thử mã chuyến đi, tên người đi, thành phố hoặc quốc gia."
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "Where every trip is"
+msgstr "Mỗi chuyến đi đang ở bước nào"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Where the trip is"
+msgstr "Chuyến đi đang ở bước nào"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Who is travelling"
+msgstr "Người đi công tác"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "With a cash advance"
+msgstr "Có tạm ứng"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "further down · show more"
+msgstr "ở phía dưới · hiện thêm"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
+msgid "trips"
+msgstr "chuyến đi"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Clear the search"
+msgstr "Xóa tìm kiếm"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_business_trip_approval.py:0
+msgid "How many days"
+msgstr "Số ngày"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Me"
+msgstr "Tôi"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Newest request first"
+msgstr "Yêu cầu mới nhất trước"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "No department"
+msgstr "Không có phòng ban"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "No manager"
+msgstr "Không có quản lý"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Somebody else"
+msgstr "Người khác"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "Start again"
+msgstr "Bắt đầu lại"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_business_trip_approval.py:0
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Waiting longest first"
+msgstr "Chờ lâu nhất trước"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/pb_trips_cockpit.py:0
+msgid "Who it waits on"
+msgstr "Đang chờ ai"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_business_trip
+#. odoo-javascript
+#: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
+msgid "of"
+msgstr "trên"

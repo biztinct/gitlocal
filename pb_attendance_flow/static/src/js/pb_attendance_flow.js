@@ -19,8 +19,17 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_attendance_flow/js/pbaf_icons";
 import { addDays } from "@pb_wf_kit/js/wf_context_service";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+import { ic as kic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.attendance.flow";
+// FILTER wave 7: the corrections pipeline sits on the shared filter panel and
+// pages. The exceptions queue is computed, not records, so it keeps its tabs
+// (ruling R5).
+const CORR_PAGE = 30;
+// what the shared context (week, department, pinned person) hands the panel
+const CTX_KEYS = ["day", "department", "employee"];
 
 const KIND_META = {
     missing_punch:    { icon: "alertCircle", label: _t("Missing punch"),   tone: "rose" },
@@ -31,6 +40,7 @@ const KIND_META = {
 
 export class PbAttendanceFlow extends Component {
     static template = "pb_attendance_flow.PbAttendanceFlow";
+    static components = { PbFilterLayout };
     static props = {
         action: { type: Object, optional: true },
         // mounted as a hub lens rather than as a standalone client action
@@ -55,6 +65,7 @@ export class PbAttendanceFlow extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
         this.ic = ic;
+        this.kic = kic;
         this.KIND_META = KIND_META;
 
         // Embedded: department + week come from the shared context (W4). The
@@ -67,9 +78,24 @@ export class PbAttendanceFlow extends Component {
             // onChange (not a render dep) because a context change must REFETCH,
             // not merely re-render; unsubscribed on unmount so a lens switch
             // cannot leave a callback writing into a dead component.
-            const off = this.ctxSvc.onChange(() => this.load());
+            const off = this.ctxSvc.onChange(() => {
+                this.load();
+                this._syncKitFromContext();
+            });
             onWillUnmount(off);
         }
+
+        // The corrections pipeline on the shared filter panel. Embedded, the
+        // host's week, department and pinned person arrive as the panel's own
+        // filters (chips the officer can remove), on top of the first view.
+        this.kit = useFilterKit({
+            model: MODEL,
+            noun: _t("corrections"),
+            onChange: () => this.loadCorrections(),
+            initial: this.props.embedded
+                ? { filters: { status: ["submitted"], ...this._ctxFilters() }, viewKey: "waiting" }
+                : null,
+        });
 
         this.state = useState({
             loaded: false,
@@ -82,6 +108,11 @@ export class PbAttendanceFlow extends Component {
             refuseNote: "",
             composer: null,             // correction detail
             imp: this._blankImport(),
+            // the corrections the filter panel produced, one page at a time
+            corrections: [],
+            corrTotal: 0,
+            corrLoaded: false,
+            corrMore: false,
         });
         onWillStart(async () => {
             await this.load();
@@ -129,6 +160,80 @@ export class PbAttendanceFlow extends Component {
                 this.wf.departmentId || false, this.wf.personId || false];
     }
 
+    /** The shared context as the corrections panel's filters (embedded
+     *  only): the week's days, the department, the pinned person. */
+    _ctxFilters() {
+        if (!this.props.embedded) { return {}; }
+        const f = {};
+        if (this.wf.weekStart) {
+            f.day = { from: this.wf.weekStart, to: addDays(this.wf.weekStart, 6) };
+        }
+        if (this.wf.departmentId) { f.department = [this.wf.departmentId]; }
+        if (this.wf.personId) { f.employee = [this.wf.personId]; }
+        return f;
+    }
+
+    /** The host changed the week, the department or the pin: the panel
+     *  follows (the other filters, the search and the view stay). A READ —
+     *  nothing here tells the host anything (W21). */
+    _syncKitFromContext() {
+        if (!this.kit.loaded || this.kit.failed) { return; }
+        const next = { ...this.kit.filters };
+        for (const k of CTX_KEYS) { delete next[k]; }
+        Object.assign(next, this._ctxFilters());
+        this.kit.setFilters(next, { search: this.kit.search, viewKey: this.kit.viewKey });
+    }
+
+    // ---------------------------------------------------------- corrections
+    /** One page of corrections for the filter panel's current state. Never
+     *  calls `_changed()` — this runs on mount (W21). */
+    async loadCorrections({ more = false } = {}) {
+        if (this.kit.failed) {
+            this.state.corrLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.corrections.length : 0;
+        if (more) { this.state.corrMore = true; }
+        try {
+            const d = await this.orm.call(MODEL, "get_correction_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: CORR_PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.corrections = more ? [...this.state.corrections, ...d.cards] : d.cards;
+            this.state.corrTotal = d.total;
+            this.state.corrLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The corrections could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.corrLoaded = true;
+            }
+        } finally {
+            this.state.corrMore = false;
+        }
+    }
+    loadMoreCorrections() {
+        if (!this.state.corrMore) { this.loadCorrections({ more: true }); }
+    }
+    get corrHasMore() { return this.state.corrections.length < this.state.corrTotal; }
+    get corrNext() { return Math.min(CORR_PAGE, this.state.corrTotal - this.state.corrections.length); }
+
+    /** "" (cards) · "none" (no correction at all) · "calm" (nothing waiting)
+     *  · "search" · "filters". */
+    get corrEmpty() {
+        if (!this.state.corrLoaded || this.state.corrections.length) { return ""; }
+        if (!this.kit.total && !this.kit.search) { return "none"; }
+        if (this.kit.search && !this.kit.activeCount) { return "search"; }
+        if (this.kit.isExactly({ status: ["submitted"] })) { return "calm"; }
+        return "filters";
+    }
+    corrStartAgain() { this.kit.home(); }
+    /** The corrections' search hint (a template literal is never translated, F29). */
+    get searchHint() { return _t("Find a reference, a name or a reason"); }
+    corrShowAll() {
+        if (this.kit.views.some((v) => v.key === "all")) { this.kit.useView("all"); } else { this.kit.clearAll(); }
+    }
+
     /** The person the queue is narrowed to, or null. */
     get personFilter() {
         return (this.state.data && this.state.data.person) || null;
@@ -168,10 +273,15 @@ export class PbAttendanceFlow extends Component {
         const k = (this.state.data && this.state.data.kpis) || {};
         return [
             { key: "exc", n: k.open_exceptions || 0, label: _t("open exceptions"), tone: k.open_exceptions ? "amber" : "", run: null },
-            { key: "corr", n: k.pending_corrections || 0, label: _t("pending corrections"), tone: k.pending_corrections ? "amber" : "", run: null },
+            { key: "corr", n: k.pending_corrections || 0, label: _t("pending corrections"), tone: k.pending_corrections ? "amber" : "",
+              run: this.kit.loaded && !this.kit.failed ? () => this.kit.toggleFilters({ status: ["submitted"] }) : null },
             { key: "late", n: (k.late_pct || 0) + "%", label: _t("late this week"), tone: "", run: null },
             { key: "imports", n: k.imports_month || 0, label: _t("imports this month"), tone: "", run: null },
         ];
+    }
+
+    get glanceOn() {
+        return this.kit.loaded && this.kit.isExactly({ status: ["submitted"] }) ? "corr" : "";
     }
 
     get kindTabs() {
@@ -244,6 +354,9 @@ export class PbAttendanceFlow extends Component {
         this.state.view = "board";
         this.state.composer = null;
         this.load();
+        // the corrections page and the panel's counts (a click handler, so
+        // telling the host below is safe — W21)
+        this.kit.refresh();
         this._changed();
     }
 

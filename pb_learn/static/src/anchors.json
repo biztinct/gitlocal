@@ -1722,6 +1722,12 @@
       "file": "pb_timeoff/static/src/xml/pb_timeoff.xml",
       "desc": "The leave approval queue."
     },
+    "wf-leave-filters": {
+      "screen": "wftimeoff",
+      "file": "pb_timeoff/static/src/xml/pb_timeoff.xml",
+      "desc": "Time Off › Approval queue, the shared filter panel: view tabs (Waiting for approval, Backdated requests, Starting this week, Approved this month, Refused), the Filters button that opens the left panel with a count beside every value (status, leave type, department and more), the search, and the applied filters as chips.",
+      "reserved": true
+    },
     "wf-overtime": {
       "screen": "wfovertime",
       "file": "pb_hr_workforce/static/src/xml/pb_ot_desk.xml",

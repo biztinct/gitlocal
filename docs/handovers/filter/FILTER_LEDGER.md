@@ -409,6 +409,40 @@ coordinator's (`filter_deploy.sh full`).
 - **F40** (w5) A `date` section with `presets: 'past'|'future'` always offers
   "none"; on a field that is never empty and has no `none_label` it renders as
   a blank radio with a count of 0. Give such dates an explicit preset list.
+- **F41** (w7) `i18n export` of several modules writes a term they share as
+  ONE entry headed `#. modules: a, b, …` — wrapped onto the next `#.` line
+  when long — with every module's references. A merge that looks for
+  `module: <m>` silently skips it (w7 lost "Who it waits on", "Company", …
+  on the first pass). Split it per module: `#. module: <m>` first, then the
+  flags, and only that module's `code:addons/<m>/…` / `:<m>.` references.
+- **F42** (w7) A screen whose records are sudo (`_pbf_records()` returns
+  `.sudo()`) still labels a ticked value that now matches nothing as the
+  READER (`_pbf_label_values` browses `self.env`, not the records' env), so
+  a value the reader may not read directly shows its record number on the
+  chip ("Leave type 21"). Put `label_sudo: True` on every many2one section
+  of a sudo screen.
+- **F43** (w7) View tab counts are counted once, in `pbf_layout`; an action
+  on the page (approve a request) refreshes the list and the section counts
+  but the tab numbers stay as they were until the next load. Kit gap
+  (reported in FILTER_W7_REPORT §4).
+- **F44** (w7) Even `sudo setsid … upgrade … &` inside the ssh command let
+  the preview die a few minutes later (http 000). `sudo setsid nohup
+  /odoo/ops/pbf_preview.sh <cmd> </dev/null >/tmp/<w>.out 2>&1 & disown`
+  kept it up for every later upgrade; `pbf_preview.sh start` the same way
+  brings a dead preview back without an upgrade.
+- **F45** (w7) The Chrome DevTools MCP only reads/writes files inside the
+  session's workspace roots: `evaluate_script sourcePath` and screenshot
+  `filePath` in the scratchpad are refused. A login script must live in the
+  worktree for the one call and be deleted at once (never committed).
+  `navigator.clipboard.readText()` hangs `evaluate_script` (permission
+  prompt): to test "Copy a link", stub `navigator.clipboard.writeText` to
+  capture the text, then press the link.
+- **F46** (w7) On the payobook copy, trips need no approval at Payobook
+  Vietnam JSC (owner setting) and the demo trips have no live approval
+  request, so "Approve as …" on a demo card answers "This has not been sent
+  in for approval…" and a newly submitted trip is authorized at once. The
+  approve path cannot be exercised there; test it on a company with a
+  trip route.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python

@@ -74,11 +74,24 @@
     }
 
     // ------------------------------------------------------------ columns
+    // FILTER W7: the corrections carry the shared filter panel (a 276px
+    // column beside the cards), which the old right-hand column could not
+    // hold — so the two panels stack: exceptions first, corrections under.
     .pbaf-cols {
-        display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px;
+        display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px;
         align-items: start;
     }
-    @media (max-width: 1080px) { .pbaf-cols { grid-template-columns: 1fr; } }
+    // `overflow: hidden` on the panel would make it the sticky filter
+    // panel's scroll box (ledger F3)
+    .pbaf-panel.corrections { overflow: visible; }
+    .pbaf-corr-filter { padding: 12px 14px 14px; }
+    .pbaf-skel { display: flex; flex-direction: column; gap: 8px;
+        span { height: 56px; border-radius: var(--r-sm); background: rgba(148, 163, 184, .14);
+            animation: pbaf-pulse 1.2s ease-in-out infinite; } }
+    @keyframes pbaf-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+    @media (prefers-reduced-motion: reduce) { .pbaf-skel span { animation: none; } }
+    .pbaf-corr-foot { display: flex; align-items: center; gap: 12px; margin-top: 12px;
+        font-size: 12px; color: var(--muted); b { color: var(--pbim-ink, #1B1733); } }
 
     .pbaf-panel {
         background: var(--surface); border: 1px solid var(--line);
@@ -150,12 +163,13 @@
     }
 
     // ------------------------------------------------------------ corrections
-    .pbaf-corr-list { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .pbaf-corr-list { display: flex; flex-direction: column; gap: 8px; }
     .corr-card {
         display: flex; align-items: center; gap: 10px; cursor: pointer;
         padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm);
         background: #fff; transition: box-shadow .12s, border-color .12s;
         &:hover { box-shadow: var(--sh); border-color: var(--p); }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; }
         .av { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
         .body { flex: 1; min-width: 0; }
         .row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

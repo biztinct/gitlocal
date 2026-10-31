@@ -87,8 +87,11 @@
             .av { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; } } }
 
     // ---------------------------------------------------------- columns
-    .pbto-cols { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; align-items: start; margin-bottom: 20px; }
-    @media (max-width: 1080px) { .pbto-cols { grid-template-columns: 1fr; } }
+    // FILTER W7: the queue carries the shared filter panel (a 276px column
+    // beside the cards), which half a row cannot hold — so the queue takes
+    // the full width and the heatmap sits under it (it is a 31-day grid and
+    // likes the width too).
+    .pbto-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; margin-bottom: 20px; }
 
     .pbto-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
         box-shadow: var(--sh); overflow: hidden;
@@ -98,7 +101,18 @@
             .pgr { display: flex; align-items: center; gap: 8px; .pg { font-size: 12px; color: var(--muted); } } } }
 
     // ---------------------------------------------------------- queue
-    .q-list { padding: 10px; display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; }
+    // `overflow: hidden` on the panel would make it the sticky filter
+    // panel's scroll box (ledger F3); the queue panel lets it out.
+    .pbto-panel.queue { overflow: visible; }
+    .q-filter { padding: 12px 14px 14px; }
+    .q-list { display: flex; flex-direction: column; gap: 8px; }
+    .q-skel { display: flex; flex-direction: column; gap: 8px;
+        span { height: 58px; border-radius: var(--r-sm); background: rgba(148, 163, 184, .14);
+            animation: pbto-pulse 1.2s ease-in-out infinite; } }
+    @keyframes pbto-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+    @media (prefers-reduced-motion: reduce) { .q-skel span { animation: none; } }
+    .q-foot { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 12px; color: var(--muted);
+        b { color: var(--ink); } }
     .q-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line);
         border-radius: var(--r-sm); background: #fff; transition: box-shadow .12s;
         &:hover { box-shadow: var(--sh); }
@@ -111,6 +125,8 @@
             .dur { font-weight: 700; color: var(--ink); }
             .st { border-radius: 999px; padding: 1px 8px; font-size: 10.5px; font-weight: 700;
                 background: var(--soft); color: var(--p); &.two { background: #E5EDFD; color: #2563EB; }
+                &.ok { background: #E3F2E9; color: #2E7D4F; }
+                &.no { background: var(--rose-s); color: var(--rose); }
                 // D1 — asked for after the days had gone. Amber, because it
                 // is something to LOOK at rather than something wrong.
                 &.backdated { background: #FEF3C7; color: #92400E; } } }

@@ -11,11 +11,19 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_timeoff/js/pbto_icons";
+import { ic as kic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const MODEL = "pb.timeoff";
+// FILTER wave 7: the approval queue sits on the shared filter panel and
+// pages; "Waiting for approval" (its first view) is the queue as it was.
+const QUEUE_PAGE = 30;
+const WAITING = ["confirm", "validate1"];
 
 export class PbTimeoff extends Component {
     static template = "pb_timeoff.PbTimeoff";
+    static components = { PbFilterLayout };
     static props = {
         action: { type: Object, optional: true },
         // W17 (P3a): Mission Control owns the page identity, so `embedded`
@@ -36,10 +44,16 @@ export class PbTimeoff extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
         this.ic = ic;
+        this.kic = kic;
         this.state = useState({
             loaded: false,
             busy: false,
             data: null,
+            // the queue the filter panel produced, one page at a time
+            queue: [],
+            queueTotal: 0,
+            queueLoaded: false,
+            queueMore: false,
             month: false,
             balancePage: 0,
             refuseId: null,
@@ -51,6 +65,15 @@ export class PbTimeoff extends Component {
         });
         this._empTimer = null;
         this._cmdNonce = 0;
+        // The shared filter panel over the approval queue (pb_filter_kit):
+        // it owns the filters, the counts and the views; the queue below it
+        // is one page of its rows. The heatmap and the balances keep their
+        // own month and pages.
+        this.kit = useFilterKit({
+            model: MODEL,
+            noun: _t("requests"),
+            onChange: () => this.loadQueue(),
+        });
         onWillUpdateProps((next) => { this._applyPbCmd(next.pbCmd); });
         onWillStart(async () => {
             await this.load();
@@ -61,8 +84,10 @@ export class PbTimeoff extends Component {
     async load() {
         this.state.busy = true;
         try {
+            // the queue is not part of this read any more: it is paged for
+            // the filter panel (`loadQueue`)
             this.state.data = await this.orm.call(
-                MODEL, "get_board", [this.state.month, this.state.balancePage]);
+                MODEL, "get_board", [this.state.month, this.state.balancePage, false]);
             this.state.month = this.state.data.month;
             this.state.loaded = true;
         } catch (e) {
@@ -90,11 +115,60 @@ export class PbTimeoff extends Component {
         const peak = week.reduce((max, w) => Math.max(max, w.count || 0), 0);
         return [
             { key: "out", n: k.out_today_count || 0, label: _t("Out today"), tone: "", run: null },
-            { key: "pending", n: k.pending || 0, label: _t("Waiting for approval"), tone: k.pending ? "amber" : "", run: null },
+            { key: "pending", n: k.pending || 0, label: _t("Waiting for approval"), tone: k.pending ? "amber" : "",
+              run: this.kit.loaded && !this.kit.failed ? () => this.kit.toggleFilters({ status: [...WAITING] }) : null },
             { key: "week", n: peak, label: _t("Most out on one day this week"), tone: "", run: null },
         ];
     }
-    get queue() { return this.d.queue || []; }
+    get glanceOn() {
+        return this.kit.loaded && this.kit.isExactly({ status: [...WAITING] }) ? "pending" : "";
+    }
+
+    // ------------------------------------------------------------- queue page
+    /** One page of the queue for the filter panel's current state. */
+    async loadQueue({ more = false } = {}) {
+        if (this.kit.failed) {
+            this.state.queueLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.queue.length : 0;
+        if (more) { this.state.queueMore = true; }
+        try {
+            const d = await this.orm.call(MODEL, "get_queue_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: QUEUE_PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.queue = more ? [...this.state.queue, ...d.cards] : d.cards;
+            this.state.queueTotal = d.total;
+            this.state.queueLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The leave requests could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.queueLoaded = true;
+            }
+        } finally {
+            this.state.queueMore = false;
+        }
+    }
+    loadMoreQueue() {
+        if (!this.state.queueMore) { this.loadQueue({ more: true }); }
+    }
+    get queue() { return this.state.queue; }
+    get queueHasMore() { return this.state.queue.length < this.state.queueTotal; }
+    get queueNext() { return Math.min(QUEUE_PAGE, this.state.queueTotal - this.state.queue.length); }
+
+    /** Which empty state the queue shows: "clear" (nothing waiting, the
+     *  first view), "search", "filters", or "" (cards to show). */
+    get queueEmpty() {
+        if (!this.state.queueLoaded || this.queue.length) { return ""; }
+        if (this.kit.search && !this.kit.activeCount) { return "search"; }
+        if (this.kit.isExactly({ status: [...WAITING] })) { return "clear"; }
+        return "filters";
+    }
+    queueStartAgain() { this.kit.home(); }
+    /** The queue's search hint (a template literal is never translated, F29). */
+    get searchHint() { return _t("Find a name, a leave type or a note"); }
     get heatmap() { return this.d.heatmap || { days: [], rows: [], max: 0 }; }
     get balances() { return this.d.balances || { rows: [], types: [] }; }
 
@@ -130,20 +204,28 @@ export class PbTimeoff extends Component {
         await this._act(id, "refuse", this.state.refuseNote);
     }
     async _act(id, action, note) {
-        // optimistic removal from the queue
-        const before = this.queue;
         this.state.busy = true;
         try {
             await this.orm.call(MODEL, "act", [id, action], { note: note || false });
             this.notif.add(
                 action === "approve" ? _t("Leave approved.") : _t("Leave refused."),
                 { type: "success" });
-            await this.load();
+            // the queue page, the panel's counts and the numbers line; the
+            // heatmap and the balances stay as they are (FILTER W7)
+            await Promise.all([this.kit.refresh(), this._reloadKpis()]);
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
-            void before;
         } finally {
             this.state.busy = false;
+        }
+    }
+
+    async _reloadKpis() {
+        try {
+            const kpis = await this.orm.call(MODEL, "get_kpis", []);
+            if (this.state.data) { this.state.data.kpis = kpis; }
+        } catch {
+            // the numbers keep their last value; the queue already moved on
         }
     }
 
@@ -242,7 +324,7 @@ export class PbTimeoff extends Component {
                 [Number(a.employee_id), Number(a.type_id), a.date_from, a.date_to, a.note || false]);
             this.notif.add(_t("Leave filed — pending approval."), { type: "success" });
             this.state.applyOpen = false;
-            await this.load();
+            await Promise.all([this.load(), this.kit.refresh()]);
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {

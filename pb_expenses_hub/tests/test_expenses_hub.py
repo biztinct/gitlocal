@@ -68,16 +68,22 @@ class TestExpensesHub(TransactionCase):
         self.assertTrue(self.env.ref('hr_expense.group_hr_expense_team_approver'))
         self.assertIn('feature: "workforce"', src)
 
-    def test_the_claims_tab_mounts_the_real_list(self):
-        """W17: mount, never fork — the web client's own View over the
-        model's own list and search views."""
+    def test_the_claims_tab_is_on_the_filter_panel(self):
+        """FILTER W7: the Claims tab is a list on the shared filter panel
+        (it used to mount the native list). A row still opens the model's
+        own form, in the main breadcrumb; the native list and search views
+        stay for the menu's act_window."""
         src = _js('claims_lens.js')
-        self.assertIn('import { View } from "@web/views/view";', src)
-        self.assertIn('resModel: MODEL', src)
+        self.assertIn('useFilterKit', src)
         self.assertIn('const MODEL = "pb.expense.claim";', src)
-        self.assertIn('type: "list"', src)
+        self.assertIn('const FACADE = "pb.expense.claims";', src)
+        self.assertIn('target: "current"', src)
         self.assertTrue(self.env['ir.ui.view'].search(
             [('model', '=', 'pb.expense.claim'), ('type', '=', 'list')]))
+        Facade = self.env['pb.expense.claims']
+        views = [v['key'] for v in Facade._pbf_builtin_views()]
+        self.assertEqual(views[0], 'waiting', 'Waiting approval stays the start')
+        self.assertTrue(self.env['pb.expense.claim']._fields['total'].store)
 
     def test_workforce_no_longer_ships_a_trips_lens(self):
         js = _read(os.path.join(get_module_path('pb_mission'), 'static', 'src',

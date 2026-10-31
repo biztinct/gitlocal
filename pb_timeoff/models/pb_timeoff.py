@@ -38,10 +38,16 @@ _LIVE_STATES = ('confirm', 'validate1', 'validate')   # heatmap = pending + appr
 _HEATMAP_SCAN = 3000     # bounded leave scan for the heatmap (surfaced)
 _BALANCE_PAGE = 30       # employees per balance page (4.5k world — never unbounded)
 _TODAY_CARDS = 16        # on-leave-today card cap
+#: What the queue's filter panel can show: waiting, approved and refused
+#: requests (cancelled ones are gone). The first view, "Waiting for
+#: approval", is the queue as it always was.
+_PANEL_STATES = ('confirm', 'validate1', 'validate', 'refuse')
+_QUEUE_PAGE = 30         # queue cards per page (FILTER W7: the queue pages)
 
 
 class PbTimeoff(models.AbstractModel):
     _name = 'pb.timeoff'
+    _inherit = ['pb.filter.mixin']
     _description = 'Leave Command Center'
 
     # ------------------------------------------------------------- access
@@ -100,7 +106,11 @@ class PbTimeoff(models.AbstractModel):
 
     # ------------------------------------------------------------- board
     @api.model
-    def get_board(self, month=False, balance_page=0):
+    def get_board(self, month=False, balance_page=0, with_queue=True):
+        """The whole board. `with_queue=False` (the cockpit since FILTER W7)
+        leaves the unbounded queue out: the queue now comes one page at a
+        time from `get_queue_page`, for the filter panel's state. Every other
+        reader keeps the old payload (ruling R4)."""
         self._require_officer()          # real-user gate…
         su = self.sudo()                 # …then collect the board sudo (C18.65)
         first, last = su._month_bounds(month)
@@ -108,11 +118,18 @@ class PbTimeoff(models.AbstractModel):
             'month': first.strftime('%Y-%m'),
             'month_label': first.strftime('%B %Y'),
             'kpis': su._kpis(),
-            'queue': su._queue(),
+            'queue': su._queue() if with_queue else [],
             'heatmap': su._heatmap(first, last),
             'balances': su._balances(int(balance_page or 0)),
             'leave_types': su._apply_types(),
         }
+
+    @api.model
+    def get_kpis(self):
+        """The numbers line and who is out today, after an approval (the
+        heatmap and the balances are left as they are)."""
+        self._require_officer()
+        return self.sudo()._kpis()
 
     def _kpis(self):
         Leave = self.env['hr.leave']
@@ -178,7 +195,9 @@ class PbTimeoff(models.AbstractModel):
     def _leave_card(self, lv):
         df, dt = self._leave_dates(lv)
         state_label = {'confirm': _('To approve'),
-                       'validate1': _('2nd approval')}.get(lv.state, lv.state)
+                       'validate1': _('2nd approval'),
+                       'validate': _('Approved'),
+                       'refuse': _('Refused')}.get(lv.state, lv.state)
         return {
             'id': lv.id,
             'employee': self._emp_card(lv.employee_id),
@@ -189,6 +208,8 @@ class PbTimeoff(models.AbstractModel):
             'state': lv.state,
             'state_label': state_label,
             'note': lv.name or '',
+            # the one-click buttons are for requests still in the queue
+            'in_queue': lv.state in _QUEUE_STATES,
             'can_approve': bool(lv.can_approve),
             'can_refuse': bool(getattr(lv, 'can_refuse', True)),
             # D1 — asked for AFTER the days had gone. A fact written once,
@@ -323,6 +344,156 @@ class PbTimeoff(models.AbstractModel):
             ['|', ('company_id', '=', False), ('company_id', 'in', co_ids)],
             order='name')
         return [self._type_chip(t) for t in types]
+
+    # ------------------------------------------------------------- the filter panel
+    # FILTER wave 7 (2026-10-31). The queue used to be every waiting request
+    # of the companies, in one unbounded list with no filter, search or
+    # order. It now sits on the shared filter panel. The panel reads the way
+    # the board always read: behind `_require_officer`, then sudo, with the
+    # board's company scope carried in the base domain (ledger §3a, counts
+    # under sudo). Its first view, "Waiting for approval", is the queue
+    # exactly as it was.
+
+    @api.model
+    def _pbf_records(self):
+        # every kit call (layout, counts, find) passes the officer gate first
+        self._require_officer()
+        return self.env['hr.leave'].sudo()
+
+    def _pbf_model(self):
+        return 'hr.leave'
+
+    def _pbf_screen(self):
+        return 'leavequeue'
+
+    def _pbf_base_domain(self):
+        return [('employee_id.company_id', 'in', self._co_ids()),
+                ('state', 'in', list(_PANEL_STATES))]
+
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'name', 'holiday_status_id.name',
+                'department_id.name']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'soonest', 'label': _('First day soonest'),
+             'order': 'date_from asc, id asc'},
+            {'key': 'latest', 'label': _('First day latest'),
+             'order': 'date_from desc, id desc'},
+            {'key': 'longest', 'label': _('Longest first'),
+             'order': 'number_of_days desc, date_from asc, id asc'},
+            {'key': 'newest', 'label': _('Newest request first'),
+             'order': 'create_date desc, id desc'},
+            {'key': 'name', 'label': _('Name A–Z'),
+             'order': 'employee_id, date_from asc, id asc'},
+        ]
+
+    def _pbf_spec(self):
+        return [
+            # ---- pinned: where it is, what kind, which team
+            {'key': 'status', 'label': _('Status'), 'icon': 'listChecks',
+             'group': 'other', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'confirm', 'label': _('To approve'), 'tone': 'amber',
+                  'domain': [('state', '=', 'confirm')]},
+                 {'value': 'validate1', 'label': _('2nd approval'), 'tone': 'blue',
+                  'domain': [('state', '=', 'validate1')]},
+                 {'value': 'validate', 'label': _('Approved'), 'tone': 'green',
+                  'domain': [('state', '=', 'validate')]},
+                 {'value': 'refuse', 'label': _('Refused'), 'tone': 'rose',
+                  'domain': [('state', '=', 'refuse')]},
+             ]},
+            {'key': 'type', 'label': _('Leave type'), 'icon': 'umbrella',
+             'group': 'other', 'type': 'many2one', 'path': 'holiday_status_id',
+             'pinned': True, 'label_sudo': True},
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'department_id',
+             'pinned': True, 'label_sudo': True, 'none_label': _('No department')},
+            # ---- more filters
+            {'key': 'employee', 'label': _('Who is asking'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id',
+             'label_sudo': True},
+            {'key': 'from', 'label': _('First day'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'request_date_from',
+             'presets': ['today', 'this_week', 'next_7', 'next_30', 'this_month',
+                         'later', 'last_month', 'last_90', 'passed']},
+            {'key': 'to', 'label': _('Last day'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'request_date_to',
+             'presets': ['today', 'this_week', 'next_7', 'next_30', 'this_month',
+                         'later', 'last_month', 'last_90', 'passed']},
+            {'key': 'days', 'label': _('How many days'), 'icon': 'hash',
+             'group': 'other', 'type': 'number', 'path': 'number_of_days'},
+            {'key': 'backdated', 'label': _('Asked for afterwards'), 'icon': 'history',
+             'group': 'other', 'type': 'choice', 'requires': ['pb_backdated'],
+             'help': _('Asked for after the days had gone. The pay for those '
+                       'days may already have been worked out.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Backdated'), 'tone': 'amber',
+                  'domain': [('pb_backdated', '=', True)]},
+                 {'value': 'no', 'label': _('Asked for in advance'), 'tone': 'slate',
+                  'domain': [('pb_backdated', '=', False)]},
+             ]},
+            # the papers a request came with (a certificate, a letter) are its
+            # own attachments (`supported_attachment_ids` is computed, not
+            # stored, so it cannot be searched)
+            {'key': 'papers', 'label': _('Papers'), 'icon': 'paperclip',
+             'group': 'other', 'type': 'choice', 'requires': ['attachment_ids'],
+             'options': [
+                 {'value': 'yes', 'label': _('Papers attached'), 'tone': 'blue',
+                  'domain': [('attachment_ids', '!=', False)]},
+                 {'value': 'no', 'label': _('No papers'), 'tone': 'slate',
+                  'domain': [('attachment_ids', '=', False)]},
+             ]},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'employee_company_id',
+             'label_sudo': True},
+        ]
+
+    def _pbf_builtin_views(self):
+        waiting = list(_QUEUE_STATES)
+        return [
+            {'key': 'waiting', 'label': _('Waiting for approval'), 'icon': 'inbox',
+             'filters': {'status': waiting}},
+            {'key': 'backdated', 'label': _('Backdated requests'), 'icon': 'history',
+             'filters': {'status': waiting, 'backdated': ['yes']}},
+            {'key': 'week', 'label': _('Starting this week'), 'icon': 'calendar',
+             'filters': {'status': waiting + ['validate'], 'from': {'preset': 'this_week'}}},
+            {'key': 'approved', 'label': _('Approved this month'), 'icon': 'checkCircle',
+             'filters': {'status': ['validate'], 'from': {'preset': 'this_month'}}},
+            {'key': 'refused', 'label': _('Refused'), 'icon': 'xCircle',
+             'filters': {'status': ['refuse']}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        try:
+            self._require_officer()
+        except AccessError as e:
+            return {'refused': str(e.args[0] if e.args else e)}
+        return super().pbf_layout()
+
+    @api.model
+    def get_queue_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=_QUEUE_PAGE):
+        """One page of queue cards for the panel's state (same gate, same
+        sudo read, same card as the board's queue)."""
+        self._require_officer()
+        su = self.sudo()
+        Leave = su._pbf_records()
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or _QUEUE_PAGE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, _QUEUE_PAGE
+        filters = filters if isinstance(filters, dict) else {}
+        domain = su.pbf_domain(filters, search)
+        leaves = Leave.search(domain, order=su.pbf_order(sort) or 'date_from asc, id asc',
+                              offset=offset, limit=limit)
+        return {
+            'cards': [su._leave_card(lv) for lv in leaves],
+            'total': Leave.search_count(domain),
+            'offset': offset,
+        }
 
     # ------------------------------------------------------------- act
     @api.model

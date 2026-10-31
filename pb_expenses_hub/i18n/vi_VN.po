@@ -15,8 +15,8 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_expenses_hub/static/src/js/expenses_hub.js:0
 #: code:addons/pb_expenses_hub/static/src/js/expenses_hub_palette.js:0
-#: model:pb.sidebar.item,name:pb_expenses_hub.item_expenses
 #: model:ir.actions.client,name:pb_expenses_hub.action_pb_expenses_hub
+#: model:pb.sidebar.item,name:pb_expenses_hub.item_expenses
 msgid "Expenses"
 msgstr "Chi phí"
 
@@ -40,9 +40,10 @@ msgstr "Hoàn chi phí"
 
 #. module: pb_expenses_hub
 #. odoo-javascript
-#: code:addons/pb_expenses_hub/static/src/js/expenses_hub.js:0
 #: code:addons/pb_expenses_hub/static/src/js/claims_lens.js:0
+#: code:addons/pb_expenses_hub/static/src/js/expenses_hub.js:0
 #: code:addons/pb_expenses_hub/static/src/js/expenses_hub_palette.js:0
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
 msgid "Expense claims"
 msgstr "Yêu cầu hoàn chi phí"
 
@@ -51,3 +52,335 @@ msgstr "Yêu cầu hoàn chi phí"
 #: code:addons/pb_expenses_hub/static/src/js/expenses_hub_palette.js:0
 msgid "Trips and expense claims"
 msgstr "Công tác và hoàn chi phí"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Approved, not yet paid"
+msgstr "Đã duyệt, chưa thanh toán"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Biggest total first"
+msgstr "Tổng lớn nhất trước"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Claim"
+msgstr "Phiếu"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Decided on"
+msgstr "Ngày quyết định"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Every claim sent in has been decided."
+msgstr "Mọi phiếu đã gửi đều đã được quyết định."
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid ""
+"Expense claims are for the people who approve expenses. Ask your "
+"administrator if you should see them."
+msgstr ""
+"Phiếu chi phí dành cho người duyệt chi phí. Hãy hỏi quản trị viên nếu bạn "
+"cần xem."
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Expense claims are not open to you"
+msgstr "Bạn không xem được phiếu chi phí"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/js/claims_lens.js:0
+msgid "Find a reference, a name or a note"
+msgstr "Tìm mã, tên hoặc ghi chú"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Loading expense claims"
+msgstr "Đang tải phiếu chi phí"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "New claim"
+msgstr "Phiếu mới"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Newest claim first"
+msgstr "Phiếu mới nhất trước"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Newest sent first"
+msgstr "Gửi gần nhất trước"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "No claim matches these filters"
+msgstr "Không có phiếu nào khớp với các bộ lọc này"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "No claim matches “"
+msgstr "Không có phiếu nào khớp với “"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "No expense claims yet"
+msgstr "Chưa có phiếu chi phí nào"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Not decided yet"
+msgstr "Chưa quyết định"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Not paid yet"
+msgstr "Chưa thanh toán"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Nothing is waiting approval"
+msgstr "Không có phiếu nào đang chờ duyệt"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Number of receipts"
+msgstr "Số hóa đơn"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Paid on"
+msgstr "Ngày thanh toán"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Paid this month"
+msgstr "Đã thanh toán trong tháng này"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid ""
+"People send their claims from their own pages. Each claim holds one or more "
+"receipts and is decided from Approvals."
+msgstr ""
+"Mọi người gửi phiếu từ trang của mình. Mỗi phiếu gồm một hoặc nhiều hóa đơn "
+"và được quyết định ở mục Phê duyệt."
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Receipts"
+msgstr "Hóa đơn"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid ""
+"Remove a filter above, or start again from the claims waiting approval."
+msgstr "Bỏ một bộ lọc ở trên, hoặc bắt đầu lại từ các phiếu đang chờ duyệt."
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Sent on"
+msgstr "Ngày gửi"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Sent this month"
+msgstr "Gửi trong tháng này"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Show every claim"
+msgstr "Hiện mọi phiếu"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/js/claims_lens.js:0
+msgid "The expense claims could not be listed. Try again in a moment."
+msgstr "Không liệt kê được các phiếu chi phí. Hãy thử lại sau giây lát."
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "The list could not be loaded. Reload the page to try again."
+msgstr "Không tải được danh sách. Tải lại trang để thử lại."
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Their department"
+msgstr "Phòng ban của họ"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Try a claim reference, a person’s name or a word from the note."
+msgstr "Thử mã phiếu, tên một người hoặc một từ trong ghi chú."
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Waiting approval"
+msgstr "Chờ duyệt"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Who sent it"
+msgstr "Người gửi"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/js/claims_lens.js:0
+msgid "claims"
+msgstr "phiếu"
+
+#. module: pb_expenses_hub
+#: model:ir.model,name:pb_expenses_hub.model_pb_expense_claims
+msgid "Expense claims list (filter panel)"
+msgstr "Danh sách phiếu chi phí (bảng lọc)"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Clear the search"
+msgstr "Xóa tìm kiếm"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "No department"
+msgstr "Không có phòng ban"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Paid"
+msgstr "Đã thanh toán"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Refused"
+msgstr "Bị từ chối"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Start again"
+msgstr "Bắt đầu lại"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_expenses_hub
+#. odoo-python
+#: code:addons/pb_expenses_hub/models/pb_expense_claims.py:0
+msgid "Waiting longest first"
+msgstr "Chờ lâu nhất trước"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_expenses_hub
+#. odoo-javascript
+#: code:addons/pb_expenses_hub/static/src/xml/expenses_hub.xml:0
+msgid "of"
+msgstr "trên"
