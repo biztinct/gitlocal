@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Statutory Cockpit',
     'summary': 'Insurance & tax cockpit (rates, ceilings, brackets, contribution actuals)',
-    'version': '19.0.1.4.3',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -15,7 +15,9 @@
                 'pb_wf_kit',
                 # P7: the proposal a statutory change is written down as, and
                 # the payroll roles this wizard had never checked.
-                'pb_hr_payroll_formula', 'biz_approval_workflow'],
+                'pb_hr_payroll_formula', 'biz_approval_workflow',
+                # FILTER W6: the Data view's tables are on the shared filter panel
+                'pb_filter_kit'],
     'data': [
         'views/pb_statutory_action.xml',
     ],

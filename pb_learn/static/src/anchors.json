@@ -482,6 +482,12 @@
       "desc": "Insurance policies / tax tables, and the active-only chip. Every count in the roster below is scoped by these.",
       "reserved": true
     },
+    "st-data-filters": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "Statutory › Data, the shared filter panel over the table that is open (Insurance policies, Tax tables, Adjustments, Dependents): view tabs per table (for example All adjustments, Draft, This month), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. Each table keeps its own filters.",
+      "reserved": true
+    },
     "st-roster": {
       "screen": "statutory",
       "file": "pb_statutory/static/src/xml/statutory.xml",
