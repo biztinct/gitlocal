@@ -442,6 +442,8 @@ msgstr "Sau khi gửi đi, %s."
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "All I can see"
 msgstr "Tất cả tôi xem được"
@@ -1009,7 +1011,10 @@ msgstr "Các công ty"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
+#: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_proposed_person__company_id
 msgid "Company"
 msgstr "Công ty"
 
@@ -1157,6 +1162,8 @@ msgstr "Hạn"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Due today"
 msgstr "Đến hạn hôm nay"
@@ -1343,6 +1350,8 @@ msgstr "Người duyệt tài chính, trên một mức tiền"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
 #: code:addons/pb_approval_config/static/src/xml/people.xml:0
 msgid "Finished"
@@ -1564,6 +1573,8 @@ msgstr "Loại yêu cầu"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Late"
 msgstr "Trễ"
@@ -1693,6 +1704,8 @@ msgstr "Bắt buộc phải sửa"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "My turn"
 msgstr "Đến lượt tôi"
@@ -2169,6 +2182,8 @@ msgstr "Sở hữu ngân sách của một bộ phận."
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Part of the business"
@@ -2724,6 +2739,8 @@ msgstr "Gửi phiếu lương cho mọi người."
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Sent back"
@@ -2743,6 +2760,8 @@ msgstr "Đã trả lại:"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
 msgid "Sent in by"
 msgstr "Người gửi"
@@ -3671,6 +3690,8 @@ msgstr "Đang chờ"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Waiting for a decision"
 msgstr "Đang chờ quyết định"
@@ -4579,7 +4600,9 @@ msgstr "Của tôi"
 
 #. module: pb_approval_config
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "My team"
 msgstr "Nhóm của tôi"
 
@@ -5167,3 +5190,217 @@ msgstr "Chỉ theo dõi, không quyết định — một yêu cầu chỉ là v
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "sent in by"
 msgstr "người gửi"
+
+# ===================================================================
+#  FILTER wave 4 (2026-10-31): the shared filter panel.
+# ===================================================================
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "A request is your turn when the step that is waiting names you: your own seat, or one you are covering."
+msgstr "Một yêu cầu đến lượt bạn khi bước đang chờ ghi tên bạn: vị trí của chính bạn, hoặc vị trí bạn đang làm thay."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Back to My turn"
+msgstr "Quay lại Đến lượt tôi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Biggest amount first"
+msgstr "Số tiền lớn nhất trước"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Check the spelling, or search by what it is, who sent it in or the kind of request."
+msgstr "Hãy kiểm tra chính tả, hoặc tìm theo nội dung, người gửi hoặc loại yêu cầu."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Currency"
+msgstr "Loại tiền"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Due later"
+msgstr "Đến hạn sau"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Due soonest"
+msgstr "Sắp đến hạn trước"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Finished on"
+msgstr "Ngày hoàn tất"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Finished this month"
+msgstr "Hoàn tất trong tháng này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "My turn today"
+msgstr "Đến lượt tôi hôm nay"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Newest sent in first"
+msgstr "Gửi gần đây nhất trước"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "No amount"
+msgstr "Không có số tiền"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "No due date"
+msgstr "Không có hạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "No request matches these filters"
+msgstr "Không có yêu cầu nào khớp với các bộ lọc này"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "No request matches “%s”"
+msgstr "Không có yêu cầu nào khớp với “%s”"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Not finished"
+msgstr "Chưa hoàn tất"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Not my turn"
+msgstr "Chưa đến lượt tôi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Oldest sent in first"
+msgstr "Gửi lâu nhất trước"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Pay area waiting"
+msgstr "Mảng lương đang chờ"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Reading your approvals"
+msgstr "Đang đọc các phê duyệt của bạn"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Remove a filter above, or go back to what is waiting for you."
+msgstr "Bỏ bớt một bộ lọc ở trên, hoặc quay lại những gì đang chờ bạn."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Sent back to me"
+msgstr "Trả lại cho tôi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Sent in"
+msgstr "Ngày gửi"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Waiting on me"
+msgstr "Đang chờ tôi"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "What kind of request"
+msgstr "Loại yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "When it is due"
+msgstr "Khi nào đến hạn"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "Your approvals could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị danh sách phê duyệt của bạn. Vui lòng thử lại sau giây lát."
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/js/inbox.js:0
+msgid "requests"
+msgstr "yêu cầu"
