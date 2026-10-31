@@ -47,7 +47,7 @@ Nothing here modifies `pb_people` or `pb_people_hub`: the lens arrives through
 their soft registry, which is what lets the dependency run one way only.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -59,6 +59,7 @@ their soft registry, which is what lets the dependency run one way only.
         'portal',               # the /my/assets page
         'pb_hub',               # the global palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
+        'pb_filter_kit',        # the shared filter panel on the register
         'pb_people_hub',        # the hub this module bolts its lens onto
         'pb_me_portal',         # the .pbme portal kit the page reuses
         'pb_lifecycle',         # the journey a leaver's asset steps join

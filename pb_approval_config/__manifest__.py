@@ -38,7 +38,7 @@ WHAT IT NEVER DOES
   route that checks nothing is a published choice, said out loud on the Matrix
   row, and every use of it is still recorded.
 """,
-    'version': '19.0.1.6.7',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -49,6 +49,7 @@ WHAT IT NEVER DOES
         'pb_settings',             # the cog this screen lives behind
         'pb_sidebar',              # the rail, matched by tag only (no new item)
         'pb_import_kit',           # pbim tokens/primitives + the shared ic()
+        'pb_filter_kit',           # the shared filter panel on the inbox
         'pb_group',                # divisions — the parts of the business
         'hr',
         'mail',

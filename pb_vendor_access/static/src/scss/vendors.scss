@@ -401,3 +401,38 @@ $pbva-states: (
     }
 }
 
+// =========================================================================
+// THE FILTER PANEL'S LIST (pb_filter_kit, FILTER wave 4): the skeleton while
+// a page loads and the "Showing N of M · Show more" line under the cards.
+// =========================================================================
+@keyframes pbva-skel {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .55; }
+}
+
+.pbim.pbva-vendors {
+    .pbva-card--ghost {
+        height: 132px;
+        cursor: default;
+        background: var(--pbim-bg, #F8F9FC);
+        border-style: dashed;
+
+        &:hover { border-color: var(--pbim-line, #E6E8F0); box-shadow: none; }
+    }
+
+    .pbva-foot {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 2px 4px;
+        font-size: 13px;
+        color: var(--pbim-muted, #6B7280);
+
+        b { color: var(--pbim-ink, #1B1733); font-variant-numeric: tabular-nums; }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .pbim.pbva-vendors .pbva-card--ghost { animation: pbva-skel 1.2s ease-in-out infinite; }
+}
+

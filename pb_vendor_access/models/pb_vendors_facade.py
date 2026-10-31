@@ -22,6 +22,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
+from odoo.fields import Domain
 
 from .vendor_common import (PICKER_CAP, VENDOR_ROW_CAP, VENDOR_TYPES,
                             counted, fold, safe, state_label, type_label)
@@ -42,9 +43,18 @@ EDIT_GROUPS = (
 )
 
 
+#: Cards per page on the filtered list ("Show N more" brings the next page).
+PAGE_SIZE = 60
+
+
 class PbVendors(models.AbstractModel):
     _name = 'pb.vendors'
     _description = 'Vendors board — facade'
+    # The shared filter panel (pb_filter_kit, FILTER wave 4). Nothing here
+    # sudoes a vendor search, so every count beside a value is counted under
+    # the same record rules as the list itself: a vendor owner's panel counts
+    # their own vendors and nobody else's.
+    _inherit = ['pb.filter.mixin']
 
     # ================================================================= access
     @api.model
@@ -226,6 +236,205 @@ class PbVendors(models.AbstractModel):
                      x=counted(expiring, _("1 agreement"), _("%s agreements")))
         return _("%s on the register, and nothing needs renewing.",
                  counted(len(rows), _("1 vendor"), _("%s vendors")))
+
+    # ============================================================ filter panel
+    # The board used to load up to 800 vendors, count its chips over them and
+    # fold the search in Python. The panel now counts on the server over the
+    # whole register and the cards come one page at a time. `get_board` stays
+    # as it was for the spreadsheet (R4).
+
+    def _pbf_model(self):
+        return 'pb.vendor'
+
+    def _pbf_screen(self):
+        return 'vendors'
+
+    def _pbf_base_domain(self):
+        return [('active', '=', True), '|', ('company_id', '=', False),
+                ('company_id', 'in', self.env.companies.ids)]
+
+    def _pbf_search_fields(self):
+        return ['name', 'contact_name', 'contact_email', 'department_id.name',
+                'responsible_user_id.name']
+
+    @api.model
+    def _pbf_search_domain(self, search):
+        """The plain `ilike`, OR the folded match the board always had.
+
+        Postgres here has no `unaccent`, so `ilike '%bui%'` misses "Bùi"
+        (R28/R78). The register is small (the board capped it at 800), so the
+        fold runs in Python over the vendors this person may see — the search
+        is not sudoed, the names are read the way `_row` reads them — and
+        comes back as an id list.
+        """
+        plain = super()._pbf_search_domain(search)
+        needle = fold(search)
+        if plain is None or not needle:
+            return plain
+        # the panel builds this domain once per count; fold once per call
+        key = ('pb_vendors.fold', self.env.uid, needle)
+        cache = self.env.cr.cache
+        if key not in cache:
+            found = self.env['pb.vendor'].search(self._pbf_base_domain(), limit=5000)
+            hits = []
+            for s in found.sudo():              # names only (R56)
+                hay = ' '.join(fold(x) for x in (
+                    s.name, s.contact_name, s.contact_email,
+                    s.department_id.name, s.responsible_user_id.name))
+                if needle in hay:
+                    hits.append(s.id)
+            cache[key] = hits
+        hits = cache[key]
+        if not hits:
+            return plain
+        return Domain.OR([plain, Domain('id', 'in', hits)])
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+            {'key': 'name_desc', 'label': _('Name, Z to A'), 'order': 'name desc, id desc'},
+            {'key': 'ending', 'label': _('Agreement ending soonest'),
+             'order': 'next_end_date asc nulls last, name asc'},
+            {'key': 'newest', 'label': _('Newest on the register'),
+             'order': 'create_date desc, id desc'},
+        ]
+
+    def _pbf_spec(self):
+        uid = self.env.uid
+        return [
+            # ---- pinned: what they do, where their agreement is, who owns it
+            {'key': 'type', 'label': _('What they do'), 'icon': 'briefcase',
+             'group': 'work', 'type': 'selection', 'path': 'vendor_type',
+             'pinned': True},
+            {'key': 'agreement', 'label': _('Agreement'), 'icon': 'fileText',
+             'group': 'contract', 'type': 'selection', 'path': 'agreement_state',
+             'pinned': True, 'none_label': _('No agreement yet')},
+            {'key': 'owner', 'label': _('Who looks after them'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'responsible_user_id',
+             'pinned': True},
+            # ---- more filters
+            {'key': 'mine', 'label': _('Looked after by me'), 'icon': 'user',
+             'group': 'people', 'type': 'choice',
+             'options': [
+                 {'value': 'yes', 'label': _('I look after them'), 'tone': 'blue',
+                  'domain': [('responsible_user_id', '=', uid)]},
+                 {'value': 'no', 'label': _('Someone else does'), 'tone': 'slate',
+                  'domain': [('responsible_user_id', '!=', uid)]},
+             ]},
+            {'key': 'department', 'label': _('Team they work with'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'department_id',
+             'none_label': _('No team')},
+            {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+             'group': 'work', 'type': 'many2one', 'path': 'country_id',
+             'none_label': _('Not recorded')},
+            {'key': 'next_end', 'label': _('Next agreement ends'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'next_end_date',
+             'presets': 'future', 'none_label': _('Nothing recorded')},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'company_id',
+             'none_label': _('Every company')},
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All vendors'), 'icon': 'briefcase', 'filters': {}},
+            {'key': 'expiring', 'label': _('Coming up for renewal'),
+             'filters': {'agreement': ['expiring']}},
+            {'key': 'expired', 'label': _('Already run out'),
+             'filters': {'agreement': ['expired']}},
+            {'key': 'none', 'label': _('Nothing recorded'),
+             'filters': {'agreement': [False]}},
+            {'key': 'mine', 'label': _('I look after'),
+             'filters': {'mine': ['yes']}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        try:
+            self._require()
+        except AccessError as e:
+            return {'refused': str(e.args[0] if e.args else e)}
+        return super().pbf_layout()
+
+    @api.model
+    def pbf_counts(self, filters=None, search=None, keys=None):
+        self._require()
+        return super().pbf_counts(filters=filters, search=search, keys=keys)
+
+    @api.model
+    def get_head(self):
+        """The header and the numbers line, counted over the whole register
+        this person may see (whatever is filtered): the figures that filter
+        tick the same filters as the built-in views."""
+        self._require()
+        Vendor = self.env['pb.vendor']
+        base = self._pbf_base_domain()
+
+        def n(extra):
+            return safe(lambda: Vendor.search_count(base + extra), 0, 'a vendor count')
+
+        return {
+            'can_edit': self.can_edit(),
+            # the Add dialog offers every type, not only the ones in use
+            'type_options': [{'key': k, 'label': type_label(k, self.env)}
+                             for k, _l in VENDOR_TYPES],
+            'kpis': {
+                'vendors': n([]),
+                'expiring': n([('agreement_state', '=', 'expiring')]),
+                'expired': n([('agreement_state', '=', 'expired')]),
+                'none': n([('agreement_state', '=', False)]),
+                'mine': n([('responsible_user_id', '=', self.env.uid)]),
+            },
+        }
+
+    @api.model
+    def get_vendor_page(self, filters=None, search=None, sort=None, offset=0,
+                        limit=PAGE_SIZE):
+        """One page of cards for the panel's state, with the sentence under
+        the title said about the SAME list (R34: one expression each)."""
+        self._require()
+        Vendor = self.env['pb.vendor']
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        domain = self.pbf_domain(filters or {}, search)
+        vendors = Vendor.search(domain, order=self.pbf_order(sort) or 'name',
+                                offset=offset, limit=limit)
+        rows = []
+        for v in vendors:
+            try:
+                row = self._row(v)
+                row.pop('haystack', None)
+                rows.append(row)
+            except Exception as ex:  # noqa: BLE001 — one bad card never blanks the list
+                _logger.debug("Vendor card failed: %s", ex)
+        total = Vendor.search_count(domain)
+        out = {'rows': rows, 'total': total, 'offset': offset}
+        if not offset:
+            expired = Vendor.search_count(Domain.AND([domain, Domain('agreement_state', '=', 'expired')]))
+            expiring = Vendor.search_count(Domain.AND([domain, Domain('agreement_state', '=', 'expiring')]))
+            out['headline'] = self._headline_counts(total, expiring, expired)
+        return out
+
+    def _headline_counts(self, total, expiring, expired):
+        """`_headline`, said from counts instead of loaded rows."""
+        if not total:
+            if self.env['pb.vendor'].search_count(self._pbf_base_domain(), limit=1):
+                return _("No vendor on the register matches these filters.")
+            return _("No vendors on the register yet.")
+        if expired:
+            return _("%(n)s on the register, and %(x)s already run out.",
+                     n=counted(total, _("1 vendor"), _("%s vendors")),
+                     x=counted(expired, _("1 agreement has"),
+                               _("%s agreements have")))
+        if expiring:
+            return _("%(n)s on the register, %(x)s coming up for renewal.",
+                     n=counted(total, _("1 vendor"), _("%s vendors")),
+                     x=counted(expiring, _("1 agreement"), _("%s agreements")))
+        return _("%s on the register, and nothing needs renewing.",
+                 counted(total, _("1 vendor"), _("%s vendors")))
 
     # ================================================================ the drawer
     @api.model
@@ -409,9 +618,15 @@ class PbVendors(models.AbstractModel):
         return {'ok': True, 'message': res['message'], 'counters': res}
 
     @api.model
-    def export_vendors(self):
+    def export_vendors(self, filters=None, search=None):
+        """The spreadsheet. With the panel's `filters`/`search` it holds the
+        vendors the list shows right now (every page, not just the loaded
+        one, R6); without them, the whole register as before."""
         self._require()
-        return self.env['pb.vendor.export'].build_vendors()
+        ids = None
+        if filters or (search or '').strip():
+            ids = self.env['pb.vendor'].search(self.pbf_domain(filters or {}, search)).ids
+        return self.env['pb.vendor.export'].build_vendors(vendor_ids=ids)
 
     # ================================================================== probes
     @api.model

@@ -32,7 +32,7 @@
           <div class="pbva-empty-ic"><t t-out="ic('alert',30)"/></div>
           <h3>The vendor register could not be read</h3>
           <p t-esc="state.failed"/>
-          <button class="pbim-btn primary" t-on-click="reload">Try again</button>
+          <button t-if="!kit.refusal" class="pbim-btn primary" t-on-click="retry">Try again</button>
         </div>
       </div>
 
@@ -43,7 +43,7 @@
           <div class="pbva-head-id">
             <HubBackChip t-if="back" back="back" tone="'light'"/>
             <h2 t-if="!props.embedded" class="pbva-h">Vendors</h2>
-            <p class="pbva-s" t-esc="board.headline"/>
+            <p class="pbva-s" t-esc="state.headline"/>
           </div>
           <div class="pbva-head-actions">
             <button class="pbim-btn ghost" t-on-click="reload"
@@ -52,7 +52,7 @@
             </button>
             <button class="pbim-btn ghost" t-on-click="exportFile"
                     t-att-disabled="state.busy"
-                    title="Every vendor and every agreement, as a spreadsheet">
+                    t-att-title="filtered ? 'The vendors this list shows and their agreements, as a spreadsheet' : 'Every vendor and every agreement, as a spreadsheet'">
               <t t-out="ic('download',15)"/> Spreadsheet
             </button>
             <button t-if="canEdit" class="pbim-btn ghost" t-on-click="runAlerts"
@@ -66,117 +66,102 @@
           </div>
         </div>
 
-        <!-- =========================== the numbers =========================== -->
+        <!-- =========================== the numbers ===========================
+             A figure that filters ticks its filters in the panel (the same
+             filters as its view tab); pressing it again shows everyone. -->
         <t t-call="pb_import_kit.QuietGlance">
           <t t-set="qGlance" t-value="glance"/>
-          <t t-set="qGlanceOn" t-value="state.agreementState"/>
+          <t t-set="qGlanceOn" t-value="glanceOn"/>
         </t>
 
-        <!-- =========================== the filters =========================== -->
-        <div class="pbva-bar">
-          <label class="pbva-field pbva-field--search">
-            <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
-            <input class="pbva-in" type="search" t-att-value="state.search"
-                   t-on-input="onSearch"
-                   placeholder="Search a vendor, a contact or an owner"/>
-          </label>
+        <!-- ===================== the shared filter panel =====================
+             pb_filter_kit: views, search, the left panel with counts, chips.
+             The cards are its slot, one page at a time. -->
+        <PbFilterLayout kit="kit" searchPlaceholder="'Search a vendor, a contact or an owner'">
+          <div t-if="rows.length" class="pbva-grid">
+            <div t-foreach="rows" t-as="vd" t-key="vd.id"
+                 t-attf-class="pbva-card pbva-card--{{vd.state or 'none'}} {{ state.open === vd.id ? 'is-open' : '' }}"
+                 t-attf-style="--pbva-i: {{vd_index % 24}}"
+                 t-on-click="() => this.openVendor(vd)">
 
-          <div class="pbva-chips">
-            <button t-foreach="facets.types or []" t-as="tp" t-key="tp.key"
-                    t-attf-class="pbva-chip {{ state.type === tp.key ? 'is-on' : '' }}"
-                    t-on-click="() => this.setType(tp.key)">
-              <span t-esc="tp.label"/><b t-esc="tp.n"/>
+              <div class="pbva-card-h">
+                <div class="pbva-card-ic"><t t-out="ic('briefcase',18)"/></div>
+                <div class="pbva-card-id">
+                  <span class="pbva-card-n" t-esc="vd.name"/>
+                  <span class="pbva-card-t" t-esc="vd.type_label"/>
+                </div>
+                <span class="pbva-badge" t-esc="vd.state_label"/>
+              </div>
+
+              <div class="pbva-card-body">
+                <div class="pbva-kv">
+                  <span><t t-out="ic('user',13)"/></span>
+                  <b t-esc="vd.responsible or '—'"/>
+                </div>
+                <div class="pbva-kv" t-if="vd.department">
+                  <span><t t-out="ic('building',13)"/></span>
+                  <b t-esc="vd.department"/>
+                </div>
+                <div class="pbva-kv" t-if="vd.contact_email">
+                  <span><t t-out="ic('mail',13)"/></span>
+                  <b t-esc="vd.contact_email"/>
+                </div>
+              </div>
+
+              <div class="pbva-card-f">
+                <span t-if="vd.next_end" class="pbva-when">
+                  <t t-out="ic('calendar',13)"/>
+                  <t t-esc="'Next agreement ends ' + day(vd.next_end)"/>
+                </span>
+                <span t-else="" class="pbva-when pbva-when--none">
+                  <t t-out="ic('fileText',13)"/> Nothing recorded yet
+                </span>
+                <span class="pbva-count"
+                      t-esc="vd.agreements === 1 ? '1 agreement' : vd.agreements + ' agreements'"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- loading: the shape of the cards, never a blank -->
+          <div t-elif="!state.listLoaded" class="pbva-grid pbva-grid--skel" aria-label="Loading vendors">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbva-card pbva-card--ghost"/>
+          </div>
+
+          <!-- empty for a filter, for a search, or a register with nobody yet -->
+          <div t-else="" class="pbim-empty pbva-empty">
+            <div class="pbva-empty-ic">
+              <t t-if="filtered" t-out="ic('search',30)"/>
+              <t t-else="" t-out="ic('briefcase',30)"/>
+            </div>
+            <t t-if="filtered">
+              <h3>No vendor matches these filters</h3>
+              <p t-if="kit.chips.length">Remove a filter above, or start again from the whole register.</p>
+              <p t-else="">Nothing on the register matches “<t t-esc="kit.search"/>”. Check the spelling, or search by contact, team or owner.</p>
+              <button class="pbim-btn ghost" t-on-click="showAll">Show every vendor</button>
+            </t>
+            <t t-else="">
+              <h3>No suppliers on the register yet</h3>
+              <p>
+                This is where the agencies, trainers, insurers and software
+                suppliers HR deals with live — who they are, who here owns the
+                relationship, and what has been agreed. Put one in and Payobook
+                starts telling its owner before the agreement runs out, instead of
+                afterwards.
+              </p>
+              <button t-if="canEdit" class="pbim-btn primary" t-on-click="openAdd">
+                Add the first vendor
+              </button>
+            </t>
+          </div>
+
+          <div t-if="rows.length" class="pbva-foot">
+            Showing <b t-esc="fmtInt(rows.length)"/> of <b t-esc="fmtInt(state.total)"/>
+            <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
             </button>
           </div>
-
-          <div class="pbva-chips">
-            <button t-foreach="facets.states or []" t-as="st" t-key="st.key"
-                    t-attf-class="pbva-chip pbva-chip--{{st.key}} {{ state.agreementState === st.key ? 'is-on' : '' }}"
-                    t-on-click="() => this.setState(st.key)">
-              <span t-esc="st.label"/><b t-esc="st.n"/>
-            </button>
-          </div>
-
-          <button t-if="filtered" class="pbim-btn ghost pbva-clear"
-                  t-on-click="clearFilters">
-            <t t-out="ic('x',14)"/> Clear
-          </button>
-        </div>
-
-        <div t-if="board.truncated" class="pbva-note pbva-note--warn">
-          <t t-out="ic('alert',15)"/>
-          <span>There are more vendors here than one board can hold, so this is
-                the first part of the register. Narrow it with a filter or the
-                search box to see the rest.</span>
-        </div>
-
-        <!-- ============================ the cards ============================ -->
-        <div t-if="!rows.length" class="pbim-empty pbva-empty">
-          <div class="pbva-empty-ic"><t t-out="ic('briefcase',30)"/></div>
-          <h3 t-if="filtered">Nothing matches that</h3>
-          <h3 t-else="">No suppliers on the register yet</h3>
-          <p t-if="filtered">
-            Clear the filters and the whole register comes back. A chip that
-            matches nothing is a promise this screen could not keep.
-          </p>
-          <p t-else="">
-            This is where the agencies, trainers, insurers and software
-            suppliers HR deals with live — who they are, who here owns the
-            relationship, and what has been agreed. Put one in and Payobook
-            starts telling its owner before the agreement runs out, instead of
-            afterwards.
-          </p>
-          <button t-if="filtered" class="pbim-btn ghost" t-on-click="clearFilters">
-            Clear the filters
-          </button>
-          <button t-elif="canEdit" class="pbim-btn primary" t-on-click="openAdd">
-            Add the first vendor
-          </button>
-        </div>
-
-        <div t-else="" class="pbva-grid">
-          <div t-foreach="rows" t-as="vd" t-key="vd.id"
-               t-attf-class="pbva-card pbva-card--{{vd.state or 'none'}} {{ state.open === vd.id ? 'is-open' : '' }}"
-               t-attf-style="--pbva-i: {{vd_index}}"
-               t-on-click="() => this.openVendor(vd)">
-
-            <div class="pbva-card-h">
-              <div class="pbva-card-ic"><t t-out="ic('briefcase',18)"/></div>
-              <div class="pbva-card-id">
-                <span class="pbva-card-n" t-esc="vd.name"/>
-                <span class="pbva-card-t" t-esc="vd.type_label"/>
-              </div>
-              <span class="pbva-badge" t-esc="vd.state_label"/>
-            </div>
-
-            <div class="pbva-card-body">
-              <div class="pbva-kv">
-                <span><t t-out="ic('user',13)"/></span>
-                <b t-esc="vd.responsible or '—'"/>
-              </div>
-              <div class="pbva-kv" t-if="vd.department">
-                <span><t t-out="ic('building',13)"/></span>
-                <b t-esc="vd.department"/>
-              </div>
-              <div class="pbva-kv" t-if="vd.contact_email">
-                <span><t t-out="ic('mail',13)"/></span>
-                <b t-esc="vd.contact_email"/>
-              </div>
-            </div>
-
-            <div class="pbva-card-f">
-              <span t-if="vd.next_end" class="pbva-when">
-                <t t-out="ic('calendar',13)"/>
-                <t t-esc="'Next agreement ends ' + day(vd.next_end)"/>
-              </span>
-              <span t-else="" class="pbva-when pbva-when--none">
-                <t t-out="ic('fileText',13)"/> Nothing recorded yet
-              </span>
-              <span class="pbva-count"
-                    t-esc="vd.agreements === 1 ? '1 agreement' : vd.agreements + ' agreements'"/>
-            </div>
-          </div>
-        </div>
+        </PbFilterLayout>
       </div>
 
       <!-- ============================ the drawer ============================ -->
@@ -326,7 +311,7 @@
 
           <label class="pbva-lbl">What they do</label>
           <div class="pbva-chips pbva-chips--wrap">
-            <button t-foreach="board.type_options or []" t-as="tp" t-key="tp.key"
+            <button t-foreach="head.type_options or []" t-as="tp" t-key="tp.key"
                     t-attf-class="pbva-chip {{ state.vendor.vendor_type === tp.key ? 'is-on' : '' }}"
                     t-on-click="() => this.setVendorType(tp.key)"
                     t-esc="tp.label"/>

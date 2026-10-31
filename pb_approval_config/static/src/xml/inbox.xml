@@ -54,7 +54,7 @@
           <div class="pbam-empty-ic"><t t-out="ic('alert',30)"/></div>
           <h3>Your approvals could not be read</h3>
           <p t-esc="state.failed"/>
-          <button class="pbim-btn primary" t-on-click="() => this.load()">Try again</button>
+          <button class="pbim-btn primary" t-on-click="() => this.refresh()">Try again</button>
         </div>
 
         <t t-else="">
@@ -86,115 +86,110 @@
             </span>
           </div>
 
-          <div data-coach="ai-tabs" class="pbam-tabs">
-            <button t-foreach="tabs" t-as="tb" t-key="tb.key"
-                    class="pbam-tab" t-att-class="{ 'is-on': state.tab === tb.key }"
-                    t-on-click="() => this.setTab(tb.key)">
-              <span t-esc="tb.label"/>
-              <span class="pbam-count" t-esc="tb.count"/>
-            </button>
-          </div>
+          <!-- ================== the shared filter panel ==================
+               pb_filter_kit. The four tabs are its first four views, in the
+               same words (My turn · All I can see · Sent back · Finished);
+               the Learn anchor data-coach="ai-tabs" is set on that view row
+               by inbox.js, and coach= puts data-coach="pbam-filters" on the
+               panel's bar. The cards are its slot, one page at a time. -->
+          <PbFilterLayout kit="kit" coach="'pbam-filters'" searchPlaceholder="'Search what it is, who sent it in or the kind of request'">
 
-          <div t-if="state.tab === 'mine' and moneyLine" class="pbam-moneyline">
-            <t t-out="ic('banknote',13)"/>
-            <span>
-              <t t-esc="cards.length"/> waiting for you · <t t-esc="moneyLine"/>
-            </span>
-            <span class="pbim-sub">Amounts are never added across currencies.</span>
-          </div>
+            <div t-if="tab === 'mine' and moneyLine" class="pbam-moneyline">
+              <t t-out="ic('banknote',13)"/>
+              <span>
+                <t t-esc="state.total"/> waiting for you · <t t-esc="moneyLine"/>
+              </span>
+              <span class="pbim-sub">Amounts are never added across currencies.</span>
+            </div>
 
-          <div class="pbam-filters">
-            <div class="pbim-chips">
-              <button class="pbim-fchip" t-att-class="{ 'is-on': !state.area }"
-                      t-on-click="() => this.setArea('')">Everything</button>
-              <button t-foreach="data.areas" t-as="ar" t-key="ar.key"
-                      class="pbim-fchip" t-att-class="{ 'is-on': state.area === ar.key }"
-                      t-on-click="() => this.setArea(ar.key)">
-                <t t-out="ic(ar.icon,12)"/> <span t-esc="ar.label"/>
+            <div t-if="!state.listLoaded" class="pbam-reqs pbam-reqs--skel" aria-label="Reading your approvals">
+              <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="pbam-req pbam-req--ghost"/>
+            </div>
+
+            <div t-elif="!cards.length" class="pbim-empty pbam-empty">
+              <div class="pbam-empty-ic">
+                <t t-if="tab" t-out="ic('checkCircle',28)"/>
+                <t t-else="" t-out="ic('search',28)"/>
+              </div>
+              <h3 t-esc="emptyCopy.title"/>
+              <p t-esc="emptyCopy.sub"/>
+              <button t-if="!tab" class="pbim-btn ghost" t-on-click="() => this.showMine()">Back to My turn</button>
+            </div>
+
+            <div t-else="" class="pbam-reqs">
+              <div data-coach="ai-card" t-foreach="cards" t-as="cd" t-key="cd.id"
+                   class="pbam-req"
+                   t-att-class="{ 'is-mine': cd.mine, 'is-dim': cd.state === 'applied' or cd.state === 'approved' }"
+                   t-on-click="() => this.open(cd)">
+                <span class="pbam-icsq"
+                      t-att-class="{ 'pbam-icsq-rose': cd.blocked, 'pbam-icsq-amber': cd.state === 'returned' }">
+                  <t t-out="ic(cd.icon,17)"/>
+                </span>
+                <div class="pbam-reqmain">
+                  <div class="pbam-reqt">
+                    <span t-esc="cd.title"/>
+                    <span t-if="cd.mine" class="pbim-badge pbam-info">Your turn</span>
+                    <span t-elif="cd.blocked" class="pbim-badge pbam-err">Stuck</span>
+                    <span t-elif="cd.state === 'returned'" class="pbim-badge pbam-warn">Sent back</span>
+                    <span t-elif="cd.state === 'applied'" class="pbim-badge pbam-ok">Done</span>
+                    <span t-elif="cd.state === 'approved'" class="pbim-badge pbam-ok">Approved</span>
+                    <span t-elif="cd.state === 'rejected'" class="pbim-badge pbam-err">Turned down</span>
+                    <span t-elif="cd.state === 'cancelled'" class="pbim-badge pbam-muted">Withdrawn</span>
+                    <span t-foreach="cd.badges" t-as="bg" t-key="bg_index"
+                          class="pbim-badge pbam-warn" t-esc="bg"/>
+                  </div>
+                  <div class="pbam-reqs2">
+                    <span t-esc="cd.process"/> · <span t-esc="cd.sub"/> ·
+                    <span class="pbam-lbl">sent in by</span> <span t-esc="cd.submitted_by"/>, <span t-esc="when(cd.submitted_at)"/>
+                  </div>
+                  <div class="pbam-facts">
+                    <span class="pbam-f">
+                      <t t-out="ic('workflow',12)"/> <span t-esc="cd.workflow"/>
+                    </span>
+                    <span t-if="cd.blocked" class="pbam-f pbam-f-bad">
+                      <t t-out="ic('userX',12)"/> <span t-esc="cd.block_reason"/>
+                    </span>
+                    <span t-elif="cd.state === 'returned'" class="pbam-f">
+                      <t t-out="ic('undo',12)"/> <span t-esc="cd.return_note"/>
+                    </span>
+                    <span t-elif="cd.waiting_for" class="pbam-f">
+                      <t t-out="ic('user',12)"/>
+                      <span><span class="pbam-lbl">Waiting for</span> <b t-esc="cd.waiting_for"/></span>
+                    </span>
+                  </div>
+                  <div data-coach="ai-route" class="pbam-rt">
+                    <t t-foreach="cd.route" t-as="st" t-key="st_index">
+                      <span t-if="st_index" class="pbam-rline"/>
+                      <span class="pbam-rdot" t-att-class="'pbam-rdot-' + st.status">
+                        <i/><span t-esc="st.title"/>
+                      </span>
+                    </t>
+                  </div>
+                </div>
+                <div class="pbam-reqright">
+                  <div t-if="cd.amount" class="pbam-amt" t-esc="money(cd.amount, cd.currency)"/>
+                  <!-- How big it is, in the units the thing is counted in, and
+                       what kind of thing it is. Both come off the frozen facts,
+                       so a card never says something the decision was not made
+                       on. -->
+                  <div t-if="cd.count" class="pbam-cnt" t-esc="cd.count"/>
+                  <div t-if="cd.kind" class="pbam-kind" t-esc="cd.kind"/>
+                  <div t-if="cd.due_at" class="pbam-due" t-att-class="{ 'is-late': cd.late }">
+                    <t t-out="ic('clock',11)"/> <span><span class="pbam-lbl">Due</span> <t t-esc="when(cd.due_at)"/></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div t-if="cards.length" class="pbam-foot">
+              Showing <b t-esc="cards.length"/> of <b t-esc="state.total"/>
+              <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore"
+                      t-on-click="() => this.loadMore()">
+                <t t-if="state.loadingMore">Loading…</t>
+                <t t-else="">Show <t t-esc="nextPage"/> more</t>
               </button>
             </div>
-            <div class="pbim-chips">
-              <button class="pbim-fchip" t-att-class="{ 'is-on': state.due === 'today' }"
-                      t-on-click="() => this.setDue('today')">Due today</button>
-              <button class="pbim-fchip" t-att-class="{ 'is-on': state.due === 'late' }"
-                      t-on-click="() => this.setDue('late')">Late</button>
-            </div>
-          </div>
-
-          <div t-if="state.loading" class="pbim-busy">
-            <div class="pbim-spin"/><span>Reading your approvals…</span>
-          </div>
-
-          <div t-elif="!cards.length" class="pbim-empty pbam-empty">
-            <div class="pbam-empty-ic"><t t-out="ic('checkCircle',28)"/></div>
-            <h3 t-esc="emptyCopy.title"/>
-            <p t-esc="emptyCopy.sub"/>
-          </div>
-
-          <div t-else="" class="pbam-reqs">
-            <div data-coach="ai-card" t-foreach="cards" t-as="cd" t-key="cd.id"
-                 class="pbam-req"
-                 t-att-class="{ 'is-mine': cd.mine, 'is-dim': cd.state === 'applied' or cd.state === 'approved' }"
-                 t-on-click="() => this.open(cd)">
-              <span class="pbam-icsq"
-                    t-att-class="{ 'pbam-icsq-rose': cd.blocked, 'pbam-icsq-amber': cd.state === 'returned' }">
-                <t t-out="ic(cd.icon,17)"/>
-              </span>
-              <div class="pbam-reqmain">
-                <div class="pbam-reqt">
-                  <span t-esc="cd.title"/>
-                  <span t-if="cd.mine" class="pbim-badge pbam-info">Your turn</span>
-                  <span t-elif="cd.blocked" class="pbim-badge pbam-err">Stuck</span>
-                  <span t-elif="cd.state === 'returned'" class="pbim-badge pbam-warn">Sent back</span>
-                  <span t-elif="cd.state === 'applied'" class="pbim-badge pbam-ok">Done</span>
-                  <span t-elif="cd.state === 'approved'" class="pbim-badge pbam-ok">Approved</span>
-                  <span t-elif="cd.state === 'rejected'" class="pbim-badge pbam-err">Turned down</span>
-                  <span t-elif="cd.state === 'cancelled'" class="pbim-badge pbam-muted">Withdrawn</span>
-                  <span t-foreach="cd.badges" t-as="bg" t-key="bg_index"
-                        class="pbim-badge pbam-warn" t-esc="bg"/>
-                </div>
-                <div class="pbam-reqs2">
-                  <span t-esc="cd.process"/> · <span t-esc="cd.sub"/> ·
-                  <span class="pbam-lbl">sent in by</span> <span t-esc="cd.submitted_by"/>, <span t-esc="when(cd.submitted_at)"/>
-                </div>
-                <div class="pbam-facts">
-                  <span class="pbam-f">
-                    <t t-out="ic('workflow',12)"/> <span t-esc="cd.workflow"/>
-                  </span>
-                  <span t-if="cd.blocked" class="pbam-f pbam-f-bad">
-                    <t t-out="ic('userX',12)"/> <span t-esc="cd.block_reason"/>
-                  </span>
-                  <span t-elif="cd.state === 'returned'" class="pbam-f">
-                    <t t-out="ic('undo',12)"/> <span t-esc="cd.return_note"/>
-                  </span>
-                  <span t-elif="cd.waiting_for" class="pbam-f">
-                    <t t-out="ic('user',12)"/>
-                    <span><span class="pbam-lbl">Waiting for</span> <b t-esc="cd.waiting_for"/></span>
-                  </span>
-                </div>
-                <div data-coach="ai-route" class="pbam-rt">
-                  <t t-foreach="cd.route" t-as="st" t-key="st_index">
-                    <span t-if="st_index" class="pbam-rline"/>
-                    <span class="pbam-rdot" t-att-class="'pbam-rdot-' + st.status">
-                      <i/><span t-esc="st.title"/>
-                    </span>
-                  </t>
-                </div>
-              </div>
-              <div class="pbam-reqright">
-                <div t-if="cd.amount" class="pbam-amt" t-esc="money(cd.amount, cd.currency)"/>
-                <!-- How big it is, in the units the thing is counted in, and
-                     what kind of thing it is. Both come off the frozen facts,
-                     so a card never says something the decision was not made
-                     on. -->
-                <div t-if="cd.count" class="pbam-cnt" t-esc="cd.count"/>
-                <div t-if="cd.kind" class="pbam-kind" t-esc="cd.kind"/>
-                <div t-if="cd.due_at" class="pbam-due" t-att-class="{ 'is-late': cd.late }">
-                  <t t-out="ic('clock',11)"/> <span><span class="pbam-lbl">Due</span> <t t-esc="when(cd.due_at)"/></span>
-                </div>
-              </div>
-            </div>
-          </div>
+          </PbFilterLayout>
         </t>
       </div>
 

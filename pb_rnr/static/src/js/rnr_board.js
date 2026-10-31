@@ -27,9 +27,21 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+const PAGE = 60;
+// The strip's four steps as filters on the panel's "Where it is" section.
+const STEP_FILTERS = {
+    draft: { step: ["draft"] },
+    submitted: { step: ["submitted"] },
+    manager: { step: ["manager"] },
+    decided: { step: ["done", "refused"] },
+};
 
 export class PbRnrBoard extends Component {
     static template = "pb_rnr.PbRnrBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -44,6 +56,11 @@ export class PbRnrBoard extends Component {
             canWrite: false,
             canReview: false,
             rows: [],
+            total: 0,
+            stepCounts: {},
+            listLoaded: false,
+            loadingMore: false,
+            quarterStart: "",
             kpis: {},
             values: [],
             cycles: [],
@@ -52,12 +69,6 @@ export class PbRnrBoard extends Component {
             celebrationTotal: 0,
             switches: {},
             currency: "",
-            capped: false,
-
-            // filters
-            q: "",
-            stateFilter: "all",
-            valueFilter: 0,
 
             // the new-praise dialog
             creating: false,
@@ -85,6 +96,13 @@ export class PbRnrBoard extends Component {
             busy: false,
         });
 
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this board only loads a page for kit.query.
+        this.kit = useFilterKit({
+            model: "pb.rnr",
+            noun: _t("stories"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
@@ -92,14 +110,14 @@ export class PbRnrBoard extends Component {
 
     async load() {
         try {
-            const data = await this.orm.call("pb.rnr", "get_board", []);
+            const data = await this.orm.call("pb.rnr", "get_head", []);
             Object.assign(this.state, {
                 allowed: data.allowed,
                 why: data.why || "",
                 canWrite: data.can_write,
                 canReview: data.can_review,
-                rows: data.rows || [],
                 kpis: data.kpis || {},
+                quarterStart: data.quarter_start || "",
                 values: data.values || [],
                 cycles: data.cycles || [],
                 states: data.states || [],
@@ -107,7 +125,6 @@ export class PbRnrBoard extends Component {
                 celebrationTotal: data.celebration_total || 0,
                 switches: data.switches || {},
                 currency: data.currency || "",
-                capped: data.capped,
             });
         } catch (e) {
             console.warn("pb_rnr: the recognition board could not be read", e);
@@ -118,34 +135,60 @@ export class PbRnrBoard extends Component {
         }
     }
 
-    async refresh() { await this.load(); }
-
-    // ------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            const f = this.state.stateFilter;
-            if (f !== "all" && f !== r.state && f !== this.stepOf(r)) { return false; }
-            if (this.state.valueFilter
-                && r.value_id !== this.state.valueFilter) { return false; }
-            if (!q) { return true; }
-            return (r.nominee || "").toLowerCase().includes(q)
-                || (r.nominator || "").toLowerCase().includes(q)
-                || (r.story || "").toLowerCase().includes(q);
-        });
+    /** One page of stories for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.rnr", "get_praise_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.total = d.total;
+            if (!more) { this.state.stepCounts = d.steps || {}; }
+            this.state.listLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                console.warn("pb_rnr: the stories could not be listed", e);
+                this.notif.add(_t("The stories could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
     }
 
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setValueFilter(id) {
-        this.state.valueFilter = this.state.valueFilter === id ? 0 : id;
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.rows.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    /** The numbers, the counts and the list, in place. */
+    async refresh() {
+        await Promise.all([this.load(), this.kit.refresh()]);
+    }
+
+    get visibleRows() { return this.state.rows; }
+
+    get filtered() {
+        return Boolean(this.kit.activeCount || this.kit.search);
     }
 
     // ------------------------------------------------ the quiet board
     //
     // The Hiring look: one slim line of numbers and a numbered strip of the
-    // steps a story moves through. A story is at EXACTLY one step (stepOf):
-    // "Decided" holds both what was agreed and what was turned down, so the
-    // four counts add up to the whole board.
+    // steps a story moves through. A story is at EXACTLY one step: "Decided"
+    // holds both what was agreed and what was turned down. The step counts
+    // follow the panel's other filters (counted on the server); pressing a
+    // step ticks it in the panel's "Where it is" section.
     get stepDefs() {
         return [
             { key: "draft", title: _t("Being written") },
@@ -155,68 +198,80 @@ export class PbRnrBoard extends Component {
         ];
     }
 
-    stepOf(r) {
-        if (r.state === "done" || r.state === "refused") { return "decided"; }
-        return r.state || "draft";
-    }
-
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
+        const lit = this.litStep;
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.stepOf(r) === st.key);
-            const refused = st.key === "decided"
-                ? at.filter((r) => r.state === "refused").length : 0;
+            const count = counts[st.key] || 0;
             return {
                 ...st,
                 n: String(i + 1).padStart(2, "0"),
-                count: at.length,
-                countLabel: at.length === 1 ? _t("1 story") : _t("%s stories", at.length),
-                sub: refused ? _t("%s not this time", refused) : "",
+                count,
+                countLabel: count === 1 ? _t("1 story") : _t("%s stories", count),
+                sub: "",
                 flag: "",
-                on: this.state.stateFilter === st.key,
+                on: lit === st.key,
             };
         });
     }
 
+    /** The step whose filter is exactly the panel's "Where it is" state. */
+    get litStep() {
+        const cur = this.kit.values("step").map(String).sort().join(",");
+        for (const [key, f] of Object.entries(STEP_FILTERS)) {
+            if ([...f.step].sort().join(",") === cur) { return key; }
+        }
+        return "";
+    }
+
     pickStep(key) {
-        this.state.stateFilter = this.state.stateFilter === key ? "all" : key;
+        const f = STEP_FILTERS[key];
+        if (!f) { return; }
+        if (this.litStep === key) {
+            const next = { ...this.kit.filters };
+            delete next.step;
+            this.kit.setFilters(next, { search: this.kit.search });
+        } else {
+            this.kit.setFilters({ ...this.kit.filters, step: [...f.step] }, { search: this.kit.search });
+        }
+    }
+
+    get glanceFilters() {
+        return {
+            month: { written: { preset: "this_month" } },
+            submitted: { step: ["submitted"] },
+            manager: { step: ["manager"] },
+            refused: { step: ["refused"] },
+            awarded: this.state.quarterStart
+                ? { outcome: ["awarded"], decided: { from: this.state.quarterStart } }
+                : null,
+        };
     }
 
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
+        const f = this.glanceFilters;
+        const pick = (id) => (f[id] ? () => this.kit.toggleFilters(f[id]) : null);
         return [
-            { key: "month", n: k.this_month || 0, label: _t("Written this month"), tone: "", run: null },
-            { key: "submitted", n: k.with_manager || 0, label: _t("Waiting on a manager"), tone: tone(k.with_manager, "amber"), run: () => this.pickStep("submitted") },
-            { key: "manager", n: k.with_hr || 0, label: _t("Waiting on HR"), tone: tone(k.with_hr, "amber"), run: () => this.pickStep("manager") },
-            { key: "refused", n: this.state.rows.filter((r) => r.state === "refused").length, label: _t("Not this time"), tone: "", run: () => this.pickStep("refused") },
-            { key: "awarded", n: k.awarded_qtd || 0, label: _t("Given money this quarter"), tone: tone(k.awarded_qtd, "green"), run: null },
+            { key: "month", n: k.this_month || 0, label: _t("Written this month"), tone: "", run: pick("month") },
+            { key: "submitted", n: k.with_manager || 0, label: _t("Waiting on a manager"), tone: tone(k.with_manager, "amber"), run: pick("submitted") },
+            { key: "manager", n: k.with_hr || 0, label: _t("Waiting on HR"), tone: tone(k.with_hr, "amber"), run: pick("manager") },
+            { key: "refused", n: k.refused || 0, label: _t("Not this time"), tone: "", run: pick("refused") },
+            { key: "awarded", n: k.awarded_qtd || 0, label: _t("Given money this quarter"), tone: tone(k.awarded_qtd, "green"), run: pick("awarded") },
         ];
     }
 
-    /** ONE expression per sentence, so the whitespace survives (R34). */
-    get showingLine() {
-        const shown = this.visibleRows.length;
-        const all = this.state.rows.length;
-        const f = this.state.stateFilter;
-        const st = this.stepDefs.find((x) => x.key === f);
-        const filtered = f !== "all" || this.state.valueFilter || (this.state.q || "").trim();
-        if (!filtered) {
-            return { all: true, text: !all ? _t("No stories yet")
-                : all === 1 ? _t("Showing the 1 story · press a step or a number to narrow it")
-                : _t("Showing all %s stories · press a step or a number to narrow it", all) };
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.glanceFilters)) {
+            if (f && this.kit.isExactly(f)) { return key; }
         }
-        const where = st ? st.title : f === "refused" ? _t("Not this time") : "";
-        return { all: false, text: where
-            ? _t("Showing %s of %s stories at %s", shown, all, where)
-            : _t("Showing %s of %s stories", shown, all) };
+        return "";
     }
 
-    showAll() {
-        this.state.stateFilter = "all";
-        this.state.valueFilter = 0;
-        this.state.q = "";
-    }
+    showAll() { this.kit.toggleFilters({}); }
 
     /** What the switches are, said in words rather than as a row of dots. */
     get switchLine() {
@@ -303,7 +358,7 @@ export class PbRnrBoard extends Component {
                 public: d.public,
             }]);
             this.state.creating = false;
-            await this.load();
+            await this.refresh();
             this.notif.add(_t("Sent. It has gone to their manager."),
                            { type: "success" });
         } catch (e) {
@@ -362,7 +417,7 @@ export class PbRnrBoard extends Component {
         try {
             await fn();
             this.state.reviewing = null;
-            await this.load();
+            await this.refresh();
             this.notif.add(ok, { type: "success" });
         } catch (e) {
             this.notif.add(this._msg(e, _t("That could not be done.")),
@@ -466,7 +521,7 @@ export class PbRnrBoard extends Component {
                 "pb.rnr", "pick_winners", [cycle.id, this.pickList]);
             this.state.rolling = false;
             this.state.confirming = false;
-            await this.load();
+            await this.refresh();
             this.notif.add(res.msg || _t("Done."), { type: "success" });
         } catch (e) {
             this.notif.add(this._msg(e, _t("Nothing was recorded.")),
@@ -520,7 +575,7 @@ export class PbRnrBoard extends Component {
                 ? _t("%s congratulated today.", today.sent || 0)
                 : _t("Congratulations are switched off. %s would have been sent today.", today.would || 0);
             this.notif.add(msg, { type: "info" });
-            await this.load();
+            await this.refresh();
         } catch (e) {
             this.notif.add(this._msg(e, _t("That could not be run.")),
                            { type: "danger" });

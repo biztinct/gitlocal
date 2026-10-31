@@ -17,7 +17,7 @@ import io
 import logging
 import re
 import unicodedata
-from datetime import date
+from datetime import date, timedelta
 
 from odoo import api, models, _
 from odoo.exceptions import AccessError, UserError
@@ -51,9 +51,21 @@ def _initials(name):
             + (parts[-1][0] if len(parts) > 1 else '')).upper()
 
 
+#: Rows per page on the filtered register ("Show N more" brings the next).
+PAGE_SIZE = 60
+#: "Select everything matching" stops here and says so.
+MATCH_CAP = 2000
+#: Sections whose values are people: counted as the reader, NAMED as the
+#: system, the way the rows read `current_employee_id.name`.
+SUDO_LABELS = ('holder', 'department')
+
+
 class PbAssetsBoard(models.AbstractModel):
     _name = 'pb.assets'
     _description = 'Payobook Assets cockpit data'
+    # The shared filter panel (pb_filter_kit, FILTER wave 4). No sudo in a
+    # read, here as everywhere in this facade: every count is the reader's.
+    _inherit = ['pb.filter.mixin']
 
     # ------------------------------------------------------------------ gates
     @api.model
@@ -166,6 +178,188 @@ class PbAssetsBoard(models.AbstractModel):
                        for k, v in ASSET_STATES],
             'requests': self._safe(self._request_digest, default={}),
         }
+
+    # ------------------------------------------------------- the filter panel
+    # The register used to load the newest 400 items and filter them in the
+    # browser, so a chip could count items the table did not hold. The panel
+    # now counts on the server over the whole register and the table comes
+    # one page at a time. `get_board` still answers everything else on the
+    # screen (numbers, categories, the Requests segment).
+
+    def _pbf_model(self):
+        return 'pb.asset'
+
+    def _pbf_screen(self):
+        return 'assets'
+
+    def _pbf_base_domain(self):
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        return ['|', ('company_id', '=', False), ('company_id', 'in', co_ids)]
+
+    def _pbf_search_fields(self):
+        return ['code', 'name', 'serial', 'model_name', 'category_id.name',
+                'current_employee_id.name']
+
+    def _pbf_layout_extra(self):
+        return {'currency': self.env.company.currency_id.symbol or ''}
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Newest code first'), 'order': 'code desc, id desc'},
+            {'key': 'oldest', 'label': _('Oldest code first'), 'order': 'code asc, id asc'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+            {'key': 'warranty', 'label': _('Warranty ending soonest'),
+             'order': 'warranty_end asc nulls last, code desc'},
+            {'key': 'cost', 'label': _('Most expensive first'),
+             'order': 'cost desc nulls last, code desc'},
+        ]
+
+    @api.model
+    def _warranty_soon(self):
+        """The same 60 days the "Warranty ending" badge uses."""
+        today = date.today()
+        return {'from': today.isoformat(),
+                'to': (today + timedelta(days=60)).isoformat()}
+
+    def _pbf_spec(self):
+        return [
+            # ---- pinned: where it is, physical or an account, what it is
+            # (the label is the generic one; a digital row's own wording,
+            # "Active" / "Available", stays on the row itself)
+            {'key': 'status', 'label': _('Status'), 'icon': 'activity',
+             'group': 'other', 'type': 'selection', 'path': 'state', 'pinned': True},
+            {'key': 'kind', 'label': _('Physical or account'), 'icon': 'package',
+             'group': 'other', 'type': 'selection', 'path': 'kind', 'pinned': True},
+            {'key': 'category', 'label': _('Category'), 'icon': 'layers',
+             'group': 'other', 'type': 'many2one', 'path': 'category_id', 'pinned': True},
+            # ---- more filters
+            {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+             'group': 'work', 'type': 'many2one', 'path': 'country_id'},
+            {'key': 'holder', 'label': _('Who has it'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'current_employee_id',
+             'none_label': _('Nobody has it')},
+            {'key': 'department', 'label': _('Their department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one',
+             'path': 'current_employee_id.department_id',
+             'none_label': _('No department')},
+            {'key': 'warranty', 'label': _('Warranty ends'), 'icon': 'shieldCheck',
+             'group': 'dates', 'type': 'date', 'path': 'warranty_end',
+             'presets': 'future', 'none_label': _('No warranty date')},
+            {'key': 'bought', 'label': _('Bought on'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'purchase_date',
+             'presets': 'past', 'none_label': _('Not recorded')},
+            {'key': 'arrived', 'label': _('Arrived on'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'delivery_date',
+             'presets': 'past', 'none_label': _('Not recorded')},
+            {'key': 'cost', 'label': _('Cost'), 'icon': 'banknote',
+             'group': 'pay', 'type': 'number', 'path': 'cost', 'unit': 'money'},
+            {'key': 'reused', 'label': _('Passed on'), 'icon': 'refresh',
+             'group': 'other', 'type': 'choice',
+             'options': [
+                 {'value': 'yes', 'label': _('Used by somebody before'), 'tone': 'amber',
+                  'domain': [('is_reused', '=', True)]},
+                 {'value': 'no', 'label': _('First owner'), 'tone': 'green',
+                  'domain': [('is_reused', '=', False)]},
+             ]},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'company_id',
+             'none_label': _('Every company')},
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All items'), 'icon': 'package', 'filters': {}},
+            {'key': 'spare', 'label': _('Spare physical'),
+             'filters': {'status': ['spare'], 'kind': ['tangible']}},
+            {'key': 'out', 'label': _('Out with people'),
+             'filters': {'status': ['assigned'], 'kind': ['tangible']}},
+            {'key': 'repair', 'label': _('Under repair'),
+             'filters': {'status': ['repair']}},
+            {'key': 'warranty', 'label': _('Warranty ending in 60 days'),
+             'filters': {'warranty': self._warranty_soon()}},
+            {'key': 'off', 'label': _('Switched-off accounts'),
+             'filters': {'status': ['deactivated']}},
+        ]
+
+    @api.model
+    def _pbf_list_values(self, s, domain, selected=None):
+        """People: counted as the reader, named as the system."""
+        if s.get('key') not in SUDO_LABELS or s.get('type') != 'many2one':
+            return super()._pbf_list_values(s, domain, selected)
+        none_label = s.get('none_label') or _('Not set')
+        rows = []
+        for value, count in self._pbf_records()._read_group(domain, [s['path']], ['__count']):
+            rows.append({'v': value.id if value else False,
+                         'label': (value.sudo().display_name or none_label) if value else none_label,
+                         'n': count})
+        rows.sort(key=lambda r: (r['v'] is False, -r['n'], (r['label'] or '').lower()))
+        more = len(rows) > 300
+        rows = rows[:300]
+        have = {r['v'] for r in rows}
+        missing = [v for v in (selected or []) if v not in have]
+        if missing:
+            rows.extend(self._pbf_label_values(s, missing))
+        return rows, more
+
+    @api.model
+    def _pbf_label_values(self, s, values):
+        if s.get('key') in SUDO_LABELS:
+            return super(PbAssetsBoard, self.sudo())._pbf_label_values(s, values)
+        return super()._pbf_label_values(s, values)
+
+    @api.model
+    def pbf_layout(self):
+        if not self._can_read():
+            return {'refused': _("The asset register is looked after by the HR "
+                                 "and IT team. Ask them for access.")}
+        return super().pbf_layout()
+
+    @api.model
+    def pbf_counts(self, filters=None, search=None, keys=None):
+        self._require_read()
+        return super().pbf_counts(filters=filters, search=search, keys=keys)
+
+    @api.model
+    def pbf_find_values(self, key, query, filters=None, search=None):
+        self._require_read()
+        return super().pbf_find_values(key, query, filters=filters, search=search)
+
+    @api.model
+    def get_asset_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=PAGE_SIZE):
+        """One page of the register for the panel's state."""
+        self._require_read()
+        Asset = self.env['pb.asset']
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        domain = self.pbf_domain(filters or {}, search)
+        assets = Asset.search(domain, order=self.pbf_order(sort) or 'code desc, id desc',
+                              offset=offset, limit=limit)
+        rows = []
+        for asset in assets:
+            try:
+                rows.append(self._asset_row(asset))
+            except Exception:       # noqa: BLE001 — one bad row never blanks the table
+                _logger.exception('Assets page row for asset %s', asset.id)
+        return {'rows': rows, 'total': Asset.search_count(domain), 'offset': offset}
+
+    @api.model
+    def matching_ids(self, filters=None, search=None):
+        """"Select everything matching": every item the panel's state finds,
+        not just the page on screen (R6), with each one's kind so the bulk
+        bar can offer only what all of them can take. Capped, and says so."""
+        self._require_read()
+        found = self.env['pb.asset'].search_read(
+            self.pbf_domain(filters or {}, search), ['kind'],
+            order='code desc, id desc', limit=MATCH_CAP + 1)
+        capped = len(found) > MATCH_CAP
+        found = found[:MATCH_CAP]
+        return {'ids': [r['id'] for r in found],
+                'kinds': {str(r['id']): r['kind'] or 'tangible' for r in found},
+                'capped': capped, 'cap': MATCH_CAP}
 
     @api.model
     def _leavers_holding(self):
@@ -514,7 +708,7 @@ class PbAssetsBoard(models.AbstractModel):
 
     @api.model
     def export(self, kind='inventory', employee_id=None, country_id=None,
-               asset_ids=None):
+               asset_ids=None, filters=None, search=None):
         """The register as a spreadsheet.
 
         Four cuts, all scoped exactly as the board is: a file can never hold a
@@ -542,6 +736,9 @@ class PbAssetsBoard(models.AbstractModel):
             title, headers, rows = self._export_employee(CO, employee_id)
         else:
             domain = list(CO)
+            if filters or (search or '').strip():
+                # the filter panel's whole set, every page of it (R6)
+                domain = list(self.pbf_domain(filters or {}, search))
             if country_id:
                 domain.append(('country_id', '=', int(country_id)))
             if asset_ids:

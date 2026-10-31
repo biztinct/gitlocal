@@ -84,6 +84,8 @@ msgstr "Chưa có yêu cầu nào"
 
 #. module: pb_assets
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
 #: code:addons/pb_assets/static/src/js/assets_board.js:0
 msgid "Out with people"
 msgstr "Đang giao cho nhân viên"
@@ -108,13 +110,19 @@ msgstr "Đang hiển thị 1 yêu cầu · bấm một bước để thu hẹp"
 
 #. module: pb_assets
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/asset_request_approval.py:0
 #: code:addons/pb_assets/static/src/js/assets_board.js:0
 msgid "Spare in the cupboard"
 msgstr "Còn dự phòng trong kho"
 
 #. module: pb_assets
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
 #: code:addons/pb_assets/static/src/js/assets_board.js:0
+#: model:ir.model.fields.selection,name:pb_assets.selection__pb_asset__state__repair
+#: model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_search
 msgid "Under repair"
 msgstr "Đang sửa chữa"
 
@@ -153,3 +161,402 @@ msgstr "Yêu cầu tài sản"
 #: code:addons/pb_assets/static/src/js/assets_palette.js:0
 msgid "Asset categories"
 msgstr "Nhóm tài sản"
+
+# ===================================================================
+#  FILTER wave 4 (2026-10-31): the shared filter panel.
+# ===================================================================
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Add the first item"
+msgstr "Thêm tài sản đầu tiên"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "All"
+msgstr "Đã chọn tất cả"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "All items"
+msgstr "Tất cả tài sản"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__delivery_date
+msgid "Arrived on"
+msgstr "Ngày nhận hàng"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Ask the asset team to add one."
+msgstr "Hãy nhờ nhóm quản lý tài sản thêm một tài sản."
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__purchase_date
+msgid "Bought on"
+msgstr "Ngày mua"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__category_id model:ir.model.fields,field_description:pb_assets.field_pb_asset_category__name model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_category_form model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_request_search model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_search
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Clear the selection"
+msgstr "Bỏ chọn"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__company_id model:ir.model.fields,field_description:pb_assets.field_pb_asset_assignment__company_id model:ir.model.fields,field_description:pb_assets.field_pb_asset_category__company_id model:ir.model.fields,field_description:pb_assets.field_pb_asset_request__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__cost
+msgid "Cost"
+msgstr "Giá"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/asset_request_approval.py:0 code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__country_id model:ir.model.fields,field_description:pb_assets.field_pb_asset_request__country_id model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_search
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Every company"
+msgstr "Mọi công ty"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "First owner"
+msgstr "Người dùng đầu tiên"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/asset_assignment.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset_assignment__asset_id
+msgid "Item"
+msgstr "Tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Loading the register"
+msgstr "Đang tải sổ tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Most expensive first"
+msgstr "Đắt nhất trước"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Newest code first"
+msgstr "Mã mới nhất trước"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "No item matches these filters"
+msgstr "Không có tài sản nào khớp với các bộ lọc này"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 model:ir.model.fields.selection,name:pb_assets.selection__pb_asset__warranty_state__none
+msgid "No warranty date"
+msgstr "Chưa có ngày bảo hành"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Nobody has it"
+msgstr "Không ai giữ"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Nothing on the register matches “"
+msgstr "Không có tài sản nào khớp với “"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Oldest code first"
+msgstr "Mã cũ nhất trước"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields.selection,name:pb_assets.selection__pb_asset__warranty_state__over
+msgid "Out of warranty"
+msgstr "Hết bảo hành"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__is_reused
+msgid "Passed on"
+msgstr "Đã qua tay người khác"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Physical or account"
+msgstr "Vật dụng hay tài khoản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid ""
+"Put the first laptop in and Payobook gives it a code, remembers\n"
+"                   who has it and reminds the leaving checklist to ask for it back.\n"
+"                   Accounts and licences go in here too — they are switched off\n"
+"                   rather than handed back."
+msgstr "Thêm chiếc máy tính xách tay đầu tiên và Payobook sẽ cấp mã, ghi nhớ ai đang giữ và nhắc danh sách nghỉ việc thu hồi lại. Tài khoản và giấy phép phần mềm cũng được ghi ở đây — chúng được tắt đi thay vì trả lại."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid ""
+"Put the first laptop in and Payobook gives it a code, remembers\n"
+"                 who has it and reminds the leaving checklist to ask for it back.\n"
+"                 Accounts and licences go in here too — they are switched off\n"
+"                 rather than handed back."
+msgstr "Thêm chiếc máy tính xách tay đầu tiên và Payobook sẽ cấp mã, ghi nhớ ai đang giữ và nhắc danh sách nghỉ việc thu hồi lại. Tài khoản và giấy phép phần mềm cũng được ghi ở đây — chúng được tắt đi thay vì trả lại."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Remove a filter above, or start again from the whole register."
+msgstr "Bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại từ toàn bộ sổ tài sản."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Search by code, name, serial or person…"
+msgstr "Tìm theo mã, tên, số sê-ri hoặc người giữ…"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Select every item on this page"
+msgstr "Chọn mọi tài sản trên trang này"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Select everything matching ("
+msgstr "Chọn tất cả tài sản khớp ("
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Show every item"
+msgstr "Hiện tất cả tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Spare physical"
+msgstr "Vật dụng còn dư"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__state model:ir.model.fields,field_description:pb_assets.field_pb_asset_assignment__state model:ir.model.fields,field_description:pb_assets.field_pb_asset_request__state model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_request_search model_terms:ir.ui.view,arch_db:pb_assets.view_pb_asset_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Switched-off accounts"
+msgstr "Tài khoản đã tắt"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "The"
+msgstr "Đã chọn"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "The asset register is looked after by the HR and IT team. Ask them for access."
+msgstr "Sổ tài sản do bộ phận nhân sự và IT quản lý. Hãy liên hệ họ để được cấp quyền."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "The first"
+msgstr "Đã chọn"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "The register could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị sổ tài sản. Vui lòng thử lại sau giây lát."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "The register is empty"
+msgstr "Sổ tài sản đang trống"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Their department"
+msgstr "Phòng ban của họ"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Used by somebody before"
+msgstr "Đã có người dùng trước"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "Warranty ending"
+msgstr "Sắp hết bảo hành"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Warranty ending in 60 days"
+msgstr "Bảo hành hết trong 60 ngày"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Warranty ending soonest"
+msgstr "Bảo hành sắp hết trước"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__warranty_end
+msgid "Warranty ends"
+msgstr "Bảo hành hết hạn"
+
+#. module: pb_assets
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0
+msgid "Who has it"
+msgstr "Ai đang giữ"
+
+#. module: pb_assets
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_assets/models/pb_assets_board.py:0 code:addons/pb_assets/static/src/xml/assets_board.xml:0 model:ir.model.fields,field_description:pb_assets.field_pb_asset__current_employee_id
+msgid "With"
+msgstr "Người giữ"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/js/assets_board.js:0
+msgid "items"
+msgstr "tài sản"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "items on this page are selected."
+msgstr "tài sản trên trang này."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "matching items are selected."
+msgstr "tài sản khớp."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "matching items are selected. Narrow the filters to reach the rest."
+msgstr "tài sản khớp đầu tiên. Hãy thu hẹp bộ lọc để chọn phần còn lại."
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "· every page"
+msgstr "· tất cả các trang"
+
+#. module: pb_assets
+#. odoo-javascript
+#: code:addons/pb_assets/static/src/xml/assets_board.xml:0
+msgid "”. Check the spelling, or search by code, serial or person."
+msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo mã, số sê-ri hoặc người giữ."

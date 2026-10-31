@@ -24,14 +24,16 @@ Closed, cards, word filters, Take it / Hand to / Close with a note, one card
 or several) read as the user through `pb.ask.hr`. The native kanban, list and
 form stay as the off-menu fallback; a card opens the form.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': ['pb_me_portal', 'hr', 'mail', 'portal',
                 # NAV P2: Ask HR is a tab of Home (the HOME_LENSES registry)
-                'pb_home_hub'],
+                'pb_home_hub',
+                # FILTER wave 4: the shared filter panel on the Ask HR board
+                'pb_filter_kit'],
     'data': [
         'security/ir.model.access.csv',
         'security/pb_ask_hr_security.xml',

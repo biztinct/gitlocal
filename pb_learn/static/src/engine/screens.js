@@ -526,6 +526,16 @@ export const SCREENS = {
                 <button aria-pressed="false">${esc(tx(B("Everyone", "Tất cả mọi người")))}</button>
             </div>
             <div class="lrn-tabs" data-coach="ai-tabs">${tabs}</div>
+            <!-- FILTER wave 4 (2026-10-31): the four tabs are the first views
+                 of the shared filter panel; after them come My turn today,
+                 Late, Sent back to me, Finished this month and Pay area
+                 waiting, then the Filters button and the search. -->
+            <div class="lrn-strip" data-coach="pbam-filters">
+                <span class="lrn-chip">${esc(tx(B("Late", "Trễ hạn")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Pay area waiting", "Mảng lương đang chờ")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search what it is, who sent it in or the kind of request", "Tìm theo nội dung, người gửi hoặc loại yêu cầu")))}</span>
+            </div>
             <p class="lrn-note lrn-moneyline"><b>${esc(moneyLine)}</b>${SP}${esc(tx(B(
                 "Amounts are never added across currencies.",
                 "Số tiền không bao giờ được cộng chung giữa các loại tiền.")))}</p>
@@ -2993,9 +3003,16 @@ export const SCREENS = {
         return `
             ${quietNums(nums, ATTR_AH_NUMS)}
             <div class="lrn-steps" data-coach="ah-steps">${stepButtons(a.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 0 })), B("questions", "câu hỏi"))}</div>
-            <div class="lrn-strip">
-                <span class="lrn-chip">${esc(tx(B("Mine", "Của tôi")))}</span>
+            <!-- FILTER wave 4 (2026-10-31): the shared filter panel. View tabs
+                 (Open questions, Nobody has it yet, Mine…), the Filters button
+                 that opens the left panel, and the search. The steps above
+                 still pick a step. -->
+            <div class="lrn-strip" data-coach="ah-filters">
+                <span class="lrn-chip b">${esc(tx(B("Open questions", "Câu hỏi đang mở")))}</span>
                 <span class="lrn-chip a">${esc(tx(B("Nobody has it yet", "Chưa ai nhận")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Mine", "Của tôi")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a number, a name or a word", "Tìm số, tên hoặc một từ")))}</span>
             </div>
             <div class="lrn-yroles">${cards}</div>`;
     },

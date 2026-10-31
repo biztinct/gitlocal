@@ -59,9 +59,28 @@ def _clip(text, size=MAX_TEXT):
     return (text or '')[:size]
 
 
+#: Cards per page on the filtered inbox ("Show N more" brings the next).
+PAGE_SIZE = 60
+
+#: The three piles, as states. A request that was never sent in is in none.
+PILES = {
+    'waiting': ('pending', 'blocked'),
+    'returned': ('returned',),
+    'done': ('approved', 'applied', 'rejected', 'cancelled'),
+}
+LISTED_STATES = tuple(s for states in PILES.values() for s in states)
+
+
 class PbApprovalInbox(models.AbstractModel):
     _name = 'pb.approval.inbox'
     _description = 'Approvals inbox data'
+    # The shared filter panel (pb_filter_kit, FILTER wave 4). Mine / My team /
+    # Everyone stays the screen's own control above the panel and rides on
+    # every panel call as `pbf_ctx.scope`: the panel then counts with exactly
+    # the model `_scoped` reads that queue with (the reader's own rights for
+    # "Mine", the gated `sudo()` read for the two wider queues, with their
+    # company and team boundary written into the base domain).
+    _inherit = ['pb.filter.mixin']
 
     # ================================================================= gates
     @api.model
@@ -172,6 +191,209 @@ class PbApprovalInbox(models.AbstractModel):
             return Request.sudo(), [
                 ('company_id', 'in', self._my_company_ids())]
         return Request, []
+
+    # ====================================================== the filter panel
+    # The inbox used to read 120 cards for one tab and drop the ones that were
+    # not "mine" in Python, so a tab could hold fewer cards than its number
+    # and the 121st request was unreachable. The four tabs are now the panel's
+    # first four views (same words: the lessons and PayAI's doors use them),
+    # "my turn" is a filter answered in one read, and the cards come one page
+    # at a time. `list_requests` stays as it was for anything else that reads
+    # it (R4).
+
+    @api.model
+    def _pbf_scope(self):
+        scope = self._pbf_ctx().get('scope')
+        scope = scope if scope in SCOPES else 'me'
+        if scope == 'org' and not self._can_org():
+            scope = 'me'
+        return scope
+
+    def _pbf_model(self):
+        return 'biz.approval.request'
+
+    def _pbf_screen(self):
+        return 'approvals'
+
+    def _pbf_records(self):
+        return self._scoped(self._pbf_scope())[0]
+
+    def _pbf_base_domain(self):
+        return list(self._scoped(self._pbf_scope())[1]) + [
+            ('state', 'in', LISTED_STATES)]
+
+    def _pbf_search_fields(self):
+        return ['title', 'process_id.name', 'submitter_uid.name', 'scope_label']
+
+    def _pbf_layout_extra(self):
+        return {'currency': ''}
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Newest sent in first'),
+             'order': 'submitted_at desc, id desc'},
+            {'key': 'oldest', 'label': _('Oldest sent in first'),
+             'order': 'submitted_at asc, id asc'},
+            {'key': 'due', 'label': _('Due soonest'),
+             'order': 'due_at asc nulls last, submitted_at desc, id desc'},
+            {'key': 'amount', 'label': _('Biggest amount first'),
+             'order': 'amount desc nulls last, submitted_at desc, id desc'},
+        ]
+
+    @api.model
+    def _my_turn_ids(self):
+        """Requests waiting on an open seat of mine on the step that is
+        waiting — `_is_mine`, answered once per request and kept for the
+        rest of this one call (the panel asks it once per count)."""
+        key = ('pb_approval_inbox.my_turn', self.env.uid)
+        cache = self.env.cr.cache
+        if key not in cache:
+            rows = self.env['biz.approval.request'].search([
+                ('state', '=', 'pending'),
+                ('seat_ids.acting_user_id', '=', self.env.uid),
+                ('seat_ids.status', '=', 'open')])
+            cache[key] = [r.id for r in rows if self._is_mine(r)]
+        return cache[key]
+
+    @api.model
+    def _pbf_my_turn(self):
+        return [('id', 'in', self._my_turn_ids())]
+
+    @api.model
+    def _pbf_not_my_turn(self):
+        return [('id', 'not in', self._my_turn_ids())]
+
+    def _pbf_spec(self):
+        now = fields.Datetime.now()
+        end_of_day = fields.Datetime.end_of(now, 'day')
+        open_states = list(PILES['waiting'])
+        return [
+            # ---- pinned: which pile, which part of the business, when due
+            {'key': 'pile', 'label': _('Where it is'), 'icon': 'inbox',
+             'group': 'other', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'waiting', 'label': _('Waiting for a decision'), 'tone': 'amber',
+                  'domain': [('state', 'in', open_states)]},
+                 {'value': 'returned', 'label': _('Sent back'), 'tone': 'rose',
+                  'domain': [('state', 'in', list(PILES['returned']))]},
+                 {'value': 'done', 'label': _('Finished'), 'tone': 'green',
+                  'domain': [('state', 'in', list(PILES['done']))]},
+             ]},
+            {'key': 'area', 'label': _('Part of the business'), 'icon': 'layers',
+             'group': 'other', 'type': 'selection', 'path': 'process_id.area',
+             'pinned': True},
+            {'key': 'due', 'label': _('When it is due'), 'icon': 'clock',
+             'group': 'dates', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'late', 'label': _('Late'), 'tone': 'rose',
+                  'domain': [('state', 'in', open_states), ('due_at', '!=', False),
+                             ('due_at', '<', now)]},
+                 {'value': 'today', 'label': _('Due today'), 'tone': 'amber',
+                  'domain': [('state', 'in', open_states), ('due_at', '>=', now),
+                             ('due_at', '<=', end_of_day)]},
+                 {'value': 'later', 'label': _('Due later'), 'tone': 'blue',
+                  'domain': [('state', 'in', open_states), ('due_at', '>', end_of_day)]},
+                 {'value': 'none', 'label': _('No due date'), 'tone': 'slate',
+                  'domain': [('due_at', '=', False)]},
+             ]},
+            # ---- more filters
+            {'key': 'my_turn', 'label': _('My turn'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'choice',
+             'help': _('A request is your turn when the step that is waiting '
+                       'names you: your own seat, or one you are covering.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Waiting on me'), 'tone': 'blue',
+                  'domain_method': '_pbf_my_turn'},
+                 {'value': 'no', 'label': _('Not my turn'), 'tone': 'slate',
+                  'domain_method': '_pbf_not_my_turn'},
+             ]},
+            {'key': 'process', 'label': _('What kind of request'), 'icon': 'workflow',
+             'group': 'other', 'type': 'many2one', 'path': 'process_id'},
+            {'key': 'sent_by', 'label': _('Sent in by'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'submitter_uid',
+             'none_label': _('Not recorded')},
+            {'key': 'submitted', 'label': _('Sent in'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'submitted_at',
+             'presets': 'past', 'none_label': _('Not recorded')},
+            {'key': 'finished', 'label': _('Finished on'), 'icon': 'checkCircle',
+             'group': 'dates', 'type': 'date', 'path': 'closed_at',
+             'presets': 'past', 'none_label': _('Not finished')},
+            # an amount is filtered, never added: requests are in many currencies
+            {'key': 'amount', 'label': _('Amount'), 'icon': 'banknote',
+             'group': 'pay', 'type': 'number', 'path': 'amount'},
+            {'key': 'currency', 'label': _('Currency'), 'icon': 'coins',
+             'group': 'pay', 'type': 'many2one', 'path': 'currency_id',
+             'none_label': _('No amount')},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'company_id'},
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            # the four tabs, in their own words (42 lessons and PayAI say them)
+            {'key': 'mine', 'label': _('My turn'), 'icon': 'userCheck',
+             'filters': {'my_turn': ['yes']}},
+            {'key': 'all', 'label': _('All I can see'),
+             'filters': {'pile': ['waiting']}},
+            {'key': 'returned', 'label': _('Sent back'),
+             'filters': {'pile': ['returned']}},
+            {'key': 'done', 'label': _('Finished'),
+             'filters': {'pile': ['done']}},
+            # and the questions asked most after them
+            {'key': 'today', 'label': _('My turn today'),
+             'filters': {'my_turn': ['yes'], 'due': ['late', 'today']}},
+            {'key': 'late', 'label': _('Late'), 'filters': {'due': ['late']}},
+            {'key': 'back_to_me', 'label': _('Sent back to me'),
+             'filters': {'pile': ['returned'], 'sent_by': [self.env.uid]}},
+            {'key': 'done_month', 'label': _('Finished this month'),
+             'filters': {'pile': ['done'], 'finished': {'preset': 'this_month'}}},
+            {'key': 'pay', 'label': _('Pay area waiting'),
+             'filters': {'pile': ['waiting'], 'area': ['pay']}},
+        ]
+
+    @api.model
+    def get_inbox_head(self):
+        """Everything above the cards that does not depend on the filters:
+        who may look wider, the areas, the cover notes."""
+        return {
+            'scope': self._pbf_scope(),
+            'scope_label': self._scope_label(self._pbf_scope()),
+            'areas': self._areas(),
+            'can_config': self._can_config(),
+            'can_org': self._can_org(),
+            'has_team': bool(self._my_team_user_ids()),
+            'me': {'id': self.env.uid, 'name': self.env.user.name},
+            'covering_for': self._covering_for(),
+            'covered_by': self._covered_by(),
+        }
+
+    @api.model
+    def get_inbox_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=PAGE_SIZE):
+        """One page of cards for the panel's state, in the queue the context's
+        scope names, and the money waiting on me on it (never added across
+        currencies)."""
+        Request = self._pbf_records()
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        domain = self.pbf_domain(filters or {}, search)
+        rows = Request.search(domain, order=self.pbf_order(sort) or 'submitted_at desc, id desc',
+                              offset=offset, limit=limit)
+        cards = []
+        for row in rows:
+            try:
+                cards.append(self._card(row))
+            except Exception as exc:  # noqa: BLE001 — one bad card never blanks the inbox
+                _logger.warning('Approvals inbox card %s failed: %s', row.id, exc)
+        return {
+            'cards': cards,
+            'total': Request.search_count(domain),
+            'offset': offset,
+            'money': self._money(cards),
+        }
 
     # ============================================================ the cards
     @api.model

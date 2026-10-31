@@ -21,6 +21,10 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+const PAGE = 60;
 
 /** The colour a status wears, everywhere it appears. */
 const TONE = {
@@ -41,6 +45,7 @@ const WARRANTY_LABEL = {
 
 export class PbAssetsBoard extends Component {
     static template = "pb_assets.PbAssetsBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -62,21 +67,23 @@ export class PbAssetsBoard extends Component {
             facets: {},
             requests: {},
             homeCountryId: 0,
-            capped: false,
+
+            // the register the filter panel produced, one page at a time
+            total: 0,
+            listLoaded: false,
+            loadingMore: false,
 
             // what the reader is looking at
             segment: "items",       // items | requests
             reqStep: "",            // the numbered request step being shown
 
-            // filters
-            q: "",
-            kind: "all",
-            status: "all",
-            categoryId: 0,
-            countryId: 0,
-
-            // selection for the bulk bar
+            // selection for the bulk bar: ids, each one's kind, and whether
+            // it is "everything matching" (all pages) rather than ticks
             picked: [],
+            pickedKind: {},
+            pickedAll: false,
+            pickedCapped: false,
+            matching: false,
 
             // the open item
             drawer: null,
@@ -89,6 +96,13 @@ export class PbAssetsBoard extends Component {
             bulk: null,
         });
 
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this board only loads a page for kit.query.
+        this.kit = useFilterKit({
+            model: "pb.assets",
+            noun: _t("items"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
@@ -102,7 +116,6 @@ export class PbAssetsBoard extends Component {
                 allowed: d.allowed,
                 canWrite: d.can_write,
                 kpis: d.kpis || {},
-                rows: d.rows || [],
                 categories: d.categories || [],
                 countries: d.countries || [],
                 countriesAll: d.countries_all || d.countries || [],
@@ -111,7 +124,6 @@ export class PbAssetsBoard extends Component {
                 facets: d.facets || {},
                 requests: d.requests || {},
                 homeCountryId: d.home_country_id || 0,
-                capped: !!d.capped,
                 loaded: true,
             });
         } catch (e) {
@@ -121,71 +133,85 @@ export class PbAssetsBoard extends Component {
         }
     }
 
+    /** One page of the register for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.assets", "get_asset_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.total = d.total;
+            this.state.listLoaded = true;
+            if (!more) {
+                // the filters changed: "everything matching" no longer means
+                // what it meant, and a tick on an item nobody can see is a
+                // bulk change nobody asked for (R6)
+                if (this.state.pickedAll) {
+                    this.clearPicked();
+                } else {
+                    const ids = new Set(d.rows.map((r) => r.id));
+                    this.state.picked = this.state.picked.filter((id) => ids.has(id));
+                }
+            }
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                console.warn("pb_assets: could not read the register page", e);
+                this.notif.add(_t("The register could not be listed. Try again in a moment."), { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.rows.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    /** The numbers, the counts and the page, in place; the drawer follows. */
     async refresh() {
-        this.state.loaded = false;
         const openId = this.state.drawer && this.state.drawer.asset.id;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (openId) { await this.openAsset(openId); }
     }
 
     // --------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.kind !== "all" && r.kind !== this.state.kind) {
-                return false;
-            }
-            if (this.state.status !== "all" && r.state !== this.state.status) {
-                return false;
-            }
-            if (this.state.categoryId && r.category_id !== this.state.categoryId) {
-                return false;
-            }
-            if (this.state.countryId && r.country_id !== this.state.countryId) {
-                return false;
-            }
-            if (!q) { return true; }
-            return (r.code + " " + r.name + " " + (r.serial || "") + " "
-                + (r.employee || "") + " " + (r.category || "") + " "
-                + (r.model_name || "")).toLowerCase().includes(q);
-        });
-    }
+    get visibleRows() { return this.state.rows; }
 
     get hasFilters() {
-        return this.state.q || this.state.kind !== "all"
-            || this.state.status !== "all" || this.state.categoryId
-            || this.state.countryId;
+        return Boolean(this.kit.activeCount || this.kit.search);
     }
 
-    clearFilters() {
-        Object.assign(this.state, {
-            q: "", kind: "all", status: "all", categoryId: 0, countryId: 0,
-        });
-    }
+    clearFilters() { this.kit.toggleFilters({}); }
 
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setKind(id) { this.state.kind = this.state.kind === id ? "all" : id; }
-    setStatus(id) { this.state.status = this.state.status === id ? "all" : id; }
-    setCategory(id) {
-        this.state.categoryId = this.state.categoryId === id ? 0 : id;
-    }
-    onCountry(ev) { this.state.countryId = Number(ev.target.value) || 0; }
     setSegment(seg) { this.state.segment = seg; }
 
-    /** Only the statuses this board is actually showing — an empty filter is
-     *  a promise the screen cannot keep. */
-    get statusChips() {
-        const counts = this.state.facets.state || {};
-        return this.state.states.filter((s) => counts[s.id]);
+    /** A figure that filters: the register, filtered exactly like its view. */
+    glancePick(filters) {
+        return () => {
+            this.state.segment = "items";
+            this.kit.toggleFilters(filters);
+        };
     }
 
-    get categoryChips() {
-        const counts = this.state.facets.category || {};
-        return this.state.categories.filter((c) => counts[c.id]);
-    }
-
-    countFor(bucket, id) {
-        return (this.state.facets[bucket] || {})[id] || 0;
+    get glanceFilters() {
+        return {
+            assigned: { status: ["assigned"], kind: ["tangible"] },
+            spare: { status: ["spare"], kind: ["tangible"] },
+            repair: { status: ["repair"] },
+            digital: { status: ["assigned"], kind: ["digital"] },
+        };
     }
 
     // ------------------------------------------------------ the quiet board
@@ -197,19 +223,23 @@ export class PbAssetsBoard extends Component {
     // between spare, with somebody and in for repair — that is not a line.
     get glance() {
         const k = this.state.kpis || {};
+        const f = this.glanceFilters;
         return [
-            { key: "total", n: k.total || 0, label: _t("Items on the books"), tone: "", run: null },
-            { key: "assigned", n: k.assigned || 0, label: _t("Out with people"), tone: "", run: null },
-            { key: "spare", n: k.spare || 0, label: _t("Spare in the cupboard"), tone: "", run: null },
-            { key: "repair", n: k.repair || 0, label: _t("Under repair"), tone: "",
-              run: () => { this.state.segment = "items"; this.setStatus("repair"); } },
-            { key: "digital", n: k.digital_live || 0, label: _t("Accounts live"), tone: "", run: null },
+            { key: "total", n: k.total || 0, label: _t("Items on the books"), tone: "", run: this.glancePick({}) },
+            { key: "assigned", n: k.assigned || 0, label: _t("Out with people"), tone: "", run: this.glancePick(f.assigned) },
+            { key: "spare", n: k.spare || 0, label: _t("Spare in the cupboard"), tone: "", run: this.glancePick(f.spare) },
+            { key: "repair", n: k.repair || 0, label: _t("Under repair"), tone: "", run: this.glancePick(f.repair) },
+            { key: "digital", n: k.digital_live || 0, label: _t("Accounts live"), tone: "", run: this.glancePick(f.digital) },
             { key: "leavers", n: k.leavers_holding || 0, label: _t("Leavers still holding"), tone: k.leavers_holding ? "rose" : "", run: null },
         ];
     }
 
     get glanceOn() {
-        return this.state.segment === "items" && this.state.status === "repair" ? "repair" : "";
+        if (this.state.segment !== "items" || !this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.glanceFilters)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
 
     /** A request is at EXACTLY one step: "Decided" holds both the approved
@@ -274,27 +304,75 @@ export class PbAssetsBoard extends Component {
     isPicked(id) { return this.state.picked.includes(id); }
 
     togglePick(id) {
+        const row = this.state.rows.find((r) => r.id === id);
         const at = this.state.picked.indexOf(id);
-        if (at === -1) { this.state.picked.push(id); }
-        else { this.state.picked.splice(at, 1); }
+        if (at === -1) {
+            this.state.picked.push(id);
+            if (row) { this.state.pickedKind[id] = row.kind; }
+        } else {
+            this.state.picked.splice(at, 1);
+        }
+        this.state.pickedAll = false;
+        this.state.pickedCapped = false;
     }
 
+    /** The header tick: every item on the page shown (or none again). */
     pickAllVisible() {
-        const ids = this.visibleRows.map((r) => r.id);
-        const allOn = ids.every((id) => this.state.picked.includes(id));
-        this.state.picked = allOn ? [] : ids;
+        const rows = this.visibleRows;
+        const allOn = rows.length && rows.every((r) => this.state.picked.includes(r.id));
+        if (allOn) { this.clearPicked(); return; }
+        this.state.picked = rows.map((r) => r.id);
+        this.state.pickedKind = Object.fromEntries(rows.map((r) => [r.id, r.kind]));
+        this.state.pickedAll = false;
+        this.state.pickedCapped = false;
     }
 
-    clearPicked() { this.state.picked = []; }
+    get allVisiblePicked() {
+        const rows = this.visibleRows;
+        return !!rows.length && rows.every((r) => this.state.picked.includes(r.id));
+    }
+
+    /** More match than the page holds, and the page is all ticked: offer the rest. */
+    get canPickMatching() {
+        return !this.state.pickedAll && this.allVisiblePicked && this.state.total > this.state.rows.length;
+    }
+
+    /** "Select everything matching (N)": every page, from one server call (R6). */
+    async pickMatching() {
+        if (this.state.matching) { return; }
+        this.state.matching = true;
+        const q = this.kit.query;
+        try {
+            const res = await this.orm.call("pb.assets", "matching_ids", [], {
+                filters: q.filters, search: q.search,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.picked = res.ids || [];
+            this.state.pickedKind = Object.fromEntries(
+                Object.entries(res.kinds || {}).map(([k, v]) => [Number(k), v]));
+            this.state.pickedAll = true;
+            this.state.pickedCapped = !!res.capped;
+        } catch (e) {
+            this.fail(e);
+        } finally {
+            this.state.matching = false;
+        }
+    }
+
+    clearPicked() {
+        this.state.picked = [];
+        this.state.pickedKind = {};
+        this.state.pickedAll = false;
+        this.state.pickedCapped = false;
+    }
 
     /** The statuses every picked item could legally take. A mixed selection of
      *  laptops and email accounts offers only what both can do. */
     get bulkStates() {
-        const picked = this.state.rows.filter(
-            (r) => this.state.picked.includes(r.id));
-        if (!picked.length) { return []; }
-        const digital = picked.some((r) => r.kind === "digital");
-        const tangible = picked.some((r) => r.kind === "tangible");
+        if (!this.state.picked.length) { return []; }
+        const kinds = this.state.picked.map((id) => this.state.pickedKind[id] || "tangible");
+        const digital = kinds.includes("digital");
+        const tangible = kinds.includes("tangible");
         return this.state.states.filter((s) => {
             if (s.id === "assigned") { return false; }
             if (digital && !["spare", "deactivated"].includes(s.id)) {
@@ -504,7 +582,7 @@ export class PbAssetsBoard extends Component {
             this.state.add = null;
             this.notif.add(_t("Added as %s.", res.code || ""),
                            { type: "success" });
-            await this.load();
+            await Promise.all([this.load(), this.kit.refresh()]);
             await this.openAsset(res.id);
         } else if (this.state.add) {
             this.state.add.busy = false;
@@ -602,7 +680,7 @@ export class PbAssetsBoard extends Component {
                     : _t("%s item(s) changed.", res.done),
                 { type: res.refused && res.refused.length ? "warning"
                                                           : "success" });
-            this.state.picked = [];
+            this.clearPicked();
             await this.refresh();
         }
     }
@@ -636,6 +714,12 @@ export class PbAssetsBoard extends Component {
     /** Just what this one person has had. */
     exportEmployee(employeeId) {
         return this.exportFile("employee", { employee_id: employeeId });
+    }
+
+    /** The register as it is filtered now: every page, not just this one. */
+    exportFiltered() {
+        const q = this.kit.query;
+        return this.exportFile("inventory", { filters: q.filters, search: q.search });
     }
 
     /** Just the items ticked on the board. */

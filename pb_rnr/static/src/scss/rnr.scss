@@ -191,6 +191,28 @@ $rnr-colors: (
     // --------------------------------------------------------------- rows
     .rnr-list { display: flex; flex-direction: column; gap: 10px; }
 
+    // the filter panel's list: a skeleton while a page loads, and the
+    // "Showing N of M · Show more" line under the rows (FILTER wave 4)
+    .rnr-row--ghost {
+        height: 76px;
+        border-left-color: var(--pbim-line, #E2E1EF);
+        border-style: dashed;
+        background: var(--pbim-bg, #F8F9FC);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .rnr-row--ghost { animation: rnr-skel 1.2s ease-in-out infinite; }
+    }
+    .rnr-foot {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 2px 4px;
+        font-size: 13px;
+        color: var(--pbim-muted, #64748B);
+
+        b { color: var(--pbim-text, #1B1733); font-variant-numeric: tabular-nums; }
+    }
+
     .rnr-row {
         display: grid;
         grid-template-columns: 220px minmax(0, 1fr) 300px;
@@ -910,4 +932,9 @@ $rnr-colors: (
 // nested too, which is not valid CSS and which no browser plays.
 @keyframes rnw-rise {
     to { opacity: 1; transform: none; }
+}
+
+@keyframes rnr-skel {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .55; }
 }
