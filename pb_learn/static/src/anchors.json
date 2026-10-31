@@ -392,7 +392,7 @@
       ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
-      "desc": "The facet chips and the date row. Same control, different facets per ledger."
+      "desc": "The shared filter panel of the ledger: view tabs (Full & Final: All settlements, Ready to check, Waiting on me, Approved this month, Manual; Proration: All lines, Posted this month, Still draft; Retro: All adjustments, Posted this month, Still draft, Cancelled), the Filters button that opens the left panel with a count beside every value (Source, Department, Component, Batch, dates…), the search, and the applied filters as chips. Same control, different sections per ledger."
     },
     "lg-rows": {
       "screen": [

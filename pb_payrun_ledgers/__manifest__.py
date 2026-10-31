@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Pay-Run Ledgers',
     'summary': 'WOW cockpits for Full & Final, Proration Audit and Retro Adjustments',
-    'version': '19.0.1.3.4',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -12,6 +12,8 @@
         # the shared 320px drawer the in-lens ledger opens instead of navigating
         # — imported, never forked (W6)
         'pb_wf_kit',
+        # FILTER W6: the rows are on the shared filter panel
+        'pb_filter_kit',
     ],
     'data': [
         'views/ledger_actions.xml',

@@ -169,7 +169,10 @@ class PbImport(models.AbstractModel):
              'group': 'other', 'type': 'selection', 'path': 'country_code',
              'none_label': _('Not set')},
             {'key': 'created', 'label': _('Started'), 'icon': 'clock',
-             'group': 'dates', 'type': 'date', 'path': 'create_date', 'presets': 'past'},
+             'group': 'dates', 'type': 'date', 'path': 'create_date',
+             # every batch has a start, so no "not set" row
+             'presets': ['today', 'this_week', 'this_month', 'last_month', 'last_90',
+                         'this_quarter', 'this_year', 'last_year']},
         ]
 
     def _pbf_builtin_views(self):

@@ -56,8 +56,9 @@
         </div>
 
         <!-- ==== the steps (only where the records travel a route) ====
-             Each record is at exactly one step, counted over the whole
-             scope. Pressing the lit step again shows everything. -->
+             Each record is at exactly one step. The counts follow every
+             other filter that is on (R1); a step ticks its states in
+             "Where it is", and pressing the lit step again lifts it. -->
         <t t-if="steps.length">
           <div data-coach="lg-steps">
           <t t-call="pb_import_kit.QuietSteps">
@@ -66,64 +67,18 @@
             <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
           </t>
           </div>
-          <div class="pbim-showing">
-            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
-            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
-              <button type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button></t>
-          </div>
         </t>
 
-        <!-- filters -->
-        <div class="pbim-panel ppl-filters">
-          <div class="ppl-filter-row">
-            <div class="pbl-facetwrap" data-coach="lg-facets">
-              <t t-foreach="state.data.facets or []" t-as="fac" t-key="fac.key">
-                <div t-if="fac.chips.length > 1" class="pbl-facet">
-                  <span class="pbl-flabel" t-esc="fac.label"/>
-                  <t t-if="fac.kind === 'chips'">
-                    <div class="pbim-chips">
-                      <button t-foreach="fac.chips" t-as="c" t-key="c.id"
-                              t-attf-class="pbim-fchip {{ state.f[fac.key] === c.id ? 'on' : '' }}"
-                              t-on-click="() => this.setFacet(fac.key, c.id)">
-                        <t t-esc="c.label"/> <span class="c" t-esc="chipCount(fac.key, c.id)"/>
-                      </button>
-                    </div>
-                  </t>
-                  <t t-else="">
-                    <select class="pbl-select" t-on-change="(ev) => this.onFacetSelect(fac.key, ev)">
-                      <option value="">All</option>
-                      <option t-foreach="fac.chips" t-as="c" t-key="c.id" t-att-value="c.id"
-                              t-att-selected="state.f[fac.key] === c.id" t-esc="c.label"/>
-                    </select>
-                  </t>
-                </div>
-              </t>
-            </div>
-            <div class="ppl-search">
-              <span class="ic"><t t-out="ic('search', 15)"/></span>
-              <input t-att-placeholder="searchPh" t-on-input="onSearch"/>
-            </div>
-          </div>
-
-          <div t-if="state.data.date" class="ppl-filter-row">
-            <div class="pbim-chips ppl-dates">
-              <button t-foreach="dateChips" t-as="d" t-key="d.id"
-                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
-                <t t-out="ic('calendar', 13)"/> <t t-esc="d.label"/>
-              </button>
-              <t t-if="state.dateFilter === 'custom'">
-                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
-                <span class="ppl-dash">→</span>
-                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
-              </t>
-              <button t-if="dirty" class="pbim-fchip pbl-clear" t-on-click="clearFilters"><t t-out="ic('x', 13)"/> Clear</button>
-            </div>
-          </div>
-        </div>
+        <!-- ==== the shared filter panel (FILTER W6) ====
+             Views, search, the left panel with a count beside every value,
+             the applied filters as chips; the rows are its slot, a page at a
+             time from the server. One anchor for three ledgers:
+             data-coach="lg-facets" is drawn on the panel's bar. -->
+        <PbFilterLayout kit="kit" coach="'lg-facets'" searchPlaceholder="searchPh">
 
         <!-- rows -->
-        <div t-if="rows.length" class="ppl-roster" data-coach="lg-rows">
-          <div t-foreach="rows" t-as="r" t-key="r.id" class="ppl-card pbl-card" t-on-click="() => this.openRow(r)">
+        <div t-if="state.rows.length" class="ppl-roster" data-coach="lg-rows">
+          <div t-foreach="state.rows" t-as="r" t-key="r.id" class="ppl-card pbl-card" t-on-click="() => this.openRow(r)">
             <div class="ppl-av" t-attf-style="background-image:url({{ r.avatar }})"><span t-if="!r.avatar" t-esc="r.initials"/></div>
             <div class="ppl-id">
               <div class="nm" t-esc="r.title"/>
@@ -150,20 +105,38 @@
             </div>
           </div>
         </div>
-        <div t-else="" class="pbim-panel"><div class="pbim-empty" t-esc="emptyText"/></div>
 
-        <!-- The count is honest in both modes; the ESCAPE is standalone-only.
-             With a step strip the showing line above already counts, so the
-             foot keeps only the escape.
-             In a hub, "Open full list" leaves the hub for a native list — the
-             exact door this cycle exists to close. -->
-        <div class="ppl-foot" t-if="!steps.length">
-          Showing <t t-esc="rows.length"/> of <t t-esc="state.data.total"/>
+        <!-- still loading the first page -->
+        <div t-elif="!state.listLoaded" class="ppl-roster pbl-skel" aria-label="Loading">
+          <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="ppl-card pbl-card pbl-card--ghost"><span/></div>
+        </div>
+
+        <!-- nothing to list: say why, and the way back -->
+        <div t-else="" class="pbim-panel pbl-empty">
+          <span class="pbl-empty-ic"><t t-out="ic(kit.total ? 'search' : 'inbox', 26)"/></span>
+          <b t-esc="emptyTitle"/>
+          <p t-esc="emptyText"/>
+          <button t-if="kit.total" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="showAll">
+            <t t-out="ic('x', 14)"/> Show them all
+          </button>
+        </div>
+
+        <!-- How many, the next page, and the escape (standalone only: in a
+             hub, "Open full list" leaves the hub for a native list — the
+             exact door the hub exists to close). -->
+        <div class="ppl-foot" t-if="state.rows.length">
+          Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.rowsTotal)"/>
+          <button t-if="hasMore" type="button" class="pbim-btn outline pbim-btn-sm"
+                  t-att-disabled="state.loadingMore" t-on-click="loadMore">
+            <t t-if="state.loadingMore">Loading…</t>
+            <t t-else="">Show <t t-esc="nextPage"/> more</t>
+          </button>
           <t t-if="state.data.list_action and !props.embedded"> · <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button></t>
         </div>
         <div class="ppl-foot" t-elif="state.data.list_action and !props.embedded">
           <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button>
         </div>
+        </PbFilterLayout>
       </div>
 
       <!-- ==== the row's whole story, in place ====

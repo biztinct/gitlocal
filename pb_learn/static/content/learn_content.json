@@ -32479,8 +32479,8 @@
               },
               "lines": [],
               "look": {
-                "en": "The Source chips: Auto and Manual.",
-                "vi": "Các nhãn Nguồn: Tự động và Thủ công."
+                "en": "Filters, then the Source section: Auto and Manual, each with its count.",
+                "vi": "Bộ lọc, rồi mục Nguồn: Tự động và Thủ công, mỗi mục kèm số lượng."
               },
               "means": {
                 "en": "Auto settlements appear when a month's pay data finishes loading, for everyone whose leaving date falls in it.",
@@ -32491,8 +32491,8 @@
               "moment_to": "",
               "moment_which": "",
               "press": {
-                "en": "Auto or Manual, to show only those.",
-                "vi": "Tự động hoặc Thủ công, để chỉ hiện những khoản đó."
+                "en": "Auto or Manual in the Source section, to show only those.",
+                "vi": "Tự động hoặc Thủ công trong mục Nguồn, để chỉ hiện những khoản đó."
               },
               "screen": "fullfinal",
               "tip": {
@@ -33387,8 +33387,8 @@
               },
               "lines": [],
               "look": {
-                "en": "The Component and Batch filters, and the search box beside them.",
-                "vi": "Bộ lọc Thành phần và Đợt dữ liệu, và ô tìm kiếm bên cạnh."
+                "en": "The Component and Batch sections in Filters, and the search box above the list.",
+                "vi": "Mục Thành phần và Đợt dữ liệu trong Bộ lọc, và ô tìm kiếm phía trên danh sách."
               },
               "means": {
                 "en": "Pick a component or a batch, then type a name.",
@@ -40734,5 +40734,5 @@
       }
     }
   ],
-  "version": "413267424458"
+  "version": "6714e7d15104"
 }

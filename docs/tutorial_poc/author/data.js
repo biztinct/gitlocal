@@ -8333,8 +8333,9 @@ const LESSONS = {
         /* source: pb_payrun_ledgers/models/ledger_cockpits.py:497 (Component, Batch; facets pb_payrun_ledgers/static/src/xml/ledger.xml:79) */
         kicker: B("Answer one person", "Trả lời một người"),
         title: B("Filter to the question", "Lọc đúng câu hỏi"),
-        look: B("The Component and Batch filters, and the search box beside them.",
-                "Bộ lọc Thành phần và Đợt dữ liệu, và ô tìm kiếm bên cạnh."),
+        /* FILTER W6: the chips became sections of the shared filter panel */
+        look: B("The Component and Batch sections in Filters, and the search box above the list.",
+                "Mục Thành phần và Đợt dữ liệu trong Bộ lọc, và ô tìm kiếm phía trên danh sách."),
         means: B("Pick a component or a batch, then type a name.",
                  "Chọn một thành phần hoặc một đợt dữ liệu, rồi gõ một cái tên."),
         affects: B("Only the matching rows stay. That is one employee's answer, ready before they ask.",
@@ -8410,12 +8411,15 @@ const LESSONS = {
         /* source: pb_payrun_ledgers/models/ledger_cockpits.py:346 (Source facet; chips pb_payrun_ledgers/static/src/xml/ledger.xml:79) */
         kicker: B("Where it came from", "Nó đến từ đâu"),
         title: B("Auto or Manual", "Tự động hay Thủ công"),
-        look: B("The Source chips: Auto and Manual.", "Các nhãn Nguồn: Tự động và Thủ công."),
+        /* FILTER W6: Source is a section of the shared filter panel now */
+        look: B("Filters, then the Source section: Auto and Manual, each with its count.",
+                "Bộ lọc, rồi mục Nguồn: Tự động và Thủ công, mỗi mục kèm số lượng."),
         means: B("Auto settlements appear when a month's pay data finishes loading, for everyone whose leaving date falls in it.",
                  "Khoản Tự động xuất hiện khi dữ liệu lương của một tháng tải xong, cho mọi người có ngày nghỉ rơi vào tháng đó."),
         affects: B("Auto ones are worked out but never sent in by themselves. Manual ones were made by hand and go for approval at once.",
                    "Khoản Tự động được tính sẵn nhưng không bao giờ tự gửi duyệt. Khoản Thủ công do người làm tay và được gửi duyệt ngay."),
-        press: B("Auto or Manual, to show only those.", "Tự động hoặc Thủ công, để chỉ hiện những khoản đó."),
+        press: B("Auto or Manual in the Source section, to show only those.",
+                 "Tự động hoặc Thủ công trong mục Nguồn, để chỉ hiện những khoản đó."),
         tip: B("Payroll gets one to-do naming how many auto settlements are ready to check.",
                "Bộ phận lương nhận một việc cần làm ghi rõ có bao nhiêu khoản tự động cần kiểm tra."),
       },

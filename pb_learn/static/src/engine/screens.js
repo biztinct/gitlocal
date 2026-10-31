@@ -272,15 +272,15 @@ function ledgerHTML(key) {
     const money = d.money.map((k) => kpiTile(k.icon, "", M(k.v), k.label)).join("");
     const steps = d.steps
         ? `<div data-coach="lg-steps"><div class="lrn-steps">${stepButtons(
-            d.steps.map((x) => ({ label: x.label, count: x.count })), B("", ""))}</div>
-            <p class="lrn-note">${esc(tx(B("Showing all settlements · press a step or a number to narrow it",
-                "Đang hiển thị cả quyết toán · nhấn một bước hoặc một con số để thu hẹp")))}</p></div>`
+            d.steps.map((x) => ({ label: x.label, count: x.count })), B("", ""))}</div></div>`
         : "";
-    const facets = d.facets.map((f) => `<span class="lrn-flabel">${esc(tx(f.label))}</span>${
-        f.chips.map((c) => `<button class="lrn-chip">${esc(tx(c))}</button>`).join("")}`).join("");
-    const dates = [B("All time", "Mọi lúc"), B("This month", "Tháng này"), B("This year", "Năm nay"),
-                   B("Custom", "Tùy chỉnh")].map((x, i) =>
-        `<button class="lrn-chip ${i === 0 ? "b" : ""}">${ic("calendar")}${esc(tx(x))}</button>`).join("");
+    // FILTER W6 (2026-10-31): the facet chips and date chips became the
+    // shared filter panel — view tabs, a Filters button that opens the left
+    // panel (the facets live there now, with a count beside every value),
+    // the search. Same anchor on all three ledgers.
+    const views = (LEDGER_VIEWS[key] || []).map((v, i) =>
+        `<span class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(v))}</span>`).join("");
+    const facetNames = d.facets.map((f) => tx(f.label)).join(" · ");
     let actDone = false;
     const rows = d.rows.map((r) => {
         const vals = d.metrics.length === 1 ? [r.earnings - r.deductions] : [r.old, r.new, r.v];
@@ -319,8 +319,12 @@ function ledgerHTML(key) {
             <div class="lrn-grid g3">${money}</div></div>
         ${steps}
         <div class="lrn-panel lrn-lgfilters">
-            <div class="lrn-strip" data-coach="lg-facets">${facets}</div>
-            <div class="lrn-strip">${dates}</div>
+            <div class="lrn-strip" data-coach="lg-facets">${views}
+                <span class="lrn-chip" title="${esc(facetNames)}">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(key === "fullfinal"
+                    ? B("Search employee, ID, department…", "Tìm nhân viên, mã, phòng ban…")
+                    : B("Search employee or component…", "Tìm nhân viên hoặc thành phần…")))}</span>
+            </div>
         </div>
         <div class="lrn-ywf">
             <div class="lrn-ywfmain">
@@ -334,6 +338,16 @@ function ledgerHTML(key) {
             </aside>
         </div>`;
 }
+// The first view tabs of each ledger's filter panel (pb_payrun_ledgers
+// `_pbf_builtin_views`), in the same words.
+const LEDGER_VIEWS = {
+    fullfinal: [B("All settlements", "Tất cả quyết toán"), B("Ready to check", "Cần kiểm tra"),
+                B("Waiting on me", "Đang chờ tôi"), B("Manual", "Thủ công")],
+    proration: [B("All lines", "Tất cả các dòng"), B("Posted this month", "Đã ghi sổ tháng này"),
+                B("Still draft", "Còn nháp")],
+    retro: [B("All adjustments", "Tất cả điều chỉnh"), B("Posted this month", "Đã ghi sổ tháng này"),
+            B("Still draft", "Còn nháp"), B("Cancelled", "Đã hủy")],
+};
 const EN_DOWNLOAD = B("Download", "Tải xuống");
 const EN_READY_CHECK = B("Ready to check", "Cần kiểm tra");
 const EN_SEND_APPROVAL = B("Send for approval", "Gửi duyệt");
