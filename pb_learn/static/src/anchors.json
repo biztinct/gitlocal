@@ -337,6 +337,12 @@
       "file": "pb_import/static/src/xml/import.xml",
       "desc": "Recent batches and their state. Where you go back to a file that stalled."
     },
+    "im-filters": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "Import, the shared filter panel over the batches: view tabs (All batches, Needs attention, In progress, Done this month, Drafts), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The numbers and the steps above still filter.",
+      "reserved": true
+    },
     "iw-steps": {
       "screen": "importwizard",
       "file": "pb_import_wizard/static/src/xml/import_wizard.xml",

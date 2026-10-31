@@ -1326,6 +1326,16 @@ export const SCREENS = {
             </div>
             <div class="lrn-panel">
                 <h3>${ic("clock")}${esc(tx(B("Recent batches", "Đợt nhập gần đây")))}</h3>
+                <!-- FILTER W6 (2026-10-31): the shared filter panel over the
+                     batches. View tabs, a Filters button that opens the left
+                     panel, the search, and the applied filters as chips. -->
+                <div class="lrn-strip" data-coach="im-filters">
+                    <span class="lrn-chip b">${esc(tx(B("All batches", "Tất cả các đợt")))}</span>
+                    <span class="lrn-chip">${esc(tx(B("Needs attention", "Cần xử lý")))}</span>
+                    <span class="lrn-chip">${esc(tx(B("In progress", "Đang xử lý")))}</span>
+                    <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                    <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by batch, file, pay scheme or connected system…", "Tìm theo đợt, tệp, chương trình lương hoặc hệ thống đã kết nối…")))}</span>
+                </div>
                 <div class="lrn-rows" data-coach="im-batches">${batches}</div>
             </div>`;
     },

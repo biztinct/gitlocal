@@ -18,7 +18,7 @@
         <div data-coach="im-kpis">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.filter === 'all' ? '' : state.filter"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
         </div>
 
@@ -52,18 +52,14 @@
 
         <!-- where every batch is: the import pipeline as numbered steps.
              A batch is at exactly ONE step (its state); errored and cancelled
-             batches are at none and "Show all" still lists them. -->
+             batches are at none. The counts follow the filters below (R1);
+             a step ticks "Where it is" in the panel. -->
         <div data-coach="im-pipe">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
             <t t-set="qStepsLabel" t-value="'Where every import batch is'"/>
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
-          <div class="pbim-showing">
-            <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
-            <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
-              <button type="button" class="pbim-showall" t-on-click="showAll">Show all</button></t>
-          </div>
         </div>
 
         <!-- ==== the one door to connectors ====
@@ -82,34 +78,60 @@
 
         <div class="pbm-cols">
           <!-- recent batches -->
+          <!-- im-batches stays on the whole panel (its lesson describes the
+               rows); the shared filter panel inside it carries
+               data-coach="im-filters" on its bar (FILTER W6). -->
           <div class="pbm-panel pbm-grow" data-coach="im-batches">
             <div class="pbm-panel-h">
               <h2>Recent batches</h2>
-              <div class="pbm-filters">
-                <button t-foreach="['all','draft','in_progress','done','errors']" t-as="f" t-key="f"
-                        t-attf-class="pbm-fchip {{ state.filter === f ? 'on' : '' }}" t-on-click="() => this.setFilter(f)">
-                  <t t-esc="{all:'All',draft:'Draft',in_progress:'In progress',done:'Done',errors:'Errors'}[f]"/>
-                  <span class="c" t-esc="countFor(f)"/>
+            </div>
+            <PbFilterLayout kit="kit" coach="'im-filters'"
+                            searchPlaceholder="'Search by batch, file, pay scheme or connected system…'">
+              <div t-if="state.rows.length" class="pbm-table">
+                <div class="pbm-tr head">
+                  <span class="c-nm">Batch</span><span class="c-src">Source</span>
+                  <span class="c-st">Status</span><span class="c-ct">Lines</span>
+                  <span class="c-ct">Matched</span><span class="c-ct">Errors</span><span class="c-dt">Date</span>
+                </div>
+                <div t-foreach="state.rows" t-as="b" t-key="b.id" class="pbm-tr" t-on-click="() => this.openBatch(b.id)">
+                  <span class="c-nm" t-esc="b.name"/>
+                  <span class="c-src" t-esc="b.source"/>
+                  <span class="c-st"><span t-attf-class="pbm-badge {{ stateCls(b.state) }}"><span class="d"/><t t-esc="b.state_label"/></span></span>
+                  <span class="c-ct" t-esc="b.total_lines"/>
+                  <span class="c-ct" t-esc="b.matched"/>
+                  <span t-attf-class="c-ct {{ b.errors ? 'rose' : '' }}" t-esc="b.errors"/>
+                  <span class="c-dt" t-esc="b.date"/>
+                </div>
+              </div>
+
+              <!-- still loading the first page -->
+              <div t-elif="!state.listLoaded" class="pbm-table pbm-skel" aria-label="Loading the batches">
+                <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="pbm-tr pbm-tr--ghost"><span/></div>
+              </div>
+
+              <!-- nothing to list: say why, and the way back -->
+              <div t-else="" class="pbm-empty pbm-empty--filter">
+                <span class="pbm-empty-ic"><t t-out="ic(kit.total ? 'search' : 'upload', 26)"/></span>
+                <b t-esc="emptyTitle"/>
+                <p t-esc="emptyText"/>
+                <button t-if="kit.total" type="button" class="pbm-btn primary pbm-btn-sm" t-on-click="showAll">
+                  <t t-out="ic('x', 14)"/> Show every batch
+                </button>
+                <button t-else="" type="button" class="pbm-btn primary pbm-btn-sm" t-on-click="startWizard">
+                  <t t-out="ic('upload', 14)"/> Load pay data
                 </button>
               </div>
-            </div>
-            <div t-if="filteredBatches.length" class="pbm-table">
-              <div class="pbm-tr head">
-                <span class="c-nm">Batch</span><span class="c-src">Source</span>
-                <span class="c-st">Status</span><span class="c-ct">Lines</span>
-                <span class="c-ct">Matched</span><span class="c-ct">Errors</span><span class="c-dt">Date</span>
+
+              <!-- how many, and the next page -->
+              <div t-if="state.rows.length" class="pbm-foot">
+                Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.rowsTotal)"/>
+                <button t-if="hasMore" type="button" class="pbm-btn outline pbm-btn-sm"
+                        t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                  <t t-if="state.loadingMore">Loading…</t>
+                  <t t-else="">Show <t t-esc="nextPage"/> more</t>
+                </button>
               </div>
-              <div t-foreach="filteredBatches" t-as="b" t-key="b.id" class="pbm-tr" t-on-click="() => this.openBatch(b.id)">
-                <span class="c-nm" t-esc="b.name"/>
-                <span class="c-src" t-esc="b.source"/>
-                <span class="c-st"><span t-attf-class="pbm-badge {{ stateCls(b.state) }}"><span class="d"/><t t-esc="b.state_label"/></span></span>
-                <span class="c-ct" t-esc="b.total_lines"/>
-                <span class="c-ct" t-esc="b.matched"/>
-                <span t-attf-class="c-ct {{ b.errors ? 'rose' : '' }}" t-esc="b.errors"/>
-                <span class="c-dt" t-esc="b.date"/>
-              </div>
-            </div>
-            <div t-else="" class="pbm-empty">No batches match this filter.</div>
+            </PbFilterLayout>
           </div>
         </div>
       </div>
