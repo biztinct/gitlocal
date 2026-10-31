@@ -36,7 +36,7 @@
              exceptions or corrections are waiting on someone; the rest neutral. -->
         <t t-call="pb_import_kit.QuietGlance">
           <t t-set="qGlance" t-value="glance"/>
-          <t t-set="qGlanceOn" t-value="''"/>
+          <t t-set="qGlanceOn" t-value="glanceOn"/>
         </t>
 
         <div class="pbaf-cols">
@@ -116,15 +116,56 @@
               <div class="ttl"><span t-out="ic('edit',18)"/> Corrections</div>
             </div>
 
-            <div t-if="!state.data.corrections.length" class="pbaf-empty small">
+            <!-- FILTER wave 7: the shared filter panel over the corrections
+                 (views, search, the left panel with counts, the chips).
+                 Embedded, the Time hub's week, department and pinned person
+                 arrive as chips the officer can remove. -->
+            <div class="pbaf-corr-filter">
+            <PbFilterLayout kit="kit" searchPlaceholder="'Find a reference, a name or a reason'">
+
+            <div t-if="!state.corrLoaded" class="pbaf-skel" aria-busy="true" aria-label="Loading corrections">
+              <span/><span/><span/>
+            </div>
+
+            <div t-elif="kit.failed" class="pbaf-empty small">
+              <span class="i" t-out="ic('alertCircle',26)"/>
+              <div class="t">The corrections could not be loaded</div>
+              <div class="s" t-if="kit.refusal" t-esc="kit.refusal"/>
+              <div class="s" t-else="">Reload the page to try again.</div>
+            </div>
+
+            <div t-elif="corrEmpty === 'none'" class="pbaf-empty small">
               <span class="i" t-out="ic('sparkles',26)"/>
               <div class="t">No corrections yet</div>
-              <div class="s">File one from an exception on the left.</div>
+              <div class="s">File one from an exception above.</div>
+            </div>
+
+            <div t-elif="corrEmpty === 'calm'" class="pbaf-empty small">
+              <span class="i" t-out="ic('checkCircle',26)"/>
+              <div class="t">Nothing is waiting for approval</div>
+              <div class="s">Every correction filed so far has been decided.</div>
+              <button class="pbaf-btn tiny ghost" t-on-click="corrShowAll">Show all corrections</button>
+            </div>
+
+            <div t-elif="corrEmpty === 'search'" class="pbaf-empty small">
+              <span class="i" t-out="kic('search',26)"/>
+              <div class="t">Nothing matches “<t t-esc="kit.search"/>”</div>
+              <div class="s">Try a reference, a person’s name or a word from the reason.</div>
+              <button class="pbaf-btn tiny ghost" t-on-click="() => kit.setSearch('', true)">Clear the search</button>
+            </div>
+
+            <div t-elif="corrEmpty === 'filters'" class="pbaf-empty small">
+              <span class="i" t-out="ic('inbox',26)"/>
+              <div class="t">No correction matches these filters</div>
+              <div class="s">Remove a filter above, or start again from the ones waiting for approval.</div>
+              <button class="pbaf-btn tiny ghost" t-on-click="corrStartAgain">Start again</button>
             </div>
 
             <div t-else="" class="pbaf-corr-list">
-              <div t-foreach="state.data.corrections" t-as="c" t-key="c.id"
-                   class="corr-card" t-on-click="() => this.openCorrection(c.id)">
+              <div t-foreach="state.corrections" t-as="c" t-key="c.id"
+                   class="corr-card" tabindex="0" role="button"
+                   t-on-click="() => this.openCorrection(c.id)"
+                   t-on-keydown="(ev) => ev.key === 'Enter' and this.openCorrection(c.id)">
                 <img class="av" t-att-src="c.avatar_url" alt=""/>
                 <div class="body">
                   <div class="row1">
@@ -140,6 +181,17 @@
                 </div>
                 <span class="go" t-out="ic('chevron',16)"/>
               </div>
+            </div>
+
+            <div t-if="state.corrections.length" class="pbaf-corr-foot">
+              Showing <b t-esc="state.corrections.length"/> of <b t-esc="state.corrTotal"/>
+              <button t-if="corrHasMore" class="pbaf-btn tiny ghost" t-att-disabled="state.corrMore"
+                      t-on-click="loadMoreCorrections">
+                <t t-if="state.corrMore">Loading…</t>
+                <t t-else="">Show <t t-esc="corrNext"/> more</t>
+              </button>
+            </div>
+            </PbFilterLayout>
             </div>
           </section>
         </div>

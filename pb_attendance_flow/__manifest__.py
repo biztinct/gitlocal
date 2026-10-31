@@ -39,7 +39,7 @@ deliberately a second dimension beside grace, not a re-use of it — grace decid
 who was late, tolerance decides what payroll may see unreviewed.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -50,6 +50,7 @@ who was late, tolerance decides what payroll may see unreviewed.
         'biz_approval_workflow',   # the route its ladder now runs on
         'pb_sidebar',
         'pb_import_kit',
+        'pb_filter_kit',        # the shared filter panel on the corrections
         'pb_wf_kit',            # wf_context (embedded lens binds to the shared week)
         # soft-hooks (resolved via `in self.env`, module stays installable
         # without them): pb_business_trip (trip-day exclusion), hr_holidays
