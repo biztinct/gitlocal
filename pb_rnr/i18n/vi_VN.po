@@ -36,18 +36,26 @@ msgstr "1 câu chuyện"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: model:ir.model.fields.selection,name:pb_rnr.selection__pb_rnr_nomination__state__draft
 msgid "Being written"
 msgstr "Đang viết"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: model:ir.model.fields.selection,name:pb_rnr.selection__pb_rnr_nomination__state__done
 msgid "Decided"
 msgstr "Đã quyết định"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
 msgid "Given money this quarter"
 msgstr "Được thưởng tiền quý này"
@@ -60,7 +68,14 @@ msgstr "Chưa có câu chuyện nào"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+#: model:ir.model.fields.selection,name:pb_rnr.selection__pb_rnr_nomination__outcome__declined
+#: model:ir.model.fields.selection,name:pb_rnr.selection__pb_rnr_nomination__state__refused
+#: model_terms:ir.ui.view,arch_db:pb_rnr.portal_my_recognition
+#: model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_form
 msgid "Not this time"
 msgstr "Không phải lần này"
 
@@ -90,25 +105,37 @@ msgstr "Đang hiển thị 1 câu chuyện · bấm một bước hoặc một c
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_search
 msgid "Waiting on HR"
 msgstr "Đang chờ nhân sự"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_search
 msgid "Waiting on a manager"
 msgstr "Đang chờ quản lý"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: model:ir.model.fields.selection,name:pb_rnr.selection__pb_rnr_nomination__state__manager
 msgid "With HR"
 msgstr "Ở bộ phận nhân sự"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+#: model:ir.model.fields.selection,name:pb_rnr.selection__pb_rnr_nomination__state__submitted
 msgid "With their manager"
 msgstr "Ở quản lý của họ"
 
@@ -132,7 +159,16 @@ msgstr "Bảng vinh danh"
 
 #. module: pb_rnr
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/nomination.py:0
 #: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+#: model:ir.actions.act_window,name:pb_rnr.action_pb_rnr_nomination
+#: model:ir.actions.client,name:pb_rnr.action_pb_rnr_board
+#: model:ir.model,name:pb_rnr.model_pb_rnr_nomination
+#: model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_form
+#: model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_list
+#: model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_search
 msgid "Praise"
 msgstr "Khen ngợi"
 
@@ -171,3 +207,313 @@ msgstr "Lời khen của tôi"
 #: code:addons/pb_rnr/static/src/js/rnr_palette.js:0
 msgid "Talent"
 msgstr "Nhân tài"
+
+# ===================================================================
+#  FILTER wave 4 (2026-10-31): the shared filter panel.
+# ===================================================================
+
+#. module: pb_rnr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0 code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "All praise"
+msgstr "Tất cả lời khen"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Award"
+msgstr "Tiền thưởng"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Biggest award first"
+msgstr "Thưởng lớn nhất trước"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0 model:ir.model.fields,field_description:pb_rnr.field_pb_rnr_nomination__is_winner
+msgid "Chosen for the quarter"
+msgstr "Được chọn cho quý"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Find a person or something they did"
+msgstr "Tìm một người hoặc việc họ đã làm"
+
+#. module: pb_rnr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0 code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Kept private"
+msgstr "Giữ riêng tư"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Loading stories"
+msgstr "Đang tải câu chuyện"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Most recently decided"
+msgstr "Quyết định gần đây nhất"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "No quarter"
+msgstr "Chưa thuộc quý nào"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "No story matches these filters"
+msgstr "Không có câu chuyện nào khớp với các bộ lọc này"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0 model_terms:ir.actions.act_window,help:pb_rnr.action_pb_rnr_nomination
+msgid "Nobody has been thanked yet"
+msgstr "Chưa có ai được cảm ơn"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Not chosen"
+msgstr "Không được chọn"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Not decided yet"
+msgstr "Chưa quyết định"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Nothing matches “"
+msgstr "Không có gì khớp với “"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Oldest first"
+msgstr "Cũ nhất trước"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/cycle.py:0 code:addons/pb_rnr/models/nomination_approval.py:0 code:addons/pb_rnr/models/pb_rnr.py:0 model:ir.model.fields,field_description:pb_rnr.field_pb_rnr_nomination__cycle_id model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_search
+msgid "Quarter"
+msgstr "Quý"
+
+#. module: pb_rnr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0 code:addons/pb_rnr/static/src/xml/rnr_board.xml:0 code:addons/pb_rnr/static/src/xml/rnr_wall.xml:0 model_terms:ir.ui.view,arch_db:pb_rnr.portal_my_recognition
+msgid "Quarter winner"
+msgstr "Người thắng quý"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Quarter winners"
+msgstr "Người thắng quý"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Read and decide"
+msgstr "Đọc và quyết định"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Read it"
+msgstr "Đọc"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Remove a filter above, or start again from every story."
+msgstr "Bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại từ tất cả câu chuyện."
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0 code:addons/pb_rnr/static/src/xml/rnr_wall.xml:0
+msgid "Say thank you"
+msgstr "Gửi lời cảm ơn"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Shared with the company"
+msgstr "Chia sẻ với cả công ty"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Show all praise"
+msgstr "Hiện tất cả lời khen"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_wall.xml:0
+msgid ""
+"Somebody near you has almost certainly done something worth\n"
+"                saying out loud this week. Yours could be the first one on it."
+msgstr "Gần như chắc chắn có ai đó quanh bạn đã làm điều đáng được nói ra trong tuần này. Hãy viết lời khen đầu tiên — lời khen sẽ đến quản lý của họ, rồi đến bộ phận nhân sự, rồi đến cả công ty."
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid ""
+"Somebody near you has almost certainly done something worth saying\n"
+"                  out loud this week. Write the first one — it goes to their manager,\n"
+"                  then to HR, and then to the whole company."
+msgstr "Gần như chắc chắn có ai đó quanh bạn đã làm điều đáng được nói ra trong tuần này. Hãy viết lời khen đầu tiên — lời khen sẽ đến quản lý của họ, rồi đến bộ phận nhân sự, rồi đến cả công ty."
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid ""
+"Somebody near you has almost certainly done something worth saying\n"
+"              out loud this week. Write the first one — it goes to their manager,\n"
+"              then to HR, and then to the whole company."
+msgstr "Gần như chắc chắn có ai đó quanh bạn đã làm điều đáng được nói ra trong tuần này. Hãy viết lời khen đầu tiên — lời khen sẽ đến quản lý của họ, rồi đến bộ phận nhân sự, rồi đến cả công ty."
+
+#. module: pb_rnr
+#: model_terms:ir.ui.view,arch_db:pb_rnr.portal_my_recognition
+msgid ""
+"Somebody near you has almost certainly done something worth saying\n"
+"              out loud this week. Yours could be the first one on it."
+msgstr "Gần như chắc chắn có ai đó quanh bạn đã làm điều đáng được nói ra trong tuần này. Hãy viết lời khen đầu tiên — lời khen sẽ đến quản lý của họ, rồi đến bộ phận nhân sự, rồi đến cả công ty."
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+msgid "The stories could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị danh sách câu chuyện. Vui lòng thử lại sau giây lát."
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Their department"
+msgstr "Phòng ban của họ"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/company_value.py:0 code:addons/pb_rnr/models/nomination_approval.py:0 code:addons/pb_rnr/models/pb_rnr.py:0 model:ir.model.fields,field_description:pb_rnr.field_pb_company_value__name model_terms:ir.ui.view,arch_db:pb_rnr.view_pb_rnr_nomination_search
+msgid "Value"
+msgstr "Giá trị"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0 model:ir.model.fields,field_description:pb_rnr.field_pb_rnr_nomination__outcome
+msgid "What was decided"
+msgstr "Kết quả quyết định"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0 model:ir.model.fields,field_description:pb_rnr.field_pb_rnr_cycle__state
+msgid "Where it is"
+msgstr "Đang ở bước nào"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Who can see it"
+msgstr "Ai được xem"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Who it is about"
+msgstr "Người được khen"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Who wrote it"
+msgstr "Người viết"
+
+#. module: pb_rnr
+#. odoo-python
+#: code:addons/pb_rnr/models/pb_rnr.py:0
+msgid "Written"
+msgstr "Ngày viết"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0 code:addons/pb_rnr/static/src/xml/rnr_wall.xml:0 model_terms:ir.ui.view,arch_db:pb_rnr.mail_digest model_terms:ir.ui.view,arch_db:pb_rnr.portal_my_recognition
+msgid "said by"
+msgstr "do"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/js/rnr_board.js:0
+msgid "stories"
+msgstr "câu chuyện"
+
+#. module: pb_rnr
+#. odoo-javascript
+#: code:addons/pb_rnr/static/src/xml/rnr_board.xml:0
+msgid "”. Check the spelling, or search by who wrote it."
+msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo người viết."
