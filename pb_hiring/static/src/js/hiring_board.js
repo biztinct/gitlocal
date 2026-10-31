@@ -446,12 +446,34 @@ export class PbHiringBoard extends Component {
         if (!this.state.kitMore) { this.loadKitPage({ more: true }); }
     }
 
+    /** Is the panel settled on its list? While it switches lists (between
+     *  `reconfigure` and the new layout) the kit still files changes under
+     *  the OLD list's memory, so a press then would land on the wrong list. */
+    get kitReady() { return !!this.kit.loaded; }
+
+    /**
+     * Point the one panel at another list. Switches run ONE AT A TIME: the
+     * kit's load has no guard against an older layout arriving last, so two
+     * overlapping switches (a tab clicked twice, a figure pressed during a
+     * switch) could leave the Roles panel on the Interviews tab. A queued
+     * switch that a later one has overtaken is skipped.
+     */
+    _switchKit(tab, filters = null) {
+        this.kitKind = tab;
+        const run = async () => {
+            if (this.kitKind !== tab) { return; }
+            await this.kit.reconfigure({ ctx: { kind: tab }, noun: kitNoun(tab),
+                                        initial: filters ? { filters } : null });
+        };
+        this._kitChain = (this._kitChain || Promise.resolve()).then(run, run);
+        return this._kitChain;
+    }
+
     /** A tab, opened with exactly these filters on (a figure, a door). */
     async openTabWith(tab, filters) {
         this.state.tab = tab;
-        if (this.kitKind !== tab) {
-            this.kitKind = tab;
-            await this.kit.reconfigure({ ctx: { kind: tab }, noun: kitNoun(tab), initial: { filters } });
+        if (this.kitKind !== tab || !this.kitReady) {
+            await this._switchKit(tab, filters);
         } else {
             this.kit.setFilters(filters);
         }
@@ -614,7 +636,7 @@ export class PbHiringBoard extends Component {
 
     /** "Show all": every role again, whatever was on (the lesson's word). */
     showAll() {
-        if (this.state.tab !== "roles" || this.kitOn !== "roles") {
+        if (this.state.tab !== "roles" || this.kitOn !== "roles" || !this.kitReady) {
             return this.openTabWith("roles", {});
         }
         this.kit.toggleFilters({});
@@ -749,7 +771,7 @@ export class PbHiringBoard extends Component {
     }
 
     clearFilters() {
-        this.kit.toggleFilters({});
+        if (this.kitReady) { this.kit.toggleFilters({}); }
     }
 
     /** A Roles figure: exactly its filters on the Roles list; pressed again,
@@ -757,7 +779,7 @@ export class PbHiringBoard extends Component {
     toggleFocus(key) {
         const f = ROLE_FIGURES[key];
         if (!f) { return; }
-        if (this.state.tab === "roles" && this.kitOn === "roles") {
+        if (this.state.tab === "roles" && this.kitOn === "roles" && this.kitReady) {
             this.kit.toggleFilters(f);
         } else {
             this.openTabWith("roles", f);
@@ -901,7 +923,7 @@ export class PbHiringBoard extends Component {
     /** A step on the strip: only its roles; pressed again, the step filter
      *  goes (every other filter stays). From another tab it opens Roles. */
     chooseJourney(key) {
-        if (this.state.tab !== "roles" || this.kitOn !== "roles") {
+        if (this.state.tab !== "roles" || this.kitOn !== "roles" || !this.kitReady) {
             return this.openTabWith("roles", { step: [key] });
         }
         const on = this.kit.values("step");
@@ -1034,7 +1056,7 @@ export class PbHiringBoard extends Component {
     toggleIvFocus(key) {
         const f = IV_FIGURES[key];
         if (!f) { return; }
-        if (this.state.tab === "interviews" && this.kitOn === "interviews") {
+        if (this.state.tab === "interviews" && this.kitOn === "interviews" && this.kitReady) {
             this.kit.toggleFilters(f);
         } else {
             this.openTabWith("interviews", f);
@@ -1047,8 +1069,7 @@ export class PbHiringBoard extends Component {
     setTab(tab) {
         this.state.tab = tab;
         if (KIT_TABS.includes(tab) && this.kitKind !== tab) {
-            this.kitKind = tab;
-            return this.kit.reconfigure({ ctx: { kind: tab }, noun: kitNoun(tab) });
+            return this._switchKit(tab);
         }
     }
 

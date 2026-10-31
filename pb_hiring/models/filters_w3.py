@@ -403,8 +403,6 @@ class PbHiringFilters(models.AbstractModel):
         return spec
 
     def _pbf_views_roles(self):
-        today = fields.Date.context_today(self)
-        q_start = today.replace(month=((today.month - 1) // 3) * 3 + 1, day=1)
         views = [
             {'key': 'all', 'label': _('All roles'), 'icon': 'briefcase', 'filters': {}},
             {'key': 'open', 'label': _('Open roles'), 'filters': {'status': ['open', 'setup']}},
@@ -416,7 +414,7 @@ class PbHiringFilters(models.AbstractModel):
              'filters': {'status': ['open', 'setup'], 'request': ['none']}},
             {'key': 'filled', 'label': _('Filled'), 'filters': {'status': ['filled']}},
             {'key': 'quarter', 'label': _('Opened this quarter'),
-             'filters': {'opened': {'from': fields.Date.to_string(q_start), 'to': ''}}},
+             'filters': {'opened': {'preset': 'this_quarter'}}},
         ]
         return views
 
@@ -556,8 +554,10 @@ class PbHiringFilters(models.AbstractModel):
              'type': 'many2one', 'path': 'job_id', 'none_label': _('No job yet')},
             {'key': 'round', 'label': _('Round'), 'icon': 'repeat', 'group': 'work',
              'type': 'number', 'path': 'round_no'},
+            # kit 1.2.0: an explicit preset list, past and future together
             {'key': 'date', 'label': _('Date'), 'icon': 'calendar', 'group': 'dates',
-             'type': 'date', 'path': 'start', 'presets': 'future'},
+             'type': 'date', 'path': 'start',
+             'presets': ['today', 'this_week', 'next_7', 'next_30', 'passed', 'last_90']},
         ]
 
     def _pbf_views_interviews(self):

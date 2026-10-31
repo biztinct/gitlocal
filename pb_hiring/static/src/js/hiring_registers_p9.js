@@ -372,7 +372,7 @@ patch(PbHiringBoard.prototype, {
     /** Is the register narrowed by anything at all. */
     get anyAppsFilter() { return this.anyFilter; },
 
-    clearAppsFilters() { this.kit.toggleFilters({}); },
+    clearAppsFilters() { if (this.kitReady) { this.kit.toggleFilters({}); } },
 
     /** The cards the panel produced: the page(s) read so far. */
     get regCards() { return this.state.apps.cards || []; },
@@ -383,7 +383,8 @@ patch(PbHiringBoard.prototype, {
         const g = this.state.apps.glance || {};
         const n = (v) => v || 0;
         const team = !!g.team;
-        const pick = (key) => () => this.kit.toggleFilters(APP_FIGURES[key]);
+        const pick = (key) => () => (this.kitReady && this.kitOn === "applicants"
+            ? this.kit.toggleFilters(APP_FIGURES[key]) : this.openTabWith("applicants", APP_FIGURES[key]));
         return [
             { key: "in_play", n: n(g.in_play), label: n(g.in_play) === 1 ? _t("person in play") : _t("people in play"), tone: "",
               run: pick("in_play") },
@@ -470,7 +471,7 @@ patch(PbHiringBoard.prototype, {
 
     sortApps(key) {
         const pair = LIST_SORTS[key];
-        if (!pair) { return; }
+        if (!pair || !this.kitReady) { return; }
         this.kit.setSort(this.kit.sort === pair[0] ? pair[1] : pair[0]);
     },
 
@@ -554,7 +555,7 @@ patch(PbHiringBoard.prototype, {
 
     /** A step on the strip: only its offers; pressed again, the step goes. */
     pickOfferStep(key) {
-        if (this.kitOn !== "offers") { return this.openTabWith("offers", { step: [key] }); }
+        if (this.kitOn !== "offers" || !this.kitReady) { return this.openTabWith("offers", { step: [key] }); }
         const on = this.kit.values("step");
         if (on.length === 1 && String(on[0]) === key) {
             this.kit.clear("step");
@@ -565,7 +566,7 @@ patch(PbHiringBoard.prototype, {
 
     get anyOffersFilter() { return this.anyFilter; },
 
-    clearOffersFilters() { this.kit.toggleFilters({}); },
+    clearOffersFilters() { if (this.kitReady) { this.kit.toggleFilters({}); } },
 
     get offersHasMore() { return (this.state.offers.rows || []).length < (this.state.offers.total || 0); },
 
