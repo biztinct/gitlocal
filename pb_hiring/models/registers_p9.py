@@ -478,14 +478,11 @@ class PbHiringRegistersP9(models.AbstractModel):
     # =====================================================================
     @api.model
     def _offer_kpis(self, offer_rows):
-        """The two new tiles read the register's own counts, so a tile and
-        the filter it opens can never disagree (R80)."""
+        """The tiles count through the Offers views' own domains (FILTER W3,
+        `filters_w3._pbf_offer_kpi_counts`), over every offer the reader may
+        see — so a tile and the view it opens can never disagree (R80), and
+        the newest-200 window no longer caps them."""
         kpis = super()._offer_kpis(offer_rows)
-        rows, _total = self._safe(lambda: self._p9_offer_rows(), default=([], 0))
-        counts = self._p9_offer_counts(rows)
-        kpis.update({
-            'offers_waiting_mine': counts['waiting_mine'],
-            'joining_soon': counts['joining_soon'],
-            'joined_month': counts['joined_month'],
-        })
+        kpis.update(self._safe(lambda: self._pbf_offer_kpi_counts(), default={
+            'offers_waiting_mine': 0, 'joining_soon': 0, 'joined_month': 0}))
         return kpis
