@@ -134,6 +134,35 @@
         font-size: 13px; font-weight: 800; color: var(--pbim-ink);
     }
 
+    // ---------------------------------- the filter panel's list (FILTER W4)
+    // "Select everything matching", the skeleton while a page loads, and the
+    // "Showing N of M · Show more" line under the table.
+    .ast-matchbar {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        margin-bottom: 10px; padding: 9px 14px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r, 12px);
+        background: var(--pbim-soft, #F1EFFB); color: var(--pbim-ink);
+        font-size: 13px;
+        b { font-variant-numeric: tabular-nums; }
+    }
+    .ast-skel { padding: 10px 16px; }
+    .ast-skel-row {
+        height: 34px; margin: 8px 0; border-radius: 8px;
+        background: var(--pbim-bg, #F8F9FC);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .ast-skel-row { animation: ast-skel 1.2s ease-in-out infinite; }
+    }
+    @keyframes ast-skel {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+    }
+    .ast-foot {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 2px 4px; font-size: 13px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    }
+
     // -------------------------------------------------------------- drawer
     .ast-scrim {
         position: fixed; inset: 0; z-index: var(--pbim-z-modal, 1400);
