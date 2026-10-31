@@ -987,7 +987,7 @@
     "rd-who": {
       "screen": "records",
       "file": "pb_records/static/src/xml/records_desk.xml",
-      "desc": "Records Desk Who rail: search and facets.",
+      "desc": "Records Desk WHO: the shared filter panel — view tabs (All people, Running contracts, No contract, Resigned per feed when the pay feed reports leavers, Hand-picked when arriving from People with a selection), the Filters button that opens the left panel with the Employees list's own sections plus the pay feed's employment status, each with a count, the search, and the applied filters as chips.",
       "reserved": true
     },
     "rd-fields": {

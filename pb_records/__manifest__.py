@@ -50,7 +50,7 @@ clear of the floating helpers other modules pin to the same corner, the header's
 export/import controls fold into one File menu under 1440px, and a dropped file
 says how many rows it is matching while it matches them.
 """,
-    'version': '19.0.1.6.1',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -64,6 +64,8 @@ says how many rows it is matching while it matches them.
         'pb_people',
         'pb_people_hub',
         'biz_approval_workflow',
+        # FILTER W6: WHO is the shared filter panel
+        'pb_filter_kit',
     ],
     'data': [
         'security/records_groups.xml',

@@ -76,62 +76,22 @@ $rd-w-data: 194px;
         display: flex; gap: 14px; flex: 1; min-height: 0; padding-bottom: 14px;
     }
 
-    .rd-rail {
-        width: 280px; flex: none; position: relative;
-        background: #fff; border: 1px solid var(--pbim-line);
-        border-radius: var(--pbim-r-lg); padding: 14px 14px 10px;
-        display: flex; flex-direction: column; gap: 12px;
-        overflow: auto; transition: width .18s ease;
-        &.closed { width: 34px; padding: 8px 4px; overflow: visible; }
+    // FILTER W6 — WHO is the shared filter panel. The desk is a full-height
+    // surface (the grid scrolls inside itself), so the panel layout is
+    // stretched to the space left under the header instead of following a
+    // page scroll: the panel scrolls on its own, the grid fills the rest.
+    .rd-body-wrap > .pbf {
+        flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column;
+        .pbf-views, .pbf-bar { flex: none; }
+        .pbf-body { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+        .pbf-panel { position: relative; top: 0; align-self: stretch; min-height: 0; display: flex; }
+        .pbf-panel-in { max-height: 100%; }
+        .pbf-main { min-height: 0; display: flex; flex-direction: column; }
+        .pbf-chips { flex: none; }
+        .pbf-list { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+        .pbf-list > .rd-main { flex: 1; min-height: 0; }
     }
-    .rd-rail-toggle {
-        position: absolute; right: -11px; top: 16px; z-index: 5;
-        width: 22px; height: 22px; border-radius: 50%;
-        border: 1px solid var(--pbim-line); background: #fff; cursor: pointer;
-        display: grid; place-items: center; color: var(--pbim-muted);
-        box-shadow: var(--pbim-sh);
-        &:hover { color: var(--pbim-primary); border-color: var(--pbim-primary); }
-    }
-    .rd-rail-h {
-        font-size: 10.5px; font-weight: 900; letter-spacing: .09em;
-        text-transform: uppercase; color: var(--pbim-muted);
-    }
-    .rd-search {
-        display: flex; align-items: center; gap: 8px;
-        border: 1px solid var(--pbim-line); border-radius: var(--pbim-pill, 999px);
-        padding: 7px 13px; background: #fff;
-        .ic { color: var(--pbim-muted); display: flex; }
-        input {
-            border: none; outline: none; font: inherit; font-size: 13px;
-            flex: 1; min-width: 0; background: transparent; color: var(--pbim-text);
-        }
-        &:focus-within { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
-    }
-    .rd-pin-chip {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: var(--pbim-soft); color: var(--pbim-primary-strong);
-        border-radius: 999px; padding: 4px 6px 4px 10px;
-        font-size: 12px; font-weight: 800;
-        button {
-            border: none; background: transparent; cursor: pointer; display: flex;
-            color: inherit; padding: 2px; border-radius: 50%;
-            &:hover { background: rgba(0,0,0,.06); }
-        }
-    }
-    .rd-facet { display: flex; flex-direction: column; gap: 7px; }
-    .rd-facet-h {
-        font-size: 11px; font-weight: 800; color: var(--pbim-text);
-    }
-    .rd-facet-chips {
-        display: flex; flex-wrap: wrap; gap: 6px;
-        max-height: 168px; overflow: auto;
-    }
-    .rd-facet-chips .pbim-fchip { font-size: 11.5px; padding: 4px 10px; }
-    .rd-rail-foot {
-        margin-top: auto; padding-top: 10px; border-top: 1px solid var(--pbim-line-2);
-        display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    }
-    .rd-match { font-size: 12px; font-weight: 800; color: var(--pbim-primary-strong); }
+    .rd-body-wrap > .pbf.pbf--narrow .pbf-panel { position: fixed; }
 
     .rd-link {
         border: none; background: transparent; cursor: pointer; padding: 0;

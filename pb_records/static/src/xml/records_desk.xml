@@ -566,57 +566,12 @@
             </div>
           </div>
 
-          <!-- WHO -->
-          <aside t-attf-class="rd-rail {{ state.railOpen ? '' : 'closed' }}" data-coach="rd-who">
-            <button type="button" class="rd-rail-toggle" t-on-click="toggleRail"
-                    t-att-title="state.railOpen ? 'Hide the filters' : 'Show the filters'">
-              <t t-out="ic(state.railOpen ? 'chevronLeft' : 'chevron', 14)"/>
-            </button>
-            <t t-if="state.railOpen">
-              <div class="rd-rail-h">Who</div>
-              <div class="rd-search">
-                <span class="ic"><t t-out="ic('search',15)"/></span>
-                <input type="text" t-att-value="state.filters.q" t-on-input="onSearch"
-                       placeholder="Name, code or email…"/>
-              </div>
-
-              <div t-if="state.handPicked" class="rd-pinned">
-                <span class="rd-pin-chip">
-                  <t t-out="ic('users',13)"/> Hand-picked · <t t-esc="state.handPicked"/>
-                  <button type="button" t-on-click="clearHandPicked" title="Show everybody again">
-                    <t t-out="ic('x',12)"/>
-                  </button>
-                </span>
-              </div>
-
-              <t t-foreach="[
-                    {key: 'department_ids', label: 'Department', rows: state.facets.departments},
-                    {key: 'job_ids', label: 'Designation', rows: state.facets.jobs},
-                    {key: 'contract_states', label: 'Contract state', rows: state.facets.contract_states},
-                    {key: 'statuses', label: 'Employment status', rows: state.facets.statuses}
-                  ]" t-as="grp" t-key="grp.key">
-                <div t-if="grp.rows.length" class="rd-facet">
-                  <div class="rd-facet-h" t-esc="grp.label"/>
-                  <div class="rd-facet-chips">
-                    <button t-foreach="grp.rows" t-as="f" t-key="grp.key + '-' + f_index"
-                            type="button"
-                            t-attf-class="pbim-fchip {{ isFacetOn(grp.key, f.id) ? 'on' : '' }}"
-                            t-on-click="() => this.toggleFacet(grp.key, f.id)">
-                      <t t-esc="f.name"/> <span class="c" t-esc="f.count"/>
-                    </button>
-                  </div>
-                </div>
-              </t>
-
-              <div class="rd-rail-foot">
-                <span class="rd-match" t-esc="matchLine"/>
-                <button t-if="anyFilter" type="button" class="rd-link" t-on-click="clearFilters">
-                  Clear the filters
-                </button>
-              </div>
-            </t>
-          </aside>
-
+          <!-- WHO — the shared filter panel (FILTER W6). Views, search, the
+               left panel with a count beside every value (the Employees
+               list's own sections, plus the pay feed's employment status),
+               the applied filters as chips; the WHAT strip and the grid are
+               its slot. data-coach="rd-who" is drawn on the panel's bar. -->
+          <PbFilterLayout kit="kit" coach="'rd-who'" searchPlaceholder="'Name, code or email…'">
           <div class="rd-main">
 
             <!-- WHAT -->
@@ -675,6 +630,7 @@
                          onSelectAllMatching.bind="onSelectAllMatching"
                          onClearFilters.bind="clearFilters"/>
           </div>
+          </PbFilterLayout>
         </div>
 
         <!-- =========================================== Set for … popover -->

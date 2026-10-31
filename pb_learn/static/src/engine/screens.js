@@ -2169,10 +2169,19 @@ export const SCREENS = {
                 <button class="lrn-btn sm pri" data-coach="rd-review">${ic("check-circle")}${esc(reviewLabel)}</button>
             </div>
             <div class="lrn-zdesk">
+                <!-- FILTER W6 (2026-10-31): WHO is the shared filter panel —
+                     view tabs, the Filters button (the Employees list's own
+                     sections plus the pay feed's employment status), the
+                     search, and the applied filters as chips. -->
                 <div class="lrn-panel" data-coach="rd-who">
-                    <h3>${ic("users")}${esc(tx(B("Who", "Ai")))}</h3>
+                    <div class="lrn-strip">
+                        <span class="lrn-chip b">${esc(tx(B("All people", "Tất cả mọi người")))}</span>
+                        <span class="lrn-chip">${esc(tx(B("Running contracts", "Hợp đồng đang chạy")))}</span>
+                        <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                        <span class="lrn-chip">${ic("search")}${esc(tx(B("Name, code or email…", "Tên, mã hoặc email…")))}</span>
+                    </div>
                     <span class="lrn-chip b">${esc(tx(B("Department", "Phòng ban")))}: ${esc(tx(RUN.division))}</span>
-                    <p class="lrn-note">${esc(N(RUN.employees) + SP + tx(B("people match", "người khớp")))}</p>
+                    <p class="lrn-note">${esc(N(RUN.employees) + SP + tx(B("people", "người")))}</p>
                 </div>
                 <div class="lrn-panel">
                     <div class="lrn-strip" data-coach="rd-fields">
