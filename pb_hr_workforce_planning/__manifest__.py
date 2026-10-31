@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Workforce Planning & Compensation Forecasting',
-    'version': '19.0.8.1.0',
+    'version': '19.0.8.2.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Salary simulation, scenario modelling, merit cycles, and total employer cost forecasting',
     'description': """
@@ -36,6 +36,7 @@
         'om_hr_payroll',
         'pb_hr_payroll_formula',
         'pb_hr_payroll_analytics',
+        'pb_filter_kit',           # the shared filter panel (FILTER wave 8: forecast table)
     ],
 
     'data': [

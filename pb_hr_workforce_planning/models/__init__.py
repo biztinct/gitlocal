@@ -18,3 +18,4 @@ from . import hr_employee_wfp
 from . import approval_step
 from . import budget_guardrail
 from . import scenario_version
+from . import wfp_forecasts

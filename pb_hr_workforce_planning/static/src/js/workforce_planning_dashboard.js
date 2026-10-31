@@ -5,6 +5,29 @@ import { Component, useState, onWillStart, onMounted, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { loadBundle } from "@web/core/assets";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+/** The forecast table's facade on the shared filter panel (FILTER wave 8). */
+const FORECASTS = "pb.wfp.forecasts";
+/** Rows per page (server: `FORECAST_PAGE`). */
+const FORECAST_PAGE = 60;
+/**
+ * A column header press picks a sort from the panel's sort menu: the first
+ * key on the first press, the second (the other direction) on the next.
+ */
+const COLUMN_SORTS = {
+    name: ["name", "name_desc"],
+    department: ["dept"],
+    job: ["job"],
+    current_base: ["base_desc"],
+    current_total: ["total_desc"],
+    forecast_base: ["fbase_desc"],
+    forecast_total: ["ftotal_desc"],
+    increase_amount: ["increase_desc", "increase_asc"],
+    increase_pct: ["pct_desc", "pct_asc"],
+    rule_name: ["rule"],
+};
 
 // Chart.js dark-mode defaults
 const CHART_COLORS = {
@@ -66,6 +89,7 @@ const CHART_DEFAULTS = {
 
 class WfpDashboard extends Component {
     static template = "pb_hr_workforce_planning.WfpDashboard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -99,9 +123,12 @@ class WfpDashboard extends Component {
             hasLaborModule: false,
             laborData: null,
             laborLoaded: false,
-            searchQuery: "",
-            sortField: "increase_amount",
-            sortOrder: "desc",
+            // FILTER wave 8: the Employee Forecast Detail table, one page at a
+            // time for the shared filter panel (search and sort live there)
+            fcRows: [],
+            fcTotal: 0,
+            fcLoaded: false,
+            fcLoadingMore: false,
             compareScenarioId: null,
             budgetData: null,
             budgetLoaded: false,
@@ -109,6 +136,15 @@ class WfpDashboard extends Component {
             analyticsLoaded: false,
             demandData: null,
             demandLoaded: false,
+        });
+
+        // Pointed at the selected scenario (`pbf_ctx.scenario_id`) once the
+        // scenario has loaded, and again on every scenario change (`defer`).
+        this.kit = useFilterKit({
+            model: FORECASTS,
+            noun: _t("people"),
+            defer: true,
+            onChange: () => this.loadForecastPage(),
         });
 
         onWillStart(async () => {
@@ -187,7 +223,68 @@ class WfpDashboard extends Component {
             console.error("WFP Dashboard: Error loading data", e);
             this.state.loading = false;
         }
+        // The table's filters travel with the reader to the next scenario.
+        this.state.fcLoaded = false;
+        const keep = this.kit.loaded && !this.kit.failed
+            ? { filters: this.kit.filters, search: this.kit.search, viewKey: this.kit.viewKey }
+            : undefined;
+        try {
+            await this.kit.reconfigure({ ctx: { scenario_id: scenarioId }, initial: keep });
+        } catch (e) {
+            console.error("WFP Dashboard: the forecast table could not load", e);
+            this.state.fcLoaded = true;
+        }
     }
+
+    // ==========================================
+    // EMPLOYEE FORECAST DETAIL (shared filter panel)
+    // ==========================================
+    async loadForecastPage({ more = false } = {}) {
+        const scenarioId = this.state.selectedScenarioId;
+        if (!scenarioId) {
+            this.state.fcLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.fcRows.length : 0;
+        if (more) { this.state.fcLoadingMore = true; }
+        try {
+            const d = await this.orm.call(FORECASTS, "get_forecast_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: FORECAST_PAGE,
+                context: { pbf_ctx: { scenario_id: scenarioId } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.fcRows = more ? [...this.state.fcRows, ...d.rows] : d.rows;
+            this.state.fcTotal = d.total;
+            this.state.fcLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                console.error("WFP: the forecast table could not load", e);
+                this.notification.add(_t("The forecast table could not be loaded. Try again in a moment."), { type: "danger" });
+                this.state.fcLoaded = true;
+            }
+        } finally {
+            this.state.fcLoadingMore = false;
+        }
+    }
+    fcMore() { if (!this.state.fcLoadingMore) { this.loadForecastPage({ more: true }); } }
+    get fcHasMore() { return this.state.fcRows.length < this.state.fcTotal; }
+    get fcNextLabel() {
+        return _t("Show %s more", Math.min(FORECAST_PAGE, this.state.fcTotal - this.state.fcRows.length).toLocaleString("en-US"));
+    }
+    get fcShowing() {
+        return _t("Showing %(shown)s of %(total)s", {
+            shown: this.state.fcRows.length.toLocaleString("en-US"),
+            total: this.state.fcTotal.toLocaleString("en-US"),
+        });
+    }
+    get fcFiltered() { return !!(this.kit.activeCount || this.kit.search); }
+    get fcEmptyTitle() {
+        return this.kit.search && !this.kit.activeCount
+            ? _t("Nobody in this scenario matches “%s”", this.kit.search)
+            : _t("Nobody matches these filters");
+    }
+    fcStartAgain() { this.kit.home(); }
 
     // ==========================================
     // CHART RENDERING (Chart.js)
@@ -421,31 +518,9 @@ class WfpDashboard extends Component {
         return (value || 0).toFixed(2) + "%";
     }
 
+    /** The table's rows: one page from the server for the panel's state. */
     get filteredEmployees() {
-        const data = this.state.dashboardData;
-        if (!data || !data.employees) return [];
-
-        let list = [...data.employees];
-        const q = (this.state.searchQuery || "").toLowerCase();
-        if (q) {
-            list = list.filter(e =>
-                e.name.toLowerCase().includes(q) ||
-                e.department.toLowerCase().includes(q) ||
-                e.job.toLowerCase().includes(q) ||
-                e.rule_name.toLowerCase().includes(q)
-            );
-        }
-
-        const field = this.state.sortField;
-        const dir = this.state.sortOrder === "asc" ? 1 : -1;
-        list.sort((a, b) => {
-            const av = a[field] || 0;
-            const bv = b[field] || 0;
-            if (typeof av === "string") return av.localeCompare(bv) * dir;
-            return (av - bv) * dir;
-        });
-
-        return list;
+        return this.state.fcRows;
     }
 
     // ==========================================
@@ -507,17 +582,22 @@ class WfpDashboard extends Component {
         return Math.round(val).toLocaleString();
     }
 
-    onSearchInput(ev) {
-        this.state.searchQuery = ev.target.value;
-    }
-
+    /** A column header press = that column's sort in the panel's sort menu
+     *  (pressed again: the other direction, where the menu has one). */
     onSort(field) {
-        if (this.state.sortField === field) {
-            this.state.sortOrder = this.state.sortOrder === "asc" ? "desc" : "asc";
-        } else {
-            this.state.sortField = field;
-            this.state.sortOrder = "desc";
-        }
+        const keys = COLUMN_SORTS[field];
+        if (!keys || !this.kit.loaded) return;
+        const at = keys.indexOf(this.kit.sort);
+        const next = at === -1 ? keys[0] : keys[(at + 1) % keys.length];
+        if (next !== this.kit.sort) this.kit.setSort(next);
+    }
+    sortMark(field) {
+        const keys = COLUMN_SORTS[field] || [];
+        const at = keys.indexOf(this.kit.sort);
+        if (at === -1) return "";
+        const key = keys[at];
+        return key.endsWith("_asc") || key === "name" || key === "dept" || key === "job" || key === "rule"
+            ? "asc" : "desc";
     }
 
     async onCompareScenarioChange(ev) {
