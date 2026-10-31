@@ -257,6 +257,12 @@
       "desc": "Home › Ask HR, a question: its number, the person and their department, the category, the question in one line, how long ago it was asked, and who in HR has it, or Nobody has it yet in amber.",
       "reserved": true
     },
+    "ah-filters": {
+      "screen": "askhr",
+      "file": "pb_ask_hr/static/src/xml/askhr_lens.xml",
+      "desc": "Home › Ask HR, the shared filter panel: view tabs (Open questions, Nobody has it yet, Mine, Answered this week, New, waiting, Closed; for an employee: Open questions, Answered, your turn, Closed), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The steps and the numbers above still pick a step.",
+      "reserved": true
+    },
     "ah-take": {
       "screen": "askhr",
       "file": "pb_ask_hr/static/src/xml/askhr_lens.xml",
@@ -772,7 +778,13 @@
     "ai-tabs": {
       "screen": "approvals",
       "file": "pb_approval_config/static/src/xml/inbox.xml",
-      "desc": "The four tabs: My turn · All I can see · Sent back · Finished."
+      "desc": "The four tabs: My turn · All I can see · Sent back · Finished. They are the first four views of the shared filter panel, followed by My turn today, Late, Sent back to me, Finished this month and Pay area waiting; each shows its count."
+    },
+    "pbam-filters": {
+      "screen": "approvals",
+      "file": "pb_approval_config/static/src/xml/inbox.xml",
+      "desc": "The inbox's filter bar: the Filters button that opens the left panel (where it is, part of the business, when it is due, my turn, kind of request, who sent it in, dates, amount, currency) with a count beside every value, the search, and the applied filters as chips. Mine / My team / Everyone above it decides which queue the panel counts.",
+      "reserved": true
     },
     "ai-card": {
       "screen": "approvals",

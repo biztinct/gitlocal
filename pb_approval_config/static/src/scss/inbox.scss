@@ -65,6 +65,23 @@
 
     // --------------------------------------------------------- the cards
     .pbam-reqs { display: flex; flex-direction: column; gap: 10px; }
+    .pbam-moneyline { margin-bottom: 10px; }
+
+    // FILTER wave 4: the skeleton while a page loads and the "Showing N of M
+    // · Show more" line under the cards
+    .pbam-req--ghost {
+        height: 96px; cursor: default; box-shadow: none;
+        background: var(--pbim-bg, #F8F9FC); border-style: dashed;
+        &:hover { border-color: var(--pbim-line); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .pbam-req--ghost { animation: pbam-skel 1.2s ease-in-out infinite; }
+    }
+    .pbam-foot {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 2px 4px; font-size: 13px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    }
 
     .pbam-req {
         display: grid; grid-template-columns: 40px minmax(0, 1fr) auto;
@@ -299,4 +316,9 @@
 
         div div + div { margin-top: 4px; }
     }
+}
+
+@keyframes pbam-skel {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .55; }
 }

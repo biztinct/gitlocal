@@ -24,7 +24,8 @@
  * same trail as everything else.
  */
 import {
-    Component, onMounted, onWillStart, onWillUnmount, useState, useRef,
+    Component, onMounted, onPatched, onWillStart, onWillUnmount, useExternalListener,
+    useState, useRef,
 } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -33,6 +34,17 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { useNavigationState } from "@pb_hub/js/navigation_state";
 import { RequestDrawer } from "@pb_approval_config/js/request_drawer";
 import { initials, money, when } from "@pb_approval_config/js/sentence";
+import { FilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+const PAGE = 60;
+/** The four tabs, as the filter panel's first four views (same words). */
+const TAB_FILTERS = {
+    mine: { my_turn: ["yes"] },
+    all: { pile: ["waiting"] },
+    returned: { pile: ["returned"] },
+    done: { pile: ["done"] },
+};
 
 /**
  * PAYAI P4 — a door may open the inbox ON one request: the arrival carries
@@ -86,8 +98,19 @@ export function inboxArrival(props) {
     if (arrival && arrival.focus) { return arrival; }
     const own = props && props.action && props.action.context;
     if (own && own.pb_focus) { return own; }
+    // The Records Desk, Statutory and the tenant console open the inbox ON a
+    // request with `params: { request_id }` — the same door, a different key.
+    const params = props && props.action && props.action.params;
+    if (params && params.request_id) {
+        // one arrival object per door, so "consumed once" still holds
+        if (!_paramArrivals.has(params)) {
+            _paramArrivals.set(params, { focus: "request:" + Number(params.request_id) });
+        }
+        return _paramArrivals.get(params);
+    }
     return null;
 }
+const _paramArrivals = new WeakMap();
 // One arrival opens one drawer: a lens re-mounted later (tab away and back)
 // does not pop the same request open again.
 const _consumedFocus = new WeakSet();
@@ -96,7 +119,7 @@ const _consumedArea = new WeakSet();
 
 export class PbInbox extends Component {
     static template = "pb_approval_config.PbInbox";
-    static components = { RequestDrawer };
+    static components = { RequestDrawer, PbFilterLayout };
     static props = {
         embedded: { type: Boolean, optional: true },
         action: { type: Object, optional: true },
@@ -128,11 +151,14 @@ export class PbInbox extends Component {
         this.state = useState({
             loading: true,
             failed: "",
-            tab: "mine",
             scope: this.props.scope || "me",
             data: null,
-            area: "",
-            due: "",
+            // the cards the filter panel produced, one page at a time
+            cards: [],
+            total: 0,
+            money: [],
+            listLoaded: false,
+            loadingMore: false,
             openId: 0,
             asking: false,
             ask: { name: "", description: "", amount: 0, area_key: "" },
@@ -141,15 +167,52 @@ export class PbInbox extends Component {
         });
 
         this.navigationRoot = useRef("navigationRoot");
+        // Going to a record and back: the scope and the open drawer come back
+        // from here; the filters, from the panel's own memory of this tab.
         const savedNavigation = useNavigationState(this, "approvals", () => ({
-            tab: this.state.tab, scope: this.state.scope, area: this.state.area,
-            due: this.state.due, openId: this.state.openId,
+            scope: this.state.scope, openId: this.state.openId,
             scrollTop: this.navigationRoot.el?.scrollTop || 0,
         }));
         if (savedNavigation) {
-            const { scrollTop, ...controls } = savedNavigation;
-            Object.assign(this.state, controls);
+            if (FOCUS_SCOPES.includes(savedNavigation.scope)) {
+                this.state.scope = savedNavigation.scope;
+            }
+            this.state.openId = savedNavigation.openId || 0;
         }
+
+        // The shared filter panel (pb_filter_kit). Built by hand rather than
+        // with useFilterKit, because a door has to find its request's pile
+        // and scope BEFORE the panel's first load (one read, on the right
+        // queue). The scope rides on every panel call as `pbf_ctx.scope`.
+        this.kit = useState(new FilterKit({
+            orm: this.orm,
+            notification: this.notif,
+            model: "pb.approval.inbox",
+            noun: _t("requests"),
+            ctx: { scope: this.state.scope },
+            onChange: () => this.loadPage(),
+        }));
+        useExternalListener(window, "resize", () => this.kit.onResize());
+        onWillUnmount(() => this.kit.destroy());
+        // ai-tabs (42 lessons) points at the four tabs, which are now the
+        // panel's view row: the anchor is put on that row (see report: a kit
+        // option for it is a kit gap).
+        const tagTabs = () => {
+            const row = this.navigationRoot.el && this.navigationRoot.el.querySelector(".pbf-views");
+            if (row && row.getAttribute("data-coach") !== "ai-tabs") {
+                row.setAttribute("data-coach", "ai-tabs");
+            }
+        };
+        let observer = null;
+        onMounted(() => {
+            tagTabs();
+            if (this.navigationRoot.el && window.MutationObserver) {
+                observer = new MutationObserver(tagTabs);
+                observer.observe(this.navigationRoot.el, { childList: true, subtree: true });
+            }
+        });
+        onPatched(tagTabs);
+        onWillUnmount(() => observer && observer.disconnect());
         onMounted(() => {
             if (this.navigationRoot.el && savedNavigation) {
                 this.navigationRoot.el.scrollTop = savedNavigation.scrollTop || 0;
@@ -163,16 +226,18 @@ export class PbInbox extends Component {
         const area = focus ? "" : focusArea(arrival);
         if (area && !_consumedArea.has(arrival)) {
             _consumedArea.add(arrival);
-            this.state.area = area;
+            // "Waiting on you" in one area (Home › Team): my turn, that area
+            this.kit.initial = { filters: { my_turn: ["yes"], area: [area] } };
         }
         onWillStart(async () => {
-            // Find the pile first, so the list is read ONCE, on the tab and
+            // Find the pile first, so the list is read ONCE, on the view and
             // scope where the request really is.
             if (focus && !_consumedFocus.has(arrival)) {
                 _consumedFocus.add(arrival);
                 await this.locateFocused(focus);
             }
-            await this.load();
+            this.kit.ctx = { scope: this.state.scope };
+            await Promise.all([this.load(), this.kit.load()]);
         });
         onMounted(() => {
             window.addEventListener("keydown", this.onEscape,
@@ -208,7 +273,9 @@ export class PbInbox extends Component {
             return;
         }
         if (FOCUS_SCOPES.includes(where.scope)) { this.state.scope = where.scope; }
-        this.state.tab = where.tab;
+        // the panel opens on the tab's view, so closing the drawer leaves the
+        // reader on the pile that lists the request
+        this.kit.initial = { filters: TAB_FILTERS[where.tab] || {}, viewKey: where.tab };
         this.state.openId = where.id;
     }
 
@@ -219,17 +286,18 @@ export class PbInbox extends Component {
     }
 
     // ============================================================== reading
+    /** What does not depend on the filters: who may look wider, the cover
+     *  notes, the areas. */
     async load() {
         this.state.loading = true;
         this.state.failed = "";
         try {
             this.state.data = await this.orm.call(
-                "pb.approval.inbox", "list_requests",
-                [this.state.tab,
-                 { area: this.state.area || false,
-                   due: this.state.due || false },
-                 false,
-                 this.state.scope]);
+                "pb.approval.inbox", "get_inbox_head", [],
+                { context: { pbf_ctx: { scope: this.state.scope } } });
+            if (this.state.data && FOCUS_SCOPES.includes(this.state.data.scope)) {
+                this.state.scope = this.state.data.scope;
+            }
         } catch (error) {
             this.state.failed = (error.data && error.data.message)
                 || _t("Your approvals could not be read.");
@@ -238,26 +306,67 @@ export class PbInbox extends Component {
         }
     }
 
-    get data() {
-        return this.state.data
-            || { cards: [], counts: {}, areas: [], money: [] };
+    /** One page of cards for the panel's current filters, in this scope. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.cards.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.approval.inbox", "get_inbox_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+                context: { pbf_ctx: { scope: this.state.scope } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.cards = more ? [...this.state.cards, ...d.cards] : d.cards;
+            this.state.total = d.total;
+            this.state.money = more ? this._mergeMoney(this.state.money, d.money) : (d.money || []);
+            this.state.listLoaded = true;
+        } catch (error) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add((error.data && error.data.message)
+                    || _t("Your approvals could not be listed. Try again in a moment."),
+                    { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
     }
 
-    get cards() { return this.data.cards || []; }
+    /** Amounts per currency, added within one currency only. */
+    _mergeMoney(a, b) {
+        const out = {};
+        for (const row of [...(a || []), ...(b || [])]) {
+            out[row.currency] = (out[row.currency] || 0) + row.amount;
+        }
+        return Object.entries(out).sort().map(([currency, amount]) => ({ currency, amount }));
+    }
 
-    get tabs() {
-        const counts = this.data.counts || {};
-        return [
-            { key: "mine", label: _t("My turn"), count: counts.mine || 0 },
-            { key: "all", label: _t("All I can see"), count: counts.all || 0 },
-            { key: "returned", label: _t("Sent back"),
-              count: counts.returned || 0 },
-            { key: "done", label: _t("Finished"), count: counts.done || 0 },
-        ];
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.cards.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.cards.length); }
+
+    get data() {
+        return this.state.data
+            || { areas: [], covering_for: [], covered_by: [] };
+    }
+
+    get cards() { return this.state.cards; }
+
+    /** Which of the four tabs is showing, when one is (exactly, unchanged). */
+    get tab() {
+        const key = this.kit.viewKey;
+        return TAB_FILTERS[key] && !this.kit.dirty ? key : "";
+    }
+
+    get filtered() {
+        return Boolean(this.kit.activeCount || this.kit.search);
     }
 
     get emptyCopy() {
-        return {
+        const copy = {
             mine: {
                 title: _t("Nothing is waiting for you"),
                 sub: _t("When a request reaches your step it lands here, with the facts and everything attached."),
@@ -274,26 +383,37 @@ export class PbInbox extends Component {
                 title: _t("Nothing is finished yet"),
                 sub: _t("Approved, applied and turned-down requests are kept here."),
             },
-        }[this.state.tab];
+        }[this.tab];
+        if (copy) { return copy; }
+        if (this.kit.search && !this.kit.chips.length) {
+            return {
+                title: _t("No request matches “%s”", this.kit.search),
+                sub: _t("Check the spelling, or search by what it is, who sent it in or the kind of request."),
+            };
+        }
+        return {
+            title: _t("No request matches these filters"),
+            sub: _t("Remove a filter above, or go back to what is waiting for you."),
+        };
     }
 
     get moneyLine() {
-        return (this.data.money || [])
+        return (this.state.money || [])
             .map((row) => money(row.amount, row.currency)).join(" · ");
     }
 
     // =============================================================== acting
-    async setTab(key) {
-        this.state.tab = key;
-        this.state.openId = 0;
-        await this.load();
-    }
-
     async setScope(key) {
         if (this.state.scope === key) { return; }
         this.state.scope = key;
         this.state.openId = 0;
-        await this.load();
+        this.state.listLoaded = false;
+        // the same view in the new queue: the panel recounts for it
+        const keep = { filters: this.kit.filters, search: this.kit.search, viewKey: this.kit.viewKey };
+        await Promise.all([
+            this.load(),
+            this.kit.reconfigure({ ctx: { scope: key }, initial: keep }),
+        ]);
     }
 
     get scopes() {
@@ -308,21 +428,14 @@ export class PbInbox extends Component {
         return rows.length > 1 ? rows : [];
     }
 
-    async setArea(key) {
-        this.state.area = this.state.area === key ? "" : key;
-        await this.load();
-    }
-
-    async setDue(key) {
-        this.state.due = this.state.due === key ? "" : key;
-        await this.load();
-    }
+    /** Back to the start view (My turn). */
+    showMine() { this.kit.useView("mine"); }
 
     open(card) { this.state.openId = card.id; }
     close() { this.state.openId = 0; }
 
     async refresh() {
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
     }
 
     openMatrix() {
@@ -371,7 +484,7 @@ export class PbInbox extends Component {
                 area_label: area ? area.label : "",
             }]);
             this.state.asking = false;
-            await this.load();
+            await this.refresh();
             if (made.request_id) { this.state.openId = made.request_id; }
             this.notif.add(
                 _t("Sent. It is on its way to whoever decides this kind of request."),
