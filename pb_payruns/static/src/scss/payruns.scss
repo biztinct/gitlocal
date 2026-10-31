@@ -304,8 +304,36 @@
     .pbr-pill.waiting { background: var(--amber-soft); color: var(--amber); }
     .pbr-pill.done { background: var(--green-soft); color: var(--green); }
     .pbr-pill.approved { background: var(--i-soft); color: var(--i); }
+    .pbr-pill.rejected { background: var(--rose-soft); color: var(--rose); }
 
     /* ---------------------------------------------------------------- rejected drawer */
+    /* ---- FILTER wave 5: the board inside the shared filter panel ----
+       The lanes answer the width they are GIVEN (the panel takes ~280 px),
+       not the window: one column below ~820 px of board. */
+    .pbr-cq { container-type: inline-size; }
+    @container (max-width: 820px) {
+        .pbr-board, .pbr-board.f1, .pbr-board.f2, .pbr-board.f3 { grid-template-columns: 1fr; }
+        .pbr-lane.collapsed { min-height: 0; flex-direction: row; padding: 8px 14px; }
+        .pbr-lane.collapsed .pbr-slim { flex-direction: row; padding: 0; }
+        .pbr-slim-t { writing-mode: horizontal-tb; transform: none; }
+        .pbr-lh-arrow { display: none; }
+        .pbr-lane.wide .pbr-cards { grid-template-columns: 1fr; }
+    }
+    /* every lane folded (only Rejected ticked): three slim rows, not rails */
+    .pbr-board.none .pbr-lane.collapsed { min-height: 0; flex-direction: row; padding: 8px 14px; }
+    .pbr-board.none .pbr-lane.collapsed .pbr-slim { flex-direction: row; padding: 0; }
+    .pbr-board.none .pbr-slim-t { writing-mode: horizontal-tb; transform: none; }
+    .pbr-board--ghost .pbr-lane { min-height: 240px; gap: 10px; }
+    .pbr-ghost { height: 118px; border-radius: 14px; background: linear-gradient(90deg, #ECEDF6 0, #F7F7FC 50%, #ECEDF6 100%); background-size: 600px 100%; animation: pbr-shimmer 1.2s linear infinite; }
+    .pbr-lmore { align-self: center; margin: 4px auto 2px; }
+    .pbr-nomatch { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px dashed var(--line2); border-radius: 16px; padding: 16px 18px; margin-bottom: 14px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+    .pbr-nomatch b { color: var(--ink); font-size: 13.5px; }
+    .pbr-nomatch > div { flex: 1; min-width: 0; }
+    .pbr-rejhidden { margin-top: 20px; display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+    .pbr-tfoot { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); }
+    .pbr-tfoot b { color: var(--ink); }
+    .pbr-tbl th.ns { cursor: default; }
+
     .pbr-rejected { margin-top: 26px; }
     .pbr-rejected-h { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12.5px; font-weight: 700; padding: 6px 0; font-family: inherit; }
     .pbr-rejected-h .chev { transition: transform .15s; }
@@ -359,7 +387,7 @@
         .pbr-search { width: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .pbr-hero, .pbr-jdot, .pbr-flag.me, .pbr-ask .pbr-pd, .pbr-menu, .pbr-chl { animation: none !important; }
+        .pbr-hero, .pbr-jdot, .pbr-flag.me, .pbr-ask .pbr-pd, .pbr-menu, .pbr-chl, .pbr-ghost { animation: none !important; }
         .pbr-board, .pbr-card { transition: none !important; }
     }
 }

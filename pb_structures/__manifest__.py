@@ -2,14 +2,16 @@
 {
     'name': 'Payobook Salary Structures Cockpit',
     'summary': 'Bespoke periwinkle structures landing + detail cockpit + wizards',
-    'version': '19.0.1.1.3',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit',
                 # C3: the back chip the Settings hub (and any hub) hands over
-                'pb_hub'],
+                'pb_hub',
+                # FILTER wave 5: the shared filter panel on the catalogue
+                'pb_filter_kit'],
     'data': [
         'views/pb_structures_action.xml',
     ],

@@ -80,7 +80,7 @@
         <!-- GROUP P3 — two currencies never add up. The total above counts
              this company's own runs; the board still shows the others, each
              priced in its own money. -->
-        <div t-if="state.manyCurrencies" class="pbr-note-bar">
+        <div t-if="manyCurrencies" class="pbr-note-bar">
           <t t-out="ic('alert', 14)"/>
           <span>
             This board covers more than one currency
@@ -90,48 +90,41 @@
           </span>
         </div>
 
-        <!-- ===================== toolbar =====================
-             A filter is a way of looking at the board, never a change to what
-             the board is (W82): the lane counts are left alone. -->
-        <div class="pbr-tools">
-          <div t-if="state.period" class="pbr-seg" role="group" aria-label="Months">
-            <button type="button" t-att-class="state.months === 'all' ? 'on' : ''" t-on-click="() => this.setMonths('all')">All months</button>
-            <button type="button" t-att-class="state.months === 'month' ? 'on' : ''" t-on-click="() => this.setMonths('month')" t-esc="monthsOnlyLabel"/>
-          </div>
-          <t t-if="hasDivisions">
-            <span class="pbr-vsep"/>
-            <div class="pbr-divs" data-coach="pk-divchips">
-              <button t-foreach="divisionChips" t-as="dv" t-key="dv.key" type="button"
-                      class="pbr-divchip" t-att-class="{ 'is-on': state.division === dv.key }"
-                      t-on-click="() => this.setDivision(dv.key)">
-                <span t-if="dv.key !== 'all'" t-attf-class="pbr-mg is-{{ hue({division: dv.key}) }}" t-esc="mono({division: dv.key, division_label: dv.label})"/>
-                <t t-esc="dv.label"/>
-              </button>
+        <!-- ===================== the filter panel =====================
+             FILTER wave 5: the shared filter panel (pb_filter_kit) — views,
+             search, the left panel with a count beside every value, chips.
+             The months switch, the division chips and the board's own search
+             box moved into it ("Pay period ends", "Division", the search).
+             Ruling R1 supersedes W82: the lane counts FOLLOW the filters —
+             each lane counts against every other filter, so a folded lane
+             still says what is in it. Learn anchor: data-coach="pk-divchips"
+             (given to the layout's bar through `coach`, kept literal here for
+             the anchor test). -->
+        <PbFilterLayout kit="kit" coach="'pk-divchips'" searchPlaceholder="searchHint">
+          <t t-set-slot="toolbar">
+            <div class="pbr-seg" role="group" aria-label="View">
+              <button type="button" t-att-class="state.view === 'board' ? 'on' : ''" title="Board" t-on-click="() => this.setView('board')"><span class="ic" t-out="ic('grid', 13)"/></button>
+              <button type="button" t-att-class="state.view === 'list' ? 'on' : ''" title="List" t-on-click="() => this.setView('list')"><span class="ic" t-out="ic('list', 13)"/></button>
             </div>
+            <button type="button" class="pbr-btn ghost icon" title="Keyboard shortcuts" aria-label="Keyboard shortcuts" t-on-click="openKeys"><span class="ic" t-out="ic('keyboard', 15)"/></button>
           </t>
-          <div class="pbr-grow"/>
-          <label class="pbr-search">
-            <span class="ic" t-out="ic('search', 14)"/>
-            <input type="text" t-ref="search" t-model="state.q" placeholder="Find a pay run" aria-label="Find a pay run"/>
-            <kbd>/</kbd>
-          </label>
-          <div class="pbr-seg" role="group" aria-label="View">
-            <button type="button" t-att-class="state.view === 'board' ? 'on' : ''" title="Board" t-on-click="() => this.setView('board')"><span class="ic" t-out="ic('grid', 13)"/></button>
-            <button type="button" t-att-class="state.view === 'list' ? 'on' : ''" title="List" t-on-click="() => this.setView('list')"><span class="ic" t-out="ic('list', 13)"/></button>
-          </div>
-          <button type="button" class="pbr-btn ghost icon" title="Keyboard shortcuts" aria-label="Keyboard shortcuts" t-on-click="openKeys"><span class="ic" t-out="ic('keyboard', 15)"/></button>
-        </div>
 
-        <div class="pbr-showing">
-          <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/><t t-if="liveBatches.length"> · press a step, a division or a phrase in the sentence above to narrow it</t></t>
-          <t t-else="">Showing <b t-esc="showingLine.text"/> <t t-esc="showingLine.where"/>
-            <button type="button" class="pbr-lnk" t-on-click="showAll">Show all</button></t>
+        <!-- filters on and not one run anywhere on the board -->
+        <div t-if="nothingMatches" class="pbr-nomatch">
+          <span class="pbr-ei ic" t-out="ic('search', 18)"/>
+          <div><b>No pay runs match these filters</b><div t-esc="emptyHint"/></div>
+          <button type="button" class="pbr-btn" t-on-click="() => kit.home()">Show all pay runs</button>
         </div>
 
         <!-- ===================== the board =====================
              Three equal lanes. The lane header IS the numbered step: pressing
-             it focuses the lane and folds the other two into slim rails. -->
-        <div t-if="state.view === 'board'" t-attf-class="pbr-board {{ boardClass }}" data-coach="pk-tabs">
+             it ticks that step in the panel's "Where it is" and folds the
+             other two into slim rails; pressing it again lets go. -->
+        <div t-if="state.view === 'board'" class="pbr-cq">
+        <div t-if="!state.lanesLoaded" class="pbr-board pbr-board--ghost" aria-label="Loading pay runs">
+          <div t-foreach="[1,2,3]" t-as="i" t-key="i" class="pbr-lane"><div class="pbr-ghost"/><div class="pbr-ghost"/></div>
+        </div>
+        <div t-else="" t-attf-class="pbr-board {{ boardClass }}" data-coach="pk-tabs">
           <div t-foreach="lanes" t-as="ln" t-key="ln.key"
                t-attf-class="pbr-lane l-{{ ln.key }} {{ ln.collapsed ? 'collapsed' : '' }} {{ ln.on ? 'wide' : '' }}"
                t-on-click="(ev) => ln.collapsed ? this.pickStep(ln.key) : null">
@@ -181,6 +174,12 @@
                   </t>
                 </t>
               </t>
+              <!-- each lane pages on its own (FILTER wave 5) -->
+              <button t-if="ln.more" type="button" class="pbr-btn pbr-lmore" t-att-disabled="state.loadingLane === ln.key"
+                      t-on-click.stop="() => this.loadLane(ln.key)">
+                <t t-if="state.loadingLane === ln.key">Loading…</t>
+                <t t-else="">Show <t t-esc="ln.more"/> more</t>
+              </button>
             </div>
             <div t-else="" class="pbr-empty">
               <span class="pbr-ei ic" t-out="ic(ln.key === 'draft' ? 'pencil' : ln.key === 'done' ? 'checkCircle' : 'inbox', 18)"/>
@@ -189,15 +188,18 @@
             </div>
           </div>
         </div>
+        </div>
 
-        <!-- ===================== list view ===================== -->
+        <!-- ===================== list view =====================
+             One server page in the panel's sort; a column header picks the
+             matching sort (FILTER wave 5). -->
         <div t-else="" class="pbr-tbl">
           <div class="pbr-tw">
             <table>
               <thead><tr>
                 <th t-on-click="() => this.sortBy('name')">Pay run<t t-esc="sortMark('name')"/></th>
                 <th t-on-click="() => this.sortBy('date_end')">Period<t t-esc="sortMark('date_end')"/></th>
-                <th t-on-click="() => this.sortBy('state')">Where it is<t t-esc="sortMark('state')"/></th>
+                <th class="ns">Where it is</th>
                 <th class="r" t-on-click="() => this.sortBy('employees')">People<t t-esc="sortMark('employees')"/></th>
                 <th class="r" t-on-click="() => this.sortBy('gross')">Gross<t t-esc="sortMark('gross')"/></th>
                 <th class="r" t-on-click="() => this.sortBy('net')">Net pay<t t-esc="sortMark('net')"/></th>
@@ -218,19 +220,28 @@
                     <button t-elif="b.state === 'done'" type="button" class="pbr-btn ghost" t-on-click="() => this.report(b)">Report</button>
                   </td>
                 </tr>
-                <tr t-if="!listRows.length"><td colspan="7" class="pbr-tempty">Nothing matches.</td></tr>
+                <tr t-if="!listRows.length and !nothingMatches"><td colspan="7" class="pbr-tempty">No pay runs yet. Press Run payroll to start one.</td></tr>
               </tbody>
             </table>
           </div>
+          <div t-if="listRows.length" class="pbr-tfoot">
+            Showing <b t-esc="int(listRows.length)"/> of <b t-esc="int(state.listTotal)"/>
+            <button t-if="listMore" type="button" class="pbr-btn" t-att-disabled="state.loadingLane === 'list'" t-on-click="loadMoreList">
+              <t t-if="state.loadingLane === 'list'">Loading…</t>
+              <t t-else="">Show <t t-esc="listMore"/> more</t>
+            </button>
+          </div>
         </div>
 
-        <!-- ===================== rejected drawer ===================== -->
-        <div t-if="state.rejectedCount" class="pbr-rejected" data-coach="pk-rejected">
-          <button type="button" class="pbr-rejected-h" t-att-class="{ open: state.showRejected }" t-on-click="toggleRejected">
+        <!-- ===================== rejected drawer =====================
+             The rejected runs the panel's filters keep; it opens by itself
+             when "Where it is" is ticked to Rejected. -->
+        <div t-if="state.view === 'board' and rejectedCount" class="pbr-rejected" data-coach="pk-rejected">
+          <button type="button" class="pbr-rejected-h" t-att-class="{ open: rejectedOpen }" t-on-click="toggleRejected">
             <span class="chev ic" t-out="ic('chevron', 13)"/>
-            Rejected pay runs <span class="ct" t-esc="state.rejectedCount"/>
+            Rejected pay runs <span class="ct" t-esc="rejectedCount"/>
           </button>
-          <div t-if="state.showRejected" class="pbr-rejected-list">
+          <div t-if="rejectedOpen" class="pbr-rejected-list">
             <div t-foreach="rejectedBatches" t-as="b" t-key="b.id" class="pbr-rej-row" t-on-click="() => this.openPeek(b.id)">
               <span t-attf-class="pbr-mg is-{{ hue(b) }}" t-esc="mono(b)"/>
               <div class="pbr-rej-main">
@@ -243,8 +254,19 @@
               <span class="pd" t-esc="b.period"/>
               <span class="em" t-esc="_people(b.employees)"/>
             </div>
+            <button t-if="laneMore('cancel')" type="button" class="pbr-btn pbr-lmore" t-att-disabled="state.loadingLane === 'cancel'"
+                    t-on-click="() => this.loadLane('cancel')">
+              <t t-if="state.loadingLane === 'cancel'">Loading…</t>
+              <t t-else="">Show <t t-esc="laneMore('cancel')"/> more</t>
+            </button>
           </div>
         </div>
+        <!-- never silently missing: rejected runs the panel leaves out -->
+        <div t-elif="state.view === 'board' and rejectedHidden" class="pbr-rejhidden">
+          <span class="ic" t-out="ic('eyeOff', 13)"/> <t t-esc="rejectedHiddenLine"/>
+          <button type="button" class="pbr-lnk" t-on-click="showRejectedToo">Show them too</button>
+        </div>
+        </PbFilterLayout>
       </div>
 
       <!-- ===================== layers: quick look, bulk bar, sheets =====================

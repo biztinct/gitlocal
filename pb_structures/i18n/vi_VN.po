@@ -71,6 +71,8 @@ msgstr "Quay lại cấu trúc"
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
 #: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: code:addons/pb_structures/static/src/js/structure_detail.js:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Categories"
 msgstr "Phân loại"
 
@@ -95,12 +97,15 @@ msgstr "Mã *"
 #. module: pb_structures
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Countries"
 msgstr "Quốc gia"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+#: code:addons/pb_structures/models/pb_structures.py:0
 msgid "Country"
 msgstr "Quốc gia"
 
@@ -130,15 +135,20 @@ msgstr "ER"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
+#: code:addons/pb_structures/static/src/js/structure_detail.js:0
 msgid "Employees"
 msgstr "Nhân viên"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: code:addons/pb_structures/models/pb_structures.py:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Employees covered"
-msgstr "Nhân viên được bảo hiểm"
+msgstr "Nhân viên áp dụng"
 
 #. module: pb_structures
 #. odoo-javascript
@@ -197,6 +207,7 @@ msgstr "Cơ cấu lương mới"
 #. module: pb_structures
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "New structure"
 msgstr "Cấu trúc mới"
 
@@ -232,7 +243,9 @@ msgstr "Cấu trúc mở"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/xml/structure_wizards.xml:0
+#: code:addons/pb_structures/models/pb_structures.py:0
 msgid "Pay schedule"
 msgstr "Lịch thanh toán"
 
@@ -288,6 +301,8 @@ msgstr "Cấu trúc lương"
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
 #: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: code:addons/pb_structures/static/src/js/structure_detail.js:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Salary rules"
 msgstr "quy định về lương"
 
@@ -322,7 +337,9 @@ msgid "Showing"
 msgstr "Đang hiển thị"
 
 #. module: pb_structures
+#. odoo-javascript
 #: model:ir.actions.client,name:pb_structures.action_pb_structure_detail
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Structure"
 msgstr "Cấu trúc"
 
@@ -336,6 +353,7 @@ msgstr "Cấu trúc được tạo"
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/xml/structure_detail.xml:0
 #: code:addons/pb_structures/static/src/xml/structures.xml:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Structures"
 msgstr "Cấu trúc"
 
@@ -393,6 +411,7 @@ msgstr "— Tùy chọn —"
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/js/structure_wizards.js:33
 #: code:addons/pb_structures/static/src/js/structure_wizards.js:75
+#: code:addons/pb_structures/static/src/js/structure_wizards.js:0
 msgid "Failed."
 msgstr "Không thành công."
 
@@ -404,42 +423,299 @@ msgstr "Tất cả"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/js/structures.js:11
+#: code:addons/pb_structures/models/pb_structures.py:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Active"
 msgstr "Đang hoạt động"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/js/structures.js:12
+#: code:addons/pb_structures/models/pb_structures.py:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Draft"
 msgstr "Nháp"
 
 #. module: pb_structures
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_structures/static/src/js/structures.js:12
+#: code:addons/pb_structures/models/pb_structures.py:0
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Deprecated"
 msgstr "Ngừng sử dụng"
 
 #. module: pb_structures
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/js/structures.js:15
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "All time"
 msgstr "Mọi lúc"
 
 #. module: pb_structures
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/js/structures.js:15
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Updated this month"
 msgstr "Đã cập nhật trong tháng này"
 
 #. module: pb_structures
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/js/structures.js:16
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Updated this year"
 msgstr "Cập nhật năm nay"
 
 #. module: pb_structures
 #. odoo-javascript
 #: code:addons/pb_structures/static/src/js/structures.js:16
+#: code:addons/pb_structures/static/src/js/structures.js:0
 msgid "Custom"
 msgstr "Tùy chỉnh"
+
+# ===================================================================
+#  FILTER wave 5 (2026-10-31): the shared filter panel.
+# ===================================================================
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "A base structure is a template the others start from. It cannot be deleted."
+msgstr "Cấu trúc căn cứ là mẫu để các cấu trúc khác dựa vào. Không thể xoá cấu trúc này."
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "A structure is the set of pay rules a group of people is paid by. Start with one for your main payroll."
+msgstr "Cấu trúc là bộ quy tắc lương dùng để trả lương cho một nhóm người. Hãy bắt đầu với một cấu trúc cho bảng lương chính."
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "All structures"
+msgstr "Tất cả cấu trúc"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Any contract type"
+msgstr "Mọi loại hợp đồng"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Base structure"
+msgstr "Cấu trúc căn cứ"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Base structures"
+msgstr "Cấu trúc căn cứ"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Built on"
+msgstr "Dựa trên"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Changed this month"
+msgstr "Thay đổi trong tháng này"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Contract type"
+msgstr "Loại hợp đồng"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Drafts"
+msgstr "Bản nháp"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "How pay is worked out"
+msgstr "Cách tính lương"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Last changed"
+msgstr "Lần thay đổi gần nhất"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Loading structures"
+msgstr "Đang tải cấu trúc"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Most employees first"
+msgstr "Nhiều nhân viên nhất trước"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Name, Z to A"
+msgstr "Tên, Z đến A"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "No country set"
+msgstr "Chưa đặt quốc gia"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "No salary structures yet"
+msgstr "Chưa có cấu trúc lương nào"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "No schedule set"
+msgstr "Chưa đặt lịch trả lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/js/structures.js:0
+msgid "No structure is called “%s” and no code matches it. Check the spelling, or search by code."
+msgstr "Không có cấu trúc nào tên “%s” và không có mã nào khớp. Kiểm tra chính tả, hoặc tìm theo mã."
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "No structures match these filters"
+msgstr "Không có cấu trúc nào khớp với các bộ lọc này"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Nothing, it stands alone"
+msgstr "Không dựa trên cấu trúc nào"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Other structures"
+msgstr "Cấu trúc khác"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Payroll country"
+msgstr "Quốc gia tính lương"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Recently changed first"
+msgstr "Thay đổi gần đây nhất trước"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/js/structures.js:0
+msgid "Remove a filter above, or start again from every structure."
+msgstr "Bỏ một bộ lọc phía trên, hoặc bắt đầu lại từ mọi cấu trúc."
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/js/structures.js:0
+msgid "Search a name or a code…"
+msgstr "Tìm tên hoặc mã…"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "Show all structures"
+msgstr "Hiện mọi cấu trúc"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/js/structures.js:0
+msgid "The structures could not be loaded. Try again in a moment."
+msgstr "Không tải được các cấu trúc. Vui lòng thử lại sau giây lát."
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "With formulas"
+msgstr "Bằng công thức"
+
+#. module: pb_structures
+#. odoo-python
+#: code:addons/pb_structures/models/pb_structures.py:0
+msgid "With salary rules"
+msgstr "Bằng quy tắc lương"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/xml/structures.xml:0
+msgid "more"
+msgstr "thêm"
+
+#. module: pb_structures
+#. odoo-javascript
+#: code:addons/pb_structures/static/src/js/structures.js:0
+msgid "structures"
+msgstr "cấu trúc"

@@ -4,7 +4,8 @@ from datetime import date, timedelta
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.fields import Domain
 from odoo.tools import format_date
 
 _logger = logging.getLogger(__name__)
@@ -16,6 +17,11 @@ from .hr_payslip_run import PB_BOARD_STATES, PB_STAGE_NAME
 STAGE_ORDER = list(PB_BOARD_STATES)
 STAGE_LABEL = dict(PB_STAGE_NAME)
 BOARD_LIMIT = 60
+#: FILTER wave 5 — runs per lane per page, and per page of the list view.
+LANE_PAGE = 30
+LIST_PAGE = 60
+#: The lanes the board loads: the three steps and the Rejected drawer.
+LANE_KEYS = ('draft', 'approval_pending', 'done', 'cancel')
 
 # The month journey the hero draws (PAYRUN BOARD redesign, 2026-10-11). The
 # numbers are the Pay Run hub's own tracker stages (`pb.pay.hub`, _STAGE_DOC),
@@ -40,6 +46,7 @@ _OPEN_STATES = ('draft', 'approval_pending')
 
 class PbPayruns(models.AbstractModel):
     _name = 'pb.payruns'
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook Pay Runs board data'
 
     @api.model
@@ -50,8 +57,393 @@ class PbPayruns(models.AbstractModel):
             _logger.debug("Pay Runs board metric failed: %s", e)
             return default
 
+    # ============================================================ filter panel
+    # FILTER wave 5. The board is on the shared filter panel (pb_filter_kit).
+    # It used to load the newest 240 runs, keep 60 and filter those in the
+    # browser, so a division chip could hide a run that was simply not loaded.
+    # Now every count is the server's, and each lane pages on its own.
+
+    def _pbf_model(self):
+        return 'hr.payslip.run'
+
+    def _pbf_screen(self):
+        return 'payruns'
+
+    def _pbf_base_domain(self):
+        """The board's company rule as a domain.
+
+        A run carries no company of its own (`_run_companies`): its live
+        payslips' company decides, and a run with none (rejected, or not
+        computed yet) falls back to its scheme's company — and to "this
+        company" when it has neither, which the reader is always in.
+        """
+        co = self.env.companies.ids or [self.env.company.id]
+        live = [('state', '!=', 'cancel')]
+        if 'pb_formula_config_id' not in self.env['hr.payslip.run']._fields:
+            return ['|', ('slip_ids', 'any', live + [('company_id', 'in', co)]),
+                    ('slip_ids', 'not any', live)]
+        return ['|', ('slip_ids', 'any', live + [('company_id', 'in', co)]),
+                '&', ('slip_ids', 'not any', live),
+                '|', ('pb_formula_config_id', '=', False),
+                '|', ('pb_formula_config_id.company_id', '=', False),
+                ('pb_formula_config_id.company_id', 'in', co)]
+
+    def _pbf_search_fields(self):
+        return ['name', 'pb_division_label']
+
+    def _pbf_layout_extra(self):
+        return {'currency': self.env.company.currency_id.symbol or ''}
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'latest', 'label': _('Latest period first'), 'order': 'date_end desc, id desc'},
+            {'key': 'oldest', 'label': _('Oldest period first'), 'order': 'date_end asc, id asc'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+            {'key': 'people', 'label': _('Most people first'),
+             'order': 'pb_employee_count desc, date_end desc, id desc'},
+            {'key': 'gross', 'label': _('Biggest gross first'),
+             'order': 'pb_total_gross desc, date_end desc, id desc'},
+            {'key': 'net', 'label': _('Biggest net pay first'),
+             'order': 'pb_total_net desc, date_end desc, id desc'},
+        ]
+
+    @api.model
+    def _pbf_division_options(self):
+        """One option per division on this database, named as the board
+        names it (the scheme's own name: "Information Technology", not "It"),
+        plus "No division" for traditional structure payroll."""
+        _chips, names = self._divisions()
+        keys = set(names)
+        try:
+            for value, _n in self.env['hr.payslip.run']._read_group(
+                    [('pb_division', '!=', False), ('pb_division', '!=', '')],
+                    ['pb_division'], ['__count']):
+                if value:
+                    keys.add(value)
+        except Exception as e:  # noqa: BLE001
+            _logger.debug("Pay Runs division keys failed: %s", e)
+        opts = [{'value': k, 'label': names.get(k) or self._pbf_pretty(k),
+                 'domain': [('pb_division', '=', k)]} for k in keys]
+        opts.sort(key=lambda o: (o['label'] or '').lower())
+        opts.append({'value': '__none', 'label': _('No division'), 'tone': 'slate',
+                     'domain': ['|', ('pb_division', '=', False), ('pb_division', '=', '')]})
+        return opts
+
+    def _pbf_spec(self):
+        draft = ['|', ('state', '=', 'draft'), ('state', '=', False)]
+        spec = [
+            # ---- pinned: where is it, which month, which part of the business
+            {'key': 'stage', 'label': _('Where it is'), 'icon': 'activity', 'group': 'pay',
+             'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'draft', 'label': _('Draft'), 'tone': 'slate', 'domain': draft},
+                 {'value': 'approval_pending', 'label': _('Waiting for approval'),
+                  'tone': 'amber', 'domain': [('state', '=', 'approval_pending')]},
+                 {'value': 'done', 'label': _('Done'), 'tone': 'green',
+                  'domain': [('state', '=', 'done')]},
+                 {'value': 'cancel', 'label': _('Rejected'), 'tone': 'rose',
+                  'domain': [('state', '=', 'cancel')]},
+             ]},
+            {'key': 'period', 'label': _('Pay period ends'), 'icon': 'calendar', 'group': 'dates',
+             'type': 'date', 'path': 'date_end', 'pinned': True,
+             'presets': ['this_month', 'last_month', 'this_quarter', 'this_year', 'last_year']},
+            {'key': 'division', 'label': _('Division'), 'icon': 'layers', 'group': 'work',
+             'type': 'choice', 'pinned': True, 'requires': ['pb_division'],
+             'options': self._pbf_division_options()},
+            # ---- more filters
+            {'key': 'mine', 'label': _('Whose turn'), 'icon': 'userCheck', 'group': 'people',
+             'type': 'choice', 'requires': ['pb_awaiting_me'],
+             'options': [
+                 {'value': 'me', 'label': _('Waiting on me'), 'tone': 'amber',
+                  'domain': [('pb_awaiting_me', '=', True)]},
+                 {'value': 'others', 'label': _('Waiting on someone else'), 'tone': 'slate',
+                  'domain': [('state', '=', 'approval_pending'), ('pb_awaiting_me', '=', False)]},
+             ]},
+            {'key': 'sentback', 'label': _('Sent back'), 'icon': 'rotate', 'group': 'pay',
+             'type': 'choice', 'requires': ['pb_return_note'],
+             'options': [
+                 {'value': 'yes', 'label': _('Sent back to be fixed'), 'tone': 'amber',
+                  'domain': draft + [('pb_return_note', '!=', False)]},
+                 {'value': 'no', 'label': _('Not sent back'), 'tone': 'slate',
+                  'domain': ['|', ('pb_return_note', '=', False),
+                             '&', ('state', '!=', 'draft'), ('state', '!=', False)]},
+             ]},
+            {'key': 'health', 'label': _('Checks'), 'icon': 'shieldCheck', 'group': 'pay',
+             'type': 'choice', 'requires': ['pb_balance_ok', 'pb_unsourced_count'],
+             'help': _('A check fails when gross minus deductions is not net pay, or when '
+                       'payslips were worked out with no source data.'),
+             'options': [
+                 {'value': 'fail', 'label': _('Something needs a check'), 'tone': 'rose',
+                  'domain': ['|', ('pb_balance_ok', '=', False), ('pb_unsourced_count', '>', 0)]},
+                 {'value': 'ok', 'label': _('Every check passes'), 'tone': 'green',
+                  'domain': [('pb_balance_ok', '=', True),
+                             '|', ('pb_unsourced_count', '=', False), ('pb_unsourced_count', '=', 0)]},
+             ]},
+            {'key': 'scheme', 'label': _('Payroll scheme'), 'icon': 'sigma', 'group': 'pay',
+             'type': 'many2one', 'path': 'pb_formula_config_id', 'label_sudo': True,
+             'none_label': _('No scheme')},
+            {'key': 'currency', 'label': _('Currency'), 'icon': 'coins', 'group': 'pay',
+             'type': 'many2one', 'path': 'pb_currency_id', 'none_label': _('Not set')},
+            {'key': 'prepared', 'label': _('Prepared by'), 'icon': 'user', 'group': 'people',
+             'type': 'many2one', 'path': 'pb_prepared_uid', 'label_sudo': True,
+             'none_label': _('Not recorded')},
+            {'key': 'refund', 'label': _('Kind of run'), 'icon': 'undo', 'group': 'pay',
+             'type': 'choice', 'requires': ['credit_note'],
+             'options': [
+                 {'value': 'yes', 'label': _('Refund runs'), 'tone': 'rose',
+                  'domain': [('credit_note', '=', True)]},
+                 {'value': 'no', 'label': _('Regular runs'), 'tone': 'slate',
+                  'domain': [('credit_note', '=', False)]},
+             ]},
+            {'key': 'people', 'label': _('People paid'), 'icon': 'users', 'group': 'people',
+             'type': 'number', 'path': 'pb_employee_count'},
+            {'key': 'net', 'label': _('Net pay'), 'icon': 'banknote', 'group': 'pay',
+             'type': 'number', 'path': 'pb_total_net', 'unit': 'money',
+             'help': _('Each run in its own money: a run paid in another currency is '
+                       'compared in that currency.')},
+        ]
+        # Paid is the bank's answer, stamped on each payslip when its money
+        # left (pb_pay_delivery) — a run is paid when every one of its done
+        # payslips is. Absent on a database without that module.
+        paid = self._paid_domains()
+        if paid:
+            spec.insert(3, {
+                'key': 'paid', 'label': _('Paid'), 'icon': 'wallet', 'group': 'pay',
+                'type': 'choice',
+                'options': [
+                    {'value': 'topay', 'label': _('Approved, not paid yet'), 'tone': 'blue',
+                     'domain': paid[0]},
+                    {'value': 'paid', 'label': _('Paid'), 'tone': 'green',
+                     'domain': paid[1]},
+                ]})
+        # A run belongs to the company of its payslips; listed only where the
+        # reader works in more than one.
+        if len(self.env.companies) > 1:
+            spec.append({
+                'key': 'company', 'label': _('Company'), 'icon': 'landmark', 'group': 'work',
+                'type': 'choice',
+                'options': [{'value': c.id, 'label': c.name,
+                             'domain': [('slip_ids', 'any', [('company_id', '=', c.id),
+                                                             ('state', '!=', 'cancel')])]}
+                            for c in self.env.companies],
+            })
+        return spec
+
+    @api.model
+    def _paid_domains(self):
+        """(approved but not paid, paid) as domains, or None without
+        pb_pay_delivery. The run's own `pb_paid` is computed, not stored: a
+        done run is paid when it has done payslips and every one carries the
+        stamp the payment release writes (`pb_paid_on`)."""
+        if 'pb_paid_on' not in self.env['hr.payslip']._fields:
+            return None
+        done = [('state', '=', 'done')]
+        unpaid_slip = [('state', '=', 'done'), ('pb_paid_on', '=', False)]
+        topay = done + ['|', ('slip_ids', 'not any', done), ('slip_ids', 'any', unpaid_slip)]
+        paid = done + [('slip_ids', 'any', done), ('slip_ids', 'not any', unpaid_slip)]
+        return topay, paid
+
+    def _pbf_builtin_views(self):
+        this_month = {'preset': 'this_month'}
+        return [
+            {'key': 'all', 'label': _('All pay runs'), 'icon': 'calendar', 'filters': {}},
+            {'key': 'mine', 'label': _('Waiting on me'), 'filters': {'mine': ['me']}},
+            {'key': 'month', 'label': _('This month'), 'filters': {'period': this_month}},
+            {'key': 'sentback', 'label': _('Sent back'), 'filters': {'sentback': ['yes']}},
+            {'key': 'topay', 'label': _('Approved, not paid'), 'filters': {'paid': ['topay']}},
+            {'key': 'rejected', 'label': _('Rejected'), 'filters': {'stage': ['cancel']}},
+        ]
+
+    # ------------------------------------------------- the board's own calls
+    @api.model
+    def _month_runs(self):
+        """The live runs the hero talks about: those whose period ENDS in the
+        calendar month (the date the period filter and the board's month
+        groups read), whatever the panel shows."""
+        Run = self.env['hr.payslip.run']
+        today = fields.Date.context_today(self)
+        first = today.replace(day=1)
+        nxt = first + relativedelta(months=1)
+        domain = Domain.AND([
+            Domain(self._pbf_base_domain()),
+            Domain([('state', '!=', 'cancel'), ('date_end', '>=', first), ('date_end', '<', nxt)]),
+        ])
+        return Run.search(domain, order='date_end desc, id desc', limit=BOARD_LIMIT)
+
+    @api.model
+    def get_board_head(self):
+        """Everything above the lanes, un-narrowed by the panel: the month
+        the hero speaks about with its own runs, the lane names, who may
+        submit. The lanes load through `get_board_page`."""
+        company = self.env.company
+        cur = company.currency_id
+        month = self._safe(self._month_runs, default=self.env['hr.payslip.run'].browse())
+        built = self._board_cards(month)
+        return {
+            'currency': cur.symbol or '',
+            'currency_name': cur.name or '',
+            'company': company.name,
+            'can_submit': built['may_write'],
+            'columns': [{'key': s, 'label': STAGE_LABEL[s]} for s in STAGE_ORDER],
+            'month_batches': built['batches'],
+            'period': self._period_block(built['batches'], company),
+        }
+
+    @api.model
+    def _lane_domain(self, key):
+        if key == 'draft':
+            return ['|', ('state', '=', 'draft'), ('state', '=', False)]
+        return [('state', '=', key)]
+
+    @api.model
+    def get_board_page(self, filters=None, search=None, sort=None, lane=None,
+                       offset=0, limit=None):
+        """The board for the panel's current state.
+
+        lane=None   every lane (Draft, Waiting for approval, Done, and the
+                    Rejected drawer), first page of each, with each lane's
+                    total and the counts its header flag says;
+        lane=<key>  the next page of that one lane ("Show N more");
+        lane='list' one page of the list view, every state, in the sort.
+        """
+        Run = self.env['hr.payslip.run']
+        try:
+            offset = max(0, int(offset or 0))
+            limit = int(limit) if limit else 0
+        except (TypeError, ValueError):
+            offset, limit = 0, 0
+        filters = filters if isinstance(filters, dict) else {}
+        domain = self.pbf_domain(filters, search)
+        order = self.pbf_order(sort) or 'date_end desc, id desc'
+
+        def cards(runs):
+            built = self._board_cards(runs)
+            return built['batches']
+
+        def currencies_of(batches):
+            return sorted({b['currency_name'] for b in batches if b.get('currency_name')})
+
+        if lane == 'list':
+            limit = max(1, min(limit or LIST_PAGE, 200))
+            runs = Run.search(domain, order=order, offset=offset, limit=limit)
+            rows = cards(runs)
+            return {'rows': rows, 'total': Run.search_count(domain), 'offset': offset,
+                    'currencies': currencies_of(rows)}
+
+        limit = max(1, min(limit or LANE_PAGE, 120))
+        keys = [lane] if lane in LANE_KEYS else list(LANE_KEYS)
+        picked = {}
+        union = Run.browse()
+        for key in keys:
+            lane_dom = Domain.AND([domain, Domain(self._lane_domain(key))])
+            runs = Run.search(lane_dom, order=order, offset=offset if lane else 0, limit=limit)
+            picked[key] = (lane_dom, runs)
+            union |= runs
+        by_id = {b['id']: b for b in cards(union)}
+        out = {}
+        for key, (lane_dom, runs) in picked.items():
+            out[key] = {
+                'rows': [by_id[r.id] for r in runs if r.id in by_id],
+                'total': Run.search_count(lane_dom),
+                'flags': self._safe(lambda d=lane_dom, k=key: self._lane_flags(k, d), default={}),
+            }
+        return {'lanes': out, 'offset': offset if lane else 0,
+                'currencies': currencies_of(list(by_id.values()))}
+
+    @api.model
+    def _lane_flags(self, key, lane_dom):
+        """The one sentence a lane header says, counted over the WHOLE lane
+        as filtered (not the page the lane shows)."""
+        Run = self.env['hr.payslip.run']
+
+        def n(extra):
+            return Run.search_count(Domain.AND([lane_dom, Domain(extra)]))
+        if key == 'draft':
+            return {'back': n([('pb_return_note', '!=', False)]),
+                    'bad': n(['|', ('pb_balance_ok', '=', False), ('pb_unsourced_count', '>', 0)])}
+        if key == 'approval_pending':
+            return {'mine': n([('pb_awaiting_me', '=', True)])}
+        if key == 'done':
+            paid = self._paid_domains()
+            return {'topay': n(paid[0]) if paid else 0}
+        return {}
+
     @api.model
     def get_board_data(self):
+        """The whole board in one payload, as it was before the filter panel.
+
+        Kept for the readers that are not the board (FILTER ruling R4):
+        Learn's "Right now" (pb_payruns_learn), the learn manifests and the
+        tests read it. The board itself loads through `get_board_head` and
+        the paged `get_board_page` since FILTER wave 5.
+        """
+        company = self.env.company
+        cur = company.currency_id
+        Run = self.env['hr.payslip.run']
+        runs = self._safe(
+            lambda: Run.search([], order='date_end desc, id desc',
+                               limit=BOARD_LIMIT * 4),
+            default=Run.browse())
+        owner = self._run_companies(runs)
+        allowed = set(self.env.companies.ids or [company.id])
+        runs = runs.filtered(
+            lambda r: owner.get(r.id, company.id) in allowed)[:BOARD_LIMIT]
+        built = self._board_cards(runs, owner=owner)
+        batches = built['batches']
+        stage_counts = built['stage_counts']
+        may_write = built['may_write']
+
+        drawn = [s for s in STAGE_ORDER]
+        columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}
+                   for s in drawn]
+        divisions, _division_name = self._divisions()
+
+        # Demo users get the board pre-filtered to the live demo month (June 2026).
+        is_demo_user = self._safe(
+            lambda: self.env.user.has_group('pb_demo.group_payobook_demo'),
+            default=False)
+        demo_period = {'from': '2026-06-01', 'to': '2026-06-30'} if is_demo_user else None
+
+        currencies = sorted({b['currency_name'] for b in batches if
+                             b.get('currency_name')})
+        return {
+            'currency': cur.symbol or '',
+            'currency_name': cur.name or '',
+            # More than one money on the board is worth SAYING: the stage
+            # total below only ever adds up the active company's own runs.
+            'many_currencies': len(currencies) > 1,
+            'currencies': currencies,
+            'company': company.name,
+            'divisions': divisions,
+            'is_demo_user': is_demo_user,
+            'demo_period': demo_period,
+            'can_submit': may_write,
+            'columns': columns,
+            'batches': batches,
+            'rejected_count': stage_counts.get('cancel', 0),
+            # The month the hero talks about: the calendar month, as the Pay
+            # Run hub's own tracker keys it — and, since NAV P3b, its two
+            # dates from the Payroll calendar.
+            'period': self._period_block(batches, company),
+            'kpis': {
+                'total': len(batches),
+                'done': stage_counts.get('done', 0),
+                'in_pipeline': stage_counts.get('draft', 0)
+                + stage_counts.get('approval_pending', 0),
+                'my_pending': built['my_pending'],
+                'period_net': built['period_net'],
+            },
+        }
+
+    @api.model
+    def _board_cards(self, runs, owner=None):
+        """Every card the board draws for `runs`, built in a fixed number of
+        reads however many runs there are. Shared by `get_board_data` and the
+        filter panel's paged `get_board_page`, so a card is one thing.
+
+        Returns {'batches', 'stage_counts', 'my_pending', 'period_net',
+        'may_write'}.
+        """
         company = self.env.company
         cur = company.currency_id
         Run = self.env['hr.payslip.run']
@@ -64,15 +456,8 @@ class PbPayruns(models.AbstractModel):
         may_write = self._safe(lambda: Run.has_access('write'), default=False)
         awaiting = self._safe(lambda: Run._pb_runs_awaiting(self.env.uid),
                               default=set())
-
-        runs = self._safe(
-            lambda: Run.search([], order='date_end desc, id desc',
-                               limit=BOARD_LIMIT * 4),
-            default=Run.browse())
-        owner = self._run_companies(runs)
-        allowed = set(self.env.companies.ids or [company.id])
-        runs = runs.filtered(
-            lambda r: owner.get(r.id, company.id) in allowed)[:BOARD_LIMIT]
+        if owner is None:
+            owner = self._run_companies(runs)
         currency_of = self._currency_by_company()
         scheme_currency_of = self._scheme_currency_by_run(runs)
         # Where each approved run's money and payslips have got to — one query
@@ -199,47 +584,9 @@ class PbPayruns(models.AbstractModel):
                 'currency': run_currency['symbol'],
                 'currency_name': run_currency['name'],
             })
-
-        drawn = [s for s in STAGE_ORDER]
-        columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}
-                   for s in drawn]
-
-        # Demo users get the board pre-filtered to the live demo month (June 2026).
-        is_demo_user = self._safe(
-            lambda: self.env.user.has_group('pb_demo.group_payobook_demo'),
-            default=False)
-        demo_period = {'from': '2026-06-01', 'to': '2026-06-30'} if is_demo_user else None
-
-        currencies = sorted({b['currency_name'] for b in batches if
-                             b.get('currency_name')})
-        return {
-            'currency': cur.symbol or '',
-            'currency_name': cur.name or '',
-            # More than one money on the board is worth SAYING: the stage
-            # total below only ever adds up the active company's own runs.
-            'many_currencies': len(currencies) > 1,
-            'currencies': currencies,
-            'company': company.name,
-            'divisions': divisions,
-            'is_demo_user': is_demo_user,
-            'demo_period': demo_period,
-            'can_submit': may_write,
-            'columns': columns,
-            'batches': batches,
-            'rejected_count': stage_counts.get('cancel', 0),
-            # The month the hero talks about: the calendar month, as the Pay
-            # Run hub's own tracker keys it — and, since NAV P3b, its two
-            # dates from the Payroll calendar.
-            'period': self._period_block(batches, company),
-            'kpis': {
-                'total': len(batches),
-                'done': stage_counts.get('done', 0),
-                'in_pipeline': stage_counts.get('draft', 0)
-                + stage_counts.get('approval_pending', 0),
-                'my_pending': my_pending,
-                'period_net': period_net,
-            },
-        }
+        return {'batches': batches, 'stage_counts': stage_counts,
+                'my_pending': my_pending, 'period_net': period_net,
+                'may_write': may_write}
 
     # ---------------- helpers ----------------
     @api.model
@@ -302,6 +649,28 @@ class PbPayruns(models.AbstractModel):
         }
 
     @api.model
+    def _paid_by_run(self, run_ids):
+        """{run id: (paid, paid_on)} for `run_ids`, in one query; None on a
+        database without the payment stamp (pb_pay_delivery absent)."""
+        Slip = self.env['hr.payslip']
+        if 'pb_paid_on' not in Slip._fields:
+            return None
+        if not run_ids:
+            return {}
+        # raw SQL reads the table, not the cache (ledger: ABM June pay run)
+        Slip.flush_model(['payslip_run_id', 'state', 'pb_paid_on'])
+        self.env.cr.execute(
+            "SELECT payslip_run_id, COUNT(*) FILTER (WHERE state = 'done'), "
+            "COUNT(*) FILTER (WHERE state = 'done' AND pb_paid_on IS NOT NULL), "
+            "MAX(pb_paid_on) FILTER (WHERE state = 'done') "
+            "FROM hr_payslip WHERE payslip_run_id IN %s GROUP BY 1",
+            (tuple(run_ids),))
+        out = {}
+        for run_id, done, stamped, last in self.env.cr.fetchall():
+            out[run_id] = (bool(done) and done == stamped, last or False)
+        return out
+
+    @api.model
     def _empty_delivery(self):
         return {'bank_file': False, 'paid': False, 'paid_on': '',
                 'delivered': False, 'slips_sent': 0, 'delivered_on': '',
@@ -321,13 +690,24 @@ class PbPayruns(models.AbstractModel):
             return out
         ids = runs.ids
         done_runs = runs.filtered(lambda r: r.state == 'done')
+        # FILTER wave 5: the board is rebuilt on every filter change now, so
+        # "paid" is read for every done run in ONE grouped query — the run's
+        # own `pb_paid` compute loads every payslip of every run (3 s for 30
+        # runs on the demo copy). Same rule as `hr.payslip.run._compute_pb_paid`
+        # (pb_pay_delivery): paid when the run has done payslips and every one
+        # carries the payment stamp; paid on = the latest stamp.
+        paid_of = self._safe(lambda: self._paid_by_run(done_runs.ids), default=None)
         for run in done_runs:
             out[run.id] = self._empty_delivery()
-            # pb_paid / pb_paid_on live on the run only with pb_pay_delivery.
-            paid_on = self._safe(lambda r=run: getattr(r, 'pb_paid_on', False),
-                                 default=False)
-            if self._safe(lambda r=run: bool(getattr(r, 'pb_paid', False)),
-                          default=False):
+            if paid_of is not None:
+                paid, paid_on = paid_of.get(run.id, (False, False))
+            else:
+                # pb_paid / pb_paid_on live on the run only with pb_pay_delivery.
+                paid_on = self._safe(lambda r=run: getattr(r, 'pb_paid_on', False),
+                                     default=False)
+                paid = self._safe(lambda r=run: bool(getattr(r, 'pb_paid', False)),
+                                  default=False)
+            if paid:
                 out[run.id]['paid'] = True
                 out[run.id]['paid_on'] = self._fmt_date(paid_on)
 
@@ -871,12 +1251,46 @@ class PbPayruns(models.AbstractModel):
         a different company context.
         """
         out = {}
-        for run in runs:
-            currency = self._safe(lambda r=run: r._pb_scheme_currency(),
-                                  default=None)
+        # FILTER wave 5: the same answer as `_pb_scheme_currency`, read for
+        # every run at once. That method falls back to
+        # `slip_ids.mapped('formula_config_id')[:1]`, which loads every payslip
+        # of a run with no scheme of its own (9 s for 48 runs on the demo copy);
+        # here the fallback is one query: the scheme of the run's newest
+        # payslip that has one (payslips are ordered newest first).
+        Run = self.env['hr.payslip.run']
+        Slip = self.env['hr.payslip']
+        config_of = {}
+        if 'pb_formula_config_id' in Run._fields:
+            for run in runs:
+                if run.pb_formula_config_id:
+                    config_of[run.id] = run.pb_formula_config_id
+        rest = [rid for rid in runs.ids if rid not in config_of]
+        if rest and 'formula_config_id' in Slip._fields:
+            def first_configs():
+                Slip.flush_model(['payslip_run_id', 'formula_config_id'])
+                self.env.cr.execute(
+                    "SELECT DISTINCT ON (payslip_run_id) payslip_run_id, formula_config_id "
+                    "FROM hr_payslip WHERE payslip_run_id IN %s "
+                    "AND formula_config_id IS NOT NULL "
+                    "ORDER BY payslip_run_id, id DESC", (tuple(rest),))
+                return dict(self.env.cr.fetchall())
+            first = self._safe(first_configs, default=None)
+            if first is None:
+                for run in runs.filtered(lambda r: r.id in rest):
+                    currency = self._safe(lambda r=run: r._pb_scheme_currency(), default=None)
+                    if currency:
+                        out[run.id] = {'name': currency.name,
+                                       'symbol': currency.symbol or currency.name}
+            else:
+                Config = Slip._fields['formula_config_id'].comodel_name
+                configs = self.env[Config].browse(set(first.values()))
+                for rid, cid in first.items():
+                    config_of[rid] = configs.filtered(lambda c, i=cid: c.id == i)[:1]
+        for rid, config in config_of.items():
+            currency = self._safe(lambda c=config: c.currency_id, default=None)
             if currency:
-                out[run.id] = {'name': currency.name,
-                               'symbol': currency.symbol or currency.name}
+                out[rid] = {'name': currency.name,
+                            'symbol': currency.symbol or currency.name}
         return out
 
     @api.model

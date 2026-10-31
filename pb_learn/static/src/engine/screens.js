@@ -1198,9 +1198,6 @@ export const SCREENS = {
                 ${body}
             </div>`;
         }).join("");
-        const showing = tx(B("Showing all", "Đang hiện tất cả")) + SP + N(live.length) + SP
-            + tx(B("pay runs · press a step, a division or a phrase in the sentence above to narrow it",
-                   "đợt lương · nhấn một bước, một bộ phận hoặc một cụm từ trong câu phía trên để thu hẹp"));
         const rejected = b.filter((r) => r.col === "cancel").map((r) => `
             <div class="lrn-row">
                 <span class="lrn-kmono">${esc(monoOf(tx(r.division)))}</span>
@@ -1213,14 +1210,18 @@ export const SCREENS = {
                 <button class="lrn-btn" data-coach="pk-run">${ic("zap")}${esc(T("runPayroll"))}</button>
             </div>
             ${hero}
-            <div class="lrn-rtoolbar">
-                <span class="lrn-rseg"><span class="on">${esc(tx(B("All months", "Mọi tháng")))}</span><span>${esc(tx(B("Jul 2026 only", "Chỉ Th7 2026")))}</span></span>
-                <div class="lrn-tabs" data-coach="pk-divchips">
-                    ${[B("All divisions", "Tất cả bộ phận"), RUN.division, B("F&B", "F&B")].map((d, i) =>
-                        `<button aria-selected="${i === 0}">${i ? `<span class="lrn-kmono sm">${esc(monoOf(tx(d)))}</span>` : ""}${esc(tx(d))}</button>`).join("")}
-                </div>
+            <!-- FILTER wave 5 (2026-10-31): the shared filter panel replaced
+                 the months switch, the division chips and the board's search.
+                 View tabs, the Filters button that opens the left panel
+                 (Where it is, Pay period ends, Division), and the search. The
+                 lane headers and the sentence above still narrow the board. -->
+            <div class="lrn-strip" data-coach="pk-divchips">
+                <span class="lrn-chip b">${esc(tx(B("All pay runs", "Tất cả đợt lương")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Waiting on me", "Đang chờ tôi")))}</span>
+                <span class="lrn-chip">${esc(tx(B("This month", "Tháng này")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a pay run", "Tìm một đợt lương")))}</span>
             </div>
-            <p class="lrn-note">${esc(showing)}</p>
             <div class="lrn-kanban" data-coach="pk-tabs">${lanes}</div>
             <div class="lrn-panel" data-coach="pk-rejected">
                 <h3>${ic("x")}${esc(tx(B("Rejected pay runs", "Đợt lương bị từ chối")))}<span class="lrn-tabn">${
@@ -1263,8 +1264,6 @@ export const SCREENS = {
         const flow = chain.map((c, i) => `
             <div class="lrn-st ${i < cur ? "done" : ""}${SP}${i === cur ? "cur" : ""}"
                 >${esc(tx(STATUS_LABELS.payslip[c].l))}</div>`).join("");
-        const showing = tx(B("Showing all", "Đang hiện tất cả")) + SP + N(t.count) + SP
-            + tx(B("payslips · press a step or a number to narrow it", "phiếu lương · bấm một bước hoặc một con số để thu hẹp"));
         return `
             <div class="lrn-strip">
                 <select class="lrn-in" data-coach="ps-runsel">
@@ -1280,7 +1279,17 @@ export const SCREENS = {
                 ${kpiTile("trending-up", "pos", M(t.net), B("Net total", "Tổng thực nhận"))}
             </div>
             <div class="lrn-steps" data-coach="ps-chips">${steps}</div>
-            <p class="lrn-note">${esc(showing)}</p>
+            <!-- FILTER wave 5 (2026-10-31): the shared filter panel for the
+                 run picked above. View tabs, the Filters button that opens the
+                 left panel (Where it is, Review, Department), and the search.
+                 The steps above still pick a step. -->
+            <div class="lrn-strip" data-coach="ps-filters">
+                <span class="lrn-chip b">${esc(tx(B("All in this run", "Tất cả trong đợt này")))}</span>
+                <span class="lrn-chip a">${esc(tx(B("Need review", "Cần xem xét")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Waiting for approval", "Đang chờ phê duyệt")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a name, payslip number or employee code…", "Tìm tên, số phiếu lương hoặc mã nhân viên…")))}</span>
+            </div>
             <div class="lrn-grid g2 top">
                 <div class="lrn-panel">
                     <h3>${ic("users")}${esc(tx(B("Payslips in this run", "Phiếu lương trong đợt này")))}</h3>
@@ -1585,7 +1594,7 @@ export const SCREENS = {
 
     /* -------------------------------------------------- Salary Structures
        LEARN REFRESH step 5: as structures.xml draws it today — New structure,
-       the quiet numbers line, status / date / country / schedule chips, rows
+       the quiet numbers line, the shared filter panel (FILTER wave 5), rows
        with rules and employees, and the list link. */
     structures() {
         const k = PRACTICE.structures.kpis;
@@ -1614,9 +1623,16 @@ export const SCREENS = {
                 <button class="lrn-btn sm pri" data-coach="sr-new">${ic("plus")}${
                     esc(tx(B("New structure", "Cấu trúc mới")))}</button></div>
             <div data-coach="sr-kpis">${quietNums(nums, "")}</div>
+            <!-- FILTER wave 5 (2026-10-31): the shared filter panel. View
+                 tabs, the Filters button that opens the left panel (Status,
+                 Payroll country, Pay schedule), and the search. The numbers
+                 above still filter. -->
             <div class="lrn-strip" data-coach="sr-filters">
-                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a structure…", "Tìm một cấu trúc…")))}</span>
-                <span class="lrn-chip">${esc(tx(B("Any country", "Mọi quốc gia")))}</span>
+                <span class="lrn-chip b">${esc(tx(B("All structures", "Tất cả cấu trúc")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Active", "Đang hoạt động")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Drafts", "Bản nháp")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a name or a code…", "Tìm tên hoặc mã…")))}</span>
             </div>
             <div class="lrn-panel">
                 <div class="lrn-rows" data-coach="sr-roster">${rows}</div>

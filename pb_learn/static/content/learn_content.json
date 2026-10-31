@@ -31309,8 +31309,8 @@
             },
             {
               "affects": {
-                "en": "The lane counts still count the whole board. Money in another currency stays in its own currency.",
-                "vi": "Số đếm của các cột vẫn đếm cả bảng. Tiền bằng loại tiền khác vẫn giữ loại tiền của nó."
+                "en": "The lane counts follow the filters, so a folded lane still says how many runs it holds. Money in another currency stays in its own currency.",
+                "vi": "Số đếm của các cột đi theo bộ lọc, nên một cột đang thu gọn vẫn cho biết có bao nhiêu đợt lương. Tiền bằng loại tiền khác vẫn giữ loại tiền của nó."
               },
               "anchor": "pk-divchips",
               "body": "",
@@ -31321,26 +31321,26 @@
               },
               "lines": [],
               "look": {
-                "en": "The division chips in the toolbar.",
-                "vi": "Các nhãn bộ phận trên thanh công cụ."
+                "en": "The Filters button and the view tabs above the lanes.",
+                "vi": "Nút Bộ lọc và các thẻ chế độ xem phía trên các cột."
               },
               "means": {
-                "en": "A chip shows only that division's cards.",
-                "vi": "Một nhãn chỉ hiện các thẻ của bộ phận đó."
+                "en": "Tick a division (or a month, or where a run is) in the filter panel to see only those cards. A number beside every value says how many runs it holds.",
+                "vi": "Đánh dấu một bộ phận (hoặc một tháng, hoặc nơi đợt lương đang ở) trong bảng bộ lọc để chỉ thấy các thẻ đó. Con số cạnh mỗi giá trị cho biết có bao nhiêu đợt lương."
               },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "press": {
-                "en": "A division chip, or All divisions.",
-                "vi": "Một nhãn bộ phận, hoặc Tất cả các bộ phận."
+                "en": "Filters, then a division under Division; or a view tab such as This month.",
+                "vi": "Bộ lọc, rồi một bộ phận trong mục Bộ phận; hoặc một thẻ chế độ xem như Tháng này."
               },
               "screen": "payruns",
               "tip": "",
               "title": {
-                "en": "The division chips narrow the cards",
-                "vi": "Các nhãn bộ phận thu hẹp các thẻ"
+                "en": "The filter panel narrows the cards",
+                "vi": "Bảng bộ lọc thu hẹp các thẻ"
               },
               "visual": "none"
             },

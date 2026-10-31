@@ -385,6 +385,31 @@ coordinator's (`filter_deploy.sh full`).
   `python3 docs/tutorial_poc/author/tools/gen_learn_data.py` (`--check`
   verifies). A hand edit of the JSON is overwritten by the next generation.
 
+- **F37** (w5) A board that was loaded once and filtered in the browser is
+  rebuilt on EVERY filter change once converted, so any per-row cost is paid
+  per click. Profile the row builder first (`cProfile` in an `odoo-bin shell`
+  on the preview copy). Pay Runs: the scheme-currency fallback
+  (`slip_ids.mapped(...)`) and the run's computed `pb_paid` loaded every
+  payslip of every run — 48 cards 4.6 s; one grouped SQL each → 0.3 s. A
+  Python fact behind a `domain_method` that costs seconds (Payslips' review
+  flags, ~2.5 s on 1,000 payslips) is asked by layout, counts and page: keep
+  it per worker for a short TTL keyed by the records' state (count + last
+  write), on top of the per-request `cr.cache` (F25).
+- **F38** (w5) In an `i18n export` of several modules, a msgid shared by two
+  of them carries ONE comment line `#. modules: a, b` (plural) and the
+  references of both. A merge that looks for `module: <m>` skips it, and one
+  that copies every reference puts module a's `model:` references into module
+  b's `.po`. Parse `module:`/`modules:` lines, keep `code:addons/<m>/…` and
+  `…:<m>.<xmlid>` references only, and write `#. module: <m>` first (F11).
+- **F39** (w5) Two traps around the preview: (1) `pbf_preview.sh restart`
+  or `upgrade` started from an ssh session can still die with it — run it as
+  `sudo setsid nohup /odoo/ops/pbf_preview.sh restart </dev/null >/tmp/<w>.out 2>&1 & disown`;
+  (2) the `localhost:8170` tunnel on the Mac is SHARED by every builder:
+  never `pkill` it when you finish; leave it up.
+- **F40** (w5) A `date` section with `presets: 'past'|'future'` always offers
+  "none"; on a field that is never empty and has no `none_label` it renders as
+  a blank radio with a count of 0. Give such dates an explicit preset list.
+
 ## 5. PO gate (run on the server before shipping translations)
 ```python
 import sys, logging; logging.disable(logging.CRITICAL)

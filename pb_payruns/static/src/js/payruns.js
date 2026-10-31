@@ -32,6 +32,14 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { useNavigationState } from "@pb_hub/js/navigation_state";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+// FILTER wave 5 — the board's page sizes (pb.payruns LANE_PAGE / LIST_PAGE)
+// and the three steps a lane header can put in focus.
+const LANE_PAGE = 30;
+const LIST_PAGE = 60;
+const LANE_STEPS = ["draft", "approval_pending", "done"];
 
 // There is ONE action a card can take on the run itself now: send it in. What
 // happens next is a decision, and a decision is made where the request is —
@@ -97,6 +105,7 @@ function monogram(label, key) {
 
 export class PbPayruns extends Component {
     static template = "pb_payruns.PbPayruns";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -105,7 +114,6 @@ export class PbPayruns extends Component {
         this.notification = useService("notification");
         this.rejectWhy = useRef("rejectWhy");
         this.root = useRef("root");
-        this.searchBox = useRef("search");
         // the reason box takes the keyboard the moment the confirm opens
         useEffect((open) => {
             if (open && this.rejectWhy.el) { this.rejectWhy.el.focus(); }
@@ -117,19 +125,18 @@ export class PbPayruns extends Component {
             rejectNote: "",         // the "Why?" typed in that confirm
             currency: "",
             currencyName: "",
-            manyCurrencies: false,
-            currencies: [],
+            currencies: [],         // the moneys of the runs on screen
             columns: [],
-            batches: [],
-            kpis: {},
-            divisions: [],
-            division: "all",
+            // FILTER wave 5: every lane is the server's page for the panel's
+            // filters — {key: {rows, total, flags}} for the three steps and
+            // the Rejected drawer ('cancel'); the list view is one page.
+            lanes: {},
+            lanesLoaded: false,
+            loadingLane: "",
+            listRows: [],
+            listTotal: 0,
+            monthBatches: [],       // the hero's month, un-narrowed by the panel
             period: null,           // the month block the hero speaks about
-            // narrowing — none of these touch the server's counts (W82)
-            step: "",               // the lane in focus ('' = all three)
-            hero: "",               // the hero phrase pressed ('' = none)
-            months: "all",          // 'all' | 'month' (this month only)
-            q: "",
             view: "board",          // 'board' | 'list'
             selected: {},           // {run id: true}
             lastSel: 0,
@@ -138,23 +145,35 @@ export class PbPayruns extends Component {
             openMonths: {},         // Done lane: {month key: true}
             cur: 0,                 // keyboard cursor
             sheet: null,            // {kind:'submit', ids} | {kind:'keys'}
-            sort: { k: "date_end", d: -1 },
-            rejectedCount: 0,
             showRejected: false,
             // the run the hub sent us to (arrival.focus), highlighted once
             focusId: this._arrivalFocus(),
         });
+        // The filters, the search and the sort belong to the filter panel,
+        // which remembers them itself; this keeps only how the board is laid
+        // out (board or list, open months, cursor, scroll) for the way back.
         const savedNavigation = useNavigationState(this, "payruns", () => ({
-            q: this.state.q, division: this.state.division, step: this.state.step,
-            hero: this.state.hero, months: this.state.months, view: this.state.view,
-            sort: { ...this.state.sort }, openMonths: { ...this.state.openMonths },
+            view: this.state.view, openMonths: { ...this.state.openMonths },
             showRejected: this.state.showRejected, cur: this.state.cur,
             scrollTop: this.root.el?.scrollTop || 0,
         }));
         if (savedNavigation) {
-            const { scrollTop, ...controls } = savedNavigation;
-            Object.assign(this.state, controls);
+            const { scrollTop, view, openMonths, showRejected, cur } = savedNavigation;
+            Object.assign(this.state, {
+                view: view === "list" ? "list" : "board",
+                openMonths: openMonths || {}, showRejected: !!showRejected, cur: cur || 0,
+            });
+            savedNavigation.scrollTop = scrollTop;
         }
+        // The shared filter panel (pb_filter_kit). `always: ['stage']`: the
+        // lane headers read the "Where it is" counts on every refresh, folded
+        // or not — a lane counts against every OTHER filter (ruling R1).
+        this.kit = useFilterKit({
+            model: "pb.payruns",
+            noun: _t("pay runs"),
+            always: ["stage"],
+            onChange: () => this.loadPage(),
+        });
         this._rects = {};
         this._onKey = this._onKey.bind(this);
         this._onDocClick = this._onDocClick.bind(this);
@@ -192,27 +211,112 @@ export class PbPayruns extends Component {
 
     get embedded() { return !!this.props.embedded; }
 
+    /** Everything above the lanes: the hero's month, the lane names. */
     async load() {
-        const d = await this.orm.call("pb.payruns", "get_board_data", []);
-        const period = d.period || null;
+        const d = await this.orm.call("pb.payruns", "get_board_head", []);
         Object.assign(this.state, {
-            currency: d.currency, columns: d.columns, batches: d.batches,
-            kpis: d.kpis, rejectedCount: d.rejected_count,
-            divisions: d.divisions || [], loaded: true, period,
+            currency: d.currency, columns: d.columns || [],
+            monthBatches: d.month_batches || [], period: d.period || null,
+            currencyName: d.currency_name || "", loaded: true,
+        });
+    }
+
+    /** The lanes (or the list) for the panel's current filters. */
+    async loadPage() {
+        const q = this.kit.query;
+        const list = this.state.view === "list";
+        try {
+            const d = await this.orm.call("pb.payruns", "get_board_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort,
+                lane: list ? "list" : null,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            if (list) {
+                this.state.listRows = d.rows || [];
+                this.state.listTotal = d.total || 0;
+            } else {
+                this.state.lanes = d.lanes || {};
+                this.state.lanesLoaded = true;
+            }
             // GROUP P3 — each run is priced in its own company's money, and
             // a board holding two currencies says so instead of pretending.
-            currencyName: d.currency_name || "",
-            manyCurrencies: !!d.many_currencies,
-            currencies: d.currencies || [],
-        });
+            this.state.currencies = d.currencies || [];
+            this._afterLoad();
+        } catch (e) {
+            console.error("pb_payruns: the board could not load", e);
+            this.notification.add(_t("The pay runs could not be loaded. Try again in a moment."), { type: "warning" });
+        }
+    }
+    /** "Show N more" on one lane: its next page, appended. */
+    async loadLane(key) {
+        if (this.state.loadingLane) return;
+        const q = this.kit.query;
+        const lane = this.state.lanes[key];
+        if (!lane) return;
+        this.state.loadingLane = key;
+        try {
+            const d = await this.orm.call("pb.payruns", "get_board_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort,
+                lane: key, offset: lane.rows.length,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            const got = (d.lanes || {})[key];
+            if (got) {
+                const have = new Set(lane.rows.map((b) => b.id));
+                this.state.lanes[key] = { ...got, rows: [...lane.rows, ...got.rows.filter((b) => !have.has(b.id))] };
+            }
+        } catch (e) {
+            console.error("pb_payruns: more pay runs could not load", e);
+            this.notification.add(_t("More pay runs could not be loaded. Try again in a moment."), { type: "warning" });
+        } finally {
+            this.state.loadingLane = "";
+        }
+    }
+    /** "Show N more" in the list view. */
+    async loadMoreList() {
+        if (this.state.loadingLane) return;
+        const q = this.kit.query;
+        this.state.loadingLane = "list";
+        try {
+            const d = await this.orm.call("pb.payruns", "get_board_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort,
+                lane: "list", offset: this.state.listRows.length,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            const have = new Set(this.state.listRows.map((b) => b.id));
+            this.state.listRows = [...this.state.listRows, ...(d.rows || []).filter((b) => !have.has(b.id))];
+            this.state.listTotal = d.total || 0;
+        } finally {
+            this.state.loadingLane = "";
+        }
+    }
+    lanePage(key) { return this.state.lanes[key] || { rows: [], total: 0, flags: {} }; }
+    laneMore(key) {
+        const l = this.lanePage(key);
+        return Math.max(0, Math.min(LANE_PAGE, (l.total || 0) - l.rows.length));
+    }
+    get listMore() { return Math.max(0, Math.min(LIST_PAGE, this.state.listTotal - this.state.listRows.length)); }
+
+    _afterLoad() {
+        // A run the new filters no longer show is unticked, so a bulk action
+        // never reaches a run nobody can see (ruling R6).
+        const shown = new Set(this.batches.map((b) => b.id));
+        for (const id of Object.keys(this.state.selected)) {
+            if (!shown.has(Number(id))) delete this.state.selected[id];
+        }
         // The Done lane opens ONE month by default: this month if it has
         // approved runs, else the latest month that does (a tenant whose last
         // run was two months ago). Reloads keep whatever the reader opened.
         if (!Object.keys(this.state.openMonths).length) {
             const keys = this.doneMonthKeys;
-            const pick = period && keys.includes(period.key) ? period.key : keys[0];
+            const p = this.state.period;
+            const pick = p && keys.includes(p.key) ? p.key : keys[0];
             if (pick) this.state.openMonths[pick] = true;
         }
+    }
+    /** Actions on a run reload the hero, the panel's counts and the lanes. */
+    async reloadAll() {
+        await Promise.all([this.load(), this.kit.refresh()]);
     }
 
     ic(n, s = 15) { return icon(n, s); }
@@ -229,44 +333,45 @@ export class PbPayruns extends Component {
     }
 
     // ================================================================ derived
-    get liveBatches() { return this.state.batches.filter(b => b.state !== "cancel"); }
-    get hasDivisions() { return (this.state.divisions || []).length > 0; }
-
-    /** Live runs overlapping the hero's month (the hub's own rule). */
-    get monthBatches() {
-        const p = this.state.period;
-        if (!p) return [];
-        return this.liveBatches.filter(b =>
-            b.date_start && b.date_end && b.date_start <= p.date_end && b.date_end >= p.date_start);
+    /** Every card on screen: the lanes' pages, the Rejected drawer's and
+     *  the list's — the only runs a bulk action or a key press can reach. */
+    get batches() {
+        const out = [];
+        const seen = new Set();
+        const add = (b) => { if (!seen.has(b.id)) { seen.add(b.id); out.push(b); } };
+        for (const lane of Object.values(this.state.lanes || {})) (lane.rows || []).forEach(add);
+        (this.state.listRows || []).forEach(add);
+        return out;
     }
-    inMonth(b) {
-        const p = this.state.period;
-        return !!p && b.date_start <= p.date_end && b.date_end >= p.date_start;
+    /** A run by id, on screen or in the hero's month. */
+    findRun(id) {
+        return this.batches.find((b) => b.id === id)
+            || this.state.monthBatches.find((b) => b.id === id) || null;
     }
+    get monthBatches() { return this.state.monthBatches || []; }
     isPaid(b) { return b.state === "done" && !!(b.delivery && b.delivery.paid); }
     isDelivered(b) { return b.state === "done" && !!(b.delivery && b.delivery.delivered); }
+    get manyCurrencies() { return (this.state.currencies || []).length > 1; }
 
-    /** Does this card pass every narrowing the reader has set? */
-    visible(b) {
-        const s = this.state;
-        if (s.division !== "all" && (b.division || "") !== s.division) return false;
-        if (s.months === "month" && !this.inMonth(b)) return false;
-        if (s.hero) {
-            if (!this.inMonth(b)) return false;
-            if (s.hero === "drafts" && b.state !== "draft") return false;
-            if (s.hero === "waiting" && b.state !== "approval_pending") return false;
-            if (s.hero === "topay" && !(b.state === "done" && !this.isPaid(b))) return false;
-            if (s.hero === "paid" && !this.isPaid(b)) return false;
-        }
-        if (s.q) {
-            const q = s.q.toLowerCase();
-            const hay = [b.name, b.period, b.month_label, b.division_label].join(" ").toLowerCase();
-            if (!hay.includes(q)) return false;
-        }
-        return true;
+    /** The lane in focus: "Where it is" ticked to exactly one step. */
+    get stepOn() {
+        const v = this.kit.values("stage");
+        return v.length === 1 && LANE_STEPS.includes(v[0]) ? v[0] : "";
     }
-    columnBatches(key) { return this.liveBatches.filter(b => b.state === key && this.visible(b)); }
-    columnAll(key) { return this.liveBatches.filter(b => b.state === key); }
+    /** A lane folds when "Where it is" is ticked and does not include it. */
+    laneHidden(key) {
+        const v = this.kit.values("stage");
+        return v.length > 0 && !v.includes(key);
+    }
+    /** A lane's count: the panel's "Where it is" count (R1 — it counts
+     *  against every OTHER filter, so a folded lane still says what is
+     *  there); the lane's own total until the counts arrive. */
+    stageCount(key) {
+        const c = (this.kit.counts.stage || {}).values || [];
+        const row = c.find((r) => String(r.v) === key);
+        return row ? row.n : (this.lanePage(key).total || 0);
+    }
+    columnBatches(key) { return this.laneHidden(key) ? [] : this.lanePage(key).rows; }
 
     /** Lane headers: the numbered step, its count and its one flag. */
     get lanes() {
@@ -275,35 +380,43 @@ export class PbPayruns extends Component {
             approval_pending: _t("With the people on its sign-off route."),
             done: _t("Approved. Pay, deliver payslips and post journals from here."),
         };
+        const focus = this.stepOn;
         return this.state.columns.map((col, i) => {
-            const all = this.columnAll(col.key);
+            const page = this.lanePage(col.key);
+            const total = this.stageCount(col.key);
+            const fl = this.laneHidden(col.key) ? {} : (page.flags || {});
             let flag = "", tone = "";
             if (col.key === "approval_pending") {
-                const me = all.filter(b => b.awaiting_me).length;
+                const me = fl.mine || 0;
+                const all = this.laneHidden(col.key) ? 0 : page.total || 0;
                 if (me) { flag = me === 1 ? _t("1 is waiting on you") : _t("%s are waiting on you", me); tone = "me"; }
-                else if (all.length) { flag = all.length === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", all.length); tone = "amber"; }
+                else if (all) { flag = all === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", all); tone = "amber"; }
             } else if (col.key === "draft") {
-                const back = all.filter(b => b.return_note).length;
-                const bad = all.filter(b => b.unsourced || !b.balance_ok).length;
+                const back = fl.back || 0;
+                const bad = fl.bad || 0;
                 if (back) { flag = back === 1 ? _t("1 sent back to be fixed") : _t("%s sent back to be fixed", back); tone = "amber"; }
                 else if (bad) { flag = bad === 1 ? _t("1 run needs a check before it is sent in") : _t("%s runs need a check before they are sent in", bad); tone = "rose"; }
             } else if (col.key === "done") {
-                const topay = all.filter(b => !this.isPaid(b)).length;
+                const topay = fl.topay || 0;
                 if (topay) { flag = topay === 1 ? _t("1 approved, not paid yet") : _t("%s approved, not paid yet", topay); tone = "indigo"; }
             }
+            const hidden = this.laneHidden(col.key);
             return {
                 key: col.key, n: String(i + 1).padStart(2, "0"), title: col.label,
-                count: all.length, countLabel: this._runs(all.length), hint: hints[col.key] || "",
-                flag, tone, on: this.state.step === col.key,
-                collapsed: !!this.state.step && this.state.step !== col.key,
+                count: total, countLabel: this._runs(total), hint: hints[col.key] || "",
+                flag, tone, on: focus === col.key,
+                collapsed: hidden,
                 shown: this.columnBatches(col.key),
-                monos: all.slice(0, 4),
+                more: hidden ? 0 : this.laneMore(col.key),
+                monos: page.rows.slice(0, 4),
             };
         });
     }
     get boardClass() {
-        const i = this.state.columns.findIndex(c => c.key === this.state.step);
-        return (i >= 0 ? "f" + (i + 1) : "") + (this.selectedIds.length ? " selecting" : "");
+        // one lane open and two folded: the grid gives the open one the room
+        const open = this.state.columns.map((c, i) => (this.laneHidden(c.key) ? -1 : i)).filter((i) => i >= 0);
+        const focus = open.length === 1 ? "f" + (open[0] + 1) : open.length ? "" : "none";
+        return focus + (this.selectedIds.length ? " selecting" : "");
     }
 
     /** Month groups inside a lane. Done folds older months; the others only
@@ -316,7 +429,7 @@ export class PbPayruns extends Component {
         return months.map(m => {
             const runs = rs.filter(b => b.month === m);
             const fold = key === "done";
-            const open = !fold || !!this.state.openMonths[m] || !!this.state.q;
+            const open = !fold || !!this.state.openMonths[m] || !!this.kit.search;
             const net = runs.reduce((s, b) => s + (b.net || 0), 0);
             const cur = runs[0] && runs[0].currency;
             const count = runs.length === 1 ? _t("1 run") : _t("%s runs", runs.length);
@@ -330,7 +443,7 @@ export class PbPayruns extends Component {
     }
     get doneMonthKeys() {
         const out = [];
-        for (const b of this.columnAll("done")) if (!out.includes(b.month)) out.push(b.month);
+        for (const b of this.lanePage("done").rows) if (!out.includes(b.month)) out.push(b.month);
         return out;
     }
     toggleMonth(m) {
@@ -361,7 +474,7 @@ export class PbPayruns extends Component {
         if (paid.length) phrases.push({ key: "paid", text: paid.length === 1 ? _t("1 is paid and delivered") : _t("%s are paid and delivered", paid.length) });
         phrases.forEach((ph, i) => {
             ph.sep = i === 0 ? " " : i === phrases.length - 1 ? _t(" and ") : _t(", ");
-            ph.on = this.state.hero === ph.key;
+            ph.on = this.kit.loaded && this.kit.isExactly(this.phraseFilters(ph.key));
         });
         let lead, ask = "", tone = "", next, why = "";
         if (!rs.length) {
@@ -463,7 +576,7 @@ export class PbPayruns extends Component {
     heroNext() {
         const n = this.hero && this.hero.next;
         if (!n) return;
-        const b = n.id ? this.state.batches.find(x => x.id === n.id) : null;
+        const b = n.id ? this.findRun(n.id) : null;
         if (n.act === "newrun") return this.newRun();
         if (n.act === "approve") return this.openApprovals();
         if (n.act === "peek") return this.openPeek(n.id);
@@ -474,48 +587,48 @@ export class PbPayruns extends Component {
             this.state.sheet = { kind: "submit", ids };
         }
     }
-    pressPhrase(key) {
-        this.state.step = "";
-        this.state.hero = this.state.hero === key ? "" : key;
+    /** The filters a phrase of the hero's sentence stands for: that kind of
+     *  run, in the month the hero speaks about. */
+    phraseFilters(key) {
+        const month = { period: { preset: "this_month" } };
+        const paid = !!this.kit.section("paid");
+        if (key === "drafts") return { ...month, stage: ["draft"] };
+        if (key === "waiting") return { ...month, stage: ["approval_pending"] };
+        if (key === "topay") return paid ? { ...month, paid: ["topay"] } : { ...month, stage: ["done"] };
+        if (key === "paid") return paid ? { ...month, paid: ["paid"] } : { ...month, stage: ["done"] };
+        return {};
     }
+    /** A phrase ticks exactly its filters in the panel; pressing it again
+     *  goes back to the first view. */
+    pressPhrase(key) { this.kit.toggleFilters(this.phraseFilters(key)); }
 
     // ================================================================ narrowing
+    /** A lane header ticks that step in "Where it is" and keeps every other
+     *  filter; pressing the lane in focus lets go of it again. */
     pickStep(key) {
-        this.state.hero = "";
-        this.state.step = this.state.step === key ? "" : key;
+        const next = { ...this.kit.filters };
+        if (this.stepOn === key) { delete next.stage; } else { next.stage = [key]; }
+        this.kit.setFilters(next, { search: this.kit.search });
     }
-    setDivision(key) { this.state.division = key; }
-    setMonths(key) { this.state.months = key; }
-    setView(key) { this.state.view = key; }
-    get divisionChips() {
-        return [{ key: "all", label: _t("All divisions") }, ...(this.state.divisions || [])];
+    /** Board or list: each loads its own page from the server. */
+    setView(key) {
+        if (this.state.view === key) return;
+        this.state.view = key;
+        this.loadPage();
     }
-    get narrowed() {
-        const s = this.state;
-        return !!(s.step || s.hero || s.division !== "all" || s.months === "month" || s.q);
+    get narrowed() { return !!(this.kit.activeCount || this.kit.search); }
+    /** Rejected runs the panel's "Where it is" leaves out (shown as a line
+     *  under the board, so they are never silently missing). */
+    get rejectedHidden() {
+        const page = this.lanePage("cancel");
+        return page.total ? 0 : (this.laneHidden("cancel") ? this.stageCount("cancel") : 0);
     }
-    get showingLine() {
-        const all = this.liveBatches.length;
-        if (!all) return { all: true, text: _t("no pay runs yet") };
-        if (!this.narrowed) {
-            return { all: true, text: all === 1 ? _t("all 1 pay run") : _t("all %s pay runs", all) };
-        }
-        const cols = this.state.step ? [this.state.step] : this.state.columns.map(c => c.key);
-        const shown = cols.reduce((n, k) => n + this.columnBatches(k).length, 0);
-        const where = [];
-        const st = this.state.columns.find(c => c.key === this.state.step);
-        if (st) where.push(_t("at %s", st.label));
-        if (this.state.division !== "all") {
-            const dv = (this.state.divisions || []).find(d => d.key === this.state.division);
-            if (dv) where.push(_t("in %s", dv.label));
-        }
-        if ((this.state.months === "month" || this.state.hero) && this.state.period) where.push(_t("in %s", this.state.period.label));
-        if (this.state.q) where.push(_t("matching “%s”", this.state.q));
-        return { all: false, text: _t("%s of %s pay runs", shown, all), where: where.join(" · ") };
+    showRejectedToo() {
+        const cur = this.kit.values("stage");
+        this.kit.setFilters({ ...this.kit.filters, stage: [...cur, "cancel"] }, { search: this.kit.search });
+        this.state.showRejected = true;
     }
-    showAll() {
-        Object.assign(this.state, { step: "", hero: "", division: "all", months: "all", q: "" });
-    }
+    get rejectedOpen() { return this.state.showRejected || this.kit.isOn("stage", "cancel"); }
     emptyLane(key) {
         const n = this.narrowed;
         if (key === "draft") return n ? { title: _t("Nothing in draft here.") } : { title: _t("No drafts."), sub: _t("Press Run payroll to start a new pay run."), cta: true };
@@ -626,7 +739,8 @@ export class PbPayruns extends Component {
     isSelected(id) { return !!this.state.selected[id]; }
     toggleSelect(b, ev) {
         if (ev && ev.shiftKey && this.state.lastSel) {
-            const col = this.columnBatches(b.state).map(x => x.id);
+            // shift-select walks the runs SHOWN: the list's rows, or the lane's
+            const col = (this.state.view === "list" ? this.state.listRows : this.columnBatches(b.state)).map(x => x.id);
             const a = col.indexOf(this.state.lastSel), z = col.indexOf(b.id);
             if (a > -1 && z > -1) {
                 col.slice(Math.min(a, z), Math.max(a, z) + 1).forEach(id => { this.state.selected[id] = true; });
@@ -640,7 +754,9 @@ export class PbPayruns extends Component {
     }
     clearSelection() { this.state.selected = {}; }
     get bulk() {
-        const rs = this.selectedIds.map(id => this.state.batches.find(b => b.id === id)).filter(Boolean);
+        // only runs on screen: a selection never reaches a run the filters hide (R6)
+        const shown = this.batches;
+        const rs = this.selectedIds.map(id => shown.find(b => b.id === id)).filter(Boolean);
         if (!rs.length) return null;
         const cur = rs[0].currency;
         const net = rs.reduce((s, b) => s + (b.net || 0), 0);
@@ -654,7 +770,7 @@ export class PbPayruns extends Component {
     bulkSubmit() { this.state.sheet = { kind: "submit", ids: this.bulk.ids }; }
     async bulkExcel() {
         for (const id of this.selectedIds) {
-            const b = this.state.batches.find(x => x.id === id);
+            const b = this.findRun(id);
             if (b) await this._run("action_download_payslip_xlsx", b.id, null, null, true);
         }
     }
@@ -663,7 +779,7 @@ export class PbPayruns extends Component {
     get sheetRuns() {
         const s = this.state.sheet;
         if (!s || s.kind !== "submit") return [];
-        return s.ids.map(id => this.state.batches.find(b => b.id === id)).filter(Boolean);
+        return s.ids.map(id => this.findRun(id)).filter(Boolean);
     }
     closeSheet() { this.state.sheet = null; }
     openKeys() { this.state.sheet = { kind: "keys" }; }
@@ -688,7 +804,7 @@ export class PbPayruns extends Component {
     // ================================================================ quick look
     openPeek(id) { this.state.peek = id; this.state.menu = 0; this.state.cur = id; }
     closePeek() { this.state.peek = 0; }
-    get peekRun() { return this.state.batches.find(b => b.id === this.state.peek) || null; }
+    get peekRun() { return this.state.peek ? this.findRun(this.state.peek) : null; }
     peekSteps(b) {
         const at = b.state === "draft" ? 0 : b.state === "approval_pending" ? 1 : b.state === "done" ? 2 : -1;
         return this.state.columns.map((c, i) => ({
@@ -726,7 +842,25 @@ export class PbPayruns extends Component {
         });
     }
     get laneTitles() { return { all: _t("Show every step"), one: _t("Show only this step") }; }
-    get monthsOnlyLabel() { return this.state.period ? _t("%s only", this.state.period.short) : ""; }
+    // a getter, not a template literal: a literal is never extracted (F29)
+    get searchHint() { return _t("Find a pay run"); }
+    /** Filters on and not one run on the board (lanes and drawer alike). */
+    get nothingMatches() {
+        if (!this.narrowed) return false;
+        if (this.state.view === "list") return !this.state.listRows.length && !this.state.listTotal;
+        if (!this.state.lanesLoaded) return false;
+        return Object.values(this.state.lanes || {}).every((l) => !(l.total || 0));
+    }
+    get emptyHint() {
+        return this.kit.search && !this.kit.chips.length
+            ? _t("No pay run is called “%s”. Check the spelling, or search by division.", this.kit.search)
+            : _t("Remove a filter above, or start again from every pay run.");
+    }
+    get rejectedHiddenLine() {
+        const n = this.rejectedHidden;
+        return n === 1 ? _t("1 rejected pay run is not shown by these filters.")
+            : _t("%s rejected pay runs are not shown by these filters.", n);
+    }
     get sheetTitle() { return _t("Submit %s for approval?", this._runs(this.sheetRuns.length)); }
     get sheetButton() { const n = this.sheetRuns.length; return n > 1 ? _t("Submit all %s", n) : _t("Submit"); }
     subLine(b) { return _t("%(people)s · gross %(gross)s", { people: this._people(b.employees), gross: this.runGross(b) }); }
@@ -772,27 +906,24 @@ export class PbPayruns extends Component {
     }
 
     // ================================================================ list view
-    get listRows() {
-        const cols = this.state.step ? [this.state.step] : this.state.columns.map(c => c.key);
-        const rs = cols.flatMap(k => this.columnBatches(k));
-        const { k, d } = this.state.sort;
-        const order = this.state.columns.map(c => c.key);
-        rs.sort((a, b) => {
-            let v = 0;
-            if (k === "name") v = (a.name || "").localeCompare(b.name || "");
-            else if (k === "state") v = order.indexOf(a.state) - order.indexOf(b.state);
-            else if (k === "date_end") v = (a.date_end || "").localeCompare(b.date_end || "");
-            else v = (a[k] || 0) - (b[k] || 0);
-            return v * d;
-        });
-        return rs;
-    }
+    // FILTER wave 5: the list is one server page in the panel's sort; a
+    // column header picks the matching sort from the panel's sort menu.
+    get listRows() { return this.state.listRows; }
     sortBy(k) {
-        const s = this.state.sort;
-        this.state.sort = s.k === k ? { k, d: -s.d } : { k, d: k === "name" ? 1 : -1 };
+        const cur = this.kit.sort;
+        let next = { name: "name", employees: "people", gross: "gross", net: "net" }[k];
+        if (k === "date_end") next = cur === "latest" ? "oldest" : "latest";
+        if (next && next !== cur && this.kit.sorts.some((s) => s.key === next)) this.kit.setSort(next);
     }
-    sortMark(k) { const s = this.state.sort; return s.k === k ? (s.d > 0 ? " ↑" : " ↓") : ""; }
+    sortMark(k) {
+        const cur = this.kit.sort;
+        if (k === "date_end") return cur === "latest" ? " ↓" : cur === "oldest" ? " ↑" : "";
+        const key = { name: "name", employees: "people", gross: "gross", net: "net" }[k];
+        return key && cur === key ? (k === "name" ? " ↑" : " ↓") : "";
+    }
     pill(b) {
+        // the list follows the panel, so it can hold rejected runs too
+        if (b.state === "cancel") return { cls: "rejected", text: _t("Rejected") };
         if (b.state === "draft") return b.return_note ? { cls: "waiting", text: _t("Sent back") } : { cls: "draft", text: _t("Draft") };
         if (b.state === "approval_pending") return { cls: "waiting", text: b.awaiting_me ? _t("Waiting on you") : this.route(b).withText };
         if (this.isPaid(b)) return { cls: "done", text: b.delivery.paid_on ? _t("Paid %s", b.delivery.paid_on) : _t("Paid") };
@@ -828,6 +959,12 @@ export class PbPayruns extends Component {
     }
 
     // ================================================================ workflow actions
+    /** The server's own sentence for a refusal ("There are no payslips in
+     *  this pay run yet…"), not the transport's generic "Server Error". */
+    _why(e) {
+        const msg = (e && e.data && e.data.message) || (e && e.message);
+        return msg ? String(msg) : _t("That did not work. Try again in a moment.");
+    }
     async _run(method, id, okMsg, ctx, keepBusy) {
         if (!id || (this.state.busy && !keepBusy)) return;
         this.state.busy = id;
@@ -840,9 +977,9 @@ export class PbPayruns extends Component {
             } else if (okMsg) {
                 this.notification.add(okMsg, { type: "success" });
             }
-            await this.load();
+            await this.reloadAll();
         } catch (e) {
-            this.notification.add(e.message ? e.message.toString() : _t("Action failed"), { type: "danger" });
+            this.notification.add(this._why(e), { type: "danger" });
         } finally {
             this.state.busy = 0;
         }
@@ -868,11 +1005,11 @@ export class PbPayruns extends Component {
                 sent += 1;
                 delete this.state.selected[id];
             } catch (e) {
-                failed.push(e.message ? e.message.toString() : _t("Action failed"));
+                failed.push(this._why(e));
             }
         }
         this.state.busy = 0;
-        await this.load();
+        await this.reloadAll();
         if (sent) {
             this.notification.add(sent === 1 ? DONE_MSG.submit : _t("%s pay runs sent in for approval.", sent), { type: "success" });
         }
@@ -932,10 +1069,10 @@ export class PbPayruns extends Component {
 
     toggleMenu(b) { this.state.menu = this.state.menu === b.id ? 0 : b.id; }
     toggleRejected() { this.state.showRejected = !this.state.showRejected; }
-    get rejectedBatches() {
-        return this.state.batches.filter(b => b.state === "cancel"
-            && (this.state.division === "all" || (b.division || "") === this.state.division));
-    }
+    /** The Rejected drawer: the server's page of rejected runs for the
+     *  panel's filters (it narrows with the division, the period, …). */
+    get rejectedBatches() { return this.columnBatches("cancel"); }
+    get rejectedCount() { return this.laneHidden("cancel") ? 0 : this.lanePage("cancel").total || 0; }
 
     // ================================================================ keyboard + motion
     _onDocClick(ev) {
@@ -952,19 +1089,18 @@ export class PbPayruns extends Component {
         if (!el || !el.isConnected || el.offsetParent === null) return; // not the lens on screen
         const s = this.state;
         if (ev.key === "Escape") {
-            if (this._typing(ev)) {
-                if (ev.target === this.searchBox.el) { s.q = ""; ev.target.blur(); }
-                return;
-            }
+            // the panel's search box clears itself on Escape (pb_filter_kit)
+            if (this._typing(ev)) return;
             if (s.sheet) { s.sheet = null; return; }
             if (s.peek) { s.peek = 0; return; }
             if (s.menu) { s.menu = 0; return; }
             if (this.selectedIds.length) { this.clearSelection(); return; }
-            if (s.step || s.hero) { s.step = ""; s.hero = ""; }
+            // a lane in focus lets go (the other filters stay)
+            if (this.stepOn) { this.pickStep(this.stepOn); }
             return;
         }
         if (this._typing(ev) || ev.metaKey || ev.ctrlKey || ev.altKey) return;
-        if (ev.key === "/") { ev.preventDefault(); this.searchBox.el && this.searchBox.el.focus(); return; }
+        // "/" (find a run) is the filter panel's own key now
         if (ev.key === "?") { ev.preventDefault(); this.openKeys(); return; }
         if (s.view !== "board" || !s.loaded || s.sheet) return;
         const cols = this.state.columns.map(c => this.groups(c.key).flatMap(g => g.open ? g.runs.map(b => b.id) : []));
@@ -985,7 +1121,7 @@ export class PbPayruns extends Component {
             const card = el.querySelector(`[data-card="${s.cur}"]`);
             card && card.scrollIntoView({ block: "nearest", behavior: "smooth" });
         };
-        const b = s.cur ? s.batches.find(x => x.id === s.cur) : null;
+        const b = s.cur ? this.batches.find(x => x.id === s.cur) : null;
         switch (ev.key) {
             case "ArrowDown": ev.preventDefault(); move(0, 1); break;
             case "ArrowUp": ev.preventDefault(); move(0, -1); break;

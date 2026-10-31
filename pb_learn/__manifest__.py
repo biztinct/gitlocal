@@ -29,7 +29,10 @@
     # live Home does (owner 2026-10-12: Vietnamese-style months).
     # 20.5.3: vi_VN.po gains the one generated entry it lacked (slot value "22");
     # the generator now MERGES into the hand-kept .po instead of overwriting it.
-    'version': '19.0.20.7.1',
+    # 20.7.2: FILTER wave 5 — Pay Runs, Payslips and Salary Structures on the
+    # shared filter panel: anchors (pk-divchips, sr-filters, new ps-filters),
+    # replica strips and the division lesson follow the screens.
+    'version': '19.0.20.7.2',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
