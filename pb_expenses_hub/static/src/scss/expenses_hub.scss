@@ -1,20 +1,110 @@
-// NAV P2 — Expenses › Claims: the native list inside the hub canvas. A
-// definite height so the list scrolls inside itself rather than growing the
-// canvas (the hub's W20 rule); the controller fills the box.
-.pbexpense-lens {
-    display: flex;
-    flex-direction: column;
+// Expenses › Claims — the claims on the shared filter panel (FILTER W7).
+// A definite height that scrolls itself inside the hub canvas (the hub's
+// W20 rule), so the panel's sticky column rides this box.
+.pbexpense-lens.pbcl {
+    --pbcl-p: var(--pbim-primary, #5A4BB0);
+    --pbcl-soft: var(--pbim-soft, #EDEAF8);
+    --pbcl-line: var(--pbim-line, #E2E8F0);
+    --pbcl-ink: var(--pbim-ink, #1B1733);
+    --pbcl-muted: var(--pbim-muted, #64748B);
+
     height: 100%;
     min-height: 0;
     width: 100%;
-    overflow: hidden;
-    background: #F5F6FA;
+    overflow: auto;
+    padding: 16px 18px 28px;
+    box-sizing: border-box;
+    background: var(--pbim-bg, #F5F6FA);
+    color: var(--pbcl-ink);
 
-    > .o_view_controller {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
+    * { box-sizing: border-box; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    .pbcl-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--pbcl-line); background: #fff; color: var(--pbcl-ink);
+        border-radius: var(--pbim-r-sm, 10px); padding: 6px 12px;
+        font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: border-color .15s ease, background .15s ease;
+        &:hover { border-color: var(--pbcl-p); }
+        &:disabled { opacity: .6; cursor: default; }
+        &--primary { background: var(--pbcl-p); border-color: var(--pbcl-p); color: #fff; }
     }
-    .o_content { flex: 1 1 auto; min-height: 0; overflow: auto; }
+
+    // ---------------------------------------------------------- the table
+    .pbcl-table {
+        background: #fff; border: 1px solid var(--pbcl-line); border-radius: var(--pbim-r, 14px);
+        overflow: hidden;
+    }
+    .pbcl-head, .pbcl-row {
+        display: grid;
+        grid-template-columns: minmax(110px, .9fr) minmax(0, 2fr) minmax(96px, .9fr) 80px minmax(110px, 1fr) 150px;
+        align-items: center; gap: 12px; padding: 10px 16px;
+    }
+    .pbcl-head {
+        font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+        color: var(--pbcl-muted); background: #FAFAFC; border-bottom: 1px solid var(--pbcl-line);
+    }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .pbcl-row {
+        border-bottom: 1px solid var(--pbcl-line); cursor: pointer; font-size: 13px;
+        transition: background .12s ease;
+        animation: pbcl-in .2s ease both;
+        &:last-child { border-bottom: 0; }
+        &:hover { background: #FAF9FE; }
+        &:focus-visible { outline: 2px solid var(--pbcl-p); outline-offset: -2px; }
+        .ref { font-weight: 700; color: var(--pbcl-p); }
+        .who { display: flex; align-items: center; gap: 8px; min-width: 0;
+            img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex: 0 0 26px; }
+            > span { display: flex; flex-direction: column; min-width: 0; }
+            b, small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            small { color: var(--pbcl-muted); font-size: 11.5px; } }
+        .when { color: var(--pbcl-muted); i { font-style: normal; opacity: .8; } }
+        .amt { font-weight: 700; }
+    }
+    @keyframes pbcl-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .pbcl-row { animation: none; } }
+
+    .pbcl-st {
+        display: inline-block; border-radius: 999px; padding: 2px 10px;
+        font-size: 11.5px; font-weight: 700;
+        background: #EEF1F5; color: var(--pbcl-muted);
+        &.is-submitted { background: #FEF3C7; color: #92400E; }
+        &.is-approved { background: #E5EDFD; color: #2563EB; }
+        &.is-refused { background: #FCE7EF; color: #DC2668; }
+        &.is-paid { background: #E3F2E9; color: #2E7D4F; }
+    }
+
+    .pbcl-foot {
+        display: flex; align-items: center; gap: 12px; margin-top: 14px;
+        font-size: 12.5px; color: var(--pbcl-muted);
+        b { color: var(--pbcl-ink); }
+    }
+
+    // ---------------------------------------------------------- states
+    .pbcl-empty {
+        background: #fff; border: 1px solid var(--pbcl-line); border-radius: var(--pbim-r, 14px);
+        padding: 36px 24px; text-align: center; color: var(--pbcl-muted);
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        h3 { margin: 4px 0 0; font-size: 16px; font-weight: 700; color: var(--pbcl-ink); }
+        p { margin: 0; max-width: 460px; font-size: 13px; }
+        .pbcl-btn { margin-top: 8px; }
+    }
+    .pbcl-empty__ic {
+        display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
+        background: var(--pbcl-soft); color: var(--pbcl-p);
+    }
+    .pbcl-skel { display: flex; flex-direction: column; gap: 8px;
+        span { height: 46px; border-radius: var(--pbim-r-sm, 10px); background: rgba(148, 163, 184, .14);
+            animation: pbcl-pulse 1.2s ease-in-out infinite; } }
+    @keyframes pbcl-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+    @media (prefers-reduced-motion: reduce) { .pbcl-skel span { animation: none; } }
+
+    // narrow: the table becomes stacked rows
+    @media (max-width: 900px) {
+        .pbcl-head { display: none; }
+        .pbcl-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px;
+            .ref { grid-column: 1; } .who { grid-column: 1 / -1; } .when { grid-column: 1; }
+            .num:not(.amt) { display: none; } .amt { grid-column: 2; grid-row: 1; } }
+    }
 }
