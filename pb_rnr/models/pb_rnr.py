@@ -48,9 +48,29 @@ def _refusal():
     }
 
 
+#: Stories per page on the filtered list ("Show N more" brings the next).
+PAGE_SIZE = 60
+#: Sections whose values are people (or posters) a recognition reader may not
+#: be able to read by name without HR rights: counted as the reader, LABELLED
+#: as the system (R56), exactly as `_row` reads the names on the list.
+SUDO_LABELS = ('value', 'nominee', 'nominator', 'department', 'cycle')
+#: The four steps of the strip, as filters on `state` (a story is at exactly
+#: one step: "Decided" holds both what was agreed and what was turned down).
+STEP_STATES = {
+    'draft': ['draft'],
+    'submitted': ['submitted'],
+    'manager': ['manager'],
+    'decided': ['done', 'refused'],
+}
+
+
 class PbRnr(models.AbstractModel):
     _name = 'pb.rnr'
     _description = 'Payobook recognition cockpit data'
+    # The shared filter panel (pb_filter_kit, FILTER wave 4). The nomination
+    # search is never sudoed: every count is counted under the reader's own
+    # record rules, like the list.
+    _inherit = ['pb.filter.mixin']
 
     # ------------------------------------------------------------- the gates
     @api.model
@@ -145,6 +165,245 @@ class PbRnr(models.AbstractModel):
             },
             'why': '',
         }
+
+    # ------------------------------------------------------- the filter panel
+    # The board used to load the newest 300 stories and filter them in the
+    # browser; the panel now counts on the server over every story this
+    # person may read and the list comes one page at a time. `get_board`
+    # stays as it was for anything else that reads it (R4).
+
+    def _pbf_model(self):
+        return 'pb.rnr.nomination'
+
+    def _pbf_screen(self):
+        return 'praise'
+
+    def _pbf_base_domain(self):
+        return ['|', ('company_id', '=', False),
+                ('company_id', 'in', self.env.companies.ids)]
+
+    def _pbf_search_fields(self):
+        return ['nominee_id.name', 'nominator_id.name', 'story']
+
+    def _pbf_layout_extra(self):
+        return {'currency': self.env.company.currency_id.symbol or ''}
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Newest first'), 'order': 'id desc'},
+            {'key': 'oldest', 'label': _('Oldest first'), 'order': 'id asc'},
+            {'key': 'decided', 'label': _('Most recently decided'),
+             'order': 'decided_at desc nulls last, id desc'},
+            {'key': 'amount', 'label': _('Biggest award first'),
+             'order': 'award_amount desc nulls last, id desc'},
+        ]
+
+    @api.model
+    def _quarter_start(self):
+        today = fields.Date.context_today(self)
+        return date(today.year, ((today.month - 1) // 3) * 3 + 1, 1)
+
+    def _pbf_spec(self):
+        return [
+            # ---- pinned: where it is, which value, who it is about
+            {'key': 'step', 'label': _('Where it is'), 'icon': 'listChecks',
+             'group': 'other', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'draft', 'label': _('Being written'), 'tone': 'slate',
+                  'domain': [('state', '=', 'draft')]},
+                 {'value': 'submitted', 'label': _('With their manager'), 'tone': 'amber',
+                  'domain': [('state', '=', 'submitted')]},
+                 {'value': 'manager', 'label': _('With HR'), 'tone': 'amber',
+                  'domain': [('state', '=', 'manager')]},
+                 {'value': 'done', 'label': _('Decided'), 'tone': 'green',
+                  'domain': [('state', '=', 'done')]},
+                 {'value': 'refused', 'label': _('Not this time'), 'tone': 'rose',
+                  'domain': [('state', '=', 'refused')]},
+             ]},
+            {'key': 'value', 'label': _('Value'), 'icon': 'shieldCheck',
+             'group': 'other', 'type': 'many2one', 'path': 'value_id', 'pinned': True},
+            {'key': 'nominee', 'label': _('Who it is about'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'nominee_id', 'pinned': True},
+            # ---- more filters
+            {'key': 'outcome', 'label': _('What was decided'), 'icon': 'award',
+             'group': 'other', 'type': 'selection', 'path': 'outcome',
+             'none_label': _('Not decided yet')},
+            {'key': 'nominator', 'label': _('Who wrote it'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'nominator_id'},
+            {'key': 'department', 'label': _('Their department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'nominee_id.department_id',
+             'none_label': _('No department')},
+            {'key': 'cycle', 'label': _('Quarter'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'many2one', 'path': 'cycle_id',
+             'none_label': _('No quarter')},
+            {'key': 'written', 'label': _('Written'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'submitted_at',
+             'presets': 'past', 'none_label': _('Not sent yet')},
+            {'key': 'decided', 'label': _('Decided'), 'icon': 'calendarClock',
+             'group': 'dates', 'type': 'date', 'path': 'decided_at',
+             'presets': 'past', 'none_label': _('Not decided yet')},
+            {'key': 'winner', 'label': _('Quarter winner'), 'icon': 'award',
+             'group': 'other', 'type': 'choice',
+             'options': [
+                 {'value': 'yes', 'label': _('Chosen for the quarter'), 'tone': 'green',
+                  'domain': [('is_winner', '=', True)]},
+                 {'value': 'no', 'label': _('Not chosen'), 'tone': 'slate',
+                  'domain': [('is_winner', '=', False)]},
+             ]},
+            {'key': 'public', 'label': _('Who can see it'), 'icon': 'eye',
+             'group': 'other', 'type': 'choice',
+             'options': [
+                 {'value': 'yes', 'label': _('Shared with the company'), 'tone': 'blue',
+                  'domain': [('public', '=', True)]},
+                 {'value': 'no', 'label': _('Kept private'), 'tone': 'slate',
+                  'domain': [('public', '=', False)]},
+             ]},
+            {'key': 'amount', 'label': _('Award'), 'icon': 'banknote',
+             'group': 'pay', 'type': 'number', 'path': 'award_amount', 'unit': 'money'},
+        ]
+
+    def _pbf_builtin_views(self):
+        return [
+            {'key': 'all', 'label': _('All praise'), 'icon': 'award', 'filters': {}},
+            {'key': 'manager', 'label': _('Waiting on a manager'),
+             'filters': {'step': ['submitted']}},
+            {'key': 'hr', 'label': _('Waiting on HR'),
+             'filters': {'step': ['manager']}},
+            {'key': 'refused', 'label': _('Not this time'),
+             'filters': {'step': ['refused']}},
+            {'key': 'money', 'label': _('Given money this quarter'),
+             'filters': {'outcome': ['awarded'],
+                         'decided': {'from': fields.Date.to_string(self._quarter_start())}}},
+            {'key': 'winners', 'label': _('Quarter winners'),
+             'filters': {'winner': ['yes']}},
+        ]
+
+    @api.model
+    def _pbf_list_values(self, s, domain, selected=None):
+        """People and posters: counted as the reader, named as the system."""
+        if s.get('key') not in SUDO_LABELS or s.get('type') != 'many2one':
+            return super()._pbf_list_values(s, domain, selected)
+        none_label = s.get('none_label') or _('Not set')
+        rows = []
+        for value, count in self._pbf_records()._read_group(domain, [s['path']], ['__count']):
+            rows.append({'v': value.id if value else False,
+                         'label': (value.sudo().display_name or none_label) if value else none_label,
+                         'n': count})
+        rows.sort(key=lambda r: (r['v'] is False, -r['n'], (r['label'] or '').lower()))
+        more = len(rows) > 300
+        rows = rows[:300]
+        have = {r['v'] for r in rows}
+        missing = [v for v in (selected or []) if v not in have]
+        if missing:
+            rows.extend(self._pbf_label_values(s, missing))
+        return rows, more
+
+    @api.model
+    def _pbf_label_values(self, s, values):
+        if s.get('key') in SUDO_LABELS:
+            # labels only; nothing is counted here
+            return super(PbRnr, self.sudo())._pbf_label_values(s, values)
+        return super()._pbf_label_values(s, values)
+
+    @api.model
+    def pbf_layout(self):
+        if not self._can_read():
+            return {'refused': _refusal()['why']}
+        return super().pbf_layout()
+
+    @api.model
+    def pbf_counts(self, filters=None, search=None, keys=None):
+        self._require_read()
+        return super().pbf_counts(filters=filters, search=search, keys=keys)
+
+    @api.model
+    def pbf_find_values(self, key, query, filters=None, search=None):
+        self._require_read()
+        return super().pbf_find_values(key, query, filters=filters, search=search)
+
+    @api.model
+    def get_head(self):
+        """Everything on the board except the list: the gates, the numbers
+        line (counted over every story this person may read, whatever is
+        filtered), the values, the quarters and the switches."""
+        if not self._can_read():
+            return _refusal()
+        Nom = self.env['pb.rnr.nomination']
+        base = self._pbf_base_domain()
+        today = fields.Date.context_today(self)
+        month = fields.Date.to_string(today.replace(day=1))
+        quarter = fields.Date.to_string(self._quarter_start())
+
+        def n(extra):
+            return self._safe(lambda: Nom.search_count(base + extra), 0)
+
+        awarded = base + [('outcome', '=', 'awarded'), ('decided_at', '>=', quarter)]
+        return {
+            'allowed': True,
+            'can_write': True,
+            'can_review': self._can_review(),
+            'currency': self.env.company.currency_id.symbol or '',
+            'values': self.values_list(),
+            'cycles': self._cycles(),
+            'states': [{'key': k, 'label': v}
+                       for k, v in NOMINATION_STATE_LABEL.items()],
+            'outcomes': [{'key': k, 'label': v}
+                         for k, v in OUTCOME_LABEL.items()],
+            'celebrations': self._safe(
+                lambda: self.env['pb.rnr.celebration'].upcoming_celebrations(
+                    days=14), []),
+            'celebration_total': self._safe(
+                lambda: self.env['pb.rnr.celebration'].count_upcoming(
+                    days=14), 0),
+            'switches': self._switches(),
+            'quarter_start': quarter,
+            'kpis': {
+                'all': n([]),
+                'this_month': n([('submitted_at', '>=', month)]),
+                'with_manager': n([('state', '=', 'submitted')]),
+                'with_hr': n([('state', '=', 'manager')]),
+                'refused': n([('state', '=', 'refused')]),
+                'awarded_qtd': self._safe(lambda: Nom.search_count(awarded), 0),
+            },
+            'why': '',
+        }
+
+    @api.model
+    def get_praise_page(self, filters=None, search=None, sort=None, offset=0,
+                        limit=PAGE_SIZE):
+        """One page of stories for the panel's state, and the strip's four
+        step counts said about the same filters (every filter but the step
+        one, so a step never zeroes its neighbours)."""
+        self._require_read()
+        Nom = self.env['pb.rnr.nomination']
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        filters = filters if isinstance(filters, dict) else {}
+        domain = self.pbf_domain(filters, search)
+        recs = Nom.search(domain, order=self.pbf_order(sort) or 'id desc',
+                          offset=offset, limit=limit)
+        rows = []
+        for rec in recs:
+            try:
+                rows.append(self._row(rec))
+            except Exception as ex:  # noqa: BLE001 — one bad row never blanks the list
+                _logger.debug("Praise row failed: %s", ex)
+        out = {'rows': rows, 'total': Nom.search_count(domain), 'offset': offset}
+        if not offset:
+            by_state = {}
+            try:
+                for state, count in Nom._read_group(
+                        self.pbf_domain(filters, search, skip='step'), ['state'], ['__count']):
+                    by_state[state] = count
+            except Exception as ex:  # noqa: BLE001
+                _logger.info("Praise step counts failed: %s", ex)
+            out['steps'] = {k: sum(by_state.get(s, 0) for s in states)
+                            for k, states in STEP_STATES.items()}
+            out['refused'] = by_state.get('refused', 0)
+        return out
 
     @api.model
     def _switches(self):

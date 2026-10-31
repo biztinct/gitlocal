@@ -65,21 +65,18 @@
                zero, a colour only when somebody has to act. -->
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.stateFilter"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
 
           <!-- ======================= the steps =======================
-               A story is at exactly ONE step (stepOf), so the counts add
-               up. Pressing the lit step again shows everything. -->
+               A story is at exactly ONE step, so the counts add up. The
+               counts follow the panel's other filters; pressing a step ticks
+               it in "Where it is", pressing the lit step again lets go. -->
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
             <t t-set="qStepsLabel" t-value="'Where every story is'"/>
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
-          <div class="pbim-showing">
-            <span t-esc="showingLine.text"/>
-            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="showAll">Show all</button>
-          </div>
 
           <!-- ================== what is switched on ==================
                R54: a switch that is off and does not SAY so is reported as
@@ -103,79 +100,85 @@
             </button>
           </div>
 
-          <!-- ======================= the filters ======================= -->
-          <div class="rnr-filters">
-            <div class="rnr-search">
-              <t t-out="ic('search',15)"/>
-              <input type="text" placeholder="Find a person or something they did"
-                     t-att-value="state.q" t-on-input="onSearch"/>
-            </div>
-            <div class="pbim-chips">
-              <button t-foreach="state.values" t-as="vl" t-key="vl.id"
-                      class="pbim-fchip"
-                      t-att-class="{ 'is-on': state.valueFilter === vl.id }"
-                      t-on-click="() => this.setValueFilter(vl.id)"
-                      t-esc="vl.name"/>
-            </div>
-          </div>
-
-          <!-- ======================== the board ======================== -->
-          <div t-if="!visibleRows.length" class="pbim-empty rnr-empty">
-            <div class="rnr-empty-ic"><t t-out="ic('award',30)"/></div>
-            <h3 t-if="!state.rows.length">Nobody has been thanked yet</h3>
-            <h3 t-else="">Nothing matches what you are looking for</h3>
-            <p t-if="!state.rows.length">
-              Somebody near you has almost certainly done something worth saying
-              out loud this week. Write the first one — it goes to their manager,
-              then to HR, and then to the whole company.
-            </p>
-            <p t-else="">Clear the search or pick a different value.</p>
-            <button t-if="!state.rows.length" class="pbim-btn"
-                    t-on-click="openCreate">Say thank you</button>
-          </div>
-
-          <div t-else="" class="rnr-list">
-            <div t-foreach="visibleRows" t-as="pr" t-key="pr.id"
-                 t-attf-class="rnr-row rnr-row--{{pr.color}}">
-              <div class="rnr-row-who">
-                <img t-if="pr.avatar" class="rnr-av" t-att-src="pr.avatar"
-                     alt=""/>
-                <span t-else="" class="rnr-av rnr-av--txt" t-esc="pr.initials"/>
-                <div>
-                  <div class="rnr-row-n" t-esc="pr.nominee"/>
-                  <div class="rnr-row-s">
-                    said by <t t-esc="pr.nominator"/>
+          <!-- ================= the shared filter panel =================
+               pb_filter_kit: views, search, the left panel with counts,
+               chips. The stories are its slot, one page at a time. -->
+          <PbFilterLayout kit="kit" searchPlaceholder="'Find a person or something they did'">
+            <div t-if="visibleRows.length" class="rnr-list">
+              <div t-foreach="visibleRows" t-as="pr" t-key="pr.id"
+                   t-attf-class="rnr-row rnr-row--{{pr.color}}">
+                <div class="rnr-row-who">
+                  <img t-if="pr.avatar" class="rnr-av" t-att-src="pr.avatar"
+                       alt=""/>
+                  <span t-else="" class="rnr-av rnr-av--txt" t-esc="pr.initials"/>
+                  <div>
+                    <div class="rnr-row-n" t-esc="pr.nominee"/>
+                    <div class="rnr-row-s">
+                      said by <t t-esc="pr.nominator"/>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="rnr-row-mid">
-                <span t-attf-class="rnr-chip rnr-chip--{{pr.color}}"
-                      t-esc="pr.value"/>
-                <p class="rnr-row-story" t-esc="pr.excerpt"/>
-              </div>
-              <div class="rnr-row-end">
-                <span class="pbim-badge"
-                      t-att-class="{ 'ok': pr.state === 'done',
-                                     'warn': pr.state === 'submitted' or pr.state === 'manager',
-                                     'err': pr.state === 'refused' }"
-                      t-esc="pr.outcome_label or pr.state_label"/>
-                <span t-if="pr.amount" class="rnr-money" t-esc="money(pr)"/>
-<span t-if="pr.winner" class="pbim-badge ok rnr-winner">Quarter winner</span>
-                <span t-if="!pr.public" class="rnr-private">
-                  <t t-out="ic('eyeOff',13)"/> Kept private
-                </span>
-                <button class="pbim-btn-sm ghost"
-                        t-on-click="() => this.openReview(pr)">
-                  <t t-if="pr.state === 'submitted' or pr.state === 'manager'">Read and decide</t>
-                  <t t-else="">Read it</t>
-                </button>
+                <div class="rnr-row-mid">
+                  <span t-attf-class="rnr-chip rnr-chip--{{pr.color}}"
+                        t-esc="pr.value"/>
+                  <p class="rnr-row-story" t-esc="pr.excerpt"/>
+                </div>
+                <div class="rnr-row-end">
+                  <span class="pbim-badge"
+                        t-att-class="{ 'ok': pr.state === 'done',
+                                       'warn': pr.state === 'submitted' or pr.state === 'manager',
+                                       'err': pr.state === 'refused' }"
+                        t-esc="pr.outcome_label or pr.state_label"/>
+                  <span t-if="pr.amount" class="rnr-money" t-esc="money(pr)"/>
+                  <span t-if="pr.winner" class="pbim-badge ok rnr-winner">Quarter winner</span>
+                  <span t-if="!pr.public" class="rnr-private">
+                    <t t-out="ic('eyeOff',13)"/> Kept private
+                  </span>
+                  <button class="pbim-btn-sm ghost"
+                          t-on-click="() => this.openReview(pr)">
+                    <t t-if="pr.state === 'submitted' or pr.state === 'manager'">Read and decide</t>
+                    <t t-else="">Read it</t>
+                  </button>
+                </div>
               </div>
             </div>
-            <p t-if="state.capped" class="pbim-note">
-              Only the most recent stories are shown. Open “All praise” for the
-              whole list.
-            </p>
-          </div>
+
+            <!-- loading: the shape of the rows, never a blank -->
+            <div t-elif="!state.listLoaded" class="rnr-list rnr-list--skel" aria-label="Loading stories">
+              <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="rnr-row rnr-row--ghost"/>
+            </div>
+
+            <!-- empty: for a filter, for a search, or nobody thanked yet -->
+            <div t-else="" class="pbim-empty rnr-empty">
+              <div class="rnr-empty-ic">
+                <t t-if="filtered" t-out="ic('search',30)"/>
+                <t t-else="" t-out="ic('award',30)"/>
+              </div>
+              <t t-if="filtered">
+                <h3>No story matches these filters</h3>
+                <p t-if="kit.chips.length">Remove a filter above, or start again from every story.</p>
+                <p t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the spelling, or search by who wrote it.</p>
+                <button class="pbim-btn ghost" t-on-click="showAll">Show all praise</button>
+              </t>
+              <t t-else="">
+                <h3>Nobody has been thanked yet</h3>
+                <p>
+                  Somebody near you has almost certainly done something worth saying
+                  out loud this week. Write the first one — it goes to their manager,
+                  then to HR, and then to the whole company.
+                </p>
+                <button class="pbim-btn" t-on-click="openCreate">Say thank you</button>
+              </t>
+            </div>
+
+            <div t-if="visibleRows.length" class="rnr-foot">
+              Showing <b t-esc="fmtInt(visibleRows.length)"/> of <b t-esc="fmtInt(state.total)"/>
+              <button t-if="hasMore" class="pbim-btn-sm ghost" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                <t t-if="state.loadingMore">Loading…</t>
+                <t t-else="">Show <t t-esc="nextPage"/> more</t>
+              </button>
+            </div>
+          </PbFilterLayout>
 
           <!-- ==================== the new praise dialog ==================== -->
           <div t-if="state.creating" class="pbim-modal-scrim"
