@@ -28,7 +28,6 @@ msgstr "Cần nhập lý do để từ chối đơn nghỉ phép."
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
-#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:108
 msgid "A reason is required to refuse."
 msgstr "Cần nhập lý do để từ chối."
 
@@ -47,7 +46,6 @@ msgstr "Bản đồ nhiệt vắng mặt"
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
-#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:235
 msgid "Action failed."
 msgstr "Thao tác không thành công."
 
@@ -71,6 +69,7 @@ msgstr "Phê duyệt"
 
 #. module: pb_timeoff
 #. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_holidays.xml:0
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
 msgid "Cancel"
 msgstr "Hủy bỏ"
@@ -82,13 +81,37 @@ msgid "Choose…"
 msgstr "Chọn…"
 
 #. module: pb_timeoff
+#: model:ir.model.fields,field_description:pb_timeoff.field_biz_approval_request_seat__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave_allocation__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave_type__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_batch__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_policy_note__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holidays__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_edition__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_operation__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_posting__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_rule__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_settlement__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_year_opening__display_name
 #: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_log__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_watch__display_name
+#: model:ir.model.fields,field_description:pb_timeoff.field_resource_calendar_leaves__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: pb_timeoff
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+#: model:ir.model,name:pb_timeoff.model_hr_employee
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_operation__employee_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_posting__employee_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_settlement__employee_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_year_opening__employee_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_log__employee_id
 msgid "Employee"
 msgstr "Nhân viên"
 
@@ -112,12 +135,31 @@ msgstr "Nộp bởi nhân sự"
 
 #. module: pb_timeoff
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
 msgid "From"
 msgstr "Từ"
 
 #. module: pb_timeoff
+#: model:ir.model.fields,field_description:pb_timeoff.field_biz_approval_request_seat__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave_allocation__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_hr_leave_type__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_batch__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_policy_note__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holidays__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_edition__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_operation__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_posting__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_rule__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_settlement__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_year_opening__id
 #: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_log__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_watch__id
+#: model:ir.model.fields,field_description:pb_timeoff.field_resource_calendar_leaves__id
 msgid "ID"
 msgstr "ID"
 
@@ -131,7 +173,6 @@ msgstr "Trung Tâm Quản Lý Nghỉ Phép"
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
-#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:121
 msgid "Leave approved."
 msgstr "Đã duyệt nghỉ phép."
 
@@ -144,19 +185,19 @@ msgstr "Số dư nghỉ phép"
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
-#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:225
 msgid "Leave filed — pending approval."
 msgstr "Đã gửi đơn — đang chờ phê duyệt."
 
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
-#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:121
 msgid "Leave refused."
 msgstr "Đã từ chối nghỉ phép."
 
 #. module: pb_timeoff
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
 msgid "Leave type"
 msgstr "Loại nghỉ phép"
@@ -295,8 +336,10 @@ msgstr "Đơn nghỉ phép này không còn tồn tại."
 
 #. module: pb_timeoff
 #. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/timeoff_palette.js:0
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
 #: model:ir.actions.client,name:pb_timeoff.action_pb_timeoff
+#: model:ir.model,name:pb_timeoff.model_hr_leave
 #: model:pb.sidebar.item,name:pb_timeoff.item_leave_center
 msgid "Time Off"
 msgstr "Nghỉ Phép"
@@ -304,12 +347,13 @@ msgstr "Nghỉ Phép"
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
-#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:141
 msgid "Time Off — %s"
 msgstr "Thời gian nghỉ — %s"
 
 #. module: pb_timeoff
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
 msgid "To"
 msgstr "Để"
@@ -366,7 +410,6 @@ msgstr "chờ phê duyệt"
 #  Approval Matrix phase 6 — time off asks the same way everything else
 #  does, and says so in the same words.
 # =====================================================================
-
 #. module: pb_timeoff
 #. odoo-python
 #: code:addons/pb_timeoff/models/hr_leave_approval.py:0
@@ -382,22 +425,29 @@ msgstr "Đã trả lại: %s"
 #. module: pb_timeoff
 #. odoo-python
 #: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
 msgid "How many days"
 msgstr "Bao nhiêu ngày"
 
 #. module: pb_timeoff
 #. odoo-python
 #: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_log__leave_type_id
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.view_pb_carry_log_search
 msgid "Kind of time off"
 msgstr "Loại nghỉ phép"
 
 #. module: pb_timeoff
 #. odoo-python
-#: code:addons/pb_timeoff/tests/test_timeoff.py:0
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__hr_leave_type__pb_pay_treatment__unpaid
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__pb_leave_policy_rule__pay_treatment__unpaid
 msgid "Unpaid"
 msgstr "Không lương"
 
 #. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
 msgid "Falls in a month whose pay is already being worked out"
 msgstr "Rơi vào tháng lương đang được tính"
 
@@ -410,7 +460,6 @@ msgstr "Kỳ nghỉ"
 # ===================================================================
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
-
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
@@ -426,6 +475,8 @@ msgstr "Nghỉ hôm nay"
 
 #. module: pb_timeoff
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
 msgid "Waiting for approval"
 msgstr "Đang chờ duyệt"
@@ -438,12 +489,314 @@ msgstr "Ngày lễ"
 
 #. module: pb_timeoff
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_holidays.py:0
 #: code:addons/pb_timeoff/static/src/js/timeoff_palette.js:0
+#: code:addons/pb_timeoff/static/src/xml/pb_holidays.xml:0
+#: model:ir.actions.client,name:pb_timeoff.action_pb_holidays
+#: model:ir.model,name:pb_timeoff.model_pb_holidays
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.portal_breadcrumbs_holidays
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.portal_my_holidays
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.portal_my_home_holidays
 msgid "Public holidays"
 msgstr "Ngày lễ"
 
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/js/timeoff_palette.js:0
+#: model:ir.model,name:pb_timeoff.model_pb_timeoff_carry_watch
 msgid "Carry-forward watch"
 msgstr "Theo dõi phép chuyển sang"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Approved this month"
+msgstr "Đã duyệt trong tháng này"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid ""
+"Asked for after the days had gone. The pay for those days may already have "
+"been worked out."
+msgstr ""
+"Xin sau khi những ngày đó đã qua. Lương của những ngày này có thể đã được "
+"tính."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Asked for afterwards"
+msgstr "Xin sau khi đã nghỉ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Asked for in advance"
+msgstr "Xin trước"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Backdated"
+msgstr "Nộp muộn"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Backdated requests"
+msgstr "Đơn nộp muộn"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+msgid "Find a name, a leave type or a note"
+msgstr "Tìm tên, loại nghỉ phép hoặc ghi chú"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: code:addons/pb_timeoff/static/src/xml/pb_holidays.xml:0
+msgid "First day"
+msgstr "Ngày đầu tiên"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "First day latest"
+msgstr "Ngày đầu xa nhất trước"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "First day soonest"
+msgstr "Ngày đầu gần nhất trước"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: code:addons/pb_timeoff/static/src/xml/pb_holidays.xml:0
+msgid "Last day"
+msgstr "Ngày cuối cùng"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Loading leave requests"
+msgstr "Đang tải các đơn nghỉ phép"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Longest first"
+msgstr "Dài nhất trước"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "No papers"
+msgstr "Không có giấy tờ"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "No request matches these filters"
+msgstr "Không có đơn nào khớp với các bộ lọc này"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Papers"
+msgstr "Giấy tờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Papers attached"
+msgstr "Có giấy tờ kèm theo"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid ""
+"Remove a filter above, or go back to the requests waiting for approval."
+msgstr "Bỏ một bộ lọc ở trên, hoặc quay lại các đơn đang chờ phê duyệt."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Starting this week"
+msgstr "Bắt đầu trong tuần này"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+msgid "The leave requests could not be listed. Try again in a moment."
+msgstr "Không liệt kê được các đơn nghỉ phép. Hãy thử lại sau giây lát."
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "The queue could not be loaded"
+msgstr "Không tải được hàng chờ"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Try a person’s name, a leave type or a word from the note."
+msgstr "Thử tên một người, một loại nghỉ phép hoặc một từ trong ghi chú."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Who is asking"
+msgstr "Người xin nghỉ"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+msgid "requests"
+msgstr "đơn"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Clear the search"
+msgstr "Xóa tìm kiếm"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/static/src/xml/pb_holidays.xml:0
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_policy_note__country
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_edition__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__pb_leave_policy_edition__state__draft
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__pb_leave_policy_year_opening__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Name A–Z"
+msgstr "Tên A–Z"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Newest request first"
+msgstr "Yêu cầu mới nhất trước"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả nào khớp với “"
+
+#. module: pb_timeoff
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__hr_leave_type__pb_pay_treatment__paid
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__pb_leave_policy_rule__pay_treatment__paid
+msgid "Paid"
+msgstr "Đã thanh toán"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Refused"
+msgstr "Bị từ chối"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Reload the page to try again."
+msgstr "Tải lại trang để thử lại."
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Start again"
+msgstr "Bắt đầu lại"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_posting__allocation_state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_batch__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_holiday_policy_note__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_edition__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_posting__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_rule__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_settlement__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_leave_policy_year_opening__company_id
+#: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_log__company_id
+msgid "Company"
+msgstr "Công ty"
