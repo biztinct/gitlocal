@@ -40,16 +40,18 @@ start() {
 
 case "$CMD" in
   hold)
+    # The lock is taken by a detached holder loop (ops/pbf_holdloop.sh) so the
+    # foreground can exit; we only report once that loop confirms it has the
+    # lock (fixes the race where two waiters were both told HELD, F-ledger).
     who="${2:-unknown}"
-    exec 9>"$LOCK"
-    if ! flock -n 9; then echo "waiting for $(cat "$HOLDER" 2>/dev/null || echo someone) to release the preview…"; flock -w 7200 9 || { echo LOCK_TIMEOUT; exit 1; }; fi
-    echo "$who $(date -u +%H:%M)" > "$HOLDER"
-    # keep the lock alive in a background holder process the releaser can kill
-    nohup bash -c "exec 9>'$LOCK'; flock 9; echo \$\$ > '$P/lockpid'; while [ -f '$HOLDER' ]; do sleep 5; done" > /dev/null 2>&1 &
-    sleep 1; echo "HELD by $who"
+    rm -f "$P/held.$who"
+    if [ -f "$HOLDER" ] && ! grep -q "^$who " "$HOLDER"; then echo "waiting for $(cat "$HOLDER") to release the preview…"; fi
+    nohup flock -w 7200 "$LOCK" /bin/bash /odoo/ops/pbf_holdloop.sh "$who" > /dev/null 2>&1 &
+    for i in $(seq 1 1440); do [ -f "$P/held.$who" ] && break; sleep 5; done
+    if [ -f "$P/held.$who" ]; then echo "HELD by $who"; else echo LOCK_TIMEOUT; exit 1; fi
     ;;
   release)
-    rm -f "$HOLDER"; sleep 6; echo RELEASED
+    rm -f "$HOLDER"; sleep 7; rm -f "$P"/held.* "$P/lockpid"; echo RELEASED
     ;;
   sync)
     src="$2"; for m in ${3//,/ }; do
