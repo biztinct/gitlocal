@@ -14,7 +14,9 @@ built-in views. `pb.filter.view` stores the views people save.
 Client half: `useFilterKit` + `PbFilterLayout` (views tabs, toolbar, left
 panel, chips) with a slot for the screen's own list.
 """,
-    'version': '19.0.1.2.0',
+    # 1.3.0: view tabs are recounted on every full refresh (an approval shows
+    # at once); "Clear all" no longer leaves the previous tab lit with a dot.
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

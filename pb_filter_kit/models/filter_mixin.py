@@ -547,8 +547,13 @@ class PbFilterMixin(models.AbstractModel):
         }
 
     @api.model
-    def pbf_counts(self, filters=None, search=None, keys=None):
-        """Every time the filters change: the count beside each value."""
+    def pbf_counts(self, filters=None, search=None, keys=None, views=False):
+        """Every time the filters change: the count beside each value.
+
+        `views=True` (the kit's full refresh, also after a screen's own
+        action) recounts every view tab too, so "To approve 5" becomes 4 the
+        moment a request is approved instead of on the next load (kit 1.3.0).
+        """
         filters = filters if isinstance(filters, dict) else {}
         spec = self._pbf_clean_spec()
         out = {}
@@ -561,10 +566,14 @@ class PbFilterMixin(models.AbstractModel):
                 _logger.info("Filter counts for %s failed: %s", s['key'], e)
                 out[s['key']] = {'error': True}
         Rec = self._pbf_records()
-        return {
+        res = {
             'sections': out,
             'matched': Rec.search_count(self.pbf_domain(filters, search, spec=spec)),
         }
+        if views:
+            base = Domain(self._pbf_base_domain() or [])
+            res['views'] = {v['key']: v['n'] for v in self._pbf_views(spec, base)}
+        return res
 
     @api.model
     def pbf_find_values(self, key, query, filters=None, search=None):

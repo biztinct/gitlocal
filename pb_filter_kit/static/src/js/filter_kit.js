@@ -335,6 +335,9 @@ export class FilterKit {
                       filters: this.filters,
                       search: this.search,
                       keys,
+                      // the view tabs are recounted on every full refresh, so
+                      // an approval the screen just made shows at once
+                      views: true,
                   })),
         ];
         if (!countsOnly && this.onChange) {
@@ -357,6 +360,9 @@ export class FilterKit {
             }
             this.counts = fresh;
             this.matched = res.matched;
+            if (res.views) {
+                this.views = this.views.map((v) => (v.key in res.views ? { ...v, n: res.views[v.key] } : v));
+            }
         } catch (e) {
             if (seq === this.seq) {
                 console.error("pb_filter_kit: refresh failed", e);
@@ -518,6 +524,9 @@ export class FilterKit {
         this.filters = {};
         this.search = "";
         this.ui.custom = {};
+        // "Clear all" is a fresh start: no tab stays lit with a dot. A view
+        // whose filters are empty (an "Everyone" tab) still matches and lights.
+        this.viewKey = "";
         this._changed();
     }
     setSearch(q, now = false) {

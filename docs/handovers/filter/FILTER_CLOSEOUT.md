@@ -49,14 +49,18 @@ payobook.com with a clean console for every screen.
   screens (several had English-only before).
 - Learn: anchors kept or added on every screen; replicas draw the filter strip.
 
-## 3. Kit gaps — consolidated backlog for `pb_filter_kit` 1.3.0
+## 3. Kit gaps — consolidated backlog for `pb_filter_kit` (items 1–2 shipped as 1.3.0; the rest is the 1.4.0 backlog)
 
 Priority order (count = how many waves asked for it).
 
-1. **View tab counts do not refresh after an action** (W7, W8; `kit.refreshViews()`
-   or recount built-in views in `refresh()`).
-2. **"Clear all" / a figure that matches no view leaves the previous tab lit with
-   a dirty dot** (W1, W2 K1, W4 #6, W8 #1; `_matchView` should clear `viewKey`).
+1. ~~**View tab counts do not refresh after an action**~~ (W7, W8) — **DONE in
+   kit 1.3.0 (2026-11-01)**: `pbf_counts(views=True)` recounts every tab on the
+   kit's full `refresh()`, so a screen's existing `await this.kit.refresh()`
+   after an approval updates the tabs at once (ledger §3a-ter).
+2. ~~**"Clear all" leaves the previous tab lit with a dirty dot**~~ (W1, W2 K1,
+   W4 #6, W8 #1) — **DONE in kit 1.3.0**: `clearAll()` sets `viewKey = ""`
+   before `_changed()`. Residual: a *figure* that matches no view still keeps the
+   previous tab lit with a dot — that is the Save/Reset design, not a bug.
 3. **`ctx` only rides the kit's own calls** — screens must forward
    `context: {pbf_ctx}` on their page/select-all/export calls (W6 F31; export
    `kit.kw()`).

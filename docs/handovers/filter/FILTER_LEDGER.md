@@ -196,6 +196,17 @@ async loadPage({ more = false } = {}) {
 - Enter in the find box: first value found by value, else the first value of
   the section found by name.
 
+### 3a-ter. Kit 1.3.0 (after the closeout, 2026-11-01 — owner: "fix this")
+
+- `pbf_counts(..., views=True)` also returns `views: {key: n}`; `kit.refresh()`
+  asks for it on every full refresh and rewrites `views[i].n`, so a screen's
+  own `await kit.refresh()` after approve/refuse updates the tab numbers at
+  once (closes W7 gap 1 / W8 gap 3 / F43). `fetchSection` does not recount views.
+- `kit.clearAll()` clears `viewKey` before matching, so "Clear all" lights no
+  tab unless a view with empty filters matches exactly (closes W1/W2 K1/W4 #6/
+  W8 #1). Tweaking a view's filters still keeps the tab lit with the dot (that
+  is the Save/Reset feature, unchanged).
+
 ### 3b. Rulings for the rollout (coordinator, 2026-10-31)
 
 - **R1** Lane / step / tab counts FOLLOW the filters (the kit's counts). This
