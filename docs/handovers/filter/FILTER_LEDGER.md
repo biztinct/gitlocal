@@ -221,7 +221,7 @@ ssh Payobook19v2 'sudo /odoo/ops/pbf_preview.sh release w3'
 output; full log `/tmp/pbf_preview/upgrade.log`). Hold the preview once per
 wave for the whole test-and-fix pass; build everything first. Export
 translations from it while you hold it:
-`odoo-bin i18n export -c /etc/odoo-server.conf --addons-path=/tmp/pbf_preview/addons,/odoo/odoo-server/addons -d pbf_preview -l vi_VN -o /tmp/<wave>.po <modules>`
+`odoo-bin --addons-path=/tmp/pbf_preview/addons,/odoo/odoo-server/addons i18n export -c /etc/odoo-server.conf -d pbf_preview -l vi_VN -o /tmp/<wave>.po <modules>` (the addons path must come BEFORE `i18n`)
 (run as odoo, service may stay up). The live deploy of a merged batch is the
 coordinator's (`filter_deploy.sh full`).
 

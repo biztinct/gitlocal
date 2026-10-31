@@ -14,7 +14,7 @@ built-in views. `pb.filter.view` stores the views people save.
 Client half: `useFilterKit` + `PbFilterLayout` (views tabs, toolbar, left
 panel, chips) with a slot for the screen's own list.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

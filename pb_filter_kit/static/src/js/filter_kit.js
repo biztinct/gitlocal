@@ -536,6 +536,9 @@ export class FilterKit {
         }
         this.filters = normFilters(clone(filters));
         this.search = "";
+        // a pressed figure is its own state: the tab lights only when a view
+        // matches exactly, never the previously lit one with a dot (W2 K1)
+        this.viewKey = "";
         this._changed();
     }
 
