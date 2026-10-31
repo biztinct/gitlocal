@@ -37,8 +37,12 @@ class PbVendorExport(models.TransientModel):
 
     # ============================================================== the vendors
     @api.model
-    def build_vendors(self):
+    def build_vendors(self, vendor_ids=None):
         board = self.env['pb.vendors'].get_board(limit=None)
+        if vendor_ids is not None:
+            # the filter panel's set: the board's rows, narrowed to those ids
+            keep = set(vendor_ids)
+            board = dict(board, rows=[r for r in board['rows'] if r['id'] in keep])
         openpyxl, Alignment, Font, PatternFill, get_column_letter = self._wb()
         wb = openpyxl.Workbook()
         ws = wb.active

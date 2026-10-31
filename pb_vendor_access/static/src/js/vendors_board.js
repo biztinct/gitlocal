@@ -31,6 +31,18 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+const PAGE = 60;
+// What each figure on the numbers line means as a filter: the same filters as
+// the built-in views, so pressing a figure lights the matching tab.
+const GLANCE_FILTERS = {
+    expiring: { agreement: ["expiring"] },
+    expired: { agreement: ["expired"] },
+    none: { agreement: [false] },
+    mine: { mine: ["yes"] },
+};
 
 const BLANK_VENDOR = {
     id: 0, name: "", vendor_type: "services", contact_name: "",
@@ -45,7 +57,7 @@ const BLANK_AGREEMENT = {
 
 export class PbVendorsBoard extends Component {
     static template = "pb_vendor_access.PbVendorsBoard";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -59,13 +71,14 @@ export class PbVendorsBoard extends Component {
         this.state = useState({
             loaded: false,
             failed: "",
-            board: null,
+            head: null,
 
-            // filters
-            type: "",
-            department_id: 0,
-            agreementState: "",
-            search: "",
+            // the list the filter panel produced, one page at a time
+            rows: [],
+            total: 0,
+            headline: "",
+            listLoaded: false,
+            loadingMore: false,
 
             // the drawer
             open: 0,
@@ -87,26 +100,29 @@ export class PbVendorsBoard extends Component {
             busy: false,
         });
 
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this board only loads a page for kit.query.
+        this.kit = useFilterKit({
+            model: "pb.vendors",
+            noun: _t("vendors"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
     // ------------------------------------------------------------- reading
+    /** The header and the numbers line (counted over the whole register). */
     async load() {
         try {
-            this.state.board = await this.orm.call("pb.vendors", "get_board", [
-                this.state.type || null,
-                this.state.department_id || null,
-                this.state.agreementState || null,
-                this.state.search || null,
-            ]);
+            this.state.head = await this.orm.call("pb.vendors", "get_head", []);
             this.state.failed = "";
         } catch (e) {
             // Reported, never swallowed into a decoration: a board that could
             // not be read says so, and never shows an empty list as though it
             // were the answer.
-            this.state.board = null;
+            this.state.head = null;
             this.state.failed = this._msg(
                 e, _t("The vendor register could not be read."));
         } finally {
@@ -114,69 +130,92 @@ export class PbVendorsBoard extends Component {
         }
     }
 
+    /** One page of cards for the panel's current filters. */
+    async loadPage({ more = false } = {}) {
+        if (this.kit.refusal) {
+            this.state.failed = this.kit.refusal;
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.vendors", "get_vendor_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.total = d.total;
+            if (!more) { this.state.headline = d.headline || ""; }
+            this.state.listLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(this._msg(e, _t("The vendors could not be listed. Try again in a moment.")),
+                               { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.rows.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.rows.length); }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
+    /** After a save: the numbers, the counts and the cards, in place. */
     async reload() {
-        this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (this.state.open) { await this.refreshDrawer(); }
     }
 
-    get board() { return this.state.board || {}; }
-    get rows() { return this.board.rows || []; }
-    get kpis() { return this.board.kpis || {}; }
-    get facets() { return this.board.facets || {}; }
-    get canEdit() { return Boolean(this.board.can_edit); }
+    async retry() {
+        this.state.loaded = false;
+        await this.reload();
+    }
+
+    get head() { return this.state.head || {}; }
+    get rows() { return this.state.rows; }
+    get kpis() { return this.head.kpis || {}; }
+    get canEdit() { return Boolean(this.head.can_edit); }
 
     /**
      * THE QUIET NUMBERS (the Hiring look): one slim line instead of a row of
      * tiles. A register of suppliers is not a line of steps, so there is no
      * step strip. Amber only for an agreement somebody has to renew, rose
-     * for one that has already run out; both still filter when pressed.
+     * for one that has already run out. A figure that filters ticks the same
+     * filters as its view in the panel; pressing it again shows everyone.
      */
     get glance() {
         const k = this.kpis;
+        const pick = (id) => () => this.kit.toggleFilters(GLANCE_FILTERS[id]);
         return [
-            { key: "vendors", n: k.vendors || 0, label: _t("On the register"), tone: "", run: null },
-            { key: "expiring", n: k.expiring || 0, label: _t("Coming up for renewal"), tone: k.expiring ? "amber" : "", run: () => this.setState("expiring") },
-            { key: "expired", n: k.expired || 0, label: _t("Already run out"), tone: k.expired ? "rose" : "", run: () => this.setState("expired") },
-            { key: "none", n: k.none || 0, label: _t("With nothing recorded"), tone: "", run: null },
-            { key: "mine", n: k.mine || 0, label: _t("You look after"), tone: "", run: null },
+            { key: "vendors", n: k.vendors || 0, label: _t("On the register"), tone: "", run: () => this.kit.toggleFilters({}) },
+            { key: "expiring", n: k.expiring || 0, label: _t("Coming up for renewal"), tone: k.expiring ? "amber" : "", run: pick("expiring") },
+            { key: "expired", n: k.expired || 0, label: _t("Already run out"), tone: k.expired ? "rose" : "", run: pick("expired") },
+            { key: "none", n: k.none || 0, label: _t("With nothing recorded"), tone: "", run: pick("none") },
+            { key: "mine", n: k.mine || 0, label: _t("You look after"), tone: "", run: pick("mine") },
         ];
     }
 
-    // -------------------------------------------------------------- filters
-    async setType(key) {
-        this.state.type = this.state.type === key ? "" : key;
-        await this.reload();
-    }
-
-    async setState(key) {
-        this.state.agreementState = this.state.agreementState === key
-            ? "" : key;
-        await this.reload();
-    }
-
-    async setDepartment(id) {
-        this.state.department_id = this.state.department_id === id ? 0 : id;
-        await this.reload();
-    }
-
-    async onSearch(ev) {
-        this.state.search = ev.target.value;
-        await this.load();
-    }
-
-    async clearFilters() {
-        this.state.type = "";
-        this.state.department_id = 0;
-        this.state.agreementState = "";
-        this.state.search = "";
-        await this.reload();
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(GLANCE_FILTERS)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
 
     get filtered() {
-        return Boolean(this.state.type || this.state.department_id
-                       || this.state.agreementState || this.state.search);
+        return Boolean(this.kit.activeCount || this.kit.search);
     }
+
+    showAll() { this.kit.toggleFilters({}); }
 
     // -------------------------------------------------------------- the bar
     /**
@@ -520,7 +559,10 @@ export class PbVendorsBoard extends Component {
     async exportFile() {
         this.state.busy = true;
         try {
-            const res = await this.orm.call("pb.vendors", "export_vendors", []);
+            const q = this.kit.query;
+            const res = await this.orm.call("pb.vendors", "export_vendors", [], {
+                filters: q.filters, search: q.search,
+            });
             this.download(res);
             this.notif.add(_t("The spreadsheet has been downloaded."),
                            { type: "success" });

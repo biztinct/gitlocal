@@ -56,7 +56,7 @@ touched, referenced or imported.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.15.0',
+    'version': '19.0.1.16.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -73,6 +73,7 @@ registry, flat fills, one accent. No emoji.
                                 # the vendor rules and the ACL name directly
         'pb_employee_vault',    # the attachment + expiry-cron canon
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
+        'pb_filter_kit',        # the shared filter panel on the register
         'pb_hub',               # HubShell's back chip, openHub, the ⌘K registry
         'pb_settings',          # the cog this module's two panels bolt onto
         'pb_sidebar',           # the left menu this module puts its role gates
