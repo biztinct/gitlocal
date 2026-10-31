@@ -260,6 +260,29 @@ coordinator's (`filter_deploy.sh full`).
   payobook.com; use that session (never type a password). Saved views you
   create while testing must be deleted again; clear `pbf:*` keys from
   localStorage/sessionStorage at the end so the owner sees defaults.
+- **F13** `pb_learn` test_01 looked for a literal `data-coach="x"` in the
+  registered file; `<PbFilterLayout coach="'x'">` never contains one, so
+  `pe-filters` failed it from wave 0. Fixed in W2: the test also accepts
+  `coach="'x'"`. Register a new `*-filters` anchor with `reserved: true`.
+- **F14** `odoo-bin i18n export`: `--addons-path` goes BEFORE `i18n`
+  (`odoo-bin --addons-path=… i18n export -c … -d … -l vi_VN -o …`), the
+  order in §3c is refused. The export scans the live path too, so it also
+  lists strings the staged code no longer has: merge only your own msgids.
+- **F15** A `.po` entry marked only `#. odoo-javascript` is NOT used by a
+  Python `_()` with the same msgid (and the other way round). When a label the
+  browser already translated becomes a server label (a view name, a section),
+  add `#. odoo-python` and the `.py` source line to the existing entry.
+- **F16** An English sentence built inside a `t-esc` expression is never
+  extracted or translated. Put it in a JS getter with `_t("… %s …", n)`.
+- **F17** The preview copy opens on the company "Your Company"; boards scoped
+  to `env.companies` look empty. Set `document.cookie = "cids=2-6-5-1; path=/"`
+  and reload. A shell (`odoo-bin shell … -d pbf_preview --no-http`) runs fine
+  beside the serving process for timing and probes; clear `env.cr.cache` between
+  timed runs.
+- **F18** Several `domain_method`s over the same Python facts: compute the
+  facts once per request and keep them on `self.env.cr.cache` (key with uid,
+  companies and today) — `pbf_counts` calls every option's method, and the
+  layout calls them again for the views.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python
