@@ -118,15 +118,23 @@ class TestAnchorRegistry(TransactionCase):
         rewrites it — and a retired anchor that is BACK in its template must
         lose the flag, or the flag becomes an exemption nobody decided on."""
         missing, revived = [], []
+
+        def emits(text, key):
+            # The shared filter panel (pb_filter_kit) draws the anchor itself
+            # from its `coach` prop: `<PbFilterLayout coach="'pe-filters'">`
+            # renders data-coach="pe-filters" on the panel's bar (FILTER W2).
+            return ('data-coach="%s"' % key in text
+                    or "coach=\"'%s'\"" % key in text)
+
         for key, spec in self.product.items():
             text = _read(spec['file'])
             if spec.get('retired'):
-                if text is not None and 'data-coach="%s"' % key in text:
+                if text is not None and emits(text, key):
                     revived.append('%s -> back in %s' % (key, spec['file']))
                 continue
             if text is None:
                 missing.append('%s -> file not found: %s' % (key, spec['file']))
-            elif 'data-coach="%s"' % key not in text:
+            elif not emits(text, key):
                 missing.append('%s -> not in %s' % (key, spec['file']))
             for extra in spec.get('also') or []:
                 other = _read(extra)

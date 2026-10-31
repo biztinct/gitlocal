@@ -2865,6 +2865,16 @@ export const SCREENS = {
         return `
             ${quietNums(p.numbers, ATTR_PR_NUMS)}
             <div class="lrn-steps" data-coach="pr-steps">${stepButtons(p.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 3 })), B("", ""))}</div>
+            <!-- FILTER W2 (2026-10-31): the shared filter panel. View tabs, a
+                 Filters button that opens the left panel, the search, and the
+                 applied filters as chips. The numbers and steps still filter. -->
+            <div class="lrn-strip" data-coach="pr-filters">
+                <span class="lrn-chip b">${esc(tx(B("All in trial", "Tất cả đang thử việc")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Ending within 7 days", "Kết thúc trong 7 ngày")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Waiting on a decision", "Đang chờ quyết định")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by name, job or team…", "Tìm theo tên, công việc hoặc nhóm…")))}</span>
+            </div>
             <div class="lrn-ywf">
                 <div class="lrn-yroles lrn-ywfmain" data-coach="pr-list">${cards}</div>
                 <aside class="lrn-panel lrn-ydock">
@@ -2900,6 +2910,16 @@ export const SCREENS = {
         return `
             ${quietNums(c.numbers, ATTR_CL_NUMS)}
             <div class="lrn-steps" data-coach="cl-steps">${stepButtons(c.steps.map(([l, n], i) => ({ label: l, count: n, on: i === 1 })), B("", ""))}</div>
+            <!-- FILTER W2 (2026-10-31): the shared filter panel. View tabs, a
+                 Filters button that opens the left panel, the search, and the
+                 applied filters as chips. The numbers and steps still filter. -->
+            <div class="lrn-strip" data-coach="cl-filters">
+                <span class="lrn-chip b">${esc(tx(B("All", "Tất cả")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Nobody has decided", "Chưa ai quyết định")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Interns and contractors", "Thực tập sinh và nhà thầu")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by name, job, team or contract…", "Tìm theo tên, công việc, nhóm hoặc hợp đồng…")))}</span>
+            </div>
             <div class="lrn-ywf">
                 <div class="lrn-yroles lrn-ywfmain" data-coach="cl-list">${cards}</div>
                 <aside class="lrn-panel lrn-ydock">
@@ -2922,6 +2942,16 @@ export const SCREENS = {
                 <button class="lrn-btn sm">${ic("play")}${esc(tx(B("Run today's steps", "Chạy các bước hôm nay")))}</button></div>
             ${quietNums(e.numbers, ATTR_EX_NUMS)}
             <div class="lrn-steps" data-coach="ex2-steps">${stepButtons(e.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 1 })), B("", ""))}</div>
+            <!-- FILTER W2 (2026-10-31): the shared filter panel. View tabs, a
+                 Filters button that opens the left panel, the search, and the
+                 applied filters as chips. The numbers and steps still filter. -->
+            <div class="lrn-strip" data-coach="ex2-filters">
+                <span class="lrn-chip b">${esc(tx(B("All leaving", "Tất cả người nghỉ việc")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Clearances still open", "Xác nhận bàn giao còn mở")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Ready to settle", "Sẵn sàng quyết toán")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by name, job or team…", "Tìm theo tên, công việc hoặc nhóm…")))}</span>
+            </div>
             <div class="lrn-ywf">
                 <div class="lrn-yroles lrn-ywfmain" data-coach="ex2-list">
                     <div class="lrn-yrole" ${ATTR_EX_CARD}>
