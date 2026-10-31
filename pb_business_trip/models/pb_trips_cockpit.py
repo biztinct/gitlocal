@@ -201,13 +201,13 @@ class PbTrips(models.AbstractModel):
              'group': 'people', 'type': 'many2one', 'path': 'department_id',
              'pinned': True, 'label_sudo': True, 'none_label': _('No department')},
             # ---- more filters
-            {'key': 'mine', 'label': _('Waiting on me'), 'icon': 'userCheck',
+            {'key': 'mine', 'label': _('Who it waits on'), 'icon': 'userCheck',
              'group': 'people', 'type': 'choice',
              'help': _('Trips at a step you can approve now.'),
              'options': [
-                 {'value': 'yes', 'label': _('Waiting on me'), 'tone': 'amber',
+                 {'value': 'yes', 'label': _('Me'), 'tone': 'amber',
                   'domain_method': '_pbf_mine'},
-                 {'value': 'no', 'label': _('Waiting on somebody else'), 'tone': 'slate',
+                 {'value': 'no', 'label': _('Somebody else'), 'tone': 'slate',
                   'domain_method': '_pbf_not_mine'},
              ]},
             {'key': 'country', 'label': _('Country'), 'icon': 'globe',

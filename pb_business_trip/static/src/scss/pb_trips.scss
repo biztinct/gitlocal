@@ -51,7 +51,7 @@
         &:hover { border-color: var(--pbtr-accent); }
         &--primary { background: var(--pbtr-accent); border-color: var(--pbtr-accent); color: #fff; }
         &--primary:hover { filter: brightness(1.06); }
-        &--approve { background: var(--pbtr-accent); border-color: var(--pbtr-accent); color: #fff; flex: 1 1 auto; }
+        &--approve { background: var(--pbtr-accent); border-color: var(--pbtr-accent); color: #fff; flex: 1 1 auto; white-space: nowrap; }
         &--refuse { color: var(--pbtr-refuse); }
         &--refuse:hover { border-color: var(--pbtr-refuse); }
     }
@@ -64,8 +64,8 @@
         background: rgba(148, 163, 184, 0.08);
         border: 1px solid var(--pbtr-line);
         border-radius: var(--pbim-r, 14px);
-        flex: 1 0 210px;
-        min-width: 210px;
+        flex: 1 0 236px;
+        min-width: 236px;
         max-width: 340px;
         display: flex;
         flex-direction: column;
@@ -126,7 +126,7 @@
             background: var(--pbtr-accent-soft); color: var(--pbtr-accent);
             border-radius: 5px; padding: 1px 6px;
         }
-        &__dates { font-size: 12px; color: var(--pbtr-muted); margin-top: 3px; }
+        &__dates { font-size: 12px; color: var(--pbtr-muted); margin-top: 3px; white-space: nowrap; }
         &__days { margin-left: 6px; font-weight: 600; color: var(--pbtr-text); }
         &__chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
         &__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; }

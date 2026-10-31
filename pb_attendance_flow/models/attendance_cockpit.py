@@ -344,13 +344,13 @@ class PbAttendanceFlow(models.AbstractModel):
              'group': 'people', 'type': 'many2one', 'path': 'department_id',
              'pinned': True, 'label_sudo': True, 'none_label': _('No department')},
             # ---- more filters
-            {'key': 'review', 'label': _('Waiting on me'), 'icon': 'userCheck',
+            {'key': 'review', 'label': _('Who it waits on'), 'icon': 'userCheck',
              'group': 'people', 'type': 'choice',
              'help': _('Corrections you can approve now.'),
              'options': [
-                 {'value': 'yes', 'label': _('Mine to review'), 'tone': 'amber',
+                 {'value': 'yes', 'label': _('Me'), 'tone': 'amber',
                   'domain_method': '_pbf_mine'},
-                 {'value': 'no', 'label': _('Waiting on somebody else'), 'tone': 'slate',
+                 {'value': 'no', 'label': _('Somebody else'), 'tone': 'slate',
                   'domain_method': '_pbf_not_mine'},
              ]},
             {'key': 'day', 'label': _('Day corrected'), 'icon': 'calendar',
@@ -370,7 +370,7 @@ class PbAttendanceFlow(models.AbstractModel):
             {'key': 'from_exc', 'label': _('Filed from'), 'icon': 'alert',
              'group': 'other', 'type': 'char', 'path': 'exception_kind',
              'none_label': _('Filed by hand')},
-            {'key': 'failed', 'label': _('Could not be applied'), 'icon': 'xCircle',
+            {'key': 'failed', 'label': _('Problem applying it'), 'icon': 'xCircle',
              'group': 'other', 'type': 'choice',
              'help': _('Approved, but the punch could not be changed, for example '
                        'because of a working-hours limit. The reason is on the card.'),

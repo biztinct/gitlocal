@@ -405,13 +405,14 @@ class PbTimeoff(models.AbstractModel):
              ]},
             {'key': 'type', 'label': _('Leave type'), 'icon': 'umbrella',
              'group': 'other', 'type': 'many2one', 'path': 'holiday_status_id',
-             'pinned': True},
+             'pinned': True, 'label_sudo': True},
             {'key': 'department', 'label': _('Department'), 'icon': 'building',
              'group': 'people', 'type': 'many2one', 'path': 'department_id',
-             'pinned': True, 'none_label': _('No department')},
+             'pinned': True, 'label_sudo': True, 'none_label': _('No department')},
             # ---- more filters
             {'key': 'employee', 'label': _('Who is asking'), 'icon': 'user',
-             'group': 'people', 'type': 'many2one', 'path': 'employee_id'},
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id',
+             'label_sudo': True},
             {'key': 'from', 'label': _('First day'), 'icon': 'calendar',
              'group': 'dates', 'type': 'date', 'path': 'request_date_from',
              'presets': ['today', 'this_week', 'next_7', 'next_30', 'this_month',
@@ -444,7 +445,8 @@ class PbTimeoff(models.AbstractModel):
                   'domain': [('attachment_ids', '=', False)]},
              ]},
             {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
-             'group': 'work', 'type': 'many2one', 'path': 'employee_company_id'},
+             'group': 'work', 'type': 'many2one', 'path': 'employee_company_id',
+             'label_sudo': True},
         ]
 
     def _pbf_builtin_views(self):
