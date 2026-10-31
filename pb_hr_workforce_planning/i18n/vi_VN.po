@@ -850,6 +850,8 @@ msgstr "Chi phí theo bậc lương"
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_increase_rule__country_code
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_pay_grade__country_code
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__country_code
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
 msgid "Country"
 msgstr "Quốc gia"
 
@@ -1138,6 +1140,8 @@ msgstr "Delta so với hiện tại"
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__department_id
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_headcount_change__department_id
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
 msgid "Department"
 msgstr "Phòng ban"
 
@@ -1365,6 +1369,7 @@ msgstr "Bản đồ nhiệt về mức sử dụng của nhân viên - 14 ngày 
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1371
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Employees"
 msgstr "Nhân viên"
 
@@ -1408,6 +1413,10 @@ msgstr "Loại trừ khỏi kế hoạch"
 #. module: pb_hr_workforce_planning
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__is_excluded
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
 msgid "Excluded"
 msgstr "Đã loại trừ"
 
@@ -1907,6 +1916,8 @@ msgstr "Tăng"
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_merit_matrix_cell__increase_pct
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_planning_scenario__total_increase_pct
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_scenario_tree
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
 msgid "Increase %"
 msgstr "Tăng %"
 
@@ -2209,6 +2220,8 @@ msgstr "Malaysia"
 #: model:ir.model.fields,field_description:pb_hr_workforce_planning.field_wfp_employee_forecast__manager_id
 #: model:res.groups,name:pb_hr_workforce_planning.group_wfp_manager
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce_planning.view_wfp_forecast_search
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
 msgid "Manager"
 msgstr "Quản lý"
 
@@ -2455,6 +2468,7 @@ msgstr "Không có bộ phận"
 #. module: pb_hr_workforce_planning
 #. odoo-python
 #: code:addons/pb_hr_workforce_planning/models/planning_scenario.py:0
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
 msgid "No Rule"
 msgstr "Không có quy tắc"
 
@@ -3242,6 +3256,7 @@ msgstr "Gắn thẻ các thành phần công thức để lập kế hoạch l�
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:694
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Target"
 msgstr "Mục tiêu"
 
@@ -3462,6 +3477,7 @@ msgstr "Phó Chủ tịch/Điều hành"
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1150
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Variance"
 msgstr "Phương sai"
 
@@ -3903,107 +3919,421 @@ msgstr "· Năm tài chính"
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:686
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:747
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Hours Worked"
 msgstr "Giờ làm việc"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:726
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Check-ins"
 msgstr "Đăng ký"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:755
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Target Hours"
 msgstr "Số giờ mục tiêu"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:786
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "OT Hours"
 msgstr "Giờ OT"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:795
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "OT Cost"
 msgstr "Chi phí OT"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:833
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Upper Bound"
 msgstr "Giới hạn Trên"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:841
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Projected Cost"
 msgstr "Chi phí dự kiến"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:852
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Lower Bound"
 msgstr "Giới hạn Thấp"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:969
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Applicants"
 msgstr "Các ứng viên"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1014
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Coverage %"
 msgstr "Tỷ lệ bao phủ (%)"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1137
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Actual"
 msgstr "Thực tế"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Current Total"
 msgstr "Tổng số hiện tại"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "+ Base Δ"
 msgstr "+ Cơ sở Δ"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "+ Allowance Δ"
 msgstr "+ Phụ cấp Δ"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "+ Employer Δ"
 msgstr "+ Nhà tuyển dụng Δ"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1426
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Forecast Total"
 msgstr "Tổng số dự báo"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1452
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Base"
 msgstr "Cơ sở"
 
 #. module: pb_hr_workforce_planning
 #. odoo-javascript
 #: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:1459
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
 msgid "Amount"
 msgstr "Số tiền"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "A decrease"
+msgstr "Giảm"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Biggest increase first"
+msgstr "Mức tăng lớn nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid ""
+"Calculate the forecast on the scenario and every person it covers appears "
+"here."
+msgstr "Hãy tính dự báo cho kịch bản, mọi người trong kịch bản sẽ hiện ở đây."
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Check the spelling, or search by department, job or rule."
+msgstr "Kiểm tra chính tả, hoặc tìm theo phòng ban, chức danh hoặc quy tắc."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Counted in the forecast"
+msgstr "Được tính trong dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Department, A to Z"
+msgstr "Phòng ban, A đến Z"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Everyone in the forecast"
+msgstr "Mọi người trong dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Excluded people"
+msgstr "Người bị loại trừ"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Highest current base first"
+msgstr "Lương cơ bản hiện tại cao nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Highest current cost first"
+msgstr "Chi phí hiện tại cao nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Highest forecast base first"
+msgstr "Lương cơ bản dự báo cao nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Highest forecast cost first"
+msgstr "Chi phí dự báo cao nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Highest increase % first"
+msgstr "% tăng cao nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "In the forecast"
+msgstr "Trong dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Increase amount"
+msgstr "Số tiền tăng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Increase rule"
+msgstr "Quy tắc tăng lương"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Increases over 10%"
+msgstr "Mức tăng trên 10%"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Job position"
+msgstr "Chức danh"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Job, A to Z"
+msgstr "Chức danh, A đến Z"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading the forecast table"
+msgstr "Đang tải bảng dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Location or cost centre"
+msgstr "Địa điểm hoặc trung tâm chi phí"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Lowest increase % first"
+msgstr "% tăng thấp nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Months of service"
+msgstr "Số tháng làm việc"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Name, Z to A"
+msgstr "Tên, Z đến A"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "No department"
+msgstr "Không có phòng ban"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "No forecast rows in this scenario"
+msgstr "Kịch bản này chưa có dòng dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "No increase"
+msgstr "Không tăng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "No job position"
+msgstr "Chưa có chức danh"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "No manager"
+msgstr "Chưa có quản lý"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "No rule applied"
+msgstr "Không áp dụng quy tắc nào"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "Nobody in this scenario matches “%s”"
+msgstr "Không ai trong kịch bản này khớp với “%s”"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "Nobody matches these filters"
+msgstr "Không ai khớp với các bộ lọc này"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Over 10%"
+msgstr "Trên 10%"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Over 5%, up to 10%"
+msgstr "Trên 5%, đến 10%"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Remove a filter above, or go back to everyone in the forecast."
+msgstr "Bỏ bớt một bộ lọc ở trên, hoặc quay lại mọi người trong dự báo."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Rule, A to Z"
+msgstr "Quy tắc, A đến Z"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "Search a name, a department, a job or a rule"
+msgstr "Tìm theo tên, phòng ban, chức danh hoặc quy tắc"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "Show %s more"
+msgstr "Xem thêm %s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml:0
+msgid "Show everyone in the forecast"
+msgstr "Hiện mọi người trong dự báo"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "Showing %(shown)s of %(total)s"
+msgstr "Đang hiển thị %(shown)s / %(total)s"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Size of the increase"
+msgstr "Mức độ tăng"
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Smallest increase first"
+msgstr "Mức tăng nhỏ nhất trước"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "The forecast table could not be loaded. Try again in a moment."
+msgstr "Không thể tải bảng dự báo. Vui lòng thử lại sau giây lát."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "The same bands the table colours its rows by."
+msgstr "Cùng các mức mà bảng dùng để tô màu các dòng."
+
+#. module: pb_hr_workforce_planning
+#. odoo-python
+#: code:addons/pb_hr_workforce_planning/models/wfp_forecasts.py:0
+msgid "Up to 5%"
+msgstr "Đến 5%"
+
+#. module: pb_hr_workforce_planning
+#. odoo-javascript
+#: code:addons/pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js:0
+msgid "people"
+msgstr "người"

@@ -88,7 +88,7 @@
                 <div class="prd-kpi-label">Changes</div>
             </button>
         </div>
-        <p class="prd-kpis-note" t-if="state.listLoaded and filtered" t-esc="kpiNote"/>
+        <p class="prd-kpis-note" t-if="state.listLoaded and filtered and state.summary.total_employees" t-esc="kpiNote"/>
 
         <!-- =========================== batch context =========================== -->
         <div class="prd-batch-info" t-if="state.batch.name">

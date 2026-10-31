@@ -612,6 +612,7 @@ msgstr "1 quyết định lương đang chờ bạn."
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 #: code:addons/pb_pay/static/src/js/pay_hub.js:0
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "1 person"
 msgstr "1 người"
 
@@ -1329,6 +1330,8 @@ msgstr "Một phần ba dưới"
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_review_list
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Budget"
 msgstr "Ngân sách"
 
@@ -1336,6 +1339,8 @@ msgstr "Ngân sách"
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__budget_amount
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Budget for the year"
 msgstr "Ngân sách cả năm"
 
@@ -1607,6 +1612,8 @@ msgstr "Tên hiển thị"
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_limit__division_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__division_id
 #: model_terms:ir.ui.view,arch_db:pb_pay.fairness_statement
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Division"
 msgstr "Khối"
 
@@ -1779,6 +1786,8 @@ msgstr ""
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Everybody"
 msgstr "Tất cả mọi người"
 
@@ -1879,6 +1888,7 @@ msgstr "Tài chính"
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "Find a person, a job or a team"
 msgstr "Tìm một người, một chức danh hay một nhóm"
 
@@ -1948,6 +1958,9 @@ msgstr "Chênh lệch"
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review__guidance_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__guidance_pct
 #: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_guidance_form
+#. odoo-python
+#: code:addons/pb_pay/models/bands_approval.py:0
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Guidance"
 msgstr "Hướng dẫn"
 
@@ -2172,6 +2185,8 @@ msgstr "Hiệu lực đến"
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "In the band"
 msgstr "Trong khoảng lương"
 
@@ -2190,6 +2205,8 @@ msgstr "Indonesia"
 #. module: pb_pay
 #: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__in
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__in
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Inside the band"
 msgstr "Trong khoảng lương"
 
@@ -2233,6 +2250,8 @@ msgstr "Chức danh trong khoảng lương"
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_band_job__job_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_position__job_id
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__job_id
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Job position"
 msgstr "Vị trí công việc"
 
@@ -2434,6 +2453,8 @@ msgstr "Malaysia"
 
 #. module: pb_pay
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__manager_id
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Manager"
 msgstr "Quản lý"
 
@@ -2533,6 +2554,8 @@ msgstr "Hạn chót hoạt động của tôi"
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "My team"
 msgstr "Nhóm của tôi"
 
@@ -2558,6 +2581,8 @@ msgstr "Vị trí công việc mới"
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__new_wage
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__new_wage
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "New pay"
 msgstr "Lương mới"
 
@@ -2647,6 +2672,7 @@ msgstr ""
 #: code:addons/pb_pay/models/pb_pay_review.py:0
 #: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__no_band
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__no_band
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "No band for this job yet"
 msgstr "Chức danh này chưa có khoảng lương"
 
@@ -2706,6 +2732,8 @@ msgstr "Chưa có đợt xét lương nào."
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "No rise"
 msgstr "Không tăng"
 
@@ -2807,6 +2835,7 @@ msgstr "Không còn ai đứng ở đây nữa. Hãy đóng lại và xem lại 
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "Nobody matches that"
 msgstr "Không ai khớp với tìm kiếm đó"
 
@@ -2875,6 +2904,8 @@ msgstr "Không thuộc khối nào"
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Not scored"
 msgstr "Chưa chấm điểm"
 
@@ -3053,6 +3084,8 @@ msgstr "Chỉ các công ty này"
 
 #. module: pb_pay
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_line__state__open
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Open"
 msgstr "Đang mở"
 
@@ -3103,6 +3136,7 @@ msgstr "Vượt ngân sách"
 #: code:addons/pb_pay/models/pb_pay_bands.py:0
 #: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__above
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__above
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Paid above the band"
 msgstr "Được trả trên khoảng lương"
 
@@ -3113,6 +3147,7 @@ msgstr "Được trả trên khoảng lương"
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
 #: model:ir.model.fields.selection,name:pb_pay.selection__hr_contract__pb_band_state__below
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_position__state__below
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Paid below the band"
 msgstr "Được trả dưới khoảng lương"
 
@@ -3152,6 +3187,8 @@ msgstr "Lương"
 #: model:ir.model,name:pb_pay.model_pb_pay_band
 #: model:ir.model.fields,field_description:pb_pay.field_hr_contract__pb_band_id
 #: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_band_form
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Pay band"
 msgstr "Khoảng lương"
 
@@ -3573,6 +3610,8 @@ msgstr "Xét lương"
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__pct
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__proposal_amount
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Rise"
 msgstr "Mức tăng"
 
@@ -3654,6 +3693,8 @@ msgstr "Thang điểm"
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_rating__rating
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Score"
 msgstr "Điểm đánh giá"
 
@@ -3692,6 +3733,7 @@ msgstr "Trả lại"
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_change__state__refused
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review__state__refused
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_line__state__returned
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Sent back"
 msgstr "Đã trả lại"
 
@@ -3703,6 +3745,8 @@ msgstr "Đã trả lại để làm lại."
 
 #. module: pb_pay
 #: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_review_line__state__submitted
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Sent on"
 msgstr "Đã gửi đi"
 
@@ -3907,6 +3951,8 @@ msgstr "Chặn đợt xét lương"
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/js/pay_review.js:0
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Stops approval"
 msgstr "Chặn duyệt"
 
@@ -3957,6 +4003,8 @@ msgstr "Đã lấy lại. Mức lương cũ đã trở lại."
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_review_line__department_id
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Team"
 msgstr "Bộ phận"
 
@@ -5249,6 +5297,8 @@ msgstr "Phạm vi gồm những ai"
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 #: model:ir.model.fields,field_description:pb_pay.field_pb_pay_change__kind
 #: model_terms:ir.ui.view,arch_db:pb_pay.view_pb_pay_change_form
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_approval.py:0
 msgid "Why"
 msgstr "Lý do"
 
@@ -5636,6 +5686,7 @@ msgstr "chưa chấm điểm"
 #. module: pb_pay
 #. odoo-javascript
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
 msgid "people"
 msgstr "người"
 
@@ -5985,3 +6036,255 @@ msgstr "Nội dung"
 #: code:addons/pb_pay/static/src/xml/pay_review.xml:0
 msgid "1 row stops approval"
 msgstr "1 dòng chặn duyệt"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "A rise"
+msgstr "Có tăng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "A row breaks a limit that blocks approval."
+msgstr "Dòng này vượt một giới hạn chặn việc duyệt."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "All %s matching people are selected."
+msgstr "Đã chọn tất cả %s người phù hợp."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Biggest rise first"
+msgstr "Mức tăng lớn nhất trước"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Check the spelling, or find them by job or team."
+msgstr "Kiểm tra chính tả, hoặc tìm theo công việc hoặc nhóm."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Clear the selection"
+msgstr "Bỏ chọn"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Find a job or a team"
+msgstr "Tìm một công việc hoặc một nhóm"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Highest score first"
+msgstr "Điểm cao nhất trước"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Less pay"
+msgstr "Giảm lương"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Loading the worksheet"
+msgstr "Đang tải bảng tính"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Lowest in the band first"
+msgstr "Thấp nhất trong khoảng lương trước"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "No band"
+msgstr "Chưa có khoảng lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "No division"
+msgstr "Chưa có khối"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "No job position"
+msgstr "Chưa có chức danh"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "No manager"
+msgstr "Chưa có quản lý"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "No team"
+msgstr "Chưa có nhóm"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Nobody in this review matches “%s”"
+msgstr "Không ai trong đợt xét lương này khớp với “%s”"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Nobody in this review yet"
+msgstr "Đợt xét lương này chưa có ai"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Nothing stops it"
+msgstr "Không có gì chặn"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Other teams"
+msgstr "Các nhóm khác"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Paid most first"
+msgstr "Được trả cao nhất trước"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Proposed rise (%)"
+msgstr "Mức tăng đề xuất (%)"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"Remove a filter above, or go back to everybody, and the people\n"
+"              come back."
+msgstr ""
+"Bỏ bớt một bộ lọc ở trên, hoặc quay lại tất cả mọi người, và mọi người sẽ "
+"hiện lại."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Rise or not"
+msgstr "Có tăng hay không"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Scored"
+msgstr "Đã chấm điểm"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Select everything matching (%s)"
+msgstr "Chọn tất cả những gì phù hợp (%s)"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Show %s more"
+msgstr "Xem thêm %s"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Show everybody"
+msgstr "Hiện mọi người"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "Showing %(shown)s of %(total)s people"
+msgstr "Đang hiển thị %(shown)s / %(total)s người"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Smallest rise first"
+msgstr "Mức tăng nhỏ nhất trước"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Team, then name"
+msgstr "Nhóm, rồi đến tên"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The %s people on this page are selected."
+msgstr "Đã chọn %s người trên trang này."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid ""
+"The first %s matching people are selected. Narrow the filters to reach the "
+"rest."
+msgstr ""
+"Đã chọn %s người phù hợp đầu tiên. Hãy thu hẹp bộ lọc để chọn những người "
+"còn lại."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The matching rows could not be picked."
+msgstr "Không thể chọn các dòng phù hợp."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"The review covers nobody right now. Its people come from who it\n"
+"              covers, set when it was started."
+msgstr ""
+"Đợt xét lương này hiện chưa bao gồm ai. Người trong đợt đến từ phạm vi đã "
+"chọn khi bắt đầu."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The worksheet could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị bảng tính. Vui lòng thử lại sau giây lát."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Where the row is"
+msgstr "Dòng đang ở đâu"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
+msgid "Whose team"
+msgstr "Nhóm của ai"
