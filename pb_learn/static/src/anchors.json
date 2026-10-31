@@ -1262,6 +1262,13 @@
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
       "desc": "The four-step strip: Set up · Prepare & publish · Meet your candidates · Welcome aboard."
     },
+    "hi-filters": {
+      "screen": "hiring",
+      "file": "pb_hiring/static/src/xml/hiring_board.xml",
+      "also": ["pb_hiring/static/src/xml/hiring_p9.xml"],
+      "desc": "The shared filter panel on Hiring's four lists (Roles, Interviews, Applicants, Offers): view tabs (All roles, Open roles, Over budget…), the Filters button that opens the left panel with a count beside every value, the search, the sort, and the applied filters as chips. Each list keeps its own filters; the numbers and the steps above still filter.",
+      "reserved": true
+    },
     "hi-tabs": {
       "screen": "hiring",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",

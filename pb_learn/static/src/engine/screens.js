@@ -2751,6 +2751,16 @@ export const SCREENS = {
             <div class="lrn-steps" data-coach="hi-steps">${stepButtons(h.steps.map(([l, c], i) => ({ label: l, count: c, on: i === 2 })), B("", ""))}</div>
             <div class="lrn-zmodes" data-coach="hi-tabs"><button class="lrn-lens on">${esc(tx(B("Roles", "Vai trò")))}</button><button class="lrn-lens">${
                 esc(tx(B("Interviews", "Phỏng vấn")))}</button><button class="lrn-lens">${esc(tx(B("Resume bank", "Kho hồ sơ")))}</button></div>
+            <!-- FILTER W3 (2026-10-31): the shared filter panel on every Hiring
+                 list. View tabs, a Filters button that opens the left panel,
+                 the search, and the applied filters as chips. -->
+            <div class="lrn-strip" data-coach="hi-filters">
+                <span class="lrn-chip b">${esc(tx(B("All roles", "Mọi vị trí")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Open roles", "Vị trí đang mở")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Nobody asked yet", "Chưa nhờ ai")))}</span>
+                <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Search a role, a department, a recruiter…", "Tìm vị trí, phòng ban, chuyên viên tuyển dụng…")))}</span>
+            </div>
             <div class="lrn-yroles" data-coach="hi-row">${roles}</div>`;
     },
 

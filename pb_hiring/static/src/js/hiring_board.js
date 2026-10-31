@@ -35,6 +35,49 @@ import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { useSortable } from "@web/core/utils/sortable_owl";
 import { setPlaceSub } from "@pb_hub/js/hub_place";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+/* =========================================================================
+ * FILTER W3 — the shared filter panel on the four lists of this board.
+ *
+ * ONE kit, pointed at whichever list the tab shows (`kit.reconfigure` with
+ * `ctx: {kind}` on a tab switch; ledger §3a). The server (`filters_w3.py`)
+ * answers each kind with its own sections, views and saved-views key, so
+ * every tab keeps its own filters: the kit remembers them per list for the
+ * browser tab, and coming back to a list puts them back.
+ *
+ * The lists are paged on the server for the panel's state. Nothing here
+ * filters a loaded array any more: the old selects, chips and the 300-row
+ * window are gone, and every count beside a filter is a count of every
+ * record the reader may see.
+ * ========================================================================= */
+export const KIT_TABS = ["roles", "interviews", "applicants", "offers"];
+const ROLE_PAGE = 60;
+const IV_PAGE = 60;
+/** What each list is called in "12 of 40 roles". */
+export function kitNoun(kind) {
+    return {
+        roles: _t("roles"), interviews: _t("interviews"),
+        applicants: _t("people"), offers: _t("offers"),
+    }[kind] || _t("records");
+}
+/** The Roles figures that filter, as the filters they tick (the same as
+ *  the views where one exists, so pressing a figure lights its tab). */
+const ROLE_FIGURES = {
+    open: { status: ["open", "setup"] },
+    waiting: { attention: ["signoff"] },
+    norequest: { status: ["open", "setup"], request: ["none", "asked", "writing"] },
+    mine: { attention: ["mine"] },
+    over: { budget: ["over"] },
+};
+/** The Interviews doors the old focus chips were. */
+const IV_FIGURES = {
+    today: { when: ["today"] },
+    week: { when: ["week"] },
+    awaiting: { opinions: ["waiting"] },
+    late: { opinions: ["late"] },
+};
 
 /** The four screening answers, in the order a screener weighs them. */
 /** The four steps a role moves through, in order. A role is at exactly one
@@ -61,13 +104,6 @@ const BUDGET_ICON = { within: "checkCircle", over: "alert", unknown: "info", hid
 
 /** How an interview is happening, drawn rather than spelled out. */
 const MODE_ICON = { in_person: "mapPin", video: "monitor", phone: "smartphone" };
-
-/**
- * The four questions the Interviews tab answers, in the order somebody asks
- * them. "Late" is last and is the only one that is ever red: it is the only
- * one where a person outside the company is waiting.
- */
-const IV_FOCUS = ["today", "week", "awaiting", "late"];
 
 /** A recommendation is stored 1-4; this is what each number looks like. */
 const VERDICT_ICON = {
@@ -118,6 +154,7 @@ const CV_STAGES = ["screening", "shortlist", "panel_review"];
 
 export class PbHiringBoard extends Component {
     static template = "pb_hiring.PbHiringBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -130,12 +167,21 @@ export class PbHiringBoard extends Component {
             this.env.config.setDisplayName(_t("Hiring"));
         }
         this.screenOrder = SCREEN_ORDER;
-        this.ivFocusKeys = IV_FOCUS;
+        // FILTER W3: the one kit, on the list this mount starts on (a hub
+        // rail item hands its tab in as `startTab`).
+        const start = this.props.startTab || "";
+        this.kitKind = KIT_TABS.includes(start) ? start : "roles";
+        this.kit = useFilterKit({
+            model: "pb.hiring",
+            ctx: { kind: this.kitKind },
+            noun: kitNoun(this.kitKind),
+            onChange: () => this.loadKitPage(),
+        });
 
         this.state = useState({
             loaded: false, formPick: null,
             journey: { stages: [], managers: [], users: [], currencies: [], company_sections: [] },
-            journeyFocus: "all", drawerSection: "candidates", stageMove: null, messageForm: null,
+            drawerSection: "candidates", stageMove: null, messageForm: null,
             savingRequest: false,
             // ---- RECRUIT P3, requests without friction ----
             openingRole: null, asking: null, askPeople: [], declining: null,
@@ -158,13 +204,11 @@ export class PbHiringBoard extends Component {
             total: 0,
             capped: false,
 
-            // filters
-            q: "",
-            dept: "all",
-            country: "all",
-            stage: "all",
-            recruiter: "all",
-            focus: "",
+            // FILTER W3: the pages the filter panel produced. `tabTotals` is
+            // what each tab's count says: the list as it is filtered now.
+            roleRows: [], roleTotal: 0, roleSteps: {}, rolesLoaded: false,
+            ivRows: [], ivTotal: 0, ivLoaded: false,
+            kitMore: false, tabTotals: {},
 
             // the open request
             drawer: null,
@@ -189,8 +233,6 @@ export class PbHiringBoard extends Component {
             delayKinds: [],
             decisions: [],
             recommendations: [],
-            ivFocus: "",
-            ivQ: "",
             scheduling: null,
             rescheduling: null,
             noShowing: null,
@@ -379,48 +421,138 @@ export class PbHiringBoard extends Component {
             return;
         }
         this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.refreshKitList()]);
     }
 
-    // --------------------------------------------------------------- filters
-    get filtered() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            const jf = this.state.journeyFocus;
-            if (jf !== "all" && this.stageOf(r) !== jf) return false;
-            if (this.state.dept !== "all"
-                && String(r.department_id) !== String(this.state.dept)) {
-                return false;
-            }
-            if (this.state.country !== "all"
-                && String(r.country_id) !== String(this.state.country)) {
-                return false;
-            }
-            if (this.state.stage !== "all" && r.state !== this.state.stage) {
-                return false;
-            }
-            if (this.state.recruiter !== "all"
-                && String(r.recruiter_id) !== String(this.state.recruiter)) {
-                return false;
-            }
-            if (this.state.focus === "waiting" && !["sent_in", "hr_ok"].includes(r.request_state)) { return false; }
-            if (this.state.focus === "norequest" && !(["setup", "open"].includes(r.state) && ["none", "asked", "writing"].includes(r.request_state))) { return false; }
-            if (this.state.focus === "mine" && !r.waiting_mine) { return false; }
-            if (this.state.focus === "over" && r.budget_status !== "over") {
-                return false;
-            }
-            if (this.state.focus === "open" && !["setup", "open"].includes(r.state)) {
-                return false;
-            }
-            if (q) {
-                const hay = [r.title, r.name, r.department, r.location,
-                             r.recruiter, r.requested_by]
-                    .join(" ").toLowerCase();
-                if (!hay.includes(q)) { return false; }
-            }
-            return true;
-        });
+    // ============================================== FILTER W3 — the kit's lists
+    /** The list the kit is pointed at now. */
+    get kitOn() { return (this.kit.ctx && this.kit.ctx.kind) || this.kitKind; }
+
+    /** Read the shown list again after a press changed something. */
+    async refreshKitList() {
+        if (KIT_TABS.includes(this.state.tab) && this.kit.loaded) {
+            await this.kit.refresh();
+        }
     }
+
+    /** The kit's onChange: load page one of whichever list it is on. */
+    async loadKitPage({ more = false } = {}) {
+        const kind = this.kitOn;
+        if (kind === "roles") { return this.loadRolesPage({ more }); }
+        if (kind === "interviews") { return this.loadIvPage({ more }); }
+    }
+
+    loadMoreKit() {
+        if (!this.state.kitMore) { this.loadKitPage({ more: true }); }
+    }
+
+    /** Is the panel settled on its list? While it switches lists (between
+     *  `reconfigure` and the new layout) the kit still files changes under
+     *  the OLD list's memory, so a press then would land on the wrong list. */
+    get kitReady() { return !!this.kit.loaded; }
+
+    /**
+     * Point the one panel at another list. Switches run ONE AT A TIME: the
+     * kit's load has no guard against an older layout arriving last, so two
+     * overlapping switches (a tab clicked twice, a figure pressed during a
+     * switch) could leave the Roles panel on the Interviews tab. A queued
+     * switch that a later one has overtaken is skipped.
+     */
+    _switchKit(tab, filters = null) {
+        this.kitKind = tab;
+        const run = async () => {
+            if (this.kitKind !== tab) { return; }
+            await this.kit.reconfigure({ ctx: { kind: tab }, noun: kitNoun(tab),
+                                        initial: filters ? { filters } : null });
+        };
+        this._kitChain = (this._kitChain || Promise.resolve()).then(run, run);
+        return this._kitChain;
+    }
+
+    /** A tab, opened with exactly these filters on (a figure, a door). */
+    async openTabWith(tab, filters) {
+        this.state.tab = tab;
+        if (this.kitKind !== tab || !this.kitReady) {
+            await this._switchKit(tab, filters);
+        } else {
+            this.kit.setFilters(filters);
+        }
+    }
+
+    _kitFail(e, words) {
+        console.warn("pb_hiring: a list could not be read", e);
+        this.notif.add(words, { type: "warning" });
+    }
+
+    async loadRolesPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.roleRows.length : 0;
+        if (more) { this.state.kitMore = true; }
+        try {
+            const d = await this.orm.call("pb.hiring", "get_roles_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: ROLE_PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq) || this.kitOn !== "roles") { return; }
+            this.state.roleRows = more ? [...this.state.roleRows, ...(d.rows || [])] : (d.rows || []);
+            this.state.roleTotal = d.total || 0;
+            if (!more) { this.state.roleSteps = d.steps || {}; }
+            this.state.rolesLoaded = true;
+            this.state.tabTotals = { ...this.state.tabTotals, roles: d.total || 0 };
+        } catch (e) {
+            this._kitFail(e, _t("The roles could not be read. Press Refresh the board, or try again in a moment."));
+        } finally {
+            this.state.kitMore = false;
+        }
+    }
+
+    async loadIvPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.ivRows.length : 0;
+        if (more) { this.state.kitMore = true; }
+        try {
+            const d = await this.orm.call("pb.hiring", "get_interviews_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: IV_PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq) || this.kitOn !== "interviews") { return; }
+            this.state.ivRows = more ? [...this.state.ivRows, ...(d.rows || [])] : (d.rows || []);
+            this.state.ivTotal = d.total || 0;
+            this.state.ivLoaded = true;
+            this.state.tabTotals = { ...this.state.tabTotals, interviews: d.total || 0 };
+        } catch (e) {
+            this._kitFail(e, _t("The interviews could not be read. Press Refresh the board, or try again in a moment."));
+        } finally {
+            this.state.kitMore = false;
+        }
+    }
+
+    /** What a home tab's count says: its list as filtered now, or, before
+     *  that list was ever read, what the board read. */
+    tabCount(tab) {
+        const t = this.state.tabTotals[tab];
+        if (t !== undefined) { return t; }
+        if (tab === "roles") { return this.state.total || this.state.rows.length; }
+        if (tab === "interviews") { return this.state.interviews.length; }
+        return null;
+    }
+
+    get rolesSearchHint() { return _t("Search a role, a department, a recruiter…"); }
+    get ivSearchHint() { return _t("Search a candidate, a role, a recruiter…"); }
+
+    /** The roles the panel produced (the cards' own `_row` shape). */
+    get filtered() { return this.state.roleRows; }
+
+    get roleHasMore() { return this.state.roleRows.length < this.state.roleTotal; }
+    get ivHasMore() { return this.state.ivRows.length < this.state.ivTotal; }
+    nextCount(shown, total, page) { return Math.min(page, Math.max(0, total - shown)); }
+    /** "Showing 60 of 212", one sentence so every language can order it. */
+    showingWords(shown, total) {
+        return _t("Showing %(n)s of %(total)s", { n: this.fmtInt(shown), total: this.fmtInt(total) });
+    }
+    /** The next page's button: "Show 60 more", or "Loading…" while it reads. */
+    moreWords(shown, total, page) {
+        return this.state.kitMore ? _t("Loading…") : _t("Show %s more", this.fmtInt(this.nextCount(shown, total, page)));
+    }
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
 
     // ================================================ the four steps
     //
@@ -445,16 +577,23 @@ export class PbHiringBoard extends Component {
     }
 
     get stages() {
+        // FILTER W3 (ruling R1): the step counts follow the filters — the
+        // server counts each step over every OTHER filter that is on, the
+        // way the panel counts a section. Before the first page arrives
+        // they are the board's own counts.
         const rows = this.state.rows;
+        const counted = this.state.rolesLoaded ? this.state.roleSteps || {} : null;
         return JOURNEY_STAGES.map((st, i) => {
             const at = rows.filter((r) => this.stageOf(r) === st.key);
+            const count = counted && counted[st.key] !== undefined ? counted[st.key] : at.length;
             return {
                 ...st,
                 n: String(i + 1).padStart(2, "0"),
-                count: at.length,
-                countLabel: at.length === 1 ? _t("1 role") : _t("%s roles", at.length),
+                count,
+                countLabel: count === 1 ? _t("1 role") : _t("%s roles", count),
                 waiting: at.filter((r) => r.waiting).length,
                 mine: at.filter((r) => r.waiting_mine).length,
+                on: this.kitOn === "roles" && this.state.tab === "roles" && this.kit.isOn("step", st.key),
             };
         });
     }
@@ -484,18 +623,23 @@ export class PbHiringBoard extends Component {
     }
 
     get showingLine() {
-        const shown = this.filtered.length;
-        const all = this.state.rows.length;
-        const st = JOURNEY_STAGES.find((x) => x.key === this.state.journeyFocus);
-        if (!st && !this.anyFilter) {
-            return { all: true, text: !all ? _t("no roles yet") : all === 1 ? _t("all 1 role") : _t("all %s roles", all) };
+        const kit = this.kit;
+        const all = kit.loaded && this.kitOn === "roles" ? kit.total : this.state.total;
+        const shown = this.state.roleTotal;
+        const steps = this.kitOn === "roles" ? kit.values("step") : [];
+        const st = steps.length === 1 ? JOURNEY_STAGES.find((x) => x.key === steps[0]) : null;
+        if (!this.anyFilter) {
+            return { all: true, text: !all ? _t("no roles yet") : all === 1 ? _t("all 1 role") : _t("all %s roles", this.fmtInt(all)) };
         }
-        return { all: false, text: _t("%s of %s roles", shown, all), where: st ? st.title : "" };
+        return { all: false, text: _t("%s of %s roles", this.fmtInt(shown), this.fmtInt(all)), where: st ? st.title : "" };
     }
 
+    /** "Show all": every role again, whatever was on (the lesson's word). */
     showAll() {
-        this.state.journeyFocus = "all";
-        this.clearFilters();
+        if (this.state.tab !== "roles" || this.kitOn !== "roles" || !this.kitReady) {
+            return this.openTabWith("roles", {});
+        }
+        this.kit.toggleFilters({});
     }
 
     // ================================================ quiet numbers
@@ -517,9 +661,10 @@ export class PbHiringBoard extends Component {
             { key: "waiting", n: k.waiting || 0, label: _t("Requests to agree"), tone: tone(k.waiting, "amber"), run: () => this.toggleFocus("waiting") },
             { key: "norequest", n: k.no_request || 0, label: _t("No agreed request"), tone: "", run: () => this.toggleFocus("norequest") },
             { key: "mine", n: k.waiting_mine || 0, label: _t("Waiting on you"), tone: tone(k.waiting_mine, "amber"), run: () => this.toggleFocus("mine") },
-            { key: "over", n: k.over_budget || 0, label: _t("Over budget"), tone: tone(k.over_budget, "rose"), run: () => this.toggleFocus("over") },
-            { key: "iv", n: k.interviews_week || 0, label: _t("Interviews this week"), tone: "", run: () => { this.setTab("interviews"); this.toggleIvFocus("today"); } },
-            { key: "late", n: k.feedback_late || 0, label: _t("Opinions late"), tone: tone(k.feedback_late, "rose"), run: () => { this.setTab("interviews"); this.toggleIvFocus("late"); } },
+            // the budget is the hiring team's: nobody else has the filter
+            { key: "over", n: k.over_budget || 0, label: _t("Over budget"), tone: tone(k.over_budget, "rose"), run: k.over_budget ? () => this.toggleFocus("over") : null },
+            { key: "iv", n: k.interviews_week || 0, label: _t("Interviews this week"), tone: "", run: () => this.toggleIvFocus("week") },
+            { key: "late", n: k.feedback_late || 0, label: _t("Opinions late"), tone: tone(k.feedback_late, "rose"), run: () => this.toggleIvFocus("late") },
             { key: "offers_mine", n: k.offers_waiting_mine || 0, label: _t("Offers waiting on you"), tone: tone(k.offers_waiting_mine, "amber"), run: () => this.openRegister("offers", { flag: "waiting_mine" }) },
             { key: "joining", n: k.joining_soon || 0, label: _t("Joining soon"), tone: "", run: () => this.openRegister("offers", { flag: "joining_soon" }) },
             { key: "joined", n: (k.joined_month ?? k.filled_month) || 0, label: _t("Joined this month"), tone: tone(k.joined_month ?? k.filled_month, "green"), run: () => this.openRegister("offers", { flag: "joined_month" }) },
@@ -528,8 +673,18 @@ export class PbHiringBoard extends Component {
 
     pressGlance(item) {
         if (!item.run) return;
-        this.state.journeyFocus = "all";
         item.run();
+    }
+
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        const sets = this.kitOn === "roles" ? ROLE_FIGURES
+            : this.kitOn === "interviews" ? { iv: IV_FIGURES.week, late: IV_FIGURES.late } : {};
+        for (const [key, f] of Object.entries(sets)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     }
 
     // ================================================ what happens next
@@ -610,22 +765,25 @@ export class PbHiringBoard extends Component {
 
     funnelLabel(pl) { return pl.name; }
 
+    /** Is the list the kit shows narrowed by anything at all. */
     get anyFilter() {
-        return !!(this.state.q || this.state.focus
-                  || this.state.dept !== "all" || this.state.country !== "all"
-                  || this.state.stage !== "all"
-                  || this.state.recruiter !== "all");
+        return !!(this.kit.activeCount || this.kit.search);
     }
 
     clearFilters() {
-        Object.assign(this.state, {
-            q: "", focus: "", dept: "all", country: "all", stage: "all",
-            recruiter: "all",
-        });
+        if (this.kitReady) { this.kit.toggleFilters({}); }
     }
 
+    /** A Roles figure: exactly its filters on the Roles list; pressed again,
+     *  every role (from another tab it opens Roles with them on). */
     toggleFocus(key) {
-        this.state.focus = this.state.focus === key ? "" : key;
+        const f = ROLE_FIGURES[key];
+        if (!f) { return; }
+        if (this.state.tab === "roles" && this.kitOn === "roles" && this.kitReady) {
+            this.kit.toggleFilters(f);
+        } else {
+            this.openTabWith("roles", f);
+        }
     }
 
     // ------------------------------------------------------------ the role
@@ -665,6 +823,8 @@ export class PbHiringBoard extends Component {
     }
 
     backHome() {
+        // FILTER W3: whatever was done on the role's page shows on its card
+        const fromRole = this.state.view === "role";
         Object.assign(this.state, {
             view: "home", drawer: null, cand: null, sel: [], focusId: null,
             toast: null, outcome: null, moveMenu: null, showStages: null,
@@ -673,6 +833,7 @@ export class PbHiringBoard extends Component {
             letter: null, boardFilter: "",
         });
         this._publishView();
+        if (fromRole) { this.refreshKitList(); }
     }
 
     /**
@@ -759,7 +920,19 @@ export class PbHiringBoard extends Component {
         this.state.raising[kind + "_file"] = data;
         this.state.raising[kind + "_filename"] = file.name;
     }
-    chooseJourney(key) { this.state.journeyFocus = this.state.journeyFocus === key ? "all" : key; this.state.focus = ""; this.state.tab = "roles"; }
+    /** A step on the strip: only its roles; pressed again, the step filter
+     *  goes (every other filter stays). From another tab it opens Roles. */
+    chooseJourney(key) {
+        if (this.state.tab !== "roles" || this.kitOn !== "roles" || !this.kitReady) {
+            return this.openTabWith("roles", { step: [key] });
+        }
+        const on = this.kit.values("step");
+        if (on.length === 1 && String(on[0]) === key) {
+            this.kit.clear("step");
+        } else {
+            this.kit.only("step", key);
+        }
+    }
     startStageMove(candidate) { this.state.stageMove = {applicant_id: candidate.id, name: candidate.name, stage_id: "", reason: "", update_date: ""}; }
     async saveStageMove() { const res = await this.act("journey_stage", {...this.state.stageMove}); if (res) this.state.stageMove = null; }
     startMessage(candidate) { this.state.messageForm = {applicant_id: candidate.id, name: candidate.name, key: "phone", values: {}, preview: null, busy: false}; }
@@ -875,48 +1048,30 @@ export class PbHiringBoard extends Component {
         return VERDICT_ICON.strong_no;
     }
 
-    /** The words for a focus chip, so the server keeps no second copy. */
-    ivFocusLabel(key) {
-        return {
-            today: _t("Today"),
-            week: _t("This week"),
-            awaiting: _t("Waiting on an opinion"),
-            late: _t("Late"),
-        }[key] || key;
-    }
+    /** The interviews the panel produced. */
+    get filteredInterviews() { return this.state.ivRows; }
 
-    ivFocusCount(key) {
-        if (key === "late") {
-            return this.state.interviews.filter((i) => i.feedback_late).length;
-        }
-        return this.state.interviews.filter((i) => i.bucket === key).length;
-    }
-
-    get filteredInterviews() {
-        const q = (this.state.ivQ || "").trim().toLowerCase();
-        return this.state.interviews.filter((i) => {
-            if (this.state.ivFocus === "late" && !i.feedback_late) {
-                return false;
-            }
-            if (this.state.ivFocus && this.state.ivFocus !== "late"
-                && i.bucket !== this.state.ivFocus) {
-                return false;
-            }
-            if (q) {
-                const hay = [i.candidate, i.role, i.recruiter,
-                             (i.panel || []).join(" ")]
-                    .join(" ").toLowerCase();
-                if (!hay.includes(q)) { return false; }
-            }
-            return true;
-        });
-    }
-
+    /** An Interviews door (a figure, the old focus chips): that list with
+     *  exactly these filters; pressed again on the list, every interview. */
     toggleIvFocus(key) {
-        this.state.ivFocus = this.state.ivFocus === key ? "" : key;
+        const f = IV_FIGURES[key];
+        if (!f) { return; }
+        if (this.state.tab === "interviews" && this.kitOn === "interviews" && this.kitReady) {
+            this.kit.toggleFilters(f);
+        } else {
+            this.openTabWith("interviews", f);
+        }
     }
 
-    setTab(tab) { this.state.tab = tab; }
+    /** A home tab. The four lists share ONE filter panel, pointed at the
+     *  list the tab shows; each list keeps its own filters (the kit
+     *  remembers them per list), so coming back puts them back. */
+    setTab(tab) {
+        this.state.tab = tab;
+        if (KIT_TABS.includes(tab) && this.kitKind !== tab) {
+            return this._switchKit(tab);
+        }
+    }
 
     /**
      * Tomorrow at ten, as the value a `datetime-local` input wants.

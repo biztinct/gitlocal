@@ -34,29 +34,45 @@ import { _t } from "@web/core/l10n/translation";
 import { openHub } from "@pb_hub/js/hub_nav";
 import { PbHiringBoard } from "./hiring_board";
 
-const APPS_KEY = "pbhr.applicants.v1";
-const OFFERS_KEY = "pbhr.offers.v1";
+/* FILTER W3. Both registers sit on the board's ONE filter panel (see
+ * hiring_board.js): the role / recruiter / stage selects, the flag chips and
+ * the localStorage filter memory are gone - the kit remembers each list's
+ * filters, counts every value over everybody the reader may see, and the
+ * lists come a page at a time from the server (`get_applicants_page`,
+ * `get_offers_page`). Only the Board / List choice is still remembered here:
+ * it is how the list is drawn, not what is in it. */
+const APPS_KEY = "pbhr.applicants.v2";
+const OLD_KEYS = ["pbhr.applicants.v1", "pbhr.offers.v1"];
 const REG_COL_PAGE = 30;
 const REG_COL_MORE = 40;
-const SEARCH_DEBOUNCE = 300;
+const APPS_PAGE = 120;
+const OFFERS_PAGE = 60;
 
-const APPS_DEFAULT = { view: "board", role: "", recruiter: "", family: "", flag: "", q: "", sort: "stage", dir: 1 };
-const OFFERS_DEFAULT = { step: "", role: "", recruiter: "", flag: "", q: "" };
-
-/** A card's flag filters, the same tests the server runs (registers_p9.py). */
-const APP_FLAG_TEST = {
-    waiting_mine: (c) => (c.flags || []).includes("waiting"),
-    late: (c) => !!((c.opinions || {}).late) || (c.flags || []).includes("late"),
-    iv_week: (c) => (c.flags || []).includes("iv"),
-    duplicate: (c) => (c.flags || []).includes("duplicate"),
+/** The register's hero figures, as the filters they tick (the views' own). */
+const APP_FIGURES = {
+    in_play: { family: ["play"] },
+    waiting_mine: { attention: ["waiting"] },
+    late: { attention: ["late"] },
 };
-
-const OFFER_FLAG_TEST = {
-    waiting_mine: (r) => !!r.waiting_mine,
-    docs_overdue: (r) => !!(r.docreq && r.docreq.overdue),
-    check_flagged: (r) => !!(r.bgv && r.bgv.state === "flagged"),
-    joining_soon: (r) => !!r.joining_soon,
-    joined_month: (r) => !!r.joined_month,
+/** The old door flags (`openRegister(tab, {flag})`), as panel filters. */
+const APP_DOORS = {
+    waiting_mine: { attention: ["waiting"] },
+    late: { attention: ["late"] },
+    iv_week: { attention: ["iv_week"] },
+    duplicate: { attention: ["duplicate"] },
+};
+const OFFER_DOORS = {
+    waiting_mine: { attention: ["mine"] },
+    joining_soon: { attention: ["joining_soon"] },
+    joined_month: { state: ["joined"], joined: { preset: "this_month" } },
+    docs_overdue: { docs: ["overdue"] },
+    check_flagged: { check: ["flagged"] },
+};
+/** List columns the server can order by, and the two sorts each flips. */
+const LIST_SORTS = {
+    name: ["name", "name_desc"],
+    days: ["stuck", "moved"],
+    applied: ["applied", "applied_old"],
 };
 
 const OFFER_STEP_KEYS = ["approval", "candidate", "signing", "joined", "closed"];
@@ -64,18 +80,17 @@ const OFFER_STEP_KEYS = ["approval", "candidate", "signing", "joined", "closed"]
 /** The state pill's tone, by the step the offer is at. */
 const STEP_TONE = { approval: "info", candidate: "info", signing: "green", joined: "green", closed: "rose" };
 
-function readStore(key, fallback) {
+function readView() {
     try {
-        const raw = window.localStorage.getItem(key);
-        const v = raw ? JSON.parse(raw) : null;
-        return v && typeof v === "object" ? { ...fallback, ...v } : { ...fallback };
+        for (const k of OLD_KEYS) { window.localStorage.removeItem(k); }
+        return window.localStorage.getItem(APPS_KEY) === "list" ? "list" : "board";
     } catch {
-        return { ...fallback };
+        return "board";
     }
 }
 
-function writeStore(key, value) {
-    try { window.localStorage.setItem(key, JSON.stringify(value)); } catch { /* private window: fine */ }
+function writeView(view) {
+    try { window.localStorage.setItem(APPS_KEY, view); } catch { /* private window: fine */ }
 }
 
 patch(PbHiringBoard.prototype, {
@@ -87,16 +102,15 @@ patch(PbHiringBoard.prototype, {
         useExternalListener(window, "scroll", () => { if (this.state.offMenu) { this.state.offMenu = null; } }, { capture: true });
         Object.assign(this.state, {
             apps: {
-                loaded: false, loading: false, allowed: true, cards: [], columns: [], total: 0,
-                capped: false, roles: [], recruiters: [], glance: {}, canMove: false,
+                loaded: false, allowed: true, cards: [], columns: [], total: 0,
+                roles: [], glance: {}, canMove: false,
             },
-            appsF: readStore(APPS_KEY, APPS_DEFAULT),
+            appsF: { view: readView() },
             appsColLimit: {}, appsColOpen: {}, appsRailOpen: "",
             offers: {
-                loaded: false, loading: false, allowed: true, rows: [], steps: [], counts: {},
-                roles: [], recruiters: [], total: 0, capped: false, showMoney: false,
+                loaded: false, allowed: true, rows: [], steps: {}, flags: {},
+                total: 0, showMoney: false,
             },
-            offF: readStore(OFFERS_KEY, OFFERS_DEFAULT),
             offMenu: null, offMenuAt: "", regOffer: null,
         });
         onWillStart(async () => {
@@ -115,27 +129,27 @@ patch(PbHiringBoard.prototype, {
     /** The tab, whichever view is showing (the home template's own test). */
     get isRegisterTab() { return ["applicants", "offers"].includes(this.state.tab); },
 
-    setTab(tab) {
-        super.setTab(tab);
-        if (tab === "applicants") { return this.loadApplicants({ quiet: this.state.apps.loaded }); }
-        if (tab === "offers") { return this.loadOffers({ quiet: this.state.offers.loaded }); }
-    },
-
-    /** An Overview tile's door: the Offers tab with exactly one filter on. */
+    /** An Overview figure's door: a register with exactly one filter on. */
     async openRegister(tab, { flag = "", step = "" } = {}) {
+        let filters = {};
         if (tab === "offers") {
-            this.state.offF = { ...OFFERS_DEFAULT, flag, step };
-            this.saveOffersFilters();
+            filters = { ...(OFFER_DOORS[flag] || {}) };
+            if (step) { filters.step = [step]; }
         } else if (tab === "applicants") {
-            this.state.appsF = { ...this.state.appsF, role: "", recruiter: "", family: "", q: "", flag };
-            this.saveAppsFilters();
+            filters = { ...(APP_DOORS[flag] || {}) };
         }
-        await this.setTab(tab);
+        await this.openTabWith(tab, filters);
     },
 
     async reloadRegister() {
-        if (this.onApplicants) { await this.loadApplicants({ quiet: true }); }
-        if (this.onOffers) { await this.loadOffers({ quiet: true }); }
+        if (this.onRegister) { await this.refreshKitList(); }
+    },
+
+    /** The kit's onChange, for the two registers. */
+    async loadKitPage({ more = false } = {}) {
+        if (this.kitOn === "applicants") { return this.loadApplicantsPage({ more }); }
+        if (this.kitOn === "offers") { return this.loadOffersPage({ more }); }
+        return super.loadKitPage(...arguments);
     },
 
     // ======================================================== role-page verbs
@@ -304,153 +318,123 @@ patch(PbHiringBoard.prototype, {
     },
 
     // ============================================================ APPLICANTS
-    async loadApplicants({ quiet = false } = {}) {
+    async loadApplicantsPage({ more = false } = {}) {
         const a = this.state.apps;
-        if (!quiet) { a.loading = true; }
-        const seq = (this._appsSeq = (this._appsSeq || 0) + 1);
-        const f = this.state.appsF;
+        const q = this.kit.query;
+        const offset = more ? a.cards.length : 0;
+        if (more) { this.state.kitMore = true; }
         try {
-            const d = await this.orm.call("pb.hiring", "get_applicants", [{
-                role_id: Number(f.role) || false, recruiter_id: Number(f.recruiter) || false,
-                family: f.family || "", q: (f.q || "").trim(),
-            }]);
-            if (seq !== this._appsSeq) { return; }
-            Object.assign(a, {
-                loaded: true, allowed: d.allowed !== false, cards: d.cards || [], columns: d.columns || [],
-                total: d.total || 0, capped: !!d.capped, roles: d.roles || [],
-                recruiters: d.recruiters || [], glance: d.glance || {}, canMove: !!d.can_move,
+            const d = await this.orm.call("pb.hiring", "get_applicants_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: APPS_PAGE,
             });
-            // A remembered role that is no longer on this reader's board is dropped.
-            if (f.role && !a.roles.some((r) => String(r.id) === String(f.role))) {
-                this.state.appsF.role = "";
-                this.saveAppsFilters();
-                await this.loadApplicants({ quiet: true });
+            if (!this.kit.isCurrent(q.seq) || this.kitOn !== "applicants") { return; }
+            const roles = more ? [...a.roles] : [];
+            for (const r of d.roles || []) {
+                if (!roles.some((x) => x.id === r.id)) { roles.push(r); }
             }
+            Object.assign(a, {
+                loaded: true, allowed: d.allowed !== false,
+                cards: more ? [...a.cards, ...(d.cards || [])] : (d.cards || []),
+                total: d.total || 0, roles,
+            });
+            if (!more) {
+                Object.assign(a, { columns: d.columns || [], glance: d.glance || {}, canMove: !!d.can_move });
+                // somebody the new filters no longer list is unticked, so a
+                // bulk move never reaches a person nobody can see (R6)
+                const ids = new Set(a.cards.map((c) => c.id));
+                this.state.sel = this.state.sel.filter((id) => ids.has(id));
+            }
+            this.state.tabTotals = { ...this.state.tabTotals, applicants: d.total || 0 };
         } catch (e) {
-            if (seq === this._appsSeq) { a.loaded = true; }
-            this.fail(e);
+            this.state.apps.loaded = true;
+            this._kitFail(e, _t("The applicants could not be read. Press Refresh the board, or try again in a moment."));
         } finally {
-            if (seq === this._appsSeq) { a.loading = false; }
+            this.state.kitMore = false;
         }
     },
 
-    saveAppsFilters() { writeStore(APPS_KEY, this.state.appsF); },
+    /** Kept for older callers: read the register again. */
+    async loadApplicants() { return this.reloadRegister(); },
 
     /** Ids from a select are strings; ids from the server are numbers. */
     sameId(a, b) { return String(a) === String(b); },
 
     regRole(id) { return (this.state.apps.roles || []).find((r) => r.id === id); },
 
-    /** A filter the SERVER applies (role, recruiter, family, words). */
-    async setAppsFilter(key, value) {
-        this.state.appsF[key] = value;
-        this.saveAppsFilters();
-        this.clearSel();
-        await this.loadApplicants({ quiet: true });
-    },
-
-    onAppsQuery(ev) {
-        this.state.appsF.q = ev.target.value;
-        this.saveAppsFilters();
-        clearTimeout(this._appsQTimer);
-        this._appsQTimer = setTimeout(() => this.loadApplicants({ quiet: true }), SEARCH_DEBOUNCE);
-    },
-
-    /** A figure or chip: one at a time, pressed again to clear. */
-    toggleAppsFlag(key) {
-        this.state.appsF.flag = this.state.appsF.flag === key ? "" : key;
-        this.saveAppsFilters();
-        this.clearSel();
-    },
-
     setAppsView(view) {
         this.state.appsF.view = view;
-        this.saveAppsFilters();
+        writeView(view);
     },
 
-    get anyAppsFilter() {
-        const f = this.state.appsF;
-        return !!(f.role || f.recruiter || f.family || f.flag || (f.q || "").trim());
-    },
+    get appsSearchHint() { return _t("Search a name, an email, a role…"); },
+    get offersSearchHint() { return _t("Search a candidate, a role, an offer…"); },
 
-    async clearAppsFilters() {
-        this.state.appsF = { ...APPS_DEFAULT, view: this.state.appsF.view, sort: this.state.appsF.sort, dir: this.state.appsF.dir };
-        this.saveAppsFilters();
-        this.clearSel();
-        await this.loadApplicants({ quiet: true });
-    },
+    /** Is the register narrowed by anything at all. */
+    get anyAppsFilter() { return this.anyFilter; },
 
-    get regCards() {
-        const test = APP_FLAG_TEST[this.state.appsF.flag];
-        const cards = this.state.apps.cards || [];
-        return test ? cards.filter(test) : cards;
-    },
+    clearAppsFilters() { if (this.kitReady) { this.kit.toggleFilters({}); } },
+
+    /** The cards the panel produced: the page(s) read so far. */
+    get regCards() { return this.state.apps.cards || []; },
+
+    get appsHasMore() { return (this.state.apps.cards || []).length < (this.state.apps.total || 0); },
 
     get appsGlance() {
         const g = this.state.apps.glance || {};
-        const f = this.state.appsF;
         const n = (v) => v || 0;
+        const team = !!g.team;
+        const pick = (key) => () => (this.kitReady && this.kitOn === "applicants"
+            ? this.kit.toggleFilters(APP_FIGURES[key]) : this.openTabWith("applicants", APP_FIGURES[key]));
         return [
             { key: "in_play", n: n(g.in_play), label: n(g.in_play) === 1 ? _t("person in play") : _t("people in play"), tone: "",
-              run: () => this.setAppsFilter("family", f.family === "play" ? "" : "play") },
+              run: pick("in_play") },
             { key: "roles", n: n(g.roles), label: n(g.roles) === 1 ? _t("role") : _t("roles"), tone: "", run: null },
             { key: "waiting_mine", n: n(g.waiting_mine), label: _t("waiting on you"), tone: g.waiting_mine ? "amber" : "",
-              run: () => this.toggleAppsFlag("waiting_mine") },
+              run: team ? pick("waiting_mine") : null },
             { key: "late", n: n(g.opinions_late), label: _t("opinions late"), tone: g.opinions_late ? "rose" : "",
-              run: () => this.toggleAppsFlag("late") },
+              run: team ? pick("late") : null },
         ];
     },
 
     get appsGlanceOn() {
-        const f = this.state.appsF;
-        if (f.flag === "waiting_mine" || f.flag === "late") { return f.flag; }
-        return f.family === "play" ? "in_play" : "";
+        if (this.kitOn !== "applicants" || !this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(APP_FIGURES)) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
     },
 
-    get appsChips() {
-        const g = this.state.apps.glance || {};
-        return [
-            { key: "iv_week", label: _t("Interview this week"), n: g.iv_week || 0 },
-            { key: "duplicate", label: _t("Possible duplicate"), n: g.duplicate || 0 },
-        ];
-    },
-
-    get appsFamilies() {
-        return [
-            { key: "", label: _t("Every stage") },
-            { key: "play", label: _t("In play") },
-            { key: "offer", label: _t("Offer") },
-            { key: "joined", label: _t("Joined") },
-            { key: "closed", label: _t("Closed") },
-        ];
-    },
-
-    /** The working columns: every open or done stage, folded when empty. */
+    /** The working columns: every open or done stage, folded when empty.
+     *  The count is the column's over the WHOLE filtered list; the cards are
+     *  the ones read so far. */
     get regColumns() {
         const by = {};
         for (const c of this.regCards) { (by[c.stage_id] = by[c.stage_id] || []).push(c); }
         return (this.state.apps.columns || [])
             .filter((s) => s.family !== "closed")
-            .map((s) => ({
-                ...s,
-                cards: by[s.id] || [],
-                count: (by[s.id] || []).length,
-                limit: this.state.appsColLimit[s.key] || REG_COL_PAGE,
-            }));
+            .map((s) => {
+                const cards = by[s.id] || [];
+                // typical days here: the people in the column that were read
+                const days = cards.map((c) => c.days_in_stage || 0);
+                return {
+                    ...s,
+                    cards,
+                    avg_days: days.length ? Math.round((days.reduce((x, y) => x + y, 0) / days.length) * 10) / 10 : null,
+                    count: Math.max(s.count || 0, cards.length),
+                    unread: Math.max(0, (s.count || 0) - cards.length),
+                    limit: this.state.appsColLimit[s.key] || REG_COL_PAGE,
+                };
+            });
     },
 
     get regRailRows() {
-        const by = {};
-        for (const c of this.regCards) {
-            if (c.family === "closed") { by[c.stage_key] = (by[c.stage_key] || 0) + 1; }
-        }
         return (this.state.apps.columns || []).filter((s) => s.family === "closed")
-            .map((s) => ({ ...s, count: by[s.key] || 0 }));
+            .map((s) => ({ ...s, count: s.count || 0 }));
     },
 
     get regRailTotal() { return this.regRailRows.reduce((n, s) => n + s.count, 0); },
 
-    regFolded(col) { return !col.cards.length && !this.state.appsColOpen[col.key]; },
+    regFolded(col) { return !col.count && !this.state.appsColOpen[col.key]; },
 
     toggleRegFold(col) { this.state.appsColOpen[col.key] = !this.state.appsColOpen[col.key]; },
 
@@ -458,9 +442,14 @@ patch(PbHiringBoard.prototype, {
 
     regMoreLabel(col) { return _t("Show %s more", Math.min(REG_COL_MORE, col.cards.length - col.limit)); },
 
+    /** A column holds more people than the pages read so far. */
+    regUnreadLabel(col) {
+        return col.unread === 1 ? _t("1 more further down the list") : _t("%s more further down the list", col.unread);
+    },
+
     toggleRegRail(key) { this.state.appsRailOpen = this.state.appsRailOpen === key ? "" : key; },
 
-    get regColumnsShown() { return this.regColumns.filter((c) => c.cards.length).length; },
+    get regColumnsShown() { return this.regColumns.filter((c) => c.count).length; },
 
     // ----------------------------------------------------------- the list
     get regListCols() {
@@ -476,37 +465,31 @@ patch(PbHiringBoard.prototype, {
         ];
     },
 
+    /** A column the server can order by (the rest are not sortable: a page
+     *  sorted in the browser would be a stale array, ruling R6). */
+    canSortApps(key) { return !!LIST_SORTS[key]; },
+
     sortApps(key) {
-        const f = this.state.appsF;
-        if (f.sort === key) { f.dir = -f.dir; } else { f.sort = key; f.dir = key === "days" ? -1 : 1; }
-        this.saveAppsFilters();
+        const pair = LIST_SORTS[key];
+        if (!pair || !this.kitReady) { return; }
+        this.kit.setSort(this.kit.sort === pair[0] ? pair[1] : pair[0]);
     },
 
     sortMark(key) {
-        const f = this.state.appsF;
-        if (f.sort !== key) { return ""; }
-        return f.dir > 0 ? "arrowUp" : "arrowDown";
+        const pair = LIST_SORTS[key];
+        if (!pair) { return ""; }
+        if (this.kit.sort === pair[0]) { return key === "days" ? "arrowDown" : key === "applied" ? "arrowDown" : "arrowUp"; }
+        if (this.kit.sort === pair[1]) { return key === "days" ? "arrowUp" : key === "applied" ? "arrowUp" : "arrowDown"; }
+        return "";
     },
 
-    get regListRows() {
-        const f = this.state.appsF;
-        const dir = f.dir || 1;
-        const text = (v) => String(v || "").toLowerCase();
-        const val = {
-            name: (c) => text(c.name), role: (c) => text(c.role),
-            stage: (c) => c.stage_seq || 0, days: (c) => c.days_in_stage || 0,
-            next: (c) => c.next_interview_at || "~", opinions: (c) => (c.opinions || {}).in || 0,
-            waiting: (c) => text(c.waiting) || "~", applied: (c) => c.applied_days || 0,
-        }[f.sort] || ((c) => c.stage_seq || 0);
-        return [...this.regCards].sort((a, b) => {
-            const x = val(a);
-            const y = val(b);
-            if (x < y) { return -dir; }
-            if (x > y) { return dir; }
-            // the default tie-break: longest in the stage first
-            return (b.days_in_stage || 0) - (a.days_in_stage || 0);
-        });
+    sortAria(key) {
+        const mark = this.sortMark(key);
+        return mark === "arrowUp" ? "ascending" : mark === "arrowDown" ? "descending" : "none";
     },
+
+    /** In the panel's order, as the server sent it. */
+    get regListRows() { return this.regCards; },
 
     opinionsWords(c) {
         const o = c.opinions || {};
@@ -541,72 +524,56 @@ patch(PbHiringBoard.prototype, {
         this.openCand(card.id);
     },
 
-    get appsShowing() {
-        const shown = this.regCards.length;
-        const all = (this.state.apps.cards || []).length;
-        if (!this.anyAppsFilter) {
-            return shown === 1 ? _t("1 person across your roles") : _t("%s people across your roles", shown);
-        }
-        // A figure or chip narrows what was read; the other filters ask the
-        // server, so what came back is already only the people that match.
-        if (this.state.appsF.flag) { return _t("%(n)s of %(all)s people", { n: shown, all }); }
-        return shown === 1 ? _t("1 person matches the filters") : _t("%s people match the filters", shown);
-    },
-
-    get appsCapLine() {
-        const a = this.state.apps;
-        return _t("Showing the newest %(n)s of %(total)s. Narrow it with a role or a stage to see an older one.",
-                  { n: (a.cards || []).length, total: a.total });
-    },
-
     // ================================================================ OFFERS
-    async loadOffers({ quiet = false } = {}) {
+    async loadOffersPage({ more = false } = {}) {
         const o = this.state.offers;
-        if (!quiet) { o.loading = true; }
-        const seq = (this._offSeq = (this._offSeq || 0) + 1);
+        const q = this.kit.query;
+        const offset = more ? o.rows.length : 0;
+        if (more) { this.state.kitMore = true; }
         try {
-            const d = await this.orm.call("pb.hiring", "get_offers", [{}]);
-            if (seq !== this._offSeq) { return; }
-            Object.assign(o, {
-                loaded: true, allowed: d.allowed !== false, rows: d.rows || [], steps: d.steps || [],
-                counts: d.counts || {}, roles: d.roles || [], recruiters: d.recruiters || [],
-                total: d.total || 0, capped: !!d.capped, showMoney: !!d.show_money,
+            const d = await this.orm.call("pb.hiring", "get_offers_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: OFFERS_PAGE,
             });
+            if (!this.kit.isCurrent(q.seq) || this.kitOn !== "offers") { return; }
+            Object.assign(o, {
+                loaded: true, allowed: d.allowed !== false,
+                rows: more ? [...o.rows, ...(d.rows || [])] : (d.rows || []),
+                total: d.total || 0, showMoney: !!d.show_money,
+            });
+            if (!more) { Object.assign(o, { steps: d.steps || {}, flags: d.flags || {} }); }
+            this.state.tabTotals = { ...this.state.tabTotals, offers: d.total || 0 };
         } catch (e) {
-            if (seq === this._offSeq) { o.loaded = true; }
-            this.fail(e);
+            this.state.offers.loaded = true;
+            this._kitFail(e, _t("The offers could not be read. Press Refresh the board, or try again in a moment."));
         } finally {
-            if (seq === this._offSeq) { o.loading = false; }
+            this.state.kitMore = false;
         }
     },
 
-    saveOffersFilters() { writeStore(OFFERS_KEY, this.state.offF); },
+    /** Kept for older callers: read the register again. */
+    async loadOffers() { return this.reloadRegister(); },
 
-    setOffersFilter(key, value) {
-        this.state.offF[key] = value;
-        this.state.offMenu = null;
-        this.saveOffersFilters();
+    /** A step on the strip: only its offers; pressed again, the step goes. */
+    pickOfferStep(key) {
+        if (this.kitOn !== "offers" || !this.kitReady) { return this.openTabWith("offers", { step: [key] }); }
+        const on = this.kit.values("step");
+        if (on.length === 1 && String(on[0]) === key) {
+            this.kit.clear("step");
+        } else {
+            this.kit.only("step", key);
+        }
     },
 
-    toggleOffersFlag(key) { this.setOffersFilter("flag", this.state.offF.flag === key ? "" : key); },
+    get anyOffersFilter() { return this.anyFilter; },
 
-    pickOfferStep(key) { this.setOffersFilter("step", this.state.offF.step === key ? "" : key); },
+    clearOffersFilters() { if (this.kitReady) { this.kit.toggleFilters({}); } },
 
-    get anyOffersFilter() {
-        const f = this.state.offF;
-        return !!(f.step || f.role || f.recruiter || f.flag || (f.q || "").trim());
-    },
+    get offersHasMore() { return (this.state.offers.rows || []).length < (this.state.offers.total || 0); },
 
-    clearOffersFilters() {
-        this.state.offF = { ...OFFERS_DEFAULT };
-        this.state.offMenu = null;
-        this.saveOffersFilters();
-    },
-
+    /** The five steps, counted over every OTHER filter that is on (R1). */
     get offerSteps() {
-        const counts = {};
-        for (const s of this.state.offers.steps || []) { counts[s.key] = s.count; }
-        const c = this.state.offers.counts || {};
+        const counts = this.state.offers.steps || {};
+        const flags = this.state.offers.flags || {};
         const words = {
             approval: [_t("In approval"), _t("Being prepared or signed off")],
             candidate: [_t("With the candidate"), _t("Sent, waiting for their answer")],
@@ -618,67 +585,22 @@ patch(PbHiringBoard.prototype, {
             const n = counts[key] || 0;
             let flag = "";
             let flagTone = "";
-            if (key === "approval" && c.waiting_mine) {
-                flag = _t("%s waiting on you", c.waiting_mine);
+            if (key === "approval" && flags.mine) {
+                flag = _t("%s waiting on you", flags.mine);
                 flagTone = "mine";
-            } else if (key === "signing" && c.joining_soon) {
-                flag = _t("%s joining in 30 days", c.joining_soon);
+            } else if (key === "signing" && flags.joining_soon) {
+                flag = _t("%s joining in 30 days", flags.joining_soon);
             }
             return {
                 key, n: String(i + 1).padStart(2, "0"), title: words[key][0], sub: words[key][1],
                 count: n, countLabel: n === 1 ? _t("1 offer") : _t("%s offers", n),
-                flag, flagTone, on: this.state.offF.step === key,
+                flag, flagTone, on: this.kitOn === "offers" && this.kit.isOn("step", key),
             };
         });
     },
 
-    get offerChips() {
-        const c = this.state.offers.counts || {};
-        return [
-            { key: "waiting_mine", label: _t("Waiting on you"), n: c.waiting_mine || 0, tone: "mine" },
-            { key: "docs_overdue", label: _t("Documents overdue"), n: c.docs_overdue || 0, tone: "amber" },
-            { key: "check_flagged", label: _t("Check flagged"), n: c.check_flagged || 0, tone: "rose" },
-            { key: "joining_soon", label: _t("Joining in 30 days"), n: c.joining_soon || 0, tone: "" },
-            { key: "joined_month", label: _t("Joined this month"), n: c.joined_month || 0, tone: "" },
-        ];
-    },
-
-    get offRows() {
-        const f = this.state.offF;
-        const q = (f.q || "").trim().toLowerCase();
-        const test = OFFER_FLAG_TEST[f.flag];
-        let rows = (this.state.offers.rows || []).filter((r) => {
-            if (f.step && r.step !== f.step) { return false; }
-            if (f.role && String(r.requisition_id) !== String(f.role)) { return false; }
-            if (f.recruiter && String(r.recruiter_id) !== String(f.recruiter)) { return false; }
-            if (test && !test(r)) { return false; }
-            if (q) {
-                const hay = [r.candidate, r.role, r.role_title, r.name, r.recruiter].join(" ").toLowerCase();
-                if (!hay.includes(q)) { return false; }
-            }
-            return true;
-        });
-        if (f.flag === "joining_soon") {
-            rows = [...rows].sort((a, b) => {
-                const x = a.joining_days === null || a.joining_days === undefined ? Infinity : a.joining_days;
-                const y = b.joining_days === null || b.joining_days === undefined ? Infinity : b.joining_days;
-                return x - y || b.id - a.id;
-            });
-        }
-        return rows;
-    },
-
-    get offShowing() {
-        const shown = this.offRows.length;
-        const all = (this.state.offers.rows || []).length;
-        if (!this.anyOffersFilter) { return all === 1 ? _t("all 1 offer") : _t("all %s offers", all); }
-        return _t("%(n)s of %(all)s offers", { n: shown, all });
-    },
-
-    get offCapLine() {
-        const o = this.state.offers;
-        return _t("Showing the newest %(n)s of %(total)s offers.", { n: (o.rows || []).length, total: o.total });
-    },
+    /** The offers the panel produced: the page(s) read so far. */
+    get offRows() { return this.state.offers.rows || []; },
 
     stepTone(row) { return STEP_TONE[row.step] || ""; },
 

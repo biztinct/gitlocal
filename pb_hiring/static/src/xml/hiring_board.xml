@@ -99,7 +99,7 @@
                role figures and the four steps stay on the role tabs. -->
           <div t-if="!isRegisterTab" class="pbhr-glance" data-coach="hi-numbers" role="group" aria-label="Numbers at a glance">
             <t t-foreach="glance" t-as="gl" t-key="gl.key">
-              <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.focus === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? tr('Show only these') : ''" t-on-click="() =&gt; this.pressGlance(gl)">
+              <button type="button" class="pbhr-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and glanceOn === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-title="gl.run ? tr('Show only these') : ''" t-on-click="() =&gt; this.pressGlance(gl)">
                 <span t-if="gl.tone" class="pbhr-gl-dot"/>
                 <span class="pbhr-gl-n" t-esc="gl.n"/>
                 <span class="pbhr-gl-l" t-esc="gl.label"/>
@@ -113,7 +113,7 @@
                The count is a pill that says "roles" so it is never read as
                the step's number. Pressing a step again shows everything. -->
           <nav t-if="!isRegisterTab" class="pbhr-steps4" data-coach="hi-steps" aria-label="Where every role is">
-            <button t-foreach="stages" t-as="st" t-key="st.key" type="button" class="pbhr-st" t-att-class="{ on: state.journeyFocus === st.key, has: st.count, wait: st.waiting }" t-att-aria-pressed="state.journeyFocus === st.key ? 'true' : 'false'" t-on-click="() =&gt; this.chooseJourney(st.key)">
+            <button t-foreach="stages" t-as="st" t-key="st.key" type="button" class="pbhr-st" t-att-class="{ on: st.on, has: st.count, wait: st.waiting }" t-att-aria-pressed="st.on ? 'true' : 'false'" t-on-click="() =&gt; this.chooseJourney(st.key)">
               <span class="pbhr-st-heat"/>
               <span class="pbhr-st-top">
                 <span class="pbhr-st-n" t-esc="st.n"/>
@@ -126,7 +126,7 @@
               <span class="pbhr-st-arrow" aria-hidden="true"><t t-out="ic('arrowRight',13)"/></span>
             </button>
           </nav>
-          <div t-if="!isRegisterTab" class="pbhr-showing">
+          <div t-if="state.tab === 'roles'" class="pbhr-showing">
             <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
             <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
               <button type="button" class="pbhr-showall" t-on-click="showAll">Show all</button></t>
@@ -180,20 +180,20 @@
           <div class="pbhr-tabs" data-coach="hi-tabs" role="tablist">
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'roles' }" t-att-aria-selected="state.tab === 'roles' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('roles')">
               <t t-out="ic('briefcase',15)"/> Roles
-              <span class="pbhr-tab-n" t-esc="state.rows.length"/>
+              <span class="pbhr-tab-n" t-esc="fmtInt(tabCount('roles'))"/>
             </button>
             <!-- NAV P3a: every application and every offer, across the roles -->
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'applicants' }" t-att-aria-selected="state.tab === 'applicants' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('applicants')">
               <t t-out="ic('columns',15)"/> Applicants
-              <span t-if="state.apps.loaded" class="pbhr-tab-n" t-esc="state.apps.cards.length"/>
+              <span t-if="tabCount('applicants') !== null" class="pbhr-tab-n" t-esc="fmtInt(tabCount('applicants'))"/>
             </button>
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'offers' }" t-att-aria-selected="state.tab === 'offers' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('offers')">
               <t t-out="ic('send',15)"/> Offers
-              <span t-if="state.offers.loaded" class="pbhr-tab-n" t-esc="state.offers.rows.length"/>
+              <span t-if="tabCount('offers') !== null" class="pbhr-tab-n" t-esc="fmtInt(tabCount('offers'))"/>
             </button>
             <button class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'interviews' }" t-att-aria-selected="state.tab === 'interviews' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('interviews')">
               <t t-out="ic('calendar',15)"/> Interviews
-              <span class="pbhr-tab-n" t-esc="state.interviews.length"/>
+              <span class="pbhr-tab-n" t-esc="fmtInt(tabCount('interviews'))"/>
             </button>
             <!-- RECRUIT P4 (G-26): the hiring team's own; never a line manager's -->
             <button t-if="state.canBank" class="pbhr-tab" role="tab" t-att-class="{ on: state.tab === 'bank' }" t-att-aria-selected="state.tab === 'bank' ? 'true' : 'false'" t-on-click="() =&gt; this.setTab('bank')">
@@ -208,44 +208,34 @@
 
           <t t-elif="state.tab === 'roles'">
 
-          <!-- ========================= filters ========================= -->
-          <div class="pbim-panel pbhr-filters">
-            <div class="pbhr-filter-row">
-              <div class="pbhr-search">
-                <t t-out="ic('search',15)"/>
-                <input type="text" t-model="state.q" placeholder="Search a role, a department, a recruiter…"/>
-              </div>
-              <select class="pbhr-in pbhr-sel" t-model="state.dept">
-                <option value="all">Every part of the business</option>
-                <option t-foreach="state.departments" t-as="dp" t-key="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
-              </select>
-              <select class="pbhr-in pbhr-sel" t-model="state.country">
-                <option value="all">Everywhere</option>
-                <option t-foreach="state.countries" t-as="cn" t-key="cn[0]" t-att-value="cn[0]" t-esc="cn[1]"/>
-              </select>
-              <select class="pbhr-in pbhr-sel" t-model="state.stage">
-                <option value="all">Any status</option>
-                <option t-foreach="state.states" t-as="sv" t-key="sv.key" t-att-value="sv.key" t-esc="sv.label"/>
-              </select>
-              <select class="pbhr-in pbhr-sel" t-model="state.recruiter">
-                <option value="all">Any recruiter</option>
-                <option t-foreach="state.recruiters" t-as="rc" t-key="rc[0]" t-att-value="rc[0]" t-esc="rc[1]"/>
-              </select>
-              <button t-if="anyFilter" class="pbim-btn ghost" t-on-click="clearFilters">
-                <t t-out="ic('x',14)"/> Clear
-              </button>
+          <!-- ================== shared with this reader only ==================
+               Somebody outside the hiring team who was shared a candidate has
+               no roles of their own: there is nothing to filter. -->
+          <div t-if="state.shareOnly" class="pbim-panel pbhr-empty">
+            <div class="pbhr-empty-ic"><t t-out="ic('share2',30)"/></div>
+            <h2>No roles of your own here</h2>
+            <p>The people above were shared with you by a recruiter. Open one to see what they shared.</p>
+          </div>
+
+          <!-- ======================= the filter panel =======================
+               FILTER W3: the shared panel (pb_filter_kit) owns the views, the
+               search, the sort and the left panel with a count beside every
+               value; the cards below are its slot, one page at a time. The
+               kit draws data-coach="hi-filters" on its search bar (the coach
+               prop below), on every one of the four lists. -->
+          <PbFilterLayout t-else="" kit="kit" coach="'hi-filters'" searchPlaceholder="rolesSearchHint">
+
+          <!-- ======================= reading the first page ======================= -->
+          <div t-if="!state.rolesLoaded" class="pbhr-grid pbhr-skelgrid" aria-label="Reading the roles">
+            <div t-foreach="[1,2,3,4]" t-as="sk" t-key="sk" class="pbim-panel pbhr-card pbhr-card--ghost">
+              <span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/><span class="pbhr-skel-line"/>
             </div>
           </div>
 
           <!-- ================== nothing at all yet ==================
                An empty state that TEACHES: it says what the first move is
                and who makes it, and it carries the button. -->
-          <div t-if="!state.rows.length and state.shareOnly" class="pbim-panel pbhr-empty">
-            <div class="pbhr-empty-ic"><t t-out="ic('share2',30)"/></div>
-            <h2>No roles of your own here</h2>
-            <p>The people above were shared with you by a recruiter. Open one to see what they shared.</p>
-          </div>
-          <div t-elif="!state.rows.length" class="pbim-panel pbhr-empty" data-coach="hi-row">
+          <div t-elif="!filtered.length and !anyFilter" class="pbim-panel pbhr-empty" data-coach="hi-row">
             <div class="pbhr-empty-ic"><t t-out="ic('userPlus',30)"/></div>
             <h2>No roles yet</h2>
             <p>Open a role in five fields and you can publish it and meet
@@ -263,12 +253,11 @@
           <!-- ============ everything filtered away ============ -->
           <div t-elif="!filtered.length" class="pbim-panel pbhr-empty">
             <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
-            <h2>Nothing matches that</h2>
-            <p>There are <t t-esc="state.rows.length"/>
-               <t t-esc="counted(state.rows.length, tr(' hiring request'), tr(' hiring requests'))"/>
-               on this board. Clear the filters to see them all.</p>
-            <button class="pbim-btn ghost" t-on-click="clearFilters">
-              <t t-out="ic('x',14)"/> Clear the filters
+            <h2>No roles match these filters</h2>
+            <p t-if="kit.chips.length">Remove a filter above, or start again from every role.</p>
+            <p t-else="">No role matches “<t t-esc="kit.search"/>”. Check the spelling, or search by department or recruiter.</p>
+            <button class="pbim-btn ghost" t-on-click="showAll">
+              <t t-out="ic('x',14)"/> Show all roles
             </button>
           </div>
 
@@ -357,67 +346,69 @@
             </div>
           </div>
 
-          <p t-if="state.capped" class="pbim-sub pbhr-cap">
-            Showing the newest <t t-esc="state.rows.length"/> of
-            <t t-esc="state.total"/>. Narrow it with the filters above to see
-            an older one.
-          </p>
+          <div t-if="filtered.length" class="pbhr-listfoot">
+            <span t-esc="showingWords(filtered.length, state.roleTotal)"/>
+            <button t-if="roleHasMore" type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.kitMore" t-on-click="loadMoreKit" t-esc="moreWords(filtered.length, state.roleTotal, 60)"/>
+          </div>
+          </PbFilterLayout>
           </t>
 
           <!-- ==================================================================
                THE INTERVIEWS — what is happening, and what is stuck.
+               FILTER W3: the same shared panel, pointed at the interviews.
+               The old Today / This week / Waiting / Late chips are its views
+               now; "Send the reminders due now" sits in its toolbar.
                ================================================================== -->
           <t t-else="">
-
-            <div class="pbim-panel pbhr-filters">
-              <div class="pbhr-filter-row">
-                <div class="pbhr-search">
-                  <t t-out="ic('search',15)"/>
-                  <input type="text" t-model="state.ivQ" placeholder="Search a candidate, a role, somebody on the panel…"/>
-                </div>
-                <div class="pbhr-chipbar">
-                  <button t-foreach="ivFocusKeys" t-as="fk" t-key="fk" class="pbhr-chip" t-att-class="{ on: state.ivFocus === fk,                                          err: fk === 'late' and ivFocusCount(fk) }" t-on-click="() =&gt; this.toggleIvFocus(fk)">
-                    <t t-esc="ivFocusLabel(fk)"/>
-                    <span class="pbhr-chip-n" t-esc="ivFocusCount(fk)"/>
-                  </button>
-                </div>
-                <button t-if="state.ivFocus or state.ivQ" class="pbim-btn ghost" t-on-click="() =&gt; { state.ivFocus = ''; state.ivQ = ''; }">
-                  <t t-out="ic('x',14)"/> Clear
+            <div class="pbhr-ivwrap">
+            <PbFilterLayout kit="kit" coach="'hi-filters'" searchPlaceholder="ivSearchHint">
+              <t t-set-slot="toolbar">
+                <button t-if="state.canRecruit" class="pbim-btn ghost pbim-btn-sm" t-on-click="() =&gt; this.act('run_reminders', {})" title="Send the reminders due right now — exactly what the ten-minute step does">
+                  <t t-out="ic('bell',14)"/> Send the reminders due now
                 </button>
-                <button t-if="state.canRecruit" class="pbim-btn ghost" t-on-click="() =&gt; this.act('run_reminders', {})" title="Send the reminders due right now — exactly what the ten-minute step does">
-                  <t t-out="ic('bell',15)"/> Send the reminders due now
+              </t>
+
+              <div t-if="!state.ivLoaded" class="pbhr-ivgrid" aria-label="Reading the interviews">
+                <div t-foreach="[1,2,3]" t-as="sk" t-key="sk" class="pbim-panel pbhr-ivcard pbhr-card--ghost">
+                  <span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/>
+                </div>
+              </div>
+
+              <!-- ============ nothing arranged at all ============ -->
+              <div t-elif="!filteredInterviews.length and !anyFilter" class="pbim-panel pbhr-empty">
+                <div class="pbhr-empty-ic"><t t-out="ic('calendar',30)"/></div>
+                <h2>No interviews are arranged</h2>
+                <p>Open a role on the Roles tab, find the candidate you want to
+                   meet and press Arrange. Everybody gets an invitation with a
+                   calendar file in it, Payobook reminds them the day before and
+                   again half an hour before, and afterwards each person on the
+                   panel gets their own private link to say what they thought.</p>
+                <button class="pbim-btn primary" t-on-click="() =&gt; this.setTab('roles')">
+                  <t t-out="ic('briefcase',15)"/> Go to the roles
                 </button>
               </div>
-            </div>
 
-            <!-- ============ nothing arranged at all ============ -->
-            <div t-if="!state.interviews.length" class="pbim-panel pbhr-empty">
-              <div class="pbhr-empty-ic"><t t-out="ic('calendar',30)"/></div>
-              <h2>No interviews are arranged</h2>
-              <p>Open a role on the Roles tab, find the candidate you want to
-                 meet and press Arrange. Everybody gets an invitation with a
-                 calendar file in it, Payobook reminds them the day before and
-                 again half an hour before, and afterwards each person on the
-                 panel gets their own private link to say what they thought.</p>
-              <button class="pbim-btn primary" t-on-click="() =&gt; this.setTab('roles')">
-                <t t-out="ic('briefcase',15)"/> Go to the roles
-              </button>
-            </div>
+              <!-- ============ everything filtered away ============ -->
+              <div t-elif="!filteredInterviews.length" class="pbim-panel pbhr-empty">
+                <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
+                <h2>No interviews match these filters</h2>
+                <p t-if="kit.chips.length">Remove a filter above, or start again from every interview.</p>
+                <p t-else="">No interview matches “<t t-esc="kit.search"/>”. Check the spelling, or search by role or recruiter.</p>
+                <button class="pbim-btn ghost" t-on-click="() =&gt; kit.toggleFilters({})">
+                  <t t-out="ic('x',14)"/> Show all interviews
+                </button>
+              </div>
 
-            <!-- ============ everything filtered away ============ -->
-            <div t-elif="!filteredInterviews.length" class="pbim-panel pbhr-empty">
-              <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
-              <h2>Nothing matches that</h2>
-              <p>There are <t t-esc="state.interviews.length"/>
-                 <t t-esc="counted(state.interviews.length, tr(' interview'), tr(' interviews'))"/>
-                 on this board. Clear the filters to see them all.</p>
-              <button class="pbim-btn ghost" t-on-click="() =&gt; { state.ivFocus = ''; state.ivQ = ''; }">
-                <t t-out="ic('x',14)"/> Clear the filters
-              </button>
+              <!-- ======================= the hours ======================= -->
+              <t t-else="">
+                <t t-call="pb_hiring.IvList"><t t-set="ivList" t-value="filteredInterviews"/></t>
+                <div class="pbhr-listfoot">
+                  <span t-esc="showingWords(filteredInterviews.length, state.ivTotal)"/>
+                  <button t-if="ivHasMore" type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.kitMore" t-on-click="loadMoreKit" t-esc="moreWords(filteredInterviews.length, state.ivTotal, 60)"/>
+                </div>
+              </t>
+            </PbFilterLayout>
             </div>
-
-            <!-- ======================= the hours ======================= -->
-            <t t-else=""><t t-call="pb_hiring.IvList"><t t-set="ivList" t-value="filteredInterviews"/></t></t>
           </t>
         </t>
       </div>

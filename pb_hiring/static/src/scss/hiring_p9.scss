@@ -187,3 +187,26 @@
     .pbhr .pbhr-p9-menu { animation: pbhr-p9-in .14s ease-out; }
     .pbhr .pbhr-p9-tr td { transition: background .12s; }
 }
+
+// =====================================================================
+//  FILTER W3 — the four lists on the shared filter panel (pb_filter_kit).
+//  The panel brings its own look; these are the list ends this module
+//  draws inside it: the "Showing 60 of 212 · Show 60 more" line, the
+//  first-page skeleton cards, the column hint for people further down
+//  the list, and a list heading that does not sort.
+// =====================================================================
+.pbhr {
+    .pbhr-listfoot {
+        display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        margin: 14px 0 6px; font-size: 13px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); font-weight: 650; }
+    }
+    .pbhr-card--ghost {
+        min-height: 150px; display: flex; flex-direction: column; gap: 10px; cursor: default;
+        box-shadow: none;
+    }
+    .pbhr-ivgrid .pbhr-card--ghost { min-height: 72px; }
+    .pbhr-col-more.pbhr-col-unread { color: var(--pbim-muted); font-weight: 600; }
+    .pbhr-p9-sort.is-flat { cursor: default; &:hover { color: inherit; } }
+    .pbhr-ivwrap { display: block; }
+}

@@ -24,3 +24,4 @@ from . import test_shared_calendar
 from . import test_calendar_notifications
 from . import test_google_calendar_scopes
 from . import test_calendar_connection
+from . import test_filters_w3

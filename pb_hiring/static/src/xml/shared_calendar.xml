@@ -95,10 +95,9 @@
 </div>
 </t>
 <t t-inherit="pb_hiring.PbHiringBoard" t-inherit-mode="extension">
-  <xpath expr="//div[contains(@class, 'pbhr-filters')][.//input[@t-model='state.ivQ']]" position="before"><div class="pbcal-views" role="tablist" aria-label="Interviews view"><button role="tab" t-att-aria-selected="!state.interviewCalendar ? 'true' : 'false'" t-att-class="!state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = false; }">List</button><button role="tab" t-att-aria-selected="state.interviewCalendar ? 'true' : 'false'" t-att-class="state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = true; }">Calendar</button></div><SharedCalendar t-if="state.interviewCalendar" interviewsOnly="true"/></xpath>
-  <xpath expr="//div[contains(@class, 'pbhr-filters')][.//input[@t-model='state.ivQ']]" position="attributes"><attribute name="t-if">!state.interviewCalendar</attribute></xpath>
-  <xpath expr="//div[@t-if='!state.interviews.length']" position="attributes"><attribute name="t-if">!state.interviewCalendar and !state.interviews.length</attribute></xpath>
-  <xpath expr="//div[@t-elif='!filteredInterviews.length']" position="attributes"><attribute name="t-elif">!state.interviewCalendar and !filteredInterviews.length</attribute></xpath>
-  <xpath expr="//t[@t-else][t[@t-call='pb_hiring.IvList']]" position="attributes"><attribute name="t-else"/><attribute name="t-elif">!state.interviewCalendar</attribute></xpath>
+  <!-- FILTER W3: the Interviews list sits in one wrapper (its filter panel and
+       the list); the calendar replaces the whole wrapper. -->
+  <xpath expr="//div[@class='pbhr-ivwrap']" position="before"><div class="pbcal-views" role="tablist" aria-label="Interviews view"><button role="tab" t-att-aria-selected="!state.interviewCalendar ? 'true' : 'false'" t-att-class="!state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = false; }">List</button><button role="tab" t-att-aria-selected="state.interviewCalendar ? 'true' : 'false'" t-att-class="state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = true; }">Calendar</button></div><SharedCalendar t-if="state.interviewCalendar" interviewsOnly="true"/></xpath>
+  <xpath expr="//div[@class='pbhr-ivwrap']" position="attributes"><attribute name="t-if">!state.interviewCalendar</attribute></xpath>
 </t>
 </templates>
