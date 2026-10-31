@@ -29,7 +29,7 @@
                  copied because this module does not depend on the kit. -->
             <div class="pbim-glance" role="group" aria-label="Numbers at a glance" data-coach="ps-kpis">
                 <t t-foreach="glance" t-as="gl" t-key="gl.key">
-                    <button type="button" class="pbim-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and state.filter === gl.key ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-aria-pressed="gl.run ? (state.filter === gl.key ? 'true' : 'false') : undefined" t-on-click="() =&gt; gl.run and gl.run()">
+                    <button type="button" class="pbim-gl" t-att-class="(gl.n ? '' : 'zero ') + (gl.tone ? 'is-' + gl.tone + ' ' : '') + (gl.run and gl.on ? 'on ' : '') + (gl.run ? '' : 'flat')" t-att-disabled="!gl.run" t-att-aria-pressed="gl.run ? (gl.on ? 'true' : 'false') : undefined" t-on-click="() =&gt; gl.run and gl.run()">
                         <span t-if="gl.tone" class="pbim-gl-dot"/>
                         <span class="pbim-gl-n" t-esc="gl.n"/>
                         <span class="pbim-gl-l" t-esc="gl.label"/>
@@ -39,9 +39,11 @@
 
             <!-- ============ the steps ============
                  A payslip is at EXACTLY one step (its state; the two old
-                 approval rungs read as "Waiting for approval"), so the counts
-                 add up. A cancelled payslip is at no step. Pressing the lit
-                 step again, or "Show all", shows every payslip. -->
+                 approval rungs read as "Waiting for approval"). A cancelled
+                 payslip is at no step. FILTER wave 5 (ruling R1): each step
+                 counts against every OTHER filter of the panel below, and
+                 pressing one ticks it in "Where it is"; pressing the lit step
+                 again lets go of it. -->
             <nav class="pbim-steps" t-att-style="'--pbim-steps:' + steps.length" aria-label="Where every payslip is" data-coach="ps-chips">
                 <button t-foreach="steps" t-as="st" t-key="st.key" type="button" class="pbim-st" t-att-class="(st.on ? 'on ' : '') + (st.count ? 'has ' : '') + (st.flag ? 'wait' : '')" t-att-aria-pressed="st.on ? 'true' : 'false'" t-on-click="() =&gt; this.pickStep(st.key)">
                     <span class="pbim-st-heat"/>
@@ -59,15 +61,17 @@
                     </span>
                 </button>
             </nav>
-            <div class="pbim-showing">
-                <t t-if="showingLine.all">Showing <b t-esc="showingLine.text"/> · press a step or a number to narrow it</t>
-                <t t-else="">Showing <b t-esc="showingLine.text"/><t t-if="showingLine.where"> at <b t-esc="showingLine.where"/></t>
-                    <button type="button" class="pbim-showall" t-on-click="() =&gt; this.setFilter('all')">Show all</button></t>
-            </div>
-
+            <!-- The shared filter panel (pb_filter_kit, FILTER wave 5) around
+                 the split: views, search, the left panel with counts, chips.
+                 Learn anchor: data-coach="ps-filters" (given to the layout's
+                 bar through `coach`, kept literal here for the anchor test). -->
+            <PbFilterLayout kit="kit" coach="'ps-filters'" searchPlaceholder="'Search a name, payslip number or employee code…'">
             <!-- Split -->
             <div class="psr-split">
                 <div class="psr-list" data-coach="ps-list">
+                    <t t-if="!state.listLoaded">
+                        <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="psr-card psr-card--ghost" aria-hidden="true"/>
+                    </t>
                     <t t-foreach="filteredSlips" t-as="s" t-key="s.id">
                         <div t-attf-class="psr-card #{s.id===state.selId?'sel':''}" t-on-click="() => this.select(s.id)">
                             <span class="psr-av" t-attf-style="background:{{s.color}}" t-esc="initials(s.emp)"/>
@@ -83,7 +87,24 @@
                             <span t-if="s.flag" class="psr-flagdot" t-att-title="s.why">!</span>
                         </div>
                     </t>
-                    <t t-if="!filteredSlips.length"><div class="psr-empty">No payslips in this filter.</div></t>
+                    <div t-if="state.listLoaded and !filteredSlips.length and !kit.total" class="psr-none">
+                        <div class="psr-none-ic"><t t-out="ic('receipt')"/></div>
+                        <b>No payslips in this run yet</b>
+                        <span>Payslips appear here once the run has been computed. Open the run from Pay runs to compute it.</span>
+                    </div>
+                    <div t-elif="state.listLoaded and !filteredSlips.length" class="psr-none">
+                        <div class="psr-none-ic"><t t-out="ic('search')"/></div>
+                        <b>No payslips match these filters</b>
+                        <span t-esc="emptyHint"/>
+                        <button type="button" class="psr-btn" t-on-click="() => kit.home()">Show every payslip in this run</button>
+                    </div>
+                    <div t-if="filteredSlips.length" class="psr-foot">
+                        Showing <b t-esc="fmtInt(filteredSlips.length)"/> of <b t-esc="fmtInt(state.total)"/>
+                        <button t-if="hasMore" type="button" class="psr-btn" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                            <t t-if="state.loadingMore">Loading…</t>
+                            <t t-else="">Show <t t-esc="nextPage"/> more</t>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Detail -->
@@ -131,6 +152,7 @@
                 </div>
                 <div class="psr-detail empty" t-else=""><div class="psr-empty">Select a payslip to review.</div></div>
             </div>
+            </PbFilterLayout>
         </t>
         <t t-elif="state.loaded"><div class="psr-empty" style="margin-top:60px">No pay runs found yet.</div></t>
         <t t-else=""><div class="psr-empty" style="margin-top:60px">Loading…</div></t>
