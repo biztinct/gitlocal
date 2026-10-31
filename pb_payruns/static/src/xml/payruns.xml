@@ -100,7 +100,7 @@
              still says what is in it. Learn anchor: data-coach="pk-divchips"
              (given to the layout's bar through `coach`, kept literal here for
              the anchor test). -->
-        <PbFilterLayout kit="kit" coach="'pk-divchips'" searchPlaceholder="'Find a pay run'">
+        <PbFilterLayout kit="kit" coach="'pk-divchips'" searchPlaceholder="searchHint">
           <t t-set-slot="toolbar">
             <div class="pbr-seg" role="group" aria-label="View">
               <button type="button" t-att-class="state.view === 'board' ? 'on' : ''" title="Board" t-on-click="() => this.setView('board')"><span class="ic" t-out="ic('grid', 13)"/></button>

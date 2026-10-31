@@ -167,6 +167,8 @@ export class PayslipReview extends Component {
     }
     fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
     ic(n, s = 22) { return ic(n, s); }
+    // a getter, not a template literal: a literal is never extracted (F29)
+    get searchHint() { return _t("Search a name, payslip number or employee code…"); }
 
     async select(id) {
         this.state.selId = id;

@@ -104,6 +104,8 @@ export class PbStructures extends Component {
         return "";
     }
     fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+    // a getter, not a template literal: a literal is never extracted (F29)
+    get searchHint() { return _t("Search a name or a code…"); }
     get emptyHint() {
         return this.kit.search && !this.kit.chips.length
             ? _t("No structure is called “%s” and no code matches it. Check the spelling, or search by code.", this.kit.search)

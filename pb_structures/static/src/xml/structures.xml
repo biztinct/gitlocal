@@ -31,7 +31,7 @@
              search, the left panel with counts, chips. The catalogue is its
              slot. Learn anchor: data-coach="sr-filters" (given to the layout's
              bar through `coach`, kept literal here for the anchor test). -->
-        <PbFilterLayout kit="kit" coach="'sr-filters'" searchPlaceholder="'Search a name or a code…'">
+        <PbFilterLayout kit="kit" coach="'sr-filters'" searchPlaceholder="searchHint">
           <div t-if="state.rows.length" class="ppl-roster" data-coach="sr-roster">
             <div t-foreach="state.rows" t-as="s" t-key="s.id" class="ppl-card" t-on-click="() => this.openStructure(s.id)">
               <div class="ppl-av"><t t-out="ic('layers',20)"/></div>

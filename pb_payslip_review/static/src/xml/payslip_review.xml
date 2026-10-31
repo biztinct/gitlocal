@@ -65,7 +65,7 @@
                  the split: views, search, the left panel with counts, chips.
                  Learn anchor: data-coach="ps-filters" (given to the layout's
                  bar through `coach`, kept literal here for the anchor test). -->
-            <PbFilterLayout kit="kit" coach="'ps-filters'" searchPlaceholder="'Search a name, payslip number or employee code…'">
+            <PbFilterLayout kit="kit" coach="'ps-filters'" searchPlaceholder="searchHint">
             <!-- Split -->
             <div class="psr-split">
                 <div class="psr-list" data-coach="ps-list">

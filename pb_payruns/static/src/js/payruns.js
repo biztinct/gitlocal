@@ -842,6 +842,8 @@ export class PbPayruns extends Component {
         });
     }
     get laneTitles() { return { all: _t("Show every step"), one: _t("Show only this step") }; }
+    // a getter, not a template literal: a literal is never extracted (F29)
+    get searchHint() { return _t("Find a pay run"); }
     /** Filters on and not one run on the board (lanes and drawer alike). */
     get nothingMatches() {
         if (!this.narrowed) return false;
