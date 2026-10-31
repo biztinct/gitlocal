@@ -157,7 +157,7 @@
     "pk-divchips": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns.xml",
-      "desc": "The division chips in the toolbar. They narrow the cards; the lane counts still count the whole board."
+      "desc": "Pay Runs, the shared filter panel: view tabs (All pay runs, Waiting on me, This month, Sent back, Approved, not paid, Rejected), the Filters button that opens the left panel (Where it is, Pay period ends, Division pinned) with a count beside every value, the search, and the applied filters as chips. The lane counts follow the filters. The key kept its old name (it used to sit on the division chips) so lessons still land."
     },
     "pk-card": {
       "screen": "payruns",
@@ -279,6 +279,12 @@
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
       "desc": "Payslips, net total, gross total, approved and need-review for this run."
     },
+    "ps-filters": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "Pay Run › Payslips, the shared filter panel for the run picked above: view tabs (All in this run, Need review, Waiting for approval, Done, Refunds), the Filters button that opens the left panel (Where it is, Review, Department pinned) with a count beside every value, the search, and the applied filters as chips. The steps above still pick a step.",
+      "reserved": true
+    },
     "ps-why": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
@@ -288,7 +294,7 @@
     "ps-chips": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
-      "desc": "Filter chips: All / Need review / HR pending / GM pending / Done."
+      "desc": "The numbered steps: Draft, Waiting for approval, Done. Each counts against the other filters; pressing one ticks it in the filter panel, pressing it again lets go."
     },
     "ps-list": {
       "screen": "payslips",
@@ -494,7 +500,7 @@
     "sr-filters": {
       "screen": "structures",
       "file": "pb_structures/static/src/xml/structures.xml",
-      "desc": "Search, date and country chips (the status buttons left with the quiet numbers, 446560e70). They scope the roster, not the database.",
+      "desc": "Salary Structures, the shared filter panel: view tabs (All structures, Active, Drafts, Deprecated, Changed this month), the Filters button that opens the left panel (Status, Payroll country, Pay schedule pinned) with a count beside every value, the search, and the applied filters as chips. Active / Draft / Deprecated on the numbers line still filter.",
       "reserved": true
     },
     "sr-roster": {
