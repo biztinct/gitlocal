@@ -45,6 +45,11 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { user } from "@web/core/user";
 import { openHub } from "@pb_hub/js/hub_nav";
 import { CONTRACT_GATE } from "@pb_people_hub/js/people_hub";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+/** Cards per page; "Show N more" loads the next one. */
+const PAGE = 60;
 
 /** The three choices, in the order a person weighs them. */
 const CHOICES = ["convert", "extend", "terminate"];
@@ -65,6 +70,7 @@ const CHOICE_ICON = { convert: "award", extend: "rotate", terminate: "powerOff" 
 
 export class PbContractLifeBoard extends Component {
     static template = "pb_contract_lifecycle.PbContractLifeBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -82,22 +88,15 @@ export class PbContractLifeBoard extends Component {
             leadDays: 60,
             defaultMonths: 12,
             kpis: {},
-            rows: [],
-            kinds: [],
-            departments: [],
-            months: [],
-            states: [],
-            capped: false,
+            total: 0,               // every contract the board is about
+            glanceFilters: {},      // what each figure means as a filter
 
-            // filters
-            q: "",
-            kind: "all",
-            dept: "all",
-            month: "all",
-            reviewState: "all",
-            attentionOnly: false,
-            focus: "",      // the figure on the numbers line now filtering
-            step: "",       // the step now filtering
+            // the page the filter panel produced (FILTER wave 2)
+            rows: [],
+            rowsTotal: 0,
+            listLoaded: false,
+            loadingMore: false,
+            stepCounts: {},
 
             // the open contract
             drawer: null,
@@ -115,15 +114,25 @@ export class PbContractLifeBoard extends Component {
         });
         onWillStart(async () => { this.state.canRegister = await this._canRegister(); });
 
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this board loads one page of cards for
+        // kit.query, counted and filtered on the server (no 300-row cap).
+        this.kit = useFilterKit({
+            model: "pb.contractlife",
+            noun: _t("contracts"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
     // ------------------------------------------------------------------ read
+    /** The numbers line, the switch notice and the flags — counted over
+     *  every contract the board is about, whatever is filtered. */
     async load() {
         try {
-            const d = await this.orm.call("pb.contractlife", "get_board", []);
+            const d = await this.orm.call("pb.contractlife", "get_board_head", []);
             Object.assign(this.state, {
                 allowed: d.allowed,
                 canWrite: d.can_write,
@@ -132,12 +141,8 @@ export class PbContractLifeBoard extends Component {
                 leadDays: d.lead_days || 60,
                 defaultMonths: d.default_months || 12,
                 kpis: d.kpis || {},
-                rows: d.rows || [],
-                kinds: d.kinds || [],
-                departments: d.departments || [],
-                months: d.months || [],
-                states: d.states || [],
-                capped: !!d.capped,
+                total: d.total || 0,
+                glanceFilters: d.glance_filters || {},
                 loaded: true,
             });
         } catch (e) {
@@ -148,95 +153,99 @@ export class PbContractLifeBoard extends Component {
         }
     }
 
+    /** One page of cards (and, on the first, the step counts) for the
+     *  panel's current filters. A reply for an older filter state is dropped. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.contractlife", "get_board_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.rowsTotal = d.total;
+            if (!more) { this.state.stepCounts = d.steps || {}; }
+            this.state.listLoaded = true;
+        } catch (e) {
+            console.warn("pb_contract_lifecycle: could not load the cards", e);
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The contracts could not be loaded. Try again in a moment."),
+                               { type: "warning" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+
+    get hasMore() { return this.state.rows.length < this.state.rowsTotal; }
+
+    get nextPage() { return Math.min(PAGE, this.state.rowsTotal - this.state.rows.length); }
+
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
     async refresh() {
-        this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (this.state.drawer) {
             await this.openContract(this.state.drawer.row.id);
         }
     }
 
-    // --------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.kind !== "all" && r.kind_label !== this.state.kind) {
-                return false;
-            }
-            if (this.state.dept !== "all" && r.dept !== this.state.dept) {
-                return false;
-            }
-            if (this.state.month !== "all" && r.end_month !== this.state.month) {
-                return false;
-            }
-            if (this.state.reviewState !== "all"
-                && r.review_label !== this.state.reviewState) {
-                return false;
-            }
-            if (this.state.attentionOnly && !this.needsAttention(r)) {
-                return false;
-            }
-            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
-                return false;
-            }
-            if (this.state.step && this.stepOf(r) !== this.state.step) {
-                return false;
-            }
-            if (!q) { return true; }
-            return (r.employee + " " + (r.job || "") + " " + (r.dept || "")
-                + " " + (r.contract_name || "")).toLowerCase().includes(q);
-        });
-    }
+    /** Back to every contract the board is about (the first view). */
+    showAll() { this.kit.toggleFilters({}); }
 
-    /** "Somebody has to do something about this one" — the one filter that matters. */
-    needsAttention(row) {
-        return !!(row.urgent || row.needs_decision
-            || row.review_state === "lapsed"
-            || (row.non_permanent && row.days === null));
-    }
-
-    get hasFilters() {
-        return this.state.q || this.state.kind !== "all"
-            || this.state.dept !== "all" || this.state.month !== "all"
-            || this.state.reviewState !== "all" || this.state.attentionOnly
-            || this.state.focus || this.state.step;
-    }
-
-    clearFilters() {
-        Object.assign(this.state, {
-            q: "", kind: "all", dept: "all", month: "all", reviewState: "all",
-            attentionOnly: false, focus: "", step: "",
-        });
+    /** Why the list is empty, in one translatable sentence (R34). */
+    get emptyText() {
+        if (this.kit.chips.length) {
+            return _t("There are %s contracts on this board, but none of them fits every filter you have set. Remove a filter above, or start again from all of them.",
+                      this.fmtInt(this.state.total));
+        }
+        if (this.kit.search) {
+            return _t("Nobody matches “%s”. Check the spelling, or search by job, team or contract.",
+                      this.kit.search);
+        }
+        return _t("Nothing could be listed just now. Show all contracts to start again.");
     }
 
     // ----------------------------------------------------- the quiet board
     //
     // One slim line of numbers instead of a row of tiles, and the four steps
-    // a contract's decision moves through. A contract is at EXACTLY ONE step
-    // (stepOf reads the decision state), so the counts add up to the board.
-    // Pressing a lit figure or step again clears it.
-    matchesFocus(r, key) {
-        if (key === "ending") { return r.days !== null && r.days >= 0 && r.days <= this.state.leadDays; }
-        if (key === "undecided") { return !!r.needs_decision; }
-        if (key === "waiting") { return r.review_state === "extension"; }
-        if (key === "running") { return r.review_state === "conversion"; }
-        return true;
+    // a contract's decision moves through. A contract is at EXACTLY ONE step,
+    // so the step counts add up to what the panel lists. A figure that
+    // filters ticks exactly its filters in the panel (and lights the view
+    // tab with the same filters); pressing it again shows everyone.
+    glanceRun(key) {
+        const f = this.state.glanceFilters[key];
+        return f ? () => this.kit.toggleFilters(f) : null;
     }
 
-    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.state.glanceFilters || {})) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
+    }
 
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
         return [
             { key: "ending", n: k.ending || 0, label: _t("Ending within %s days", this.state.leadDays), tone: "",
-              run: () => this.toggleFocus("ending") },
+              run: this.glanceRun("ending") },
             { key: "undecided", n: k.undecided || 0, label: _t("Nobody has decided"), tone: tone(k.undecided, "rose"),
-              run: () => this.toggleFocus("undecided") },
+              run: this.glanceRun("undecided") },
             { key: "waiting", n: k.waiting || 0, label: _t("Waiting to be agreed"), tone: tone(k.waiting, "amber"),
-              run: () => this.toggleFocus("waiting") },
+              run: this.glanceRun("waiting") },
             { key: "running", n: k.running || 0, label: _t("Being evaluated"), tone: "",
-              run: () => this.toggleFocus("running") },
+              run: this.glanceRun("running") },
             // Counted across the year, not on this board — so it cannot filter it.
             { key: "converted", n: k.converted || 0, label: _t("Made permanent this year"), tone: tone(k.converted, "green"),
               run: null },
@@ -262,13 +271,16 @@ export class PbContractLifeBoard extends Component {
         ];
     }
 
+    /** The four steps, counted on the server for the panel's filters
+     *  (everything except the step itself), so they follow the filters. */
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.stepOf(r) === st.key);
-            const signoff = at.filter((r) => r.review_state === "extension").length;
-            const lapsed = at.filter((r) => r.review_state === "lapsed").length;
-            const undecided = at.filter((r) => r.needs_decision).length;
+            const c = counts[st.key] || {};
+            const at = { length: c.n || 0 };
+            const signoff = c.signoff || 0;
+            const lapsed = c.lapsed || 0;
+            const undecided = c.undecided || 0;
             let flag = "";
             let flagTone = "";
             if (signoff) {
@@ -287,12 +299,21 @@ export class PbContractLifeBoard extends Component {
                 countLabel: at.length === 1 ? _t("1 contract") : _t("%s contracts", at.length),
                 flag,
                 flagTone,
-                on: this.state.step === st.key,
+                on: this.stepIsOn(st.key),
             };
         });
     }
 
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+    stepIsOn(key) {
+        const v = this.kit.values("step");
+        return v.length === 1 && String(v[0]) === key;
+    }
+
+    /** A step narrows the panel's list to that step, keeping every other
+     *  filter; pressing the lit step again lifts it. */
+    pickStep(key) {
+        if (this.stepIsOn(key)) { this.kit.clear("step"); } else { this.kit.only("step", key); }
+    }
 
     stepMeta(r) {
         const defs = this.stepDefs;
@@ -303,29 +324,6 @@ export class PbContractLifeBoard extends Component {
             marks: defs.map((st, j) => (j < index ? "done" : j === index ? "here" : "")),
         };
     }
-
-    get showingLine() {
-        const all = this.state.rows.length;
-        if (!this.hasFilters) {
-            return { all: true, text: !all ? _t("Showing no contracts yet")
-                : all === 1 ? _t("Showing all 1 contract · press a step or a number to narrow it")
-                    : _t("Showing all %s contracts · press a step or a number to narrow it", all) };
-        }
-        const shown = this.visibleRows.length;
-        const st = this.stepDefs.find((x) => x.key === this.state.step);
-        return { all: false, text: st
-            ? _t("Showing %s of %s contracts at %s", shown, all, st.title)
-            : _t("Showing %s of %s contracts", shown, all) };
-    }
-
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setKind(id) { this.state.kind = this.state.kind === id ? "all" : id; }
-    setDept(id) { this.state.dept = this.state.dept === id ? "all" : id; }
-    setMonth(id) { this.state.month = this.state.month === id ? "all" : id; }
-    setReviewState(id) {
-        this.state.reviewState = this.state.reviewState === id ? "all" : id;
-    }
-    toggleAttention() { this.state.attentionOnly = !this.state.attentionOnly; }
 
     // ------------------------------------------------------------ formatting
     day(value) {
@@ -428,7 +426,7 @@ export class PbContractLifeBoard extends Component {
         const reopen = this._reopen;
         this._reopen = null;
         // Dates and terms can change in that drawer; the countdowns read them.
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (reopen) { await this.openContract(reopen); }
     }
 

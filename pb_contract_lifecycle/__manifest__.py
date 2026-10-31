@@ -50,7 +50,7 @@ existing contract's end date or rewrites its wage. The old contract ends on its
 own date and the platform's nightly job closes it; the new one starts the day
 after, as a draft, so a person reads it before it starts.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -64,6 +64,7 @@ after, as a draft, so a person reads it before it starts.
         'biz_approval_workflow',   # the route its ladder now runs on
         'pb_hub',               # the global palette registry
         'pb_import_kit',        # pbim tokens/primitives + the shared ic() set
+        'pb_filter_kit',        # the shared filter panel (FILTER wave 2)
         'pb_lifecycle',         # the journey engine, letters, the hub + registry
         'pb_people_hub', # NAV P2: this board is a People tab
         'pb_offboarding',       # the leaving checklist "let it end" opens

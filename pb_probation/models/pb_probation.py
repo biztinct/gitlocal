@@ -19,20 +19,25 @@ has finished, and the flag somebody raised at the sixty-day conversation.
 """
 
 import logging
-from datetime import date
+from datetime import date, timedelta
 
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
+from odoo.fields import Domain
 
 from .probation_common import (
     GROUP_ADMIN, GROUP_MANAGER, GROUP_USER, MAX_NOMINEES, MIN_NOMINEES,
-    P_AUTO_TRIGGER, PROBATION_STATE_LABEL, REVIEW_STATE_LABEL, VERDICT_LABEL,
-    flag, initials,
+    P_AUTO_TRIGGER, PROBATION_LIVE, PROBATION_STATE_LABEL, REVIEW_OPEN,
+    REVIEW_STATE_LABEL, VERDICT_LABEL, flag, initials,
 )
 
 _logger = logging.getLogger(__name__)
 
+#: The old `get_board` payload's cap. The board itself now pages (FILTER W2).
 BOARD_LIMIT = 300
+
+#: Cards per page on the filtered board ("Show N more" loads the next page).
+PAGE_SIZE = 60
 
 #: How red the days-left number goes.
 URGENT_DAYS = 7
@@ -40,6 +45,7 @@ URGENT_DAYS = 7
 
 class PbProbation(models.AbstractModel):
     _name = 'pb.probation'
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook Probation cockpit data'
 
     # ------------------------------------------------------------------ gates
@@ -191,6 +197,312 @@ class PbProbation(models.AbstractModel):
             'red_flags': flags,
             'has_report': bool(review and review.consolidated_html),
         }
+
+    # =====================================================================
+    #  THE FILTER PANEL (pb_filter_kit, FILTER wave 2)
+    #
+    #  The board used to read 300 people, count its chips from them and
+    #  filter them in the browser. Now every count is a server count over
+    #  everybody in a trial period, and the cards come a page at a time.
+    #  `get_board` above still answers the old payload (ruling R4).
+    # =====================================================================
+    @api.model
+    def _pr_may_list(self):
+        """The board's own tier AND the trial-period field itself, which is
+        behind hr.group_hr_user: a reader who cannot read it has never been
+        able to list anybody here, and is now told so instead of being shown
+        an empty board."""
+        if not self._can_read():
+            return False
+        Emp = self.env['hr.employee']
+        field = Emp._fields.get('pb_probation_state')
+        try:
+            return bool(field) and Emp._has_field_access(field, 'read')
+        except Exception:               # noqa: BLE001
+            return False
+
+    def _pbf_model(self):
+        return 'hr.employee'
+
+    def _pbf_screen(self):
+        return 'probation'
+
+    def _pbf_records(self):
+        """SUDO for exactly the readers this board lets in, and nobody else.
+
+        The board has always read the trial end date (behind
+        hr.group_hr_manager), the reviews and the check-ins under sudo; its
+        counts and its order by end date must see the same. The audience is
+        unchanged (`_pr_may_list`) and the company travels in the base domain.
+        """
+        Emp = self.env['hr.employee']
+        return Emp.sudo() if self._pr_may_list() else Emp
+
+    def _pbf_base_domain(self):
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        return [('company_id', 'in', co_ids), ('active', '=', True),
+                ('pb_probation_state', 'in', list(PROBATION_LIVE))]
+
+    def _pbf_search_fields(self):
+        return ['name', 'job_title', 'department_id.name']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'ends', 'label': _('Trial ends soonest first'),
+             'order': 'trial_date_end asc nulls last, name asc, id asc'},
+            {'key': 'ends_late', 'label': _('Trial ends latest first'),
+             'order': 'trial_date_end desc nulls last, name asc, id asc'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'name asc, id asc'},
+            {'key': 'newest', 'label': _('Newest joiners first'),
+             'order': 'first_contract_date desc nulls last, name asc, id asc'},
+        ]
+
+    @api.model
+    def _pr_rules(self):
+        """Every review fact on a card, as a domain on `hr.employee`.
+
+        A person's review is the LIVE one (at most one: a second trigger adds
+        nothing, R30) or, when none is live, the latest — the same rule as
+        `pb.probation.review.for_employee`. All literal domains: every count
+        stays one SQL query.
+        """
+        today = self._pbf_today()
+        ds = fields.Date.to_string
+        live = list(REVIEW_OPEN)
+
+        def rev(dom):
+            return Domain('pb_probation_review_ids', 'any', dom)
+
+        none = Domain('pb_probation_review_ids', '=', False)
+        no_live = Domain('pb_probation_review_ids', 'not any', [('state', 'in', live)])
+        review = {'none': none}
+        for st in live:
+            review[st] = rev([('state', '=', st)])
+        review['closed'] = no_live & rev([('state', '=', 'closed')])
+        # the five numbered steps (probation_board.js flowStepOf)
+        steps = {
+            'peers': none | rev([('state', 'in', ['scheduled', 'nomination']),
+                                 ('pb_gate', '!=', 'approved')]),
+            'answers': rev([('state', '=', 'feedback'), ('pb_gate', '!=', 'approved')]),
+            'talk': (rev([('state', 'in', ['consolidation', 'one_on_one']),
+                          ('pb_gate', '!=', 'approved')])
+                     | rev([('state', '=', 'verdict'),
+                            ('pb_gate', 'not in', ['hr', 'ceo', 'approved'])])),
+            'review': rev([('state', '=', 'verdict'), ('pb_gate', 'in', ['hr', 'ceo'])]),
+            'outcome': review['closed'] | rev([('state', 'in', live),
+                                               ('pb_gate', '=', 'approved')]),
+        }
+        late = rev([('state', '=', 'feedback'), ('feedback_deadline', '<', ds(today))])
+        later = rev([('round', '>=', 2)])
+        week = ds(today + timedelta(days=7))
+        return {
+            'today': today, 'review': review, 'steps': steps, 'late': late,
+            'later': later, 'first': Domain('pb_probation_review_ids', '!=', False) & ~later,
+            'running': rev([('state', 'in', live)]),
+            'week': week,
+        }
+
+    @api.model
+    def _pr_glance_filters(self, rules=None):
+        """What each figure on the numbers line means as a filter — the SAME
+        filters as the built-in views, so pressing one lights its tab."""
+        rules = rules or self._pr_rules()
+        return {
+            'running': {'review': list(REVIEW_OPEN)},
+            'verdicts': {'review': ['verdict']},
+            'late': {'answers_late': ['yes']},
+            # "Ending within a week" has always counted a trial that has
+            # already run out too: that one cannot wait either.
+            'urgent': {'trial_ends': {'to': rules['week']}},
+        }
+
+    def _pbf_spec(self):
+        rules = self._pr_rules()
+        review, steps = rules['review'], rules['steps']
+        return [
+            # ---- pinned: when it ends, where the review is, which team
+            {'key': 'trial_ends', 'label': _('Trial period ends'), 'icon': 'calendarClock',
+             'group': 'contract', 'type': 'date', 'path': 'trial_date_end',
+             'presets': 'future', 'pinned': True, 'none_label': _('No end date')},
+            {'key': 'stage', 'label': _('Review step'), 'icon': 'listChecks',
+             'group': 'contract', 'type': 'choice', 'pinned': True,
+             'requires': ['pb_probation_review_ids'],
+             'help': _('The five steps of a probation review, as on the strip above the cards.'),
+             'options': [
+                 {'value': 'peers', 'label': _('Choose peers'), 'tone': 'slate',
+                  'domain': steps['peers']},
+                 {'value': 'answers', 'label': _('Gather perspectives'), 'tone': 'blue',
+                  'domain': steps['answers']},
+                 {'value': 'talk', 'label': _('Manager conversation'), 'tone': 'blue',
+                  'domain': steps['talk']},
+                 {'value': 'review', 'label': _('HR & leadership review'), 'tone': 'amber',
+                  'domain': steps['review']},
+                 {'value': 'outcome', 'label': _('Share the outcome'), 'tone': 'green',
+                  'domain': steps['outcome']},
+             ]},
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'department_id',
+             'pinned': True, 'none_label': _('No team')},
+            # ---- more filters
+            {'key': 'review', 'label': _('Review status'), 'icon': 'fileText',
+             'group': 'contract', 'type': 'choice',
+             'requires': ['pb_probation_review_ids'],
+             'options': [
+                 {'value': 'none', 'label': _('Not started'), 'tone': 'slate',
+                  'domain': review['none']},
+                 {'value': 'scheduled', 'label': _('Scheduled'), 'tone': 'slate',
+                  'domain': review['scheduled']},
+                 {'value': 'nomination', 'label': _('Peers being chosen'), 'tone': 'blue',
+                  'domain': review['nomination']},
+                 {'value': 'feedback', 'label': _('Feedback running'), 'tone': 'blue',
+                  'domain': review['feedback']},
+                 {'value': 'consolidation', 'label': _('Consolidating'), 'tone': 'blue',
+                  'domain': review['consolidation']},
+                 {'value': 'one_on_one', 'label': _('Manager 1:1'), 'tone': 'blue',
+                  'domain': review['one_on_one']},
+                 {'value': 'verdict', 'label': _('Awaiting decision'), 'tone': 'amber',
+                  'domain': review['verdict']},
+                 {'value': 'closed', 'label': _('Closed'), 'tone': 'green',
+                  'domain': review['closed']},
+             ]},
+            {'key': 'answers_late', 'label': _("Colleagues' answers"), 'icon': 'clock',
+             'group': 'contract', 'type': 'choice',
+             'requires': ['pb_probation_review_ids'],
+             'help': _('Colleagues were asked, the answer window has closed and answers are missing.'),
+             'options': [
+                 {'value': 'yes', 'label': _('Overdue'), 'tone': 'rose',
+                  'domain': rules['late']},
+                 {'value': 'no', 'label': _('Nothing overdue'), 'tone': 'green',
+                  'domain': ~rules['late']},
+             ]},
+            {'key': 'round', 'label': _('Review round'), 'icon': 'repeat',
+             'group': 'contract', 'type': 'choice',
+             'requires': ['pb_probation_review_ids'],
+             'options': [
+                 {'value': 'first', 'label': _('First round'), 'tone': 'slate',
+                  'domain': rules['first']},
+                 {'value': 'later', 'label': _('Second round or later'), 'tone': 'amber',
+                  'domain': rules['later']},
+             ]},
+            {'key': 'trial', 'label': _('Trial status'), 'icon': 'hourglass',
+             'group': 'contract', 'type': 'selection', 'path': 'pb_probation_state'},
+            {'key': 'country', 'label': _('Country'), 'icon': 'globe',
+             'group': 'people', 'type': 'many2one', 'path': 'country_id',
+             'none_label': _('Not recorded')},
+            {'key': 'manager', 'label': _('Manager'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'parent_id',
+             'none_label': _('Nobody named')},
+            {'key': 'job', 'label': _('Job position'), 'icon': 'briefcase',
+             'group': 'work', 'type': 'many2one', 'path': 'job_id',
+             'none_label': _('No job position')},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'company_id'},
+            {'key': 'joined', 'label': _('Joined'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'first_contract_date',
+             'presets': 'past', 'none_label': _('No start date')},
+        ]
+
+    def _pbf_builtin_views(self):
+        glance = self._pr_glance_filters()
+        return [
+            {'key': 'all', 'label': _('All in trial'), 'icon': 'hourglass', 'filters': {}},
+            {'key': 'ending', 'label': _('Ending within 7 days'),
+             'filters': glance['urgent']},
+            {'key': 'verdict', 'label': _('Waiting on a decision'),
+             'filters': glance['verdicts']},
+            {'key': 'late', 'label': _('Answers overdue'), 'filters': glance['late']},
+            {'key': 'extended', 'label': _('Extended'), 'filters': {'trial': ['extended']}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        if not self._pr_may_list():
+            # the board shows its own "looked after by the HR team" panel
+            return {'refused': _("Trial periods are looked after by the HR team.")}
+        return super().pbf_layout()
+
+    @api.model
+    def get_board_head(self):
+        """The numbers line, the switch notice and the flags, counted over
+        EVERYBODY in a trial period. The cards come from `get_board_page`."""
+        if not self._pr_may_list():
+            return {'allowed': False, 'can_write': False, 'kpis': {},
+                    'auto_on': False, 'total': 0, 'glance_filters': {},
+                    'min_nominees': MIN_NOMINEES, 'max_nominees': MAX_NOMINEES}
+        Rec = self._pbf_records()
+        rules = self._pr_rules()
+        base = Domain(self._pbf_base_domain())
+
+        def count(dom):
+            return self._safe(lambda: Rec.search_count(base & Domain(dom)))
+
+        total = self._safe(lambda: Rec.search_count(base))
+        kpis = {
+            'in_probation': total,
+            'running': count(rules['running']),
+            'verdicts': count(rules['review']['verdict']),
+            'overdue_feedback': count(rules['late']),
+            'urgent': count(Domain('trial_date_end', '<=', rules['week'])),
+        }
+        return {
+            'allowed': True,
+            'can_write': self._can_write(),
+            'auto_on': flag(self.env, P_AUTO_TRIGGER),
+            'kpis': kpis,
+            'total': total,
+            'glance_filters': self._pr_glance_filters(rules),
+            'min_nominees': MIN_NOMINEES,
+            'max_nominees': MAX_NOMINEES,
+        }
+
+    @api.model
+    def get_board_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=PAGE_SIZE):
+        """One page of cards for the panel's filters, plus — on the first
+        page — the five step counts for those same filters (ruling R1)."""
+        if not self._pr_may_list():
+            return {'rows': [], 'total': 0, 'offset': 0, 'steps': {}}
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        Rec = self._pbf_records()
+        spec = self._pbf_clean_spec()
+        domain = self.pbf_domain(filters or {}, search, spec=spec)
+        found = Rec.search(domain, order=self.pbf_order(sort) or 'name, id',
+                           offset=offset, limit=limit)
+        today = date.today()
+        rows = []
+        # Read as the reader, exactly as the old board read its cards.
+        for person in self.env['hr.employee'].browse(found.ids):
+            try:
+                rows.append(self._row(person, today))
+            except Exception:           # noqa: BLE001 — one bad card never blanks the board
+                _logger.exception('Probation row for employee %s', person.id)
+        out = {'rows': rows, 'total': Rec.search_count(domain), 'offset': offset}
+        if not offset:
+            out['steps'] = self._pr_step_counts(filters or {}, search, spec)
+        return out
+
+    @api.model
+    def _pr_step_counts(self, filters, search, spec):
+        """{step: {n, flag counts}} for the panel's filters minus the step."""
+        Rec = self._pbf_records()
+        rules = self._pr_rules()
+        dom = self.pbf_domain(filters, search, skip='stage', spec=spec)
+        out = {}
+        for key, step_dom in rules['steps'].items():
+            at = dom & step_dom
+            out[key] = {
+                'n': self._safe(lambda at=at: Rec.search_count(at)),
+                # the strip's flag: whose answers are late (only ever at
+                # "Gather perspectives"; everybody at the sign-off step is
+                # waiting for a sign-off, so that flag is the count itself)
+                'late': self._safe(lambda at=at: Rec.search_count(
+                    at & rules['late'])) if key == 'answers' else 0,
+            }
+        return out
 
     # ------------------------------------------------------------ one person
     @api.model

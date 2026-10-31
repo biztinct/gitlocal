@@ -23,6 +23,11 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+/** Cards per page; "Show N more" loads the next one. */
+const PAGE = 60;
 
 /** How a clearance reads as a light. */
 const CLEARANCE_CLS = {
@@ -42,6 +47,7 @@ const CLEARANCE_WORD = {
 
 export class PbExitsBoard extends Component {
     static template = "pb_offboarding.PbExitsBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -54,21 +60,16 @@ export class PbExitsBoard extends Component {
             allowed: true,
             canWrite: false,
             kpis: {},
-            rows: [],
-            countries: [],
-            departments: [],
-            months: [],
+            total: 0,               // everybody leaving
+            glanceFilters: {},      // what each figure means as a filter
             depts: [],
-            capped: false,
 
-            // filters
-            q: "",
-            country: "all",
-            dept: "all",
-            month: "all",
-            blockedOnly: false,
-            focus: "",      // the figure on the numbers line now filtering
-            step: "",       // the step now filtering
+            // the page the filter panel produced (FILTER wave 2)
+            rows: [],
+            rowsTotal: 0,
+            listLoaded: false,
+            loadingMore: false,
+            stepCounts: {},
 
             // the open leaver
             drawer: null,
@@ -80,25 +81,32 @@ export class PbExitsBoard extends Component {
             kt: null,
         });
 
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this board loads one page of cards for
+        // kit.query, counted and filtered on the server (no 300-row cap).
+        this.kit = useFilterKit({
+            model: "pb.exits",
+            noun: _t("people leaving"),
+            onChange: () => this.loadPage(),
+        });
         onWillStart(async () => { await this.load(); });
     }
 
     ic(n, s = 16) { return ic(n, s); }
 
     // ------------------------------------------------------------------ read
+    /** The numbers line and the flags — counted over everybody leaving,
+     *  whatever is filtered. */
     async load() {
         try {
-            const d = await this.orm.call("pb.exits", "get_board", []);
+            const d = await this.orm.call("pb.exits", "get_board_head", []);
             Object.assign(this.state, {
                 allowed: d.allowed,
                 canWrite: d.can_write,
                 kpis: d.kpis || {},
-                rows: d.rows || [],
-                countries: d.countries || [],
-                departments: d.departments || [],
-                months: d.months || [],
+                total: d.total || 0,
+                glanceFilters: d.glance_filters || {},
                 depts: d.depts || [],
-                capped: !!d.capped,
                 loaded: true,
             });
         } catch (e) {
@@ -109,43 +117,68 @@ export class PbExitsBoard extends Component {
         }
     }
 
+    /** One page of cards (and, on the first, the step counts) for the
+     *  panel's current filters. A reply for an older filter state is dropped. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.exits", "get_board_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.rowsTotal = d.total;
+            if (!more) { this.state.stepCounts = d.steps || {}; }
+            this.state.listLoaded = true;
+        } catch (e) {
+            console.warn("pb_offboarding: could not load the cards", e);
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The leavers could not be loaded. Try again in a moment."),
+                               { type: "warning" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+
+    get hasMore() { return this.state.rows.length < this.state.rowsTotal; }
+
+    get nextPage() { return Math.min(PAGE, this.state.rowsTotal - this.state.rows.length); }
+
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
     async refresh() {
-        this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (this.state.drawer) {
             await this.openExit(this.state.drawer.leaver.id);
         }
     }
 
-    // --------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.country !== "all" && r.country !== this.state.country) {
-                return false;
-            }
-            if (this.state.dept !== "all" && r.dept !== this.state.dept) {
-                return false;
-            }
-            if (this.state.month !== "all" && r.month !== this.state.month) {
-                return false;
-            }
-            if (this.state.blockedOnly && !this.isBlocked(r)) {
-                return false;
-            }
-            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
-                return false;
-            }
-            if (this.state.step && this.stepOf(r) !== this.state.step) {
-                return false;
-            }
-            if (!q) { return true; }
-            return (r.employee + " " + (r.job || "") + " " + (r.dept || ""))
-                .toLowerCase().includes(q);
-        });
+    /** Back to everybody leaving (the first view). */
+    showAll() { this.kit.toggleFilters({}); }
+
+    /** Why the list is empty, in one translatable sentence (R34). */
+    get emptyText() {
+        if (this.kit.chips.length) {
+            return this.state.total === 1
+                ? _t("There is 1 person leaving, but they do not fit every filter you have set. Remove a filter above, or start again from everybody.")
+                : _t("There are %s people leaving, but none of them fits every filter you have set. Remove a filter above, or start again from everybody.",
+                     this.fmtInt(this.state.total));
+        }
+        if (this.kit.search) {
+            return _t("Nobody matches “%s”. Check the spelling, or search by job or team.", this.kit.search);
+        }
+        return _t("Nothing could be listed just now. Show everybody to start again.");
     }
 
-    /** "Something is holding this exit up" — the one filter that matters. */
+    /** "Something is holding this exit up" — the card's amber edge. */
     isBlocked(row) {
         if (row.ff.closed) { return false; }
         return !!(row.assets
@@ -154,56 +187,45 @@ export class PbExitsBoard extends Component {
             || row.kt_open);
     }
 
-    get hasFilters() {
-        return this.state.q || this.state.country !== "all"
-            || this.state.dept !== "all" || this.state.month !== "all"
-            || this.state.blockedOnly || this.state.focus || this.state.step;
-    }
-
-    clearFilters() {
-        Object.assign(this.state, {
-            q: "", country: "all", dept: "all", month: "all",
-            blockedOnly: false, focus: "", step: "",
-        });
-    }
-
     // ----------------------------------------------------- the quiet board
     //
     // One slim line of numbers instead of a row of tiles, and the four steps
-    // a leaver moves through. A leaver is at EXACTLY ONE step (stepOf), so
-    // the step counts add up to the board. Pressing a lit figure or step
-    // again clears it.
-    matchesFocus(r, key) {
-        const days = r.lwd ? r.days : null;
-        if (key === "leaving") { return days !== null && days >= 0 && days <= 31; }
-        if (key === "gone") { return days !== null && days < 0; }
-        if (key === "blocked") { return !!(r.ff.id && !r.ff.ready && !r.ff.closed); }
-        if (key === "clearances") { return r.clearances.some((c) => c.state === "pending"); }
-        if (key === "assets") { return !!r.assets; }
-        if (key === "to_check") { return !!r.ff.to_check; }
-        return true;
+    // a leaver moves through. A leaver is at EXACTLY ONE step, so the step
+    // counts add up to what the panel lists. A figure that filters ticks
+    // exactly its filters in the panel (and lights the view tab with the
+    // same filters); pressing it again shows everyone.
+    glanceRun(key) {
+        const f = this.state.glanceFilters[key];
+        return f ? () => this.kit.toggleFilters(f) : null;
     }
 
-    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.state.glanceFilters || {})) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
+    }
 
     get glance() {
         const k = this.state.kpis || {};
         const tone = (v, t) => (v ? t : "");
         return [
             { key: "leaving", n: k.leaving || 0, label: _t("Leaving this month"), tone: "",
-              run: () => this.toggleFocus("leaving") },
+              run: this.glanceRun("leaving") },
             { key: "gone", n: k.gone || 0, label: _t("Last day has passed"), tone: "",
-              run: () => this.toggleFocus("gone") },
+              run: this.glanceRun("gone") },
             { key: "blocked", n: k.blocked || 0, label: _t("Settlements held up"), tone: tone(k.blocked, "rose"),
-              run: () => this.toggleFocus("blocked") },
+              run: this.glanceRun("blocked") },
             { key: "clearances", n: k.clearances || 0, label: _t("Clearances still open"), tone: tone(k.clearances, "amber"),
-              run: () => this.toggleFocus("clearances") },
+              run: this.glanceRun("clearances") },
             { key: "assets", n: k.assets || 0, label: _t("Items not back yet"), tone: tone(k.assets, "amber"),
-              run: () => this.toggleFocus("assets") },
+              run: this.glanceRun("assets") },
             // LEARN REFRESH step 6 — worked out, waiting for a person to check
             // it and send it for approval
             { key: "to_check", n: k.to_check || 0, label: _t("Settlements to check"), tone: tone(k.to_check, "amber"),
-              run: () => this.toggleFocus("to_check") },
+              run: this.glanceRun("to_check") },
         ];
     }
 
@@ -224,11 +246,14 @@ export class PbExitsBoard extends Component {
         ];
     }
 
+    /** The four steps, counted on the server for the panel's filters
+     *  (everything except the step itself), so they follow the filters. */
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.stepOf(r) === st.key);
-            const waiting = at.filter((r) => r.clearances.some((c) => c.state === "pending")).length;
+            const c = counts[st.key] || {};
+            const at = { length: c.n || 0 };
+            const waiting = c.waiting || 0;
             return {
                 ...st,
                 n: String(i + 1).padStart(2, "0"),
@@ -236,12 +261,21 @@ export class PbExitsBoard extends Component {
                 countLabel: at.length === 1 ? _t("1 person") : _t("%s people", at.length),
                 flag: !waiting ? "" : waiting === 1 ? _t("1 waiting for a sign-off") : _t("%s waiting for a sign-off", waiting),
                 flagTone: "",
-                on: this.state.step === st.key,
+                on: this.stepIsOn(st.key),
             };
         });
     }
 
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
+    stepIsOn(key) {
+        const v = this.kit.values("step");
+        return v.length === 1 && String(v[0]) === key;
+    }
+
+    /** A step narrows the panel's list to that step, keeping every other
+     *  filter; pressing the lit step again lifts it. */
+    pickStep(key) {
+        if (this.stepIsOn(key)) { this.kit.clear("step"); } else { this.kit.only("step", key); }
+    }
 
     stepMeta(r) {
         const defs = this.stepDefs;
@@ -252,26 +286,6 @@ export class PbExitsBoard extends Component {
             marks: defs.map((st, j) => (j < index ? "done" : j === index ? "here" : "")),
         };
     }
-
-    get showingLine() {
-        const all = this.state.rows.length;
-        if (!this.hasFilters) {
-            return { all: true, text: !all ? _t("Showing nobody leaving yet")
-                : all === 1 ? _t("Showing all 1 person leaving · press a step or a number to narrow it")
-                    : _t("Showing all %s people leaving · press a step or a number to narrow it", all) };
-        }
-        const shown = this.visibleRows.length;
-        const st = this.stepDefs.find((x) => x.key === this.state.step);
-        return { all: false, text: st
-            ? _t("Showing %s of %s people leaving at %s", shown, all, st.title)
-            : _t("Showing %s of %s people leaving", shown, all) };
-    }
-
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setCountry(id) { this.state.country = this.state.country === id ? "all" : id; }
-    setDept(id) { this.state.dept = this.state.dept === id ? "all" : id; }
-    setMonth(id) { this.state.month = this.state.month === id ? "all" : id; }
-    toggleBlocked() { this.state.blockedOnly = !this.state.blockedOnly; }
 
     // ------------------------------------------------------------ formatting
     clearanceCls(state) { return CLEARANCE_CLS[state] || "missing"; }

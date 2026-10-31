@@ -15,7 +15,6 @@ msgstr ""
 # ===================================================================
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
-
 #. module: pb_contract_lifecycle
 #. odoo-javascript
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
@@ -72,7 +71,9 @@ msgstr "Gia hạn chờ đồng ý, hoặc đánh giá đang chạy"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Being agreed"
 msgstr "Đang chờ đồng ý"
 
@@ -84,7 +85,9 @@ msgstr "Đang được đánh giá"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Decided"
 msgstr "Đã quyết định"
 
@@ -96,7 +99,9 @@ msgstr "Đã quyết định, hoặc đã kết thúc mà chưa quyết định"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Decision needed"
 msgstr "Cần quyết định"
 
@@ -108,7 +113,9 @@ msgstr "Kết thúc, gia hạn hoặc chuyển thành chính thức"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Ending within %s days"
 msgstr "Kết thúc trong vòng %s ngày"
 
@@ -126,13 +133,17 @@ msgstr "Chưa đưa ra quyết định nào"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Nobody has decided"
 msgstr "Chưa ai quyết định"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Running"
 msgstr "Đang hiệu lực"
 
@@ -152,7 +163,8 @@ msgstr "Đang hiển thị %s trên %s hợp đồng ở bước %s"
 #. odoo-javascript
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
 msgid "Showing all %s contracts · press a step or a number to narrow it"
-msgstr "Đang hiển thị tất cả %s hợp đồng · bấm một bước hoặc một con số để thu hẹp"
+msgstr ""
+"Đang hiển thị tất cả %s hợp đồng · bấm một bước hoặc một con số để thu hẹp"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
@@ -174,7 +186,9 @@ msgstr "Bước %s / %s"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Waiting to be agreed"
 msgstr "Đang chờ đồng ý"
 
@@ -187,11 +201,9 @@ msgstr "Hiện tất cả"
 # ===================================================================
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
-
 # ===================================================================
 #  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
 # ===================================================================
-
 #. module: pb_contract_lifecycle
 #. odoo-javascript
 #: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
@@ -289,3 +301,348 @@ msgstr "Con người"
 #: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
 msgid "All contracts"
 msgstr "Tất cả hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: model:ir.model.fields,field_description:pb_contract_lifecycle.field_pb_contract_extension__company_id
+#: model:ir.model.fields,field_description:pb_contract_lifecycle.field_pb_contract_review__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_exit_clearance__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_kt_item__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_notice_policy__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_resignation__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_probation_policy__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_probation_review__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_training_item__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_training_status__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_training_track__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_verdict_proposal__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Contract category"
+msgstr "Loại hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/contract_extension_approval.py:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Contract ends"
+msgstr "Hợp đồng kết thúc"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Contract status"
+msgstr "Trạng thái hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Contractor"
+msgstr "Nhà thầu"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Contracts are looked after by the HR team."
+msgstr "Hợp đồng do bộ phận nhân sự phụ trách."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Contracts somebody has to act on before the date."
+msgstr "Những hợp đồng cần có người xử lý trước ngày kết thúc."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Decision"
+msgstr "Quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Employment type"
+msgstr "Loại hình làm việc"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Ended with nothing decided"
+msgstr "Đã kết thúc mà chưa quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Ending latest first"
+msgstr "Kết thúc muộn nhất trước"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Ending soonest first"
+msgstr "Sắp kết thúc trước"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Ends within %s days"
+msgstr "Kết thúc trong vòng %s ngày"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Evaluation running"
+msgstr "Đang đánh giá"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Extension requested"
+msgstr "Đã đề nghị gia hạn"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Freelancer"
+msgstr "Cộng tác viên tự do"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Intern"
+msgstr "Thực tập sinh"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Intern or contractor with no end date"
+msgstr "Thực tập sinh hoặc nhà thầu không có ngày kết thúc"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Interns and contractors"
+msgstr "Thực tập sinh và nhà thầu"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Name, A to Z"
+msgstr "Tên, từ A đến Z"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Needs somebody"
+msgstr "Cần người xử lý"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "No category"
+msgstr "Chưa có loại"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "No contract matches these filters"
+msgstr "Không có hợp đồng nào khớp với các bộ lọc này"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "No end date"
+msgstr "Không có ngày kết thúc"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "No start date"
+msgstr "Không có ngày bắt đầu"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "No team"
+msgstr "Chưa có nhóm"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid ""
+"Nobody matches “%s”. Check the spelling, or search by job, team or contract."
+msgstr ""
+"Không có ai khớp với “%s”. Hãy kiểm tra chính tả, hoặc tìm theo công việc, "
+"nhóm hay hợp đồng."
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Nobody named"
+msgstr "Chưa chỉ định ai"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Not raised yet"
+msgstr "Chưa nêu"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "Nothing could be listed just now. Show all contracts to start again."
+msgstr ""
+"Hiện chưa liệt kê được gì. Hãy hiển thị tất cả hợp đồng để bắt đầu lại."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Nothing needed"
+msgstr "Không cần làm gì"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Opened, nobody asked yet"
+msgstr "Đã mở, chưa hỏi ai"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Permanent"
+msgstr "Chính thức"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Show all contracts"
+msgstr "Hiển thị tất cả hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Started"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Started most recently"
+msgstr "Bắt đầu gần đây nhất"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Student"
+msgstr "Sinh viên"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "The contracts could not be loaded. Try again in a moment."
+msgstr "Không tải được danh sách hợp đồng. Vui lòng thử lại sau giây lát."
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid ""
+"There are %s contracts on this board, but none of them fits every filter you"
+" have set. Remove a filter above, or start again from all of them."
+msgstr ""
+"Bảng có %s hợp đồng, nhưng không hợp đồng nào khớp với tất cả bộ lọc bạn đã "
+"chọn. Hãy bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại với tất cả."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Trainee"
+msgstr "Học việc"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Where it stands"
+msgstr "Đang ở bước nào"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Where the decision about this contract stands."
+msgstr "Quyết định về hợp đồng này đang ở bước nào."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Worker"
+msgstr "Công nhân"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "contracts"
+msgstr "hợp đồng"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "of"
+msgstr "trên"

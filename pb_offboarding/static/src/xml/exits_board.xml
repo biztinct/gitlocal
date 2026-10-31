@@ -70,12 +70,14 @@
           <div data-coach="ex2-numbers">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.focus"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
           </div>
 
           <!-- ====================== the four steps ======================
-               A leaver is at exactly ONE step (stepOf), so the counts add up. -->
+               A leaver is at exactly ONE step, so the counts add up to what
+               the panel lists. Counted on the server for the panel's filters
+               (ruling R1); pressing one narrows to that step. -->
           <div data-coach="ex2-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
@@ -83,60 +85,8 @@
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
           </div>
-          <div class="pbim-showing">
-            <span t-esc="showingLine.text"/>
-            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
-          </div>
-
-          <!-- ======================== filters ======================== -->
-          <div class="pbim-panel exb-filters" t-if="state.rows.length">
-            <div class="exb-filter-row">
-              <div class="exb-search">
-                <t t-out="ic('search',15)"/>
-                <input type="text" t-att-value="state.q" t-on-input="onSearch"
-                       placeholder="Search by name, job or team…"/>
-              </div>
-              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm"
-                      t-on-click="clearFilters">
-                <t t-out="ic('x',14)"/> Clear
-              </button>
-            </div>
-            <div class="exb-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.months" t-as="mo" t-key="mo.id"
-                        t-attf-class="pbim-fchip {{ state.month === mo.id ? 'on' : '' }}"
-                        t-on-click="() => this.setMonth(mo.id)">
-                  <span t-esc="monthLabel(mo.id)"/>
-                  <span class="c" t-esc="mo.count"/>
-                </button>
-              </div>
-              <div class="pbim-chips">
-                <button t-foreach="state.departments" t-as="dp" t-key="dp.id"
-                        t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}"
-                        t-on-click="() => this.setDept(dp.id)">
-                  <span t-esc="dp.label"/>
-                  <span class="c" t-esc="dp.count"/>
-                </button>
-              </div>
-            </div>
-            <div class="exb-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.countries" t-as="ct" t-key="ct.id"
-                        t-attf-class="pbim-fchip {{ state.country === ct.id ? 'on' : '' }}"
-                        t-on-click="() => this.setCountry(ct.id)">
-                  <span t-esc="ct.label"/>
-                  <span class="c" t-esc="ct.count"/>
-                </button>
-                <button t-attf-class="pbim-fchip {{ state.blockedOnly ? 'on' : '' }}"
-                        t-on-click="toggleBlocked">
-                  <t t-out="ic('alert',13)"/> Something is holding it up
-                </button>
-              </div>
-            </div>
-          </div>
-
           <!-- ================== nothing here yet ================== -->
-          <div t-if="!state.rows.length" class="pbim-panel exb-empty" data-coach="ex2-list">
+          <div t-if="!state.total" class="pbim-panel exb-empty" data-coach="ex2-list">
             <div class="exb-empty-ic"><t t-out="ic('powerOff',30)"/></div>
             <h2>Nobody is leaving just now</h2>
             <p>When a leaving checklist opens — because HR approved a
@@ -146,29 +96,16 @@
                settlement can be closed.</p>
           </div>
 
-          <!-- ============ the filters match nobody ============
-               A board that answers a filter with a blank page is a dead end:
-               the reader cannot tell "nobody matches" from "it is still
-               loading" from "it broke". Say which it is, and offer the way
-               back in the same breath. The whole sentence is ONE expression,
-               because OWL collapses the newline between two t-esc nodes and
-               the page then reads "There are2 people leaving" (R34). -->
-          <div t-elif="!visibleRows.length" class="pbim-panel exb-empty">
-            <div class="exb-empty-ic"><t t-out="ic('search',30)"/></div>
-            <h2>Nobody matches that</h2>
-            <p>
-              <t t-esc="state.rows.length === 1
-                        ? 'There is 1 person on this board, but they do not fit the filters you have set.'
-                        : 'There are ' + state.rows.length + ' people on this board, but none of them fits the filters you have set.'"/>
-            </p>
-            <button class="pbim-btn primary" t-on-click="clearFilters">
-              <t t-out="ic('x',15)"/> Clear the filters
-            </button>
-          </div>
+          <!-- ============ the shared filter panel (FILTER wave 2) ============
+               Views, search, the left panel with a count beside every value,
+               the applied filters as chips. The cards are its slot, a page at
+               a time from the server. -->
+          <PbFilterLayout t-else="" kit="kit" coach="'ex2-filters'"
+                          searchPlaceholder="'Search by name, job or team…'">
 
           <!-- ======================= the people ======================= -->
-          <div t-else="" class="exb-grid" data-coach="ex2-list">
-            <div t-foreach="visibleRows" t-as="row" t-key="row.id"
+          <div t-if="state.rows.length" class="exb-grid" data-coach="ex2-list">
+            <div t-foreach="state.rows" t-as="row" t-key="row.id"
                  class="pbim-panel exb-card"
                  t-att-class="{ 'is-blocked': isBlocked(row), 'is-done': row.ff.closed }">
 
@@ -277,10 +214,35 @@
             </div>
           </div>
 
-          <p t-if="state.capped" class="exb-capped">
-            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
-            a filter to see the rest.
-          </p>
+          <!-- ============ still loading the first page ============ -->
+          <div t-elif="!state.listLoaded" class="exb-grid exb-skeleton" aria-label="Loading the leavers">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbim-panel exb-card exb-card--ghost"/>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". Say which it is, and offer the way
+               back in the same breath. Each sentence is ONE expression,
+               because OWL collapses the newline between two t-esc nodes (R34). -->
+          <div t-else="" class="pbim-panel exb-empty exb-empty--filter">
+            <div class="exb-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nobody matches these filters</h2>
+            <p t-esc="emptyText"/>
+            <button class="pbim-btn primary" t-on-click="showAll">
+              <t t-out="ic('x',15)"/> Show everybody leaving
+            </button>
+          </div>
+
+          <!-- ============ how many, and the next page ============ -->
+          <div t-if="state.rows.length" class="exb-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.rowsTotal)"/>
+            <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
 
         </t>
       </div>

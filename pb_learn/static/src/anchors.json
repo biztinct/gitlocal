@@ -1449,6 +1449,12 @@
       "file": "pb_offboarding/static/src/xml/exits_board.xml",
       "desc": "Working their notice → Signing off → Ready to settle → Settled."
     },
+    "ex2-filters": {
+      "screen": "exits",
+      "file": "pb_offboarding/static/src/xml/exits_board.xml",
+      "desc": "The shared filter panel: view tabs (All leaving, Leaving this month, Last day has passed, Clearances still open, Ready to settle), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The numbers and the steps above still filter.",
+      "reserved": true
+    },
     "ex2-list": {
       "screen": "exits",
       "file": "pb_offboarding/static/src/xml/exits_board.xml",
@@ -1507,6 +1513,12 @@
       "screen": "probation",
       "file": "pb_probation/static/src/xml/probation_board.xml",
       "desc": "Choose peers → … → Share the outcome."
+    },
+    "pr-filters": {
+      "screen": "probation",
+      "file": "pb_probation/static/src/xml/probation_board.xml",
+      "desc": "The shared filter panel: view tabs (All in trial, Ending within 7 days, Waiting on a decision, Answers overdue, Extended), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The numbers and the steps above still filter.",
+      "reserved": true
     },
     "pr-list": {
       "screen": "probation",
@@ -1576,6 +1588,12 @@
       "screen": "contractends",
       "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
       "desc": "Running → Decision needed → Being agreed → Decided."
+    },
+    "cl-filters": {
+      "screen": "contractends",
+      "file": "pb_contract_lifecycle/static/src/xml/contractlife_board.xml",
+      "desc": "The shared filter panel: view tabs (All, Ending within the decision window, Nobody has decided, Waiting to be agreed, Interns and contractors), the Filters button that opens the left panel with a count beside every value, the search, and the applied filters as chips. The numbers and the steps above still filter.",
+      "reserved": true
     },
     "cl-list": {
       "screen": "contractends",

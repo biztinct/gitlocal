@@ -21,22 +21,27 @@ confirm dialog, at the moment somebody is about to agree to it.
 """
 
 import logging
-from datetime import date
+from datetime import date, timedelta
 
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
+from odoo.fields import Domain
 
 from .contract_common import (
     DECISION_LABEL, EMPLOYEE_TYPE_LABEL, GROUP_ADMIN, GROUP_MANAGER,
     GROUP_USER, NON_PERMANENT_TYPES, P_AUTO_TRIGGER, P_EXTENSION_MONTHS,
-    P_LEAD_DAYS, REVIEW_STATE_LABEL, flag, initials, number,
+    P_LEAD_DAYS, REVIEW_OPEN, REVIEW_STATE_LABEL, flag, initials, number,
 )
 
 _logger = logging.getLogger(__name__)
 
 #: How many rows the SCREEN reads. Right for a screen and wrong for a job —
-#: the nightly work passes no cap at all (R76).
+#: the nightly work passes no cap at all (R76). Only the old `get_board`
+#: payload still uses it; the board itself now pages (FILTER W2).
 BOARD_LIMIT = 300
+
+#: Cards per page on the filtered board ("Show N more" loads the next page).
+PAGE_SIZE = 60
 
 #: How red the days-left number goes: half the lead time, or a fortnight,
 #: whichever is smaller.
@@ -46,6 +51,7 @@ def _urgent_days(lead):
 
 class PbContractLife(models.AbstractModel):
     _name = 'pb.contractlife'
+    _inherit = ['pb.filter.mixin']
     _description = 'Payobook Contracts & interns cockpit data'
 
     # ------------------------------------------------------------------ gates
@@ -251,6 +257,343 @@ class PbContractLife(models.AbstractModel):
             'evaluation_id': (review.review_id.id
                               if (review and review.review_id) else 0),
         }
+
+    # =====================================================================
+    #  THE FILTER PANEL (pb_filter_kit, FILTER wave 2)
+    #
+    #  The board used to read two searches merged into 300 rows, count its
+    #  chips from those rows and filter them in the browser, so a chip could
+    #  say 40 while the board behind it held 11 and the 301st contract was
+    #  simply not there. Now every count is a server count over every
+    #  contract the board is about, and the cards come a page at a time.
+    #  `get_board` above still answers the old payload for anything that
+    #  reads it (ruling R4).
+    # =====================================================================
+    @api.model
+    def _cl_may_list(self):
+        """May this reader see the cards at all? The board's own tier AND
+        read access to contracts, because the cards are read as the reader."""
+        if not self._can_read():
+            return False
+        try:
+            return bool(self.env['ir.model.access'].check(
+                'hr.contract', 'read', raise_exception=False))
+        except Exception:               # noqa: BLE001
+            return False
+
+    def _pbf_model(self):
+        return 'hr.contract'
+
+    def _pbf_screen(self):
+        return 'contractends'
+
+    def _pbf_records(self):
+        """SUDO for exactly the readers this board lets in, and nobody else.
+
+        The board has always read the employment type and every decision
+        under sudo (R56: `employee_type` sits behind hr.group_hr_user and the
+        decisions behind their own rules), so its counts must see what its
+        cards show. The company restriction travels in the base domain.
+        """
+        Contract = self.env['hr.contract']
+        return Contract.sudo() if self._cl_may_list() else Contract
+
+    def _pbf_base_domain(self):
+        """Everybody with an end date, plus every intern and contractor —
+        the two searches the board always made, as ONE domain (no cap)."""
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        return ['&', '&',
+                ('company_id', 'in', co_ids),
+                ('state', 'in', ['draft', 'open']),
+                '|', ('date_end', '!=', False),
+                '&', ('employee_id.active', '=', True),
+                ('employee_id.employee_type', 'in', list(NON_PERMANENT_TYPES))]
+
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'employee_id.job_title',
+                'employee_id.department_id.name', 'name']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'ends', 'label': _('Ending soonest first'),
+             'order': 'date_end asc nulls last, id asc'},
+            {'key': 'ends_late', 'label': _('Ending latest first'),
+             'order': 'date_end desc nulls last, id desc'},
+            {'key': 'name', 'label': _('Name, A to Z'),
+             'order': 'employee_id, id'},
+            {'key': 'started', 'label': _('Started most recently'),
+             'order': 'date_start desc nulls last, id desc'},
+        ]
+
+    @api.model
+    def _cl_rules(self):
+        """Every fact on a card, as a domain on `hr.contract`.
+
+        A contract's decision is its LIVE review (at most one: a second
+        trigger adds nothing, R30) or, when none is live, the latest one —
+        the same rule `_row` reads. All literal domains: nothing here needs
+        Python per row, so every count stays one SQL query.
+        """
+        today = self._pbf_today()
+        lead = max(1, number(self.env, P_LEAD_DAYS, 60))
+        urgent = _urgent_days(lead)
+        ds = fields.Date.to_string
+
+        def rev(*states):
+            return Domain('pb_review_ids', 'any', [('state', 'in', list(states))])
+
+        no_live = Domain('pb_review_ids', 'not any', [('state', 'in', list(REVIEW_OPEN))])
+        review = {
+            'none': Domain('pb_review_ids', '=', False),
+            'upcoming': rev('upcoming'),
+            'decide': rev('decide'),
+            'extension': rev('extension'),
+            'conversion': rev('conversion'),
+            'done': no_live & rev('done'),
+            'lapsed': no_live & rev('lapsed') & ~rev('done'),
+        }
+        # `needs_decision` and `urgent` on a card (`_row`), and "needs
+        # somebody" on the old chip row (contractlife_board.js needsAttention)
+        needs = (Domain('date_end', '<=', ds(today + timedelta(days=lead)))
+                 & (review['none'] | rev('upcoming', 'decide')))
+        soon = Domain('date_end', '<=', ds(today + timedelta(days=urgent)))
+        undated = (Domain('date_end', '=', False)
+                   & Domain('employee_id.employee_type', 'in', list(NON_PERMANENT_TYPES)))
+        attention = needs | soon | review['lapsed'] | undated
+        return {
+            'today': today, 'lead': lead, 'urgent': urgent,
+            'review': review, 'needs': needs, 'soon': soon,
+            'undated': undated, 'attention': attention,
+            # the four steps; a contract is at exactly one of them
+            'steps': {
+                'running': review['none'] | review['upcoming'],
+                'choose': review['decide'],
+                'agree': review['extension'] | review['conversion'],
+                'closed': review['done'] | review['lapsed'],
+            },
+            # "Ending within the lead days": today to today + lead, inclusive
+            'window': {'from': ds(today), 'to': ds(today + timedelta(days=lead))},
+        }
+
+    @api.model
+    def _cl_glance_filters(self, rules=None):
+        """What each figure on the numbers line means as a filter — the SAME
+        filters as the built-in views, so pressing one lights its tab."""
+        rules = rules or self._cl_rules()
+        return {
+            'ending': {'ends': dict(rules['window'])},
+            'undecided': {'attention': ['undecided']},
+            'waiting': {'decision': ['extension']},
+            'running': {'decision': ['conversion']},
+        }
+
+    def _pbf_spec(self):
+        rules = self._cl_rules()
+        review = rules['review']
+        types = [
+            ('employee', _('Permanent')), ('worker', _('Worker')),
+            ('student', _('Student')), ('trainee', _('Trainee')),
+            ('intern', _('Intern')), ('contractor', _('Contractor')),
+            ('freelance', _('Freelancer')),
+        ]
+        return [
+            # ---- pinned: when, has anybody decided, which team
+            {'key': 'ends', 'label': _('Contract ends'), 'icon': 'calendarClock',
+             'group': 'contract', 'type': 'date', 'path': 'date_end',
+             'presets': 'future', 'pinned': True,
+             'none_label': _('No end date')},
+            {'key': 'decision', 'label': _('Decision'), 'icon': 'scale',
+             'group': 'contract', 'type': 'choice', 'pinned': True,
+             'requires': ['pb_review_ids'],
+             'help': _('Where the decision about this contract stands.'),
+             'options': [
+                 {'value': 'none', 'label': _('Not raised yet'), 'tone': 'slate',
+                  'domain': review['none']},
+                 {'value': 'upcoming', 'label': _('Opened, nobody asked yet'),
+                  'tone': 'blue', 'domain': review['upcoming']},
+                 {'value': 'decide', 'label': _('Decision needed'), 'tone': 'rose',
+                  'domain': review['decide']},
+                 {'value': 'extension', 'label': _('Extension requested'),
+                  'tone': 'amber', 'domain': review['extension']},
+                 {'value': 'conversion', 'label': _('Evaluation running'),
+                  'tone': 'blue', 'domain': review['conversion']},
+                 {'value': 'done', 'label': _('Decided'), 'tone': 'green',
+                  'domain': review['done']},
+                 {'value': 'lapsed', 'label': _('Ended with nothing decided'),
+                  'tone': 'rose', 'domain': review['lapsed']},
+             ]},
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one',
+             'path': 'employee_id.department_id', 'pinned': True,
+             'none_label': _('No team')},
+            # ---- more filters
+            {'key': 'attention', 'label': _('Needs somebody'), 'icon': 'alert',
+             'group': 'contract', 'type': 'choice',
+             'help': _('Contracts somebody has to act on before the date.'),
+             'options': [
+                 {'value': 'undecided', 'label': _('Nobody has decided'),
+                  'tone': 'rose', 'domain': rules['needs']},
+                 {'value': 'soon', 'label': _('Ends within %s days', rules['urgent']),
+                  'tone': 'amber', 'domain': rules['soon']},
+                 {'value': 'lapsed', 'label': _('Ended with nothing decided'),
+                  'tone': 'rose', 'domain': review['lapsed']},
+                 {'value': 'undated', 'label': _('Intern or contractor with no end date'),
+                  'tone': 'amber', 'domain': rules['undated']},
+                 {'value': 'fine', 'label': _('Nothing needed'), 'tone': 'green',
+                  'domain': ~rules['attention']},
+             ]},
+            {'key': 'step', 'label': _('Where it stands'), 'icon': 'listChecks',
+             'group': 'contract', 'type': 'choice', 'requires': ['pb_review_ids'],
+             'options': [
+                 {'value': 'running', 'label': _('Running'), 'tone': 'slate',
+                  'domain': rules['steps']['running']},
+                 {'value': 'choose', 'label': _('Decision needed'), 'tone': 'rose',
+                  'domain': rules['steps']['choose']},
+                 {'value': 'agree', 'label': _('Being agreed'), 'tone': 'amber',
+                  'domain': rules['steps']['agree']},
+                 {'value': 'closed', 'label': _('Decided'), 'tone': 'green',
+                  'domain': rules['steps']['closed']},
+             ]},
+            {'key': 'kind', 'label': _('Employment type'), 'icon': 'idCard',
+             'group': 'people', 'type': 'choice',
+             'requires': ['employee_id.employee_type'],
+             'options': [{'value': k, 'label': label,
+                          'tone': 'blue' if k in NON_PERMANENT_TYPES else '',
+                          'domain': [('employee_id.employee_type', '=', k)]}
+                         for k, label in types]},
+            {'key': 'manager', 'label': _('Manager'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id.parent_id',
+             'none_label': _('Nobody named')},
+            {'key': 'status', 'label': _('Contract status'), 'icon': 'fileText',
+             'group': 'contract', 'type': 'selection', 'path': 'state'},
+            {'key': 'category', 'label': _('Contract category'), 'icon': 'file',
+             'group': 'contract', 'type': 'many2one', 'path': 'type_id',
+             'none_label': _('No category')},
+            {'key': 'starts', 'label': _('Started'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'date_start',
+             'presets': 'past', 'none_label': _('No start date')},
+        ]
+
+    def _pbf_builtin_views(self):
+        rules = self._cl_rules()
+        glance = self._cl_glance_filters(rules)
+        return [
+            {'key': 'all', 'label': _('All'), 'icon': 'fileText', 'filters': {}},
+            {'key': 'ending', 'label': _('Ending within %s days', rules['lead']),
+             'filters': glance['ending']},
+            {'key': 'undecided', 'label': _('Nobody has decided'),
+             'filters': glance['undecided']},
+            {'key': 'waiting', 'label': _('Waiting to be agreed'),
+             'filters': glance['waiting']},
+            {'key': 'temps', 'label': _('Interns and contractors'),
+             'filters': {'kind': list(NON_PERMANENT_TYPES)}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        if not self._cl_may_list():
+            # the board shows its own "looked after by the HR team" panel
+            return {'refused': _("Contracts are looked after by the HR team.")}
+        return super().pbf_layout()
+
+    @api.model
+    def get_board_head(self):
+        """The numbers line, the switch notice and the flags, counted over
+        EVERY contract the board is about. The cards come from
+        `get_board_page`, a page at a time, for the panel's filters."""
+        if not self._cl_may_list():
+            return {'allowed': False, 'can_write': False, 'kpis': {},
+                    'auto_on': False, 'would_raise': 0, 'lead_days': 60,
+                    'default_months': 12, 'total': 0, 'glance_filters': {}}
+        Rec = self._pbf_records()
+        rules = self._cl_rules()
+        base = Domain(self._pbf_base_domain())
+        co_ids = self.env.companies.ids or [self.env.company.id]
+
+        def count(dom):
+            return self._safe(lambda: Rec.search_count(base & Domain(dom)))
+
+        win = rules['window']
+        year_start = date(rules['today'].year, 1, 1)
+        kpis = {
+            'ending': count(Domain('date_end', '>=', win['from'])
+                            & Domain('date_end', '<=', win['to'])),
+            'undecided': count(rules['needs']),
+            'running': count(rules['review']['conversion']),
+            'waiting': count(rules['review']['extension']),
+            'converted': self._safe(lambda: self.env['pb.contract.review'].search_count([
+                ('company_id', 'in', co_ids),
+                ('decision', '=', 'convert'),
+                ('decided_at', '>=', str(year_start)),
+            ])),
+        }
+        return {
+            'allowed': True,
+            'can_write': self._can_write(),
+            'auto_on': flag(self.env, P_AUTO_TRIGGER),
+            'would_raise': self._safe(lambda: len(
+                self.env['pb.journey.case']._due_for_decision())),
+            'lead_days': rules['lead'],
+            'default_months': number(self.env, P_EXTENSION_MONTHS, 12),
+            'kpis': kpis,
+            'total': self._safe(lambda: Rec.search_count(base)),
+            'glance_filters': self._cl_glance_filters(rules),
+        }
+
+    @api.model
+    def get_board_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=PAGE_SIZE):
+        """One page of cards for the panel's filters, plus — on the first
+        page — the four step counts for those same filters (ruling R1)."""
+        if not self._cl_may_list():
+            return {'rows': [], 'total': 0, 'offset': 0, 'steps': {}}
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or PAGE_SIZE), 200))
+        except (TypeError, ValueError):
+            offset, limit = 0, PAGE_SIZE
+        Rec = self._pbf_records()
+        spec = self._pbf_clean_spec()
+        domain = self.pbf_domain(filters or {}, search, spec=spec)
+        found = Rec.search(domain, order=self.pbf_order(sort) or 'date_end, id',
+                           offset=offset, limit=limit)
+        today = date.today()
+        lead = max(1, number(self.env, P_LEAD_DAYS, 60))
+        rows = []
+        # Read as the reader, exactly as the old board read its cards; only
+        # the search above needed sudo (the employment type is HR-gated).
+        for contract in self.env['hr.contract'].browse(found.ids):
+            try:
+                rows.append(self._row(contract, today, lead))
+            except Exception:           # noqa: BLE001 — one bad card never blanks the board
+                _logger.warning('pb_contract_lifecycle: row for contract %s',
+                                contract.id, exc_info=True)
+        out = {'rows': rows, 'total': Rec.search_count(domain), 'offset': offset}
+        if not offset:
+            out['steps'] = self._cl_step_counts(filters or {}, search, spec)
+        return out
+
+    @api.model
+    def _cl_step_counts(self, filters, search, spec):
+        """{step: {n, flag counts}} for the panel's filters minus the step."""
+        Rec = self._pbf_records()
+        rules = self._cl_rules()
+        dom = self.pbf_domain(filters, search, skip='step', spec=spec)
+        out = {}
+        for key, step_dom in rules['steps'].items():
+            at = dom & step_dom
+            row = {'n': self._safe(lambda at=at: Rec.search_count(at))}
+            if key == 'agree':
+                row['signoff'] = self._safe(lambda at=at: Rec.search_count(
+                    at & rules['review']['extension']))
+            elif key == 'closed':
+                row['lapsed'] = self._safe(lambda at=at: Rec.search_count(
+                    at & rules['review']['lapsed']))
+            else:
+                row['undecided'] = self._safe(lambda at=at: Rec.search_count(
+                    at & rules['needs']))
+            out[key] = row
+        return out
 
     # ------------------------------------------------------- one contract
     @api.model
