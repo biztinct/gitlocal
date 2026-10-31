@@ -67,3 +67,4 @@ from . import shared_calendar
 from . import calendar_notifications
 from . import google_calendar_scopes
 from . import calendar_connection
+from . import filters_w3   # FILTER W3 — the four Hiring lists on the shared filter panel; LAST: it adds the mixin

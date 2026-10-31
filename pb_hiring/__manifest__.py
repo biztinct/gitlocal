@@ -179,7 +179,7 @@ WHAT THIS MODULE IS
     The emails the product always sends are listed beside them, each with
     its own switch. An automation can never stop a move.
 """,
-    'version': '19.0.2.21.5',
+    'version': '19.0.2.22.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -219,6 +219,7 @@ WHAT THIS MODULE IS
         'google_calendar',          # RECRUIT P5 (RC-D3): Google Calendar + Meet for interviews
         'microsoft_calendar',
         'pb_hr_payroll_formula',
+        'pb_filter_kit',            # FILTER W3: the shared filter panel on Roles, Interviews, Applicants, Offers
     ],
     'data': [
         'security/pb_hiring_security.xml',
