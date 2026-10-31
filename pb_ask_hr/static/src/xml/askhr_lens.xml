@@ -124,7 +124,7 @@
               <h3>No question matches</h3>
               <p t-if="kit.search and !kit.chips.length">Nothing matches “<t t-esc="kit.search"/>”. Try a number, a name or one word from the question.</p>
               <p t-else="">No question here matches the filters you chose. Remove one above, or start again.</p>
-              <button type="button" class="pbah-btn pbah-btn--ghost" t-on-click="clearFilters">Show every question</button>
+              <button type="button" class="pbah-btn pbah-btn--ghost" t-on-click="clearFilters">Start again</button>
             </div>
             <div t-elif="ek === 'step'" class="pbah-empty is-small">
               <p t-esc="stepEmptyWords"/>

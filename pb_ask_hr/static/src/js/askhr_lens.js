@@ -286,7 +286,12 @@ export class PbAskHrLens extends Component {
         return !!(this.kit.activeCount || this.kit.search);
     }
 
-    clearFilters() { this.kit.toggleFilters({}); }
+    /** Start again: the board's first view (the open questions), not an
+     *  unnamed "everything" no tab stands for. */
+    clearFilters() {
+        const first = this.kit.views[0];
+        if (first) { this.kit.useView(first.key); } else { this.kit.clearAll(); }
+    }
 
     catIcon(key) { return ic(CATEGORY_ICON[key] || "helpCircle", 13); }
 
