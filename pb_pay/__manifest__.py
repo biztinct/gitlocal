@@ -67,7 +67,7 @@ WHAT IT DOES NOT CHANGE
   button for a day afterwards. A payslip that has already been worked out is
   never touched.
 """,
-    'version': '19.0.3.6.2',
+    'version': '19.0.3.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -87,6 +87,7 @@ WHAT IT DOES NOT CHANGE
         'pb_explorer',             # what payroll actually paid (pb.fact.emp)
         'pb_lifecycle',            # the letter engine a pay letter is printed by
         'pb_me_portal',            # the portal kit the pay page is built on
+        'pb_filter_kit',           # the worksheet's shared filter panel (FILTER w8)
     ],
     'data': [
         'security/pb_pay_security.xml',

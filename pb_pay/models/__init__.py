@@ -13,6 +13,7 @@ from . import pb_pay_review
 from . import pb_pay_apply
 from . import pb_pay_change
 from . import pb_pay_reviews
+from . import pb_pay_review_sheet   # the worksheet on the shared filter panel (FILTER w8)
 from . import pb_pay_migrate
 from . import pb_pay_retire
 from . import pb_pay_approval

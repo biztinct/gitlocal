@@ -1142,6 +1142,12 @@
       "file": "pb_pay/static/src/xml/pay_review.xml",
       "desc": "Worksheet tools: Use the guidance, Add 1%, Take off 1%, Share out what is left, Paste scores, Calibration."
     },
+    "pp-filters": {
+      "screen": "payreview",
+      "file": "pb_pay/static/src/xml/pay_review.xml",
+      "desc": "The worksheet's shared filter panel: view tabs (Everybody, My team, Not scored, Stops approval, Paid below the band, No rise), the Filters button that opens the left panel (team, score, in the band, stops approval, whose team, rise or not, manager, job, division, pay band, proposed rise, where the row is) with a count beside every value, the search and the order. Select every row on the page, then everything matching, before a worksheet tool.",
+      "reserved": true
+    },
     "pp-calibration": {
       "screen": "payreview",
       "file": "pb_pay/static/src/xml/pay_review.xml",

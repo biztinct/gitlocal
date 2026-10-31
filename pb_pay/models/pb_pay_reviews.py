@@ -283,16 +283,23 @@ class PbPayReviews(models.AbstractModel):
 
     # ============================================================ one review
     @api.model
-    def open_review(self, review_id, page=0, filters=None):
-        """The whole review: header, meters, fairness, limits, rows, trail."""
+    def open_review(self, review_id, page=0, filters=None, with_rows=True):
+        """The whole review: header, meters, fairness, limits, rows, trail.
+
+        The screen passes ``with_rows=False`` since FILTER wave 8: its
+        worksheet is served by `pb.pay.review.sheet` for the shared filter
+        panel, a page at a time. The rows stay here for other callers (R4).
+        """
         started = time.time()
         self._require_read()
         review = self._review(review_id)
         can_names = self._has(GROUP_MANAGER, GROUP_FINANCE, GROUP_CEO,
                               'hr.group_hr_manager', 'base.group_system')
-        lines = self._filtered_lines(review, filters or {})
+        lines = self._filtered_lines(review, filters or {}) if with_rows \
+            else review.line_ids
         page = max(0, int(page or 0))
-        window = lines[page * PAGE:(page + 1) * PAGE]
+        window = lines[page * PAGE:(page + 1) * PAGE] if with_rows \
+            else review.line_ids.browse()
         fairness = self._safe(lambda: review.fairness(), default={}) or {}
         return {
             'allowed': True,

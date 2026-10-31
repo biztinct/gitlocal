@@ -41,8 +41,20 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { binValues } from "@pb_pay/js/band_picture";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 
 const REVIEWS = "pb.pay.reviews";
+/** The worksheet's facade on the shared filter panel (FILTER wave 8). */
+const SHEET = "pb.pay.review.sheet";
+/** Worksheet rows per page (server: `SHEET_PAGE`, the old 120 window). */
+const SHEET_PAGE = 120;
+
+/** Typing in a box (the panel's search, the find-a-filter box, a rise) is
+ *  never a worksheet shortcut: "-" in a search must not take 1% off. */
+function isTyping(el) {
+    return !!el && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
+}
 
 /**
  * THE CALIBRATION PICTURE, in pixels. Two sets, because a phone is not a
@@ -89,18 +101,6 @@ function finePct(value, spread) {
     return (Number(value) || 0).toFixed(decimals);
 }
 
-/** The filters over the worksheet, in the order they are offered. */
-export function filterDefs() {
-    return [
-        { key: "all", label: _t("Everybody") },
-        { key: "mine", label: _t("My team") },
-        { key: "unrated", label: _t("Not scored") },
-        { key: "blocked", label: _t("Stops approval") },
-        { key: "below_band", label: _t("Paid below the band") },
-        { key: "no_rise", label: _t("No rise") },
-    ];
-}
-
 /** The four things a manager does to a block of rows. */
 export function bulkDefs() {
     return [
@@ -113,12 +113,25 @@ export function bulkDefs() {
 
 export class PbPayReview extends Component {
     static template = "pb_pay.PbPayReview";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this._settle = null;
+        // The worksheet on the shared filter panel. It is pointed at a
+        // review when one is opened (`pbf_ctx.review_id`), so it loads by
+        // hand; the Score section is counted on every refresh because the
+        // header's "not scored" sentence reads it.
+        this._sheetFor = 0;
+        this.kit = useFilterKit({
+            model: SHEET,
+            noun: _t("people"),
+            defer: true,
+            always: ["score"],
+            onChange: () => this.loadSheet(),
+        });
         // The picture is MEASURED, never assumed: this screen sits inside a
         // hub whose rail can be collapsed, and the plot's height changes with
         // the viewport (WFPLAN W20).
@@ -159,7 +172,15 @@ export class PbPayReview extends Component {
             editing: 0,
             editValue: "",
             nudge: "1",
-            filters: { which: "all", text: "" },
+            // the worksheet, one page at a time for the filter panel
+            sheetRows: [],
+            sheetTotal: 0,
+            sheetLoaded: false,
+            sheetMore: false,
+            // "everything matching": the selection is the whole filtered set
+            pickedAll: false,
+            pickedCapped: false,
+            matching: false,
 
             // ---- the calibration picture
             calib: null,
@@ -212,7 +233,6 @@ export class PbPayReview extends Component {
 
     ic(name, size = 16) { return ic(name, size); }
 
-    get filterDefs() { return filterDefs(); }
     get bulkDefs() { return bulkDefs(); }
 
     // ================================================================ errors
@@ -258,9 +278,9 @@ export class PbPayReview extends Component {
         return (open && open.card) || null;
     }
 
+    /** The worksheet rows loaded so far (pages of the panel's filtered set). */
     get rows() {
-        const open = this.state.open;
-        return (open && open.rows) || [];
+        return this.state.sheetRows;
     }
 
     get canWrite() {
@@ -273,27 +293,44 @@ export class PbPayReview extends Component {
         return (open && open.actions) || {};
     }
 
-    async openReview(id, page = 0) {
+    /**
+     * The review's header (meters, fairness, steps, actions), then the
+     * worksheet through the filter panel. Opening the SAME review again (after
+     * an approval step, a paste, …) keeps the reader's filters and only asks
+     * the panel to count and list again; another review starts the panel
+     * afresh on it.
+     */
+    async openReview(id) {
         this.state.busy = true;
         try {
-            this.state.open = await this.orm.call(REVIEWS, "open_review", [
-                id, page, this.state.filters,
-            ]);
+            const head = await this.orm.call(REVIEWS, "open_review", [id, 0, {}], {
+                with_rows: false,
+            });
+            const same = this._sheetFor === id && this.state.view !== "list" && this.kit.loaded;
+            this.state.open = head;
             this.state.view = "review";
             this.state.selection = [];
+            this.state.pickedAll = false;
             this.state.cursor = 0;
             this.state.anchor = 0;
+            if (same) {
+                await this.kit.refresh();
+            } else {
+                this._sheetFor = id;
+                this.state.sheetRows = [];
+                this.state.sheetLoaded = false;
+                await this.kit.reconfigure({ ctx: { review_id: id } });
+            }
         } catch (error) {
             this._fail(error, _t("That review could not be opened."));
         }
         this.state.busy = false;
     }
 
-    async reopen(page) {
+    async reopen() {
         const card = this.card;
         if (!card) { return; }
-        await this.openReview(card.id, page === undefined
-            ? this.state.open.page : page);
+        await this.openReview(card.id);
     }
 
     backToList() {
@@ -303,14 +340,124 @@ export class PbPayReview extends Component {
         this.load();
     }
 
-    async setFilter(which) {
-        this.state.filters = { ...this.state.filters, which };
-        await this.reopen(0);
+    // ============================================== the worksheet (panel)
+    /** One page of the worksheet for the panel's current state. */
+    async loadSheet({ more = false } = {}) {
+        const id = this._sheetFor;
+        if (!id || this.kit.refusal) {
+            this.state.sheetLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.sheetRows.length : 0;
+        if (more) { this.state.sheetMore = true; }
+        try {
+            const d = await this.orm.call(SHEET, "get_sheet_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: SHEET_PAGE,
+                context: { pbf_ctx: { review_id: id } },
+            });
+            if (!this.kit.isCurrent(q.seq) || this._sheetFor !== id) { return; }
+            this.state.sheetRows = more ? [...this.state.sheetRows, ...d.rows] : d.rows;
+            this.state.sheetTotal = d.total;
+            this.state.sheetLoaded = true;
+            if (!more) {
+                // The filters changed: "everything matching" no longer means
+                // what it meant, and a pick on a row nobody can see is a
+                // change nobody asked for (R6).
+                if (this.state.pickedAll) {
+                    this.state.selection = [];
+                    this.state.pickedAll = false;
+                } else {
+                    const ids = new Set(d.rows.map((r) => r.id));
+                    this.state.selection = this.state.selection.filter((x) => ids.has(x));
+                }
+                this.state.cursor = 0;
+                this.state.anchor = 0;
+            }
+        } catch (error) {
+            if (this.kit.isCurrent(q.seq)) {
+                this._fail(error, _t("The worksheet could not be listed. Try again in a moment."));
+                this.state.sheetLoaded = true;
+            }
+        } finally {
+            this.state.sheetMore = false;
+        }
     }
 
-    async setSearch(value) {
-        this.state.filters = { ...this.state.filters, text: value || "" };
-        await this.reopen(0);
+    sheetMoreRows() { if (!this.state.sheetMore) { this.loadSheet({ more: true }); } }
+    get sheetHasMore() { return this.state.sheetRows.length < this.state.sheetTotal; }
+    get sheetNextLabel() {
+        return _t("Show %s more", Math.min(SHEET_PAGE,
+            this.state.sheetTotal - this.state.sheetRows.length).toLocaleString("en-US"));
+    }
+    get sheetShowing() {
+        return _t("Showing %(shown)s of %(total)s people", {
+            shown: this.state.sheetRows.length.toLocaleString("en-US"),
+            total: this.state.sheetTotal.toLocaleString("en-US"),
+        });
+    }
+    get sheetFiltered() { return !!(this.kit.activeCount || this.kit.search); }
+    get sheetEmptyTitle() {
+        return this.kit.search && !this.kit.activeCount
+            ? _t("Nobody in this review matches “%s”", this.kit.search)
+            : _t("Nobody matches that");
+    }
+    sheetStartAgain() { this.kit.home(); }
+    /** A reader who may not see names cannot search by one either. */
+    get sheetSearchPlaceholder() {
+        return this.kit.extra && this.kit.extra.can_names === false
+            ? _t("Find a job or a team") : _t("Find a person, a job or a team");
+    }
+
+    /** "N people have not been scored": the panel's own count (it follows
+     *  the other filters, R1), or the review's figure before it answers. */
+    get unratedCount() {
+        const c = this.kit.counts.score;
+        const row = c && !c.error && (c.values || []).find((v) => v.v === "unscored");
+        if (row) { return row.n; }
+        return (this.state.open && this.state.open.unrated) || 0;
+    }
+
+    /** Every row on the page shown is picked, and more match than it holds. */
+    get canPickMatching() {
+        const rows = this.rows;
+        return !this.state.pickedAll && rows.length > 0
+            && this.state.sheetTotal > rows.length
+            && rows.every((r) => this.state.selection.includes(r.id));
+    }
+
+    /** "Select everything matching (N)": the whole filtered set, from one
+     *  server call over the panel's filters (R6). */
+    async pickMatching() {
+        if (this.state.matching || !this._sheetFor) { return; }
+        this.state.matching = true;
+        const q = this.kit.query;
+        try {
+            const res = await this.orm.call(SHEET, "matching_line_ids", [], {
+                filters: q.filters, search: q.search,
+                context: { pbf_ctx: { review_id: this._sheetFor } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.selection = res.ids || [];
+            this.state.pickedAll = true;
+            this.state.pickedCapped = !!res.capped;
+        } catch (error) {
+            this._fail(error, _t("The matching rows could not be picked."));
+        } finally {
+            this.state.matching = false;
+        }
+    }
+    get pageSelectedLabel() {
+        return _t("The %s people on this page are selected.", this.rows.length.toLocaleString("en-US"));
+    }
+    get matchLabel() {
+        return _t("Select everything matching (%s)", this.state.sheetTotal.toLocaleString("en-US"));
+    }
+    get allPickedLabel() {
+        return this.state.pickedCapped
+            ? _t("The first %s matching people are selected. Narrow the filters to reach the rest.",
+                 this.state.selection.length.toLocaleString("en-US"))
+            : _t("All %s matching people are selected.", this.state.selection.length.toLocaleString("en-US"));
     }
 
     // ============================================================ new review
@@ -390,6 +537,7 @@ export class PbPayReview extends Component {
 
     pick(row, index, ev) {
         this.state.cursor = index;
+        this.state.pickedAll = false;
         if (ev && ev.shiftKey) {
             const from = Math.min(this.state.anchor, index);
             const to = Math.max(this.state.anchor, index);
@@ -408,11 +556,13 @@ export class PbPayReview extends Component {
         this.state.selection = [row.id];
     }
 
+    /** The page shown (R6); the whole filtered set is one more press. */
     selectAll() {
         this.state.selection = this.rows.map((r) => r.id);
+        this.state.pickedAll = false;
     }
 
-    clearSelection() { this.state.selection = []; }
+    clearSelection() { this.state.selection = []; this.state.pickedAll = false; }
 
     get selectionLabel() {
         const count = this.state.selection.length;
@@ -469,19 +619,21 @@ export class PbPayReview extends Component {
     }
 
     _patchRows(fresh) {
-        if (!fresh || !this.state.open) { return; }
+        if (!fresh) { return; }
         const byId = {};
         fresh.forEach((row) => { byId[row.id] = row; });
-        this.state.open = {
-            ...this.state.open,
-            rows: this.state.open.rows.map((row) => byId[row.id] || row),
-        };
+        this.state.sheetRows = this.state.sheetRows.map((row) => byId[row.id] || row);
+        // the counts beside the panel's values follow the new figures; the
+        // rows stay where they are so nothing jumps under the reader
+        this.kit.refresh({ countsOnly: true });
     }
 
     async bulk(key) {
+        // what is picked (the page, or everything matching), or the page shown
         const ids = this.state.selection.length
             ? this.state.selection : this.rows.map((r) => r.id);
         if (!ids.length) { return; }
+        const whole = this.state.pickedAll;
         const step = parseFloat(this.state.nudge) || 1;
         this.state.busy = true;
         try {
@@ -499,9 +651,15 @@ export class PbPayReview extends Component {
                     key === "nudge_down" ? -step : step]);
             }
             this._merge(answer);
-            const fresh = await this.orm.call(REVIEWS, "rows",
-                                              [this.card.id, ids]);
-            this._patchRows(fresh);
+            if (whole) {
+                // thousands of rows: list the page again rather than fetch
+                // every one of them back
+                await this.kit.refresh();
+            } else {
+                const fresh = await this.orm.call(REVIEWS, "rows",
+                                                  [this.card.id, ids]);
+                this._patchRows(fresh);
+            }
             if (answer && answer.sentence) {
                 this.notif.add(answer.sentence, { type: "success" });
             }
@@ -1337,6 +1495,9 @@ export class PbPayReview extends Component {
         }
         if (this.state.view !== "review" || this.state.editing) { return; }
         if (this.anyDrawer) { return; }
+        // the panel's search and find boxes (and any other field): typing
+        // "-" or Enter there is text, not "take 1% off" or "edit this row"
+        if (isTyping(ev.target)) { return; }
         const rows = this.rows;
         if (!rows.length) { return; }
         if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {

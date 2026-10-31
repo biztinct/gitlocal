@@ -135,10 +135,10 @@
               <span class="pay-revmeter-l">Fairness</span>
               <span class="pay-revmeter-s" t-esc="state.open.fairness_line"/>
             </div>
-            <div class="pay-revmeter" t-if="state.open.unrated">
+            <div class="pay-revmeter" t-if="unratedCount">
               <span class="pay-revmeter-l">Scores</span>
               <span class="pay-revmeter-s">
-                <t t-esc="state.open.unrated"/> people have not been scored, so
+                <t t-esc="unratedCount"/> people have not been scored, so
                 the guidance used the middle for them.
               </span>
             </div>
@@ -196,20 +196,15 @@
           </div>
         </div>
 
-        <!-- the worksheet -->
+        <!-- the worksheet
+             FILTER wave 8: on the shared filter panel (pb_filter_kit). The
+             six filters it had are the panel's first six views, same words;
+             coach= renders data-coach="pp-filters" on the layout's bar. -->
         <div class="pay-card" data-coach="pp-worksheet">
-          <div class="pay-tools">
-            <div class="pay-tools-l">
-              <button t-foreach="filterDefs" t-as="f" t-key="f.key"
-                      t-attf-class="pay-filter #{state.filters.which === f.key ? 'is-on' : ''}"
-                      t-on-click="() => this.setFilter(f.key)">
-                <span t-esc="f.label"/>
-              </button>
-              <input class="pbim-input pay-search" type="search"
-                     placeholder="Find a person, a job or a team"
-                     t-on-change="(ev) => this.setSearch(ev.target.value)"/>
-            </div>
-            <div class="pay-tools-r" data-coach="pp-bulk" t-if="canWrite">
+          <PbFilterLayout kit="kit" coach="'pp-filters'"
+                          searchPlaceholder="sheetSearchPlaceholder">
+          <div class="pay-tools" t-if="canWrite">
+            <div class="pay-tools-r" data-coach="pp-bulk">
               <span class="pay-selcount" t-esc="selectionLabel"/>
               <input class="pbim-input pay-step-in" type="number" step="0.5"
                      t-att-value="state.nudge"
@@ -246,7 +241,26 @@
             </div>
           </div>
 
-          <div class="pay-wswrap">
+          <!-- "everything matching": offered once the whole page is picked -->
+          <div class="pay-matchbar" t-if="canWrite and (canPickMatching or state.pickedAll)">
+            <t t-if="state.pickedAll">
+              <t t-out="ic('checkCircle', 14)"/>
+              <span t-esc="allPickedLabel"/>
+              <button class="pbim-btn ghost sm" t-on-click="() => this.clearSelection()">Clear the selection</button>
+            </t>
+            <t t-else="">
+              <span t-esc="pageSelectedLabel"/>
+              <button class="pbim-btn outline sm" t-att-disabled="state.matching"
+                      t-on-click="() => this.pickMatching()" t-esc="matchLabel"/>
+            </t>
+          </div>
+
+          <!-- loading: the shape of the worksheet, never a blank -->
+          <div class="pay-wsskel" t-if="!state.sheetLoaded" aria-label="Loading the worksheet">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pay-wsskel-row"/>
+          </div>
+
+          <div class="pay-wswrap" t-if="state.sheetLoaded and rows.length">
             <table class="pay-ws">
               <thead>
                 <tr>
@@ -302,32 +316,43 @@
             </table>
           </div>
 
-          <div class="pay-empty" t-if="!rows.length">
+          <div class="pay-empty" t-if="state.sheetLoaded and !rows.length and sheetFiltered">
             <t t-out="ic('users', 26)"/>
-            <p class="pay-empty-t">Nobody matches that</p>
+            <p class="pay-empty-t" t-esc="sheetEmptyTitle"/>
+            <p class="pay-empty-s" t-if="kit.activeCount">
+              Remove a filter above, or go back to everybody, and the people
+              come back.
+            </p>
+            <p class="pay-empty-s" t-else="">
+              Check the spelling, or find them by job or team.
+            </p>
+            <button class="pbim-btn outline sm" t-on-click="() => this.sheetStartAgain()">
+              <t t-out="ic('users', 15)"/>
+              <span>Show everybody</span>
+            </button>
+          </div>
+          <div class="pay-empty" t-if="state.sheetLoaded and !rows.length and !sheetFiltered">
+            <t t-out="ic('users', 26)"/>
+            <p class="pay-empty-t">Nobody in this review yet</p>
             <p class="pay-empty-s">
-              Change the filter above, or clear the search, and the people come
-              back.
+              The review covers nobody right now. Its people come from who it
+              covers, set when it was started.
             </p>
           </div>
 
-          <div class="pay-pager" t-if="state.open.pages > 1">
-            <button class="pbim-btn ghost sm"
-                    t-att-disabled="state.open.page === 0"
-                    t-on-click="() => this.reopen(state.open.page - 1)">
-              <t t-out="ic('chevronLeft', 15)"/>
-              <span>Back</span>
-            </button>
-            <span class="pay-pager-l">
-              <t t-esc="state.open.total_rows"/> people
-            </span>
-            <button class="pbim-btn ghost sm"
-                    t-att-disabled="state.open.page + 1 >= state.open.pages"
-                    t-on-click="() => this.reopen(state.open.page + 1)">
-              <span>More</span>
-              <t t-out="ic('chevron', 15)"/>
+          <div class="pay-pager" t-if="state.sheetLoaded and rows.length">
+            <span class="pay-pager-l" t-esc="sheetShowing"/>
+            <button class="pbim-btn ghost sm" t-if="sheetHasMore"
+                    t-att-disabled="state.sheetMore"
+                    t-on-click="() => this.sheetMoreRows()">
+              <t t-if="state.sheetMore">Loading…</t>
+              <t t-else="">
+                <span t-esc="sheetNextLabel"/>
+                <t t-out="ic('chevronDown', 15)"/>
+              </t>
             </button>
           </div>
+          </PbFilterLayout>
         </div>
       </t>
 

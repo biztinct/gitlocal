@@ -2578,9 +2578,14 @@ export const SCREENS = {
             </div>
             <div class="lrn-ywf">
                 <div class="lrn-panel lrn-ywfmain" data-coach="pp-worksheet">
-                    <div class="lrn-strip">${[B("Everybody", "Tất cả mọi người"), B("My team", "Nhóm của tôi"), B("Not scored", "Chưa chấm điểm"),
+                    <!-- FILTER wave 8 (2026-10-31): the six filters are the
+                         first views of the shared filter panel, then the
+                         Filters button and the search. -->
+                    <div class="lrn-strip" data-coach="pp-filters">${[B("Everybody", "Tất cả mọi người"), B("My team", "Nhóm của tôi"), B("Not scored", "Chưa chấm điểm"),
                         B("Stops approval", "Chặn duyệt"), B("Paid below the band", "Được trả dưới khoảng lương"), B("No rise", "Không tăng")]
-                        .map((f, i) => `<span class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(f))}</span>`).join("")}</div>
+                        .map((f, i) => `<span class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(f))}</span>`).join("")}
+                        <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
+                        <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a person, a job or a team", "Tìm một người, một công việc hoặc một nhóm")))}</span></div>
                     <div class="lrn-ztablewrap"><table class="lrn-ztable">
                         <thead><tr>${cols.map((c) => `<th>${esc(tx(c))}</th>`).join("")}</tr></thead>
                         <tbody>${rows}</tbody>
