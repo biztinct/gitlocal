@@ -260,6 +260,42 @@ coordinator's (`filter_deploy.sh full`).
   payobook.com; use that session (never type a password). Saved views you
   create while testing must be deleted again; clear `pbf:*` keys from
   localStorage/sessionStorage at the end so the owner sees defaults.
+- **F13** (w4) The preview Odoo is started by `pbf_preview.sh` with `nohup … &`
+  inside YOUR ssh session; when a long `upgrade`/`restart` call is moved to
+  the background and its ssh session ends, the preview dies with it
+  (`status` shows `pid=` empty, http 000). Run them detached and poll:
+  `ssh Payobook19v2 'sudo setsid /odoo/ops/pbf_preview.sh upgrade <mods> </dev/null >/tmp/<w>_up.out 2>&1 &'`
+  then `grep -E "upgrade EXIT|preview http" /tmp/<w>_up.out`.
+- **F14** (w4) `odoo-bin i18n export`: `--addons-path` goes BEFORE `i18n export`,
+  and `-c/-d/-l/-o` AFTER it (`odoo-bin --addons-path=… i18n export -c /etc/odoo-server.conf -d pbf_preview -l vi_VN -o /tmp/x.po <m>`);
+  `-c` before the sub-command makes it a server run (`no such option: -l`).
+- **F15** (w4) A module's stale `i18n/<module>.pot` silently drops translations:
+  the server's PoFileReader merges the .pot into the .po and every entry the
+  .pot does not know becomes obsolete. pb_approval_config's .pot dated
+  2026-09-12 hid every term added since (refreshed in w4). Before shipping
+  terms, compare `grep -c ^msgid` of the .pot with the code, or regenerate it
+  with `-l pot`.
+- **F16** (w4) A code term used from Python needs BOTH `#. odoo-python` AND a
+  `#: code:addons/<m>/<file>.py:0` reference in its entry; the flag alone does
+  not load (rows are typed by reference). When a term already translated for
+  JS starts being used in Python, replace the entry's comment/reference block
+  with the export's.
+- **F17** (w4) The Learn anchor test (`pb_learn/tests/test_anchor_registry.py`
+  test_01) greps the declared file for the literal `data-coach="<key>"`; a key
+  given through `PbFilterLayout coach="'<key>'"` is not literal. Keep the
+  literal in an XML comment next to the layout (`pe-filters` currently fails).
+- **F18** (w4) Claude-in-Chrome may be stuck at a ~567 px window that
+  `resize_window` cannot change (kit goes narrow ≤ 900 px). Use the
+  chrome-devtools MCP instead: `new_page` with an `isolatedContext`,
+  `emulate viewport 1440x900x1`, sign in with a `fetch('/web/session/authenticate')`.
+  The webclient refuses to be framed, so an iframe harness does not work.
+- **F19** (w4) Parallel builders share the session scratchpad: a file named
+  `merge_po.py` was overwritten by another wave mid-run. Prefix every scratch
+  file with the wave id.
+- **F20** (w4) Python facts a choice section needs many times per request
+  (`domain_method`, a folded search) are re-evaluated once per count (~12 per
+  `pbf_counts`). Memoise them on `self.env.cr.cache[(key, uid, …)]` — one
+  request, one cursor.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python
