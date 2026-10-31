@@ -130,7 +130,7 @@ class PbPayslipReview(models.AbstractModel):
              'none_label': _('No scheme')},
             {'key': 'company', 'label': _('Company'), 'icon': 'landmark', 'group': 'work',
              'type': 'many2one', 'path': 'company_id'},
-            {'key': 'refund', 'label': _('Refunds'), 'icon': 'undo', 'group': 'pay',
+            {'key': 'refund', 'label': _('Kind of payslip'), 'icon': 'undo', 'group': 'pay',
              'type': 'choice', 'requires': ['credit_note'],
              'options': [
                  {'value': 'yes', 'label': _('Refunds'), 'tone': 'rose',
@@ -139,7 +139,7 @@ class PbPayslipReview(models.AbstractModel):
                   'domain': [('credit_note', '=', False)]},
              ]},
             {'key': 'period', 'label': _('Period ends'), 'icon': 'calendar', 'group': 'dates',
-             'type': 'date', 'path': 'date_to', 'presets': 'past'},
+             'type': 'date', 'path': 'date_to', 'presets': ['this_month', 'last_month', 'this_quarter', 'this_year', 'last_year']},
         ]
         # "Paid" is the bank's answer (pb_pay_delivery stamps the payslip when
         # its money left), not the payroll state; absent without that module.

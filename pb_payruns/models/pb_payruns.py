@@ -151,7 +151,7 @@ class PbPayruns(models.AbstractModel):
              'type': 'choice', 'pinned': True, 'requires': ['pb_division'],
              'options': self._pbf_division_options()},
             # ---- more filters
-            {'key': 'mine', 'label': _('Waiting on me'), 'icon': 'userCheck', 'group': 'people',
+            {'key': 'mine', 'label': _('Whose turn'), 'icon': 'userCheck', 'group': 'people',
              'type': 'choice', 'requires': ['pb_awaiting_me'],
              'options': [
                  {'value': 'me', 'label': _('Waiting on me'), 'tone': 'amber',
@@ -187,7 +187,7 @@ class PbPayruns(models.AbstractModel):
             {'key': 'prepared', 'label': _('Prepared by'), 'icon': 'user', 'group': 'people',
              'type': 'many2one', 'path': 'pb_prepared_uid', 'label_sudo': True,
              'none_label': _('Not recorded')},
-            {'key': 'refund', 'label': _('Refund runs'), 'icon': 'undo', 'group': 'pay',
+            {'key': 'refund', 'label': _('Kind of run'), 'icon': 'undo', 'group': 'pay',
              'type': 'choice', 'requires': ['credit_note'],
              'options': [
                  {'value': 'yes', 'label': _('Refund runs'), 'tone': 'rose',

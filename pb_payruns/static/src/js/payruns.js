@@ -922,6 +922,8 @@ export class PbPayruns extends Component {
         return key && cur === key ? (k === "name" ? " ↑" : " ↓") : "";
     }
     pill(b) {
+        // the list follows the panel, so it can hold rejected runs too
+        if (b.state === "cancel") return { cls: "rejected", text: _t("Rejected") };
         if (b.state === "draft") return b.return_note ? { cls: "waiting", text: _t("Sent back") } : { cls: "draft", text: _t("Draft") };
         if (b.state === "approval_pending") return { cls: "waiting", text: b.awaiting_me ? _t("Waiting on you") : this.route(b).withText };
         if (this.isPaid(b)) return { cls: "done", text: b.delivery.paid_on ? _t("Paid %s", b.delivery.paid_on) : _t("Paid") };
@@ -957,6 +959,12 @@ export class PbPayruns extends Component {
     }
 
     // ================================================================ workflow actions
+    /** The server's own sentence for a refusal ("There are no payslips in
+     *  this pay run yet…"), not the transport's generic "Server Error". */
+    _why(e) {
+        const msg = (e && e.data && e.data.message) || (e && e.message);
+        return msg ? String(msg) : _t("That did not work. Try again in a moment.");
+    }
     async _run(method, id, okMsg, ctx, keepBusy) {
         if (!id || (this.state.busy && !keepBusy)) return;
         this.state.busy = id;
@@ -971,7 +979,7 @@ export class PbPayruns extends Component {
             }
             await this.reloadAll();
         } catch (e) {
-            this.notification.add(e.message ? e.message.toString() : _t("Action failed"), { type: "danger" });
+            this.notification.add(this._why(e), { type: "danger" });
         } finally {
             this.state.busy = 0;
         }
@@ -997,7 +1005,7 @@ export class PbPayruns extends Component {
                 sent += 1;
                 delete this.state.selected[id];
             } catch (e) {
-                failed.push(e.message ? e.message.toString() : _t("Action failed"));
+                failed.push(this._why(e));
             }
         }
         this.state.busy = 0;

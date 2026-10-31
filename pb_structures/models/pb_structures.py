@@ -128,7 +128,7 @@ class PbStructures(models.AbstractModel):
             {'key': 'employees', 'label': _('Employees covered'), 'icon': 'users', 'group': 'people',
              'type': 'number', 'path': 'employee_count'},
             {'key': 'updated', 'label': _('Last changed'), 'icon': 'calendarClock', 'group': 'dates',
-             'type': 'date', 'path': 'write_date', 'presets': 'past'},
+             'type': 'date', 'path': 'write_date', 'presets': ['this_week', 'this_month', 'last_month', 'last_90', 'this_quarter', 'this_year']},
         ]
 
     def _pbf_builtin_views(self):
