@@ -72,12 +72,12 @@
                feature somebody reports as broken. This is the one thing on
                this board an administrator has to decide, so it is stated
                where they are, with the number it would affect. -->
-          <div t-if="state.canWrite and !state.autoOn and state.rows.length" class="pbim-panel prb-notice">
+          <div t-if="state.canWrite and !state.autoOn and state.total" class="pbim-panel prb-notice">
             <div class="prb-notice-ic"><t t-out="ic('info',20)"/></div>
             <div>
               <b>Reviews are not opening by themselves yet</b>
               <p>
-                <t t-esc="state.rows.length === 1                           ? 'There is 1 person in a trial period. Nothing happens automatically until an administrator switches the trigger on — until then, press Run today\'s steps or start a review from a card below.'                           : 'There are ' + state.rows.length + ' people in a trial period. Nothing happens automatically until an administrator switches the trigger on — until then, press Run today\'s steps or start a review from a card below.'"/>
+                <t t-esc="state.total === 1                           ? 'There is 1 person in a trial period. Nothing happens automatically until an administrator switches the trigger on — until then, press Run today\'s steps or start a review from a card below.'                           : 'There are ' + fmtInt(state.total) + ' people in a trial period. Nothing happens automatically until an administrator switches the trigger on — until then, press Run today\'s steps or start a review from a card below.'"/>
               </p>
             </div>
           </div>
@@ -88,14 +88,15 @@
           <div data-coach="pr-numbers">
           <t t-call="pb_import_kit.QuietGlance">
             <t t-set="qGlance" t-value="glance"/>
-            <t t-set="qGlanceOn" t-value="state.focus"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
           </t>
           </div>
 
           <!-- ====================== how a review runs ======================
                The five steps of a review, numbered, with how many people sit
-               at each. A person is at exactly ONE step (flowStepOf), so the
-               counts add up. Replaces the old unnumbered explainer strip. -->
+               at each. A person is at exactly ONE step, so the counts add up
+               to what the panel lists. Counted on the server for the panel's
+               filters (ruling R1); pressing one narrows to that step. -->
           <div data-coach="pr-steps">
           <t t-call="pb_import_kit.QuietSteps">
             <t t-set="qSteps" t-value="steps"/>
@@ -103,51 +104,8 @@
             <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
           </t>
           </div>
-          <div class="pbim-showing">
-            <span t-esc="showingLine.text"/>
-            <button t-if="!showingLine.all" type="button" class="pbim-showall" t-on-click="clearFilters">Show all</button>
-          </div>
-
-          <!-- ======================== filters ======================== -->
-          <div class="pbim-panel prb-filters" t-if="state.rows.length">
-            <div class="prb-filter-row">
-              <div class="prb-search">
-                <t t-out="ic('search',15)"/>
-                <input type="text" t-att-value="state.q" t-on-input="onSearch" placeholder="Search by name, job or team…"/>
-              </div>
-              <button t-if="hasFilters" class="pbim-btn ghost pbim-btn-sm" t-on-click="clearFilters">
-                <t t-out="ic('x',14)"/> Clear
-              </button>
-            </div>
-            <div class="prb-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.states" t-as="sv" t-key="sv.id" t-attf-class="pbim-fchip {{ state.reviewState === sv.id ? 'on' : '' }}" t-on-click="() =&gt; this.setReviewState(sv.id)">
-                  <span t-esc="sv.label"/>
-                  <span class="c" t-esc="sv.count"/>
-                </button>
-              </div>
-              <div class="pbim-chips">
-                <button t-foreach="state.departments" t-as="dp" t-key="dp.id" t-attf-class="pbim-fchip {{ state.dept === dp.id ? 'on' : '' }}" t-on-click="() =&gt; this.setDept(dp.id)">
-                  <span t-esc="dp.label"/>
-                  <span class="c" t-esc="dp.count"/>
-                </button>
-              </div>
-            </div>
-            <div class="prb-filter-row">
-              <div class="pbim-chips">
-                <button t-foreach="state.countries" t-as="ct" t-key="ct.id" t-attf-class="pbim-fchip {{ state.country === ct.id ? 'on' : '' }}" t-on-click="() =&gt; this.setCountry(ct.id)">
-                  <span t-esc="ct.label"/>
-                  <span class="c" t-esc="ct.count"/>
-                </button>
-                <button t-attf-class="pbim-fchip {{ state.attentionOnly ? 'on' : '' }}" t-on-click="toggleAttention">
-                  <t t-out="ic('alert',13)"/> Needs somebody
-                </button>
-              </div>
-            </div>
-          </div>
-
           <!-- ================== nothing here yet ================== -->
-          <div t-if="!state.rows.length" class="pbim-panel prb-empty" data-coach="pr-list">
+          <div t-if="!state.total" class="pbim-panel prb-empty" data-coach="pr-list">
             <div class="prb-empty-ic"><t t-out="ic('stamp',30)"/></div>
             <h2>Nobody is in a trial period</h2>
             <p>When somebody's joining checklist opens, Payobook works out the
@@ -161,26 +119,16 @@
             </button>
           </div>
 
-          <!-- ============ the filters match nobody ============
-               A board that answers a filter with a blank page is a dead end:
-               the reader cannot tell "nobody matches" from "it is still
-               loading" from "it broke". The whole sentence is ONE expression,
-               because OWL collapses the newline between two t-esc nodes and
-               the page then reads "There are2 people" (R34). -->
-          <div t-elif="!visibleRows.length" class="pbim-panel prb-empty">
-            <div class="prb-empty-ic"><t t-out="ic('search',30)"/></div>
-            <h2>Nobody matches that</h2>
-            <p>
-              <t t-esc="state.rows.length === 1                         ? 'There is 1 person on this board, but they do not fit the filters you have set.'                         : 'There are ' + state.rows.length + ' people on this board, but none of them fits the filters you have set.'"/>
-            </p>
-            <button class="pbim-btn primary" t-on-click="clearFilters">
-              <t t-out="ic('x',15)"/> Clear the filters
-            </button>
-          </div>
+          <!-- ============ the shared filter panel (FILTER wave 2) ============
+               Views, search, the left panel with a count beside every value,
+               the applied filters as chips. The cards are its slot, a page at
+               a time from the server. -->
+          <PbFilterLayout t-else="" kit="kit" coach="'pr-filters'"
+                          searchPlaceholder="'Search by name, job or team…'">
 
           <!-- ======================= the people ======================= -->
-          <div t-else="" class="prb-grid" data-coach="pr-list">
-            <div t-foreach="visibleRows" t-as="row" t-key="row.id" class="pbim-panel prb-card" t-att-class="{ 'is-urgent': row.urgent, 'is-late': row.feedback_late }">
+          <div t-if="state.rows.length" class="prb-grid" data-coach="pr-list">
+            <div t-foreach="state.rows" t-as="row" t-key="row.id" class="pbim-panel prb-card" t-att-class="{ 'is-urgent': row.urgent, 'is-late': row.feedback_late }">
 
               <div class="prb-card-top" t-on-click="() =&gt; this.openPerson(row.id)">
                 <img class="prb-av" t-att-src="row.avatar" t-att-alt="row.employee"/>
@@ -276,10 +224,34 @@
             </div>
           </div>
 
-          <p t-if="state.capped" class="prb-capped">
-            Showing the first <t t-esc="state.rows.length"/>. Narrow it down with
-            a filter to see the rest.
-          </p>
+          <!-- ============ still loading the first page ============ -->
+          <div t-elif="!state.listLoaded" class="prb-grid prb-skeleton" aria-label="Loading the trial periods">
+            <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbim-panel prb-card prb-card--ghost"/>
+          </div>
+
+          <!-- ============ the filters match nobody ============
+               A board that answers a filter with a blank page is a dead end:
+               the reader cannot tell "nobody matches" from "it is still
+               loading" from "it broke". Each sentence is ONE expression,
+               because OWL collapses the newline between two t-esc nodes (R34). -->
+          <div t-else="" class="pbim-panel prb-empty prb-empty--filter">
+            <div class="prb-empty-ic"><t t-out="ic('search',30)"/></div>
+            <h2>Nobody matches these filters</h2>
+            <p t-esc="emptyText"/>
+            <button class="pbim-btn primary" t-on-click="showAll">
+              <t t-out="ic('x',15)"/> Show everybody in a trial period
+            </button>
+          </div>
+
+          <!-- ============ how many, and the next page ============ -->
+          <div t-if="state.rows.length" class="prb-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.rowsTotal)"/>
+            <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
 
         </t>
       </div>

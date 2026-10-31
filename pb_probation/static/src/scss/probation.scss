@@ -11,6 +11,10 @@
 //  px/% pair kills the ENTIRE asset bundle, not just this file.
 // =====================================================================
 
+// At the top level: nested inside a selector, Sass emits a keyframe rule
+// nested too and no browser plays it (R85).
+@keyframes prb-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+
 .prb {
     // ---------------------------------------------------------- header
     .prb-head {
@@ -33,12 +37,9 @@
     }
     .prb-notice-ic { color: var(--pbim-primary-strong); flex: 0 0 auto; }
 
-    // --------------------------------------------------------- filters
-    .prb-filters { padding: 14px 16px; margin-bottom: 18px; }
-    .prb-filter-row {
-        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-        & + .prb-filter-row { margin-top: 10px; }
-    }
+    // ------------------------------------------------- the picker's search
+    // The board's filters are the shared panel's (pb_filter_kit, FILTER
+    // wave 2); this box is now only the colleague picker's.
     .prb-search {
         display: flex; align-items: center; gap: 8px; flex: 1 1 260px;
         border: 1px solid var(--pbim-line); border-radius: 10px;
@@ -189,9 +190,19 @@
         border-top: 1px solid var(--pbim-line-2); padding-top: 11px;
     }
 
-    .prb-capped {
-        margin-top: 16px; font-size: 12.5px; color: var(--pbim-muted);
-        text-align: center;
+    // ---- the first page loading, and "Show N more" under the cards ----
+    .prb-skeleton .prb-card--ghost {
+        height: 260px; box-shadow: none; background: var(--pbim-soft);
+        border-color: var(--pbim-line-2);
+        &:hover { transform: none; box-shadow: none; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .prb-skeleton .prb-card--ghost { animation: prb-pulse 1.2s ease-in-out infinite; }
+    }
+    .prb-foot {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        flex-wrap: wrap; margin-top: 16px; font-size: 12.5px; color: var(--pbim-muted);
+        b { color: var(--pbim-text); font-weight: 700; }
     }
 
     // ----------------------------------------------------- empty state

@@ -28,6 +28,11 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+/** Cards per page; "Show N more" loads the next one. */
+const PAGE = 60;
 
 /** The five stops the rail shows, in order — the SAME five steps as the
  *  numbered strip above the cards (flowStepOf), so a card and the strip can
@@ -53,6 +58,7 @@ const _openedFor = new WeakSet();
 
 export class PbProbationBoard extends Component {
     static template = "pb_probation.PbProbationBoard";
+    static components = { PbFilterLayout };
     static props = ["*"];
 
     setup() {
@@ -67,22 +73,17 @@ export class PbProbationBoard extends Component {
             canWrite: false,
             autoOn: false,
             kpis: {},
-            rows: [],
-            countries: [],
-            departments: [],
-            states: [],
-            capped: false,
+            total: 0,               // everybody in a trial period
+            glanceFilters: {},      // what each figure means as a filter
             minNominees: 3,
             maxNominees: 5,
 
-            // filters
-            q: "",
-            country: "all",
-            dept: "all",
-            reviewState: "all",
-            attentionOnly: false,
-            focus: "",      // the figure on the numbers line now filtering
-            step: "",       // the review step now filtering
+            // the page the filter panel produced (FILTER wave 2)
+            rows: [],
+            rowsTotal: 0,
+            listLoaded: false,
+            loadingMore: false,
+            stepCounts: {},
 
             // the open person
             drawer: null,
@@ -92,6 +93,15 @@ export class PbProbationBoard extends Component {
             nominating: null,
             verdicting: null,
             talking: null,
+        });
+
+        // The shared filter panel (pb_filter_kit): it owns the filters, the
+        // counts and the views; this board loads one page of cards for
+        // kit.query, counted and filtered on the server (no 300-row cap).
+        this.kit = useFilterKit({
+            model: "pb.probation",
+            noun: _t("people"),
+            onChange: () => this.loadPage(),
         });
 
         onWillStart(async () => {
@@ -122,19 +132,18 @@ export class PbProbationBoard extends Component {
     report(html) { return markup(html || ""); }
 
     // ------------------------------------------------------------------ read
+    /** The numbers line, the switch notice and the flags — counted over
+     *  everybody in a trial period, whatever is filtered. */
     async load() {
         try {
-            const d = await this.orm.call("pb.probation", "get_board", []);
+            const d = await this.orm.call("pb.probation", "get_board_head", []);
             Object.assign(this.state, {
                 allowed: d.allowed,
                 canWrite: d.can_write,
                 autoOn: !!d.auto_on,
                 kpis: d.kpis || {},
-                rows: d.rows || [],
-                countries: d.countries || [],
-                departments: d.departments || [],
-                states: d.states || [],
-                capped: !!d.capped,
+                total: d.total || 0,
+                glanceFilters: d.glance_filters || {},
                 minNominees: d.min_nominees || 3,
                 maxNominees: d.max_nominees || 5,
                 loaded: true,
@@ -147,81 +156,87 @@ export class PbProbationBoard extends Component {
         }
     }
 
+    /** One page of cards (and, on the first, the step counts) for the
+     *  panel's current filters. A reply for an older filter state is dropped. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.probation", "get_board_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...d.rows] : d.rows;
+            this.state.rowsTotal = d.total;
+            if (!more) { this.state.stepCounts = d.steps || {}; }
+            this.state.listLoaded = true;
+        } catch (e) {
+            console.warn("pb_probation: could not load the cards", e);
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add(_t("The trial periods could not be loaded. Try again in a moment."),
+                               { type: "warning" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+
+    get hasMore() { return this.state.rows.length < this.state.rowsTotal; }
+
+    get nextPage() { return Math.min(PAGE, this.state.rowsTotal - this.state.rows.length); }
+
+    fmtInt(n) { return Number(n || 0).toLocaleString("en-US"); }
+
     async refresh() {
-        this.state.loaded = false;
-        await this.load();
+        await Promise.all([this.load(), this.kit.refresh()]);
         if (this.state.drawer) {
             await this.openPerson(this.state.drawer.row.id);
         }
     }
 
-    // --------------------------------------------------------------- filters
-    get visibleRows() {
-        const q = (this.state.q || "").trim().toLowerCase();
-        return this.state.rows.filter((r) => {
-            if (this.state.country !== "all" && r.country !== this.state.country) {
-                return false;
-            }
-            if (this.state.dept !== "all" && r.dept !== this.state.dept) {
-                return false;
-            }
-            if (this.state.reviewState !== "all"
-                && r.review_label !== this.state.reviewState) {
-                return false;
-            }
-            if (this.state.attentionOnly && !this.needsAttention(r)) {
-                return false;
-            }
-            if (this.state.focus && !this.matchesFocus(r, this.state.focus)) {
-                return false;
-            }
-            if (this.state.step && this.flowStepOf(r) !== this.state.step) {
-                return false;
-            }
-            if (!q) { return true; }
-            return (r.employee + " " + (r.job || "") + " " + (r.dept || ""))
-                .toLowerCase().includes(q);
-        });
-    }
+    /** Back to everybody in a trial period (the first view). */
+    showAll() { this.kit.toggleFilters({}); }
 
-    /** "Somebody has to do something about this one" — the one filter that matters. */
-    needsAttention(row) {
-        return !!(row.urgent
-            || row.feedback_late
-            || row.red_flags
-            || !row.training_ok
-            || row.review_state === "verdict"
-            || (!row.review_state && row.days !== null && row.days <= 21));
-    }
-
-    get hasFilters() {
-        return this.state.q || this.state.country !== "all"
-            || this.state.dept !== "all" || this.state.reviewState !== "all"
-            || this.state.attentionOnly || this.state.focus || this.state.step;
-    }
-
-    clearFilters() {
-        Object.assign(this.state, {
-            q: "", country: "all", dept: "all", reviewState: "all",
-            attentionOnly: false, focus: "", step: "",
-        });
+    /** Why the list is empty, in one translatable sentence (R34). */
+    get emptyText() {
+        if (this.kit.chips.length) {
+            return this.state.total === 1
+                ? _t("There is 1 person in a trial period, but they do not fit every filter you have set. Remove a filter above, or start again from everybody.")
+                : _t("There are %s people in a trial period, but none of them fits every filter you have set. Remove a filter above, or start again from everybody.",
+                     this.fmtInt(this.state.total));
+        }
+        if (this.kit.search) {
+            return _t("Nobody matches “%s”. Check the spelling, or search by job or team.", this.kit.search);
+        }
+        return _t("Nothing could be listed just now. Show everybody to start again.");
     }
 
     // ----------------------------------------------------- the quiet board
     //
     // One slim line of numbers instead of a row of tiles, and the five
-    // numbered steps of a review in place of the old explainer strip. A
-    // person is at EXACTLY ONE step (flowStepOf), so the counts add up to
-    // the board. Pressing a lit figure or step again clears it.
-    matchesFocus(r, key) {
-        if (key === "running") { return !!r.review_state && r.review_state !== "closed"; }
-        if (key === "verdicts") { return r.review_state === "verdict"; }
-        if (key === "late") { return !!r.feedback_late; }
-        if (key === "urgent") { return !!r.urgent; }
-        return true;
+    // numbered steps of a review. A person is at EXACTLY ONE step, so the
+    // step counts add up to what the panel lists. A figure that filters
+    // ticks exactly its filters in the panel (and lights the view tab with
+    // the same filters); pressing it again shows everyone.
+    glanceRun(key) {
+        const f = this.state.glanceFilters[key];
+        return f ? () => this.kit.toggleFilters(f) : null;
     }
 
-    toggleFocus(key) { this.state.focus = this.state.focus === key ? "" : key; }
+    /** Which figure is lit: the one whose filters are exactly what is on. */
+    get glanceOn() {
+        if (!this.kit.loaded) { return ""; }
+        for (const [key, f] of Object.entries(this.state.glanceFilters || {})) {
+            if (this.kit.isExactly(f)) { return key; }
+        }
+        return "";
+    }
 
     get glance() {
         const k = this.state.kpis || {};
@@ -229,13 +244,13 @@ export class PbProbationBoard extends Component {
         return [
             { key: "all", n: k.in_probation || 0, label: _t("In a trial period"), tone: "", run: null },
             { key: "running", n: k.running || 0, label: _t("Reviews running"), tone: "",
-              run: () => this.toggleFocus("running") },
+              run: this.glanceRun("running") },
             { key: "verdicts", n: k.verdicts || 0, label: _t("Waiting on a decision"), tone: tone(k.verdicts, "amber"),
-              run: () => this.toggleFocus("verdicts") },
+              run: this.glanceRun("verdicts") },
             { key: "late", n: k.overdue_feedback || 0, label: _t("Answers overdue"), tone: tone(k.overdue_feedback, "rose"),
-              run: () => this.toggleFocus("late") },
+              run: this.glanceRun("late") },
             { key: "urgent", n: k.urgent || 0, label: _t("Ending within a week"), tone: tone(k.urgent, "rose"),
-              run: () => this.toggleFocus("urgent") },
+              run: this.glanceRun("urgent") },
         ];
     }
 
@@ -269,12 +284,16 @@ export class PbProbationBoard extends Component {
         ];
     }
 
+    /** The five steps, counted on the server for the panel's filters
+     *  (everything except the step itself), so they follow the filters. */
     get steps() {
-        const rows = this.state.rows;
+        const counts = this.state.stepCounts || {};
         return this.stepDefs.map((st, i) => {
-            const at = rows.filter((r) => this.flowStepOf(r) === st.key);
-            const waiting = at.filter((r) => this.atSignOff(r)).length;
-            const late = at.filter((r) => r.feedback_late).length;
+            const c = counts[st.key] || {};
+            const at = { length: c.n || 0 };
+            // everybody at the sign-off step is waiting for a sign-off
+            const waiting = st.key === "review" ? c.n || 0 : 0;
+            const late = c.late || 0;
             let flag = "";
             let flagTone = "";
             if (waiting) {
@@ -290,34 +309,21 @@ export class PbProbationBoard extends Component {
                 countLabel: at.length === 1 ? _t("1 person") : _t("%s people", at.length),
                 flag,
                 flagTone,
-                on: this.state.step === st.key,
+                on: this.stepIsOn(st.key),
             };
         });
     }
 
-    pickStep(key) { this.state.step = this.state.step === key ? "" : key; }
-
-    get showingLine() {
-        const all = this.state.rows.length;
-        if (!this.hasFilters) {
-            return { all: true, text: !all ? _t("Showing nobody in a trial period yet")
-                : all === 1 ? _t("Showing all 1 person in a trial period · press a step or a number to narrow it")
-                    : _t("Showing all %s people in a trial period · press a step or a number to narrow it", all) };
-        }
-        const shown = this.visibleRows.length;
-        const st = this.stepDefs.find((x) => x.key === this.state.step);
-        return { all: false, text: st
-            ? _t("Showing %s of %s people at %s", shown, all, st.title)
-            : _t("Showing %s of %s people in a trial period", shown, all) };
+    stepIsOn(key) {
+        const v = this.kit.values("stage");
+        return v.length === 1 && String(v[0]) === key;
     }
 
-    onSearch(ev) { this.state.q = ev.target.value; }
-    setCountry(id) { this.state.country = this.state.country === id ? "all" : id; }
-    setDept(id) { this.state.dept = this.state.dept === id ? "all" : id; }
-    setReviewState(id) {
-        this.state.reviewState = this.state.reviewState === id ? "all" : id;
+    /** A step narrows the panel's list to that step, keeping every other
+     *  filter; pressing the lit step again lifts it. */
+    pickStep(key) {
+        if (this.stepIsOn(key)) { this.kit.clear("stage"); } else { this.kit.only("stage", key); }
     }
-    toggleAttention() { this.state.attentionOnly = !this.state.attentionOnly; }
 
     // ------------------------------------------------------------ the rail
     stageLabel(stage) { return STAGE_LABEL[stage] || stage; }
