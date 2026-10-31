@@ -1033,6 +1033,24 @@ class PbTenants(models.AbstractModel):
                 sites = env['website'].sudo().search([])
                 if sites:
                     sites.write({'name': name})
+        # WHITELABEL 2026-10-31. On the paid level the product rule is on, and
+        # the rows cloned from the template still say the master product's
+        # name — mail templates, lessons, job names, journey steps. The
+        # stored-row scrub in biz_debrand is the ONE place that rewrites them,
+        # and its Save handler is deliberately not called (see above), so the
+        # scrub is called on its own. The process cache of this database's
+        # brand is dropped first, so the seams in this very process stop
+        # serving the previous level's answer.
+        if values.get('biz_debrand.product_name'):
+            try:
+                from odoo.addons.biz_debrand.models.brand import invalidate
+                invalidate(env.cr.dbname)
+            except Exception:  # noqa: BLE001 — biz_debrand absent: nothing cached
+                pass
+            scrub = getattr(env['res.config.settings'], '_biz_debrand_scrub_data', None)
+            if scrub:
+                rows = scrub()
+                say('Stored text rewritten to the brand: %s rows.' % (rows or 0))
         title, blurb = tenant.brand_summary(master_brand=master_brand)
         say('Branding applied: %s. %s' % (title, blurb))
         return values
