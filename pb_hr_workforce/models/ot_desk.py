@@ -23,11 +23,19 @@ _OT_COLORS = {'weekday': '#e74c3c', 'weekend': '#9b59b6',
 _BONUS_PAGE = 100          # bonus review rows per page
 _BONUS_SCAN_CAP = 5000     # hard cap on the bonus scan (surfaced, never silent)
 _CSV_CAP = 20000           # export row cap (surfaced)
+#: Queue cards per page of the shared filter panel (FILTER wave 8). Each card
+#: carries a live split preview, so the page is kept short; "Show N more"
+#: appends the next one.
+_QUEUE_PAGE = 40
 
 
 class PbOtDesk(models.AbstractModel):
     _name = 'pb.ot.desk'
     _description = 'Overtime Desk Cockpit'
+    # FILTER wave 8: the approval queue sits on the shared filter panel. The
+    # Bonus Hours review keeps its own server filters (a second surface over
+    # the same model with a different base, R5-like) and is untouched.
+    _inherit = ['pb.filter.mixin']
 
     # ------------------------------------------------------------- access
     @api.model
@@ -83,7 +91,14 @@ class PbOtDesk(models.AbstractModel):
 
     # ------------------------------------------------------------- desk load
     @api.model
-    def get_desk(self):
+    def get_desk(self, with_queue=True):
+        """The board: numbers, rules, and (for older callers) the whole queue.
+
+        The cockpit itself passes ``with_queue=False`` since FILTER wave 8 and
+        reads the queue a page at a time through :meth:`get_queue_page`, for
+        the filter panel's state. The full list stays here for the callers
+        that read it (R4).
+        """
         # Review K-F5: the sidebar admits BOTH tiers, so the entry gate must
         # too. A pure bonus viewer (payroll manager without the attendance
         # role) gets the Bonus review surface with an EMPTY approval queue —
@@ -102,38 +117,200 @@ class PbOtDesk(models.AbstractModel):
         reqs = Req.search([
             ('state', '=', 'submitted'),
             ('employee_id.company_id', 'in', co_ids),
-        ], order='date desc, id desc') if can_act else Req.browse()
+        ], order='date desc, id desc') if (can_act and with_queue) else Req.browse()
 
+        return {
+            'can_view_bonus': self._is_bonus_viewer(),
+            'can_act': can_act,
+            'kpis': self._kpis(co_ids),
+            'queue': self._queue_cards(reqs),
+            'configs': self._config_gallery(),
+            'bonus_presets': self._preset_list(),
+        }
+
+    def _queue_cards(self, reqs):
+        """One card per request: who, when, the type, the split and the
+        ceiling bars. A request still waiting shows what approval WOULD store
+        right now; a decided one shows what was stored."""
+        if not reqs:
+            return []
+        Req = self.env['hr.overtime.request'].sudo()
         emp_ids = reqs.mapped('employee_id').ids
-        # ONE batched ceiling read for every employee in the queue
+        # ONE batched ceiling read for every employee on the page
         ceilings = self.env['hr.attendance.weekentry'].get_ot_ceilings(
             emp_ids, date.today().isoformat()) if emp_ids else {}
-
-        queue = []
+        types = dict(Req._fields['overtime_type'].selection)
+        states = dict(Req._fields['state'].selection)
+        cards = []
         for r in reqs:
-            split = self._split_preview(r)
-            queue.append({
+            waiting = r.state == 'submitted'
+            if waiting:
+                split = self._split_preview(r)
+            else:
+                split = {'entry': round(r.actual_hours or r.planned_hours or 0.0, 2),
+                         'approved': round(r.approved_hours or 0.0, 2),
+                         'bonus': round(r.bonus_hours or 0.0, 2)}
+            cards.append({
                 'id': r.id,
                 'employee': self._emp_card(r.employee_id),
                 'date': r.date.isoformat() if r.date else '',
                 'type': r.overtime_type,
-                'type_label': dict(Req._fields['overtime_type'].selection).get(
-                    r.overtime_type, r.overtime_type),
+                'type_label': types.get(r.overtime_type, r.overtime_type),
                 'color': _OT_COLORS.get(r.overtime_type, '#5A4BB0'),
                 'rate': r.rate_display or '',
                 'planned': round(r.planned_hours or 0.0, 2),
                 'split': split,
                 'ceiling': ceilings.get(r.employee_id.id, {}),
                 'reason': r.reason or '',
+                'state': r.state,
+                'state_label': states.get(r.state, r.state),
+                'can_act': waiting,
             })
+        return cards
 
+    # ------------------------------------------------- the shared filter panel
+    @api.model
+    def _ot_can_act(self):
+        try:
+            self._require_manager()
+            return True
+        except AccessError:
+            return False
+
+    def _pbf_model(self):
+        return 'hr.overtime.request'
+
+    def _pbf_screen(self):
+        return 'otqueue'
+
+    def _pbf_records(self):
+        # Same read as the queue always had: sudo behind the manager gate,
+        # with the company boundary carried by the base domain below.
+        return self.env['hr.overtime.request'].sudo()
+
+    def _pbf_base_domain(self):
+        if not self._ot_can_act():
+            # Counts are asked without going through pbf_layout: a reader the
+            # desk refuses must get nothing from them either.
+            return [('id', '=', 0)]
+        # Drafts are the employee's own, not yet sent; everything sent stays
+        # findable, and the first view narrows to what waits for a decision.
+        return [('employee_id.company_id', 'in', self._co_ids()),
+                ('state', 'in', ('submitted', 'approved', 'refused'))]
+
+    def _pbf_search_fields(self):
+        return ['employee_id.name', 'department_id.name', 'reason']
+
+    def _pbf_sorts(self):
+        return [
+            {'key': 'newest', 'label': _('Newest day first'), 'order': 'date desc, id desc'},
+            {'key': 'oldest', 'label': _('Oldest day first'), 'order': 'date asc, id asc'},
+            {'key': 'hours', 'label': _('Most hours first'), 'order': 'planned_hours desc, date desc, id desc'},
+            {'key': 'name', 'label': _('Name, A to Z'), 'order': 'employee_id, date desc, id desc'},
+        ]
+
+    def _pbf_spec(self):
+        spec = [
+            # ---- pinned: whose team, what kind, which day
+            {'key': 'department', 'label': _('Department'), 'icon': 'building',
+             'group': 'people', 'type': 'many2one', 'path': 'department_id', 'pinned': True,
+             'none_label': _('No department')},
+            # a choice, not the field's selection: the card's own words, and
+            # translated by _() rather than by stored selection rows (F27/F28)
+            {'key': 'type', 'label': _('Kind of overtime'), 'icon': 'clock',
+             'group': 'work', 'type': 'choice', 'pinned': True,
+             'options': [
+                 {'value': 'weekday', 'label': _('Weekday'), 'domain': [('overtime_type', '=', 'weekday')]},
+                 {'value': 'weekend', 'label': _('Weekend'), 'domain': [('overtime_type', '=', 'weekend')]},
+                 {'value': 'holiday', 'label': _('Public Holiday'), 'domain': [('overtime_type', '=', 'holiday')]},
+                 {'value': 'night', 'label': _('Night'), 'domain': [('overtime_type', '=', 'night')]},
+             ]},
+            {'key': 'day', 'label': _('Day worked'), 'icon': 'calendar',
+             'group': 'dates', 'type': 'date', 'path': 'date', 'pinned': True,
+             'presets': ['today', 'this_week', 'this_month', 'last_month', 'last_90',
+                         'this_quarter', 'this_year', 'last_year']},
+            # ---- more filters
+            {'key': 'status', 'label': _('Where it is'), 'icon': 'inbox',
+             'group': 'work', 'type': 'choice',
+             'options': [
+                 {'value': 'submitted', 'label': _('Waiting for a decision'), 'tone': 'amber',
+                  'domain': [('state', '=', 'submitted')]},
+                 {'value': 'approved', 'label': _('Approved'), 'tone': 'green',
+                  'domain': [('state', '=', 'approved')]},
+                 {'value': 'refused', 'label': _('Refused'), 'tone': 'slate',
+                  'domain': [('state', '=', 'refused')]},
+             ]},
+            {'key': 'employee', 'label': _('Person'), 'icon': 'user',
+             'group': 'people', 'type': 'many2one', 'path': 'employee_id'},
+            {'key': 'manager', 'label': _('Manager'), 'icon': 'userCheck',
+             'group': 'people', 'type': 'many2one', 'path': 'manager_id',
+             'none_label': _('No manager')},
+            {'key': 'planned', 'label': _('Hours asked for'), 'icon': 'clock',
+             'group': 'work', 'type': 'number', 'path': 'planned_hours'},
+            {'key': 'rule', 'label': _('Overtime rule'), 'icon': 'sliders',
+             'group': 'work', 'type': 'many2one', 'path': 'overtime_config_id',
+             'none_label': _('No rule matched')},
+            {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
+             'group': 'work', 'type': 'many2one', 'path': 'employee_id.company_id'},
+        ]
+        if self._is_bonus_viewer():
+            # Bonus hours are the restricted slice (payroll-manager tier): an
+            # approver-only manager never gets a filter that reads them.
+            spec[5:5] = [
+                {'key': 'overflow', 'label': _('Beyond the ceiling'), 'icon': 'coins',
+                 'group': 'pay', 'type': 'choice',
+                 'options': [
+                     {'value': 'yes', 'label': _('Has bonus hours'), 'tone': 'amber',
+                      'domain': [('bonus_hours', '>', 0)]},
+                     {'value': 'no', 'label': _('Within the ceiling'), 'tone': 'green',
+                      'domain': ['|', ('bonus_hours', '=', False), ('bonus_hours', '<=', 0)]},
+                 ]},
+                {'key': 'bonus', 'label': _('Bonus hours'), 'icon': 'coins',
+                 'group': 'pay', 'type': 'number', 'path': 'bonus_hours'},
+            ]
+        return spec
+
+    def _pbf_builtin_views(self):
+        waiting = ['submitted']
+        return [
+            {'key': 'todo', 'label': _('To approve'), 'icon': 'inbox',
+             'filters': {'status': waiting}},
+            {'key': 'approved_month', 'label': _('Approved this month'),
+             'filters': {'status': ['approved'], 'day': {'preset': 'this_month'}}},
+            {'key': 'bonus', 'label': _('With bonus hours'),
+             'filters': {'overflow': ['yes']}},
+            {'key': 'weekend', 'label': _('Weekend and holiday'),
+             'filters': {'status': waiting, 'type': ['weekend', 'holiday']}},
+            {'key': 'week', 'label': _('This week'),
+             'filters': {'status': waiting, 'day': {'preset': 'this_week'}}},
+        ]
+
+    @api.model
+    def pbf_layout(self):
+        if not self._ot_can_act():
+            # the desk's own gate: a pure bonus viewer has no approval queue
+            return {'refused': _("The approval queue is for attendance managers. "
+                                 "You can open the Bonus Hours review above.")}
+        return super().pbf_layout()
+
+    @api.model
+    def get_queue_page(self, filters=None, search=None, sort=None, offset=0,
+                       limit=_QUEUE_PAGE):
+        """One page of the approval queue for the filter panel's state."""
+        self._require_manager()
+        try:
+            offset = max(0, int(offset or 0))
+            limit = max(1, min(int(limit or _QUEUE_PAGE), 100))
+        except (TypeError, ValueError):
+            offset, limit = 0, _QUEUE_PAGE
+        Req = self._pbf_records()
+        domain = self.pbf_domain(filters or {}, search)
+        reqs = Req.search(domain, order=self.pbf_order(sort) or 'date desc, id desc',
+                          offset=offset, limit=limit)
         return {
-            'can_view_bonus': self._is_bonus_viewer(),
-            'can_act': can_act,
-            'kpis': self._kpis(co_ids),
-            'queue': queue,
-            'configs': self._config_gallery(),
-            'bonus_presets': self._preset_list(),
+            'rows': self._queue_cards(reqs),
+            'total': Req.search_count(domain),
+            'offset': offset,
         }
 
     def _kpis(self, co_ids):

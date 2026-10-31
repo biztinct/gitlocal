@@ -35,29 +35,67 @@
              a ceiling. The month's hours per overtime type follow, neutral. -->
         <t t-call="pb_import_kit.QuietGlance">
           <t t-set="qGlance" t-value="glance"/>
-          <t t-set="qGlanceOn" t-value="''"/>
+          <t t-set="qGlanceOn" t-value="glanceOn"/>
         </t>
 
         <!-- queue -->
-        <section class="pbot-panel" data-coach="wf-ot-queue">
+        <section class="pbot-panel pbot-queuepanel" data-coach="wf-ot-queue">
           <div class="panel-h">
             <div class="ttl"><span t-out="ic('inbox',18)"/> Approval queue</div>
-            <button t-if="queue.length" class="pbot-btn tiny ghost" t-on-click="selectAll">
-              <span>Select all</span>
-            </button>
           </div>
 
-          <div t-if="!queue.length" class="pbot-empty">
+          <!-- A pure bonus viewer has no queue: the desk's own sentence, no panel. -->
+          <div t-if="kit.refusal" class="pbot-empty">
+            <span class="i" t-out="ic('lock',30)"/>
+            <div class="t">Not your queue</div>
+            <div class="s" t-esc="kit.refusal"/>
+          </div>
+
+          <!-- FILTER wave 8: the shared filter panel (pb_filter_kit) around the
+               queue. coach= renders data-coach="wf-ot-filters" on the layout's
+               bar (views, Filters, search, sort, Select all). -->
+          <div t-else="" class="pbot-filterwrap">
+          <PbFilterLayout kit="kit" coach="'wf-ot-filters'"
+                          searchPlaceholder="queueSearchPlaceholder">
+            <t t-set-slot="toolbar">
+              <button t-if="actable.length" class="pbot-btn tiny ghost" t-on-click="selectAll"
+                      title="Ticks every card on this page that is still waiting">
+                <span t-out="ic('check',13)"/><span t-esc="selectAllLabel"/>
+              </button>
+            </t>
+
+          <!-- loading: the shape of the queue, never a blank -->
+          <div t-if="!state.listLoaded" class="pbot-queue pbot-skel" aria-label="Loading the queue">
+            <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="pbot-skel-row"/>
+          </div>
+
+          <div t-elif="!queue.length and emptyKind === 'clear'" class="pbot-empty">
             <span class="i" t-out="ic('checkCircle',30)"/>
             <div class="t">Queue clear</div>
             <div class="s">No overtime requests are waiting for approval.</div>
           </div>
+          <div t-elif="!queue.length and emptyKind === 'search'" class="pbot-empty">
+            <span class="i" t-out="ic('search',30)"/>
+            <div class="t" t-esc="searchEmptyTitle"/>
+            <div class="s">Check the spelling, or search by a person, a department or a word from the reason.</div>
+            <button class="pbot-btn ghost" t-on-click="() => kit.setSearch('', true)">
+              <span t-out="ic('x',14)"/><span>Clear the search</span>
+            </button>
+          </div>
+          <div t-elif="!queue.length" class="pbot-empty">
+            <span class="i" t-out="ic('filter',30)"/>
+            <div class="t">No request matches these filters</div>
+            <div class="s">Remove a filter above, or go back to the requests waiting for a decision.</div>
+            <button class="pbot-btn ghost" t-on-click="startAgain">
+              <span t-out="ic('inbox',14)"/><span>Show what is waiting</span>
+            </button>
+          </div>
 
           <div t-else="" class="pbot-queue">
             <div t-foreach="queue" t-as="q" t-key="q.id"
-                 t-attf-class="ot-card {{ isSelected(q.id) ? 'sel' : '' }}">
+                 t-attf-class="ot-card {{ isSelected(q.id) ? 'sel' : '' }} {{ q.can_act ? '' : 'done' }}">
               <label class="pick">
-                <input type="checkbox" t-att-checked="isSelected(q.id)"
+                <input t-if="q.can_act" type="checkbox" t-att-checked="isSelected(q.id)"
                        t-on-change="() => this.toggle(q.id)"/>
               </label>
               <img class="av" t-att-src="q.employee.avatar_url" alt=""/>
@@ -89,17 +127,30 @@
                         t-attf-style="width: {{ pct(q.ceiling.ytd, q.ceiling.cap_year) }}%"/></span>
                 </div>
               </div>
-              <div class="acts">
+              <div t-if="q.can_act" class="acts">
                 <button class="pbot-btn tiny primary" t-on-click="() => this.approveOne(q.id)">
                   <span t-out="ic('check',13)"/><span>Approve</span>
                 </button>
-                <button class="pbot-btn tiny bad ghost" t-on-click="() => this.refuseOne(q.id)">
+                <button class="pbot-btn tiny bad ghost" t-on-click="() => this.refuseOne(q.id)" title="Refuse">
                   <span t-out="ic('x',13)"/>
                 </button>
+              </div>
+              <div t-else="" class="acts">
+                <span t-attf-class="stchip is-{{ q.state }}" t-esc="q.state_label"/>
               </div>
               <div t-if="state.rowResults[q.id] and !state.rowResults[q.id].ok" class="rowerr"
                    t-esc="state.rowResults[q.id].error"/>
             </div>
+          </div>
+
+          <div t-if="state.listLoaded and queue.length" class="pbot-foot">
+            <span t-esc="showingLine"/>
+            <button t-if="hasMore" class="pbot-btn tiny ghost" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="" t-esc="nextLabel"/>
+            </button>
+          </div>
+          </PbFilterLayout>
           </div>
         </section>
 

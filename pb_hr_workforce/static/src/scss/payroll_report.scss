@@ -281,6 +281,28 @@
         .prd-spin { animation-duration: 3s; }
     }
 
+    // ================================== the shared filter panel (FILTER w8)
+    // The panel's own look is pb_filter_kit's; this seats it under the sticky
+    // toolbar (the panel sticks below it, not behind it) and draws the
+    // states around the tables.
+    .prd-filters { padding-top: 14px; }
+    .prd-filters .pbf-panel { top: 76px; }
+    .prd-filters .pbf-panel-in { max-height: calc(100vh - 150px); }
+    .prd-filters .prd-tablewrap:first-child,
+    .prd-filters .prd-summary-layout + .prd-tablewrap { margin-top: 0; }
+    .prd-filters .prd-empty { margin-top: 0; }
+    .prd-empty-btn { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; }
+    .prd-kpi-btn { font: inherit; cursor: pointer; transition: border-color .15s, background .15s;
+        &:hover { border-color: var(--amber); }
+        &.is-on { background: #FEF3C7; border-color: var(--amber); } }
+    .prd-kpis-note { margin: 6px 22px 0; font-size: 12px; color: var(--muted); }
+    .prd-skel { padding: 10px 14px; display: grid; gap: 10px; }
+    .prd-skel-row { height: 40px; border-radius: var(--r-sm); background: var(--line-2);
+        animation: prd-pulse 1.2s ease-in-out infinite; }
+    .prd-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 12px 2px 0; color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) { .prd-skel-row { animation: none; } }
+
     // =========================================================== responsive
     @media (max-width: 900px) {
         .prd-summary-layout { flex-direction: column; align-items: stretch; }
@@ -296,6 +318,7 @@
 }
 
 @keyframes prd-spin { to { transform: rotate(360deg); } }
+@keyframes prd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 
 /* ------------------------------------------------------------------ hub mode
    IA Cycle 4. `.prd` already owns its scrolling at `height: 100%`, so the lens

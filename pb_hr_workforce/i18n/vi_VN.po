@@ -309,6 +309,8 @@ msgstr "Phê duyệt làm thêm giờ và quản lý giới hạn"
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__state__approved
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Approved"
 msgstr "Đã phê duyệt"
 
@@ -473,6 +475,9 @@ msgstr "Chỉ mục màu"
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_planning__company_id
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_shift_template__company_id
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_pb_ot_ceiling__company_id
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
 msgid "Company"
 msgstr "Công ty"
 
@@ -562,6 +567,8 @@ msgstr "Ngày"
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:283
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "Day"
 msgstr "Ngày"
 
@@ -585,6 +592,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:282
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
 msgid "Department"
 msgstr "Phòng ban"
 
@@ -650,6 +661,7 @@ msgstr "Tỷ lệ hiệu quả"
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_planning_search
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:281
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
 msgid "Employee"
 msgstr "Nhân viên"
 
@@ -918,6 +930,9 @@ msgstr "M"
 
 #. module: pb_hr_workforce
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_overtime_request__manager_id
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
 msgid "Manager"
 msgstr "Quản lý"
 
@@ -1084,6 +1099,8 @@ msgstr "Tiếp theo Hoạt động Loại"
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_shift_template__shift_type__night
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_shift_template_kanban
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:173
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Night"
 msgstr "Đêm"
 
@@ -1101,6 +1118,7 @@ msgstr "Không có giờ thưởng"
 #. module: pb_hr_workforce
 #. odoo-python
 #: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
 msgid "No department"
 msgstr "Chưa có phòng ban"
 
@@ -1451,6 +1469,8 @@ msgstr "Trước đó"
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__holiday
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:173
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Public Holiday"
 msgstr "Nghỉ lễ"
 
@@ -1546,6 +1566,9 @@ msgstr "Từ chối làm thêm giờ"
 #. module: pb_hr_workforce
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__state__refused
 #: model_terms:ir.ui.view,arch_db:pb_hr_workforce.view_overtime_request_form
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
 msgid "Refused"
 msgstr "Đã từ chối"
 
@@ -2020,6 +2043,8 @@ msgstr "Lưới tuần"
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__weekday
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:172
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Weekday"
 msgstr "Ngày thường"
 
@@ -2034,6 +2059,8 @@ msgstr "Làm thêm giờ trong tuần"
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
 #: model:ir.model.fields.selection,name:pb_hr_workforce.selection__hr_overtime_request__overtime_type__weekend
 #: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:172
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Weekend"
 msgstr "Cuối tuần"
 
@@ -2146,6 +2173,7 @@ msgstr "b"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 msgid "bonus hours this month"
 msgstr "giờ thưởng tháng này"
 
@@ -2232,6 +2260,7 @@ msgstr "trang"
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 msgid "pending approvals"
 msgstr "chờ duyệt"
 
@@ -2251,6 +2280,7 @@ msgstr "(các) yêu cầu. Thêm ghi chú tùy chọn."
 #. module: pb_hr_workforce
 #. odoo-javascript
 #: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
 msgid "requests"
 msgstr "yêu cầu"
 
@@ -2297,6 +2327,7 @@ msgstr "%(h)s h đã vượt mức trần hàng tháng của %(cap)s h. Phần d
 #. module: pb_hr_workforce
 #. odoo-python
 #: code:addons/pb_hr_workforce/models/overtime_request_approval.py:0
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
 msgid "Hours asked for"
 msgstr "Số giờ đề nghị"
 
@@ -2521,3 +2552,466 @@ msgstr "Đang tải dữ liệu lương…"
 #: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
 msgid "%(name)s (%(count)s slips)"
 msgstr "%(name)s (%(count)s phiếu lương)"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Against the last run"
+msgstr "So với đợt trước"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Approved this month"
+msgstr "Đã duyệt trong tháng này"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Being prepared"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Beyond the ceiling"
+msgstr "Vượt mức trần"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Bonus hours"
+msgstr "Giờ thưởng"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid ""
+"Check the spelling, or search by a person, a department or a word from the "
+"reason."
+msgstr ""
+"Kiểm tra chính tả, hoặc tìm theo người, phòng ban hoặc một từ trong lý do."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Check the spelling, or search by job or department."
+msgstr "Kiểm tra chính tả, hoặc tìm theo chức danh hoặc phòng ban."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Clear the search"
+msgstr "Xóa tìm kiếm"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Clear the selection"
+msgstr "Bỏ chọn"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Day worked"
+msgstr "Ngày làm việc"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Done"
+msgstr "Hoàn tất"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Everyone in this run"
+msgstr "Mọi người trong đợt này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid ""
+"Generate the payslips on the pay run, then come back to compare them with "
+"the run before."
+msgstr ""
+"Hãy tạo phiếu lương cho đợt lương, rồi quay lại để so sánh với đợt trước."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Has bonus hours"
+msgstr "Có giờ thưởng"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Job position"
+msgstr "Chức danh"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Joined"
+msgstr "Vào làm"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Joined before this run"
+msgstr "Vào làm trước đợt này"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Joined in this run"
+msgstr "Vào làm trong đợt này"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Kind of overtime"
+msgstr "Loại tăng ca"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Loading payroll data"
+msgstr "Đang tải dữ liệu lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Loading the queue"
+msgstr "Đang tải hàng chờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Most hours first"
+msgstr "Nhiều giờ nhất trước"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Name, Z to A"
+msgstr "Tên, Z đến A"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "New joiners this run"
+msgstr "Người mới vào trong đợt này"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Newest day first"
+msgstr "Ngày gần nhất trước"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "No job position"
+msgstr "Chưa có chức danh"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "No manager"
+msgstr "Chưa có quản lý"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "No pay run yet"
+msgstr "Chưa có đợt lương nào"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "No pay structure"
+msgstr "Chưa có cơ cấu lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "No payslip matches these filters"
+msgstr "Không có phiếu lương nào khớp với các bộ lọc này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "No payslips in this run"
+msgstr "Đợt này chưa có phiếu lương"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "No request matches these filters"
+msgstr "Không có yêu cầu nào khớp với các bộ lọc này"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "No rule matched"
+msgstr "Không khớp quy tắc nào"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "Nobody in this run matches “%s”"
+msgstr "Không ai trong đợt này khớp với “%s”"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Not your queue"
+msgstr "Không phải hàng chờ của bạn"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Nothing matches “%s”"
+msgstr "Không có gì khớp với “%s”"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Nothing to compare with"
+msgstr "Không có gì để so sánh"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Oldest day first"
+msgstr "Ngày xa nhất trước"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid ""
+"Once a pay run has payslips, this report compares every person's pay with "
+"the run before it."
+msgstr ""
+"Khi một đợt lương có phiếu lương, báo cáo này so sánh lương của từng người "
+"với đợt liền trước."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Overtime rule"
+msgstr "Quy tắc tăng ca"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Pay changed"
+msgstr "Lương thay đổi"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid ""
+"Pay changed: gross pay or basic salary moved against the same person in the "
+"previous run."
+msgstr ""
+"Lương thay đổi: tổng thu nhập hoặc lương cơ bản khác so với chính người đó ở"
+" đợt lương trước."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Pay structure"
+msgstr "Cơ cấu lương"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Payslip number"
+msgstr "Số phiếu lương"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Payslip status"
+msgstr "Trạng thái phiếu lương"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid ""
+"Remove a filter above, or go back to the requests waiting for a decision."
+msgstr ""
+"Bỏ bớt một bộ lọc ở trên, hoặc quay lại các yêu cầu đang chờ quyết định."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Remove a filter above, or show everyone in this run again."
+msgstr "Bỏ bớt một bộ lọc ở trên, hoặc hiện lại mọi người trong đợt này."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Same as last run"
+msgstr "Như đợt trước"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Search a name, a department or a reason"
+msgstr "Tìm theo tên, phòng ban hoặc lý do"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "Search a name, a job or a department"
+msgstr "Tìm theo tên, chức danh hoặc phòng ban"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Select the %s waiting here"
+msgstr "Chọn %s yêu cầu đang chờ ở đây"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Show %s more"
+msgstr "Xem thêm %s"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Show everyone in this run"
+msgstr "Hiện mọi người trong đợt này"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/payroll_report.xml:0
+msgid "Show only the people whose pay changed"
+msgstr "Chỉ hiện những người có lương thay đổi"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Show what is waiting"
+msgstr "Xem những gì đang chờ"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Showing %(shown)s of %(total)s"
+msgstr "Đang hiển thị %(shown)s / %(total)s"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid ""
+"The approval queue is for attendance managers. You can open the Bonus Hours "
+"review above."
+msgstr ""
+"Hàng chờ duyệt dành cho người quản lý chấm công. Bạn có thể mở phần xem xét "
+"Giờ thưởng ở phía trên."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "The pay runs could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị các đợt lương. Vui lòng thử lại sau giây lát."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "The payroll report could not be loaded. Try again in a moment."
+msgstr "Không thể tải báo cáo lương. Vui lòng thử lại sau giây lát."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "The queue could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị hàng chờ. Vui lòng thử lại sau giây lát."
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Ticks every card on this page that is still waiting"
+msgstr "Đánh dấu mọi thẻ trên trang này vẫn đang chờ"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "To approve"
+msgstr "Chờ duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "Totals for the %s payslips the filters show."
+msgstr "Tổng của %s phiếu lương mà bộ lọc đang hiển thị."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Waiting for a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/payroll_report.py:0
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Weekend and holiday"
+msgstr "Cuối tuần và ngày lễ"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "With bonus hours"
+msgstr "Có giờ thưởng"
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Within the ceiling"
+msgstr "Trong mức trần"
+
+#. module: pb_hr_workforce
+#. odoo-javascript
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+msgid "payslips"
+msgstr "phiếu lương"

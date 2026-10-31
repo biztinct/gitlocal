@@ -34,13 +34,20 @@
  * perfectly (W40's shape: a `catch`-like guard that turns a missing dependency
  * into a missing feature). The bundle is now awaited before the first paint.
  */
-import { Component, useState, onMounted, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
 import { loadBundle } from "@web/core/assets";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+/** The list's facade on the shared filter panel (FILTER wave 8). */
+const LIST = "pb.payroll.report";
+/** Rows per page (server: `REPORT_PAGE`). */
+const PAGE = 60;
 
 function fmt(val) {
     if (!val && val !== 0) return "–";
@@ -49,6 +56,7 @@ function fmt(val) {
 
 export class PayrollReport extends Component {
     static template = "pb_hr_workforce.PayrollReport";
+    static components = { PbFilterLayout };
 
     static props = {
         action: { type: Object, optional: true },
@@ -61,6 +69,7 @@ export class PayrollReport extends Component {
     setup() {
         this.actionService = useService("action");
         this.notification = useService("notification");
+        this.orm = useService("orm");
 
         // Check if opened from batch run with context
         const action = this.props.action || {};
@@ -72,22 +81,33 @@ export class PayrollReport extends Component {
             activeTab: "earnings",
             batchId: initialBatchId,
             batches: [],
+            batchesLoaded: false,
             batch: {},
             prevBatch: {},
-            employees: [],
+            // FILTER wave 8: the run's payslips, one page at a time for the
+            // filter panel; the totals and the department summary come from
+            // the server over every payslip the filters match.
+            rows: [],
+            total: 0,
+            listLoaded: false,
+            loadingMore: false,
             deptChart: [],
             summary: { total_employees: 0, total_gross: 0, total_net: 0, total_deductions: 0, changes: 0 },
-            searchQuery: "",
             expandedEmp: false,
+        });
+
+        // The panel is pointed at the picked run (`pbf_ctx.run_id`) once the
+        // run list has answered, and pointed again whenever another run is
+        // picked — so it is loaded by hand (`defer`).
+        this.kit = useFilterKit({
+            model: LIST,
+            noun: _t("payslips"),
+            defer: true,
+            onChange: () => this.loadPage(),
         });
 
         onWillStart(async () => {
             await this.loadBatches();
-        });
-        onMounted(async () => {
-            if (this.state.batchId) {
-                await this.loadReport(this.state.batchId);
-            }
         });
     }
 
@@ -95,16 +115,6 @@ export class PayrollReport extends Component {
     fmt(val) { return fmt(val); }
     batchLabel(b) {
         return _t("%(name)s (%(count)s slips)", { name: b.name, count: b.count });
-    }
-
-    get filteredEmployees() {
-        const q = (this.state.searchQuery || "").toLowerCase().trim();
-        if (!q) return this.state.employees;
-        return this.state.employees.filter(e =>
-            e.name.toLowerCase().includes(q) ||
-            (e.job_title || "").toLowerCase().includes(q) ||
-            (e.department || "").toLowerCase().includes(q)
-        );
     }
 
     async _rpc(method, args = []) {
@@ -116,48 +126,102 @@ export class PayrollReport extends Component {
     async loadBatches() {
         try {
             this.state.batches = await this._rpc("get_all_batches");
-            // Auto-select first if none selected
-            if (!this.state.batchId && this.state.batches.length > 0) {
-                this.state.batchId = this.state.batches[0].id;
-                await this.loadReport(this.state.batchId);
-            }
         } catch (e) {
             console.error("Failed to load batches:", e);
+            this.notification.add(_t("The pay runs could not be listed. Try again in a moment."), { type: "danger" });
+        }
+        this.state.batchesLoaded = true;
+        // Opened from a run, or the newest one
+        const id = this.state.batchId || (this.state.batches[0] && this.state.batches[0].id);
+        if (id) {
+            await this.selectRun(id);
         }
     }
 
-    async loadReport(batchId) {
-        this.state.loading = true;
-        try {
-            const data = await this._rpc("get_batch_report", [batchId]);
-            if (data.error) {
-                this.notification.add(data.error, { type: "danger" });
-                this.state.loading = false;
-                return;
-            }
-            Object.assign(this.state, {
-                batch: data.batch,
-                prevBatch: data.prev_batch,
-                employees: data.employees,
-                deptChart: data.dept_chart,
-                summary: data.summary,
-            });
-            // Render chart after data loads
-            if (this.state.activeTab === "summary") {
-                setTimeout(() => this._renderDonut(), 100);
-            }
-        } catch (e) {
-            console.error("Report load failed:", e);
-            this.notification.add(_t("Failed to load payroll report"), { type: "danger" });
-        }
-        this.state.loading = false;
+    /** Point the panel at a run. The filters a reader set travel with them. */
+    async selectRun(id) {
+        this.state.batchId = id;
+        this.state.listLoaded = false;
+        this.state.expandedEmp = false;
+        const keep = this.kit.loaded && !this.kit.failed
+            ? { filters: this.kit.filters, search: this.kit.search, viewKey: this.kit.viewKey }
+            : undefined;
+        await this.kit.reconfigure({ ctx: { run_id: id }, initial: keep });
     }
+
+    /** One page of payslips for the panel's state (and, on the first page,
+     *  the totals and department summary of everything that matches). */
+    async loadPage({ more = false } = {}) {
+        if (!this.state.batchId) {
+            this.state.listLoaded = true;
+            return;
+        }
+        const q = this.kit.query;
+        const offset = more ? this.state.rows.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const data = await this.orm.call(LIST, "get_report_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+                context: { pbf_ctx: { run_id: this.state.batchId } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.rows = more ? [...this.state.rows, ...data.rows] : data.rows;
+            this.state.total = data.total;
+            if (!more) {
+                Object.assign(this.state, {
+                    batch: data.batch || {},
+                    prevBatch: data.prev_batch || {},
+                    deptChart: data.dept_chart || [],
+                    summary: data.summary || this.state.summary,
+                    expandedEmp: false,
+                });
+                if (this.state.activeTab === "summary") {
+                    setTimeout(() => this._renderDonut(), 100);
+                }
+            }
+            this.state.listLoaded = true;
+        } catch (e) {
+            if (this.kit.isCurrent(q.seq)) {
+                console.error("Report load failed:", e);
+                this.notification.add(_t("The payroll report could not be loaded. Try again in a moment."), { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    loadMore() { if (!this.state.loadingMore) { this.loadPage({ more: true }); } }
+    get hasMore() { return this.state.rows.length < this.state.total; }
+    get nextLabel() {
+        return _t("Show %s more", fmt(Math.min(PAGE, this.state.total - this.state.rows.length)));
+    }
+    get showingLine() {
+        return _t("Showing %(shown)s of %(total)s", { shown: fmt(this.state.rows.length), total: fmt(this.state.total) });
+    }
+    get rows() { return this.state.rows; }
+    get filtered() { return !!(this.kit.activeCount || this.kit.search); }
+    get emptyTitle() {
+        return this.kit.search && !this.kit.activeCount
+            ? _t("Nobody in this run matches “%s”", this.kit.search)
+            : _t("No payslip matches these filters");
+    }
+    get kpiNote() {
+        return _t("Totals for the %s payslips the filters show.", fmt(this.state.summary.total_employees));
+    }
+    /** The Changes figure is the "Pay changed" filter. */
+    get changedOn() { return this.kit.loaded && this.kit.isExactly({ changed: ["changed"] }); }
+    toggleChanged() {
+        if (this.kit.loaded && !this.kit.failed) { this.kit.toggleFilters({ changed: ["changed"] }); }
+    }
+    showEveryone() { this.kit.home(); }
+    /** A getter, so the words are translated (F29). */
+    get searchPlaceholder() { return _t("Search a name, a job or a department"); }
 
     onBatchChange(ev) {
         const id = parseInt(ev.target.value);
         if (id) {
-            this.state.batchId = id;
-            this.loadReport(id);
+            this.selectRun(id);
         }
     }
 

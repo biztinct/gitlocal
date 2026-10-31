@@ -889,3 +889,32 @@
     font-weight: 600;
     margin: 0 2px;
 }
+
+/* ── FILTER wave 8: the Employee Forecast Detail table on the shared filter
+   panel (pb_filter_kit). The panel's own look is the kit's; this seats it
+   in the table card and draws the states around the table. Flat fills. ── */
+.wfp-fc-body { margin-top: 12px; }
+.wfp-fc-card .wfp-table thead th { cursor: pointer; user-select: none; }
+.wfp-fc-card .wfp-table thead th.wfp-sorted { color: var(--wfp-text-accent); }
+.wfp-row-excluded td { color: var(--wfp-text-muted); }
+.wfp-fc-out {
+    margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    background: #f1f5f9; color: var(--wfp-text-secondary);
+}
+.wfp-fc-skel { display: grid; gap: 8px; }
+.wfp-fc-skel-row {
+    height: 36px; border-radius: var(--wfp-radius-xs); background: #f1f5f9;
+    animation: wfp-fc-pulse 1.2s ease-in-out infinite;
+}
+@keyframes wfp-fc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .wfp-fc-skel-row { animation: none; } }
+.wfp-fc-empty {
+    text-align: center; padding: 40px 20px; border: 1px solid var(--wfp-border);
+    border-radius: var(--wfp-radius-sm); color: var(--wfp-text-secondary);
+}
+.wfp-fc-empty h4 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--wfp-text-primary); }
+.wfp-fc-empty p { margin: 0 0 14px; font-size: 13px; }
+.wfp-fc-foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-top: 12px; font-size: 12.5px; color: var(--wfp-text-secondary); font-variant-numeric: tabular-nums;
+}

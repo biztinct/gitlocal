@@ -228,36 +228,58 @@
                     </div>
                 </div>
 
-                <!-- EMPLOYEE TABLE -->
-                <div class="wfp-table-card">
+                <!-- EMPLOYEE TABLE
+                     FILTER wave 8: on the shared filter panel (pb_filter_kit).
+                     The rows are one page from the server for the panel's
+                     state; the search and the order live in the panel's bar
+                     (a column header still picks its order). The charts above
+                     keep reading the whole scenario from get_dashboard_data:
+                     they describe the scenario, not the filtered table.
+                     No coach anchor: nothing in Learn describes this screen. -->
+                <div class="wfp-table-card wfp-fc-card">
                     <div class="wfp-table-header">
                         <h3 class="wfp-chart-title">
                             <i class="fa fa-table"/>Employee Forecast Detail
                         </h3>
-                        <input type="text" class="wfp-search-input"
-                               placeholder="Search employees, departments, rules..."
-                               t-on-input="onSearchInput"/>
                     </div>
+                    <div class="wfp-fc-body">
+                    <PbFilterLayout kit="kit"
+                                    searchPlaceholder="fcSearchPlaceholder">
+                    <div t-if="!state.fcLoaded" class="wfp-fc-skel" aria-label="Loading the forecast table">
+                        <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="wfp-fc-skel-row"/>
+                    </div>
+                    <div t-elif="!filteredEmployees.length and fcFiltered" class="wfp-fc-empty">
+                        <h4 t-esc="fcEmptyTitle"/>
+                        <p t-if="kit.activeCount">Remove a filter above, or go back to everyone in the forecast.</p>
+                        <p t-else="">Check the spelling, or search by department, job or rule.</p>
+                        <button class="wfp-btn wfp-btn-secondary" t-on-click="fcStartAgain">Show everyone in the forecast</button>
+                    </div>
+                    <div t-elif="!filteredEmployees.length" class="wfp-fc-empty">
+                        <h4>No forecast rows in this scenario</h4>
+                        <p>Calculate the forecast on the scenario and every person it covers appears here.</p>
+                    </div>
+                    <t t-else="">
                     <div class="wfp-table-scroll">
                         <table class="wfp-table">
                             <thead>
                                 <tr>
-                                    <th t-on-click="() => this.onSort('name')">Employee</th>
-                                    <th t-on-click="() => this.onSort('department')">Dept</th>
-                                    <th t-on-click="() => this.onSort('job')">Job</th>
-                                    <th class="text-end" t-on-click="() => this.onSort('current_base')">Cur. Base</th>
-                                    <th class="text-end" t-on-click="() => this.onSort('current_total')">Cur. TCOW</th>
-                                    <th class="text-end" t-on-click="() => this.onSort('forecast_base')">Fcst. Base</th>
-                                    <th class="text-end" t-on-click="() => this.onSort('forecast_total')">Fcst. TCOW</th>
-                                    <th class="text-end" t-on-click="() => this.onSort('increase_amount')">Increase</th>
-                                    <th class="text-end" t-on-click="() => this.onSort('increase_pct')">Inc. %</th>
-                                    <th t-on-click="() => this.onSort('rule_name')">Rule</th>
+                                    <th t-att-class="sortMark('name') ? 'wfp-sorted' : ''" t-on-click="() => this.onSort('name')">Employee</th>
+                                    <th t-att-class="sortMark('department') ? 'wfp-sorted' : ''" t-on-click="() => this.onSort('department')">Dept</th>
+                                    <th t-att-class="sortMark('job') ? 'wfp-sorted' : ''" t-on-click="() => this.onSort('job')">Job</th>
+                                    <th t-attf-class="text-end #{sortMark('current_base') ? 'wfp-sorted' : ''}" t-on-click="() => this.onSort('current_base')">Cur. Base</th>
+                                    <th t-attf-class="text-end #{sortMark('current_total') ? 'wfp-sorted' : ''}" t-on-click="() => this.onSort('current_total')">Cur. TCOW</th>
+                                    <th t-attf-class="text-end #{sortMark('forecast_base') ? 'wfp-sorted' : ''}" t-on-click="() => this.onSort('forecast_base')">Fcst. Base</th>
+                                    <th t-attf-class="text-end #{sortMark('forecast_total') ? 'wfp-sorted' : ''}" t-on-click="() => this.onSort('forecast_total')">Fcst. TCOW</th>
+                                    <th t-attf-class="text-end #{sortMark('increase_amount') ? 'wfp-sorted' : ''}" t-on-click="() => this.onSort('increase_amount')">Increase</th>
+                                    <th t-attf-class="text-end #{sortMark('increase_pct') ? 'wfp-sorted' : ''}" t-on-click="() => this.onSort('increase_pct')">Inc. %</th>
+                                    <th t-att-class="sortMark('rule_name') ? 'wfp-sorted' : ''" t-on-click="() => this.onSort('rule_name')">Rule</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
-                                    <tr t-attf-class="#{emp.increase_pct > 10 ? 'wfp-row-high' : emp.increase_pct > 5 ? 'wfp-row-mid' : 'wfp-row-normal'}">
-                                        <td><t t-esc="emp.name"/></td>
+                                    <tr t-attf-class="#{emp.increase_pct > 10 ? 'wfp-row-high' : emp.increase_pct > 5 ? 'wfp-row-mid' : 'wfp-row-normal'} #{emp.excluded ? 'wfp-row-excluded' : ''}"
+                                        t-att-title="emp.excluded ? emp.exclusion_reason : undefined">
+                                        <td><t t-esc="emp.name"/><span t-if="emp.excluded" class="wfp-fc-out">Excluded</span></td>
                                         <td><t t-esc="emp.department"/></td>
                                         <td><t t-esc="emp.job"/></td>
                                         <td class="text-end"><t t-esc="_formatCurrency(emp.current_base)"/></td>
@@ -277,6 +299,16 @@
                                 </t>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="wfp-fc-foot">
+                        <span t-esc="fcShowing"/>
+                        <button t-if="fcHasMore" class="wfp-btn wfp-btn-secondary" t-att-disabled="state.fcLoadingMore" t-on-click="fcMore">
+                            <t t-if="state.fcLoadingMore">Loading…</t>
+                            <t t-else="" t-esc="fcNextLabel"/>
+                        </button>
+                    </div>
+                    </t>
+                    </PbFilterLayout>
                     </div>
                 </div>
             </div>

@@ -724,6 +724,24 @@
     }
     .pay-pager-l { font-size: 12px; color: var(--pbim-muted); }
 
+    // ------------------------------- the worksheet's filter panel (FILTER w8)
+    // pb_filter_kit draws the panel; the worksheet keeps its tools row and
+    // gains "everything matching" and a loading shape.
+    .pay-matchbar {
+        display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+        margin-top: 10px; padding: 8px 12px; border-radius: var(--pbim-r-sm);
+        background: var(--pbim-soft); color: var(--pbim-ink); font-size: 12.5px;
+        svg { color: var(--pbim-primary); }
+    }
+    .pay-wsskel { display: grid; gap: 8px; margin-top: 10px; }
+    .pay-wsskel-row {
+        height: 38px; border-radius: var(--pbim-r-sm); background: var(--pbim-line-2);
+        animation: pay-wsskel 1.2s ease-in-out infinite;
+    }
+    @keyframes pay-wsskel { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+    @media (prefers-reduced-motion: reduce) { .pay-wsskel-row { animation: none; } }
+    .pay-empty .pbim-btn { margin-top: 10px; }
+
     // ------------------------------------------------------- calibration
     //
     //  ONE COLUMN PER SCORE, AND THE SHAPE OF ITS RISES INSIDE IT. The rise

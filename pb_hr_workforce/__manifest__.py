@@ -1,7 +1,7 @@
 {
     'name': 'Workforce Management',
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.4.20.0',
+    'version': '19.0.4.22.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -30,6 +30,7 @@ Workforce Management — Deputy & Rippling-Style HR Tools
         'pb_sidebar',
         'pb_import_kit',
         'pb_wf_kit',      # shared Workforce context bar / drawer / ribbon (W6)
+        'pb_filter_kit',  # the shared filter panel (FILTER wave 8: OT queue, Payroll Report)
     ],
     'data': [
         'security/ir.model.access.csv',

@@ -2,7 +2,13 @@
 <!-- Payroll Report. The template lived in an inline xml`` literal inside
      payroll_report.js, and inline templates are never extracted for
      translation, so the whole screen stayed English in Vietnamese
-     (LEARN REFRESH step 6). Same markup, now a real template file. -->
+     (LEARN REFRESH step 6). Same markup, now a real template file.
+
+     FILTER wave 8: the three tabs sit inside the shared filter panel
+     (pb_filter_kit). The run picker and the tabs stay in the toolbar; the
+     list under them is one page of the run's payslips for the panel's state,
+     and the totals and the department summary are counted on the server over
+     every payslip the filters match. -->
 <templates xml:space="preserve">
   <t t-name="pb_hr_workforce.PayrollReport">
     <div class="pbim prd" t-att-class="{ 'prd--embedded': props.embedded }">
@@ -23,10 +29,6 @@
                         </option>
                     </t>
                 </select>
-                <div class="prd-search">
-                    <span class="prd-search-ic" t-out="ic('search', 15)"/>
-                    <input type="text" placeholder="Search employee..." t-model="state.searchQuery"/>
-                </div>
             </div>
             <div class="prd-toolbar-right">
                 <div class="prd-tab-bar" data-coach="rp-tabs">
@@ -49,8 +51,20 @@
             </div>
         </div>
 
-        <!-- ============================ summary KPIs ============================ -->
-        <div class="prd-kpis" data-coach="rp-kpis" t-if="state.summary.total_employees > 0">
+        <!-- ============================ no run at all ============================ -->
+        <div class="prd-content" t-if="state.batchesLoaded and !state.batches.length">
+            <div class="prd-empty">
+                <span class="prd-empty-ic" t-out="ic('inbox', 30)"/>
+                <h3>No pay run yet</h3>
+                <p>Once a pay run has payslips, this report compares every person's pay with the run before it.</p>
+            </div>
+        </div>
+
+        <t t-if="state.batchId">
+        <!-- ============================ summary KPIs ============================
+             The totals of every payslip the filters match, counted on the
+             server (never added up from the page shown). -->
+        <div class="prd-kpis" data-coach="rp-kpis" t-if="state.listLoaded">
             <div class="prd-kpi">
                 <div class="prd-kpi-num" t-esc="state.summary.total_employees"/>
                 <div class="prd-kpi-label">Employees</div>
@@ -67,11 +81,14 @@
                 <div class="prd-kpi-num" t-esc="fmt(state.summary.total_net)"/>
                 <div class="prd-kpi-label">Total Net Pay</div>
             </div>
-            <div class="prd-kpi prd-kpi-changes" t-if="state.summary.changes > 0">
+            <button type="button" class="prd-kpi prd-kpi-changes prd-kpi-btn" t-if="state.summary.changes > 0 or changedOn"
+                    t-att-class="{ 'is-on': changedOn }" t-att-aria-pressed="changedOn ? 'true' : 'false'"
+                    t-on-click="toggleChanged" title="Show only the people whose pay changed">
                 <div class="prd-kpi-num" t-esc="state.summary.changes"/>
                 <div class="prd-kpi-label">Changes</div>
-            </div>
+            </button>
         </div>
+        <p class="prd-kpis-note" t-if="state.listLoaded and filtered and state.summary.total_employees" t-esc="kpiNote"/>
 
         <!-- =========================== batch context =========================== -->
         <div class="prd-batch-info" t-if="state.batch.name">
@@ -86,9 +103,37 @@
             </div>
         </div>
 
+        <!-- ===================== the shared filter panel =====================
+             coach= renders data-coach="rp-filters" on the layout's bar
+             (views, Filters, search, order). -->
+        <div class="prd-content prd-filters">
+          <PbFilterLayout kit="kit" coach="'rp-filters'" searchPlaceholder="searchPlaceholder">
+
+            <!-- loading: the shape of the table, never a blank -->
+            <div t-if="!state.listLoaded" class="prd-tablewrap prd-skel" aria-label="Loading payroll data">
+                <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="prd-skel-row"/>
+            </div>
+
+            <!-- empty: for a filter or a search -->
+            <div t-elif="!rows.length and filtered" class="prd-empty">
+                <span class="prd-empty-ic" t-out="ic('search', 30)"/>
+                <h3 t-esc="emptyTitle"/>
+                <p t-if="kit.activeCount">Remove a filter above, or show everyone in this run again.</p>
+                <p t-else="">Check the spelling, or search by job or department.</p>
+                <button class="pbim-btn outline prd-empty-btn" t-on-click="showEveryone">
+                    <span t-out="ic('users', 15)"/> Show everyone in this run
+                </button>
+            </div>
+            <div t-elif="!rows.length" class="prd-empty">
+                <span class="prd-empty-ic" t-out="ic('inbox', 30)"/>
+                <h3>No payslips in this run</h3>
+                <p>Generate the payslips on the pay run, then come back to compare them with the run before.</p>
+            </div>
+
+            <t t-else="">
         <!-- ============================== earnings ============================== -->
-        <div class="prd-content" t-if="state.activeTab === 'earnings' and !state.loading">
-            <div class="prd-tablewrap" t-if="filteredEmployees.length">
+        <div t-if="state.activeTab === 'earnings'">
+            <div class="prd-tablewrap">
             <table class="prd-table">
                 <thead>
                     <tr>
@@ -101,9 +146,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
-                        <tr class="prd-row" t-att-class="{ 'is-open': state.expandedEmp === emp.id }"
-                            t-on-click="() => this.toggleDetail(emp.id)">
+                    <t t-foreach="rows" t-as="emp" t-key="emp.slip_id">
+                        <tr class="prd-row" t-att-class="{ 'is-open': state.expandedEmp === emp.slip_id }"
+                            t-on-click="() => this.toggleDetail(emp.slip_id)">
                             <td class="prd-col-emp">
                                 <div class="prd-emp-info">
                                     <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy" alt=""/>
@@ -132,7 +177,7 @@
                                 </t>
                             </td>
                         </tr>
-                        <tr t-if="state.expandedEmp === emp.id" class="prd-detail-row">
+                        <tr t-if="state.expandedEmp === emp.slip_id" class="prd-detail-row">
                             <td colspan="6">
                                 <div class="prd-detail-grid">
                                     <div class="prd-detail-section">
@@ -174,15 +219,10 @@
                 </tbody>
             </table>
             </div>
-            <div class="prd-empty" t-else="">
-                <span class="prd-empty-ic" t-out="ic('inbox', 30)"/>
-                <h3>No payroll data</h3>
-                <p>Select a pay run batch to view the report.</p>
-            </div>
         </div>
 
         <!-- ============================= deductions ============================= -->
-        <div class="prd-content" t-if="state.activeTab === 'deductions' and !state.loading">
+        <div t-if="state.activeTab === 'deductions'">
             <div class="prd-tablewrap">
             <table class="prd-table">
                 <thead>
@@ -195,8 +235,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
-                        <tr class="prd-row" t-on-click="() => this.toggleDetail(emp.id)">
+                    <t t-foreach="rows" t-as="emp" t-key="emp.slip_id">
+                        <tr class="prd-row" t-on-click="() => this.toggleDetail(emp.slip_id)">
                             <td class="prd-col-emp">
                                 <div class="prd-emp-info">
                                     <img class="prd-avatar" t-att-src="emp.avatar_url" loading="lazy" alt=""/>
@@ -225,8 +265,10 @@
             </div>
         </div>
 
-        <!-- ========================== department summary ========================== -->
-        <div class="prd-content" t-if="state.activeTab === 'summary' and !state.loading">
+        <!-- ========================== department summary ==========================
+             Every payslip the filters match, by department — worked out on
+             the server in one pass, never from the page of rows above. -->
+        <div t-if="state.activeTab === 'summary'">
             <div class="prd-summary-layout">
                 <div class="prd-chart-area">
                     <canvas id="prdDonutChart" width="300" height="300"/>
@@ -274,11 +316,18 @@
             </div>
         </div>
 
-        <!-- =============================== loading =============================== -->
-        <div t-if="state.loading" class="prd-loading">
-            <div class="prd-spin"/>
-            <span>Loading payroll data…</span>
+        <!-- paging: the tables only; the summary already covers every match -->
+        <div class="prd-foot" t-if="state.activeTab !== 'summary'">
+            <span t-esc="showingLine"/>
+            <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                <t t-if="state.loadingMore">Loading…</t>
+                <t t-else="" t-esc="nextLabel"/>
+            </button>
         </div>
+            </t>
+          </PbFilterLayout>
+        </div>
+        </t>
 
       </div>
     </div>

@@ -443,6 +443,29 @@ coordinator's (`filter_deploy.sh full`).
   in for approval…" and a newly submitted trip is authorized at once. The
   approve path cannot be exercised there; test it on a company with a
   trip route.
+- **F47** (w8) A screen with its own capture-phase `keydown` listener on
+  `window` (pay review: `+`/`-`/Enter = Add 1% / Take off 1% / edit row)
+  also fires while the reader types in the kit's search or find box. Guard
+  the handler with "the target is an input/textarea/select/contenteditable →
+  return" before any shortcut.
+- **F48** (w8) Server code can be timed and checked WITHOUT the preview lock:
+  `odoo-bin shell --addons-path=/tmp/pbf_stage_<w>,/tmp/pbf_preview/addons,/odoo/odoo-server/addons -d pbf_preview --no-http`
+  loads your staged Python over the installed modules (read-only probes, end
+  with `env.cr.rollback()`). The first call in a fresh process is 10–20×
+  slower (cold): always time a second pass. Run long probes detached
+  (`(… > /tmp/<w>_x.out 2>&1 &)`): an ssh drop kills a foreground shell.
+- **F49** (w8) The preview can die minutes after an `upgrade` even when the
+  upgrade was started with `setsid` (status `pid=` empty, browser calls end
+  in `ConnectionLostError`). Restart it with
+  `sudo setsid nohup /odoo/ops/pbf_preview.sh start </dev/null >/tmp/<w>_start.out 2>&1 & disown`
+  and re-check `status` after a minute. The upgrade's error count also
+  includes OLDER runs (the log is appended): read only the lines after the
+  last `Odoo version`.
+- **F50** (w8) `domain_method` facts over a whole pay run (two runs' payslip
+  lines) cost ~0.4 s warm but ~8 s on the first request after a restart, and
+  `pbf_layout`, `pbf_counts` and the page call are three requests that each
+  compute them (the cursor cache is per request). Keep such facts in ONE SQL
+  pass and say the cold figure in the report.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python
