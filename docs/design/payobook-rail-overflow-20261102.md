@@ -1,6 +1,6 @@
 # Submenu rail: overflow, clipping and the fold — design note
 
-Date: 2026-11-02 (Sydney). Status: DESIGN, not built. Owner decisions pending (see §6).
+Date: 2026-11-02 (Sydney). Status: BUILT + LIVE ×4 DBs 2026-11-02 (owner: build directly, 80px/10px, no Joiners+Probation merge, location row kept; plus WHERE THEY WORK → LOCATION, ACCESS & DELEGATION → ACCESS).
 Mock: `docs/design/rail-overflow-poc.html` (also published as a private artifact).
 Standard it refines: NAV ledger R1/R2/R4/R5 (`docs/handovers/NAV_LEDGER.md`), owner ruling 2026-10-20 (memory `submenu-rail-standard`).
 
