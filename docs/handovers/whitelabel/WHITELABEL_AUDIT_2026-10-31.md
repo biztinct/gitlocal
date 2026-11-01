@@ -115,6 +115,15 @@ for "Payobook": `biz_debrand/models/scrub.py` only scrubs rows matching `\modoo`
 | Source Atlas lane labels via `rebrand_payload` | `pb_source_atlas/models/pb_source_atlas.py` (1.14.0) | "Payobook records" lane |
 | Hiring: catalogue/guide/detail payloads via `rebrand_payload`; connection help via `env._()`; LinkedIn app name via `product_label`; DocuSign void reason via `_()`; readiness chip as template text | `pb_hiring` board_catalogue.py, connections.py, job_board_platform.py, docusign.py, `static/src/xml/hiring_connections.xml` (2.22.0) | job boards, LinkedIn, candidates |
 
+### E2. REVERSE shipped 2026-11-01 (owner: "white-label → standard must work too")
+
+| Change | Where | Behaviour |
+|---|---|---|
+| Brand journal `biz_debrand_rewrite` (plain table, `CREATE TABLE IF NOT EXISTS`, unique per table/row/column): every cell the PRODUCT rule changes is recorded with its raw pre-rewrite value and the value written, plus the product/brand pair in force | `biz_debrand/models/scrub.py` (2.10.0) `_biz_journal_write`, called from `_biz_scrub_text` / `_biz_scrub_jsonb` only when `product` is on and the vendor-only result differs | Vendor-rule ("Odoo") rewrites are never journaled: they are never reversed. |
+| `_biz_debrand_restore_rows()` — runs FIRST on every `_biz_debrand_scrub_data()`; for each journal entry whose (brand, product) no longer matches the database (level left, brand renamed, product rule off): cell still equals the written value → raw value goes back (the forward pass that follows re-applies the vendor rule under the current brand); cell edited since → only the brand word is swapped back under the forward rule's own guards (`rize.payobook.com`, `rize_website`, `/rize/` untouched; case-sensitive); row gone → entry forgotten. Entries are deleted once handled. | same file | A tenant's OWN use of its brand name (a rule note they wrote) is never touched: it was never journaled. |
+| Tenants cockpit calls restore + scrub on EVERY level change and reports "Stored text put back to the product name: N rows." / "Stored text rewritten to the brand: N rows." | `pb_tenants/models/service.py` `_apply_brand_to` (2.5.0) | Same path on the tenant's own Branding page and at the end of every `-u` (register_hook). |
+| rize backfill: the 2026-10-31 rewrite pre-dates the journal, so its entries were rebuilt from `/odoo/backups/whitelabel-20261031/rize.dump` (only cells where today's forward rules applied to the dump value reproduce the current value exactly) | one-off `wl_backfill_rize.py` (odoo shell), evidence in `/tmp/wl4_*` on the server | After this rize can go back to standard with one Save. |
+
 **Left out, on purpose:** `pb_hr_payroll_indonesia` mailto (module not installed on any live DB); pb_tenants billing mails/invoice PDF (master-only, Rize not billed); hidden Excel meta sheet names `_Payobook`/`_payobook` (machinery, looked up on upload); the tenant host `rize.payobook.com` (custom domain is the fix); LLM prompts in Learn/Formula Studio (model may still say "Payobook" — the reply goes through `rebrand_payload` in `ask()` only for the Learn path).
 
 ## D. Design facts to carry into the fix phase

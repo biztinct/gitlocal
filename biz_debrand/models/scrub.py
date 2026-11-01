@@ -11,6 +11,13 @@ this module, and on every save of the Branding settings. Idempotent by
 construction: the rewrite is a no-op once applied, and rows are only touched
 when they still match.
 
+WHITELABEL REVERSE (2026-11-01): the PRODUCT rule's rewrites are journaled in
+``biz_debrand_rewrite`` and undone by ``_biz_debrand_restore_rows`` — which
+runs first on every scrub — whenever the brand or the product the database is
+configured with no longer matches the one a journal entry was written under.
+That is what takes a tenant from the white-label level back to the standard
+one with its stored text saying the product's name again.
+
 Deliberately NOT scrubbed:
   * ``ir_module_module`` metadata — re-imported from every ``__manifest__.py``
     on each ``-u``; handled at ``read()`` instead (see ir_module_module.py).
@@ -26,6 +33,7 @@ Deliberately NOT scrubbed:
   * email *addresses* — only the display name of an address is rewritten;
     rewriting the addr-spec would silently change routing.
 """
+import json
 import logging
 import re
 
@@ -38,6 +46,52 @@ from .brand import (
 )
 
 _logger = logging.getLogger(__name__)
+
+# WHITELABEL REVERSE 2026-11-01. Every row the PRODUCT rule rewrites is
+# journaled here — table, row, column, the raw value it had before and the
+# value it was given — so that leaving the white-label level (or changing the
+# brand name) can put the master product's name back in exactly the rows it
+# was taken out of, and nowhere else. A tenant's own use of its brand name in
+# a rule note or an email is never touched, because it was never journaled.
+#
+# A plain table, not a model: it is written and read by raw SQL in this file
+# only, nobody edits it on a screen, and ``CREATE TABLE IF NOT EXISTS`` makes
+# it exist on the first scrub after an upgrade without an ordering dependency.
+JOURNAL = "biz_debrand_rewrite"
+JOURNAL_DDL = (
+    """
+    CREATE TABLE IF NOT EXISTS {t} (
+        id           serial PRIMARY KEY,
+        table_name   varchar NOT NULL,
+        res_id       integer NOT NULL,
+        column_name  varchar NOT NULL,
+        kind         varchar NOT NULL,
+        product      varchar NOT NULL,
+        brand        varchar NOT NULL,
+        before_value text,
+        after_value  text,
+        written_at   timestamp NOT NULL DEFAULT (now() at time zone 'UTC')
+    )
+    """.format(t=JOURNAL),
+    """
+    CREATE UNIQUE INDEX IF NOT EXISTS {t}_cell_uniq
+        ON {t} (table_name, res_id, column_name)
+    """.format(t=JOURNAL),
+)
+JOURNAL_UPSERT = """
+    INSERT INTO {t} (table_name, res_id, column_name, kind, product, brand,
+                     before_value, after_value, written_at)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, now() at time zone 'UTC')
+    ON CONFLICT (table_name, res_id, column_name) DO UPDATE
+       SET kind = EXCLUDED.kind, product = EXCLUDED.product,
+           brand = EXCLUDED.brand, before_value = EXCLUDED.before_value,
+           after_value = EXCLUDED.after_value, written_at = EXCLUDED.written_at
+""".format(t=JOURNAL)
+
+
+def _json_cell(value):
+    """One canonical text form for a jsonb cell, so two dicts compare as text."""
+    return json.dumps(value, sort_keys=True, ensure_ascii=False)
 
 # (table, [plain text/varchar columns]) — scrubbed row by row in Python so the
 # rewrite rules are identical to every other seam (PostgreSQL regexes have no
@@ -166,17 +220,29 @@ class ResConfigSettings(models.TransientModel):
         self.env.cr.execute('SELECT id, %s FROM "%s" WHERE %s' % (cols, table, where))
         rows = self.env.cr.fetchall()
         updates = []
+        journal = []
         for row in rows:
             record_id, values = row[0], row[1:]
             new_values = [debrand_text(v, brand, website, product) if isinstance(v, str) else v for v in values]
             if any(new is not old for new, old in zip(new_values, values)):
                 updates.append(tuple(new_values) + (record_id,))
+                if product:
+                    # Journal only the cells the PRODUCT rule changed: the
+                    # vendor-only result is what the cell would have become
+                    # without it, so a difference means the product's name
+                    # was in there and has to be reversible.
+                    for column, old, new in zip(columns, values, new_values):
+                        if (new is not old and isinstance(old, str)
+                                and new != debrand_text(old, brand, website)):
+                            journal.append((table, record_id, column, "text",
+                                            product, brand, old, new))
         if not updates:
             return 0
         assignment = ", ".join('"%s" = %%s' % c for c in columns)
         sql = 'UPDATE "%s" SET %s WHERE id = %%s' % (table, assignment)
         for start in range(0, len(updates), BATCH):
             self.env.cr.executemany(sql, updates[start:start + BATCH])
+        self._biz_journal_write(journal)
         return len(updates)
 
     def _biz_scrub_jsonb(self, table, columns, brand, website, product=None):
@@ -191,6 +257,7 @@ class ResConfigSettings(models.TransientModel):
                 % (column, table, column, word)
             )
             updates = []
+            journal = []
             for record_id, value in self.env.cr.fetchall():
                 if not isinstance(value, dict):
                     continue
@@ -200,14 +267,153 @@ class ResConfigSettings(models.TransientModel):
                 }
                 if new_value != value:
                     updates.append((new_value, record_id))
+                    if product:
+                        vendor_only = {
+                            lang: debrand_text(text, brand, website) if isinstance(text, str) else text
+                            for lang, text in value.items()
+                        }
+                        if new_value != vendor_only:
+                            journal.append((table, record_id, column, "jsonb",
+                                            product, brand,
+                                            _json_cell(value), _json_cell(new_value)))
             if not updates:
                 continue
             sql = 'UPDATE "%s" SET "%s" = %%s WHERE id = %%s' % (table, column)
             payload = [(Json(value), record_id) for value, record_id in updates]
             for start in range(0, len(payload), BATCH):
                 self.env.cr.executemany(sql, payload[start:start + BATCH])
+            self._biz_journal_write(journal)
             touched += len(payload)
         return touched
+
+    # ------------------------------------------------------------------
+    # WHITELABEL REVERSE — the journal and the way back
+    # ------------------------------------------------------------------
+    def _biz_journal_ready(self):
+        for ddl in JOURNAL_DDL:
+            self.env.cr.execute(ddl)
+
+    def _biz_journal_write(self, entries):
+        """Record the cells the product rule just changed. Own savepoint: a
+        journal that cannot be written must not undo the rewrite it records."""
+        if not entries:
+            return
+        try:
+            with self.env.cr.savepoint():
+                self._biz_journal_ready()
+                for start in range(0, len(entries), BATCH):
+                    self.env.cr.executemany(JOURNAL_UPSERT, entries[start:start + BATCH])
+        except Exception:
+            _logger.warning("biz_debrand: brand journal write failed (%s cells)",
+                            len(entries), exc_info=True)
+
+    @staticmethod
+    def _biz_unbrand_rule(brand):
+        """The word rule that swaps ``brand`` back for the product in a cell
+        somebody edited after it was rewritten. Same guards as the forward
+        rule, so ``rize.payobook.com``, ``rize_website`` and ``/rize/`` stay
+        exactly as they are; case-sensitive, because the forward rule wrote
+        the brand exactly as configured."""
+        return re.compile(r"(?<![.\w/-])" + re.escape(brand) + r"(?![\w/\[-])(?!\.\w)")
+
+    def _biz_debrand_restore_rows(self):
+        """Put the product's name back wherever the journal says it was taken
+        out under a brand this database no longer uses.
+
+        Called at the start of every scrub, so it covers all three ways the
+        level can change: the master's Tenants cockpit, the tenant's own
+        Branding page, and an upgrade that follows either. Entries that still
+        match the current brand AND product (a plain re-save) are left alone.
+
+        Per cell: if it still holds exactly what the rewrite wrote, the raw
+        pre-rewrite value goes back (the vendor rule then re-runs on it in
+        the forward pass that follows, under the current brand). If somebody
+        edited the cell since, only the brand word is swapped back, with the
+        forward rule's own guards. A row deleted since is simply forgotten.
+        Returns the number of cells changed.
+        """
+        self._biz_journal_ready()
+        brand, _website = brand_for_env(self.env)
+        product = product_for_env(self.env)
+        active = bool(brand) and bool(product_rules(product, brand))
+        self.env.cr.execute(
+            "SELECT id, table_name, res_id, column_name, kind, product, brand, "
+            "before_value, after_value FROM %s ORDER BY table_name, res_id" % JOURNAL
+        )
+        entries = self.env.cr.fetchall()
+        restored, forgotten = 0, []
+        for (jid, table, res_id, column, kind, j_product, j_brand,
+             before, after) in entries:
+            if active and j_brand == brand and j_product == product:
+                continue  # same level, same words: nothing to undo
+            try:
+                with self.env.cr.savepoint():
+                    if not self._biz_columns(table, [column]):
+                        forgotten.append(jid)
+                        continue
+                    self.env.cr.execute(
+                        'SELECT "%s" FROM "%s" WHERE id = %%s' % (column, table), (res_id,)
+                    )
+                    row = self.env.cr.fetchone()
+                    if row is None:
+                        forgotten.append(jid)
+                        continue
+                    current = row[0]
+                    rule = self._biz_unbrand_rule(j_brand)
+                    if kind == "jsonb":
+                        now_text = _json_cell(current) if isinstance(current, dict) else None
+                        if now_text == after:
+                            new_value = json.loads(before)
+                        elif isinstance(current, dict):
+                            new_value = {
+                                lang: rule.sub(j_product, text) if isinstance(text, str) else text
+                                for lang, text in current.items()
+                            }
+                        else:
+                            forgotten.append(jid)
+                            continue
+                        if new_value != current:
+                            self.env.cr.execute(
+                                'UPDATE "%s" SET "%s" = %%s WHERE id = %%s' % (table, column),
+                                (Json(new_value), res_id),
+                            )
+                            restored += 1
+                    else:
+                        if current == after:
+                            new_value = before
+                        elif isinstance(current, str):
+                            new_value = rule.sub(j_product, current)
+                        else:
+                            forgotten.append(jid)
+                            continue
+                        if new_value != current:
+                            self.env.cr.execute(
+                                'UPDATE "%s" SET "%s" = %%s WHERE id = %%s' % (table, column),
+                                (new_value, res_id),
+                            )
+                            restored += 1
+                    forgotten.append(jid)
+            except Exception:
+                _logger.warning("biz_debrand: restore of %s.%s#%s failed",
+                                table, column, res_id, exc_info=True)
+        if forgotten:
+            for start in range(0, len(forgotten), BATCH):
+                self.env.cr.execute(
+                    "DELETE FROM %s WHERE id = ANY(%%s)" % JOURNAL,
+                    (forgotten[start:start + BATCH],),
+                )
+        if restored:
+            self.env.invalidate_all()
+            self.env.registry.clear_cache("default", "templates")
+            _logger.info("biz_debrand: restored %s stored cells from the brand "
+                         "journal (brand now %r, product %r)", restored, brand, product)
+        return restored
+
+    def _biz_debrand_journal_count(self):
+        """How many cells the journal could put back right now."""
+        self._biz_journal_ready()
+        self.env.cr.execute("SELECT count(*) FROM %s" % JOURNAL)
+        return self.env.cr.fetchone()[0]
 
     def _biz_scrub_email_display_names(self, brand, website):
         """Rewrite only the display-name part of stored ``"Name" <addr>`` values.
@@ -363,6 +569,18 @@ class ResConfigSettings(models.TransientModel):
         product = product_for_env(self.env)
         if not product_rules(product, brand):
             product = None
+
+        # WHITELABEL REVERSE: first undo what an earlier brand did, so a tenant
+        # that left the white-label level (or renamed its brand) gets the
+        # product's name back before the forward pass runs under the brand
+        # it has now. Its own savepoint: the way back must never block the
+        # way forward.
+        try:
+            with self.env.cr.savepoint():
+                self._biz_journal_ready()
+                self._biz_debrand_restore_rows()
+        except Exception:
+            _logger.warning("biz_debrand: brand journal restore failed", exc_info=True)
 
         total = 0
         for table, columns in TEXT_TARGETS:

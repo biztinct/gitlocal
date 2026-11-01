@@ -1041,15 +1041,28 @@ class PbTenants(models.AbstractModel):
         # scrub is called on its own. The process cache of this database's
         # brand is dropped first, so the seams in this very process stop
         # serving the previous level's answer.
-        if values.get('biz_debrand.product_name'):
-            try:
-                from odoo.addons.biz_debrand.models.brand import invalidate
-                invalidate(env.cr.dbname)
-            except Exception:  # noqa: BLE001 — biz_debrand absent: nothing cached
-                pass
-            scrub = getattr(env['res.config.settings'], '_biz_debrand_scrub_data', None)
-            if scrub:
-                rows = scrub()
+        #
+        # WHITELABEL REVERSE 2026-11-01. Called on EVERY level now, because
+        # the scrub also carries the way back: the rows it rewrote under a
+        # previous brand are journaled, and leaving the white-label level (or
+        # renaming the brand) restores the product's name in exactly those
+        # rows before the forward pass runs. The restore is called first on
+        # its own so the cockpit can report both numbers.
+        try:
+            from odoo.addons.biz_debrand.models.brand import invalidate
+            invalidate(env.cr.dbname)
+        except Exception:  # noqa: BLE001 — biz_debrand absent: nothing cached
+            pass
+        settings = env['res.config.settings']
+        restore = getattr(settings, '_biz_debrand_restore_rows', None)
+        if restore:
+            restored = restore()
+            if restored:
+                say('Stored text put back to the product name: %s rows.' % restored)
+        scrub = getattr(settings, '_biz_debrand_scrub_data', None)
+        if scrub:
+            rows = scrub()
+            if values.get('biz_debrand.product_name'):
                 say('Stored text rewritten to the brand: %s rows.' % (rows or 0))
         title, blurb = tenant.brand_summary(master_brand=master_brand)
         say('Branding applied: %s. %s' % (title, blurb))
