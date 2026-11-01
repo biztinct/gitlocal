@@ -86,31 +86,53 @@
       <div class="pbhub-low">
 
         <!-- ========================= lens rail ========================= -->
-        <nav class="pbhub-rail" t-attf-aria-label="{{ brand.label }} lenses"
+        <nav class="pbhub-rail" t-att-class="{ 'is-open': state.moreOpen }"
+             t-attf-aria-label="{{ brand.label }} lenses"
              t-on-keydown="(ev) => this.onRailKeydown(ev)">
-          <!-- The sub-menu is always visible: a 72px rail, an icon above a short
+          <!-- The sub-menu is always visible: an 80px rail, an icon above a short
                capital label, the selected item a soft pill, no hover widening
-               (owner ruling 2026-10-20, NAV ledger R1; it replaces the
-               2026-10-02 fold-to-icons rail). -->
-          <div class="pbhub-rail__in">
+               (owner ruling 2026-10-20, NAV ledger R1). RAIL FIT 2026-11-02: it
+               never scrolls; what does not fit the window folds into MORE, and
+               pinned items (Access, Set-up) sit at the foot under a hairline. -->
+          <div class="pbhub-rail__in" t-ref="rail">
           <!-- ONE class attribute: a static `class` plus `t-att-class` is the
                documented-safe pair; t-att-class and t-attf-class both compile
                to `class` and the last one written wins (W23). -->
-          <button t-foreach="lenses" t-as="l" t-key="l.key"
-                  class="pbhub-rail__b"
-                  t-att-class="{ 'is-on': state.lens === l.key,
-                                 'is-locked': isLocked(l) }"
-                  t-att-aria-current="state.lens === l.key ? 'page' : false"
-                  t-att-title="l.title or l.label"
-                  t-on-click="() => this.setLens(l.key)">
-            <span class="pbhub-rail__ic" t-out="ic(l.icon, 18)"/>
-            <span class="pbhub-rail__l" t-esc="l.label"/>
-            <!-- FLEET P4. A part of the product this company has not got, that
-                 the platform chose to keep on screen rather than take away.
-                 The padlock is the whole difference, and clicking it says why
-                 in one sentence — never nothing. -->
-            <span t-if="isLocked(l)" class="pbhub-rail__lock" t-out="ic('lock', 10)"/>
-          </button>
+          <t t-foreach="mainLenses" t-as="l" t-key="l.key">
+            <t t-call="pb_hub.HubRailButton"/>
+          </t>
+          <div t-if="hasFoot or pinnedLenses.length" class="pbhub-rail__foot"
+               t-att-class="{ 'is-empty': !hasFoot }">
+            <t t-foreach="pinnedLenses" t-as="l" t-key="l.key">
+              <t t-call="pb_hub.HubRailButton"/>
+            </t>
+            <!-- Always in the DOM so its height can be measured; hidden until
+                 something folds. -->
+            <button type="button" class="pbhub-rail__b pbhub-rail__more"
+                    t-att-class="{ 'is-folded': !state.folded.length,
+                                   'is-on': state.moreOpen }"
+                    t-att-aria-expanded="state.moreOpen ? 'true' : 'false'"
+                    aria-haspopup="menu"
+                    t-att-title="moreTitle"
+                    t-on-click="() => this.toggleMore()">
+              <span class="pbhub-rail__ic" t-out="ic('moreVertical', 20)"/>
+              <span class="pbhub-rail__l" t-esc="moreLabel"/>
+            </button>
+          </div>
+          </div>
+          <div t-if="state.moreOpen and foldedLenses.length" class="pbhub-more"
+               role="menu" t-att-aria-label="moreTitle" t-ref="more"
+               t-on-keydown="(ev) => this.onMoreKeydown(ev)">
+            <div class="pbhub-more__h" t-esc="moreTitle"/>
+            <button t-foreach="foldedLenses" t-as="l" t-key="l.key" type="button"
+                    role="menuitem" class="pbhub-more__i"
+                    t-att-class="{ 'is-on': state.lens === l.key,
+                                   'is-locked': isLocked(l) }"
+                    t-on-click="() => this.pickFolded(l.key)">
+              <span class="pbhub-more__ic" t-out="ic(l.icon, 16)"/>
+              <span class="pbhub-more__l" t-esc="l.title or l.label"/>
+              <span t-if="isLocked(l)" class="pbhub-more__lock" t-out="ic('lock', 12)"/>
+            </button>
           </div>
         </nav>
 
@@ -171,6 +193,27 @@
         </aside>
       </div>
     </div>
+  </t>
+
+  <!-- ================================================ one rail button
+       Called inside the shell's own foreach, so `l` and every shell getter
+       are in scope. `data-lens` is what the fit measure reads. -->
+  <t t-name="pb_hub.HubRailButton">
+    <button type="button" class="pbhub-rail__b" t-att-data-lens="l.key"
+            t-att-class="{ 'is-on': state.lens === l.key,
+                           'is-locked': isLocked(l),
+                           'is-folded': isFolded(l) }"
+            t-att-aria-current="state.lens === l.key ? 'page' : false"
+            t-att-title="l.title or l.label"
+            t-on-click="() => this.setLens(l.key)">
+      <span class="pbhub-rail__ic" t-out="ic(l.icon, 20)"/>
+      <span class="pbhub-rail__l" t-esc="l.label"/>
+      <!-- FLEET P4. A part of the product this company has not got, that
+           the platform chose to keep on screen rather than take away.
+           The padlock is the whole difference, and clicking it says why
+           in one sentence, never nothing. -->
+      <span t-if="isLocked(l)" class="pbhub-rail__lock" t-out="ic('lock', 10)"/>
+    </button>
   </t>
 
   <!-- ====================================================== back chip -->

@@ -437,9 +437,12 @@ for (const [category, workspace, title, focus, hub] of [
     ['pb_people_hub_lens', 'people', 'People access', 'people.records', {label:'People', xmlid:'pb_people_hub.action_pb_people_hub'}],
     ['pb_payhub_lens', 'payroll', 'Payroll access', 'payroll.operations', {label:'Payroll', xmlid:'pb_payhub.action_pb_pay_hub'}],
 ]) {
+    // RAIL FIT 2026-11-02 (owner): the rail word is ACCESS, the full name is
+    // the tooltip, and it is pinned to the foot of the rail with the other
+    // set-up items, so a long rail folds it first.
     registry.category(category).add('access_studio', {
-        key: 'access', icon: 'shield', label: _t('Access & delegation'),
-        title: _t(title), Component: PbAccessBoard,
+        key: 'access', icon: 'shield', label: _t('Access'),
+        title: _t('Access & delegation'), pinned: true, Component: PbAccessBoard,
         groups: ['base.group_user'], props: { embedded: true, workspace, focus, hub },
     });
 }

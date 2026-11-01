@@ -23262,8 +23262,8 @@
               "vi": "Những người làm cho nhiều công ty, và số ngày họ làm ở mỗi nơi."
             },
             "name": {
-              "en": "Where they work",
-              "vi": "Nơi họ làm việc"
+              "en": "Location",
+              "vi": "Địa điểm"
             }
           }
         },
@@ -35183,8 +35183,8 @@
             },
             {
               "affects": {
-                "en": "Where they work and Assets are tabs under People. Goals and Praise are tabs under Talent. None of them changes a payslip.",
-                "vi": "Nơi họ làm việc và Tài sản là tab trong Con người. Mục tiêu và Khen ngợi là tab trong Nhân tài. Không ô nào thay đổi phiếu lương."
+                "en": "Location and Assets are tabs under People. Goals and Praise are tabs under Talent. None of them changes a payslip.",
+                "vi": "Địa điểm và Tài sản là tab trong Con người. Mục tiêu và Khen ngợi là tab trong Nhân tài. Không ô nào thay đổi phiếu lương."
               },
               "anchor": "rep-pm-tiles",
               "body": "",
@@ -35195,8 +35195,8 @@
               },
               "lines": [],
               "look": {
-                "en": "The four tiles: Where they work, Assets, Goals and Praise.",
-                "vi": "Bốn ô: Nơi họ làm việc, Tài sản, Mục tiêu và Khen ngợi."
+                "en": "The four tiles: Location, Assets, Goals and Praise.",
+                "vi": "Bốn ô: Địa điểm, Tài sản, Mục tiêu và Khen ngợi."
               },
               "means": {
                 "en": "People who work for more than one company; the laptops and cards handed out; this year's goals; the praise people give.",
@@ -35209,8 +35209,8 @@
               "screen": "peoplemore",
               "tip": "",
               "title": {
-                "en": "Where they work, Assets, Goals, Praise",
-                "vi": "Nơi họ làm việc, Tài sản, Mục tiêu, Khen ngợi"
+                "en": "Location, Assets, Goals, Praise",
+                "vi": "Địa điểm, Tài sản, Mục tiêu, Khen ngợi"
               },
               "visual": "none"
             },
@@ -35267,8 +35267,8 @@
           "vi": "Ai cũng đọc được Bảng vinh danh và Thông báo. Các tab của Con người theo quyền riêng của chúng."
         },
         "what": {
-          "en": "Home › Wall and Announce; People › Where they work and Assets; Talent › Goals and Praise. Each tab shows only when your company uses it.",
-          "vi": "Trang chủ › Bảng vinh danh và Thông báo; Con người › Nơi họ làm việc và Tài sản; Nhân tài › Mục tiêu và Khen ngợi. Mỗi tab chỉ hiện khi công ty bạn dùng nó."
+          "en": "Home › Wall and Announce; People › Location and Assets; Talent › Goals and Praise. Each tab shows only when your company uses it.",
+          "vi": "Trang chủ › Bảng vinh danh và Thông báo; Con người › Địa điểm và Tài sản; Nhân tài › Mục tiêu và Khen ngợi. Mỗi tab chỉ hiện khi công ty bạn dùng nó."
         },
         "when": {
           "en": "Whenever you want to thank someone, tell everyone something, hand out a laptop, or check a goal.",
@@ -35284,8 +35284,8 @@
         "hr"
       ],
       "search": {
-        "en": "wall, praise, say thank you, announcements, assets, goals, where they work",
-        "vi": "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc"
+        "en": "wall, praise, say thank you, announcements, assets, goals, where they work, location",
+        "vi": "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc, địa điểm"
       },
       "section": "payroll",
       "sequence": 250,
@@ -40734,5 +40734,5 @@
       }
     }
   ],
-  "version": "6714e7d15104"
+  "version": "f8882a484f5b"
 }

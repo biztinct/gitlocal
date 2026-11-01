@@ -81,7 +81,7 @@
                   t-att-aria-current="state.lens === l.key ? 'page' : false"
                   t-att-title="l.label"
                   t-on-click="() => this.setLens(l.key)">
-            <span class="pbms-rail__ic" t-out="ic(l.icon, 18)"/>
+            <span class="pbms-rail__ic" t-out="ic(l.icon, 20)"/>
             <span class="pbms-rail__l" t-esc="l.label"/>
           </button>
         </nav>

@@ -682,10 +682,10 @@ class TestSettingsGroupsNavP2(TransactionCase):
         scss = open(get_module_path('pb_settings') + '/static/src/scss/settings_hub.scss',
                     encoding='utf-8').read()
         nav = scss.split('.pbst-nav {', 1)[1].split('}', 1)[0]
-        self.assertIn('flex: 0 0 72px', nav)
+        self.assertIn('flex: 0 0 80px', nav)   # RAIL FIT 2026-11-02
         btn = scss.split('.pbst-nav__b {', 1)[1].split('svg', 1)[0]
-        self.assertIn('width: 60px', btn)
-        self.assertIn('font-size: 9px', btn)
+        self.assertIn('width: 68px', btn)
+        self.assertIn('font-size: 10px', btn)
         self.assertIn('text-transform: uppercase', btn)
         self.assertNotIn('.pbst-nav__l { display: none; }', scss,
                          'R5: the rail keeps its labels on small laptops')

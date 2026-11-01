@@ -28,7 +28,10 @@
  * Binding non-goal for Cycle 1: `pb_mission` is NOT refactored onto this. It
  * keeps its own copy of the shape until a later cycle retires it.
  */
-import { Component, useState, useEffect, onWillStart, onWillUnmount } from "@odoo/owl";
+import {
+    Component, useState, useEffect, useRef, onWillStart, onWillUnmount,
+    onMounted, onPatched,
+} from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { isMacOS } from "@web/core/browser/feature_detection";
 import { user } from "@web/core/user";
@@ -86,6 +89,18 @@ export class HubShell extends Component {
          *                Component?,              // omitted = placeholder lens
          *                props?: {},              // merged into the lens props
          *                wantsArrival?: true      // also receive `arrival`
+         *                pinned?: true,           // RAIL FIT 2026-11-02: drawn
+         *                                         // at the foot of the rail
+         *                                         // under a hairline (Access,
+         *                                         // Set-up); folds first
+         *                under?: "insights",      // RAIL FIT: not on the rail;
+         *                                         // a TAB inside that lens,
+         *                                         // which must accept
+         *                                         // `subLenses`/`tab`/`onTab`
+         *                                         // (PbModuleInsights does).
+         *                                         // Without that parent on
+         *                                         // the rail it is an ordinary
+         *                                         // rail item again.
          *              } ],
          *   dock?:    Component,                  // 268px right column
          *   tracker?: { label, stage, total, onClick? },
@@ -128,10 +143,57 @@ export class HubShell extends Component {
 
         this.state = useState({
             lens: this.navigationMemory.lens || this.arrival.lens || this._restoreLens(),
+            // RAIL FIT: the `under` lens shown as a tab inside `lens`, or "".
+            sub: "",
             // key -> boolean; null while unresolved, which the rail reads as
             // "show everything" so the shell never flashes an empty rail
             allowed: null,
+            // RAIL FIT: rail keys that did not fit the window's height and
+            // sit behind MORE instead. Never the selected lens.
+            folded: [],
+            moreOpen: false,
         });
+
+        // RAIL FIT (2026-11-02). A rail taller than the window used to scroll
+        // inside itself, and a classic scrollbar (Windows, any Mac with a
+        // mouse) took 16px of the 72px column and sliced every label. Now the
+        // rail never scrolls: what does not fit folds into MORE. Measured on
+        // every patch and every rail resize; the measure only writes state
+        // when the answer changes, so it cannot loop.
+        this.railRef = useRef("rail");
+        this.moreRef = useRef("more");
+        this._onSubTab = (key) => this._setSub(key);
+        this._childProps = {};
+        onMounted(() => {
+            this._fitRail();
+            if (window.ResizeObserver && this.railRef.el) {
+                this._railObserver = new ResizeObserver(() => this._fitRail());
+                this._railObserver.observe(this.railRef.el);
+            }
+            // Web fonts arrive after the first paint and change label heights.
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(() => this._fitRail());
+            }
+        });
+        onPatched(() => this._fitRail());
+        onWillUnmount(() => {
+            if (this._railObserver) { this._railObserver.disconnect(); }
+        });
+        // MORE closes on a press anywhere outside it.
+        useEffect(
+            (open) => {
+                if (!open) { return; }
+                const away = (ev) => {
+                    const nav = this.railRef.el && this.railRef.el.parentElement;
+                    if (nav && !nav.contains(ev.target)) { this.state.moreOpen = false; }
+                };
+                document.addEventListener("pointerdown", away, true);
+                const first = this.moreRef.el && this.moreRef.el.querySelector(".pbhub-more__i");
+                if (first) { first.focus(); }
+                return () => document.removeEventListener("pointerdown", away, true);
+            },
+            () => [this.state.moreOpen],
+        );
 
         // lensProps memo (see the getter). Module-level constants would be
         // shared between two hubs on one page; instance fields are not.
@@ -160,8 +222,10 @@ export class HubShell extends Component {
     }
 
     _publishPlace() {
-        this.navigationMemory.lens = this.state.lens;
-        const title = hubLocationTitle(this.config.key, this.lensDef);
+        // The sub-tab is where the reader IS (Insights › Budget), so memory,
+        // the location row and Learn all name it rather than its parent.
+        this.navigationMemory.lens = this.state.sub || this.state.lens;
+        const title = hubLocationTitle(this.config.key, this.placeDef);
         if (title && this.env.config?.setDisplayName) { this.env.config.setDisplayName(title); }
         const tag = (this.props.action && this.props.action.tag) || "";
         if (!tag) { return; }
@@ -169,7 +233,7 @@ export class HubShell extends Component {
             tag,
             hubKey: this.config.key || "",
             hubLabel: this.brand.label,
-            lens: this.state.lens,
+            lens: this.state.sub || this.state.lens,
             lenses: this.lenses.map((l) => ({ key: l.key, label: l.label,
                                               icon: l.icon,
                                               locked: this.isLocked(l) })),
@@ -185,7 +249,7 @@ export class HubShell extends Component {
     get brand() { return this.config.brand || { label: "", icon: "compass" }; }
     get tracker() { return this.config.tracker || null; }
     get back() { return this.arrival.back; }
-    get locationTitle() { return hubLocationTitle(this.config.key, this.lensDef); }
+    get locationTitle() { return hubLocationTitle(this.config.key, this.placeDef); }
     get hasCog() { return typeof this.config.cog === "function"; }
 
     // --------------------------------------------------------------- arrival
@@ -259,8 +323,31 @@ export class HubShell extends Component {
             && !this.gate(l.feature).locked;
         if (!usable({ key: this.state.lens, feature: this._featureOfLens(this.state.lens) })) {
             const first = lenses.find(usable);
-            this.state.lens = first ? first.key : this.state.lens;
+            this._settle(first ? first.key : this.state.lens);
+        } else {
+            this._settle(this.state.lens);
         }
+    }
+
+    /**
+     * Put `key` on screen: a lens that lives `under` another one becomes that
+     * lens with `key` as its tab, everything else is itself. Reads `lenses`,
+     * so it must run after `allowed` is known.
+     */
+    _settle(key) {
+        const def = (this.config.lenses || []).find((l) => l.key === key);
+        if (def && this._parentShown(def)) {
+            this.state.lens = def.under;
+            this.state.sub = key;
+        } else {
+            this.state.lens = key;
+            this.state.sub = "";
+        }
+    }
+
+    /** True when `def` sits as a tab inside a parent that is on the rail. */
+    _parentShown(def) {
+        return !!def.under && this.lenses.some((p) => p.key === def.under && !p.under);
     }
 
     // ------------------------------------------------ parts of the product
@@ -323,9 +410,149 @@ export class HubShell extends Component {
     /** True while this rail button should be drawn with a padlock. */
     isLocked(lens) { return this.gate(lens.feature).locked; }
 
+    // ------------------------------------------------------- RAIL FIT
+    /** What the rail draws: every lens except those living inside another. */
+    get railLenses() { return this.lenses.filter((l) => !this._parentShown(l)); }
+    get mainLenses() { return this.railLenses.filter((l) => !l.pinned); }
+    get pinnedLenses() { return this.railLenses.filter((l) => l.pinned); }
+    /** In rail order: the main list first, pinned items (Access) last. */
+    get foldedLenses() {
+        return this.mainLenses.concat(this.pinnedLenses).filter((l) => this.isFolded(l));
+    }
+    isFolded(l) { return this.state.folded.includes(l.key); }
+    /** Pinned items still on screen, plus MORE when anything folded. */
+    get hasFoot() {
+        return this.state.folded.length > 0
+            || this.pinnedLenses.some((l) => !this.isFolded(l));
+    }
+    get moreLabel() { return _t("More"); }
+    get moreTitle() { return _t("More in %s", this.brand.label); }
+
+    /**
+     * Fold the tail of the rail into MORE when the items are taller than the
+     * column. Pinned items fold first, then the main list from the end; the
+     * selected lens always stays. Folded buttons are still in the DOM (hidden,
+     * out of flow) so their heights can be measured without guessing.
+     */
+    _fitRail() {
+        const el = this.railRef.el;
+        if (!el) { return; }
+        let folded = [];
+        const phone = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+        if (!phone && el.clientHeight > 0) {
+            const cs = window.getComputedStyle(el);
+            const avail = el.clientHeight - parseFloat(cs.paddingTop || 0)
+                - parseFloat(cs.paddingBottom || 0);
+            const gap = parseFloat(cs.rowGap) || 4;
+            const h = {};
+            for (const b of el.querySelectorAll(".pbhub-rail__b[data-lens]")) {
+                h[b.dataset.lens] = b.offsetHeight;
+            }
+            const more = el.querySelector(".pbhub-rail__more");
+            const foot = 10;   // the foot's hairline and its padding
+            const main = this.mainLenses.map((l) => l.key);
+            const pinned = this.pinnedLenses.map((l) => l.key);
+            const sum = (keys) => keys.reduce((s, k) => s + (h[k] || 0) + gap, 0);
+            const need = sum(main) + (pinned.length ? foot + sum(pinned) : 0);
+            if (need > avail + 1) {
+                const on = this.state.lens;
+                const keepPinned = pinned.includes(on) ? [on] : [];
+                let budget = avail - foot - ((more && more.offsetHeight) || 52) - gap
+                    - sum(keepPinned);
+                if (main.includes(on)) { budget -= (h[on] || 0) + gap; }
+                // A prefix of the main list fits; the selected item is kept
+                // wherever it sits (its room was reserved above), so the scan
+                // never stops before reaching it.
+                const keep = [];
+                let full = false;
+                for (const k of main) {
+                    if (k === on) { keep.push(k); continue; }
+                    if (full) { continue; }
+                    const cost = (h[k] || 0) + gap;
+                    if (cost > budget) { full = true; continue; }
+                    keep.push(k);
+                    budget -= cost;
+                }
+                folded = main.concat(pinned)
+                    .filter((k) => !keep.includes(k) && !keepPinned.includes(k));
+            }
+        }
+        if (folded.join("|") !== this.state.folded.join("|")) {
+            this.state.folded = folded;
+            if (!folded.length) { this.state.moreOpen = false; }
+        }
+    }
+
+    toggleMore() { this.state.moreOpen = !this.state.moreOpen; }
+
+    pickFolded(key) {
+        this.state.moreOpen = false;
+        this.setLens(key);
+    }
+
+    /** Up / Down / Home / End inside MORE; Escape returns to the MORE button. */
+    onMoreKeydown(ev) {
+        if (ev.key === "Escape") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.state.moreOpen = false;
+            const btn = this.railRef.el && this.railRef.el.querySelector(".pbhub-rail__more");
+            if (btn) { btn.focus(); }
+            return;
+        }
+        railKeydown(ev, ".pbhub-more__i");
+    }
+
+    // ------------------------------------------------- tabs inside a lens
+    /** The `under` lenses the given rail lens hosts as tabs, in rail order. */
+    _subLensesFor(key) {
+        return this.lenses
+            .filter((l) => l.under === key && !this.isLocked(l))
+            .map((l) => ({
+                key: l.key, label: l.title || l.label, icon: l.icon,
+                Component: l.Component, props: this._childPropsFor(l),
+            }));
+    }
+
+    /** Identity-stable props per hosted lens (W21), arrival included. */
+    _childPropsFor(def) {
+        if (!this._childProps[def.key]) {
+            const props = { embedded: true, ...(def.props || {}) };
+            if (def.wantsArrival) { props.arrival = this._arrivalProp; }
+            this._childProps[def.key] = props;
+        }
+        return this._childProps[def.key];
+    }
+
+    /** A tab press inside the host: remember it like a rail press. */
+    _setSub(key) {
+        const isSub = (this.config.lenses || []).some(
+            (l) => l.key === key && l.under === this.state.lens);
+        const sub = isSub ? key : "";
+        if (sub === this.state.sub) { return; }
+        this.state.sub = sub;
+        this._publishPlace();
+        this._remember(sub || this.state.lens);
+    }
+
+    _remember(key) {
+        const storageKey = this._lensStorageKey;
+        if (!storageKey) { return; }
+        try {
+            window.localStorage.setItem(storageKey, key);
+        } catch { /* private mode */ }
+    }
+
     get lensDef() {
         return (this.config.lenses || []).find((l) => l.key === this.state.lens)
             || null;
+    }
+
+    /** The lens the reader is actually looking at: the tab, else the lens. */
+    get placeDef() {
+        const sub = this.state.sub
+            && (this.config.lenses || []).find((l) => l.key === this.state.sub);
+        return sub || this.lensDef;
     }
 
     /** The lens on screen is one this company has not got. */
@@ -373,12 +600,21 @@ export class HubShell extends Component {
         // shell repaints, which re-runs the cockpit's onWillUpdateProps fetch
         // for nothing. Stable identity per lens is the same rule the LENSES
         // feature maps in pb_mission are written to.
-        if (this._propsFor === def.key) { return this._propsCache; }
+        // RAIL FIT: a lens hosting tabs is re-memoised per tab, so the host
+        // sees `tab` change when a rail press or a deep link moves it.
+        const memo = `${def.key}|${this.state.sub}`;
+        if (this._propsFor === memo) { return this._propsCache; }
         const props = { embedded: true, ...(def.props || {}) };
         if (def.wantsArrival) {
             props.arrival = this._arrivalProp;
         }
-        this._propsFor = def.key;
+        const subs = this._subLensesFor(def.key);
+        if (subs.length) {
+            props.subLenses = subs;
+            props.tab = this.state.sub || undefined;
+            props.onTab = this._onSubTab;
+        }
+        this._propsFor = memo;
         this._propsCache = props;
         return props;
     }
@@ -392,26 +628,27 @@ export class HubShell extends Component {
         // twice tells you twice.
         const def = (this.config.lenses || []).find((l) => l.key === key);
         if (def && this.gate(def.feature).locked) { this.openLock(def); return; }
-        if (this.state.lens === key) { return; }
         if (this.state.allowed && !this.state.allowed[key]) { return; }
-        this.state.lens = key;
+        this.state.moreOpen = false;
+        const lens = def && this._parentShown(def) ? def.under : key;
+        const sub = lens === key ? "" : key;
+        if (this.state.lens === lens && this.state.sub === sub) { return; }
+        this.state.lens = lens;
+        this.state.sub = sub;
         // Said NOW, from the click, not after the patch: OWL does not patch
         // the shell until the new lens has finished loading, and the helper
         // must follow the tab the reader pressed, not the data behind it.
         this._publishPlace();
-        const storageKey = this._lensStorageKey;
-        if (!storageKey) { return; }
-        try {
-            window.localStorage.setItem(storageKey, key);
-        } catch { /* private mode */ }
+        this._remember(key);
     }
 
     /**
      * Up / Down (and Home / End) walk the rail with the keyboard; Enter and
      * Space on the focused button open the lens through `setLens` above, as a
      * click does (NAV P1). The helper is shared with pb_mission's own rail.
+     * Folded buttons are hidden and skipped; MORE is part of the walk.
      */
-    onRailKeydown(ev) { railKeydown(ev, ".pbhub-rail__b"); }
+    onRailKeydown(ev) { railKeydown(ev, ".pbhub-rail__b:not(.is-folded)"); }
 
     // ------------------------------------------------------------ ⌘K palette
     /** "⌘K" on macOS, "Ctrl K" elsewhere — the label must match the key. */

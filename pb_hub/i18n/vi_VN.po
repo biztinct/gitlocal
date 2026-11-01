@@ -667,3 +667,15 @@ msgstr "Trợ giúp"
 #: code:addons/pb_hub/static/src/js/hub_palette_entries.js:0
 msgid "Lessons and tours"
 msgstr "Bài học và hướng dẫn tham quan"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_shell.js:0
+msgid "More"
+msgstr "Thêm"
+
+#. module: pb_hub
+#. odoo-javascript
+#: code:addons/pb_hub/static/src/js/hub_shell.js:0
+msgid "More in %s"
+msgstr "Thêm trong %s"

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="pb_insights.PbModuleInsights">
-    <div class="pbim pbmi">
-      <header class="pbmi-head">
+    <div class="pbim pbmi" t-att-class="{ 'is-hosting': !!activeSub }">
+      <!-- RAIL FIT 2026-11-02: report screens that used to be rail items of
+           their own (People's Workforce insights, Payroll's report and Budget)
+           are tabs here now. While one is open the page hands it the whole
+           height and drops its own heading. -->
+      <header t-if="!activeSub" class="pbmi-head">
         <div>
           <div class="pbmi-eyebrow">Insights <span t-if="!isCatalogue">· <t t-esc="title"/></span></div>
           <h1 t-if="isCatalogue">Reports across Payobook</h1>
@@ -22,10 +26,19 @@
                 t-att-aria-current="state.tab === tab ? 'page' : false"
                 t-on-click="() => this.selectTab(tab)"
                 t-esc="tab.charAt(0).toUpperCase() + tab.slice(1)"/>
+        <button t-foreach="subTabs" t-as="sub" t-key="sub.key"
+                t-att-class="{ 'is-on': state.tab === sub.key }"
+                t-att-aria-current="state.tab === sub.key ? 'page' : false"
+                t-on-click="() => this.selectTab(sub.key)"
+                t-esc="sub.label"/>
       </nav>
 
-      <div t-if="state.error" class="pbmi-error" role="alert" t-esc="state.error"/>
-      <p t-if="state.busy" class="pbmi-loading">Reading the latest figures…</p>
+      <div t-if="activeSub" class="pbmi-host">
+        <t t-component="activeSub.Component" t-key="'sub-' + activeSub.key"
+           t-props="activeSub.props"/>
+      </div>
+      <div t-if="state.error and !activeSub" class="pbmi-error" role="alert" t-esc="state.error"/>
+      <p t-if="state.busy and !activeSub" class="pbmi-loading">Reading the latest figures…</p>
 
       <section t-if="!isCatalogue and state.tab === 'overview'" class="pbmi-section">
         <PbInsights t-if="isPayroll" embedded="true"/>

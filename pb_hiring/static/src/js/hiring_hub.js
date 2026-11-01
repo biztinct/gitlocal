@@ -98,9 +98,11 @@ export class PbHiringHub extends Component {
                   Component: PbHiringBoard, groups: HIRING_BANK_GATE, probe: PROBE,
                   props: { startTab: "bank", placeLens: "bank" } },
                 ...extraLenses.filter((lens) => lens.key === "numbers"),
+                // RAIL FIT 2026-11-02: set-up sits at the foot of the rail
+                // with Access, under a hairline, and folds first.
                 { key: "setup", icon: "sliders", label: _t("Set-up"),
                   title: _t("Hiring set-up"), Component: PbHiringSetup,
-                  groups: HIRING_SETUP_GATE, probe: PROBE },
+                  groups: HIRING_SETUP_GATE, probe: PROBE, pinned: true },
                 ...extraLenses.filter((lens) => lens.key !== "numbers"),
             ],
         };
@@ -112,8 +114,9 @@ export class PbHiringHub extends Component {
         return registry.category(HIRING_LENSES).getAll().map((def) => {
             const props = typeof def.propsFromContext === "function"
                 ? def.propsFromContext(ctx) : (def.props || {});
-            return { ...def, props,
-                label: def.key === "access" ? _t("Access & delegations") : def.label };
+            // RAIL FIT 2026-11-02: Access keeps its own short rail word now;
+            // the old "Access & delegations" override made it two lines.
+            return { ...def, props };
         });
     }
 

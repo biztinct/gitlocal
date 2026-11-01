@@ -64,7 +64,7 @@
                     t-att-title="g.title or g.label"
                     t-att-data-group="g.key"
                     t-on-click="() => this.setGroup(g.key)">
-              <span class="pbst-nav__ic" t-out="ic(g.icon, 18)"/>
+              <span class="pbst-nav__ic" t-out="ic(g.icon, 20)"/>
               <span class="pbst-nav__l" t-esc="g.label"/>
             </button>
           </nav>

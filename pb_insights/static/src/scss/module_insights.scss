@@ -13,6 +13,12 @@
   .pbmi-tabs button { border: 0; border-radius: 9px; background: transparent; padding: 9px 18px; color: #667695; font-weight: 700; }
   .pbmi-tabs button.is-on { background: #5d4bb7; color: white; }
   .pbmi-section { max-width: 1500px; margin: auto; }
+  // RAIL FIT 2026-11-02: a hosted report screen takes the rest of the height
+  // and owns its own scrolling (W20: a definite-height box, never auto).
+  &.is-hosting { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 14px 0 0; }
+  &.is-hosting .pbmi-tabs { flex: none; margin: 0 4vw 14px; }
+  .pbmi-host { flex: 1 1 auto; min-height: 0; min-width: 0; display: flex; border-top: 1px solid #dee3ed; }
+  .pbmi-host > * { flex: 1 1 auto; min-height: 0; min-width: 0; width: 100%; }
   .pbmi-intro, .pbmi-question { margin: 8px 0 18px; font-size: 14px; }
   .pbmi-tiles, .pbmi-reportgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; }
   .pbmi-tile, .pbmi-report { text-align: left; border: 1px solid #dfe4ed; border-radius: 14px; background: white; box-shadow: 0 8px 20px rgba(27, 32, 69, .035); }

@@ -206,24 +206,31 @@
         align-items: stretch;
     }
 
-    // THE RAIL STANDARD (NAV ledger R1, owner ruling 2026-10-20). Every hub's
-    // second level is one always-visible column: 72px wide, 60px buttons, an
-    // 18px line icon above a 9px capital label of at most two lines, the
-    // selected item a soft tint pill. No hover widening, no labels beside
-    // icons. pb_mission's Workforce rail carries the same numbers in its own
-    // file until it is folded onto this kit; change both or neither.
+    // THE RAIL STANDARD (NAV ledger R1, owner ruling 2026-10-20; RAIL FIT
+    // owner ruling 2026-11-02). Every hub's second level is one always-visible
+    // column: 80px wide, 68px buttons, a 20px line icon above a 10px capital
+    // label of at most two lines, the selected item a soft tint pill. No
+    // hover widening, no labels beside icons. pb_mission's Workforce rail and
+    // pb_settings' group rail carry the same numbers in their own files;
+    // change all three or none.
     // The rail stays put without `position: sticky` because only the canvas
-    // scrolls (the shell root is `overflow: hidden`). Ten items by design,
-    // twelve at most; beyond that the rail scrolls inside itself (R2).
+    // scrolls (the shell root is `overflow: hidden`). It NEVER scrolls: a
+    // classic scrollbar took 16px of the column and sliced every label, so
+    // what does not fit the window folds into MORE (hub_shell.js _fitRail).
     .pbhub-rail {
         position: relative;
         z-index: 1;
-        flex: 0 0 72px;
+        flex: 0 0 80px;
         min-height: 0;
         display: flex;
+
+        // Lifted while MORE is open, so its list sits above a lens's own
+        // sticky headers (the canvas makes no stacking context, W37).
+        &.is-open { z-index: 30; }
     }
     .pbhub-rail__in {
-        width: 72px;
+        position: relative;
+        width: 80px;
         height: 100%;
         min-height: 0;
         display: flex;
@@ -231,28 +238,58 @@
         align-items: center;
         gap: 4px;
         padding: 14px 0;
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow: hidden;
         background: var(--pbim-surface, #fff);
         border-right: 1px solid var(--pbim-line, #E2E8F0);
     }
+    // Pinned items and MORE, at the foot of the column under a hairline.
+    .pbhub-rail__foot {
+        margin-top: auto;
+        padding-top: 9px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 14px;
+            right: 14px;
+            height: 1px;
+            background: var(--pbim-line, #E2E8F0);
+        }
+        &.is-empty::before { display: none; }
+    }
+    // A folded button stays in the DOM, out of flow and invisible, so the
+    // fit measure can read its height. `visibility` also takes it out of the
+    // tab order and the accessibility tree.
+    .pbhub-rail__b.is-folded {
+        position: absolute;
+        top: 0;
+        left: 6px;
+        visibility: hidden;
+        pointer-events: none;
+    }
     .pbhub-rail__b {
-        width: 60px;
+        width: 68px;
         flex: none;
         position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 5px;
-        padding: 9px 3px;
+        padding: 7px 3px;
         border: 0;
         border-radius: var(--pbim-r-sm, 10px);
         background: transparent;
         color: var(--pbim-muted, #64748B);
         font: inherit;
-        font-size: 9px;
-        font-weight: 800;
-        letter-spacing: .04em;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .02em;
         line-height: 1.2;
         text-transform: uppercase;
         text-align: center;
@@ -276,19 +313,19 @@
     }
     .pbhub-rail__ic { display: inline-flex; }
     // Two lines at most; the full name is in the button's `title`.
-    // The label box is 64px, wider than the pill's 54px content box and
-    // centred over it (it overhangs by up to 5px into the rail's 6px gutter):
-    // at 9px/800/.04em, WORKFORCE measures 62px and CONTRACTS 61px, so a
-    // narrower box either splits a word mid-way or slices its last letter.
+    // The label box is 72px, wider than the pill's 62px content box and
+    // centred over it (it overhangs by up to 5px into the rail's 6px gutter).
+    // At 10px/700/.02em the widest words measure WORKFORCE 67, DELEGATION 66,
+    // CONTRACTS 65, LỰC LƯỢNG 60 (2026-11-02), so every word fits with room.
     // Words never break inside (overflow-wrap normal); lines past two are
     // clipped vertically only (overflow-y clip keeps x visible) with an
-    // ellipsis. Measured 2026-10-20, NAV ledger gotcha row "label box".
+    // ellipsis. NAV ledger gotcha row "label box".
     .pbhub-rail__l {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         flex: none;
-        width: 64px;
+        width: 72px;
         overflow-x: visible;
         overflow-y: clip;
         word-break: normal;
@@ -310,12 +347,71 @@
     }
     .pbhub-rail__lock {
         position: absolute;
-        top: 6px;
-        right: 9px;
+        top: 5px;
+        right: 12px;
         display: inline-flex;
         color: var(--pbim-muted, #64748B);
         svg { display: block; }
     }
+
+    // RAIL FIT — the MORE list. Opens to the right of the rail, anchored to
+    // its foot; each folded item by its full name.
+    .pbhub-more {
+        position: absolute;
+        left: calc(100% + 6px);
+        bottom: 12px;
+        width: 236px;
+        max-height: calc(100% - 24px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 6px;
+        background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px);
+        box-shadow: 0 12px 32px rgba(16, 12, 40, .16);
+    }
+    .pbhub-more__h {
+        padding: 6px 10px 4px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbhub-more__i {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 8px 10px;
+        border: 0;
+        border-radius: var(--pbim-r-sm, 10px);
+        background: transparent;
+        color: var(--pbim-ink, #1B1733);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+
+        svg { display: block; flex: none; }
+        &:hover { background: var(--pbim-line-2, #F1F5F9); }
+        &.is-on {
+            background: var(--pbim-soft, #EDEAF8);
+            color: var(--pbim-primary, #5A4BB0);
+        }
+        &.is-locked { color: var(--pbim-muted, #64748B); }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary, #5A4BB0);
+            outline-offset: -2px;
+        }
+    }
+    .pbhub-more__ic { display: inline-flex; color: var(--pbim-muted, #64748B); }
+    .pbhub-more__i.is-on .pbhub-more__ic { color: inherit; }
+    .pbhub-more__l { flex: 1 1 auto; min-width: 0; }
+    .pbhub-more__lock { display: inline-flex; color: var(--pbim-muted, #64748B); }
 
     // The canvas of a locked lens: the same empty primitive, one tone quieter,
     // and the sentence rather than a placeholder line.
@@ -573,6 +669,14 @@
             overflow-y: hidden;
             border-right: 0;
             border-bottom: 1px solid var(--pbim-line, #E2E8F0);
+        }
+        // Nothing folds on a phone: the strip scrolls sideways instead, and
+        // the pinned items simply follow the rest after a hairline.
+        .pbhub-rail__foot {
+            flex-direction: row;
+            margin: 0;
+            padding: 0 0 0 8px;
+            &::before { top: 10px; bottom: 10px; left: 0; right: auto; width: 1px; height: auto; }
         }
     }
 }

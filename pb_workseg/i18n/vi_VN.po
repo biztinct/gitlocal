@@ -1594,3 +1594,9 @@ msgid ""
 msgstr ""
 "Hai loại tiền tệ. Các khoản này đứng cạnh nhau và không bao giờ được cộng "
 "lại với nhau."
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/workseg_lens.js:0
+msgid "Location"
+msgstr "Địa điểm"

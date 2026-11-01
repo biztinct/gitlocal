@@ -1,6 +1,6 @@
 /** @odoo-module **/
 /** One report catalogue and one measure workbench, mounted in each owning hub. */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { openHub } from "@pb_hub/js/hub_nav";
@@ -26,6 +26,13 @@ export class PbModuleInsights extends Component {
         embedded: { type: Boolean, optional: true },
         startTab: { type: String, optional: true },
         explorerComponent: { optional: true },
+        // RAIL FIT 2026-11-02 (handed in by <HubShell/> for lenses declared
+        // `under: "insights"`): extra tabs that mount another screen, the tab
+        // the shell wants open, and a callback so a tab press is remembered
+        // like a rail press. [{ key, label, icon, Component, props }]
+        subLenses: { type: Array, optional: true },
+        tab: { type: String, optional: true },
+        onTab: { type: Function, optional: true },
         "*": true,
     };
 
@@ -33,14 +40,28 @@ export class PbModuleInsights extends Component {
         this.orm = useService("orm");
         this.actionService = useService("action");
         this.state = useState({
-            tab: this.props.startTab || "overview", busy: true, error: "",
+            tab: this.props.tab || this.props.startTab || "overview", busy: true, error: "",
             measure: "", dimension: "", over: "month", months: 6,
             measures: [], catalogue: [], overview: [], result: null,
             chart: "bars", search: "",
         });
         this.request = 0;
         onWillStart(() => this.initialize());
+        // The shell moved the tab (a rail press on Insights, a deep link, the
+        // MORE list): follow it. A tab press made here comes back as the same
+        // value and changes nothing.
+        onWillUpdateProps((next) => {
+            if (next.tab && next.tab !== this.state.tab) {
+                this.state.tab = next.tab;
+            } else if (!next.tab && this.props.tab && this.isSub(this.state.tab)) {
+                this.state.tab = "overview";
+            }
+        });
     }
+
+    get subTabs() { return this.props.subLenses || []; }
+    isSub(key) { return this.subTabs.some((s) => s.key === key); }
+    get activeSub() { return this.subTabs.find((s) => s.key === this.state.tab) || null; }
 
     get area() { return this.props.area; }
     get isPayroll() { return this.area === "payroll"; }
@@ -99,6 +120,7 @@ export class PbModuleInsights extends Component {
 
     async selectTab(tab) {
         this.state.tab = tab;
+        if (this.props.onTab) { this.props.onTab(tab); }
         if (tab === "explorer" && !this.isPayroll && !this.state.result) {
             await this.loadExplorer();
         }

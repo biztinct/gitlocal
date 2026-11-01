@@ -94,10 +94,17 @@ export const INSIGHTS_LENSES = "pb_insights_hub_lens";
 
 // One home for each operational report. Keep explicit old Insights deep links
 // working while the visible rail and search results use the owning module.
+//
+// RAIL FIT 2026-11-02: `under` puts a report inside its home's own Insights
+// lens as a tab instead of a rail item of its own (People and Payroll had 13
+// and 14 rail items; the rail scrolled and sliced its labels). The lens key is
+// unchanged, so every deep link, ⌘K row and remembered tab still lands on it.
+// Hiring, Talent and Learning have no separate Insights lens: theirs IS the
+// report, so they stay rail items.
 export const INSIGHT_DESTINATIONS = {
-    workforce: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "workforce", category: "pb_people_hub_lens" },
-    payroll: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "report", category: "pb_payhub_lens" },
-    budget: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget", category: "pb_payhub_lens" },
+    workforce: { xmlid: "pb_people_hub.action_pb_people_hub", lens: "workforce", category: "pb_people_hub_lens", under: "insights" },
+    payroll: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "report", category: "pb_payhub_lens", under: "insights" },
+    budget: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget", category: "pb_payhub_lens", under: "insights" },
     hiring: { xmlid: "pb_hiring.action_pb_hiring_hub", lens: "numbers", category: "pb_hiring_hub_lens" },
     goals: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "goal_numbers", category: "pb_talent_hub_lens" },
     training: { xmlid: "pb_learning_hub.action_pb_learning_hub", lens: "numbers", category: "pb_learning_hub_lens" },
@@ -105,8 +112,9 @@ export const INSIGHT_DESTINATIONS = {
 
 export function registerModuleInsight(key, definition, options) {
     const destination = INSIGHT_DESTINATIONS[key];
+    const placed = destination.under ? { under: destination.under } : {};
     registry.category(destination.category).add(destination.lens, {
-        ...definition, key: destination.lens, feature: "insights",
+        ...definition, ...placed, key: destination.lens, feature: "insights",
     }, options);
 }
 

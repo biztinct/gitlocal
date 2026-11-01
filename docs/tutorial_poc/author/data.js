@@ -2793,13 +2793,13 @@ const STATIONS = {
       {
         id: "peoplemore", icon: "heart", mins: 5, after: "employees",
         roles: ["hr"],
-        search: B("wall, praise, say thank you, announcements, assets, goals, where they work", "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc"),
+        search: B("wall, praise, say thank you, announcements, assets, goals, where they work, location", "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc, địa điểm"),
         title: B("The rest of People, Home and Talent", "Phần còn lại của Con người, Trang chủ và Nhân tài"),
         desc: B("Praise on the Wall, messages in Announce, the People tabs for where people work and what they hold, and Goals and Praise on Talent.",
                 "Lời khen trên Bảng vinh danh, thông báo ở Thông báo, các tab của Con người về nơi mọi người làm và họ giữ gì, cùng Mục tiêu và Khen ngợi ở Nhân tài."),
         outline: {
-          what: B("Home › Wall and Announce; People › Where they work and Assets; Talent › Goals and Praise. Each tab shows only when your company uses it.",
-                  "Trang chủ › Bảng vinh danh và Thông báo; Con người › Nơi họ làm việc và Tài sản; Nhân tài › Mục tiêu và Khen ngợi. Mỗi tab chỉ hiện khi công ty bạn dùng nó."),
+          what: B("Home › Wall and Announce; People › Location and Assets; Talent › Goals and Praise. Each tab shows only when your company uses it.",
+                  "Trang chủ › Bảng vinh danh và Thông báo; Con người › Địa điểm và Tài sản; Nhân tài › Mục tiêu và Khen ngợi. Mỗi tab chỉ hiện khi công ty bạn dùng nó."),
           why: B("Pay is one part of working here. These tabs hold the rest, next to the records payroll already trusts.",
                  "Lương chỉ là một phần của việc làm ở đây. Các tab này giữ phần còn lại, ngay cạnh hồ sơ mà bảng lương vẫn tin dùng."),
           when: B("Whenever you want to thank someone, tell everyone something, hand out a laptop, or check a goal.",
@@ -3619,12 +3619,16 @@ const LESSONS = {
       {
         screen: "payruns", anchor: "pk-divchips",
         kicker: B("Scoping", "Thu hẹp phạm vi"),
-        title: B("The division chips narrow the cards", "Các nhãn bộ phận thu hẹp các thẻ"),
-        look: B("The division chips in the toolbar.", "Các nhãn bộ phận trên thanh công cụ."),
-        means: B("A chip shows only that division's cards.", "Một nhãn chỉ hiện các thẻ của bộ phận đó."),
-        affects: B("The lane counts still count the whole board. Money in another currency stays in its own currency.",
-                   "Số đếm của các cột vẫn đếm cả bảng. Tiền bằng loại tiền khác vẫn giữ loại tiền của nó."),
-        press: B("A division chip, or All divisions.", "Một nhãn bộ phận, hoặc Tất cả các bộ phận."),
+        /* FILTER wave 5 changed this step in the generated JSON only
+           (9eed8daad); brought back to the source 2026-11-02 so a
+           regenerate keeps it. */
+        title: B("The filter panel narrows the cards", "Bảng bộ lọc thu hẹp các thẻ"),
+        look: B("The Filters button and the view tabs above the lanes.", "Nút Bộ lọc và các thẻ chế độ xem phía trên các cột."),
+        means: B("Tick a division (or a month, or where a run is) in the filter panel to see only those cards. A number beside every value says how many runs it holds.",
+                 "Đánh dấu một bộ phận (hoặc một tháng, hoặc nơi đợt lương đang ở) trong bảng bộ lọc để chỉ thấy các thẻ đó. Con số cạnh mỗi giá trị cho biết có bao nhiêu đợt lương."),
+        affects: B("The lane counts follow the filters, so a folded lane still says how many runs it holds. Money in another currency stays in its own currency.",
+                   "Số đếm của các cột đi theo bộ lọc, nên một cột đang thu gọn vẫn cho biết có bao nhiêu đợt lương. Tiền bằng loại tiền khác vẫn giữ loại tiền của nó."),
+        press: B("Filters, then a division under Division; or a view tab such as This month.", "Bộ lọc, rồi một bộ phận trong mục Bộ phận; hoặc một thẻ chế độ xem như Tháng này."),
       },
       {
         screen: "payruns", anchor: "pk-card-actions",
@@ -7443,13 +7447,13 @@ const LESSONS = {
         screen: "peoplemore", anchor: "rep-pm-tiles",
         /* source: pb_learn/static/src/engine/screens.js:2419 · pb_learn/static/src/engine/fixture.js:2049 */
         kicker: B("People and Talent", "Con người và Nhân tài"),
-        title: B("Where they work, Assets, Goals, Praise", "Nơi họ làm việc, Tài sản, Mục tiêu, Khen ngợi"),
-        look: B("The four tiles: Where they work, Assets, Goals and Praise.",
-                "Bốn ô: Nơi họ làm việc, Tài sản, Mục tiêu và Khen ngợi."),
+        title: B("Location, Assets, Goals, Praise", "Địa điểm, Tài sản, Mục tiêu, Khen ngợi"),
+        look: B("The four tiles: Location, Assets, Goals and Praise.",
+                "Bốn ô: Địa điểm, Tài sản, Mục tiêu và Khen ngợi."),
         means: B("People who work for more than one company; the laptops and cards handed out; this year's goals; the praise people give.",
                  "Người làm cho nhiều công ty; máy tính và thẻ đã cấp; mục tiêu năm nay; lời khen mọi người dành cho nhau."),
-        affects: B("Where they work and Assets are tabs under People. Goals and Praise are tabs under Talent. None of them changes a payslip.",
-                   "Nơi họ làm việc và Tài sản là tab trong Con người. Mục tiêu và Khen ngợi là tab trong Nhân tài. Không ô nào thay đổi phiếu lương."),
+        affects: B("Location and Assets are tabs under People. Goals and Praise are tabs under Talent. None of them changes a payslip.",
+                   "Địa điểm và Tài sản là tab trong Con người. Mục tiêu và Khen ngợi là tab trong Nhân tài. Không ô nào thay đổi phiếu lương."),
       },
       {
         screen: "peoplemore", anchor: "rep-tabs",
@@ -9840,7 +9844,7 @@ const SCREEN_CTX = {
         pay: [B("Pay", "Lương"),
               B("Pay bands drawn as a picture, and the yearly pay review.",
                 "Các dải lương dưới dạng hình vẽ, và đợt xét lương hằng năm.")],
-        where: [B("Where they work", "Nơi họ làm việc"),
+        where: [B("Location", "Địa điểm"),
                 B("People who work for more than one company, and the days they spend in each.",
                   "Những người làm cho nhiều công ty, và số ngày họ làm ở mỗi nơi.")],
         assets: [B("Assets", "Tài sản"),
@@ -12343,7 +12347,7 @@ const PRACTICE_ANCHORS = {
   "rep-wf-locked": "The practice Close board's picture of a locked week, with the Reopen… note. Drawn beside the grey lock so the lesson can show both states.",
   "rep-ac-handover": "The practice Hand my access over dialog, drawn open: who, what, until, and the automatic take-back.",
   "rep-pm-wall": "The practice Wall card: one piece of praise tied to a company value, and Say thank you.",
-  "rep-pm-tiles": "The practice tiles for People's smaller tabs: Where they work, Assets, Goals, Announce.",
+  "rep-pm-tiles": "The practice tiles for People's smaller tabs: Location, Assets, Goals, Announce.",
 };
 
 /* =============================================================================

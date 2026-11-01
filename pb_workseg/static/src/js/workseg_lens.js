@@ -33,7 +33,10 @@ import { WORKSEG_GATE } from "@pb_workseg/js/workseg_palette";
 registry.category(PEOPLE_LENSES).add("where", {
     key: "where",
     icon: "mapPin",
-    label: _t("Where they work"),
+    // RAIL FIT 2026-11-02 (owner): the rail word is LOCATION; the screen's
+    // full name stays in the tooltip and the location row.
+    label: _t("Location"),
+    title: _t("Where they work"),
     Component: PbAssignmentsScreen,
     groups: WORKSEG_GATE,
     // The deep link can be more specific than the lens: "Same person?" is

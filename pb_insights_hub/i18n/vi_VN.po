@@ -101,3 +101,9 @@ msgstr "Lương"
 #: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
 msgid "Payroll report"
 msgstr "Báo cáo lương"
+
+#. module: pb_insights_hub
+#. odoo-javascript
+#: code:addons/pb_insights_hub/static/src/js/insights_hub.js:0
+msgid "Workforce insights"
+msgstr "Phân tích lực lượng lao động"

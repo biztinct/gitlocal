@@ -457,7 +457,10 @@ class TestWhereTheyWorkIsADoor(TransactionCase):
         self.assertTrue(found, 'the "Where they work" lens is gone')
         self.assertEqual(int(found.group(1)), 48,
                          'after Pay (45), before Plan (last)')
-        self.assertIn('label: _t("Where they work")', lens)
+        # RAIL FIT 2026-11-02 (owner): the rail word is Location; the full
+        # name is the title.
+        self.assertIn('label: _t("Location")', lens)
+        self.assertIn('title: _t("Where they work")', lens)
         self.assertIn('icon: "mapPin"', lens)
         self.assertIn('Component: PbAssignmentsScreen', lens)
         self.assertIn('wantsArrival: true', lens,

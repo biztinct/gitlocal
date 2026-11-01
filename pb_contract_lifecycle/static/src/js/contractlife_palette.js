@@ -47,7 +47,10 @@ registry.category(PEOPLE_LENSES).add("contracts", {
     Component: PbContractLifeBoard,
     groups: LIFECYCLE_GATE,
     feature: "lifecycle",
-}, { sequence: 58 });
+// RAIL FIT 2026-11-02: right after Employees (People's own lens has no
+// sequence and Records is 40), so the two halves of a person's terms sit
+// together instead of tenth on the rail.
+}, { sequence: 38 });
 
 const HUB_XMLID = "pb_people_hub.action_pb_people_hub";
 const MANAGER = [

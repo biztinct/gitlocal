@@ -1265,7 +1265,9 @@
     "hi-filters": {
       "screen": "hiring",
       "file": "pb_hiring/static/src/xml/hiring_board.xml",
-      "also": ["pb_hiring/static/src/xml/hiring_p9.xml"],
+      "also": [
+        "pb_hiring/static/src/xml/hiring_p9.xml"
+      ],
       "desc": "The shared filter panel on Hiring's four lists (Roles, Interviews, Applicants, Offers): view tabs (All roles, Open roles, Over budget…), the Filters button that opens the left panel with a count beside every value, the search, the sort, and the applied filters as chips. Each list keeps its own filters; the numbers and the steps above still filter.",
       "reserved": true
     },
@@ -2156,7 +2158,7 @@
     "rep-wf-locked": "The practice Close board's picture of a locked week, with the Reopen… note. Drawn beside the grey lock so the lesson can show both states.",
     "rep-ac-handover": "The practice Hand my access over dialog, drawn open: who, what, until, and the automatic take-back.",
     "rep-pm-wall": "The practice Wall card: one piece of praise tied to a company value, and Say thank you.",
-    "rep-pm-tiles": "The practice tiles for People's smaller tabs: Where they work, Assets, Goals, Announce."
+    "rep-pm-tiles": "The practice tiles for People's smaller tabs: Location, Assets, Goals, Announce."
   },
   "foreign": {
     "im-connectors": "pb_import — the \"Manage connectors\" deep link the IA redesign's Cycle 3 left behind when it closed Import's five duplicate connector doors. pb_learn neither laid it nor teaches it; the im-* family in that template is otherwise pb_learn's, which is exactly why it has to be named rather than wildcarded.",

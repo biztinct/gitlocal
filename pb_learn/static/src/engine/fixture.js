@@ -2086,7 +2086,7 @@ const PRACTICE = {
     announce: { title: B("New store opens in Hải Phòng", "Cửa hàng mới khai trương ở Hải Phòng"),
                 when: B("From HR · 01/08/2026", "Từ Nhân sự · 01/08/2026") },
     tiles: [
-      [B("Where they work", "Nơi họ làm việc"), B("People who work for more than one company", "Người làm cho nhiều công ty")],
+      [B("Location", "Địa điểm"), B("People who work for more than one company", "Người làm cho nhiều công ty")],
       [B("Assets", "Tài sản"), B("Laptops, phones and cards, and who holds them", "Máy tính, điện thoại, thẻ, và ai đang giữ")],
       [B("Goals", "Mục tiêu"), B("What each person plans this year", "Điều mỗi người dự định trong năm")],
       [B("Praise", "Khen ngợi"), B("The thank-yous people give each other", "Những lời cảm ơn mọi người dành cho nhau")],
@@ -2155,14 +2155,16 @@ const MENU = [
     lenses: [
       { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
         also: ["contracts"] },
+      /* RAIL FIT 2026-11-02: Contracts sits right after Employees; Where they
+         work reads LOCATION on the rail. */
+      { key: "contracts", label: B("Contracts", "Hợp đồng"), screen: "contractends" },
       { key: "records", label: B("Records", "Hồ sơ"), screen: "records" },
       { key: "pay", label: B("Pay", "Lương"), screen: "paybands", also: ["payreview"] },
-      { key: "where", label: B("Where they work", "Nơi họ làm việc") },
+      { key: "where", label: B("Location", "Địa điểm") },
       { key: "assets", label: B("Assets", "Tài sản") },
       { key: "newjoiners", label: B("Joiners", "Người mới"), screen: "joiners" },
       { key: "probation", label: B("Probation", "Thử việc"), screen: "probation" },
       { key: "exits", label: B("Exits", "Nghỉ việc"), screen: "exits" },
-      { key: "contracts", label: B("Contracts", "Hợp đồng"), screen: "contractends" },
       { key: "plan", label: B("Plan", "Kế hoạch"), screen: "decisionroom" },
     ],
   },

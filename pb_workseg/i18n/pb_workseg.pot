@@ -1504,3 +1504,9 @@ msgid ""
 "working days. Drag across the days worked somewhere else — or use the arrow "
 "keys and hold Shift to extend."
 msgstr ""
+
+#. module: pb_workseg
+#. odoo-javascript
+#: code:addons/pb_workseg/static/src/js/workseg_lens.js:0
+msgid "Location"
+msgstr ""
