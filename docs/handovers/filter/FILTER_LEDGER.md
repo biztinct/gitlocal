@@ -503,6 +503,18 @@ coordinator's (`filter_deploy.sh full`).
   `odoo-bin … -d pbf_preview --stop-after-init --test-tags=/<m>:<Class>` still
   starts HTTP even with `--no-http`; pass `--http-port=8179 --gevent-port=8178`
   and log to `/tmp/pbf_preview/<w>tests.log` (odoo can write there).
+- **F57** (kit 1.3.0 live incident, 2026-11-02) **An override of a kit method
+  MUST take `**kw` and pass it to `super()`.** Kit 1.3.0 added `views=` to
+  `pbf_counts`; five screens (Records Desk, Hiring, Assets, Vendors, Praise)
+  overrode it with the exact old signature → every full refresh on those
+  screens failed with `TypeError … unexpected keyword argument 'views'`
+  ("pb_filter_kit: refresh failed RPC_ERROR" in the console) for ~24 h. Found
+  by gitlocal-e0. Rule for builders: `def pbf_counts(self, filters=None,
+  search=None, keys=None, **kw): … return super().pbf_counts(…, **kw)` (same
+  for `pbf_find_values`, `pbf_layout`); rule for the kit: before adding a
+  parameter to any `pbf_*` method, `grep -rn "def pbf_<name>"` outside
+  pb_filter_kit and smoke one overriding screen (Hiring › Roles) — the Overtime
+  queue, which has no override, proved nothing.
 
 ## 5. PO gate (run on the server before shipping translations)
 ```python

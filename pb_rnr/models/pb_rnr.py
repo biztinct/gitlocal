@@ -312,9 +312,10 @@ class PbRnr(models.AbstractModel):
         return super().pbf_layout()
 
     @api.model
-    def pbf_counts(self, filters=None, search=None, keys=None):
+    def pbf_counts(self, filters=None, search=None, keys=None, **kw):
+        # **kw rides every kit argument through (kit 1.3.0 added `views`).
         self._require_read()
-        return super().pbf_counts(filters=filters, search=search, keys=keys)
+        return super().pbf_counts(filters=filters, search=search, keys=keys, **kw)
 
     @api.model
     def pbf_find_values(self, key, query, filters=None, search=None):

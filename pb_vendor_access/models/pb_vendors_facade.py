@@ -357,9 +357,10 @@ class PbVendors(models.AbstractModel):
         return super().pbf_layout()
 
     @api.model
-    def pbf_counts(self, filters=None, search=None, keys=None):
+    def pbf_counts(self, filters=None, search=None, keys=None, **kw):
+        # **kw rides every kit argument through (kit 1.3.0 added `views`).
         self._require()
-        return super().pbf_counts(filters=filters, search=search, keys=keys)
+        return super().pbf_counts(filters=filters, search=search, keys=keys, **kw)
 
     @api.model
     def get_head(self):
