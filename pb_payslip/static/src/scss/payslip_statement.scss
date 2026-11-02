@@ -40,13 +40,16 @@
     .pbps-rej { font-size: 12.5px; font-weight: 800; color: var(--rose); background: var(--rose-soft); border-radius: 999px; padding: 5px 13px; }
 
     /* earnings / deductions */
-    .pbps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-    .pbps-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+    /* minmax(0, …): a plain 1fr track grows to its card's min-content, and a
+       long deduction name then pushed the right card past the dialog edge. */
+    .pbps-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+    .pbps-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; min-width: 0; }
     .pbps-card-h { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 800; margin-bottom: 10px; }
     .pbps-dotc { width: 10px; height: 10px; border-radius: 50%; } .pbps-dotc.earn { background: var(--green); } .pbps-dotc.ded { background: var(--rose); }
     .pbps-tag { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 2px 9px; }
     .pbps-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--line-soft); font-size: 13.5px; }
-    .pbps-row-nm { color: #374151; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pbps-row-nm small { color: var(--muted); margin-left: 7px; font-weight: 600; }
+    /* Names wrap rather than truncate: the full statutory name is the point. */
+    .pbps-row-nm { color: #374151; font-weight: 600; flex: 1; min-width: 0; overflow-wrap: anywhere; } .pbps-row-nm small { color: var(--muted); margin-left: 7px; font-weight: 600; }
     .pbps-row-amt { font-weight: 800; font-variant-numeric: tabular-nums; flex: none; white-space: nowrap; } .pbps-row-amt.ded { color: var(--rose); }
     .pbps-sub { display: flex; align-items: center; justify-content: space-between; margin-top: 11px; padding-top: 12px; border-top: 2px solid var(--line); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
     .pbps-sub.earn { color: var(--green); } .pbps-sub.ded { color: var(--rose); }
@@ -100,7 +103,7 @@
     .pbps-wd .v { font-size: 14px; font-weight: 800; }
 
     @media (max-width: 900px) {
-        .pbps-grid { grid-template-columns: 1fr; }
+        .pbps-grid { grid-template-columns: minmax(0, 1fr); }
         .pbps-hero { flex-wrap: wrap; }
         .pbps-net { text-align: left; }
     }
