@@ -1,6 +1,6 @@
 {
     'name': 'Payobook Website',
-    'version': '19.0.1.12.1',
+    'version': '19.0.1.13.0',
     'category': 'Website',
     'summary': 'Intelligent global payroll marketing homepage (served at /)',
     'description': """

@@ -10,7 +10,7 @@
         <a class="pb-legal-skip" href="#legal-content">Skip to content</a>
         <header class="pb-legal-header">
           <a href="/" class="pb-legal-brand" aria-label="Payobook home">payobook<span>.</span></a>
-          <nav aria-label="Legal navigation"><a href="/privacy">Privacy</a><a href="/terms-of-service">Terms</a><a href="/web/login">Sign in</a></nav>
+          <nav aria-label="Legal navigation"><a href="/privacy">Privacy</a><a href="/terms-of-service">Terms</a><a href="/sign-in"><t t-if="not request.env.user._is_public()">Go to app</t><t t-else="">Sign in</t></a></nav>
         </header>
         <main id="legal-content" class="pb-legal-main">
           <div class="pb-legal-intro"><p class="pb-legal-eyebrow">PAYOBOOK · TRUST &amp; TRANSPARENCY</p><h1 t-esc="document['title']"/><p class="pb-legal-date">Effective 28 October 2026</p><p t-esc="document['intro']"/></div>

@@ -733,6 +733,12 @@ msgstr ""
 "một trang được xây dựng thủ công — không có hình thức rườm rà, chỉ có sự rõ ràng."
 
 #. module: pb_website
+#: model_terms:ir.ui.view,arch_db:pb_website.legal_page
+#: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
+msgid "Go to app"
+msgstr "Vào ứng dụng"
+
+#. module: pb_website
 #: model_terms:ir.ui.view,arch_db:pb_website.pb_website_homepage
 msgid "Sign in"
 msgstr "Đăng nhập"
