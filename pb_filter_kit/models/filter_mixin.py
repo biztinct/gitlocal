@@ -126,7 +126,10 @@ class PbFilterMixin(models.AbstractModel):
         request time — the door for facts that are Python, not fields
         (e.g. `[('id', 'in', ids_found_by_the_pay_feed)]`)."""
         if option.get('domain_method'):
-            return getattr(self, option['domain_method'])() or []
+            # optional `args`: one method can serve several options
+            # (`{'domain_method': '_dom_step', 'args': ['offer']}`)
+            args = option.get('args') or []
+            return getattr(self, option['domain_method'])(*args) or []
         return option.get('domain') if option.get('domain') is not None else []
 
     @api.model
@@ -143,7 +146,9 @@ class PbFilterMixin(models.AbstractModel):
                     if s.get('requires'):
                         if not all(self._pbf_resolve(p)[1] for p in s['requires']):
                             continue
-                    if len(opts) < 2:
+                    # one option is enough: a single fact ("Waiting on you")
+                    # may stand as its own section (K-W3-3)
+                    if not opts:
                         continue
                     s['options'] = opts
                 else:
@@ -225,7 +230,12 @@ class PbFilterMixin(models.AbstractModel):
         p = s.get('presets')
         if isinstance(p, (list, tuple)):
             return tuple(k for k in p if k in ALL_PRESETS)
-        return FUTURE_PRESETS if p == 'future' else PAST_PRESETS
+        out = FUTURE_PRESETS if p == 'future' else PAST_PRESETS
+        # "none" is offered by default only when the screen named it
+        # (`none_label`): otherwise it was a blank radio counting 0 (F40)
+        if not s.get('none_label'):
+            out = tuple(k for k in out if k != 'none')
+        return out
 
     @api.model
     def _pbf_date_domain(self, path, preset=None, start=None, end=None):
@@ -379,13 +389,16 @@ class PbFilterMixin(models.AbstractModel):
         out = []
         none_label = s.get('none_label') or _('Not set')
         Model, field = self._pbf_resolve(s.get('path'))
+        # browse in the RECORDS' env: a sudo screen labels as sudo, so a ticked
+        # value that matches nothing any more still shows its name (F42)
+        env = self._pbf_records().env
         for v in values:
             label = none_label
             if v not in (False, None, ''):
                 label = str(v)
                 try:
                     if s['type'] == 'many2one' and field is not None:
-                        rec = self.env[field.comodel_name].browse(int(v)).exists()
+                        rec = env[field.comodel_name].browse(int(v)).exists()
                         if s.get('label_sudo') and rec:
                             rec = rec.sudo()
                         label = rec.display_name if rec else _('Removed')
@@ -431,7 +444,7 @@ class PbFilterMixin(models.AbstractModel):
                 d = self._pbf_date_domain(s['path'], preset=p)
                 presets.append({
                     'v': p,
-                    'label': s.get('none_label') if p == 'none' else labels.get(p, p),
+                    'label': (s.get('none_label') or _('Not set')) if p == 'none' else labels.get(p, p),
                     'n': Rec.search_count(Domain.AND([domain, d])) if d is not None else 0,
                 })
             return {'presets': presets}
@@ -520,7 +533,10 @@ class PbFilterMixin(models.AbstractModel):
         sections = []
         for s in spec:
             try:
-                shown = self._pbf_worth_showing(s, base)
+                # `hidden: True` = never listed in the panel on its own; it
+                # appears only while a view, a link or a figure switches it on
+                # (Records "Hand-picked", W6 #3)
+                shown = False if s.get('hidden') else self._pbf_worth_showing(s, base)
             except Exception as e:  # noqa: BLE001
                 _logger.info("Filter section %s hidden: %s", s.get('key'), e)
                 shown = False

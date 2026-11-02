@@ -16,7 +16,13 @@ panel, chips) with a slot for the screen's own list.
 """,
     # 1.3.0: view tabs are recounted on every full refresh (an approval shows
     # at once); "Clear all" no longer leaves the previous tab lit with a dot.
-    'version': '19.0.1.3.0',
+    # 1.4.0: the closeout backlog — kit.kw()/kit.context for a screen's own
+    # calls; sudo screens label ticked values as sudo; reconfigure() load
+    # guard; link/door filters remembered at once; initial.merge (on top of
+    # the first view); date "none" only with a none_label; number units in
+    # hints and chips; `hidden` sections; domain_method `args`; a one-option
+    # choice.
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

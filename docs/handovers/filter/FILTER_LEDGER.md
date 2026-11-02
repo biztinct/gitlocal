@@ -207,6 +207,42 @@ async loadPage({ more = false } = {}) {
   W8 #1). Tweaking a view's filters still keeps the tab lit with the dot (that
   is the Save/Reset feature, unchanged).
 
+### 3a-quater. Kit 1.4.0 (the closeout backlog, 2026-11-02 — owner: "panel polish backlog", coded directly)
+
+- `kit.kw(extra)` / `kit.context`: the kit's kwargs (with `context.pbf_ctx`)
+  for a SCREEN's own page / select-all / export call (F31). Every ctx screen
+  already forwarded by hand; new screens use `kit.kw()`.
+- `_pbf_label_values` browses in `self._pbf_records().env`: a sudo screen
+  labels a ticked, now-unmatched value as sudo (F42). `label_sudo` still works.
+- `load()` carries a `_loadSeq` token: a `reconfigure()` that lands while a
+  load is in flight wins; the older layout is dropped. `reconfigure()` also
+  clears `screen`, so the old screen's tab memory / prefs are never touched
+  in between (K-W3-1). Verified: Roles→Applicants→Offers within 60 ms ends
+  on the Offers panel; Interviews→Applicants→Roles likewise.
+- Filters that arrive by `?pbf=` link or `initial` are written to the tab
+  memory on load (`_rememberState()`), so leaving and coming back keeps them
+  (F54). Verified on the OT queue (`pbf:state:otqueue` holds the link's filters).
+- `initial: { filters, search?, merge: true }` applies the filters ON TOP of
+  the first view: the first tab lights with the changed-dot (W7 #3).
+- Default date presets (`'past'`/`'future'`) include `none` only when the
+  section has a `none_label` (F40); an explicit list still may name `none`
+  and it is labelled "Not set" when no `none_label`.
+- `fmtNumber(n, unit)`: a non-money unit word follows the number in the
+  range hint and on the chip (`unit: 'hours'` → "2 hours to 8 hours";
+  `'%'` → "12%") (W8 #2). Money unchanged.
+- Spec `hidden: True`: the section is never listed on its own; it appears
+  only while a view / link / figure switches it on (W6 #3).
+- `domain_method` options take `args`: `{'domain_method': '_dom_step',
+  'args': ['offer']}` (W6 #2).
+- A `choice` with ONE option is kept (K-W3-3); `_pbf_worth_showing` still
+  hides it when it does not split the list.
+- NOT done: kanban lane paging (W5 #2), per-request fact cache (F50), mixed
+  currencies (W4/W7), phone scrim from the screen's breakpoint (W2 K2).
+- Gotcha while testing: the preview copy still held the PRE-hotfix pb_hiring
+  / pb_records / pb_assets / pb_vendor_access / pb_rnr, so the Hiring board
+  logged "refresh failed RPC_ERROR" (F57's TypeError) until those five were
+  synced from HEAD — sync the overriding screens whenever the kit is synced.
+
 ### 3b. Rulings for the rollout (coordinator, 2026-10-31)
 
 - **R1** Lane / step / tab counts FOLLOW the filters (the kit's counts). This

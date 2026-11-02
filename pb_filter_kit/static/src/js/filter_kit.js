@@ -217,19 +217,40 @@ export class FilterKit {
         }
         return kw;
     }
+    /**
+     * The same kwargs for the SCREEN's own calls (its page, select-all and
+     * export): `orm.call(model, "get_page", [], kit.kw({ limit }))`. A call
+     * that runs `pbf_domain` without the ctx loses every section the spec
+     * builds from it (F31). `kit.context` is the bare context object.
+     */
+    kw(extra = {}) {
+        return this._kw(extra);
+    }
+    get context() {
+        return this.ctx ? { pbf_ctx: this.ctx } : {};
+    }
 
     // ----------------------------------------------------------- load
     async load() {
+        // a reconfigure() that lands while this load is in flight wins: the
+        // older layout must not overwrite the newer one (K-W3-1)
+        const token = (this._loadSeq = (this._loadSeq || 0) + 1);
         let layout;
         try {
             layout = await this.orm.call(this.model, "pbf_layout", [], this._kw());
         } catch (e) {
+            if (token !== this._loadSeq) {
+                return;
+            }
             console.error("pb_filter_kit: the filter panel could not load", e);
             this.failed = true;
             this.loaded = true;
             if (this.onChange) {
                 await this.onChange(this);
             }
+            return;
+        }
+        if (token !== this._loadSeq) {
             return;
         }
         if (layout && layout.refused) {
@@ -258,14 +279,30 @@ export class FilterKit {
         this.ui.closed = prefs.closed && typeof prefs.closed === "object" ? prefs.closed : {};
         this.sort = this.sorts.some((s) => s.key === prefs.sort) ? prefs.sort : (this.sorts[0] || {}).key || "";
 
-        const start = this.initial || this._readUrl() || readJSON("session", this._sessKey);
+        const door = this.initial || this._readUrl();
+        const start = door || readJSON("session", this._sessKey);
         this.initial = null;
         if (start && typeof start === "object") {
-            this.filters = normFilters(start.filters || {});
-            this.search = typeof start.search === "string" ? start.search : "";
-            const v = this.views.find((x) => x.key === start.viewKey);
-            this.viewKey = v ? v.key : "";
+            const first = this.views[0];
+            if (start.merge && first) {
+                // `initial: { filters, merge: true }` = these filters ON TOP of
+                // the first view (a host's week or person as extra chips): the
+                // first tab lights with a changed-dot (W7 #3)
+                this.filters = normFilters({ ...clone(first.filters), ...(start.filters || {}) });
+                this.search = typeof start.search === "string" ? start.search : first.search || "";
+                this.viewKey = first.key;
+            } else {
+                this.filters = normFilters(start.filters || {});
+                this.search = typeof start.search === "string" ? start.search : "";
+                const v = this.views.find((x) => x.key === start.viewKey);
+                this.viewKey = v ? v.key : "";
+            }
             this._matchView();
+            if (door) {
+                // filters that came by a link or a door go to the tab memory
+                // at once, so leaving and coming back keeps them (F54)
+                this._rememberState();
+            }
         } else if (this.views.length) {
             this.viewKey = this.views[0].key;
             this.filters = normFilters(this.views[0].filters);
@@ -421,12 +458,15 @@ export class FilterKit {
         if (!keepView) {
             this._matchView();
         }
+        this._rememberState();
+        this._schedule(delay);
+    }
+    _rememberState() {
         writeJSON("session", this._sessKey, {
             filters: this.filters,
             search: this.search,
             viewKey: this.viewKey,
         });
-        this._schedule(delay);
     }
 
     /** If the filters now equal a view exactly, that view's tab lights up. */
@@ -585,8 +625,10 @@ export class FilterKit {
         }
         this.initial = initial || null;
         this.seq++;
+        // `screen` is cleared too: until the new layout lands, nothing reads
+        // or writes the OLD screen's tab memory or prefs (K-W3-1)
         Object.assign(this, {
-            loaded: false, failed: false, refusal: "", sections: [], views: [], sorts: [],
+            loaded: false, failed: false, refusal: "", screen: "", sections: [], views: [], sorts: [],
             filters: {}, search: "", viewKey: "", counts: {}, labels: {}, matched: null,
         });
         this.ui.find = "";
@@ -804,7 +846,13 @@ export class FilterKit {
             }
             return cur + Math.round(v).toLocaleString("en-US");
         }
-        return v.toLocaleString("en-US");
+        const text = v.toLocaleString("en-US");
+        // any other unit is a word the screen chose ("hours", "days", "%"):
+        // it follows the number in the hint and on the chip (W8 #2)
+        if (unit && unit !== "money") {
+            return unit === "%" ? text + "%" : text + " " + unit;
+        }
+        return text;
     }
 
     // ------------------------------------------------------------ views

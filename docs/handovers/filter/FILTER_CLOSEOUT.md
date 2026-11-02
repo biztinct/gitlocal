@@ -49,9 +49,20 @@ payobook.com with a clean console for every screen.
   screens (several had English-only before).
 - Learn: anchors kept or added on every screen; replicas draw the filter strip.
 
-## 3. Kit gaps — consolidated backlog for `pb_filter_kit` (items 1–2 shipped as 1.3.0; the rest is the 1.4.0 backlog)
+## 3. Kit gaps — consolidated backlog for `pb_filter_kit` (items 1–2 shipped as 1.3.0; 3–7, 9, 11 and parts of 8 and 13 shipped as 1.4.0 on 2026-11-02; what remains is listed at the end)
 
-Priority order (count = how many waves asked for it).
+Priority order (count = how many waves asked for it). **Kit 1.4.0 (ledger
+§3a-quater) closed:** 3 (kit side: `kit.kw()` / `kit.context`; every ctx
+screen already forwards), 4 (`_pbf_label_values` browses in the records' env),
+5 (`load()` sequence guard + `screen` cleared on `reconfigure`), 6 (link/door
+filters written to tab memory at once), 7 (default presets drop "none" unless
+`none_label`; "this quarter / next 60 / today / passed" already existed), 8
+(any non-money `unit` word follows the number in hint and chip; currencies
+still mix), 9 (`initial: {filters, merge: true}` = on top of the first view),
+11 (`hidden: True` sections; `domain_method` + `args`), 13 (a one-option
+`choice` is allowed; the ticked-zero ordering was already fixed in 1.2.0).
+**Still open:** 10 (kanban lane paging), 12 (per-request fact cache), 8's
+mixed currencies, 13's phone scrim and `pickFirstFound` name-match nuance.
 
 1. ~~**View tab counts do not refresh after an action**~~ (W7, W8) — **DONE in
    kit 1.3.0 (2026-11-01)**: `pbf_counts(views=True)` recounts every tab on the
