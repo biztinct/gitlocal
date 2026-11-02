@@ -265,13 +265,13 @@ class PayrollTemplates(models.AbstractModel):
         if overlap:
             c = overlap.sorted('date_start')[-1]
             state = dict(Contract._fields['state']._description_selection(self.env)).get(c.state, c.state)
-            return _('contract from %s is %s, not Running') % (format_date(self.env, c.date_start), state)
+            return _('contract from %s is %s, not Running') % (format_date(self.env, c.date_start, date_format='d MMM y'), state)
         later = contracts.filtered(lambda c: c.date_start > end).sorted('date_start')
         if later:
-            return _('contract starts %s, after this pay month') % format_date(self.env, later[0].date_start)
+            return _('contract starts %s, after this pay month') % format_date(self.env, later[0].date_start, date_format='d MMM y')
         ended = contracts.filtered(lambda c: c.date_end and c.date_end < start).sorted('date_end')
         if ended:
-            return _('contract ended %s, before this pay month') % format_date(self.env, ended[-1].date_end)
+            return _('contract ended %s, before this pay month') % format_date(self.env, ended[-1].date_end, date_format='d MMM y')
         return _('no contract covering this pay month')
 
     def _note_outside(self, outside, cfg, period, sheet_name, rn, entry, vals, header, identity_columns):
