@@ -131,7 +131,10 @@
                 </div>
                 <div class="pev-cell" t-if="profile.counts">
                   <span class="k"><t t-out="ic('history',14)"/> On record</span>
-                  <span class="v"><t t-esc="profile.counts.contracts"/> <span>contracts</span> · <t t-esc="profile.counts.payslips"/> <span>payslips</span></span>
+                  <span class="v">
+                    <t t-esc="profile.counts.contracts"/> <span t-if="profile.counts.contracts === 1">contract</span><span t-else="">contracts</span>
+                    · <t t-esc="profile.counts.payslips"/> <span t-if="profile.counts.payslips === 1">payslip</span><span t-else="">payslips</span>
+                  </span>
                 </div>
               </div>
 

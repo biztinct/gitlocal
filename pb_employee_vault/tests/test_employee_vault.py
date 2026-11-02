@@ -313,6 +313,12 @@ class TestEmployeeVault(TransactionCase):
                         for g in t for r in g['rows'])
         self.assertNotIn('3,100', flat)
         self.assertNotIn('hourly_cost', rows(hr, 'pay'))
-        if 'wage' in rows(hr, 'pay'):
-            self.assertEqual(rows(hr, 'pay')['wage']['value'],
-                             'Visible to payroll managers only')
+
+        # a country-gated group stays shut for someone neither paid nor
+        # recorded in that country — yes/no defaults are not evidence
+        vals = {'country_id': self.env.ref('base.ca').id}
+        if 'payroll_country' in self.emp_a._fields:
+            vals['payroll_country'] = False
+        self.emp_a.write(vals)
+        mgr = self.People.with_user(self.mgr).get_employee_360(self.emp_a.id)
+        self.assertNotIn('vn', [g['key'] for g in mgr['details']['pay']])

@@ -1302,3 +1302,15 @@ msgstr "Chưa có thông tin."
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Something missing, or need to change a detail?"
 msgstr "Thiếu thông tin hoặc cần sửa?"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "contract"
+msgstr "hợp đồng"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "payslip"
+msgstr "phiếu lương"

@@ -17,7 +17,8 @@ Display rules:
   * a plain row shows "—" when empty, so HR sees what is missing;
   * an ``opt`` row is hidden when empty (rarely-used extras);
   * a group with a ``gate`` country (VN / ID statutory) is shown only when the
-    person is paid or recorded in that country, or any of its rows is filled;
+    person is paid or recorded in that country, or one of its typed-in rows
+    (not a yes/no or pick-list default) is filled;
     inside it every row shows, booleans as Yes / No;
   * a group with no visible row is dropped.
 Money is masked the same way as the Profile tab: only payroll managers get
@@ -116,7 +117,6 @@ _SPEC = [
     ]),
 
     ('pay', 'setup', _lt("Pay setup"), 'banknote', None, [
-        ('wage', _lt("Monthly wage"), False),
         ('hourly_cost', _lt("Hourly cost"), True),
         ('structure_type_id', _lt("Salary structure type"), False),
         ('pb_paid_by_id', _lt("Paid by"), False),
@@ -159,7 +159,13 @@ _SPEC = [
     ]),
 ]
 
-_MONEY_FIELDS = ('wage', 'hourly_cost')
+# The monthly wage is NOT here: it lives on the contract and the Profile tab
+# already shows it (the version's own `wage` is 0 on contract-based tenants).
+_MONEY_FIELDS = ('hourly_cost',)
+# Only a typed-in value is evidence for a country-gated group. Yes/no and
+# pick-list fields carry defaults on every employee (the VN pack sets
+# "Tax resident" = Yes for all), so they would open the group for everyone.
+_EVIDENCE_TYPES = ('char', 'text', 'date', 'datetime', 'many2one', 'integer')
 _HOME_ADDRESS = ('private_street', 'private_street2', 'private_city',
                  'private_state_id', 'private_zip', 'private_country_id')
 
@@ -234,9 +240,9 @@ class PbPeople(models.AbstractModel):
                     continue
                 if name in _MONEY_FIELDS and not unmask and opt:
                     continue
-                is_bool = meta[name].get('type') == 'boolean'
-                filled = (value is not None and not is_bool) or (is_bool and emp[name])
-                vals.append((name, str(label), value, opt, filled))
+                evidence = (value is not None
+                            and meta[name].get('type') in _EVIDENCE_TYPES)
+                vals.append((name, str(label), value, opt, evidence))
             if gate:
                 if not (self._e360_gate(emp, meta, gate)
                         or any(v[4] for v in vals)):
