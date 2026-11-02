@@ -17,6 +17,7 @@ from datetime import date, datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+from odoo.tools.misc import format_date
 
 try:  # WHITELABEL 2026-10-31 — the tenant's own name for the product
     from odoo.addons.biz_debrand.models.brand import product_label
@@ -223,6 +224,79 @@ class PayrollTemplates(models.AbstractModel):
         old = snapshot_person.get('identity_values', {}).get('code', snapshot_person['code'])
         current = self._identity_value(employee, column) if column.get('field') else self._code(employee)
         return str(value or '').strip() == old and current == old
+
+    # Row messages name the person, so a reviewer can act without opening the
+    # workbook: "Time row 12 · RIZ233 Khuu Quoc Bao: duplicate Employee ID."
+    def _row_who(self, employee=None, code='', name=''):
+        if employee:
+            code, name = self._code(employee), employee.name
+        return ' '.join(str(v).strip() for v in (code, name) if str(v or '').strip())
+
+    def _row_at(self, sheet_name, rn, employee=None, code='', name=''):
+        who = self._row_who(employee, code, name)
+        where = _('%s row %s') % (sheet_name, rn)
+        return '%s · %s' % (where, who) if who else where
+
+    def _outside_reason(self, cfg, period, employee):
+        """Why this person is not in the month's payroll population.
+
+        Mirrors pb.payrun.wizard._eligible_employees: a contract in this
+        company that is Running (or Expired with an end date) and overlaps the
+        month, and then the scheme's coverage. Reports the first rule broken.
+        """
+        start, end = self._period(period)
+        if not employee:
+            return _('no longer in the system')
+        if not employee.active:
+            return _('archived in the system')
+        if employee.company_id != self.env.company:
+            return _('belongs to another company')
+        Contract = self.env['hr.contract'].sudo()
+        domain = [('employee_id', '=', employee.id), ('company_id', '=', self.env.company.id),
+                  ('date_start', '!=', False)]
+        contracts = Contract.search(domain)
+        if not contracts:
+            if Contract.with_context(active_test=False).search_count(domain):
+                return _('contract is archived')
+            return _('has no contract')
+        overlap = contracts.filtered(lambda c: c.date_start <= end and (not c.date_end or c.date_end >= start))
+        if overlap.filtered(lambda c: c.state == 'open' or (c.state == 'close' and c.date_end)):
+            return _('not covered by the %s pay scheme') % cfg.name
+        if overlap:
+            c = overlap.sorted('date_start')[-1]
+            state = dict(Contract._fields['state']._description_selection(self.env)).get(c.state, c.state)
+            return _('contract from %s is %s, not Running') % (format_date(self.env, c.date_start), state)
+        later = contracts.filtered(lambda c: c.date_start > end).sorted('date_start')
+        if later:
+            return _('contract starts %s, after this pay month') % format_date(self.env, later[0].date_start)
+        ended = contracts.filtered(lambda c: c.date_end and c.date_end < start).sorted('date_end')
+        if ended:
+            return _('contract ended %s, before this pay month') % format_date(self.env, ended[-1].date_end)
+        return _('no contract covering this pay month')
+
+    def _note_outside(self, outside, cfg, period, sheet_name, rn, entry, vals, header, identity_columns):
+        """Collect a refused row under its person: one message per person, not per tab."""
+        if entry:
+            eid, old = entry
+            key = ('employee', eid)
+            if key not in outside:
+                emp = self.env['hr.employee'].sudo().with_context(active_test=False).browse(eid).exists()
+                old_code = old.get('identity_values', {}).get('code', old.get('code'))
+                outside[key] = {'who': self._row_who(emp) if emp else self._row_who(code=old_code, name=old.get('name')),
+                                'reason': self._outside_reason(cfg, period, emp), 'rows': []}
+        else:
+            # Not a row this download produced: report what was typed into it.
+            typed = {c['kind']: vals[header.index(c['label'])] for c in identity_columns if c['label'] in header}
+            code, name = str(typed.get('code') or '').strip(), str(typed.get('name') or '').strip()
+            key = ('typed', code or name or '%s:%s' % (sheet_name, rn))
+            outside.setdefault(key, {'who': self._row_who(code=code, name=name),
+                                     'reason': _('not in the downloaded file; download a fresh copy'), 'rows': []})
+        outside[key]['rows'].append(_('%s row %s') % (sheet_name, rn))
+
+    @staticmethod
+    def _outside_lines(outside):
+        return ['%s: %s (%s).' % (o['who'], o['reason'], ', '.join(o['rows'])) if o['who']
+                else '%s: %s.' % (', '.join(o['rows']), o['reason']) for o in outside.values()]
 
     def _catalog(self, cfg):
         cards = self._cards(cfg)
@@ -669,6 +743,7 @@ class PayrollTemplates(models.AbstractModel):
         changes, issues, blanks, unchanged = [], [], 0, 0
         change_keys = set()
         seen_tabs = {}
+        outside = {}
         for sheet_name, cols in snapshot['columns'].items():
             if sheet_name not in wb:
                 issues.append(_('Missing worksheet: %s') % sheet_name)
@@ -696,20 +771,22 @@ class PayrollTemplates(models.AbstractModel):
                 key = vals[header.index('_row')]
                 entry = by_row.get(key)
                 if not entry or entry[0] not in allowed:
-                    issues.append(_('%s row %s: employee is unknown or outside this payroll population.') % (sheet_name, rn))
+                    self._note_outside(outside, cfg, period, sheet_name, rn, entry, vals, header, identity_columns)
                     continue
                 eid, old = entry
+                emp = people.browse(eid)
+                at = self._row_at(sheet_name, rn, emp)
                 if eid in seen:
-                    issues.append(_('%s row %s: duplicate Employee ID.') % (sheet_name, rn))
+                    issues.append(_('%s: duplicate Employee ID; keep one row.') % at)
                     continue
                 seen.add(eid)
-                emp = people.browse(eid)
-                if not self._workbook_code_unchanged(emp, old, identity_columns[0], vals[header.index(identity_labels['code'])]):
-                    issues.append(_('%s row %s: Employee ID cannot be changed.') % (sheet_name, rn))
+                typed_code = vals[header.index(identity_labels['code'])]
+                if not self._workbook_code_unchanged(emp, old, identity_columns[0], typed_code):
+                    issues.append(_('%s: Employee ID cannot be changed (file has %s).') % (at, str(typed_code or '').strip() or _('blank')))
                 old_email = old.get('identity_values', {}).get('email', old['email'])
                 if mode == 'records' and ((vals[header.index(identity_labels['email'])] or '') != old_email
                         or self._identity_value(emp, identity_columns[1]) != old_email):
-                    issues.append(_('%s row %s: email cannot be changed.') % (sheet_name, rn))
+                    issues.append(_('%s: email cannot be changed.') % at)
                 provided_records = {}
                 for c in cols:
                     destination = c.get('record_id') or c['id']
@@ -719,7 +796,7 @@ class PayrollTemplates(models.AbstractModel):
                         blanks += 1
                         continue
                     if cell.data_type == 'f':
-                        issues.append(_('%s row %s: enter a value, not an Excel formula.') % (sheet_name, rn))
+                        issues.append(_('%s · %s: enter a value, not an Excel formula.') % (at, c['label']))
                         continue
                     current = records[eid].get(destination) if mode == 'records' else monthly[eid].get(c['id'])
                     previous = old['records'].get(destination) if mode == 'records' else old['monthly'].get(c['id'])
@@ -738,16 +815,16 @@ class PayrollTemplates(models.AbstractModel):
                         if plain(value) == current:
                             unchanged += 1
                         else:
-                            issues.append(_('%s row %s: %s is read-only context.') % (sheet_name, rn, c['label']))
+                            issues.append(_('%s: %s is read-only context.') % (at, c['label']))
                         continue
                     try:
                         value = self._numeric(value, c.get('kind')) if mode == 'monthly' else plain(value)
                     except (ValueError, TypeError):
-                        issues.append(_('%s row %s: %s needs a valid number.') % (sheet_name, rn, c['label']))
+                        issues.append(_('%s: %s needs a valid number.') % (at, c['label']))
                         continue
                     if mode == 'records':
                         if destination in provided_records and provided_records[destination] != plain(value):
-                            issues.append(_('%s row %s: columns for the same saved field contain conflicting values. Use the same value, or leave one blank.') % (sheet_name, rn))
+                            issues.append(_('%s: columns for the same saved field contain conflicting values. Use the same value, or leave one blank.') % at)
                             continue
                         provided_records[destination] = plain(value)
                     if plain(value) == current:
@@ -763,6 +840,7 @@ class PayrollTemplates(models.AbstractModel):
                                         'field_id': destination, 'field_label': c['label'], 'tab': sheet_name,
                                         'old': current, 'value': plain(value)})
             seen_tabs[sheet_name] = seen
+        issues.extend(self._outside_lines(outside))
         if mode == 'monthly' and not seen_tabs.get('Monthly adjustments', set()).issubset(seen_tabs.get('Time', set())):
             issues.append(_('Every adjustment employee must also appear on the Time tab.'))
         if mode == 'records' and changes:

@@ -231,6 +231,7 @@ class PayrollInputReview(models.AbstractModel):
         previous_period, previous = self._previous_inputs(cfg, period, people, catalog)
         by_row = {v['row']: (int(k), v) for k, v in snapshot['employees'].items()}
         uploads, structural, warnings, seen_tabs = {}, [], [], {}
+        outside = {}
         reference_only = set()
         if layout_changed:
             warnings.append(_('Template settings changed since download. Your workbook values have been matched to the current input fields. Review all fields below before continuing.'))
@@ -280,15 +281,17 @@ class PayrollInputReview(models.AbstractModel):
                         reference_only.add(old.get('identity_values', {}).get('code', old['code']))
                         continue
                 if not entry or entry[0] not in resolved:
-                    structural.append(_('%s row %s: employee is unknown or outside this payroll population.') % (sheet_name, rn))
+                    self._note_outside(outside, cfg, period, sheet_name, rn, entry, vals, headers, identity_columns)
                     continue
                 eid, old = entry
+                at = self._row_at(sheet_name, rn, people.browse(eid))
                 if eid in seen:
-                    structural.append(_('%s row %s: duplicate Employee ID.') % (sheet_name, rn))
+                    structural.append(_('%s: duplicate Employee ID; keep one row.') % at)
                     continue
                 seen.add(eid)
-                if not self._workbook_code_unchanged(people.browse(eid), old, identity_columns[0], vals[headers.index(code_header)]):
-                    structural.append(_('%s row %s: Employee ID cannot be changed.') % (sheet_name, rn))
+                typed_code = vals[headers.index(code_header)]
+                if not self._workbook_code_unchanged(people.browse(eid), old, identity_columns[0], typed_code):
+                    structural.append(_('%s: Employee ID cannot be changed (file has %s).') % (at, str(typed_code or '').strip() or _('blank')))
                 for c in cols:
                     value = cells[ids[c['id']]].value
                     if value is None or value == '':
@@ -303,6 +306,7 @@ class PayrollInputReview(models.AbstractModel):
                         warnings.append(_('%s · %s: this month’s saved input changed since download. Your uploaded value is shown for review; confirming replaces only this month’s input.') % (people.browse(eid).name, c['label']))
                     uploads[(eid, c['id'])] = plain(value)
             seen_tabs[sheet_name] = seen
+        structural.extend(self._outside_lines(outside))
         if reference_only:
             warnings.append(_('Blank rows for %s are reference only because these employees are outside the current payroll population. No payroll inputs were taken from those rows.') % ', '.join(sorted(reference_only)))
         if not seen_tabs.get('Monthly adjustments', set()).issubset(seen_tabs.get('Time', set())):
