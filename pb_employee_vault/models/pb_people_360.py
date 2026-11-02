@@ -109,6 +109,7 @@ class PbPeople(models.AbstractModel):
         timeline = self.env['pb.employee.timeline']._collect(emp, unmask)
         return {
             'profile': profile,
+            'details': self._e360_details(emp, unmask),
             'costcenter': self._costcenter(emp),
             'documents': self._documents_for(emp),
             'categories': self._categories(),

@@ -29,6 +29,7 @@ export class Employee360Drawer extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.action = useService("action");
         this.state = useState({
             loaded: false, shown: false, busy: false,
             tab: "profile", d: null,
@@ -91,6 +92,25 @@ export class Employee360Drawer extends Component {
 
     // ---- chrome ----
     setTab(t) { this.state.tab = t; }
+    /** Groups for one of the read-only detail tabs (Personal · Job · Pay & tax). */
+    groups(tab) { return ((this.d.details || {})[tab]) || []; }
+    /**
+     * "Full details": the complete employee form — every field, editable.
+     * The drawer is read-only by owner ruling, so this is the way to change
+     * anything it shows and to see anything it leaves out.
+     */
+    openFull() {
+        const id = Number(this.props.empId);
+        this.close();
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.employee",
+            res_id: id,
+            views: [[false, "form"]],
+            target: "current",
+            name: this.profile.name || _t("Employee"),
+        });
+    }
     onKey(ev) { if (ev.key === "Escape") { this.close(); } }
     close() {
         this.state.shown = false;

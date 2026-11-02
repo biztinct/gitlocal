@@ -7,5 +7,6 @@ from . import hr_version_audit
 from . import employee_document
 from . import employee_timeline
 from . import pb_people_360
+from . import employee_details
 
 from . import payroll_profile

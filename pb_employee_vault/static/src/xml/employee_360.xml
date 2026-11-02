@@ -47,6 +47,9 @@
               <div class="pev-tenure" t-if="profile.tenure_label and profile.tenure_label !== '—'">
                 <span class="l">Tenure</span><span class="v" t-esc="profile.tenure_label"/>
               </div>
+              <button class="pev-full" t-on-click="openFull" title="Open the complete employee record — every field, editable">
+                <t t-out="ic('external',14)"/> Full details
+              </button>
               <button class="pev-x" t-on-click="close"><t t-out="ic('x',18)"/></button>
             </div>
           </div>
@@ -55,6 +58,15 @@
           <div class="pev-tabs">
             <button t-attf-class="pev-tab {{ state.tab === 'profile' ? 'on' : '' }}" t-on-click="() => this.setTab('profile')">
               <t t-out="ic('user',15)"/> Profile
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'personal' ? 'on' : '' }}" t-on-click="() => this.setTab('personal')">
+              <t t-out="ic('idCard',15)"/> Personal
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'job' ? 'on' : '' }}" t-on-click="() => this.setTab('job')">
+              <t t-out="ic('briefcase',15)"/> Job
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'pay' ? 'on' : '' }}" t-on-click="() => this.setTab('pay')">
+              <t t-out="ic('banknote',15)"/> Pay &amp; tax
             </button>
             <button t-attf-class="pev-tab {{ state.tab === 'documents' ? 'on' : '' }}" t-on-click="() => this.setTab('documents')">
               <t t-out="ic('fileText',15)"/> Documents
@@ -113,6 +125,14 @@
                   <span class="k"><t t-out="ic('fileText',14)"/> Structure</span>
                   <span class="v" t-esc="profile.contract.structure"/>
                 </div>
+                <div class="pev-cell" t-if="profile.contract and profile.contract.id">
+                  <span class="k"><t t-out="ic('calendar',14)"/> Contract dates</span>
+                  <span class="v"><t t-esc="profile.contract.date_start || '—'"/> → <t t-if="profile.contract.date_end" t-esc="profile.contract.date_end"/><t t-else="">no end date</t></span>
+                </div>
+                <div class="pev-cell" t-if="profile.counts">
+                  <span class="k"><t t-out="ic('history',14)"/> On record</span>
+                  <span class="v"><t t-esc="profile.counts.contracts"/> <span>contracts</span> · <t t-esc="profile.counts.payslips"/> <span>payslips</span></span>
+                </div>
               </div>
 
               <!-- statutory readiness chips -->
@@ -122,6 +142,33 @@
                 <span t-attf-class="pev-stat {{ profile.statutory.insurance ? 'ok' : 'off' }}"><t t-out="ic('shield',14)"/> Insurance</span>
               </div>
             </t>
+
+            <!-- ============ PERSONAL · JOB · PAY & TAX (read-only) ============ -->
+            <t t-if="['personal', 'job', 'pay'].includes(state.tab)">
+              <div t-if="!groups(state.tab).length" class="pev-empty"><t t-out="ic('inbox',30)"/><p>Nothing recorded here yet.</p></div>
+              <t t-foreach="groups(state.tab)" t-as="grp" t-key="grp.key">
+                <section class="pev-sec">
+                  <div class="pev-sec-h">
+                    <span class="ci" t-out="ic(grp.icon,15)"/>
+                    <span class="cn" t-esc="grp.title"/>
+                    <span class="cc"><t t-esc="grp.filled"/> / <t t-esc="grp.rows.length"/></span>
+                  </div>
+                  <dl class="pev-kv">
+                    <t t-foreach="grp.rows" t-as="row" t-key="row.key">
+                      <div t-attf-class="pev-kv-row {{ row.empty ? 'is-empty' : '' }}">
+                        <dt t-esc="row.label"/>
+                        <dd t-esc="row.empty ? '—' : row.value"/>
+                      </div>
+                    </t>
+                  </dl>
+                </section>
+              </t>
+            </t>
+
+            <div class="pev-more" t-if="['profile', 'personal', 'job', 'pay'].includes(state.tab)">
+              <span>Something missing, or need to change a detail?</span>
+              <button class="pev-btn ghost" t-on-click="openFull"><t t-out="ic('external',14)"/> Full details</button>
+            </div>
 
             <!-- ==================== DOCUMENTS ==================== -->
             <t t-if="state.tab === 'documents'">

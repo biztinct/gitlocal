@@ -26,6 +26,8 @@ msgid "Active"
 msgstr "Đang hoạt động"
 
 #. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
 #. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Bank"
@@ -76,6 +78,8 @@ msgid "Degree / Certificate"
 msgstr "Bằng cấp/Chứng chỉ"
 
 #. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
 #. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Department"
@@ -156,6 +160,8 @@ msgid "Email"
 msgstr "Email"
 
 #. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 #: model:ir.model,name:pb_employee_vault.model_hr_employee
 #: model:ir.model.fields,field_description:pb_employee_vault.field_pb_employee_document__employee_id
 msgid "Employee"
@@ -268,6 +274,8 @@ msgid "JPG · PNG · PDF"
 msgstr "JPG · PNG · PDF"
 
 #. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
 #. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Joined"
@@ -303,12 +311,16 @@ msgid "Loading…"
 msgstr "Đang tải…"
 
 #. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
 #. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Manager"
 msgstr "Quản lý"
 
 #. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
 #. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Monthly wage"
@@ -498,6 +510,8 @@ msgid "View"
 msgstr "Chế độ xem"
 
 #. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
 #. odoo-javascript
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "Visible to payroll managers only"
@@ -585,3 +599,706 @@ msgstr "Không thể xóa tài liệu này."
 #: code:addons/pb_employee_vault/static/src/js/employee_360.js:177
 msgid "Could not load more history."
 msgstr "Không thể tải thêm lịch sử."
+
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Identity"
+msgstr "Danh tính"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Legal name"
+msgstr "Tên pháp lý"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Legal given name"
+msgstr "Tên (theo giấy tờ)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Legal family name"
+msgstr "Họ (theo giấy tờ)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Date of birth"
+msgstr "Ngày sinh"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Place of birth"
+msgstr "Nơi sinh"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Marital status"
+msgstr "Tình trạng hôn nhân"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Nationality"
+msgstr "Quốc tịch"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Religion"
+msgstr "Tôn giáo"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Blood type"
+msgstr "Nhóm máu"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "ID papers"
+msgstr "Giấy tờ tùy thân"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "ID number"
+msgstr "Số CCCD/CMND"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Passport number"
+msgstr "Số hộ chiếu"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Visa number"
+msgstr "Số thị thực"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Visa expires"
+msgstr "Thị thực hết hạn"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work permit number"
+msgstr "Số giấy phép lao động"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work permit expires"
+msgstr "Giấy phép lao động hết hạn"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Personal contact"
+msgstr "Liên hệ cá nhân"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Personal email"
+msgstr "Email cá nhân"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Personal phone"
+msgstr "Điện thoại cá nhân"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Home address"
+msgstr "Địa chỉ thường trú"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Temporary address"
+msgstr "Địa chỉ tạm trú"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Home to work (km)"
+msgstr "Từ nhà đến nơi làm việc (km)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Family and emergency"
+msgstr "Gia đình và liên hệ khẩn cấp"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Spouse"
+msgstr "Vợ/chồng"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Dependent children"
+msgstr "Số con phụ thuộc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Dependants for tax"
+msgstr "Người phụ thuộc (thuế)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Emergency contact"
+msgstr "Người liên hệ khẩn cấp"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Emergency phone"
+msgstr "Điện thoại khẩn cấp"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Emergency contact name"
+msgstr "Tên người liên hệ khẩn cấp"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Emergency contact phone"
+msgstr "Điện thoại người liên hệ khẩn cấp"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Relationship"
+msgstr "Mối quan hệ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Education"
+msgstr "Học vấn"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Education level"
+msgstr "Trình độ học vấn"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Field of study"
+msgstr "Chuyên ngành"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "School"
+msgstr "Trường"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Role"
+msgstr "Vai trò"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Job level"
+msgstr "Cấp bậc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Division"
+msgstr "Khối"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Grade"
+msgstr "Ngạch"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Employee type"
+msgstr "Loại nhân viên"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Performance rating"
+msgstr "Xếp loại hiệu suất"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Reporting"
+msgstr "Quan hệ báo cáo"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Coach"
+msgstr "Người hướng dẫn"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Buddy"
+msgstr "Người đồng hành"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "HR partner"
+msgstr "Đối tác nhân sự"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "App login"
+msgstr "Tài khoản đăng nhập"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Workplace"
+msgstr "Nơi làm việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work location"
+msgstr "Địa điểm làm việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work address"
+msgstr "Địa chỉ làm việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Working hours"
+msgstr "Giờ làm việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Leave policy"
+msgstr "Chính sách nghỉ phép"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work phone"
+msgstr "Điện thoại công việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work mobile"
+msgstr "Di động công việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Employee number"
+msgstr "Mã nhân viên"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Badge ID"
+msgstr "Mã thẻ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Key dates"
+msgstr "Các mốc thời gian"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "First contract"
+msgstr "Hợp đồng đầu tiên"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Current contract from"
+msgstr "Hợp đồng hiện tại từ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Current contract until"
+msgstr "Hợp đồng hiện tại đến"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Trial period"
+msgstr "Thời gian thử việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Trial period ends"
+msgstr "Kết thúc thử việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Leaving date"
+msgstr "Ngày nghỉ việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Reason for leaving"
+msgstr "Lý do nghỉ việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Pay setup"
+msgstr "Thiết lập lương"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Hourly cost"
+msgstr "Chi phí theo giờ"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Salary structure type"
+msgstr "Loại cơ cấu lương"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Paid by"
+msgstr "Trả lương theo"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Advance paid by"
+msgstr "Tạm ứng theo"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Payroll country"
+msgstr "Quốc gia tính lương"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Account number"
+msgstr "Số tài khoản"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Bank name"
+msgstr "Tên ngân hàng"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Bank branch"
+msgstr "Chi nhánh ngân hàng"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Bank account number"
+msgstr "Số tài khoản ngân hàng"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Account holder"
+msgstr "Chủ tài khoản"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Vietnam tax and insurance"
+msgstr "Thuế và bảo hiểm Việt Nam"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Personal tax code"
+msgstr "Mã số thuế cá nhân"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Tax resident"
+msgstr "Cư trú thuế"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Residency status"
+msgstr "Tình trạng cư trú"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Tax regime"
+msgstr "Chế độ thuế"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Subject to personal income tax"
+msgstr "Chịu thuế TNCN"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Signed the single-employer tax commitment"
+msgstr "Đã ký cam kết thuế (một nơi làm việc)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Social insurance number"
+msgstr "Số sổ BHXH"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Insurance code"
+msgstr "Mã bảo hiểm"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "In the statutory insurance scheme"
+msgstr "Tham gia bảo hiểm bắt buộc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Social insurance (SI)"
+msgstr "Bảo hiểm xã hội (BHXH)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Health insurance (HI)"
+msgstr "Bảo hiểm y tế (BHYT)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Unemployment insurance (UI)"
+msgstr "Bảo hiểm thất nghiệp (BHTN)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Insurance enrolment status"
+msgstr "Tình trạng tham gia bảo hiểm"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Union member"
+msgstr "Đoàn viên công đoàn"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Minimum-wage region"
+msgstr "Vùng lương tối thiểu"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Local employee"
+msgstr "Lao động trong nước"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Work authorisation"
+msgstr "Giấy phép làm việc"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Indonesia tax and insurance"
+msgstr "Thuế và bảo hiểm Indonesia"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "NPWP tax number"
+msgstr "Mã số thuế NPWP"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "BPJS employment number"
+msgstr "Số BPJS lao động"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "BPJS health number"
+msgstr "Số BPJS y tế"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Family card number"
+msgstr "Số sổ hộ khẩu (KK)"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/employee_details.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Full details"
+msgstr "Xem đầy đủ"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Open the complete employee record — every field, editable"
+msgstr "Mở hồ sơ nhân viên đầy đủ — mọi trường, có thể chỉnh sửa"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Personal"
+msgstr "Cá nhân"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Pay & tax"
+msgstr "Lương và thuế"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Contract dates"
+msgstr "Thời hạn hợp đồng"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "no end date"
+msgstr "không thời hạn"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "On record"
+msgstr "Trong hồ sơ"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "contracts"
+msgstr "hợp đồng"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "payslips"
+msgstr "phiếu lương"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Nothing recorded here yet."
+msgstr "Chưa có thông tin."
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
+msgid "Something missing, or need to change a detail?"
+msgstr "Thiếu thông tin hoặc cần sửa?"

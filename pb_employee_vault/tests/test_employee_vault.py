@@ -287,3 +287,32 @@ class TestEmployeeVault(TransactionCase):
         c.unlink()
         self.assertTrue(entry.exists())
         self.assertEqual(entry.res_display, display)
+
+    def test_11_detail_tabs_and_wage_mask(self):
+        """Personal / Job / Pay & tax ride in the bundled read; money is
+        manager-only there too, and empty plain rows still show (as empty)."""
+        self.emp_a.write({'private_email': 'a.person@example.com'})
+        self.Contract.create({
+            'name': 'C-DT', 'employee_id': self.emp_a.id, 'wage': 3100.0,
+            'state': 'draft', 'date_start': str(self.today)})
+
+        def rows(payload, tab):
+            return {r['key']: r for g in payload['details'][tab] for r in g['rows']}
+
+        mgr = self.People.with_user(self.mgr).get_employee_360(self.emp_a.id)
+        self.assertEqual(set(mgr['details']), {'personal', 'job', 'pay'})
+        personal = rows(mgr, 'personal')
+        self.assertEqual(personal['private_email']['value'], 'a.person@example.com')
+        # a plain row with no value is listed, marked empty — HR sees the gap
+        self.assertTrue(personal['passport_id']['empty'])
+        # an optional extra with no value is not listed at all
+        self.assertNotIn('pb_religion', personal)
+
+        hr = self.People.with_user(self.hr).get_employee_360(self.emp_a.id)
+        flat = ' '.join(str(r['value']) for t in hr['details'].values()
+                        for g in t for r in g['rows'])
+        self.assertNotIn('3,100', flat)
+        self.assertNotIn('hourly_cost', rows(hr, 'pay'))
+        if 'wage' in rows(hr, 'pay'):
+            self.assertEqual(rows(hr, 'pay')['wage']['value'],
+                             'Visible to payroll managers only')
