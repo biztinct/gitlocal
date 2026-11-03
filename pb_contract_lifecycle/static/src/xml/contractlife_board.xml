@@ -202,7 +202,9 @@
                 </div>
               </div>
 
-              <div class="ctl-chips">
+              <!-- only when it has a chip: an empty row is a stray rule line -->
+              <div t-if="row.non_permanent or row.decision_label or row.review_state === 'lapsed' or row.needs_decision or (row.days === null and !row.open_ended)"
+                   class="ctl-chips">
                 <span t-if="row.non_permanent"
                       class="pbim-badge info" t-esc="row.kind_label"/>
                 <span t-if="row.decision_label" class="pbim-badge ok ctl-sentence"
