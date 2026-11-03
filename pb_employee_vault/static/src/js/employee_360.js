@@ -30,6 +30,7 @@ export class Employee360Drawer extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.action = useService("action");
+        this.overlay = useService("overlay");
         this.state = useState({
             loaded: false, shown: false, busy: false,
             tab: "profile", d: null,
@@ -110,6 +111,27 @@ export class Employee360Drawer extends Component {
             target: "current",
             name: this.profile.name || _t("Employee"),
         });
+    }
+    /** The person's current contract, when they have one. */
+    get contractId() { return (this.profile.contract && this.profile.contract.id) || 0; }
+    /**
+     * "Contract": the person's current contract in the contract slide-over,
+     * from the soft `pb_contracts_drawer` registry (pb_contracts depends on
+     * People, so no hard import). One panel at a time, as on the People
+     * screen: this one slides out and the contract panel slides in through
+     * the overlay service, so it works wherever this drawer is hosted.
+     */
+    openContract() {
+        const id = this.contractId;
+        if (!id) { return; }
+        const Drawer = registry.category("pb_contracts_drawer").get("contract_360", null);
+        this.close();
+        if (Drawer) {
+            const remove = this.overlay.add(Drawer, { contractId: id, onClose: () => remove() });
+            return;
+        }
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail",
+                               name: _t("Contract"), params: { contract_id: id } });
     }
     onKey(ev) { if (ev.key === "Escape") { this.close(); } }
     close() {

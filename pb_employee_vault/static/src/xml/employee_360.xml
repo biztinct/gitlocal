@@ -47,6 +47,9 @@
               <div class="pev-tenure" t-if="profile.tenure_label and profile.tenure_label !== '—'">
                 <span class="l">Tenure</span><span class="v" t-esc="profile.tenure_label"/>
               </div>
+              <button class="pev-full" t-if="contractId" t-on-click="openContract" title="Open this person's current contract">
+                <t t-out="ic('fileText',14)"/> Contract
+              </button>
               <button class="pev-full" t-on-click="openFull" title="Open the complete employee record — every field, editable">
                 <t t-out="ic('external',14)"/> Full details
               </button>
