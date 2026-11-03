@@ -15524,3 +15524,49 @@ msgstr "Tên phần gốc trong tệp Excel của chương trình lương."
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__component_type
 msgid "The report group: organises the grid and reports, such as Earnings or Deductions. Filled from the pay role; a group a person types is kept. The spreadsheet's own section heading is kept separately."
 msgstr "Nhóm báo cáo: sắp xếp lưới và báo cáo, như Thu nhập hoặc Khấu trừ. Được điền theo vai trò trong lương; nhóm do một người gõ được giữ nguyên. Tên phần gốc trong bảng tính được giữ riêng."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__value_labels
+msgid "Words for each value"
+msgstr "Chữ cho từng giá trị"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__value_labels
+msgid "Optional. How a value reads on screen, e.g. \"0=No;1=Yes\" or \"0=None;1=Insurance-premium tax only;2=All tax (net salary)\". The pay data file and formulas keep using the numbers."
+msgstr "Không bắt buộc. Cách một giá trị hiển thị trên màn hình, ví dụ \"0=Không;1=Có\" hoặc \"0=Không;1=Chỉ thuế trên phí bảo hiểm;2=Toàn bộ thuế (lương net)\". Tệp dữ liệu lương và công thức vẫn dùng các con số."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage__pb_fill
+msgid "Filled in by"
+msgstr "Được điền bởi"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_contract_advantage__pb_fill__auto
+msgid "Filled in by Payobook"
+msgstr "Payobook tự điền"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage__pb_checked_by
+msgid "Checked by"
+msgstr "Người kiểm tra"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage__pb_checked_at
+msgid "Checked on"
+msgstr "Ngày kiểm tra"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_contract_advantage_change__change_source__auto_default
+msgid "Filled in by Payobook from the scheme's usual answer"
+msgstr "Payobook tự điền theo câu trả lời thường dùng của chương trình lương"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_contract_advantage_change__change_source__checked
+msgid "Checked, no change"
+msgstr "Đã kiểm tra, không thay đổi"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/contract_fill_in.py:0
+msgid "You cannot confirm the answers on a contract. Ask an administrator for the right to change contracts."
+msgstr "Bạn không thể xác nhận các câu trả lời trên hợp đồng. Hãy đề nghị quản trị viên cấp quyền sửa hợp đồng."

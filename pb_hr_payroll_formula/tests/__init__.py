@@ -179,3 +179,6 @@ from . import test_payroll_period_input
 from . import test_employee_work_timezone
 
 from . import test_payroll_preparation
+
+# FILLIN P1 — a new contract starts with the scheme's usual answers.
+from . import test_fillin_p1

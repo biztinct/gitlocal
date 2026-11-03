@@ -134,6 +134,10 @@ class HrEmployee(models.Model):
             by_company.setdefault(employee.company_id.id, []).append(employee.id)
 
         changed = 0
+        # FILLIN P1 (ledger D5b) — the people whose paying scheme was unknown
+        # and is known now; their draft/running contracts get the scheme's
+        # usual answers once the new "Paid by" is stored.
+        newly_known = []
         for company_id, ids in by_company.items():
             main_cycle = self._pb_main_cycle(company_id)
             main = Map.resolve_many(ids, main_cycle)
@@ -170,13 +174,40 @@ class HrEmployee(models.Model):
                         r.pb_paid_by_id.id != c
                         or r.pb_paid_by_advance_id.id != a))
                 changed += len(really)
+                if config_id:
+                    newly_known.extend(
+                        stale.filtered(lambda r: not r.pb_paid_by_id).ids)
                 stale.write({
                     'pb_paid_by_id': config_id or False,
                     'pb_paid_by_advance_id': advance_id or False,
                     'pb_paid_by_rung': via,
                     'pb_paid_by_stale': False,
                 })
+        if newly_known:
+            self._pb_fill_in_newly_known(newly_known)
         return changed
+
+    @api.model
+    def _pb_fill_in_newly_known(self, employee_ids):
+        """Fill the usual answers on these people's draft/running contracts.
+
+        Missing codes only, never an overwrite — the fill itself guarantees
+        that (`pb_hr_payroll_formula/models/contract_fill_in.py`). Never
+        blocks the recompute.
+        """
+        Contract = self.env['hr.contract'].sudo()
+        if not hasattr(Contract, '_pb_fill_in_defaults'):
+            return 0
+        try:
+            contracts = Contract.search([
+                ('employee_id', 'in', list(employee_ids)),
+                ('state', 'in', ['draft', 'open'])])
+            return contracts._pb_fill_in_defaults()
+        except Exception:       # noqa: BLE001 — "Paid by" still settles
+            _logger.warning('pb fill-in: could not fill for %s people whose '
+                            '"Paid by" became known', len(employee_ids),
+                            exc_info=True)
+            return 0
 
     @api.model
     def _pb_cron_recompute_paid_by(self):

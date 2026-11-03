@@ -129,3 +129,9 @@ from . import application_source_trace
 from . import employee_work_timezone
 
 from . import payroll_preparation
+
+# FILLIN P1 — a new contract starts with the paying scheme's usual answers;
+# filled-in lines are marked and checkable; rules carry words for each value.
+# Extends hr.contract / hr.contract.advantage(.template) / hr.formula.rule /
+# hr.formula.config, so it loads after every base model it touches.
+from . import contract_fill_in

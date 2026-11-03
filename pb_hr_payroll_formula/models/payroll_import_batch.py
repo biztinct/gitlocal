@@ -5215,27 +5215,11 @@ class HrPayrollImportBatch(models.Model):
     def _get_or_create_advantage_template(self, rule, cache):
         if rule.code in cache:
             return cache[rule.code]
-        template = self.env['hr.contract.advantage.template'].search([
-            ('code', '=', rule.code)
-        ], limit=1)
-        wanted_type = 'text' if getattr(rule, 'is_text_component', False) else 'amount'
-        if not template:
-            template = self.env['hr.contract.advantage.template'].create({
-                'name': rule.name or rule.code,
-                'code': rule.code,
-                'lower_bound': 0.0,
-                'upper_bound': 0.0,
-                'default_value': 0.0,
-                'value_type': wanted_type,
-            })
-        elif 'value_type' in template._fields and template.value_type != wanted_type:
-            # An existing template is NEVER flipped. Every line already filed under it
-            # was written as the other kind, and re-typing the template would silently
-            # reinterpret all of that history. The workbook is told, not obeyed.
-            _logger.warning(
-                "Contract component sync: rule %s wants value type %s but template %s "
-                "is already %s — keeping the template as it is.",
-                rule.code, wanted_type, template.code, template.value_type)
+        # FILLIN P1 — ONE search-by-code for the catalogue: the body moved to
+        # `hr.contract.advantage.template.template_for_rule` so the fill-in on
+        # a new contract and this sync can never disagree on which row a code
+        # files under (or on the never-flip-a-template rule).
+        template = self.env['hr.contract.advantage.template'].template_for_rule(rule)
         cache[rule.code] = template
         return template
 
@@ -5252,21 +5236,13 @@ class HrPayrollImportBatch(models.Model):
 
     def _log_contract_component_change(self, contract, template, old_amount, new_amount,
                                        source, notes=None, old_text=None, new_text=None):
-        vals = {
-            'contract_id': contract.id,
-            'advantage_template_id': template.id,
-            'old_amount': old_amount,
-            'new_amount': new_amount,
-            'effective_date': self.date_from or fields.Date.context_today(self),
-            'change_source': source,
-            'import_batch_id': self.id,
-            'notes': notes or False,
-        }
-        Change = self.env['hr.contract.advantage.change']
-        if 'old_text_value' in Change._fields:
-            vals['old_text_value'] = old_text or False
-            vals['new_text_value'] = new_text or False
-        Change.create(vals)
+        # FILLIN P1 — the row's shape lives on the model now; same rights,
+        # same values, same effective date as before.
+        self.env['hr.contract.advantage.change'].log(
+            contract, template, old_amount, new_amount, source,
+            notes=notes or '',
+            effective_date=self.date_from or fields.Date.context_today(self),
+            import_batch=self, old_text=old_text, new_text=new_text)
 
     def _create_new_contract_for_components(self, contract):
         if not contract:
@@ -5277,7 +5253,11 @@ class HrPayrollImportBatch(models.Model):
             updates['date_end'] = effective_date - timedelta(days=1)
         if updates:
             contract.write(updates)
-        new_contract = contract.copy({
+        # FILLIN P1 — no usual answers on this copy: the sync that called us
+        # writes every component of the scheme straight after, from the file
+        # or from the contract being replaced. Filling first would only leave
+        # "filled in, not checked" marks on values that were carried over.
+        new_contract = contract.with_context(pb_skip_fill_in=True).copy({
             'date_start': effective_date,
             'date_end': False,
         })
@@ -5407,6 +5387,13 @@ class HrPayrollImportBatch(models.Model):
                     self._log_contract_component_change(
                         contract, template, old_value, new_value, source
                     )
+                elif found and getattr(line_obj, 'pb_fill', False):
+                    # FILLIN FI1 — the file states the very value Payobook
+                    # filled in. The file is a human source, so the answer is
+                    # now confirmed: the write hook clears the "filled in, not
+                    # checked" mark. The amount does not move and no change
+                    # row is written (nothing changed).
+                    line_obj.write({'amount': new_value})
             else:
                 line_obj = self.env['hr.contract.advantage'].create({
                     'contract_id': contract.id,
