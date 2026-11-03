@@ -49,6 +49,12 @@
 // never actually scrolls — the action manager does) stops the panel from
 // sticking. Clip sideways only, so the panel can follow the list.
 .pbim.pbim-page:has(.pbf) { overflow-x: clip; overflow-y: visible; }
+// …except as a hub LENS. There the hub shell is `overflow: hidden` and hands
+// the lens a definite height (pb_hub W20), so the page IS the only thing that
+// can scroll; with the rule above nothing did, and the list ran off the bottom
+// of the screen with no scroll bar (owner report 2026-11-03, People ›
+// Employees). The panel then sticks inside the page's own scroll.
+.pbhub-lens > .pbim.pbim-page:has(.pbf) { overflow-y: auto; }
 
 // ------------------------------------------------------------ buttons
 .pbf-btn {
