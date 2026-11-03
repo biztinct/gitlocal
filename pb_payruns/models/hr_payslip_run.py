@@ -75,6 +75,19 @@ _PB_CHAIN_TOKEN = object()
 #: A run may be born in draft, never already approved or already under way.
 _PB_BORN_SEALED = ('approval_pending', 'done', 'cancel')
 
+#: PRS P1 — a per-call cache of `_pb_review_groups`, keyed by run id. The pay
+#: run screen needs the groups for its route preview AND its Split offer, and
+#: the preview's `_approval_context` works them out again; on rize that was
+#: ~125 ms each time. Only an INSTANCE of this class is honoured, so a context
+#: value arriving from a client (always plain JSON) can never stand in for one
+#: and steer which route a run is sent to.
+_PB_GROUPS_MEMO_KEY = 'pb_review_groups_memo'
+
+
+class ReviewGroupsMemo(dict):
+    """{run id: groups} for the length of one read; never stored."""
+
+
 #: Salary-rule codes that mean "this run contains overtime". Read as a
 #: SUBSTRING of the line's own code, because a scheme built from a workbook
 #: names its components after the workbook's headings.
@@ -149,6 +162,10 @@ class HrPayslipRun(models.Model):
             raise UserError(_(
                 "There are no computed payslips to print. Generate payslips "
                 "and compute their amounts first."))
+        return self._pb_print_slips(payslips)
+
+    def _pb_print_slips(self, payslips):
+        """The review PDF for `payslips` — the whole run or a selection."""
         # The formula report reads each slip's own scheme and saved line
         # values, including an imported document when one is configured.
         # Legacy country reports look up fixed rule codes, which may have no
@@ -405,14 +422,6 @@ class HrPayslipRun(models.Model):
         # by the very write that has not landed yet is the normal case, not an
         # exotic one.
         self.env['hr.payslip'].flush_model(['payslip_run_id', 'state'])
-        line_fields = ['slip_id', 'category_id', 'total']
-        detail_aware = 'component_detail' in self.env['hr.payslip.line']._fields
-        if detail_aware:
-            line_fields.append('component_detail')
-        role_aware = 'pay_role' in self.env['hr.payslip.line']._fields
-        if role_aware:
-            line_fields.append('pay_role')
-        self.env['hr.payslip.line'].flush_model(line_fields)
         cr = self.env.cr
         cr.execute("""
             SELECT p.payslip_run_id, count(*)
@@ -438,6 +447,62 @@ class HrPayslipRun(models.Model):
                 GROUP BY p.payslip_run_id
             """, (tuple(run_ids),))
             unsourced = dict(cr.fetchall())
+        # PRS P1 — the per-payslip money is read ONCE, by the helper the pay
+        # run screen's people table reads too, and the run's figures are its
+        # sum: one source of truth (PRS C3). The bands are summed per code in
+        # the helper's own row order, so every float addition happens in the
+        # same order it always did and not a single dong moves.
+        agg = {}
+        for row in self._pb_slip_totals(run_ids).values():
+            target = agg.setdefault(row['run_id'], {})
+            for code, total in row['bands'].items():
+                target[code] = target.get(code, 0.0) + total
+        for run in self:
+            d = agg.get(run.id, {})
+            run.pb_employee_count = counts.get(run.id, 0)
+            run.pb_unsourced_count = unsourced.get(run.id, 0)
+            run.pb_total_net = d.get('NET', 0.0)
+            # The RUN's gross keeps its own rule: the scheme's gross lines
+            # summed, or — only when the run has none at all — basic plus
+            # allowances. Per payslip the same rule is applied to that payslip
+            # (`_pb_slip_totals`); the two agree on every run that is built one
+            # way throughout (PRS-G10).
+            run.pb_total_gross = d.get('GROSS') or (
+                d.get('BASIC', 0.0) + d.get('ALW', 0.0))
+            # Already summed as magnitudes in SQL, so no outer abs() here.
+            run.pb_total_deductions = (d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
+                                       + d.get('COMP', 0.0))
+            run.pb_total_employer_cost = d.get('ERCOST', 0.0)
+            run._pb_set_balance(bool(d.get('NET')))
+
+    @api.model
+    def _pb_slip_totals(self, run_ids):
+        """Each payslip's own money, for the payslips of `run_ids`.
+
+        {slip id: {'run_id', 'gross', 'deductions', 'net', 'employer_cost',
+                   'bands': {band code: amount}}}
+
+        PRS P1 — this is the SQL `_compute_pb_totals` always ran, with the
+        per-payslip numbers kept instead of summed away. The run's figures are
+        the sum of these `bands`; the pay run screen's people table reads the
+        four named figures. Cancelled payslips and payslips with no banded
+        line are absent (they have no money to show). Read-only.
+        """
+        run_ids = [int(r) for r in (run_ids or []) if r]
+        if not run_ids:
+            return {}
+        # Raw SQL reads the tables, not the cache (PRS-G5): flush every column
+        # the query reads, including the payslip's own run and state.
+        self.env['hr.payslip'].flush_model(['payslip_run_id', 'state'])
+        line_fields = ['slip_id', 'category_id', 'total']
+        detail_aware = 'component_detail' in self.env['hr.payslip.line']._fields
+        if detail_aware:
+            line_fields.append('component_detail')
+        role_aware = 'pay_role' in self.env['hr.payslip.line']._fields
+        if role_aware:
+            line_fields.append('pay_role')
+        self.env['hr.payslip.line'].flush_model(line_fields)
+        cr = self.env.cr
         net_clause = ("pl.pay_role = 'net' OR c.code = 'NET'"
                       if role_aware else "c.code = 'NET'")
         detail_clause = ("AND ((" + net_clause + ") "
@@ -474,8 +539,8 @@ class HrPayslipRun(models.Model):
         per_slip = {}
         for rid, sid, code, magnitude, signed, explicit in cr.fetchall():
             per_slip.setdefault((rid, sid), {})[code] = (magnitude or 0.0, signed or 0.0, explicit)
-        agg = {}
-        for (rid, _sid), bands in per_slip.items():
+        out = {}
+        for (rid, sid), bands in per_slip.items():
             gross = bands.get('GROSS', (0,))[0] or (
                 bands.get('BASIC', (0,))[0] + bands.get('ALW', (0,))[0])
             net = bands.get('NET', (0,))[0]
@@ -484,22 +549,23 @@ class HrPayslipRun(models.Model):
                 gross, net, sum(b[1] for b in deductions), sum(b[0] for b in deductions),
                 bool(deductions) and all(b[2] for b in deductions),
                 any(b in bands for b in ('GROSS', 'BASIC', 'ALW')), 'NET' in bands)
+            counted = {}
             for code, (magnitude, signed, _explicit) in bands.items():
-                total = signed if apply_signed and code in ('DED', 'DEDUCTION', 'COMP') else magnitude
-                target = agg.setdefault(rid, {})
-                target[code] = target.get(code, 0.0) + total
-        for run in self:
-            d = agg.get(run.id, {})
-            run.pb_employee_count = counts.get(run.id, 0)
-            run.pb_unsourced_count = unsourced.get(run.id, 0)
-            run.pb_total_net = d.get('NET', 0.0)
-            run.pb_total_gross = d.get('GROSS') or (
-                d.get('BASIC', 0.0) + d.get('ALW', 0.0))
-            # Already summed as magnitudes in SQL, so no outer abs() here.
-            run.pb_total_deductions = (d.get('DED', 0.0) + d.get('DEDUCTION', 0.0)
-                                       + d.get('COMP', 0.0))
-            run.pb_total_employer_cost = d.get('ERCOST', 0.0)
-            run._pb_set_balance(bool(d.get('NET')))
+                counted[code] = (signed if apply_signed
+                                 and code in ('DED', 'DEDUCTION', 'COMP')
+                                 else magnitude)
+            out[sid] = {
+                'run_id': rid,
+                'gross': counted.get('GROSS') or (
+                    counted.get('BASIC', 0.0) + counted.get('ALW', 0.0)),
+                'deductions': (counted.get('DED', 0.0)
+                               + counted.get('DEDUCTION', 0.0)
+                               + counted.get('COMP', 0.0)),
+                'net': counted.get('NET', 0.0),
+                'employer_cost': counted.get('ERCOST', 0.0),
+                'bands': counted,
+            }
+        return out
 
     def _pb_set_balance(self, has_net):
         """Does gross − deductions − net come to nothing?
@@ -623,6 +689,11 @@ class HrPayslipRun(models.Model):
         honest way to pick between them.
         """
         self.ensure_one()
+        memo = self.env.context.get(_PB_GROUPS_MEMO_KEY)
+        if not isinstance(memo, ReviewGroupsMemo):
+            memo = None
+        elif self.id in memo:
+            return memo[self.id]
         # WHERE THIS RUN BELONGS IS NOT A PERMISSION QUESTION.
         #
         # Working it out means reading the pay scheme, the employees' teams and
@@ -671,7 +742,10 @@ class HrPayslipRun(models.Model):
             row['slip_ids'].append(slip.id)
             if slip.employee_id:
                 row['employee_ids'].append(slip.employee_id.id)
-        return list(groups.values())
+        result = list(groups.values())
+        if memo is not None:
+            memo[self.id] = result
+        return result
 
     def _pb_scope_keys(self, config, division):
         """The opaque keys the engine walks, most specific first."""
@@ -736,8 +810,14 @@ class HrPayslipRun(models.Model):
         slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
         if not slips:
             return False
-        for line in slips.mapped('line_ids'):
-            code = (line.code or '').upper().replace('_', '').replace('-', '')
+        # PRS P1 — the DISTINCT codes, in one grouped read, instead of loading
+        # every line of every payslip as a record (~350 ms on a 520-payslip
+        # run, paid on every Submit and every run-screen route preview). Same
+        # reader, same record rules, same rule on each code as before.
+        rows = self.env['hr.payslip.line']._read_group(
+            [('slip_id', 'in', slips.ids)], groupby=['code'])
+        for (raw,) in rows:
+            code = (raw or '').upper().replace('_', '').replace('-', '')
             if not code:
                 continue
             for token in _PB_OT_TOKENS:
@@ -1353,6 +1433,106 @@ class HrPayslipRun(models.Model):
                              "Payslips to compute the period again.", n=count),
                 'type': 'success', 'sticky': False,
                 'next': {'type': 'ir.actions.act_window_close'},
+            },
+        }
+
+    # ------------------------------------------------------------------
+    # PRS P1 — what a selection of payslips on the run screen can do
+    # ------------------------------------------------------------------
+    #: The verbs `action_pb_slips` accepts. Each is an existing per-payslip
+    #: method; nothing here calculates, approves or pays anything new.
+    _PB_SLIP_VERBS = ('recalc', 'pdf', 'delete')
+
+    def action_pb_slips(self, verb, slip_ids):
+        """Do `verb` to some of this run's payslips (the screen's bulk bar).
+
+        recalc  the same recompute the run's own button runs, on the selection
+        pdf     the review PDF the run's own Print button makes, for the
+                selection
+        delete  the draft payslips only, run kept — the same rule as
+                `action_pb_delete_draft_payslips` (PRS-G9: never take a payslip
+                off a run by clearing its run)
+
+        Refuses any payslip that is not on THIS run, and any delete of a
+        payslip that is not a draft.
+        """
+        self.ensure_one()
+        if verb not in self._PB_SLIP_VERBS:
+            raise UserError(_("That is not something a selection of payslips "
+                              "can do."))
+        try:
+            wanted = {int(i) for i in (slip_ids or [])}
+        except (TypeError, ValueError):
+            wanted = set()
+        if not wanted:
+            raise UserError(_("Pick at least one payslip first."))
+        slips = self.env['hr.payslip'].browse(sorted(wanted)).exists()
+        if len(slips) != len(wanted) or slips - self.slip_ids:
+            raise UserError(_(
+                "Some of the payslips you picked are not on this pay run, so "
+                "nothing was done. Reload the run and pick again."))
+        if verb == 'pdf':
+            printable = slips.filtered(
+                lambda s: s.state != 'cancel' and s.line_ids)
+            if not printable:
+                raise UserError(_(
+                    "None of the payslips you picked has been calculated yet, "
+                    "so there is nothing to print."))
+            return self._pb_print_slips(printable)
+
+        # recalc and delete change the run, so they follow its write access
+        # and only ever touch a draft.
+        self.check_access('write')
+        if self.state != 'draft':
+            raise UserError(_(
+                "This pay run is no longer a draft, so its payslips "
+                "cannot be changed."))
+        if verb == 'delete':
+            locked = slips.filtered(
+                lambda s: s.state not in self._PB_DISPOSABLE_SLIP_STATES)
+            if locked:
+                raise UserError(_(
+                    "%(n)s of the payslips you picked are not drafts, so "
+                    "nothing was deleted.", n=len(locked)))
+            count = len(slips)
+            slips.unlink()
+            _logger.info("pb_payruns: %s deleted %s picked draft payslip(s) "
+                         "from run %s", self.env.user.login, count, self.id)
+            return {
+                'type': 'ir.actions.client', 'tag': 'display_notification',
+                'params': {
+                    'title': _('Draft payslips deleted'),
+                    'message': (_("1 payslip deleted. The pay run is kept.")
+                                if count == 1 else
+                                _("%s payslips deleted. The pay run is kept.",
+                                  count)),
+                    'type': 'success', 'sticky': False,
+                },
+            }
+        # recalc — exactly what `action_recompute_formula_lines_batch` does
+        # for a whole run, narrowed to the selection. Without the payroll
+        # scheme engine there is no recompute to run.
+        Slip = self.env['hr.payslip']
+        if not hasattr(Slip, 'action_recompute_formula_lines'):
+            raise UserError(_(
+                "Recalculating is not available on this system."))
+        if hasattr(Slip, '_adopt_scheme_when_structureless'):
+            slips._adopt_scheme_when_structureless()
+        governed = slips.filtered(
+            lambda s: s.calculation_method == 'formula' and s.formula_config_id)
+        if not governed:
+            raise UserError(_(
+                "None of the payslips you picked is calculated from a payroll "
+                "scheme, so there is nothing to recalculate."))
+        governed.action_recompute_formula_lines()
+        count = len(governed)
+        return {
+            'type': 'ir.actions.client', 'tag': 'display_notification',
+            'params': {
+                'title': _('Recalculated'),
+                'message': (_("1 payslip recalculated.") if count == 1
+                            else _("%s payslips recalculated.", count)),
+                'type': 'success', 'sticky': False,
             },
         }
 

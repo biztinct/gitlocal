@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
+import unicodedata
 from datetime import date, timedelta
 
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 from odoo.fields import Domain
-from odoo.tools import format_date
+from odoo.tools import format_date, format_datetime
 
 _logger = logging.getLogger(__name__)
 
 # The stages the board draws and the words for them — imported rather than
 # re-typed, so the board can never offer a stage the model does not have.
-from .hr_payslip_run import PB_BOARD_STATES, PB_STAGE_NAME
+from .hr_payslip_run import (PB_BOARD_STATES, PB_STAGE_NAME,
+                             _PB_GROUPS_MEMO_KEY, ReviewGroupsMemo)
 
 STAGE_ORDER = list(PB_BOARD_STATES)
 STAGE_LABEL = dict(PB_STAGE_NAME)
@@ -42,6 +46,31 @@ _CLOSE_LENS_GROUPS = (
     'om_hr_payroll.group_hr_payroll_manager',
 )
 _OPEN_STATES = ('draft', 'approval_pending')
+
+# PRS P1 — the pay run screen.
+#: People rows the screen payload carries at most; the counts cover everyone.
+SCREEN_ROW_CAP = 2000
+#: A take-home move this large against the previous run flags the person.
+SCREEN_CHANGE_SHARE = 0.10
+#: Month names a run's NAME may carry, English (full and short). Vietnamese
+#: names are matched by `_VI_MONTH_RE` ("Tháng 10/2026", "tháng 10 năm 2026").
+_EN_MONTHS = {
+    'january': 1, 'jan': 1, 'february': 2, 'feb': 2, 'march': 3, 'mar': 3,
+    'april': 4, 'apr': 4, 'may': 5, 'june': 6, 'jun': 6, 'july': 7, 'jul': 7,
+    'august': 8, 'aug': 8, 'september': 9, 'sept': 9, 'sep': 9,
+    'october': 10, 'oct': 10, 'november': 11, 'nov': 11, 'december': 12,
+    'dec': 12,
+}
+_EN_MONTH_RE = re.compile(
+    r'\b(' + '|'.join(sorted(_EN_MONTHS, key=len, reverse=True))
+    + r')\.?[\s,/-]*(\d{4})\b', re.IGNORECASE)
+_VI_MONTH_RE = re.compile(
+    r'th[aá]ng\s*(\d{1,2})\s*(?:/|-|\.|\s+n[aă]m\s+|\s+)\s*(\d{4})\b',
+    re.IGNORECASE)
+#: The Approvals inbox and set-up screens (pb_approval_config, read softly).
+_INBOX_ACTION = 'pb_approval_config.action_pb_approval_inbox'
+_MATRIX_ACTION = 'pb_approval_config.action_pb_approval_matrix'
+_MAKE_ACTION = 'om_hr_payroll.action_hr_payslip_by_employees'
 
 
 class PbPayruns(models.AbstractModel):
@@ -587,6 +616,1215 @@ class PbPayruns(models.AbstractModel):
         return {'batches': batches, 'stage_counts': stage_counts,
                 'my_pending': my_pending, 'period_net': period_net,
                 'may_write': may_write}
+
+    # ============================================================ run screen
+    # PRS P1 (docs/handovers/payrunscreen/PRS_P1_HANDOVER.md). Everything the
+    # ONE pay run screen shows, in one round trip, already in words.
+    #
+    # READ-ONLY. Nothing below writes a record. The facts the board already
+    # knows come from the board's own card (`_board_cards`), never rebuilt;
+    # what only this screen needs is read in a fixed number of queries
+    # however many payslips the run has. Every optional piece (route preview,
+    # previous run, Source Atlas, statement) sits inside `_safe`, so one
+    # failure never blanks the screen.
+
+    @api.model
+    def get_run_screen(self, run_id):
+        """The pay run screen's payload for one run. See the handover for
+        the exact keys; a run the reader cannot read raises AccessError."""
+        _ = self.env._
+        Run = self.env['hr.payslip.run']
+        try:
+            rid = int(run_id or 0)
+        except (TypeError, ValueError):
+            rid = 0
+        run = Run.browse(rid).exists() if rid else Run.browse()
+        if not run:
+            raise UserError(_("This pay run no longer exists. Go back to Pay "
+                              "runs and open it from there."))
+        # The gate. Everything after it reads what this person may already
+        # read on the board and on the run's own form.
+        run.check_access('read')
+
+        built = self._board_cards(run)
+        card = built['batches'][0]
+        may_write = built['may_write']
+        state = card['state']
+        sent_back = state == 'draft' and bool(run.pb_return_note)
+
+        currency = run.pb_currency_id or self.env.company.currency_id
+        money = lambda amount, short=False: self._screen_money(  # noqa: E731
+            amount, currency, short=short)
+
+        # ---- the payslips: as the reader sees them, then their facts in SQL
+        slips = run.slip_ids
+        facts = self._safe(lambda: self._screen_slip_facts(slips),
+                           default={}) or {}
+        if slips and not facts:
+            # The one query failed: read the same facts the slow way rather
+            # than tell the reader a run full of payslips has none.
+            facts = {s.id: {'state': s.state or 'draft',
+                            'employee_id': s.employee_id.id or False,
+                            'name': s.name or '', 'lines': len(s.line_ids),
+                            'calculated_at': False, 'unsourced': False}
+                     for s in slips}
+        totals =self._safe(lambda: Run._pb_slip_totals(run.ids),
+                            default={}) or {}
+        live_facts = [f for f in facts.values() if f['state'] != 'cancel']
+        live_count = len(live_facts)
+        uncalculated = sum(1 for f in live_facts if not f['lines'])
+        calculated_count = live_count - uncalculated
+
+        # ---- the run before this one, for "compared with last month"
+        prev = Run.browse()
+        if live_count:
+            prev = self._safe(lambda: self._screen_previous_run(run, currency),
+                              default=Run.browse()) or Run.browse()
+        prev_net_of = {}
+        if prev:
+            prev_net_of = self._safe(lambda: self._screen_net_by_employee(prev),
+                                     default={}) or {}
+        prev_month = (self._safe(lambda: format_date(
+            self.env, prev.date_end or prev.date_start, date_format='MMMM'),
+            default='') if prev else '')
+
+        people = self._screen_people(facts, totals, state, prev,
+                                     prev_net_of, prev_month)
+        # Which (scheme, part of the business, currency) groups the payslips
+        # fall in, worked out ONCE: the route preview and the Split offer both
+        # need it, and on rize it is the single most expensive read here.
+        groups = None
+        if state == 'draft' and live_count:
+            run = run.with_context(**{_PB_GROUPS_MEMO_KEY: ReviewGroupsMemo()})
+            groups = self._safe(lambda: run._pb_review_groups(), default=None)
+        route = self._screen_route(run, card, state, live_count, groups=groups)
+        checks = self._screen_checks(run, card, state, live_count,
+                                     uncalculated, facts, route,
+                                     may_write)
+        bad = sum(1 for item in checks['items'] if not item['ok'])
+        journey = self._screen_journey(run, card, state, live_count, bad,
+                                       len(checks['items']), sent_back)
+        primary = self._screen_primary(run, card, state, live_count, bad,
+                                       sent_back, may_write, route)
+
+        net = card['net'] or 0.0
+        gross = card['gross'] or 0.0
+        employer = card['employer_cost'] or 0.0
+        n = card['employees'] or 0
+        if state == 'cancel':
+            sentence = _("This pay run was rejected, so nobody is paid from it.")
+        elif not n:
+            sentence = _("No payslips yet, so there is no money on this run.")
+        elif employer:
+            sentence = (_("1 person takes home %(net)s. With the company's own "
+                          "contributions, this run costs %(total)s in all.",
+                          net=money(net, True),
+                          total=money(gross + employer, True)) if n == 1
+                        else _("%(n)s people take home %(net)s. With the "
+                               "company's own contributions, this run costs "
+                               "%(total)s in all.", n=n, net=money(net, True),
+                               total=money(gross + employer, True)))
+        else:
+            sentence = (_("1 person takes home %(net)s, out of %(gross)s gross "
+                          "pay.", net=money(net, True),
+                          gross=money(gross, True)) if n == 1
+                        else _("%(n)s people take home %(net)s, out of "
+                               "%(gross)s gross pay.", n=n,
+                               net=money(net, True), gross=money(gross, True)))
+
+        compare, compare_none = None, None
+        if live_count and prev:
+            compare = self._safe(
+                lambda: self._screen_compare(prev, net), default=None)
+        elif live_count:
+            compare_none = _("This is the first run on this scheme, so there "
+                             "is nothing to compare with yet.")
+
+        delivery = dict(card['delivery'])
+        delivery.update(self._screen_delivery_steps(run, card, state,
+                                                     live_count, net, money))
+
+        split_ok = bool(state == 'draft' and may_write and groups
+                        and len(groups) > 1)
+        actions = self._screen_actions(run, card, state, may_write,
+                                       live_count, calculated_count, prev_month,
+                                       split_ok)
+        Slip = self.env['hr.payslip']
+        return {
+            'run': card,
+            'header': {
+                'title': run.name or '',
+                'work_dates': self._screen_work_dates(run.date_start,
+                                                      run.date_end),
+                # sudo: a payroll officer who may open the run is not always
+                # allowed to open the SCHEME (`_pb_review_groups` says why);
+                # its name is a label on the run, not the scheme handed over.
+                'scheme': (run.sudo().pb_formula_config_id.name or '')
+                if 'pb_formula_config_id' in Run._fields else '',
+                'people': n,
+                'currency_name': currency.name or '',
+                'symbol': currency.symbol or currency.name or '',
+                'decimals': currency.decimal_places,
+                'status': self._screen_status(state, sent_back),
+            },
+            'date_mismatch': self._safe(
+                lambda: self._screen_date_mismatch(run), default=None),
+            'journey': journey,
+            'primary': primary,
+            'money': {
+                'net': net, 'gross': gross,
+                'deductions': card['deductions'] or 0.0,
+                'employer_cost': employer,
+                'total_cost': gross + employer,
+                'sentence': sentence,
+            },
+            'compare': compare,
+            'compare_none': compare_none,
+            'checks': checks,
+            'route': route,
+            'delivery': delivery,
+            'people': people,
+            'settings_editable': state == 'draft' and may_write,
+            'actions': actions,
+            'bulk': {
+                'recalc': (state == 'draft' and may_write and bool(live_count)
+                           and hasattr(Slip, 'action_recompute_formula_lines')),
+                'pdf': state != 'cancel' and bool(calculated_count),
+                'delete': state == 'draft' and may_write and bool(live_count),
+            },
+            'statement_available': 'pb_statement_json' in Slip._fields,
+        }
+
+    # ---------------------------------------------------------- run screen: words
+    @api.model
+    def _screen_money(self, amount, currency, short=False):
+        """Money as a reader writes it, in the run's own currency.
+
+        Full form: ₫1,250,000 / $1,250.50 — the currency's own decimals, so
+        dong never shows ".00" (PRS C4). Short form for sentences: ₫1.62
+        billion, ₫3.5 million — trailing zeros dropped, never "₫2.00 billion".
+        """
+        _ = self.env._
+        symbol = currency.symbol or currency.name or ''
+        value = float(amount or 0.0)
+        sign = '−' if value < 0 else ''
+        value = abs(value)
+
+        def trim(text):
+            return text.rstrip('0').rstrip('.') if '.' in text else text
+
+        if short and value >= 1e9:
+            return _("%(amount)s billion",
+                     amount='%s%s%s' % (sign, symbol, trim('%.2f' % (value / 1e9))))
+        if short and value >= 1e6:
+            return _("%(amount)s million",
+                     amount='%s%s%s' % (sign, symbol, trim('%.1f' % (value / 1e6))))
+        decimals = max(int(currency.decimal_places or 0), 0)
+        return '%s%s%s' % (sign, symbol, '{:,.{d}f}'.format(value, d=decimals))
+
+    @api.model
+    def _screen_pct(self, value):
+        """12 → '12', 2.44 → '2.4' (one decimal, trailing zero dropped)."""
+        text = '%.1f' % abs(value)
+        return text[:-2] if text.endswith('.0') else text
+
+    @api.model
+    def _initials(self, name):
+        """Two letters for an avatar: first and last word of the name."""
+        words = [w for w in (name or '').replace('DEMO ', '', 1).split()
+                 if w[:1].isalpha()]
+        if not words:
+            return ''
+        if len(words) == 1:
+            return words[0][:1].upper()
+        return (words[0][:1] + words[-1][:1]).upper()
+
+    @api.model
+    def _screen_status(self, state, sent_back):
+        _ = self.env._
+        if state == 'draft':
+            return ({'key': 'sent_back', 'label': _("Sent back")} if sent_back
+                    else {'key': 'draft', 'label': _("Draft")})
+        if state == 'approval_pending':
+            return {'key': 'pending', 'label': _("Waiting for approval")}
+        if state == 'done':
+            return {'key': 'done', 'label': _("Approved")}
+        return {'key': 'rejected', 'label': _("Rejected")}
+
+    @api.model
+    def _screen_work_dates(self, d1, d2):
+        """"1 – 30 Sep 2026", "16 Sep – 15 Oct 2026", "16 Dec 2026 – 15 Jan
+        2027" — the reader's own language for the month names."""
+        if not d1 or not d2:
+            return self._fmt_period(d1, d2)
+
+        def fmt(d, pattern):
+            return self._safe(lambda: format_date(self.env, d, date_format=pattern),
+                              default=str(d))
+        if (d1.year, d1.month) == (d2.year, d2.month):
+            left = fmt(d1, 'd')
+        elif d1.year == d2.year:
+            left = fmt(d1, 'd MMM')
+        else:
+            left = fmt(d1, 'd MMM y')
+        return '%s – %s' % (left, fmt(d2, 'd MMM y'))
+
+    @api.model
+    def _screen_named_month(self, name):
+        """(year, month) a run's NAME speaks of, or None."""
+        text = unicodedata.normalize('NFC', name or '')
+        found = _EN_MONTH_RE.search(text)
+        if found:
+            return int(found.group(2)), _EN_MONTHS[found.group(1).lower()]
+        found = _VI_MONTH_RE.search(text)
+        if found:
+            month = int(found.group(1))
+            if 1 <= month <= 12:
+                return int(found.group(2)), month
+        return None
+
+    @api.model
+    def _screen_main_month(self, d1, d2):
+        """(year, month) holding most of the days d1..d2; a tie goes to the
+        later month, the one the board files the run under."""
+        best, best_days = None, -1
+        start = d1
+        while start <= d2:
+            month_end = start + relativedelta(day=31)
+            end = min(month_end, d2)
+            days = (end - start).days + 1
+            if days >= best_days:
+                best, best_days = (start.year, start.month), days
+            start = month_end + timedelta(days=1)
+        return best
+
+    @api.model
+    def _screen_date_mismatch(self, run):
+        """R2 — a plain warning when the name names another month than the
+        dates cover (rize 1591: "… October 2026" over 1 – 30 Sep 2026)."""
+        if not run.date_start or not run.date_end or run.date_end < run.date_start:
+            return None
+        named = self._screen_named_month(run.name)
+        if not named:
+            return None
+        main = self._screen_main_month(run.date_start, run.date_end)
+        if named == main:
+            return None
+        _ = self.env._
+        named_label = self._safe(lambda: format_date(
+            self.env, date(named[0], named[1], 1), date_format='MMMM y'),
+            default='%s/%s' % (named[1], named[0]))
+        dates = self._screen_work_dates(run.date_start, run.date_end)
+        if run.state == 'draft':
+            text = _("The name says %(named)s, but the dates are %(dates)s. "
+                     "Check the dates before sending it.",
+                     named=named_label, dates=dates)
+        else:
+            text = _("The name says %(named)s, but the dates are %(dates)s.",
+                     named=named_label, dates=dates)
+        return {'text': text}
+
+    # ---------------------------------------------------------- run screen: reads
+    @api.model
+    def _screen_slip_facts(self, slips):
+        """{slip id: {'state', 'employee_id', 'name', 'lines': n,
+        'unsourced': bool, 'calculated_at': dt}} in ONE query, oldest first.
+
+        `slips` is the run's payslips AS THE READER SEES THEM (the one2many
+        applies the payslip record rules); only their ids reach the query.
+        `unsourced` is the run's own rule (`_compute_pb_totals`) applied per
+        payslip. Read in SQL rather than record by record: on a 520-payslip
+        run the per-record attribute reads alone cost ~350 ms.
+        """
+        if not slips:
+            return {}
+        Slip = self.env['hr.payslip']
+        self.env['hr.payslip.line'].flush_model(['slip_id'])
+        source_aware = all(f in Slip._fields for f in (
+            'pb_sourced_inputs', 'calculation_method', 'formula_input_sources'))
+        columns = ['state', 'employee_id', 'name']
+        if source_aware:
+            columns += ['pb_sourced_inputs', 'calculation_method',
+                        'formula_input_sources']
+        Slip.flush_model(columns)
+        unsourced = ("""(p.state != 'cancel'
+                         AND COALESCE(p.pb_sourced_inputs, 0) = 0
+                         AND p.calculation_method = 'formula'
+                         AND p.formula_input_sources IS NOT NULL
+                         AND p.formula_input_sources <> '')"""
+                     if source_aware else 'FALSE')
+        self.env.cr.execute("""
+            SELECT p.id, p.state, p.employee_id, p.name,
+                   COUNT(l.id), MAX(l.create_date), """ + unsourced + """
+            FROM hr_payslip p
+            LEFT JOIN hr_payslip_line l ON l.slip_id = p.id
+            WHERE p.id IN %s
+            GROUP BY p.id
+            ORDER BY p.id
+        """, (tuple(slips.ids),))
+        return {sid: {'state': st or 'draft', 'employee_id': eid or False,
+                      'name': name or '', 'lines': lines or 0,
+                      'calculated_at': at, 'unsourced': bool(flag)}
+                for sid, st, eid, name, lines, at, flag
+                in self.env.cr.fetchall()}
+
+    @api.model
+    def _screen_previous_run(self, run, currency):
+        """The run before this one on the same scheme and part of the
+        business, in the same money (R3): not rejected, ended before this one
+        starts, and with payslips to compare against."""
+        Run = self.env['hr.payslip.run']
+        if not run.date_start:
+            return Run.browse()
+        domain = [('id', '!=', run.id), ('state', '!=', 'cancel'),
+                  ('date_end', '<', run.date_start),
+                  ('pb_currency_id', '=', currency.id)]
+        if 'pb_formula_config_id' in Run._fields:
+            domain.append(('pb_formula_config_id', '=',
+                           run.pb_formula_config_id.id or False))
+        division = run.pb_division or ''
+        for candidate in Run.search(domain, order='date_end desc, id desc',
+                                    limit=20):
+            if (candidate.pb_division or '') == division \
+                    and candidate.pb_employee_count:
+                return candidate
+        return Run.browse()
+
+    @api.model
+    def _screen_net_by_employee(self, run):
+        """{employee id: take-home} on `run` — the same per-payslip money."""
+        totals = self.env['hr.payslip.run']._pb_slip_totals(run.ids)
+        self.env['hr.payslip'].flush_model(['payslip_run_id', 'employee_id',
+                                            'state'])
+        self.env.cr.execute(
+            "SELECT id, employee_id FROM hr_payslip "
+            "WHERE payslip_run_id = %s AND state != 'cancel'", (run.id,))
+        out = {}
+        for sid, eid in self.env.cr.fetchall():
+            out[eid] = out.get(eid, 0.0) + (totals.get(sid) or {}).get('net', 0.0)
+        return out
+
+    @api.model
+    def _screen_compare(self, prev, net):
+        _ = self.env._
+        before = float(prev.pb_total_net or 0.0)
+        label = self._month_label(prev.date_end or prev.date_start)
+        people = prev.pb_employee_count or 0
+        pct = None
+        if before:
+            pct = round((float(net) - before) / abs(before) * 100.0, 1)
+        if pct is None:
+            change = _("%s paid no take-home, so there is no percentage to "
+                       "compare.", label)
+        elif pct > 0:
+            change = _("%(pct)s%% more take-home than %(label)s.",
+                       pct=self._screen_pct(pct), label=label)
+        elif pct < 0:
+            change = _("%(pct)s%% less take-home than %(label)s.",
+                       pct=self._screen_pct(pct), label=label)
+        else:
+            change = _("The same take-home as %s.", label)
+        then = (_("1 person was paid then.") if people == 1
+                else _("%s people were paid then.", people))
+        return {'run_id': prev.id, 'label': label, 'net': before,
+                'people': people, 'change_pct': pct,
+                'sentence': '%s %s' % (change, then)}
+
+    @api.model
+    def _screen_people(self, facts, totals, state, prev, prev_net_of,
+                       prev_month):
+        """The people table: one row per payslip, the team list, the counts."""
+        _ = self.env._
+        employees = self.env['hr.employee'].browse(
+            {f['employee_id'] for f in facts.values() if f['employee_id']})
+        info = self._safe(lambda: self._screen_employee_info(employees),
+                          default={}) or {}
+        net_of = {}
+        for sid, fact in facts.items():
+            if fact['state'] != 'cancel':
+                eid = fact['employee_id']
+                net_of[eid] = net_of.get(eid, 0.0) + \
+                    (totals.get(sid) or {}).get('net', 0.0)
+
+        rows, teams = [], {}
+        counts = {'all': 0, 'flagged': 0, 'changed': 0}
+        for sid, fact in facts.items():
+            eid = fact['employee_id']
+            person = info.get(eid) or {}
+            money_row = totals.get(sid) or {}
+            flag = self._screen_flag(fact, state, eid, net_of,
+                                     prev, prev_net_of, prev_month)
+            name = person.get('name') or fact['name'] or ''
+            row = {
+                'slip_id': sid, 'employee_id': eid or False,
+                'name': name, 'initials': self._initials(name),
+                'job': person.get('job') or '', 'team': person.get('team') or '',
+                'gross': money_row.get('gross', 0.0),
+                'deductions': money_row.get('deductions', 0.0),
+                'net': money_row.get('net', 0.0),
+                'employer_cost': money_row.get('employer_cost', 0.0),
+                'flag': flag,
+            }
+            rows.append(row)
+            counts['all'] += 1
+            if flag['kind'] in ('rose', 'amber'):
+                counts['flagged'] += 1
+            elif flag['kind'] == 'p':
+                counts['changed'] += 1
+            if fact['state'] != 'cancel':
+                team = row['team'] or _("No team")
+                bucket = teams.setdefault(team, {'name': team, 'count': 0,
+                                                 'net': 0.0})
+                bucket['count'] += 1
+                bucket['net'] += row['net']
+        rows.sort(key=lambda r: (-(r['net'] or 0.0), r['name'].lower()))
+        return {
+            'rows': rows[:SCREEN_ROW_CAP],
+            'teams': sorted(teams.values(),
+                            key=lambda t: (-t['count'], t['name'].lower())),
+            'counts': counts,
+            'changed_available': bool(prev),
+            'capped': len(rows) > SCREEN_ROW_CAP,
+            'total': len(rows),
+        }
+
+    @api.model
+    def _screen_employee_info(self, employees):
+        """{employee id: {'name','job','team'}} in a fixed number of reads.
+
+        Read as the reader first. A payroll officer who may open this run
+        already sees these names on its payslip list; where the employee
+        record itself is closed to them, the name, job title and team are read
+        past that — nothing else about the person is.
+        """
+        if not employees:
+            return {}
+        try:
+            rows = self._screen_employee_rows(employees)
+        except AccessError:
+            rows = self._screen_employee_rows(employees.sudo())
+
+        def names(model, ids):
+            if not ids or model not in self.env:
+                return {}
+            return {r['id']: r['name'] for r in self.env[model].sudo()
+                    .browse(list(ids)).read(['name'], load=None)}
+        dept_name = names('hr.department',
+                          {r['department_id'] for r in rows if r.get('department_id')})
+        job_name = names('hr.job', {r['job_id'] for r in rows
+                                    if r.get('job_id') and not r.get('job_title')})
+        out = {}
+        for r in rows:
+            out[r['id']] = {
+                'name': r.get('name') or '',
+                'job': r.get('job_title') or job_name.get(r.get('job_id')) or '',
+                'team': dept_name.get(r.get('department_id')) or ''}
+        return out
+
+    @api.model
+    def _screen_employee_rows(self, employees):
+        """[{'id','name','job_title','job_id','department_id'}], ids only.
+
+        Job and team live on the employee's current VERSION on this build
+        (`hr.employee.department_id` is a related field — raw SQL on it
+        fails, and reading it through the employee computes the version for
+        every person). So the stored `current_version_id` is read, then the
+        versions themselves — the same values the employee's related fields
+        show. `load=None` keeps every many2one a bare id: the display names a
+        classic read adds cost ~250 ms on a 520-person run and the job and
+        team names are read once each instead.
+        """
+        Emp = employees.env['hr.employee']
+        Version = employees.env.get('hr.version')
+        if Version is None or 'current_version_id' not in Emp._fields:
+            wanted = [f for f in ('name', 'job_title', 'job_id', 'department_id')
+                      if f in Emp._fields]
+            return employees.read(wanted, load=None)
+        rows = employees.read(['name', 'current_version_id'], load=None)
+        version_ids = [r['current_version_id'] for r in rows
+                       if r.get('current_version_id')]
+        wanted = [f for f in ('job_title', 'job_id', 'department_id')
+                  if f in Version._fields]
+        versions = {v['id']: v for v in
+                    Version.browse(version_ids).read(wanted, load=None)}
+        for r in rows:
+            version = versions.get(r.get('current_version_id')) or {}
+            for f in wanted:
+                r[f] = version.get(f) or False
+        return rows
+
+    @api.model
+    def _screen_flag(self, fact, state, eid, net_of, prev, prev_net_of,
+                     prev_month):
+        """One person's status chip. First match wins: cancelled · no data ·
+        not calculated · new · take-home moved ≥ 10% · fine."""
+        _ = self.env._
+        if fact.get('state') == 'cancel':
+            return {'kind': 'muted', 'text': _("Cancelled")}
+        if fact.get('unsourced'):
+            return {'kind': 'rose', 'text': _("No data this period")}
+        if not fact.get('lines'):
+            return {'kind': 'rose', 'text': _("Not calculated yet")}
+        if prev and eid:
+            if eid not in prev_net_of:
+                return {'kind': 'p', 'text': _("New since %s", prev_month)}
+            before = prev_net_of.get(eid) or 0.0
+            now = net_of.get(eid) or 0.0
+            if before and abs(now - before) >= abs(before) * SCREEN_CHANGE_SHARE:
+                pct = (now - before) / abs(before) * 100.0
+                pct_text = '%d' % round(abs(pct))
+                return {'kind': 'p',
+                        'text': (_("+%(pct)s%% vs %(month)s", pct=pct_text,
+                                   month=prev_month) if pct > 0
+                                 else _("−%(pct)s%% vs %(month)s",
+                                        pct=pct_text, month=prev_month))}
+        if state == 'done':
+            return {'kind': 'ok', 'text': _("Approved")}
+        return {'kind': 'ok', 'text': _("Calculated")}
+
+    # --------------------------------------------------------- run screen: route
+    @api.model
+    def _screen_route(self, run, card, state, live_count, groups=None):
+        """Who signs it off. A draft is PREVIEWED (exactly what Submit would
+        resolve, minus the writes); a run already sent shows its live seats."""
+        _ = self.env._
+        out = {'mode': 'none', 'seats': [], 'note': '', 'error': None,
+               'fast': False, 'prepared_by': None}
+        preparer = run.pb_prepared_uid or run.create_uid
+        if preparer:
+            out['prepared_by'] = {'name': preparer.name or '',
+                                  'initials': self._initials(preparer.name),
+                                  'me': preparer.id == self.env.uid}
+        approval = card.get('approval') or {}
+
+        if state != 'draft':
+            steps = approval.get('steps') or []
+            if steps:
+                out['mode'] = 'live'
+                for index, st in enumerate(steps, start=1):
+                    if st['status'] == 'done':
+                        names, status = st['decided_by'], 'done'
+                        when = (_("Signed off %s", st['decided_on'])
+                                if st['decided_on'] else _("Signed off"))
+                    elif st['status'] in ('active', 'blocked'):
+                        names, status, when = st['with'], 'now', _("Has it now")
+                    else:
+                        names, status = st['with'], 'later'
+                        when = _("Step %s", index)
+                    name = ', '.join(names) or _("Nobody yet")
+                    out['seats'].append({
+                        'name': name, 'initials': self._initials(names[0])
+                        if names else '', 'title': st['title'] or '',
+                        'status': status, 'when': when, 'issue': ''})
+            if approval.get('blocked'):
+                out['error'] = approval['blocked']
+            if state == 'approval_pending':
+                now = [s for s in out['seats'] if s['status'] == 'now']
+                out['note'] = (_("It is with %(who)s now, for “%(step)s”.",
+                                 who=now[0]['name'], step=now[0]['title'])
+                               if now else _("Waiting for the sign-off."))
+            elif state == 'done':
+                out['note'] = (_("Approved on %s.", approval['closed_on'])
+                               if approval.get('closed_on')
+                               else _("Approved."))
+                if not steps:
+                    out['note'] = _("Nobody needed to sign it off. That is "
+                                    "recorded.")
+            else:
+                out['note'] = _("This pay run was rejected, so nobody signs "
+                                "it off.")
+            return out
+
+        if not live_count:
+            out['note'] = _("Who signs it off is worked out from the payslips, "
+                            "once they are made.")
+            return out
+        out['mode'] = 'preview'
+        preview = self._safe(lambda: self._screen_route_preview(run, groups),
+                             default=None)
+        if preview is None:
+            out['error'] = _("Who signs this run off could not be worked out "
+                             "just now. Reload the run to try again.")
+            return out
+        if preview['error']:
+            out['error'] = preview['error']
+            return out
+        index = 0
+        for step in preview['steps']:
+            if step.get('kind') == 'notify' or not step.get('included', True):
+                continue
+            if step.get('kind') == 'fast':
+                out['fast'] = True
+                continue
+            index += 1
+            names = [p['name'] for p in step.get('people') or [] if p.get('name')]
+            issue = step.get('issue') or {}
+            out['seats'].append({
+                'name': ', '.join(names) or _("Nobody yet"),
+                'initials': self._initials(names[0]) if names else '',
+                'title': step.get('title') or '',
+                'status': 'later', 'when': _("Step %s", index),
+                'issue': issue.get('msg') or ''})
+            if issue.get('level') == 'block' and not out['error']:
+                out['error'] = issue.get('msg') or ''
+        names = [s['name'] for s in out['seats']]
+        if out['fast'] and not names:
+            first = _("Nobody checks this pay run before it is approved: it "
+                      "is approved the moment it is sent, and that is "
+                      "recorded.")
+        elif not names:
+            first = _("No step of the route applies to this run, so it would "
+                      "be approved the moment it is sent.")
+        elif len(names) == 1:
+            first = _("When you send it, it goes to %s.", names[0])
+        elif len(names) == 2:
+            first = _("When you send it, it goes to %(first)s first, then to "
+                      "%(second)s.", first=names[0], second=names[1])
+        else:
+            first = _("When you send it, it goes to %(n)s people in turn: "
+                      "%(names)s.", n=len(names), names=', '.join(names))
+        scope = preview.get('scope') or ''
+        out['note'] = (_("%(first)s This route is set for %(scope)s.",
+                         first=first, scope=scope) if scope else first)
+        return out
+
+    @api.model
+    def _screen_route_preview(self, run, groups=None):
+        """What `biz.approval.engine.submit` would resolve for this draft,
+        minus every write (engine.py `submit`, `preview`). The engine's
+        preview asks for approval set-up rights, so it runs as superuser —
+        AFTER `get_run_screen` has checked the reader may read the run.
+
+        `groups` is the run's `_pb_review_groups()`, already read by the
+        caller. Exactly one group on a draft with payslips is everything
+        `_approval_validate` checks, so it is only asked — for its exact
+        words — when that is not the case."""
+        if groups is None or len(groups) != 1:
+            try:
+                run._approval_validate()
+            except UserError as e:
+                return {'error': e.args[0] if e.args else '', 'steps': [],
+                        'scope': ''}
+        ctx = run._approval_context()
+        process = run._approval_process()
+        company = self.env['res.company'].browse(int(ctx['company_id']))
+        engine = self.env['biz.approval.engine'].sudo()
+        _binding, version, _trace, error = engine._resolve_binding(
+            company, process, ctx.get('scope_keys'), ctx.get('kind_key'))
+        if error:
+            return {'error': error.get('message') or '', 'steps': [],
+                    'scope': ctx.get('scope_label') or ''}
+        result = engine.preview(version, ctx)
+        return {'error': None, 'steps': result.get('steps') or [],
+                'scope': ctx.get('scope_label') or ''}
+
+    # -------------------------------------------------------- run screen: checks
+    @api.model
+    def _screen_checks(self, run, card, state, live_count, uncalculated,
+                       facts, route, may_write):
+        """The verdict and the mock-up's four rows, in order: this period's
+        data · the figures add up · calculated · who signs it off. The rose
+        rows reuse the board's own words (`_run_checks`)."""
+        _ = self.env._
+        if state == 'cancel' and not live_count:
+            return {'verdict': 'bad', 'title': _("This pay run was rejected"),
+                    'sub': card.get('reject_note') or '', 'items': []}
+        if not live_count:
+            return {'verdict': 'wait', 'title': _("Nothing to check yet"),
+                    'sub': _("Make the payslips first. The checks run as soon "
+                             "as they exist."),
+                    'items': []}
+        items = []
+        unsourced = card.get('unsourced') or 0
+        if unsourced:
+            items.append({
+                'key': 'data', 'ok': False,
+                'title': (_("1 payslip has no source data") if unsourced == 1
+                          else _("%s payslips have no source data", unsourced)),
+                'detail': _("Their figures are scheme defaults, not real pay."),
+                'door': {'kind': 'flagged',
+                         'label': (_("Show the person") if unsourced == 1
+                                   else _("Show the %s people", unsourced))}})
+        else:
+            items.append({
+                'key': 'data', 'ok': True,
+                'title': _("Every payslip has this period's data"),
+                'detail': _("No payslip was calculated from scheme defaults "
+                            "alone."),
+                'door': None})
+
+        if card.get('balance_ok') is False:
+            gap = self._money_words(card.get('balance_gap'),
+                                    run.pb_currency_id.symbol
+                                    or card.get('currency'))
+            atlas = self._screen_atlas_ok()
+            items.append({
+                'key': 'balance', 'ok': False,
+                'title': _("Figures do not add up (gap %s)", gap),
+                'detail': _("%s is unaccounted for between gross, deductions "
+                            "and net.", gap),
+                'door': ({'kind': 'atlas',
+                          'label': _("Where the numbers come from")}
+                         if atlas else None)})
+        else:
+            items.append({
+                'key': 'balance', 'ok': True,
+                'title': _("The figures add up"),
+                'detail': _("Gross pay less deductions equals take-home."),
+                'door': None})
+
+        if uncalculated:
+            items.append({
+                'key': 'calculated', 'ok': False,
+                'title': (_("1 payslip is not calculated yet") if uncalculated == 1
+                          else _("%s payslips are not calculated yet",
+                                 uncalculated)),
+                'detail': (_("Recalculate everyone to work them out.")
+                           if state == 'draft' and may_write
+                           else _("They have no pay lines yet.")),
+                'door': {'kind': 'flagged',
+                         'label': (_("Show the person") if uncalculated == 1
+                                   else _("Show the %s people", uncalculated))}})
+        else:
+            stamps = [f['calculated_at'] for f in facts.values()
+                      if f.get('calculated_at')]
+            when = self._safe(lambda: format_datetime(
+                self.env, max(stamps), dt_format='d MMM y, HH:mm'),
+                default='') if stamps else ''
+            items.append({
+                'key': 'calculated', 'ok': True,
+                'title': (_("The payslip is calculated") if live_count == 1
+                          else _("All %s payslips are calculated", live_count)),
+                'detail': _("Last calculated on %s.", when) if when else '',
+                'door': None})
+
+        if route.get('error'):
+            setup = self._screen_setup_door()
+            items.append({
+                'key': 'route', 'ok': False,
+                'title': _("Who signs it off is not settled"),
+                'detail': route['error'],
+                'door': ({'kind': 'approvals_setup',
+                          'label': _("Set who signs it off")}
+                         if setup else None)})
+        else:
+            titles = [s['title'] for s in route.get('seats') or [] if s['title']]
+            title = _("Approval route is set")
+            if route.get('fast') and not titles:
+                title = _("No sign-off is needed")
+                detail = _("Nobody needs to sign it off: it is approved the "
+                           "moment it is sent, and that is recorded.")
+            elif not titles and route.get('mode') != 'preview':
+                title = _("No sign-off was needed")
+                detail = _("Nobody needed to sign it off.")
+            elif not titles:
+                title = _("No sign-off is needed")
+                detail = _("No step of the route applies to this run.")
+            elif len(titles) == 1:
+                detail = _("1 sign-off: %s.", titles[0])
+            else:
+                detail = _("%(n)s sign-offs: %(steps)s.", n=len(titles),
+                           steps=' → '.join(titles))
+            items.append({'key': 'route', 'ok': True, 'title': title,
+                          'detail': detail, 'door': None})
+
+        bad = sum(1 for item in items if not item['ok'])
+        if state == 'cancel':
+            return {'verdict': 'bad', 'title': _("This pay run was rejected"),
+                    'sub': card.get('reject_note') or '', 'items': items}
+        if state == 'done':
+            return {'verdict': 'done', 'title': _("Checked and approved"),
+                    'sub': _("The figures are locked."), 'items': items}
+        if state == 'approval_pending':
+            changed = self._safe(
+                lambda: bool(run.pb_source_revision)
+                and run._pb_source_revision() != run.pb_source_revision,
+                default=None)
+            if changed:
+                sub = _("The figures have changed since it was sent, so it "
+                        "cannot be approved as it is.")
+            elif changed is None:
+                sub = _("Waiting for the sign-off.")
+            else:
+                sub = _("Nothing has changed since it was sent.")
+            return {'verdict': 'wait', 'title': _("Checked and sent in"),
+                    'sub': sub, 'items': items}
+        if bad:
+            return {
+                'verdict': 'bad',
+                'title': (_("1 thing to fix before sending") if bad == 1
+                          else _("%s things to fix before sending", bad)),
+                'sub': (_("It cannot be sent until who signs it off is "
+                          "settled.") if route.get('error')
+                        else _("You can still send it. The approver will see "
+                               "these too.")),
+                'items': items}
+        return {'verdict': 'ok', 'title': _("Everything checks out"),
+                'sub': (_("Fix what was sent back, then send it again.")
+                        if run.pb_return_note
+                        else _("Ready to send for approval.")),
+                'items': items}
+
+    @api.model
+    def _screen_atlas_ok(self):
+        """May this reader open Where the numbers come from?"""
+        if not callable(getattr(self.env['hr.payslip.run'],
+                                'action_open_source_atlas', None)):
+            return False
+        Atlas = self.env.get('pb.source.atlas')
+        if Atlas is None:
+            return False
+        return bool(self._safe(lambda: Atlas._atlas_gate(), default=False))
+
+    @api.model
+    def _screen_setup_door(self):
+        """May this reader open the approval set-up (the Matrix)?"""
+        if not self.env.ref(_MATRIX_ACTION, raise_if_not_found=False):
+            return False
+        return bool(self._safe(
+            lambda: self.env['biz.approval.engine']._require_config() or True,
+            default=False))
+
+    # ------------------------------------------------- run screen: journey, next
+    @api.model
+    def _screen_journey(self, run, card, state, live_count, bad, n_checks,
+                        sent_back):
+        """Prepare · Check · Approve · Pay · Send payslips — the mock-up's
+        `journey()`, from the run's real state."""
+        _ = self.env._
+
+        def step(key, st, label, sub):
+            return {'key': key, 'state': st, 'label': label, 'sub': sub}
+        labels = {'prepare': _("Prepare"), 'check': _("Check"),
+                  'approve': _("Approve"), 'pay': _("Pay"),
+                  'deliver': _("Send payslips")}
+        if not live_count and state in ('draft', 'approval_pending'):
+            return [step('prepare', 'now', labels['prepare'], _("No payslips yet")),
+                    step('check', 'later', labels['check'], _("Waits for payslips")),
+                    step('approve', 'later', labels['approve'], '—'),
+                    step('pay', 'later', labels['pay'], '—'),
+                    step('deliver', 'later', labels['deliver'], '—')]
+        if state == 'cancel':
+            made = _("Payslips cancelled")
+        else:
+            made = (_("1 payslip made") if live_count == 1
+                    else _("%s payslips made", live_count))
+        prepare = step('prepare', 'done', labels['prepare'], made)
+        all_pass = _("All %s checks pass", n_checks)
+        approval = card.get('approval') or {}
+        if state == 'draft':
+            if bad:
+                check = step('check', 'warn', labels['check'],
+                             _("1 thing to fix") if bad == 1
+                             else _("%s things to fix", bad))
+            elif sent_back:
+                check = step('check', 'warn', labels['check'],
+                             _("Sent back — fix and send again"))
+            else:
+                check = step('check', 'done', labels['check'], all_pass)
+            return [prepare, check,
+                    step('approve', 'later' if (bad or sent_back) else 'now',
+                         labels['approve'], _("Not sent yet")),
+                    step('pay', 'later', labels['pay'], _("After approval")),
+                    step('deliver', 'later', labels['deliver'],
+                         _("After payment"))]
+        if state == 'approval_pending':
+            if approval.get('blocked'):
+                approve = step('approve', 'warn', labels['approve'],
+                               _("Stuck: %s", approval['blocked']))
+            elif approval.get('with'):
+                approve = step('approve', 'now', labels['approve'],
+                               _("With %(who)s · step %(i)s of %(n)s",
+                                 who=approval['with'],
+                                 i=approval.get('step_index') or 1,
+                                 n=approval.get('step_total') or 1))
+            else:
+                approve = step('approve', 'now', labels['approve'],
+                               _("Waiting for the sign-off"))
+            return [prepare,
+                    step('check', 'done', labels['check'], _("Checked and sent in")),
+                    approve,
+                    step('pay', 'later', labels['pay'], _("After approval")),
+                    step('deliver', 'later', labels['deliver'],
+                         _("After payment"))]
+        if state == 'done':
+            delivery = card.get('delivery') or {}
+            closed = approval.get('closed_on')
+            approve = step('approve', 'done', labels['approve'],
+                           _("Approved %s", closed) if closed else _("Approved"))
+            if delivery.get('paid'):
+                pay = step('pay', 'done', labels['pay'],
+                           _("Paid %s", delivery['paid_on'])
+                           if delivery.get('paid_on') else _("Paid"))
+            elif delivery.get('bank_file'):
+                pay = step('pay', 'now', labels['pay'],
+                           _("Bank file made, not paid yet"))
+            else:
+                pay = step('pay', 'now', labels['pay'],
+                           _("Bank file not made yet"))
+            if delivery.get('delivered'):
+                deliver = step('deliver', 'done', labels['deliver'],
+                               _("Sent to %s people",
+                                 delivery.get('slips_sent') or 0))
+            elif delivery.get('paid'):
+                deliver = step('deliver', 'now', labels['deliver'],
+                               _("Not sent yet"))
+            else:
+                deliver = step('deliver', 'later', labels['deliver'],
+                               _("After payment"))
+            return [prepare,
+                    step('check', 'done', labels['check'], all_pass),
+                    approve, pay, deliver]
+        # rejected
+        return [prepare,
+                step('check', 'done', labels['check'], _("Checked")),
+                step('approve', 'warn', labels['approve'], _("Rejected")),
+                step('pay', 'later', labels['pay'], _("Will not be paid")),
+                step('deliver', 'later', labels['deliver'],
+                     _("Will not be sent"))]
+
+    @api.model
+    def _screen_primary(self, run, card, state, live_count, bad, sent_back,
+                        may_write, route):
+        """The ONE next step. Agrees with the board's `next_action` for the
+        same run, plus the two cases the board does not need: no payslips
+        (make them) and approved but not yet paid and delivered."""
+        _ = self.env._
+        none = {'kind': 'none', 'label': '', 'method': None, 'action': None,
+                'context': None, 'warn': 0, 'confirm': None}
+        if state == 'draft' and not live_count:
+            if may_write and self.env.ref(_MAKE_ACTION,
+                                          raise_if_not_found=False):
+                return dict(none, kind='make', label=_("Make payslips"),
+                            action=_MAKE_ACTION,
+                            context={'active_model': 'hr.payslip.run',
+                                     'active_id': run.id,
+                                     'active_ids': [run.id]})
+            return none
+        if state == 'draft':
+            if card.get('next_action') != 'submit' or not card.get('can_act'):
+                return none
+            label = _("Send again") if sent_back else _("Send for approval")
+            names = [s['name'] for s in route.get('seats') or []]
+            if bad:
+                confirm = {
+                    'title': (_("Send it with 1 problem?") if bad == 1
+                              else _("Send it with %s problems?", bad)),
+                    'body': (_("The checks found things to fix, and %s will see "
+                               "them too. Most people fix them first.",
+                               names[0]) if names
+                             else _("The checks found things to fix, and the "
+                                    "approver will see them too. Most people "
+                                    "fix them first.")),
+                    'ok': _("Send anyway"), 'cancel': _("Fix first"),
+                    'danger': True}
+            else:
+                keep = _("You can still see it, but not change it, while it is "
+                         "being approved.")
+                if len(names) == 1:
+                    where = _("It goes to %s.", names[0])
+                elif len(names) == 2:
+                    where = _("It goes to %(first)s first, then to %(second)s.",
+                              first=names[0], second=names[1])
+                elif names:
+                    where = _("It goes to %(n)s people in turn, starting with "
+                              "%(first)s.", n=len(names), first=names[0])
+                elif route.get('fast'):
+                    where = _("Nobody needs to sign it off, so it is approved "
+                              "the moment it is sent.")
+                else:
+                    where = ''
+                confirm = {'title': _("Send for approval?"),
+                           'body': ('%s %s' % (where, keep)).strip(),
+                           'ok': label, 'cancel': _("Not yet"),
+                           'danger': False}
+            return dict(none, kind='resubmit' if sent_back else 'submit',
+                        label=label, method='action_approval_submit',
+                        warn=bad, confirm=confirm)
+        inbox = _INBOX_ACTION if self.env.ref(
+            _INBOX_ACTION, raise_if_not_found=False) else None
+        if state == 'approval_pending':
+            if card.get('next_action') == 'decide' and card.get('can_act'):
+                return dict(none, kind='decide', label=_("Open the approval"),
+                            action=inbox)
+            return dict(none, kind='approvals', label=_("Open in Approvals"),
+                        action=inbox)
+        if state == 'done':
+            delivery = card.get('delivery') or {}
+            if not (delivery.get('paid') and delivery.get('delivered')) \
+                    and callable(getattr(self.env['hr.payslip.run'],
+                                         'action_pb_pay_deliver', None)):
+                return dict(none, kind='paydeliver', label=_("Pay & deliver"),
+                            method='action_pb_pay_deliver')
+        return none
+
+    @api.model
+    def _screen_delivery_steps(self, run, card, state, live_count, net, money):
+        """Approved → bank file → paid → payslips sent → journals, each with
+        its state; `now` is the first one not done on an approved run."""
+        _ = self.env._
+        d = card.get('delivery') or {}
+        approval = card.get('approval') or {}
+        done = state == 'done'
+        last = (approval.get('steps') or [{}])[-1] if approval.get('steps') else {}
+        who = ', '.join(last.get('decided_by') or [])
+        closed = approval.get('closed_on') or ''
+        if closed and who:
+            approved_sub = _("On %(when)s, by %(who)s", when=closed, who=who)
+        elif closed:
+            approved_sub = _("On %s", closed)
+        else:
+            approved_sub = ''
+        people = card.get('employees') or 0
+        rows = [
+            ('approved', done, _("Approved"), approved_sub),
+            ('bank_file', bool(d.get('bank_file')), _("Make the bank file"),
+             _("Made") if d.get('bank_file')
+             else (_("1 transfer · %s", money(net, True)) if people == 1
+                   else _("%(n)s transfers · %(net)s", n=people,
+                          net=money(net, True)))),
+            ('paid', bool(d.get('paid')), _("Mark as paid"),
+             _("Paid on %s", d['paid_on']) if d.get('paid') and d.get('paid_on')
+             else _("After the bank confirms")),
+            ('sent', bool(d.get('delivered')), _("Send payslips"),
+             _("Sent to %s people", d.get('slips_sent') or 0)
+             if d.get('delivered')
+             else (_("1 person by email") if people == 1
+                   else _("%s people by email", people))),
+            ('journals', bool(d.get('journals')), _("Post to the books"),
+             _("Posted on %s", d['journals_on'])
+             if d.get('journals') and d.get('journals_on')
+             else _("The salary journal")),
+        ]
+        steps, now_given = [], False
+        for key, is_done, label, sub in rows:
+            if done and is_done:
+                st = 'done'
+            elif done and not now_given:
+                st, now_given = 'now', True
+            else:
+                st = 'later'
+            steps.append({'key': key, 'state': st, 'label': label, 'sub': sub})
+        return {'steps': steps,
+                'left': sum(1 for s in steps if s['state'] != 'done')}
+
+    @api.model
+    def _screen_actions(self, run, card, state, may_write, live_count,
+                        calculated_count, prev_month, split_ok):
+        """Downloads and More: only what applies to this state and what this
+        reader may do; a method another module adds is offered only where
+        that module is installed."""
+        _ = self.env._
+        Run = self.env['hr.payslip.run']
+
+        def has(method):
+            return callable(getattr(Run, method, None))
+
+        def item(key, label, hint, method=None, action=None, danger=False,
+                 confirm=None):
+            return {'key': key, 'label': label, 'hint': hint, 'method': method,
+                    'action': action, 'danger': danger, 'confirm': confirm}
+
+        def ask(title, body, ok, cancel, danger=False):
+            return {'title': title, 'body': body, 'ok': ok, 'cancel': cancel,
+                    'danger': danger}
+
+        downloads, more = [], []
+        open_run = state != 'cancel'
+        if live_count and open_run:
+            if has('action_download_payslip_xlsx'):
+                downloads.append(item(
+                    'xlsx', _("Excel workbook"),
+                    _("Every payslip, one row per person"),
+                    method='action_download_payslip_xlsx'))
+            if has('action_open_payroll_report'):
+                downloads.append(item(
+                    'report', _("Payroll report"),
+                    _("Totals by team and pay item"),
+                    method='action_open_payroll_report'))
+        if calculated_count and open_run and has('action_pb_print_payslips'):
+            downloads.append(item(
+                'pdf', _("Payslips as PDF"),
+                _("The approved payslips") if state == 'done'
+                else _("For checking before approval"),
+                method='action_pb_print_payslips'))
+
+        if live_count and self._screen_atlas_ok():
+            more.append(item(
+                'atlas', _("Where the numbers come from"),
+                _("Trace any figure back to its file or record"),
+                method='action_open_source_atlas'))
+        if live_count and has('action_input_changes'):
+            more.append(item(
+                'changes',
+                _("What changed since %s", prev_month) if prev_month
+                else _("What changed"),
+                _("Pay data that is new or different this time"),
+                method='action_input_changes'))
+        if state == 'draft' and may_write and live_count:
+            if has('action_recompute_formula_lines_batch'):
+                more.append(item(
+                    'recalc', _("Recalculate everyone"),
+                    _("After you fix a pay item or the pay data"),
+                    method='action_recompute_formula_lines_batch'))
+            if split_ok:
+                more.append(item(
+                    'split', _("Split into review groups"),
+                    _("One run per scheme and part of the business"),
+                    method='action_split_review_groups',
+                    confirm=ask(
+                        _("Split into review groups?"),
+                        _("Makes one pay run per pay scheme and part of the "
+                          "business, and moves each payslip into the right "
+                          "one. This run is removed once it is empty."),
+                        _("Split it"), _("Not now"))))
+            more.append(item(
+                'cleardraft', _("Delete draft payslips"),
+                _("Keeps the run, so you can make them again"),
+                method='action_pb_delete_draft_payslips', danger=True,
+                confirm=ask(
+                    _("Delete the draft payslip?") if live_count == 1
+                    else _("Delete all %s draft payslips?", live_count),
+                    _("The run stays, so you can make them again. Nothing "
+                      "approved is touched."),
+                    _("Delete payslips"), _("Keep them"), danger=True)))
+        if state in ('draft', 'approval_pending') and card.get('can_reject'):
+            more.append(item(
+                'reject', _("Reject this run"),
+                _("Asks why first. A rejected run cannot come back."),
+                method='action_pb_ask_reject', danger=True,
+                confirm=ask(
+                    _("Reject this run?"),
+                    _("You will be asked why. A rejected run cannot be sent "
+                      "again; you would start a new one."),
+                    _("Reject"), _("Keep it"), danger=True)))
+        if state == 'done' and may_write:
+            delivery = card.get('delivery') or {}
+            if not (delivery.get('paid') or delivery.get('bank_file')
+                    or delivery.get('delivered')):
+                more.append(item(
+                    'redraft', _("Set back to draft"),
+                    _("Only before anyone is paid"),
+                    method='draft_payslip_run', danger=True,
+                    confirm=ask(
+                        _("Set this run back to draft?"),
+                        _("Its payslips can be changed again, and it must be "
+                          "approved again before anyone is paid."),
+                        _("Set back to draft"), _("Keep it approved"),
+                        danger=True)))
+            if has('action_send_email_all') and live_count:
+                more.append(item(
+                    'email', _("Email payslips"),
+                    _("Each person gets their own payslip"),
+                    method='action_send_email_all',
+                    confirm=ask(
+                        _("Email every payslip?"),
+                        _("1 person gets their payslip by email.")
+                        if live_count == 1
+                        else _("Each of the %s people gets their own payslip "
+                               "by email.", live_count),
+                        _("Send them"), _("Not now"))))
+        return {'downloads': downloads, 'more': more}
 
     # ---------------- helpers ----------------
     @api.model

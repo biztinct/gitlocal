@@ -269,9 +269,11 @@ msgid "Journals"
 msgstr "Bút toán"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_payruns.view_pb_payrun_reject_form
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Keep it"
 msgstr "Giữ lại"
 
@@ -478,10 +480,12 @@ msgid "Period"
 msgstr "Kỳ lương"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 #: model_terms:ir.ui.view,arch_db:pb_payruns.view_hr_payslip_run_kanban_pb
 #: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Reject"
 msgstr "Từ chối"
 
@@ -784,9 +788,11 @@ msgid "Pay run sent in for approval."
 msgstr "Kỳ lương đã được gửi đi phê duyệt."
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Open the approval"
 msgstr "Mở phê duyệt"
 
@@ -1766,8 +1772,10 @@ msgid "Paid %(date)s · %(n)s payslips sent"
 msgstr "Đã chi trả %(date)s · đã gửi %(n)s phiếu lương"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Paid %s"
 msgstr "Đã chi trả %s"
 
@@ -2129,8 +2137,10 @@ msgid "Net pay this month"
 msgstr "Thực nhận tháng này"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Not now"
 msgstr "Để sau"
 
@@ -2153,8 +2163,10 @@ msgid "Open the full run"
 msgstr "Mở đợt lương đầy đủ"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Payroll report"
 msgstr "Báo cáo lương"
 
@@ -2165,8 +2177,10 @@ msgid "People"
 msgstr "Nhân sự"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Reject this run"
 msgstr "Từ chối đợt này"
 
@@ -2369,8 +2383,10 @@ msgid "Advice only: the run can still be sent in. Closing the week locks the att
 msgstr "Chỉ là lời khuyên: đợt lương vẫn có thể được gửi đi. Khóa tuần sẽ khóa dữ liệu chấm công phía sau các phiếu lương này."
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Paid on %s"
 msgstr "Đã trả lương ngày %s"
 
@@ -2761,3 +2777,1161 @@ msgstr "trên"
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "pay runs"
 msgstr "đợt lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No payslips yet, so there is no money on this run."
+msgstr "Chưa có phiếu lương nên đợt lương này chưa có số tiền nào."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "This pay run no longer exists. Go back to Pay runs and open it from there."
+msgstr "Đợt lương này không còn tồn tại. Hãy quay lại Đợt lương và mở lại từ đó."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "This is the first run on this scheme, so there is nothing to compare with yet."
+msgstr "Đây là đợt lương đầu tiên của gói lương này nên chưa có gì để so sánh."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 person takes home %(net)s. With the company's own contributions, this run costs %(total)s in all."
+msgstr "1 người nhận về %(net)s. Tính cả phần công ty đóng, đợt lương này tốn tổng cộng %(total)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(n)s people take home %(net)s. With the company's own contributions, this run costs %(total)s in all."
+msgstr "%(n)s người nhận về %(net)s. Tính cả phần công ty đóng, đợt lương này tốn tổng cộng %(total)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 person takes home %(net)s, out of %(gross)s gross pay."
+msgstr "1 người nhận về %(net)s trên tổng thu nhập %(gross)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(n)s people take home %(net)s, out of %(gross)s gross pay."
+msgstr "%(n)s người nhận về %(net)s trên tổng thu nhập %(gross)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(amount)s billion"
+msgstr "%(amount)s tỷ"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(amount)s million"
+msgstr "%(amount)s triệu"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The name says %(named)s, but the dates are %(dates)s. Check the dates before sending it."
+msgstr "Tên ghi %(named)s nhưng ngày làm việc là %(dates)s. Hãy kiểm tra lại ngày trước khi gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The name says %(named)s, but the dates are %(dates)s."
+msgstr "Tên ghi %(named)s nhưng ngày làm việc là %(dates)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s paid no take-home, so there is no percentage to compare."
+msgstr "%s không có lương thực nhận nên không có tỷ lệ để so sánh."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 person was paid then."
+msgstr "Khi đó có 1 người được trả lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s people were paid then."
+msgstr "Khi đó có %s người được trả lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(pct)s%% more take-home than %(label)s."
+msgstr "Lương thực nhận nhiều hơn %(label)s %(pct)s%%."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(pct)s%% less take-home than %(label)s."
+msgstr "Lương thực nhận ít hơn %(label)s %(pct)s%%."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The same take-home as %s."
+msgstr "Lương thực nhận bằng %s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No team"
+msgstr "Chưa có nhóm"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Calculated"
+msgstr "Đã tính"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No data this period"
+msgstr "Không có dữ liệu kỳ này"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Not calculated yet"
+msgstr "Chưa tính"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "New since %s"
+msgstr "Mới từ %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "+%(pct)s%% vs %(month)s"
+msgstr "+%(pct)s%% so với %(month)s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "−%(pct)s%% vs %(month)s"
+msgstr "−%(pct)s%% so với %(month)s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Who signs it off is worked out from the payslips, once they are made."
+msgstr "Người ký duyệt được xác định từ các phiếu lương, sau khi phiếu được tạo."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Who signs this run off could not be worked out just now. Reload the run to try again."
+msgstr "Hiện chưa xác định được người ký duyệt đợt lương này. Hãy tải lại đợt lương để thử lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nobody checks this pay run before it is approved: it is approved the moment it is sent, and that is recorded."
+msgstr "Không ai kiểm tra đợt lương này trước khi duyệt: đợt lương được duyệt ngay khi gửi, và việc này được ghi lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(first)s This route is set for %(scope)s."
+msgstr "%(first)s Quy trình này được đặt cho %(scope)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No step of the route applies to this run, so it would be approved the moment it is sent."
+msgstr "Không bước nào của quy trình áp dụng cho đợt lương này, nên đợt lương sẽ được duyệt ngay khi gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "It is with %(who)s now, for “%(step)s”."
+msgstr "Hiện đang ở chỗ %(who)s, cho bước “%(step)s”."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Waiting for the sign-off."
+msgstr "Đang chờ ký duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "This pay run was rejected, so nobody signs it off."
+msgstr "Đợt lương này đã bị từ chối nên không ai cần ký duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Step %s"
+msgstr "Bước %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "When you send it, it goes to %s."
+msgstr "Khi bạn gửi, đợt lương sẽ đến %s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nobody yet"
+msgstr "Chưa có ai"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Approved on %s."
+msgstr "Đã duyệt ngày %s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Approved."
+msgstr "Đã duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nobody needed to sign it off. That is recorded."
+msgstr "Không ai cần ký duyệt. Việc này đã được ghi lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "When you send it, it goes to %(first)s first, then to %(second)s."
+msgstr "Khi bạn gửi, đợt lương sẽ đến %(first)s trước, rồi đến %(second)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "When you send it, it goes to %(n)s people in turn: %(names)s."
+msgstr "Khi bạn gửi, đợt lương sẽ lần lượt đến %(n)s người: %(names)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Signed off %s"
+msgstr "Đã ký duyệt %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Signed off"
+msgstr "Đã ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Has it now"
+msgstr "Đang xử lý"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Everything checks out"
+msgstr "Mọi thứ đều ổn"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nothing to check yet"
+msgstr "Chưa có gì để kiểm tra"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Make the payslips first. The checks run as soon as they exist."
+msgstr "Hãy tạo phiếu lương trước. Việc kiểm tra sẽ chạy ngay khi có phiếu."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nobody needs to sign it off: it is approved the moment it is sent, and that is recorded."
+msgstr "Không ai cần ký duyệt: đợt lương được duyệt ngay khi gửi, và việc này được ghi lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "This pay run was rejected"
+msgstr "Đợt lương này đã bị từ chối"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Checked and approved"
+msgstr "Đã kiểm tra và đã duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The figures are locked."
+msgstr "Các số liệu đã được khóa."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The figures have changed since it was sent, so it cannot be approved as it is."
+msgstr "Số liệu đã thay đổi kể từ khi gửi, nên không thể duyệt nguyên trạng."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Checked and sent in"
+msgstr "Đã kiểm tra và đã gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Fix what was sent back, then send it again."
+msgstr "Sửa phần bị trả lại, rồi gửi lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Ready to send for approval."
+msgstr "Sẵn sàng gửi phê duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Every payslip has this period's data"
+msgstr "Mọi phiếu lương đều có dữ liệu kỳ này"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No payslip was calculated from scheme defaults alone."
+msgstr "Không phiếu lương nào chỉ được tính từ giá trị mặc định của gói lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The figures add up"
+msgstr "Số liệu khớp"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Gross pay less deductions equals take-home."
+msgstr "Tổng thu nhập trừ khấu trừ bằng lương thực nhận."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Who signs it off is not settled"
+msgstr "Chưa xác định người ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Approval route is set"
+msgstr "Đã có quy trình phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nothing has changed since it was sent."
+msgstr "Không có gì thay đổi kể từ khi gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 thing to fix before sending"
+msgstr "1 việc cần sửa trước khi gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s things to fix before sending"
+msgstr "%s việc cần sửa trước khi gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "It cannot be sent until who signs it off is settled."
+msgstr "Chưa thể gửi cho đến khi xác định được người ký duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "You can still send it. The approver will see these too."
+msgstr "Bạn vẫn có thể gửi. Người phê duyệt cũng sẽ thấy các mục này."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 payslip is not calculated yet"
+msgstr "1 phiếu lương chưa được tính"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s payslips are not calculated yet"
+msgstr "%s phiếu lương chưa được tính"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Recalculate everyone to work them out."
+msgstr "Hãy tính lại cho mọi người để có số liệu."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "They have no pay lines yet."
+msgstr "Các phiếu này chưa có dòng lương nào."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The payslip is calculated"
+msgstr "Phiếu lương đã được tính"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "All %s payslips are calculated"
+msgstr "Cả %s phiếu lương đã được tính"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Last calculated on %s."
+msgstr "Tính lần cuối lúc %s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nobody needed to sign it off."
+msgstr "Không ai cần ký duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No step of the route applies to this run."
+msgstr "Không bước nào của quy trình áp dụng cho đợt lương này."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 sign-off: %s."
+msgstr "1 bước ký duyệt: %s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(n)s sign-offs: %(steps)s."
+msgstr "%(n)s bước ký duyệt: %(steps)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Show the person"
+msgstr "Xem người này"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Show the %s people"
+msgstr "Xem %s người"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Where the numbers come from"
+msgstr "Số liệu lấy từ đâu"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Set who signs it off"
+msgstr "Chọn người ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "All %s checks pass"
+msgstr "Đạt cả %s mục kiểm tra"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Prepare"
+msgstr "Chuẩn bị"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Check"
+msgstr "Kiểm tra"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Pay"
+msgstr "Chi trả"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send payslips"
+msgstr "Gửi phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 payslip made"
+msgstr "Đã tạo 1 phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s payslips made"
+msgstr "Đã tạo %s phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Checked"
+msgstr "Đã kiểm tra"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Will not be paid"
+msgstr "Sẽ không được chi trả"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Will not be sent"
+msgstr "Sẽ không được gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No payslips yet"
+msgstr "Chưa có phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Waits for payslips"
+msgstr "Chờ có phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "After approval"
+msgstr "Sau khi duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "After payment"
+msgstr "Sau khi chi trả"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Stuck: %s"
+msgstr "Bị kẹt: %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Approved %s"
+msgstr "Đã duyệt %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Sent to %s people"
+msgstr "Đã gửi cho %s người"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 thing to fix"
+msgstr "1 việc cần sửa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s things to fix"
+msgstr "%s việc cần sửa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Sent back — fix and send again"
+msgstr "Bị trả lại — sửa rồi gửi lại"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "With %(who)s · step %(i)s of %(n)s"
+msgstr "Đang ở chỗ %(who)s · bước %(i)s/%(n)s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Waiting for the sign-off"
+msgstr "Đang chờ ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Bank file made, not paid yet"
+msgstr "Đã tạo tệp ngân hàng, chưa chi trả"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Bank file not made yet"
+msgstr "Chưa tạo tệp ngân hàng"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send again"
+msgstr "Gửi lại"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send for approval"
+msgstr "Gửi phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "You can still see it, but not change it, while it is being approved."
+msgstr "Trong lúc chờ duyệt, bạn vẫn xem được nhưng không sửa được."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send anyway"
+msgstr "Vẫn gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Fix first"
+msgstr "Sửa trước"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "It goes to %s."
+msgstr "Đợt lương sẽ đến %s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send for approval?"
+msgstr "Gửi phê duyệt?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Not yet"
+msgstr "Chưa"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Open in Approvals"
+msgstr "Mở trong Phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Make payslips"
+msgstr "Tạo phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send it with 1 problem?"
+msgstr "Gửi khi còn 1 vấn đề?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send it with %s problems?"
+msgstr "Gửi khi còn %s vấn đề?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The checks found things to fix, and %s will see them too. Most people fix them first."
+msgstr "Việc kiểm tra phát hiện mục cần sửa, và %s cũng sẽ thấy. Đa số mọi người sửa trước rồi mới gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The checks found things to fix, and the approver will see them too. Most people fix them first."
+msgstr "Việc kiểm tra phát hiện mục cần sửa, và người phê duyệt cũng sẽ thấy. Đa số mọi người sửa trước rồi mới gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "It goes to %(first)s first, then to %(second)s."
+msgstr "Đợt lương sẽ đến %(first)s trước, rồi đến %(second)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Pay & deliver"
+msgstr "Chi trả & gửi phiếu"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "It goes to %(n)s people in turn, starting with %(first)s."
+msgstr "Đợt lương sẽ lần lượt đến %(n)s người, bắt đầu từ %(first)s."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Nobody needs to sign it off, so it is approved the moment it is sent."
+msgstr "Không ai cần ký duyệt, nên đợt lương được duyệt ngay khi gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "On %(when)s, by %(who)s"
+msgstr "Ngày %(when)s, bởi %(who)s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "On %s"
+msgstr "Ngày %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Make the bank file"
+msgstr "Tạo tệp ngân hàng"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Mark as paid"
+msgstr "Đánh dấu đã chi trả"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Post to the books"
+msgstr "Ghi sổ kế toán"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Made"
+msgstr "Đã tạo"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "After the bank confirms"
+msgstr "Sau khi ngân hàng xác nhận"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Posted on %s"
+msgstr "Đã ghi sổ ngày %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The salary journal"
+msgstr "Sổ nhật ký lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 transfer · %s"
+msgstr "1 lệnh chuyển · %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%(n)s transfers · %(net)s"
+msgstr "%(n)s lệnh chuyển · %(net)s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 person by email"
+msgstr "1 người qua email"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s people by email"
+msgstr "%s người qua email"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Payslips as PDF"
+msgstr "Phiếu lương dạng PDF"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Trace any figure back to its file or record"
+msgstr "Truy mọi số liệu về tệp hoặc hồ sơ gốc"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Pay data that is new or different this time"
+msgstr "Dữ liệu lương mới hoặc khác so với lần trước"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Delete draft payslips"
+msgstr "Xóa phiếu lương nháp"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Keeps the run, so you can make them again"
+msgstr "Giữ đợt lương để bạn tạo lại phiếu"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Asks why first. A rejected run cannot come back."
+msgstr "Sẽ hỏi lý do trước. Đợt lương đã từ chối không thể khôi phục."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Excel workbook"
+msgstr "Tệp Excel"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Every payslip, one row per person"
+msgstr "Mọi phiếu lương, mỗi người một dòng"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Totals by team and pay item"
+msgstr "Tổng theo nhóm và khoản lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The approved payslips"
+msgstr "Các phiếu lương đã duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "For checking before approval"
+msgstr "Để kiểm tra trước khi duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "What changed since %s"
+msgstr "Những gì thay đổi từ %s"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "What changed"
+msgstr "Những gì thay đổi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Recalculate everyone"
+msgstr "Tính lại cho mọi người"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "After you fix a pay item or the pay data"
+msgstr "Sau khi bạn sửa một khoản lương hoặc dữ liệu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "One run per scheme and part of the business"
+msgstr "Mỗi gói lương và bộ phận một đợt lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Set back to draft"
+msgstr "Đưa về nháp"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Only before anyone is paid"
+msgstr "Chỉ khi chưa chi trả cho ai"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Email payslips"
+msgstr "Gửi phiếu lương qua email"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Each person gets their own payslip"
+msgstr "Mỗi người nhận phiếu lương của mình"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "The run stays, so you can make them again. Nothing approved is touched."
+msgstr "Đợt lương vẫn được giữ để bạn tạo lại phiếu. Không đụng đến phiếu nào đã duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Delete payslips"
+msgstr "Xóa phiếu lương"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Keep them"
+msgstr "Giữ lại"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Reject this run?"
+msgstr "Từ chối đợt lương này?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "You will be asked why. A rejected run cannot be sent again; you would start a new one."
+msgstr "Bạn sẽ được hỏi lý do. Đợt lương đã từ chối không thể gửi lại; bạn sẽ phải tạo đợt mới."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Split into review groups?"
+msgstr "Tách thành các nhóm duyệt?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Makes one pay run per pay scheme and part of the business, and moves each payslip into the right one. This run is removed once it is empty."
+msgstr "Tạo một đợt lương cho mỗi gói lương và bộ phận, rồi chuyển từng phiếu lương vào đúng đợt. Đợt lương này sẽ bị xóa khi không còn phiếu nào."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Split it"
+msgstr "Tách"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Delete the draft payslip?"
+msgstr "Xóa phiếu lương nháp?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Delete all %s draft payslips?"
+msgstr "Xóa cả %s phiếu lương nháp?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Set this run back to draft?"
+msgstr "Đưa đợt lương này về nháp?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Its payslips can be changed again, and it must be approved again before anyone is paid."
+msgstr "Các phiếu lương có thể sửa lại, và đợt lương phải được duyệt lại trước khi chi trả cho bất kỳ ai."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Keep it approved"
+msgstr "Giữ trạng thái đã duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Email every payslip?"
+msgstr "Gửi email mọi phiếu lương?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Send them"
+msgstr "Gửi"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 person gets their payslip by email."
+msgstr "1 người sẽ nhận phiếu lương qua email."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Each of the %s people gets their own payslip by email."
+msgstr "Mỗi người trong %s người sẽ nhận phiếu lương của mình qua email."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "That is not something a selection of payslips can do."
+msgstr "Không thể làm việc này với các phiếu lương đã chọn."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Pick at least one payslip first."
+msgstr "Hãy chọn ít nhất một phiếu lương trước."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Some of the payslips you picked are not on this pay run, so nothing was done. Reload the run and pick again."
+msgstr "Một số phiếu lương bạn chọn không thuộc đợt lương này nên chưa có gì được thực hiện. Hãy tải lại đợt lương và chọn lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "This pay run is no longer a draft, so its payslips cannot be changed."
+msgstr "Đợt lương này không còn là bản nháp nên không thể thay đổi phiếu lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Recalculating is not available on this system."
+msgstr "Hệ thống này chưa hỗ trợ tính lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "None of the payslips you picked is calculated from a payroll scheme, so there is nothing to recalculate."
+msgstr "Không phiếu lương nào bạn chọn được tính từ gói lương, nên không có gì để tính lại."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Recalculated"
+msgstr "Đã tính lại"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "None of the payslips you picked has been calculated yet, so there is nothing to print."
+msgstr "Chưa phiếu lương nào bạn chọn được tính, nên không có gì để in."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "%(n)s of the payslips you picked are not drafts, so nothing was deleted."
+msgstr "%(n)s phiếu lương bạn chọn không phải bản nháp, nên không có gì bị xóa."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Draft payslips deleted"
+msgstr "Đã xóa phiếu lương nháp"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "1 payslip recalculated."
+msgstr "Đã tính lại 1 phiếu lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "%s payslips recalculated."
+msgstr "Đã tính lại %s phiếu lương."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "1 payslip deleted. The pay run is kept."
+msgstr "Đã xóa 1 phiếu lương. Đợt lương vẫn được giữ."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "%s payslips deleted. The pay run is kept."
+msgstr "Đã xóa %s phiếu lương. Đợt lương vẫn được giữ."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Payslips cancelled"
+msgstr "Phiếu lương đã bị hủy"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "This pay run was rejected, so nobody is paid from it."
+msgstr "Đợt lương này đã bị từ chối nên không ai được chi trả từ đợt này."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No sign-off is needed"
+msgstr "Không cần ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "No sign-off was needed"
+msgstr "Đã không cần ký duyệt"

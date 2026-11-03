@@ -32,3 +32,8 @@ from . import test_batch_print
 # line, the month's two dates from the Payroll calendar, the attendance-close
 # advice that never blocks.
 from . import test_readiness_p3b
+
+# PRS P1: the pay run screen's one payload — journey, next step, checks, who
+# signs it off, people, menus — and the per-payslip money the run's own
+# totals are now the sum of.
+from . import test_run_screen
