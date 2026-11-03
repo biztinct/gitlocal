@@ -1296,8 +1296,37 @@
                     <div class="ce-grid2">
                       <div class="ce-field"><label>Source field mapping</label>
                         <input class="ce-input" t-att-value="state.draft.data_source_field" placeholder="e.g. basic_salary" t-on-input="(ev) => this.setDraftField('data_source_field', ev)"/></div>
-                      <div class="ce-field"><label>Default value</label>
-                        <input class="ce-input" type="number" step="any" t-att-value="state.draft.default_value" t-on-change="(ev) => this.setDraftField('default_value', ev)"/></div>
+                      <!-- FILLIN P2 C3 — on a contract component this number is
+                           the answer every NEW contract starts with; with words
+                           it is picked as a word (the number is still stored). -->
+                      <div class="ce-field" data-coach="fs-usual-answer">
+                        <label t-if="state.draft.is_contract_component">Usual answer for a new contract</label>
+                        <label t-else="">Default value</label>
+                        <t t-if="state.draft.is_contract_component and usualControl === 'toggle'">
+                          <div class="ce-yn" role="group">
+                            <button t-foreach="usualOptions" t-as="o" t-key="o.value" type="button"
+                                    class="ce-yn-b" t-att-class="{ on: isUsual(o) }"
+                                    t-on-click="() => this.setUsual(o.value)" t-esc="o.label"/>
+                          </div>
+                        </t>
+                        <t t-elif="state.draft.is_contract_component and usualControl === 'select'">
+                          <select class="ce-input" t-on-change="(ev) => this.setUsual(ev.target.value)">
+                            <option t-if="!usualKnown" value="" selected="selected" t-esc="usualNumber"/>
+                            <t t-foreach="usualOptions" t-as="o" t-key="o.value">
+                              <option t-att-value="o.value" t-att-selected="isUsual(o)" t-esc="o.label"/>
+                            </t>
+                          </select>
+                        </t>
+                        <input t-else="" class="ce-input" type="number" step="any" t-att-value="state.draft.default_value" t-on-change="(ev) => this.setDraftField('default_value', ev)"/>
+                        <span t-if="state.draft.is_contract_component" class="ce-help">Every new contract for a person this scheme pays starts with this value. Leave 0 for none.</span>
+                      </div>
+                    </div>
+                    <div class="ce-field">
+                      <label>Words for each value</label>
+                      <input class="ce-input mono" t-att-value="state.draft.value_labels or ''" placeholder="0=No;1=Yes"
+                             t-on-input="(ev) => this.setValueLabels(ev.target.value)"/>
+                      <span t-if="state.labelsMsg" class="ce-help ce-help-warn" t-esc="state.labelsMsg"/>
+                      <span t-else="" class="ce-help">Optional. How each number reads on screens, e.g. 0=No;1=Yes. Pay data files and formulas keep using the numbers.</span>
                     </div>
                   </t>
 

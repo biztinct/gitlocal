@@ -567,7 +567,34 @@ class PbPayrunWizard(models.AbstractModel):
             'people': missed[:100],
             'split': [hosts[e] for e in extra],
             'split_count': len(extra),
+            # FILLIN P2 C2 — of the people covered, how many still hold an
+            # answer Payobook filled in that nobody has checked. Advice only.
+            'unchecked': self._fillin_unchecked(covered),
         }
+
+    @api.model
+    def _fillin_unchecked(self, employee_ids):
+        """How many of these people have a draft or running contract holding
+        an answer Payobook filled in by itself (FILLIN P1 marks) that nobody
+        has checked. 0 wherever the marks do not exist. A read."""
+        Line = self.env.get('hr.contract.advantage')
+        ids = [int(e) for e in (employee_ids or []) if e]
+        if not ids or Line is None or 'pb_fill' not in Line._fields:
+            return 0
+        try:
+            self.env.cr.execute("""
+                SELECT COUNT(DISTINCT c.employee_id)
+                  FROM hr_contract c
+                  JOIN hr_contract_advantage a ON a.contract_id = c.id
+                 WHERE c.employee_id IN %s
+                   AND c.state IN ('draft', 'open')
+                   AND a.pb_fill = 'auto' AND a.pb_checked_at IS NULL""",
+                                (tuple(ids),))
+            return int(self.env.cr.fetchone()[0] or 0)
+        except Exception:       # noqa: BLE001 — a hint never blocks a run
+            _logger.warning('FILLIN: could not count unchecked answers',
+                            exc_info=True)
+            return 0
 
     # ---------------- Step 1: defaults ----------------
     @api.model

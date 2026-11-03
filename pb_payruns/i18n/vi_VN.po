@@ -3935,3 +3935,27 @@ msgstr "Không cần ký duyệt"
 #: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "No sign-off was needed"
 msgstr "Đã không cần ký duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "1 person has answers Payobook filled in that nobody has checked yet."
+msgstr "1 người có câu trả lời do Payobook điền mà chưa ai kiểm tra."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "%s people have answers Payobook filled in that nobody has checked yet."
+msgstr "%s người có câu trả lời do Payobook điền mà chưa ai kiểm tra."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "BPJS and tax settings were filled in from the scheme's usual answers when their contracts were created. Check them once under Contracts › To check; the run can still go ahead."
+msgstr "Các thiết lập BPJS và thuế được điền theo câu trả lời thường dùng của chế độ lương khi tạo hợp đồng. Hãy kiểm tra một lần trong Hợp đồng › Cần kiểm tra; đợt lương vẫn có thể tiếp tục."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "HR team"
+msgstr "Nhóm nhân sự"

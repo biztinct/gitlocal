@@ -1170,16 +1170,20 @@ msgid "if"
 msgstr "nếu"
 
 #. module: pb_formula_studio
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3008
 #: code:addons/pb_formula_studio/static/src/xml/grid_studio.xml:1
+#: code:addons/pb_formula_studio/models/studio_fillin.py:0
 msgid "Yes"
 msgstr "Có"
 
 #. module: pb_formula_studio
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/formula_studio.js:3008
 #: code:addons/pb_formula_studio/static/src/xml/grid_studio.xml:1
+#: code:addons/pb_formula_studio/models/studio_fillin.py:0
 msgid "No"
 msgstr "Không"
 
@@ -10943,6 +10947,7 @@ msgstr "ví dụ: lương cơ bản"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Default value"
 msgstr "Giá trị mặc định"
 
@@ -16548,3 +16553,39 @@ msgstr "Làm mới tự động loại giá trị, vai trò trong lương, nhóm
 #: code:addons/pb_formula_studio/static/src/js/component_treatment.js:275
 msgid "Value types, pay roles, report groups and the Included in another total ticks checked. %s component(s) changed."
 msgstr "Đã kiểm tra loại giá trị, vai trò trong lương, nhóm báo cáo và các dấu Đã tính trong một tổng khác. %s thành phần đã thay đổi."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/studio_fillin.py:0
+msgid "These words do not read yet. Write each value as number=words, separated by semicolons, for example 0=No;1=Yes."
+msgstr "Chưa đọc được các từ này. Viết mỗi giá trị theo dạng số=từ, cách nhau bằng dấu chấm phẩy, ví dụ 0=Không;1=Có."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/studio_fillin.py:0
+msgid "The words for each value do not read. Write them like 0=No;1=Yes."
+msgstr "Không đọc được các từ cho từng giá trị. Hãy viết như 0=Không;1=Có."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Usual answer for a new contract"
+msgstr "Câu trả lời thường dùng cho hợp đồng mới"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Every new contract for a person this scheme pays starts with this value. Leave 0 for none."
+msgstr "Mọi hợp đồng mới của người được chế độ lương này trả đều bắt đầu với giá trị này. Để 0 nếu không có."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Words for each value"
+msgstr "Từ cho từng giá trị"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Optional. How each number reads on screens, e.g. 0=No;1=Yes. Pay data files and formulas keep using the numbers."
+msgstr "Không bắt buộc. Cách mỗi con số hiển thị trên màn hình, ví dụ 0=Không;1=Có. Tệp dữ liệu lương và công thức vẫn dùng các con số."

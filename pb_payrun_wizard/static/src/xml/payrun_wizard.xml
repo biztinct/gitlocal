@@ -83,6 +83,13 @@
                                     </span>
                                     <span class="pw-schemefield__chev"><t t-out="ic('chevronDown',16)"/></span>
                                 </button>
+                                <!-- FILLIN P2 C2 — advice, never a block:
+                                     hidden when nobody has anything to check. -->
+                                <p t-if="schemeUnchecked" class="pw-fillin" data-coach="pw-fillin">
+                                    <span class="pw-fillin__ic" t-out="ic('listChecks',14)"/>
+                                    <span class="pw-fillin__tx" t-esc="schemeUncheckedLine"/>
+                                    <button type="button" class="pw-fillin__go" t-on-click="openFillin">Open the Contracts list</button>
+                                </p>
                                 <div t-if="state.scheme.open" class="pw-notcovered">
                                     <p class="pw-muted">
                                         No scheme covers these people, so this run will

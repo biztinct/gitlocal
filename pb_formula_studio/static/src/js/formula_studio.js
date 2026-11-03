@@ -482,6 +482,7 @@ export class PbFormulaStudio extends Component {
             editBusy: false,
             liveValid: null,
             editError: "",
+            labelsMsg: "",
             advOpen: false,
             fieldMeta: {},
             // WP-A — Studio Command Layer
@@ -2830,6 +2831,7 @@ export class PbFormulaStudio extends Component {
         if (!d || !d.ok) { this.notif.add(_t("Could not open the component."), { type: "warning" }); return; }
         delete d.ok;
         this.state.draft = d;
+        this.state.labelsMsg = "";
         this.state.editId = rid;
         this.state.editScope = "simple";
         this.state.advOpen = false;
@@ -2875,6 +2877,33 @@ export class PbFormulaStudio extends Component {
         let v = t.type === "checkbox" ? t.checked : t.value;
         if (t.type === "number") v = v === "" ? 0 : parseFloat(v);
         this.state.draft[field] = v;
+    }
+    // ---- FILLIN P2 C3: the usual answer and the words for each value ----
+    // Which control the usual answer takes is the SERVER's judgement (the
+    // rule's own `value_label_control`), asked again as the words are typed.
+    get labelView() { return this.state.draft.value_label_view || { control: "", options: [] }; }
+    get usualControl() { return this.labelView.control || ""; }
+    get usualOptions() { return this.labelView.options || []; }
+    get usualNumber() { return String(this.state.draft.default_value || 0); }
+    get usualKnown() { return this.usualOptions.some((o) => this.isUsual(o)); }
+    isUsual(o) { return Math.abs(Number(o.value) - Number(this.state.draft.default_value || 0)) < 1e-9; }
+    setUsual(v) {
+        if (v === "" || v === null || v === undefined) return;
+        const n = Number(v);
+        if (isFinite(n)) this.state.draft.default_value = n;
+    }
+    setValueLabels(text) {
+        this.state.draft.value_labels = text;
+        clearTimeout(this._labelsTimer);
+        this._labelsTimer = setTimeout(async () => {
+            try {
+                const r = await this.orm.silent.call("pb.formula.studio", "studio_value_labels",
+                    [text, this.state.draft.value_kind || "money"]);
+                if (this.state.draft.value_labels !== text) return;   // typed on
+                this.state.draft.value_label_view = { control: r.control || "", options: r.options || [] };
+                this.state.labelsMsg = r.ok ? "" : (r.msg || "");
+            } catch { /* a hint, never an error dialog */ }
+        }, 300);
     }
     setDraftType(type) {
         this.state.draft.column_type = type;

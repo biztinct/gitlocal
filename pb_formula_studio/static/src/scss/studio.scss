@@ -295,6 +295,15 @@
     .ce-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
     .ce-field { display: flex; flex-direction: column; gap: 6px; }
     .ce-field label { font-size: 12px; font-weight: 700; color: var(--muted); }
+    /* FILLIN P2 C3 — the usual answer as Yes / No, and the words under it */
+    .ce-help { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+    .ce-help-warn { color: var(--amber); font-weight: 600; }
+    .ce-grid2 + .ce-field { margin-top: 14px; }
+    .ce-yn { display: inline-flex; gap: 0; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--bg); width: max-content; }
+    .ce-yn-b { border: 0; background: transparent; border-radius: 8px; padding: 6px 16px; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; transition: background .13s, color .13s, box-shadow .13s; }
+    .ce-yn-b:hover { color: var(--ink); }
+    .ce-yn-b.on { background: #fff; color: var(--i600); box-shadow: 0 1px 3px rgba(90,75,176,.18); }
+    .ce-yn-b:focus-visible { outline: 2px solid var(--i); outline-offset: 1px; }
 
     .ce-sec { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line-soft); }
     .ce-sec-h { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }

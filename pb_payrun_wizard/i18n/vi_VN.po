@@ -685,3 +685,33 @@ msgstr "PayAI đã điền sẵn theo yêu cầu của bạn. Hãy kiểm tra, r
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Update records"
 msgstr "Cập nhật hồ sơ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "1 of them has answers Payobook filled in that nobody has checked"
+msgstr "1 người trong số đó có câu trả lời do Payobook điền mà chưa ai kiểm tra"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "%s of them have answers Payobook filled in that nobody has checked"
+msgstr "%s người trong số đó có câu trả lời do Payobook điền mà chưa ai kiểm tra"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "The Contracts list is not available on this server."
+msgstr "Danh sách Hợp đồng chưa có trên máy chủ này."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Open the Contracts list"
+msgstr "Mở danh sách Hợp đồng"

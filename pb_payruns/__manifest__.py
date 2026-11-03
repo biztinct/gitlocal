@@ -15,7 +15,7 @@
     # pb_comp_ben and pb_close stay OUT of depends).
     # 3.3.0: FILTER wave 5 — the board is on the shared filter panel
     # (pb_filter_kit): server-counted filters, saved views, paged lanes.
-    'version': '19.0.3.3.0',
+    'version': '19.0.3.3.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -407,6 +407,19 @@ $pw-lock-bd: #A7E3D5;
 }
 .pw-root .pw-notcovered .pw-plist { max-height: 190px; overflow-y: auto; }
 
+/* FILLIN P2 C2 — a muted line, not an alarm: the run may go ahead. */
+.pw-root .pw-fillin {
+    margin: 8px 0 0; display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    font-size: 12.5px; color: var(--pw-muted); line-height: 1.4;
+}
+.pw-root .pw-fillin__ic { display: inline-flex; color: #B45309; flex: none; }
+.pw-root .pw-fillin__go {
+    border: none; background: none; padding: 0; cursor: pointer; font: inherit;
+    font-weight: 700; color: var(--pw-brand); text-decoration: underline;
+    text-decoration-color: transparent; text-underline-offset: 3px;
+}
+.pw-root .pw-fillin__go:hover { text-decoration-color: currentColor; }
+
 /* =====================================================================
    GROUP P5 — people paid in two places.
 

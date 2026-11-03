@@ -2404,6 +2404,36 @@ class PbPayruns(models.AbstractModel):
                 'next': dict(run_door, label=_("Open the run to see which component")),
                 'advisory': False, 'more': ''})
 
+        # FILLIN P2 C1 — people on this run whose draft or running contract
+        # still holds an answer Payobook filled in by itself that nobody has
+        # checked (FILLIN P1 marks). Advice, never a block. A read.
+        fillin = 0
+        Line = self.env.get('hr.contract.advantage')
+        if Line is not None and 'pb_fill' in Line._fields:
+            self.env.cr.execute("""
+                SELECT COUNT(DISTINCT p.employee_id)
+                  FROM hr_payslip p
+                  JOIN hr_contract c ON c.employee_id = p.employee_id
+                                   AND c.state IN ('draft', 'open')
+                  JOIN hr_contract_advantage a ON a.contract_id = c.id
+                 WHERE p.payslip_run_id = %s AND p.state != 'cancel'
+                   AND a.pb_fill = 'auto' AND a.pb_checked_at IS NULL""",
+                                (run.id,))
+            fillin = int(self.env.cr.fetchone()[0] or 0)
+        if fillin:
+            checks.append({
+                'key': 'fillin', 'tone': 'amber', 'icon': 'listChecks',
+                'text': (_("1 person has answers Payobook filled in that "
+                           "nobody has checked yet.") if fillin == 1
+                         else _("%s people have answers Payobook filled in "
+                                "that nobody has checked yet.", fillin)),
+                'detail': _("BPJS and tax settings were filled in from the "
+                            "scheme's usual answers when their contracts "
+                            "were created. Check them once under Contracts "
+                            "› To check; the run can still go ahead."),
+                'owner': self._person(team=_("HR team")),
+                'next': None, 'advisory': True, 'more': ''})
+
         close_weeks = None
         status = (readiness.get('close') or {}).get(run.id)
         if status and status['total']:

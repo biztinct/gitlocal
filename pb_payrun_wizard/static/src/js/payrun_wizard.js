@@ -777,6 +777,27 @@ export class PayrunWizard extends Component {
 
     toggleNotCovered() { this.state.scheme.open = !this.state.scheme.open; }
 
+    // ------------------------------------------------- FILLIN P2 C2
+    /** Of the people covered, how many hold answers nobody has checked. */
+    get schemeUnchecked() {
+        return (this.state.scheme.preview && this.state.scheme.preview.unchecked) || 0;
+    }
+    get schemeUncheckedLine() {
+        const n = this.schemeUnchecked;
+        return n === 1
+            ? _t("1 of them has answers Payobook filled in that nobody has checked")
+            : _t("%s of them have answers Payobook filled in that nobody has checked", this.num(n));
+    }
+    /** The Contracts list on its "To check" view — by tag, no dependency. */
+    openFillin() {
+        this.action.doAction({
+            type: "ir.actions.client", tag: "pb_contracts",
+            name: _t("Contracts"), params: { view: "fillin" },
+        }).catch(() => this.notif.add(
+            _t("The Contracts list is not available on this server."),
+            { type: "warning" }));
+    }
+
     openSchemePicker() {
         this.dialog.add(SchemePickerDialog, {
             groups: this.schemeGroups,
