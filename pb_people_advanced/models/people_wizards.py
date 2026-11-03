@@ -200,4 +200,8 @@ class PbContractWizard(models.AbstractModel):
                 c.write({'state': 'open'})
         except Exception as e:
             return {'error': str(getattr(e, 'name', None) or e) or 'Could not create contract.'}
-        return {'contract_id': c.id, 'name': c.name, 'employee_id': emp.id, 'error': None}
+        # `applied` is what the dialog reads to say "Contract created" rather
+        # than "No contract exists yet": a route that applies at once hands
+        # this dict back through `_apply_contract`, so it must say so itself.
+        return {'contract_id': c.id, 'name': c.name, 'employee_id': emp.id,
+                'error': None, 'applied': True}

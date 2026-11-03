@@ -34,6 +34,20 @@
           </t>
 
           <t t-else="">
+            <!-- No person yet (opened from the Contracts list): ask first.
+                 The form below stays visible but cannot be sent until one
+                 is picked (`canCreate`). -->
+            <div t-if="needsPerson" class="pplw-sec pplw-who">
+              <h4>Who is this contract for? *</h4>
+              <input type="search" class="pplw-in" placeholder="Type a name…" t-att-value="state.pick.term"
+                     t-on-input="pickSearch" autofocus="autofocus" data-biz-missing="true"/>
+              <div t-if="state.pick.rows.length" class="pplw-pick">
+                <button t-foreach="state.pick.rows" t-as="r" t-key="r.id" class="pplw-pick-row" t-on-click="() => this.pickOne(r)">
+                  <t t-out="ic('user',14)"/> <t t-esc="r.name"/>
+                </button>
+              </div>
+              <div t-elif="state.pick.term.length >= 2 and !state.pick.busy" class="pplw-note">Nobody by that name. Check the spelling, or add the person under Employees first.</div>
+            </div>
             <div class="pplw-grid2">
               <div class="pplw-sec">
                 <h4>Structure &amp; wage</h4>

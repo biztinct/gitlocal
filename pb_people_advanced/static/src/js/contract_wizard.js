@@ -20,6 +20,9 @@ export class ContractWizard extends Component {
         this.renewFrom = p.renew_from || false;
         this.state = useState({
             loading: false, busyMsg: "", defaults: null, result: null,
+            // Opened from the Contracts list there is no person yet: the
+            // dialog asks for one first (search as you type, pick one).
+            pick: { term: "", rows: [], busy: false },
             form: { struct_id: "", structure_type_id: "", wage: "", date_start: "",
                     date_end: "", resource_calendar_id: "", activate: true },
         });
@@ -40,6 +43,31 @@ export class ContractWizard extends Component {
     }
 
     ic(n, s = 16) { return ic(n, s); }
+    /** True while the dialog still needs a person. */
+    get needsPerson() { return !this.empId; }
+    async pickSearch(ev) {
+        const term = (ev.target.value || "").trim();
+        this.state.pick.term = term;
+        if (term.length < 2) { this.state.pick.rows = []; return; }
+        this.state.pick.busy = true;
+        try {
+            const rows = await this.orm.call("hr.employee", "name_search",
+                [term, [["active", "=", true]], "ilike", 8]);
+            if (this.state.pick.term === term) {
+                this.state.pick.rows = rows.map(([id, name]) => ({ id, name }));
+            }
+        } catch { this.state.pick.rows = []; }
+        finally { this.state.pick.busy = false; }
+    }
+    async pickOne(row) {
+        this.empId = row.id;
+        this.state.pick.rows = [];
+        this.state.loading = true; this.state.busyMsg = _t("Loading…");
+        try {
+            const d = await this.orm.call(MODEL, "get_defaults", [this.empId, this.renewFrom]);
+            this.state.defaults = d;
+        } finally { this.state.loading = false; }
+    }
     onField(f, ev) { this.state.form[f] = ev.target.value; }
     toggle(f) { this.state.form[f] = !this.state.form[f]; }
     get cur() { return (this.state.defaults && this.state.defaults.currency) || "₫"; }
