@@ -600,6 +600,12 @@ export class PbPayrunScreen extends Component {
             this.state.statement[slipId] = "none";
         }
     }
+    /** A statement line marked "already inside another line's total" is
+     *  drawn as a sub-line only when its section also has ordinary lines;
+     *  a scheme that marks every line that way would otherwise dim them all. */
+    lineClass(lines, ln) {
+        return ln.detail && lines.some((x) => !x.detail) ? "detail" : "";
+    }
     stmtMoney(amount, negative = false) {
         const v = Math.abs(Number(amount || 0));
         return `${negative ? "−" : ""}${this.money(v)}`;
@@ -658,6 +664,7 @@ export class PbPayrunScreen extends Component {
         if (!clickParams) {
             return;
         }
+        const keyBefore = this.loadedKey;
         if (this.env.onClickViewButton) {
             await this.env.onClickViewButton({
                 clickParams,
@@ -678,7 +685,14 @@ export class PbPayrunScreen extends Component {
                 onClose: () => record.model.load(),
             });
         }
-        this.load();
+        // The form normally reloads its record after a button, and the
+        // record-key effect then reloads this screen. Only when that did not
+        // happen (a download, a notification) is the screen reloaded here.
+        setTimeout(() => {
+            if (this.loadedKey === keyBefore && this.root.el && this.root.el.isConnected) {
+                this.load();
+            }
+        }, 400);
     }
 
     confirmThen(confirm, fn) {
@@ -943,7 +957,17 @@ export class PbPayrunHistory extends Component {
     get events() {
         const entry = this.store[this.props.record.resId];
         const run = entry && entry.data && entry.data.run;
-        return (run && run.history) || null;
+        if (!run || !run.history) {
+            return null;
+        }
+        // An event with no date is "now" only when it is the step a run
+        // waiting for approval is waiting on; any other undated event (an
+        // approval recorded without its day) just shows no date.
+        const last = run.history.length - 1;
+        return run.history.map((ev, i) => ({
+            text: ev[0], when: ev[1] || "",
+            wait: !ev[1] && run.state === "approval_pending" && i === last,
+        }));
     }
 }
 

@@ -352,16 +352,16 @@
                 <t t-elif="panelStatement">
                   <t t-set="st" t-value="panelStatement"/>
                   <div class="lines"><h4>Pay</h4>
-                    <t t-foreach="st.earnings" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{ln.detail ? 'detail' : ''}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount)"/></div></t>
+                    <t t-foreach="st.earnings" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{lineClass(st.earnings, ln)}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount)"/></div></t>
                     <div class="ln tot"><span>Gross pay</span><span class="num" t-esc="money(pr.gross)"/></div>
                   </div>
                   <div class="lines"><h4>Deductions</h4>
-                    <t t-foreach="st.deductions" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{ln.detail ? 'detail' : ''}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount, true)"/></div></t>
+                    <t t-foreach="st.deductions" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{lineClass(st.deductions, ln)}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount, true)"/></div></t>
                     <div t-if="!st.deductions.length" class="ln"><span class="muted">No deductions</span></div>
                     <div class="ln tot"><span>Total deductions</span><span class="num" t-esc="stmtMoney(pr.deductions, true)"/></div>
                   </div>
                   <div t-if="st.employer.length" class="lines"><h4>Company pays on top</h4>
-                    <t t-foreach="st.employer" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{ln.detail ? 'detail' : ''}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount)"/></div></t>
+                    <t t-foreach="st.employer" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{lineClass(st.employer, ln)}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount)"/></div></t>
                   </div>
                 </t>
                 <t t-else="">
@@ -406,7 +406,7 @@
       </t>
       <t t-elif="events.length">
         <t t-foreach="events" t-as="ev" t-key="ev_index">
-          <div t-attf-class="ev {{ev[1] ? '' : 'wait'}}"><i/><div><b t-esc="ev[0]"/><small><t t-if="ev[1]" t-esc="ev[1]"/><t t-else="">now</t></small></div></div>
+          <div t-attf-class="ev {{ev.wait ? 'wait' : ''}}"><i/><div><b t-esc="ev.text"/><small t-if="ev.when" t-esc="ev.when"/><small t-elif="ev.wait">now</small></div></div>
         </t>
       </t>
       <p t-else="" class="muted">Nothing has happened to this run yet.</p>
