@@ -121,6 +121,36 @@ class PbPeople(models.AbstractModel):
             'is_hr': True,
         }
 
+    # --------------------------------------------- FILLIN P2 B4: the chip
+    @api.model
+    def fillin_pending(self, employee_id):
+        """`{n, contract_id}` — answers Payobook filled in on this person's
+        draft or running contracts that nobody has checked yet. A read: it
+        writes nothing, and answers `n: 0` wherever the marks do not exist
+        (FILLIN P1 lives in `pb_hr_payroll_formula`, not a dependency)."""
+        blank = {'n': 0, 'contract_id': False}
+        if not self._vault_is_hr():
+            return blank
+        emp = self._emp(employee_id or 0)
+        Line = self.env.get('hr.contract.advantage')
+        if not emp or Line is None or 'pb_fill' not in Line._fields:
+            return blank
+        contracts = self.env['hr.contract'].search(
+            [('employee_id', '=', emp.id), ('state', 'in', ('draft', 'open'))])
+        if not contracts:
+            return blank
+        lines = Line.sudo().search([
+            ('contract_id', 'in', contracts.ids), ('pb_fill', '=', 'auto'),
+            ('pb_checked_at', '=', False)])
+        if not lines:
+            return blank
+        # the contract with the most to check opens; a running one wins a tie
+        counts = {}
+        for line in lines:
+            counts[line.contract_id] = counts.get(line.contract_id, 0) + 1
+        best = max(counts, key=lambda c: (counts[c], c.state == 'open', c.id))
+        return {'n': len(lines), 'contract_id': best.id}
+
     @api.model
     def get_timeline_page(self, employee_id, offset=0):
         self._require_hr()

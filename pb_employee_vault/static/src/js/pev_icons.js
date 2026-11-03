@@ -14,6 +14,8 @@ export const IC = {
     plus:         '<path d="M12 5v14M5 12h14"/>',
     check:        '<path d="M20 6 9 17l-5-5"/>',
     checkCircle:  '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+    // FILLIN P2 — "filled in by Payobook"
+    sparkles:     '<path d="M9.94 14.34 12 20l2.06-5.66L20 12l-5.94-2.34L12 4l-2.06 5.66L4 12z"/><path d="M19 4v3M17.5 5.5h3"/>',
     search:       '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     upload:       '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
     download:     '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',

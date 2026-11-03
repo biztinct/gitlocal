@@ -79,7 +79,7 @@
       <t t-elif="kind === 'select'">
         <span class="pbc-resting" t-esc="restingText"/>
         <CdPicker rows="pickerRows" allowClear="allowClear" anchorEl="props.anchorEl"
-                  onPick.bind="onPick" onCancel="props.onCancel"/>
+                  current="props.value" onPick.bind="onPick" onCancel="props.onCancel"/>
       </t>
 
       <t t-elif="kind === 'm2o'">

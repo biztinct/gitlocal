@@ -38,7 +38,7 @@
                        drawers to keep in step forever. Absent modules add
                        nothing and this row reads exactly as it did. -->
                   <t t-foreach="extraChips" t-as="chip" t-key="chip.key">
-                    <t t-component="chip.Component" t-props="chipProps"/>
+                    <t t-component="chip.Component" t-props="chipPropsFor(chip)"/>
                   </t>
                 </div>
               </div>
@@ -261,6 +261,17 @@
         </t>
       </aside>
     </div>
+  </t>
+
+  <!-- ==================================================================
+       FILLIN P2 B4 — answers Payobook filled in that nobody has checked.
+       Rendered only when there is at least one (quiet board pattern).
+       ================================================================== -->
+  <t t-name="pb_employee_vault.FillinChip">
+    <button t-if="state.n" type="button" class="pev-chip pev-chip-fill"
+            t-att-title="tooltip" t-on-click.stop="open">
+      <t t-out="ic('sparkles',13)"/> <t t-esc="label"/>
+    </button>
   </t>
 
 </templates>

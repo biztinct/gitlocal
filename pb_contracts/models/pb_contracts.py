@@ -3,6 +3,7 @@ import logging
 from datetime import date, timedelta
 
 from odoo import _, api, models
+from odoo.fields import Domain
 from odoo.tools.translate import LazyTranslate
 
 _logger = logging.getLogger(__name__)
@@ -218,12 +219,147 @@ class PbContracts(models.AbstractModel):
              'none_label': _('No trial period')},
             {'key': 'company', 'label': _('Company'), 'icon': 'landmark',
              'group': 'work', 'type': 'many2one', 'path': 'company_id'},
-        ]
+        ] + self._fillin_spec()
+
+    # ================================================== FILLIN P2 — To check
+    @api.model
+    def _fillin_ready(self):
+        """Does this database mark the answers Payobook fills in (FILLIN P1,
+        `pb_hr_payroll_formula`)? Probed, never assumed: this module does not
+        depend on the rules module."""
+        Line = self.env.get('hr.contract.advantage')
+        return Line is not None and 'pb_fill' in Line._fields \
+            and 'pb_checked_at' in Line._fields
+
+    @api.model
+    def _fillin_domain(self):
+        return [('advantages_ids', 'any', [('pb_fill', '=', 'auto'),
+                                           ('pb_checked_at', '=', False)])]
+
+    def _fillin_spec(self):
+        """A hidden choice: never listed in the panel, switched on by the
+        "To check" tab (and by the pay run's door), named by its chip."""
+        if not self._fillin_ready():
+            return []
+        return [{'key': 'fillin', 'label': _('Answers to check'),
+                 'icon': 'listChecks', 'group': 'contract', 'type': 'choice',
+                 'hidden': True,
+                 'options': [{'value': 'unchecked',
+                              'label': _('Filled in by Payobook, not checked'),
+                              'tone': 'amber',
+                              'domain': self._fillin_domain()}]}]
+
+    @api.model
+    def _fillin_rows(self, contracts):
+        """`{contract_id: {'n', 'answers': [{label, value_text}]}}` for the
+        unchecked filled-in lines of a page of contracts — ONE search."""
+        if not contracts or not self._fillin_ready():
+            return {}
+        lines = self.env['hr.contract.advantage'].sudo().search([
+            ('contract_id', 'in', contracts.ids), ('pb_fill', '=', 'auto'),
+            ('pb_checked_at', '=', False)])
+        if not lines:
+            return {}
+        codes = list({l.advantage_template_id.code for l in lines} - {False})
+        rules = self._safe(lambda: self._cd_rule_by_code(
+            codes, company=self.env.company), default={})
+        out = {}
+        for line in lines.sorted(lambda l: ((l.advantage_template_id.code or ''),
+                                             l.id)):
+            rule = rules.get(line.advantage_template_id.code)
+            word = ''
+            if rule is not None and hasattr(rule, 'value_label_for'):
+                word = self._safe(lambda: rule.value_label_for(line.amount),
+                                  default='')
+            entry = out.setdefault(line.contract_id.id, {'n': 0, 'answers': []})
+            entry['n'] += 1
+            entry['answers'].append({
+                'label': (line.advantage_template_id.name
+                          or (rule.name if rule else '')
+                          or line.advantage_template_id.code or '—'),
+                'value_text': word or self._cd_num(line.amount or 0.0),
+            })
+        return out
+
+    @api.model
+    def fillin_check_contract(self, contract_id):
+        """"Looks right" on one card: confirm that contract's unchecked
+        filled-in answers. The right is `pb_fillin_check`'s own."""
+        contract = self._cd_contract(contract_id) if self._cd_may_read() \
+            else None
+        if contract is None:
+            return {'ok': False, 'n': 0,
+                    'msg': _("That contract is no longer here.")}
+        if not self._cd_may_check():
+            return {'ok': False, 'n': 0,
+                    'msg': _("You cannot confirm the answers on a contract. "
+                             "Ask an administrator for the right to change "
+                             "contracts.")}
+        try:
+            n = contract.pb_fillin_check()
+        except Exception as error:   # noqa: BLE001 — AccessError included
+            return {'ok': False, 'n': 0, 'msg': self._cd_reason(error)}
+        return {'ok': True, 'n': n,
+                'msg': _("%(who)s: answers confirmed.") % {
+                    'who': contract.employee_id.name or contract.name or ''}}
+
+    @api.model
+    def fillin_preview_all(self, filters=None, search=None):
+        """What "All N look right" would confirm, for the confirm dialog: the
+        count and the first five people, under the SAME filters as the list."""
+        if not self._fillin_ready() or not self._cd_may_read():
+            return {'n': 0, 'people': [], 'more': 0, 'can_check': False}
+        filters = filters if isinstance(filters, dict) else {}
+        domain = Domain.AND([Domain(self.pbf_domain(filters, search)),
+                             Domain(self._fillin_domain())])
+        C = self.env['hr.contract']
+        n = C.search_count(domain)
+        first = C.search(domain, order='employee_id, id', limit=5)
+        return {'n': n,
+                'people': [c.employee_id.name or c.name or '—' for c in first],
+                'more': max(n - len(first), 0),
+                'can_check': bool(n and self._cd_may_check())}
+
+    @api.model
+    def fillin_check_all(self, filters=None, search=None):
+        """"All N look right": confirm every unchecked filled-in answer of the
+        contracts the list shows right now (its filters AND search), in the
+        caller's rights. Returns how many contracts."""
+        if not self._fillin_ready():
+            return {'ok': False, 'n': 0, 'lines': 0, 'msg': ''}
+        self._cd_require_read()
+        if not self._cd_may_check():
+            return {'ok': False, 'n': 0, 'lines': 0,
+                    'msg': _("You cannot confirm the answers on a contract. "
+                             "Ask an administrator for the right to change "
+                             "contracts.")}
+        filters = filters if isinstance(filters, dict) else {}
+        # The list's own domain, read with the caller's rights: nobody checks
+        # a contract they cannot see.
+        domain = Domain.AND([Domain(self.pbf_domain(filters, search)),
+                             Domain(self._fillin_domain())])
+        contracts = self.env['hr.contract'].search(domain)
+        if not contracts:
+            return {'ok': True, 'n': 0, 'lines': 0,
+                    'msg': _("Nothing was left to check.")}
+        try:
+            lines = contracts.pb_fillin_check()
+        except Exception as error:   # noqa: BLE001 — AccessError included
+            return {'ok': False, 'n': 0, 'lines': 0,
+                    'msg': self._cd_reason(error)}
+        n = len(contracts)
+        return {'ok': True, 'n': n, 'lines': lines,
+                'msg': _("Checked 1 contract.") if n == 1 else
+                _("Checked %s contracts.") % n}
 
     def _pbf_builtin_views(self):
         return [
             {'key': 'all', 'label': _('All contracts'), 'icon': 'fileText', 'filters': {}},
             {'key': 'running', 'label': _('Running'), 'filters': {'status': ['open']}},
+            # FILLIN P2 B1 — the review list. Offered only where the marks
+            # exist (a view naming a section the database lacks is dropped).
+            {'key': 'fillin', 'label': _('To check'), 'icon': 'listChecks',
+             'filters': {'fillin': ['unchecked']}},
             {'key': 'ending', 'label': _('Ending within 30 days'), 'filters': {'step': ['ending']}},
             {'key': 'draft', 'label': _('Draft'), 'filters': {'status': ['draft']}},
             {'key': 'started', 'label': _('Started this month'),
@@ -284,12 +420,19 @@ class PbContracts(models.AbstractModel):
         today = date.today()
         rows = []
         pay_signs = {}
-        for c in C.search(domain, order=order, offset=offset, limit=limit):
+        page = C.search(domain, order=order, offset=offset, limit=limit)
+        # FILLIN P2 B2 — the answers to check, one search for the page
+        fillin = self._safe(lambda: self._fillin_rows(page), default={})
+        for c in page:
             try:
-                rows.append(self._contract_row(c, today, pay_signs))
+                row = self._contract_row(c, today, pay_signs)
+                row['fillin'] = fillin.get(c.id) or {'n': 0, 'answers': []}
+                rows.append(row)
             except Exception as ex:  # noqa: BLE001 — one bad card never blanks the list
                 _logger.debug("Contract row failed: %s", ex)
-        out = {'rows': rows, 'total': C.search_count(domain), 'offset': offset}
+        out = {'rows': rows, 'total': C.search_count(domain), 'offset': offset,
+               'can_check': bool(fillin) and self._safe(self._cd_may_check,
+                                                        default=False)}
         if not offset:
             out['steps'] = self._safe(lambda: self._pbf_step_counts(filters, search), default={})
         return out

@@ -72,9 +72,37 @@ export class Employee360Drawer extends Component {
     get chipProps() {
         const id = Number(this.props.empId);
         if (!this._chipProps || this._chipProps.empId !== id) {
-            this._chipProps = { empId: id };
+            // FILLIN P2 B4 — a chip may open a contract in the side panel
+            // (`onOpenContract(contractId, tab)`); built once per person so the
+            // chips never remount while somebody reads them.
+            this._chipProps = {
+                empId: id,
+                onOpenContract: (cid, tab) => this.openContract(cid, tab),
+            };
         }
         return this._chipProps;
+    }
+    /**
+     * The props ONE chip declares, out of `chipProps`: OWL checks props in
+     * debug mode, so a chip that does not take `onOpenContract` (the "Paid by"
+     * chip) must not be handed it. Cached per person and chip so the object
+     * stays stable between paints.
+     */
+    chipPropsFor(chip) {
+        const all = this.chipProps;
+        this._chipPropsBy = this._chipPropsBy || {};
+        const cached = this._chipPropsBy[chip.key];
+        if (cached && cached.empId === all.empId) { return cached; }
+        const declared = chip.Component.props;
+        let out = all;
+        if (declared && !Array.isArray(declared) && typeof declared === "object") {
+            out = {};
+            for (const k of Object.keys(all)) {
+                if (k in declared) { out[k] = all[k]; }
+            }
+        }
+        this._chipPropsBy[chip.key] = out;
+        return out;
     }
     get d() { return this.state.d || {}; }
     get profile() { return (this.state.d && this.state.d.profile) || {}; }
@@ -121,13 +149,16 @@ export class Employee360Drawer extends Component {
      * screen: this one slides out and the contract panel slides in through
      * the overlay service, so it works wherever this drawer is hosted.
      */
-    openContract() {
-        const id = this.contractId;
+    openContract(contractId, tab) {
+        // the header button passes a click event: only a number is a contract
+        const id = (typeof contractId === "number" && contractId) || this.contractId;
         if (!id) { return; }
         const Drawer = registry.category("pb_contracts_drawer").get("contract_360", null);
         this.close();
         if (Drawer) {
-            const remove = this.overlay.add(Drawer, { contractId: id, onClose: () => remove() });
+            const props = { contractId: id, onClose: () => remove() };
+            if (typeof tab === "string" && tab) { props.tab = tab; }
+            const remove = this.overlay.add(Drawer, props);
             return;
         }
         this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail",

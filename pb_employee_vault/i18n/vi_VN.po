@@ -1314,3 +1314,21 @@ msgstr "hợp đồng"
 #: code:addons/pb_employee_vault/static/src/xml/employee_360.xml:0
 msgid "payslip"
 msgstr "phiếu lương"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/js/fillin_chip.js:0
+msgid "1 answer to check"
+msgstr "1 câu trả lời cần kiểm tra"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/js/fillin_chip.js:0
+msgid "%s answers to check"
+msgstr "%s câu trả lời cần kiểm tra"
+
+#. module: pb_employee_vault
+#. odoo-javascript
+#: code:addons/pb_employee_vault/static/src/js/fillin_chip.js:0
+msgid "Payobook filled these in from the scheme's usual answers when the contract was created. Open the contract to check or change them."
+msgstr "Payobook đã điền các câu trả lời này theo câu trả lời thường dùng của chế độ lương khi tạo hợp đồng. Mở hợp đồng để kiểm tra hoặc sửa."

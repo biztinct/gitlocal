@@ -119,14 +119,22 @@ export class CdPicker extends Component {
         allowClear: { type: Boolean, optional: true },
         anchorEl: { optional: true },                  // the cell to float beside
         clearLabel: { type: String, optional: true },
+        // FILLIN P2 — the value the cell holds now: its row opens lit, so a
+        // pick-list of words says which one is current before anything moves.
+        current: { optional: true },
     };
 
     setup() {
         this.rootRef = useRef("root");
         this.inputRef = useRef("input");
         this.clearRef = useRef("clear");
+        const first = this.staticRows("");
+        const cur = this.props.current;
+        const lit = (cur === undefined || cur === null || cur === false) ? -1
+            : first.findIndex((r) => String(r.id) === String(cur)
+                || (typeof r.id === "number" && Math.abs(r.id - Number(cur)) < 1e-9));
         this.state = useState({
-            term: "", rows: this.staticRows(""), active: 0, loading: false,
+            term: "", rows: first, active: lit > 0 ? lit : 0, loading: false,
             top: 0, left: 0, width: 260, up: false, placed: false,
         });
         this._timer = null;

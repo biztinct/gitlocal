@@ -7,6 +7,7 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
 import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
 import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
 // The contract's journey. A contract sits at exactly one step (the server's
@@ -41,6 +42,7 @@ export class PbContracts extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notif = useService("notification");
+        this.dialog = useService("dialog");
         // The return door (hub_nav.js). The People hub no longer mounts this
         // board as a lens — the Employees lens opens it as its own page — so
         // the way back is read ONCE, from props, like every plain cockpit.
@@ -49,8 +51,12 @@ export class PbContracts extends Component {
             loaded: false, currency: "", kpis: {}, total: 0,
             contracts: [], listTotal: 0, listLoaded: false, listError: false,
             loadingMore: false, stepCounts: {},
-            drawerContractId: null,
+            drawerContractId: null, drawerTab: "", canCheck: false,
+            checking: 0,
         });
+        // FILLIN P2 C1 — the pay run's door ("Open the Contracts list") lands
+        // on the To check view: `params.view = "fillin"`.
+        const params = (this.props.action && (this.props.action.params || this.props.action.context)) || {};
         // The shared filter panel (pb_filter_kit, FILTER W1): it owns the
         // filters, the counts and the views; this screen loads one page of
         // contracts for kit.query, with the step strip's counts beside it.
@@ -58,12 +64,14 @@ export class PbContracts extends Component {
             model: "pb.contracts",
             noun: _t("contracts"),
             onChange: () => this.loadPage(),
+            initial: params.view === "fillin"
+                ? { filters: { fillin: ["unchecked"] }, viewKey: "fillin" } : null,
         });
         onWillStart(async () => { await this.load(); });
         // deep link: ?contract=<id>, or an action param, opens the drawer when
         // it is registered — otherwise it is simply ignored and the roster
         // renders as it always did.
-        const p = (this.props.action && (this.props.action.params || this.props.action.context)) || {};
+        const p = params;
         let cid = p.contract || p.contract_id || p.active_id;
         if (!cid) {
             try { cid = new URLSearchParams(window.location.search).get("contract"); } catch (e) { cid = null; }
@@ -82,9 +90,16 @@ export class PbContracts extends Component {
     // `people.js:57` builds them; the mount point's `t-key` is the contract id,
     // so switching records remounts and the panel slides in again.
     get drawerProps() {
-        return { contractId: this.state.drawerContractId, onClose: () => this.closeDrawer() };
+        const props = {
+            contractId: this.state.drawerContractId, onClose: () => this.closeDrawer(),
+            // the answers were confirmed inside the panel: the card and the
+            // "To check" count follow at once (kit 1.3.0 recounts the tabs)
+            onChanged: () => this.kit.refresh(),
+        };
+        if (this.state.drawerTab) { props.tab = this.state.drawerTab; }
+        return props;
     }
-    closeDrawer() { this.state.drawerContractId = null; }
+    closeDrawer() { this.state.drawerContractId = null; this.state.drawerTab = ""; }
 
     /** The numbers line, counted over every contract whatever is filtered. */
     async load() {
@@ -107,6 +122,7 @@ export class PbContracts extends Component {
             this.state.contracts = more ? [...this.state.contracts, ...d.rows] : d.rows;
             this.state.listTotal = d.total;
             if (d.steps) { this.state.stepCounts = d.steps; }
+            this.state.canCheck = Boolean(d.can_check);
             this.state.listLoaded = true;
             this.state.listError = false;
         } catch (e) {
@@ -203,8 +219,81 @@ export class PbContracts extends Component {
         kit.toggleFilters({ step: [key] });
     }
 
-    openContract(id) {
+    // ============================================ FILLIN P2 — To check
+    /** The answers are spelled out on the card only on the review list. */
+    get fillinView() { return this.kit.loaded && this.kit.isOn("fillin", "unchecked"); }
+    fillinCount(c) { return (c.fillin && c.fillin.n) || 0; }
+    fillinChip(c) {
+        const n = this.fillinCount(c);
+        return n === 1 ? _t("1 answer to check") : _t("%s answers to check", this.fmtInt(n));
+    }
+    fillinAnswers(c) { return (c.fillin && c.fillin.answers) || []; }
+    get fillinTotal() {
+        const v = (this.kit.views || []).find((x) => x.key === "fillin");
+        return this.state.listTotal || (v && v.n) || 0;
+    }
+    get allLookRightLabel() {
+        const n = this.state.listTotal;
+        return n === 1 ? _t("It looks right") : _t("All %s look right", this.fmtInt(n));
+    }
+    /** "Looks right" on one card. */
+    async looksRight(c) {
+        if (this.state.checking) { return; }
+        this.state.checking = c.id;
+        try {
+            const r = await this.orm.call("pb.contracts", "fillin_check_contract", [c.id]);
+            this.notif.add(r.msg || "", { type: r.ok ? "success" : "warning" });
+        } catch (e) {
+            this.notif.add(_t("The answers could not be confirmed just now. Try again in a moment."), { type: "danger" });
+        } finally {
+            this.state.checking = 0;
+        }
+        await this.kit.refresh();
+        this.load();
+    }
+    /** "Change": the panel opens on its Components tab. */
+    changeAnswers(c) { this.openContract(c.id, "components"); }
+    /** "All N look right": a confirm that states the count and names people. */
+    async allLookRight() {
+        const q = this.kit.query;
+        let p;
+        try {
+            p = await this.orm.call("pb.contracts", "fillin_preview_all", [], {
+                filters: q.filters, search: q.search,
+            });
+        } catch (e) {
+            this.notif.add(_t("The list of answers could not be read just now. Try again in a moment."), { type: "danger" });
+            return;
+        }
+        if (!p.n) { this.notif.add(_t("Nothing was left to check."), { type: "info" }); return; }
+        const names = p.people.join(", ") + (p.more ? " " + _t("…and %s more", this.fmtInt(p.more)) : "");
+        const body = p.n === 1
+            ? _t("Confirm the answers Payobook filled in on 1 contract (%s)? Nothing is changed; each answer is marked as checked by you.", names)
+            : _t("Confirm the answers Payobook filled in on %(n)s contracts (%(names)s)? Nothing is changed; each answer is marked as checked by you.", { n: this.fmtInt(p.n), names });
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Confirm the filled-in answers"),
+            body,
+            confirmLabel: p.n === 1 ? _t("Confirm 1 contract") : _t("Confirm %s contracts", this.fmtInt(p.n)),
+            cancelLabel: _t("Cancel"),
+            confirm: async () => {
+                try {
+                    const r = await this.orm.call("pb.contracts", "fillin_check_all", [], {
+                        filters: q.filters, search: q.search,
+                    });
+                    this.notif.add(r.msg || "", { type: r.ok ? "success" : "warning" });
+                } catch (e) {
+                    this.notif.add(_t("The answers could not be confirmed just now. Try again in a moment."), { type: "danger" });
+                }
+                await this.kit.refresh();
+                this.load();
+            },
+            cancel: () => {},
+        });
+    }
+
+    openContract(id, tab = "") {
         if (!id) return;
+        this.state.drawerTab = tab || "";
         if (this.drawerCmp) { this.state.drawerContractId = Number(id); return; }
         this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_detail", name: _t("Contract"), params: { contract_id: id } });
     }

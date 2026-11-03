@@ -48,7 +48,21 @@
           <button class="pbim-btn outline pbim-btn-sm" t-on-click="retry"><t t-out="ic('refresh',14)"/> Try again</button>
         </div>
         <div t-elif="state.contracts.length" class="ppl-roster" data-coach="ct-roster">
-          <div t-foreach="state.contracts" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openContract(c.id)">
+          <!-- FILLIN P2 B3 — the review list's one bulk action. It names the
+               count; the confirm names the people. -->
+          <div t-if="fillinView and state.canCheck and state.listTotal" class="ct-fill-bar">
+            <span class="ct-fill-bar-ic" t-out="ic('sparkles',16)"/>
+            <div class="ct-fill-bar-tx">
+              <b>Answers Payobook filled in by itself</b>
+              <span>From the usual answers of the scheme that pays each person. Confirm the ones that are right; change the rest.</span>
+            </div>
+            <button class="pbim-btn outline pbim-btn-sm" t-on-click="allLookRight">
+              <t t-out="ic('checkCheck',14)"/> <t t-esc="allLookRightLabel"/>
+            </button>
+          </div>
+          <div t-foreach="state.contracts" t-as="c" t-key="c.id" class="ppl-card"
+               t-att-class="{ 'ct-has-fill': fillinView and fillinCount(c) }"
+               t-on-click="() => this.openContract(c.id)">
             <div class="ppl-av" t-attf-style="background-image:url({{ c.avatar }})"/>
             <div class="ppl-id">
               <div class="nm" t-esc="c.employee"/>
@@ -62,10 +76,33 @@
             <div class="ppl-meta">
               <span t-attf-class="pbim-badge {{ stateCls(c.state) }}"><span class="d"/><t t-esc="c.state_label"/></span>
               <span t-if="c.days_to_expiry !== null and c.days_to_expiry >= 0 and c.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="c.days_to_expiry"/>d</span>
+              <span t-if="fillinCount(c)" class="ct-fill-chip"
+                    title="Payobook filled these in from the scheme's usual answers. Open the contract to check or change them.">
+                <t t-out="ic('sparkles',12)"/> <t t-esc="fillinChip(c)"/>
+              </span>
             </div>
             <div class="ppl-wage">
               <span class="v money" t-esc="c.wage ? money(c.wage, c.currency) : '—'"/>
               <span class="k">monthly</span>
+            </div>
+            <!-- FILLIN P2 B2 — on the To check list the answers are spelled
+                 out, with the two things a person does with them. -->
+            <div t-if="fillinView and fillinCount(c)" class="ct-fill" t-on-click.stop="">
+              <div class="ct-fill-ans">
+                <span t-foreach="fillinAnswers(c)" t-as="a" t-key="a_index" class="ct-fill-a">
+                  <span class="l" t-esc="a.label"/>
+                  <b t-esc="a.value_text"/>
+                </span>
+              </div>
+              <div class="ct-fill-acts">
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.changeAnswers(c)">
+                  <t t-out="ic('pencil',13)"/> Change
+                </button>
+                <button t-if="state.canCheck" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.checking === c.id" t-on-click="() => this.looksRight(c)">
+                  <t t-out="ic('check',13)"/> Looks right
+                </button>
+              </div>
             </div>
           </div>
         </div>
