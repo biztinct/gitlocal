@@ -98,6 +98,8 @@ export class PbPayrunScreen extends Component {
     static props = { ...standardWidgetProps };
 
     setup() {
+        // Silent: the screen draws its own skeletons, so the app-wide loading
+        // cover must not sit on top of them while the payload loads.
         this.orm = useService("orm");
         this.action = useService("action");
         this.dialog = useService("dialog");
@@ -169,7 +171,7 @@ export class PbPayrunScreen extends Component {
         this.state.error = null;
         let data;
         try {
-            data = await this.orm.call("pb.payruns", "get_run_screen", [id],
+            data = await this.orm.silent.call("pb.payruns", "get_run_screen", [id],
                                        { parts: "main" });
         } catch (e) {
             if (seq !== this.seq) {
@@ -197,7 +199,7 @@ export class PbPayrunScreen extends Component {
         this.state.routeLoading = true;
         this.state.routeError = null;
         try {
-            const part = await this.orm.call("pb.payruns", "get_run_screen", [id],
+            const part = await this.orm.silent.call("pb.payruns", "get_run_screen", [id],
                                              { parts: "route" });
             if (seq !== this.seq || !this.state.data) {
                 return;
@@ -593,7 +595,7 @@ export class PbPayrunScreen extends Component {
         }
         this.state.statement[slipId] = "loading";
         try {
-            const [rec] = await this.orm.read("hr.payslip", [slipId], ["pb_statement_json"]);
+            const [rec] = await this.orm.silent.read("hr.payslip", [slipId], ["pb_statement_json"]);
             const parsed = rec && rec.pb_statement_json ? JSON.parse(rec.pb_statement_json) : null;
             this.state.statement[slipId] = parsed || "none";
         } catch {
