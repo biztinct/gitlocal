@@ -1478,14 +1478,18 @@ msgid "Leave empty"
 msgstr "Để trống"
 
 #. module: pb_contracts
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
 msgid "Yes"
 msgstr "Có"
 
 #. module: pb_contracts
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
 msgid "No"
 msgstr "Không"
 
@@ -1940,3 +1944,93 @@ msgstr ""
 #: code:addons/pb_contracts/models/pb_contracts.py:0
 msgid "Earliest end date first"
 msgstr "Ngày kết thúc sớm nhất trước"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "Filled in by Payobook · not checked"
+msgstr "Payobook đã điền · chưa kiểm tra"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "Filled in by Payobook · checked by %(who)s on %(when)s"
+msgstr "Payobook đã điền · %(who)s đã kiểm tra ngày %(when)s"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "somebody"
+msgstr "ai đó"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "You cannot confirm the answers on a contract. Ask an administrator for the right to change contracts."
+msgstr "Bạn không thể xác nhận các câu trả lời trên hợp đồng. Hãy đề nghị quản trị viên cấp quyền thay đổi hợp đồng."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "1 answer confirmed."
+msgstr "Đã xác nhận 1 câu trả lời."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "%s answers confirmed."
+msgstr "Đã xác nhận %s câu trả lời."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "Nothing was left to check."
+msgstr "Không còn gì cần kiểm tra."
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "Checked by %s, no change"
+msgstr "%s đã kiểm tra, không thay đổi"
+
+#. module: pb_contracts
+#. odoo-python
+#: code:addons/pb_contracts/models/pb_contract_360.py:0
+msgid "Filled in by Payobook from the scheme's usual answer"
+msgstr "Payobook đã điền theo câu trả lời thường dùng của chế độ lương"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Payobook filled in 1 answer for this contract."
+msgstr "Payobook đã điền 1 câu trả lời cho hợp đồng này."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Payobook filled in %s answers for this contract."
+msgstr "Payobook đã điền %s câu trả lời cho hợp đồng này."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "They came from the usual answers of the scheme that pays this person. Change any that are wrong, then confirm the rest."
+msgstr "Các câu trả lời này lấy từ câu trả lời thường dùng của chế độ lương trả cho người này. Sửa những câu sai, rồi xác nhận phần còn lại."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Save or discard your changes first, then confirm the answers."
+msgstr "Hãy lưu hoặc bỏ các thay đổi trước, rồi xác nhận các câu trả lời."
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+msgid "All correct"
+msgstr "Tất cả đều đúng"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+msgid "Confirms every answer Payobook filled in on this contract. Nothing is changed."
+msgstr "Xác nhận mọi câu trả lời Payobook đã điền trên hợp đồng này. Không có gì bị thay đổi."

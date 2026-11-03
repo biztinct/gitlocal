@@ -137,13 +137,19 @@
             <span t-attf-class="pbc-comp-from tone-{{ row.fills_tone || 'muted' }}" t-esc="row.fills_label || '—'"/>
             <span class="pbc-comp-warn" t-if="row.requires_new_contract">usually starts a new contract</span>
             <span class="pbc-comp-nil" t-if="row.virtual">not filled in yet</span>
+            <!-- FILLIN P2 A2 — Payobook wrote this value by itself. Amber
+                 until a person confirms it, then quiet. -->
+            <span class="pbc-comp-fill" t-if="row.fill" t-att-class="fillTagClass(row)">
+              <t t-out="ic(row.fill_checked ? 'checkCircle' : 'sparkles',12)"/> <t t-esc="row.fill_tag"/>
+            </span>
           </span>
         </div>
         <div class="pbc-comp-r">
           <t t-if="isEditing('comp', compRowKey(row))">
             <CdEditor entry="compEntry(row)" value="compEditValue(row)"
                       currency="currency" anchorEl="anchorEl"
-                      onCommit="(v) => this.commitComp(row, v)"
+                      resting="compDisplay(row)"
+                      onCommit="(v, l) => this.commitComp(row, v, l)"
                       onCancel.bind="cancelEdit"
                       onMove="(dir) => this.moveComp(row, dir)"/>
           </t>
@@ -342,6 +348,21 @@
                     </span>
                   </t>
                 </div>
+              </div>
+
+              <!-- FILLIN P2 A3 — one quiet line while anything Payobook
+                   filled in is unchecked. Gone the moment it is confirmed. -->
+              <div class="pbc-fillin" t-if="fillin.n" data-coach="cd-fillin">
+                <span class="pbc-fillin-ic" t-out="ic('sparkles',16)"/>
+                <div class="pbc-fillin-tx">
+                  <b t-esc="fillinLine"/>
+                  <span t-esc="fillinHelp"/>
+                </div>
+                <button class="pbim-btn ghost pbc-fillin-b" t-if="fillin.can_check"
+                        t-att-disabled="state.busy" t-on-click="checkFillin"
+                        title="Confirms every answer Payobook filled in on this contract. Nothing is changed.">
+                  <t t-out="ic('check',15)"/> All correct
+                </button>
               </div>
 
               <div class="pbc-explain" t-if="components.explainer">

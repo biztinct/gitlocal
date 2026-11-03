@@ -295,6 +295,33 @@
         display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
         padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--mut);
     }
+    // FILLIN P2 — "Filled in by Payobook". Amber while nobody has checked
+    // it (there is something to do), quiet once somebody has.
+    .pbc-comp-fill {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px; background: var(--amber-s); color: var(--amber);
+        svg { color: currentColor; flex: none; }
+        &.checked { background: var(--bg); color: var(--mut); font-weight: 600; }
+    }
+    .pbc-fillin {
+        display: flex; align-items: center; gap: 11px; margin-bottom: 12px;
+        padding: 11px 13px; border-radius: var(--r-sm);
+        border: 1px solid var(--amber-s); border-left: 3px solid var(--amber);
+        background: var(--surf);
+        animation: pbc-fillin-in .22s ease-out both;
+    }
+    .pbc-fillin-ic {
+        flex: none; width: 30px; height: 30px; border-radius: 9px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--amber-s); color: var(--amber);
+    }
+    .pbc-fillin-tx {
+        min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px;
+        b { font-size: 13px; font-weight: 700; color: var(--ink); }
+        span { font-size: 12px; color: var(--mut); line-height: 1.45; }
+    }
+    .pbc-fillin-b { flex: none; white-space: nowrap; }
+    @keyframes pbc-fillin-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
     .pbc-comp-w.virtual {
         border-style: dashed;
         .pbc-comp-v { color: var(--mut); font-weight: 600; }
@@ -338,6 +365,7 @@
         &.tone-indigo { border-left-color: var(--p);     .pbc-tl-ic { color: var(--p); } }
         &.tone-teal   { border-left-color: var(--cyan);  .pbc-tl-ic { color: var(--cyan); } }
         &.tone-amber  { border-left-color: var(--amber); .pbc-tl-ic { color: var(--amber); } }
+        &.tone-green  { border-left-color: var(--green); .pbc-tl-ic { color: var(--green); } }
     }
     .pbc-tl-body { min-width: 0; flex: 1; }
     .pbc-tl-l1 {

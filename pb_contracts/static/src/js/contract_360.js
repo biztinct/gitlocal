@@ -437,6 +437,11 @@ export class Contract360Drawer extends Component {
     static props = {
         contractId: { type: [Number, String] },
         onClose: { type: Function, optional: true },
+        // FILLIN P2 — the tab to open on ("components" from a "Change" door);
+        // and a call-back after the answers were confirmed, so the list
+        // underneath can recount ("To check 3" becomes 2).
+        tab: { type: String, optional: true },
+        onChanged: { type: Function, optional: true },
     };
 
     setup() {
@@ -445,7 +450,8 @@ export class Contract360Drawer extends Component {
         this.dialog = useService("dialog");
         this.notif = useService("notification");
         this.state = useState({
-            loaded: false, shown: false, tab: "terms", d: null,
+            loaded: false, shown: false,
+            tab: TABS.includes(this.props.tab) ? this.props.tab : "terms", d: null,
             // CD-3 — what has been typed but not written. A key is DELETED the
             // moment its value comes back to what the record holds, so the
             // count on the Save bar can never lie
@@ -685,6 +691,12 @@ export class Contract360Drawer extends Component {
         if (entry.kind === "m2o") {
             return Number(value || 0) === Number(cur || 0);
         }
+        // FILLIN P2 — a component's Yes / No or pick-list carries a NUMBER
+        // (1, 0, 2); the contract's own YES / NO fields carry words and fall
+        // through to the text compare below.
+        if ((entry.kind === "toggle" || entry.kind === "select") && typeof value === "number") {
+            return Math.abs(value - Number(cur || 0)) < 1e-9;
+        }
         const left = (value === false || value === undefined || value === null) ? "" : String(value);
         const right = (cur === false || cur === undefined || cur === null) ? "" : String(cur);
         return left.trim() === right.trim();
@@ -855,15 +867,62 @@ export class Contract360Drawer extends Component {
     }
     /** The payload's component row, dressed as a term entry so ONE editor and
      *  ONE coercion path serve both halves of the drawer. */
+    //
+    // FILLIN P2 — the SERVER names the editor (`edit_kind`): a Yes / No toggle
+    // or a pick-list when the rule has words for its values, a plain number
+    // for a count, money otherwise. The words themselves arrive as `options`
+    // from the rule's own labels; the client never invents one. A payload
+    // from an older server has no `edit_kind` and edits as it always did.
     compEntry(row) {
+        const isText = row.value_type === "text";
+        const kind = isText ? "text" : (row.edit_kind || "money");
+        const options = row.options || [];
+        const words = (kind === "toggle" || kind === "select") && options.length;
         return {
             name: "comp" + this.compRowKey(row),
             label: row.name,
-            kind: row.value_type === "text" ? "text" : "money",
-            value: row.value_type === "text" ? (row.text_value || "") : (row.amount || 0),
-            required: false,
+            kind: words ? kind : (kind === "toggle" || kind === "select" ? "money" : kind),
+            options,
+            value: isText ? (row.text_value || "") : (row.amount || 0),
+            // a value with words is always one of them: never "Leave empty"
+            required: Boolean(words),
             writable: true,
         };
+    }
+    // ------------------------------------------- FILLIN P2: filled in by us
+    get fillin() { return this.components.fillin || { n: 0, can_check: false }; }
+    get fillinLine() {
+        const n = this.fillin.n || 0;
+        return n === 1 ? _t("Payobook filled in 1 answer for this contract.")
+            : _t("Payobook filled in %s answers for this contract.", grouped(n));
+    }
+    get fillinHelp() {
+        return _t("They came from the usual answers of the scheme that pays this person. Change any that are wrong, then confirm the rest.");
+    }
+    fillTagClass(row) { return { checked: Boolean(row.fill_checked) }; }
+    /** "All correct": one RPC, never a save — nothing is changed, only confirmed. */
+    async checkFillin() {
+        if (!this.fillin.can_check || this.state.busy) { return; }
+        if (this.isDirty) {
+            this.notif.add(_t("Save or discard your changes first, then confirm the answers."),
+                           { type: "warning" });
+            return;
+        }
+        this.state.busy = true;
+        let result = null;
+        try {
+            result = await this.orm.call(MODEL, "cd_fillin_check", [Number(this.props.contractId)]);
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+            return;
+        } finally {
+            this.state.busy = false;
+        }
+        if (result && result.detail) { this.state.d = result.detail; }
+        this.notif.add((result && result.msg) || "", {
+            type: result && result.ok ? "success" : "warning",
+        });
+        if (this.props.onChanged) { this.props.onChanged(); }
     }
     startComp(row, ev) {
         if (!this.canEditComp(row)) { return; }
@@ -883,7 +942,7 @@ export class Contract360Drawer extends Component {
             this.state.edit = { scope: "comp", key };
         }
     }
-    commitComp(row, value) {
+    commitComp(row, value, label) {
         const entry = this.compEntry(row);
         const key = this.compRowKey(row);
         if (this._sameAsRecord(entry, value)) {
@@ -892,7 +951,7 @@ export class Contract360Drawer extends Component {
             this.state.dirty.comps.edits[key] = {
                 value,
                 isText: row.value_type === "text",
-                label: this._stageLabel(entry, value),
+                label: this._stageLabel(entry, value, label),
                 // A virtual row carries what the save needs to MAKE the line.
                 virtual: Boolean(row.virtual),
                 templateId: row.template_id || false,
@@ -1406,7 +1465,7 @@ export class Contract360Drawer extends Component {
         const parts = m.split("-");
         return (MONTHS()[parseInt(parts[1], 10)] || "") + " " + parts[0];
     }
-    hasDelta(row) { return Boolean(row.from || row.to); }
+    hasDelta(row) { return !row.nodelta && Boolean(row.from || row.to); }
     get maskedTitle() { return _t("Visible to payroll managers only"); }
     historyCountLabel() {
         return _t("Showing %(shown)s of %(total)s", {

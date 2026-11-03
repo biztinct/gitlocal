@@ -628,7 +628,9 @@ export const SCREENS = {
             fields.map(([l, v]) => `<div class="lrn-kv2"><span>${esc(tx(l))}</span><b>${
                 esc(typeof v === "number" ? M(v) : tx(v))}</b></div>`).join("")}`).join("");
         const comps = dr.comps.map((c) => `<div class="lrn-kv2"><span><b>${esc(c.code)}</b>${SP}${esc(tx(c.name))}<br>
-            <span class="lrn-chip ${c.tone}">${esc(tx(c.src))}</span></span><b>${esc(M(c.v))}</b></div>`).join("");
+            <span class="lrn-chip ${c.tone}">${esc(tx(c.src))}</span>${c.fill
+                ? `${SP}<span class="lrn-chip warn">${ic("sparkles")}${esc(tx(c.fill))}</span>` : ""}</span><b>${
+                esc(c.word ? tx(c.word) : M(c.v))}</b></div>`).join("");
         const hist = dr.history.map((h) => `<div class="lrn-kv2"><span>${esc(tx(h.what))}<br><span class="lrn-sub2">${
             esc(h.when)}${DOT}${esc(tx(h.src))}</span></span><b>${esc(M(h.from))}${ARROW}${esc(M(h.to))}</b></div>`).join("");
 

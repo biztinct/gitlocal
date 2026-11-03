@@ -1175,6 +1175,13 @@ const PRACTICE = {
           src: B("Held on this contract", "Lưu trên hợp đồng này"), tone: "b" },
         { code: "OT", name: B("Overtime", "Tăng ca"), v: 0,
           src: B("From a pay data file", "Từ tệp dữ liệu lương"), tone: "ok" },
+        /* FILLIN P2: a Yes / No answer reads as a word, never as money, and
+           an answer Payobook filled in by itself carries the amber tag until
+           somebody confirms it — as the real contract panel does. */
+        { code: "UNION", name: B("Union member", "Đoàn viên công đoàn"), v: 1,
+          word: B("Yes", "Có"),
+          src: B("Held on this contract", "Lưu trên hợp đồng này"), tone: "b",
+          fill: B("Filled in by Payobook · not checked", "Payobook đã điền · chưa kiểm tra") },
       ],
       history: [
         { what: B("Monthly wage", "Lương hàng tháng"), from: 11000000, to: EMP.mai.base, when: "01/01/2026",

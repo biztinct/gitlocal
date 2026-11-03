@@ -32,7 +32,9 @@
     # 20.7.2: FILTER wave 5 — Pay Runs, Payslips and Salary Structures on the
     # shared filter panel: anchors (pk-divchips, sr-filters, new ps-filters),
     # replica strips and the division lesson follow the screens.
-    'version': '19.0.20.8.4',
+    # 20.8.5: FILLIN P2 — the practice contract panel shows a Yes / No answer
+    # as a word and one "Filled in by Payobook · not checked" tag (JS only).
+    'version': '19.0.20.8.5',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

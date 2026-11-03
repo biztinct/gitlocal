@@ -798,6 +798,107 @@ class PbContracts(models.AbstractModel):
         return {'state': 'scoped', 'schemes': schemes,
                 'codes': {c for c in (answer.get('codes') or set()) if c}}
 
+    # =================================================================
+    # FILLIN P2 — words for a value, and "Filled in by Payobook"
+    # =================================================================
+    #: value kinds that are counted, not paid: shown as a plain number with
+    #: no money sign (A1). `money` and an unknown kind stay money.
+    _CD_PLAIN_KINDS = ('integer', 'quantity', 'decimal', 'rate', 'identifier')
+
+    @api.model
+    def _cd_value_view(self, rule, amount, symbol):
+        """`(display, edit_kind, options)` for one numeric value.
+
+        The words come from the rule's own `value_labels` (FILLIN D4) and
+        nowhere else; a value with no word shows its number. The engine, the
+        pay data file and the save keep the number — this is display only.
+        """
+        control = ''
+        options = []
+        if rule is not None and hasattr(rule, 'value_label_control'):
+            try:
+                control = rule.value_label_control() or ''
+                options = rule.value_label_options() or []
+            except Exception:   # noqa: BLE001 — a typo in the words never
+                control, options = '', []   # costs the drawer its row
+        kind = (getattr(rule, 'value_kind', '') or 'money') if rule else 'money'
+        number = amount or 0.0
+        if control:
+            if not options:
+                # a Yes / No kind with no words of its own
+                options = [{'value': 1.0, 'label': _("Yes")},
+                           {'value': 0.0, 'label': _("No")}]
+            word = ''
+            for option in options:
+                if abs(option['value'] - number) < 1e-9:
+                    word = option['label']
+                    break
+            if control == 'toggle':
+                # Yes first, as the contract's own YES / NO fields read
+                options = sorted(options, key=lambda o: -o['value'])
+            return (word or self._cd_num(number), control,
+                    [{'value': o['value'], 'label': o['label']}
+                     for o in options])
+        if kind in self._CD_PLAIN_KINDS:
+            return (self._cd_num(number),
+                    'integer' if kind in ('integer', 'quantity') else 'number',
+                    [])
+        return self._cd_money(number, symbol), 'money', []
+
+    @api.model
+    def _cd_fill_tag(self, line):
+        """The "Filled in by Payobook" tag for a stored line, or `{}`."""
+        if 'pb_fill' not in line._fields or line.pb_fill != 'auto':
+            return {'fill': False, 'fill_checked': False, 'fill_tag': False}
+        if not line.pb_checked_at:
+            return {'fill': True, 'fill_checked': False,
+                    'fill_tag': _("Filled in by Payobook · not checked")}
+        who = line.sudo().pb_checked_by.name or _("somebody")
+        return {'fill': True, 'fill_checked': True,
+                'fill_tag': _("Filled in by Payobook · checked by %(who)s on "
+                              "%(when)s") % {
+                    'who': who, 'when': _dlabel(line.pb_checked_at)}}
+
+    @api.model
+    def _cd_may_check(self):
+        """"All correct" needs exactly the right `pb_fillin_check` enforces
+        (`_pb_fillin_may_check`, FILLIN P1 §6). Asked once per payload so the
+        button is never offered to somebody the server would refuse."""
+        Contract = self.env['hr.contract']
+        if not hasattr(Contract, '_pb_fillin_may_check'):
+            return False
+        try:
+            return bool(Contract._pb_fillin_may_check())
+        except Exception:   # noqa: BLE001 — an ACL question, not a crash
+            return False
+
+    @api.model
+    def cd_fillin_check(self, contract_id):
+        """"All correct" on the contract panel: confirm every answer Payobook
+        filled in on this contract and nobody has checked. Writes nothing
+        else; refuses (a sentence, never a traceback) without the right."""
+        self._cd_require_read()
+        contract = self._cd_contract(contract_id)
+        if contract is None:
+            return {'ok': False, 'n': 0,
+                    'msg': _("That contract is no longer here.")}
+        if not hasattr(contract, 'pb_fillin_check') or not self._cd_may_check():
+            return {'ok': False, 'n': 0,
+                    'msg': _("You cannot confirm the answers on a contract. "
+                             "Ask an administrator for the right to change "
+                             "contracts.")}
+        try:
+            n = contract.pb_fillin_check()
+        except Exception as error:   # noqa: BLE001 — AccessError included
+            _logger.warning("Contract drawer: check refused on %s: %s",
+                            contract.id, error)
+            return {'ok': False, 'n': 0, 'msg': self._cd_reason(error)}
+        return {'ok': True, 'n': n,
+                'msg': (_("1 answer confirmed.") if n == 1 else
+                        _("%s answers confirmed.") % n) if n else
+                _("Nothing was left to check."),
+                'detail': self._cd_payload(contract)}
+
     @api.model
     def _cd_comp_row(self, line, template, symbol, can_write, rules, fills,
                      typed):
@@ -809,13 +910,19 @@ class PbContracts(models.AbstractModel):
         bounded = not (lower == 0 and upper == 0)
         rule = rules.get(code)
         fill = fills.get(code) or ('none', fills_label('none'), _FILLS['none'][1])
+        edit_kind, options = ('text', [])
         if value_type == 'text':
             text_value = (line.text_value or '') if typed else ''
             display = text_value or '—'
         else:
             text_value = False
-            display = self._cd_money(line.amount or 0.0, symbol)
+            display, edit_kind, options = self._cd_value_view(
+                rule, line.amount or 0.0, symbol)
+        tag = self._cd_fill_tag(line)
         return {
+            'edit_kind': edit_kind,
+            'options': options,
+            **tag,
             'id': line.id,
             'virtual': False,
             'code': code,
@@ -864,16 +971,23 @@ class PbContracts(models.AbstractModel):
             template_id = False
         bounded = not (lower == 0 and upper == 0)
         fill = fills.get(code) or ('none', fills_label('none'), _FILLS['none'][1])
+        if value_type == 'text':
+            display, edit_kind, options = '—', 'text', []
+        else:
+            display, edit_kind, options = self._cd_value_view(rule, 0.0,
+                                                              symbol)
         return {
             'id': False,
             'virtual': True,
+            'edit_kind': edit_kind,
+            'options': options,
+            'fill': False, 'fill_checked': False, 'fill_tag': False,
             'code': code,
             'name': name or '—',
             'value_type': value_type,
             'amount': 0.0,
             'text_value': '' if value_type == 'text' else False,
-            'display': '—' if value_type == 'text'
-            else self._cd_money(0.0, symbol),
+            'display': display,
             'lower': lower,
             'upper': upper,
             'bounded': bounded,
@@ -967,7 +1081,13 @@ class PbContracts(models.AbstractModel):
         # `total` is what the CONTRACT holds, so every stored line was already
         # added above — the ones in "Other values" included. It is not the sum
         # of the visible list, and it never was.
+        # FILLIN P2 A3 — the answers Payobook filled in that nobody checked.
+        unchecked = sum(1 for r in rows + other_rows
+                        if r.get('fill') and not r.get('fill_checked'))
         return {'rows': rows, 'count': len(rows),
+                'fillin': {'n': unchecked,
+                           'can_check': bool(unchecked and can_write
+                                             and self._cd_may_check())},
                 'other_rows': other_rows,
                 'other_count': len(other_rows),
                 'scope': {'state': state, 'schemes': scope.get('schemes') or []},
@@ -1022,8 +1142,15 @@ class PbContracts(models.AbstractModel):
         if Change is None:
             return []
         out = []
-        for change in Change.sudo().search(
-                [('contract_id', '=', contract.id)], limit=_HISTORY_CAP * 2):
+        changes = Change.sudo().search(
+            [('contract_id', '=', contract.id)], limit=_HISTORY_CAP * 2)
+        # FILLIN P2 — a Yes / No reads as Yes / No in the history too, never
+        # as "Rp0 → Rp1". One rule lookup for the whole stream.
+        rules = self._safe(lambda: self._cd_rule_by_code(
+            list({c.advantage_template_id.code or c.advantage_template_code
+                  for c in changes} - {False, ''}),
+            company=contract.company_id or self.env.company), default={})
+        for change in changes:
             template = change.advantage_template_id
             is_text = (template.value_type == 'text') if (
                 template and 'value_type' in template._fields) else bool(
@@ -1032,8 +1159,12 @@ class PbContracts(models.AbstractModel):
                 old = change.old_text_value or False
                 new = change.new_text_value or False
             else:
-                old = self._cd_money(change.old_amount or 0.0, symbol)
-                new = self._cd_money(change.new_amount or 0.0, symbol)
+                rule = rules.get(template.code or change.advantage_template_code)
+                old = self._cd_value_view(rule, change.old_amount or 0.0,
+                                          symbol)[0]
+                new = self._cd_value_view(rule, change.new_amount or 0.0,
+                                          symbol)[0]
+            source = change.change_source or ''
             when = change.changed_at or change.create_date
             out.append({
                 '_sort': fields.Datetime.to_string(when) if when else '',
@@ -1051,7 +1182,10 @@ class PbContracts(models.AbstractModel):
                 'to': new,
                 'source': self._cd_change_sentence(change),
                 'actor': change.changed_by.name or False,
-                'tone': 'indigo',
+                # a "checked" row changes nothing, so it shows no from → to
+                'nodelta': source == 'checked',
+                'tone': {'auto_default': 'amber',
+                         'checked': 'green'}.get(source, 'indigo'),
             })
         return out
 
@@ -1081,9 +1215,14 @@ class PbContracts(models.AbstractModel):
                 return _("From the connected system")
         # One literal per case so each is a msgid (LEARN REFRESH step 6):
         # the module-level dict above is data and never reaches a translator.
+        if source == 'checked':
+            return _("Checked by %s, no change") % (
+                change.sudo().changed_by.name or _("somebody"))
         return {
             'manual': _("Typed in Payobook"),
             'import_default': _("Filled from the component's default"),
+            'auto_default': _("Filled in by Payobook from the scheme's usual "
+                              "answer"),
         }.get(source) or _("From a pay data file")
 
     @api.model
