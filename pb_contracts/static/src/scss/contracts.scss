@@ -51,6 +51,7 @@
         b { color: var(--pbim-text, #1B1733); font-weight: 700; }
     }
     .ct-fill-acts { display: flex; gap: 6px; flex: none; }
+    .ct-fill-done .ppl-empty-ic { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
     .ct-fill-bar {
         display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
         padding: 11px 14px; border-radius: 12px; background: var(--pbim-surface, #fff);

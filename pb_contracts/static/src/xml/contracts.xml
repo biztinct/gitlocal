@@ -115,6 +115,13 @@
           <span>A contract is the agreement payroll is worked out from. Add the first one.</span>
           <button class="pbim-btn primary pbim-btn-sm" t-on-click="newContract"><t t-out="ic('plus',14)"/> New contract</button>
         </div>
+        <!-- FILLIN P2 — the review list, empty: good news, said as such. -->
+        <div t-elif="fillinView and !kit.search" class="pbim-panel ppl-empty ct-fill-done">
+          <div class="ppl-empty-ic"><t t-out="ic('checkCircle',22)"/></div>
+          <b>Nothing to check</b>
+          <span>Every answer Payobook filled in by itself has been confirmed or changed by a person.</span>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => kit.toggleFilters({})">Show all contracts</button>
+        </div>
         <div t-else="" class="pbim-panel ppl-empty">
           <div class="ppl-empty-ic"><t t-out="ic('search',22)"/></div>
           <b>No contracts match these filters</b>
