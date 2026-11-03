@@ -72,7 +72,7 @@
                 <span t-if="p.days_to_expiry !== null and p.days_to_expiry >= 0 and p.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="p.days_to_expiry"/>d</span>
               </div>
               <div class="ppl-wage">
-                <span class="v money" t-esc="p.wage ? money(p.wage) : '—'"/>
+                <span class="v money" t-esc="p.wage ? money(p.wage, p.currency) : '—'"/>
                 <span class="k">monthly</span>
               </div>
               <div class="ppl-ready">

@@ -168,9 +168,10 @@ export class PbPeople extends Component {
     ic(n, s = 16) { return ic(n, s); }
 
     // ---- formatting ----
-    money(n) {
+    /** `cur`: a row's own sign (its pay scheme's money); totals use the company's. */
+    money(n, cur) {
         if (n === null || n === undefined) return "—";
-        const cur = this.state.currency || "₫";
+        cur = cur || this.state.currency || "₫";
         const a = Math.abs(n);
         if (a >= 1e9) return cur + (n / 1e9).toFixed(1) + "B";
         if (a >= 1e6) return cur + (n / 1e6).toFixed(1) + "M";

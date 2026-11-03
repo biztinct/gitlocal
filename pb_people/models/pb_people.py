@@ -46,6 +46,29 @@ class PbPeople(models.AbstractModel):
             return default
 
     @api.model
+    def _pay_symbol(self, e, cache=None):
+        """The money sign for this person's wage: their pay scheme's currency.
+
+        A Singapore-paid person's wage is in S$, not the company's dong. The
+        scheme comes from the stored "Paid by" (`pb_paid_by_id`, GROUP P2);
+        a database without it, or a person nobody pays yet, gets the
+        company's money as before. `cache` (scheme id -> sign) keeps a roster
+        page to one lookup per scheme.
+        """
+        company_sign = (e.company_id or self.env.company).currency_id.symbol or ''
+        scheme = e.pb_paid_by_id if 'pb_paid_by_id' in e._fields else False
+        if not scheme or not hasattr(scheme, 'scheme_currency'):
+            return company_sign
+        if cache is not None and scheme.id in cache:
+            return cache[scheme.id]
+        sign = self._safe(
+            lambda: scheme.sudo().scheme_currency().get('symbol') or '',
+            default='') or company_sign
+        if cache is not None:
+            cache[scheme.id] = sign
+        return sign
+
+    @api.model
     def _roster_kpis(self):
         """The quiet numbers + department list, over every active employee."""
         Emp = self.env['hr.employee']
@@ -138,6 +161,7 @@ class PbPeople(models.AbstractModel):
         count_new = new_hires is None
         new_hires = new_hires or 0
         people = []
+        pay_signs = {}
         emps = self._safe(lambda: Emp.search(LIST_DOM, order='name', limit=ROSTER_LIMIT),
                           default=Emp.browse())
         for e in emps:
@@ -155,6 +179,7 @@ class PbPeople(models.AbstractModel):
                     new_hires += 1
                 people.append({
                     'id': e.id,
+                    'currency': self._pay_symbol(e, pay_signs),
                     'name': e.name or '—',
                     'initials': _initials(e.name),
                     'avatar': '/web/image/hr.employee/%s/avatar_128' % e.id,
@@ -353,7 +378,7 @@ class PbPeople(models.AbstractModel):
         ]
 
     @api.model
-    def _roster_row(self, e, today, month_start):
+    def _roster_row(self, e, today, month_start, pay_signs=None):
         """One card on the roster (shared by the paged list and the old call)."""
         c = e.contract_id
         state = c.state if c else 'none'
@@ -364,6 +389,7 @@ class PbPeople(models.AbstractModel):
             dte = (c.date_end - today).days
         return {
             'id': e.id,
+            'currency': self._pay_symbol(e, pay_signs),
             'name': e.name or '—',
             'initials': _initials(e.name),
             'avatar': '/web/image/hr.employee/%s/avatar_128' % e.id,
@@ -406,9 +432,10 @@ class PbPeople(models.AbstractModel):
         today = date.today()
         month_start = today.replace(day=1)
         rows = []
+        pay_signs = {}
         for e in emps:
             try:
-                rows.append(self._roster_row(e, today, month_start))
+                rows.append(self._roster_row(e, today, month_start, pay_signs))
             except Exception as ex:  # noqa: BLE001 — one bad card never blanks the list
                 _logger.debug("People roster row failed: %s", ex)
         return {'rows': rows, 'total': Emp.search_count(domain), 'offset': offset}
@@ -434,7 +461,6 @@ class PbPeople(models.AbstractModel):
         e = self.env['hr.employee'].browse(int(emp_id))
         if not e.exists():
             return {'error': 'Employee not found'}
-        cur = (e.company_id or self.env.company).currency_id
         c = e.contract_id
         today = date.today()
         jd = _join_date(e)
@@ -474,7 +500,7 @@ class PbPeople(models.AbstractModel):
             'email': e.work_email or '', 'phone': e.work_phone or e.mobile_phone or '',
             'country': e.country_id.name if e.country_id else '',
             'join_date': str(jd) if jd else '', 'tenure_label': tenure_label,
-            'currency': cur.symbol or '',
+            'currency': self._pay_symbol(e),
             'contract': {
                 'id': c.id if c else False,
                 'state': state, 'state_label': STATE_LABEL.get(state, state),
