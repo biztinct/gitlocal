@@ -153,6 +153,22 @@ class HrPayslipRun(models.Model):
     #: The row in the approval catalogue this model is approved under.
     _approval_process_key = 'payrun'
 
+    @api.model
+    def _get_view(self, view_id=None, view_type='form', **options):
+        """PRS P2: the Run settings card says "Books it is posted to" for the
+        salary journal. That field comes from om_hr_payroll_account, which
+        this module does not depend on, so it is relabelled here — only when
+        the composed form carries it — rather than by an xpath that would
+        fail to apply wherever accounting is not installed."""
+        arch, view = super()._get_view(view_id, view_type, **options)
+        if view_type == 'form' and 'pb-payrun-form' in (arch.get('class') or ''):
+            for node in arch.xpath("//group[hasclass('pb-prs-settings')]"
+                                   "//field[@name='journal_id']"):
+                node.set('string', self.env._("Books it is posted to"))
+                node.set('help', self.env._(
+                    "Where the salary costs land when this run is posted."))
+        return arch, view
+
     def action_pb_print_payslips(self):
         """Print computed slips for review without advancing the approval."""
         self.ensure_one()

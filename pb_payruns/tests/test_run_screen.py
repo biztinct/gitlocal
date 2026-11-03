@@ -407,9 +407,11 @@ class TestRunScreen(TransactionCase):
 
         first = self._screen(august)
         self.assertIsNone(first['compare'])
+        # R5: the sentence names the month that has no run of this kind
         self.assertEqual(first['compare_none'],
-                         'This is the first run on this scheme, so there is '
-                         'nothing to compare with yet.')
+                         'There is no run of the same kind for July 2026 on '
+                         'this scheme, so there is nothing to compare with '
+                         'yet.')
         self.assertFalse(first['people']['changed_available'])
 
         screen = self._screen(september)
@@ -696,3 +698,257 @@ class TestRunScreen(TransactionCase):
         with self.assertRaises(UserError):
             run.action_pb_slips('delete', slip.ids)
         self.assertTrue(slip.exists())
+
+    # ============================================================ PRS P2
+    def _route_fast(self):
+        """A published "No approval needed" route, company-wide (rize VN's
+        shape, PRS-G18)."""
+        if not self.process:
+            self.skipTest('the approval catalogue is not installed here')
+        Binding = self.env['biz.approval.binding'].sudo()
+        Binding.search([
+            ('company_id', '=', self.company.id),
+            ('process_id', '=', self.process.id),
+            ('active', '=', True)]).write({'active': False})
+        workflow = self.env['biz.approval.workflow'].sudo().create({
+            'name': 'PRS fast lane', 'company_id': self.company.id,
+            'process_id': self.process.id, 'owner_user_id': self.env.user.id})
+        version = self.env['biz.approval.workflow.version'].sudo().create({
+            'workflow_id': workflow.id, 'revision': 1, 'status': 'draft',
+            'definition': _route([{
+                'key': 'f1', 'kind': 'fast', 'title': 'No approval needed',
+                'who': {}, 'min_amount': 0, 'condition': None}])})
+        checks = self.engine.validate_for_publish(version.id)
+        self.assertFalse(checks['errors'], checks['errors'])
+        self.engine.publish(version.id, version.draft_revision, None, 'test',
+                            [w['code'] for w in checks['warnings']])
+        Binding.create({
+            'company_id': self.company.id, 'process_id': self.process.id,
+            'scope_key': '', 'scope_label': self.company.name,
+            'kind_key': 'any', 'workflow_id': workflow.id, 'mode': 'follow'})
+        return workflow
+
+    def _scheme(self, code, cycle):
+        Config = self.env['hr.formula.config']
+        values = {'name': 'PRS %s scheme' % code, 'code': code,
+                  'country_code': 'VN', 'company_id': self.company.id,
+                  'cycle_type': cycle}
+        if 'state' in Config._fields:
+            values['state'] = 'active'
+        return Config.create(values)
+
+    def test_t17_a_fast_lane_route_reads_amber_not_green(self):
+        """R4: no sign-off is allowed, but it is AMBER, says what happens,
+        never makes the run unready and never adds to the warn badge."""
+        self._route_fast()
+        run = self._run()
+        self._slip(run, self.emp_a)
+        screen = self._screen(run)
+        route_row = next(i for i in screen['checks']['items']
+                         if i['key'] == 'route')
+        self.assertTrue(route_row['ok'])
+        self.assertEqual(route_row['tone'], 'amber')
+        self.assertEqual(route_row['title'],
+                         'No sign-off is set for this scheme')
+        self.assertEqual(route_row['detail'],
+                         'Sending it approves it straight away.')
+        self.assertEqual(screen['checks']['verdict'], 'ok')
+        self.assertIn('approved the moment it is sent',
+                      screen['checks']['sub'])
+        self.assertEqual(screen['primary']['warn'], 0)
+        self.assertEqual(screen['journey'][2]['state'], 'now')
+        confirm = screen['primary']['confirm']
+        self.assertEqual(confirm['body'],
+                         'No sign-off is set for this scheme. Sending it '
+                         'approves it straight away.')
+        self.assertFalse(confirm['danger'])
+        self.assertTrue(screen['route']['fast'])
+        # every other row carries its own tone
+        self.assertEqual({i['key']: i['tone'] for i in screen['checks']['items']
+                          if i['key'] != 'route'},
+                         {'data': 'ok', 'balance': 'ok', 'calculated': 'ok'})
+
+    def test_t18_a_june_mid_month_run_is_not_julys_comparison(self):
+        """R5: only the SAME KIND of run, for the calendar month JUST
+        BEFORE, is "Compared with"."""
+        mid = self._scheme('PRSMID', 'mid_cycle')
+        end = self._scheme('PRSEND', 'end_cycle')
+        # no run-level scheme on these runs: the kind is read off the
+        # payslips' scheme, exactly as `_pb_kind_key` reads it for a route
+        june_mid = self._run('PRS June advance', '2026-06-01', '2026-06-15')
+        self._slip(june_mid, self.emp_a, formula_config_id=mid.id)
+        july_end = self._run('PRS July 2026', '2026-07-01', '2026-07-31')
+        self._slip(july_end, self.emp_a, formula_config_id=end.id)
+        self.assertEqual(june_mid._pb_kind_key(), 'mid_cycle')
+        self.assertEqual(july_end._pb_kind_key(), 'end_cycle')
+        screen = self._screen(july_end)
+        self.assertIsNone(screen['compare'])
+        self.assertIn('June 2026', screen['compare_none'])
+        self.assertFalse(screen['people']['changed_available'])
+        # a June END-of-month run IS the comparison
+        june_end = self._run('PRS June 2026', '2026-06-16', '2026-06-30')
+        self._slip(june_end, self.emp_a, formula_config_id=end.id)
+        self.assertEqual(self._screen(july_end)['compare']['run_id'],
+                         june_end.id)
+
+    def test_t18b_two_months_back_is_not_last_month(self):
+        may = self._run('PRS May 2026', '2026-05-01', '2026-05-31',
+                        config=self.viet)
+        self._slip(may, self.emp_a)
+        july = self._run('PRS July 2026', '2026-07-01', '2026-07-31',
+                         config=self.viet)
+        self._slip(july, self.emp_a)
+        screen = self._screen(july)
+        self.assertIsNone(screen['compare'])
+        self.assertIn('June 2026', screen['compare_none'])
+
+    def test_parts_main_then_route_add_up_to_the_whole(self):
+        """P2 item 16: 'main' draws everything but the route preview; 'route'
+        fills exactly the pieces the route decides; together they are the
+        one-shot payload."""
+        run = self._ready_draft()
+        run.invalidate_recordset()
+        whole = self.board.get_run_screen(run.id)
+        main = self.board.get_run_screen(run.id, parts='main')
+        route = self.board.get_run_screen(run.id, parts='route')
+        self.assertFalse(whole['route_pending'])
+        self.assertTrue(main['route_pending'])
+        self.assertEqual(main['route']['mode'], 'pending')
+        pending = next(i for i in main['checks']['items'] if i['key'] == 'route')
+        self.assertEqual(pending['tone'], 'pending')
+        self.assertTrue(pending['ok'])
+        self.assertEqual(main['primary']['warn'], 0)
+        self.assertEqual(set(route), {'route', 'checks', 'journey', 'primary',
+                                      'actions', 'route_pending'})
+        for key in ('route', 'checks', 'journey', 'primary', 'actions'):
+            self.assertEqual(route[key], whole[key], key)
+        for key in ('money', 'people', 'header', 'compare', 'compare_none'):
+            self.assertEqual(main[key], whole[key], key)
+        # nothing is ever deferred where there is nothing to preview
+        empty = self.board.get_run_screen(self._run('PRS empty').id,
+                                          parts='main')
+        self.assertFalse(empty['route_pending'])
+
+    def test_a_draft_with_payslips_can_still_add_people(self):
+        """The header's Generate Payslips went into the primary (no payslips)
+        and More › Add or remake payslips (some payslips) — never lost."""
+        run = self._ready_draft()
+        more = {i['key']: i for i in self._screen(run)['actions']['more']}
+        self.assertIn('remake', more)
+        self.assertEqual(more['remake']['action'],
+                         'om_hr_payroll.action_hr_payslip_by_employees')
+        self.assertEqual(more['remake']['context']['active_id'], run.id)
+
+    # ============================================= P2: the form itself
+    # Header buttons the new screen does NOT offer, each with why. A module
+    # that adds a header button to the pay run form must either be offered
+    # by `get_run_screen` (primary, Downloads, More) or be listed here —
+    # otherwise its button would vanish silently behind the hidden header
+    # (PRS C13).
+    RETIRED = {
+        # offered in More only when the payslips span 2+ review groups;
+        # offering it on one group is a dead end (P1 §1)
+        'action_split_review_groups':
+            'More › Split into review groups, only when there is something '
+            'to split',
+        # legacy Indonesia ZIP print; Downloads › Payslips as PDF does it
+        'action_print_payslips_zip':
+            'Downloads › Payslips as PDF replaces the legacy ZIP print',
+    }
+
+    def _composed_form(self):
+        from lxml import etree
+        views = self.Run.get_views([(False, 'form')])
+        return etree.fromstring(views['views']['form']['arch'])
+
+    def _offered_names(self):
+        """Every button name or action the screen offers, across the states
+        that offer them: an empty draft, a draft with payslips, a done run."""
+        names = set()
+
+        def take(payload):
+            for entry in [payload['primary']] + payload['actions']['downloads'] \
+                    + payload['actions']['more']:
+                if entry.get('method'):
+                    names.add(entry['method'])
+                if entry.get('action'):
+                    names.add(entry['action'])
+                    ref = self.env.ref(entry['action'], raise_if_not_found=False)
+                    if ref:
+                        names.add(str(ref.id))
+        take(self._screen(self._run('PRS empty')))
+        run = self._ready_draft()
+        take(self._screen(run))
+        run.state = 'done'
+        take(self._screen(run))
+        return names
+
+    def test_t14_every_header_button_is_offered_or_retired(self):
+        arch = self._composed_form()
+        header = [b.get('name') for b in arch.xpath('//header//button')
+                  if b.get('name')]
+        self.assertTrue(header, 'the composed form has no header buttons')
+        offered = self._offered_names()
+        missing = sorted(n for n in set(header)
+                         if n not in offered and n not in self.RETIRED)
+        self.assertFalse(
+            missing,
+            "These header buttons are hidden by the pay run screen but it "
+            "offers them nowhere: %s. Offer each one in get_run_screen "
+            "(primary / Downloads / More) or add it to RETIRED with a "
+            "reason." % missing)
+
+    def test_t15_the_composed_form_still_validates(self):
+        arch = self._composed_form()
+        widgets = [w.get('name') for w in arch.xpath('//widget')]
+        self.assertIn('pb_payrun_screen', widgets)
+        # the screen is the first thing on the sheet
+        sheet = arch.xpath('//sheet')[0]
+        first = next(iter(sheet))
+        self.assertEqual(first.get('name'), 'pb_payrun_screen')
+        # the old pieces are still there for the classic layout and for
+        # every view that anchors on them — hidden, never deleted (C7)
+        for anchor in ("//field[@name='slip_ids']",
+                       "//field[@name='credit_note']",
+                       "//field[@name='pb_total_net']",
+                       "//widget[@name='vu_progress_rail']"):
+            self.assertTrue(arch.xpath(anchor), anchor)
+        self.assertTrue(arch.xpath("//*[contains(@class, 'pb-prs-settings')]"))
+
+    def test_t16_the_auto_hero_is_switched_off(self):
+        arch = self._composed_form()
+        classes = (arch.get('class') or '').split()
+        self.assertIn('vu-no-hero', classes)
+        self.assertIn('pb-payrun-form', classes)
+        # item 11: no dead-end "New" on the run form
+        self.assertEqual(arch.get('create'), '0')
+
+    def test_board_advice_shows_amber_with_its_own_door_or_none(self):
+        """The board's amber advice lines (`_run_checks`) appear on the
+        screen as amber rows: with a button when they carry a `next` door
+        (key + label), with none when they do not ('fillin' today)."""
+        self._route_two_steps()
+        run = self._run()
+        self._slip(run, self.emp_a)
+        built = self.board._board_cards(run)
+        card = dict(built['batches'][0])
+        card['checks'] = list(card.get('checks') or []) + [
+            {'key': 'fillin', 'tone': 'amber', 'text': 'Filled in, unchecked.',
+             'detail': 'Check them once.', 'next': None, 'advisory': True},
+            {'key': 'close', 'tone': 'amber', 'text': 'Week not closed.',
+             'detail': 'Advice only.', 'advisory': True,
+             'next': {'key': 'close', 'label': 'Open Close'}},
+            {'key': 'nodata', 'tone': 'rose', 'text': 'Not advice.',
+             'next': None, 'advisory': False}]
+        facts = self.board._screen_slip_facts(run.slip_ids)
+        route = self.board._screen_route(run, card, 'draft', 1)
+        checks = self.board._screen_checks(run, card, 'draft', 1, 0, facts,
+                                           route, True)
+        rows = {i['key']: i for i in checks['items']}
+        self.assertEqual(rows['fillin']['tone'], 'amber')
+        self.assertIsNone(rows['fillin']['door'])
+        self.assertEqual(rows['close']['door'],
+                         {'key': 'close', 'label': 'Open Close', 'kind': 'board'})
+        self.assertNotIn('nodata', rows)
+        self.assertTrue(all(rows[k]['ok'] for k in ('fillin', 'close')))
+        self.assertEqual(checks['verdict'], 'ok')

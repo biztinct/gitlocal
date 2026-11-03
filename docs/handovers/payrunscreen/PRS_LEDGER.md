@@ -79,6 +79,14 @@ C12. **Browser proof is mandatory.** No UI is "done" until it has been opened
     payobook.com walk with the QA login (see memory payobook-qa-login; never
     write its password into the repo). Rize run 1591 may be OPENED to look, but
     nothing on rize is changed, submitted or recalculated (owner ruling below).
+C13. **Header-button guard (P2).** The pay run screen hides the form's native
+    `<header>`. Every `<header><button name=…>` in the COMPOSED form must be
+    offered by `get_run_screen` (primary, Downloads or More) or listed in
+    `RETIRED` in `pb_payruns/tests/test_run_screen.py` with a one-line reason.
+    `test_t14_every_header_button_is_offered_or_retired` fails otherwise, so a
+    module that adds a header button can never vanish silently behind the new
+    screen. Generate Payslips lives on as the primary "Make payslips" (empty
+    run) and More › "Add or remake payslips" (run with payslips).
 
 ## Owner rulings (do not re-ask)
 
@@ -90,6 +98,16 @@ R2. Rize run 1591 "Rize Vietnam Payroll · October 2026" covers 1–30 Sep. Owne
 R3. "Compared with last month" shows only when an earlier run on the same
     scheme exists; otherwise the screen says so plainly (Rize's VN scheme has
     no earlier run today).
+R4. (2026-11-04) A scheme with NO sign-off (fast lane, e.g. Rize VN) shows the
+    route check as AMBER, not green: "No sign-off is set for this scheme.
+    Sending it approves it straight away." The Send button's confirm says the
+    same. Amber does not make the run unready and does not add to the
+    primary's warn badge (that counts rose rows only).
+R5. (2026-11-04) "Compared with" = ONLY the run of the SAME KIND (end of
+    month vs mid-month / same run type the scheme map uses) for the CALENDAR
+    MONTH JUST BEFORE this run's month, same scheme + division + currency, with
+    payslips. None → compare None + "nothing to compare with yet". This
+    narrows R3 and drives the per-person "changed" flags too.
 
 ## The ten view layers on the pay run form (verified 2026-11-03, rize)
 
@@ -189,3 +207,42 @@ PRS-G18. (Finding, 2026-11-04) Rize run 1591's route resolves to a FAST lane
         scheme is named "Rize Vietnam Payroll — archived master-data scheme".
         Nothing was changed (R2); the owner should know before anyone presses
         it.
+PRS-G19. (P2) `invisible="1"` removes a node from the rendered form, so no CSS
+        class can ever bring it back. The "Show the classic layout" escape hatch
+        needs the old pieces RENDERED and hidden by a class (`pb-prs-legacy`,
+        shown again under `body.pb-prs-classic`).
+PRS-G20. (P2) An xpath `position="move"` only works as a DIRECT child of a spec.
+        To move a node into a NEW wrapper, insert the wrapper in one spec, then
+        move into it with a second spec (`//div[hasclass('pb-prs-lower')]`
+        inside → `//sheet/group[...]` move). After the move `//sheet/group`
+        no longer finds Run settings: later views must use
+        `//group[hasclass('pb-prs-settings')]` or a field name.
+PRS-G21. (P2) `journal_id` comes from om_hr_payroll_account, which pb_payruns
+        does not depend on. An xpath on it would break the view wherever
+        accounting is absent, so its label is set in `hr.payslip.run._get_view`
+        (only when the composed form carries it).
+PRS-G22. (P2) A local scratch DB cloned before another session added a stored
+        field fails 30+ tests with "column a.pb_fill does not exist" (their
+        `_run_checks` advisory). `-u` the module that owns the column too
+        (here pb_hr_payroll_formula) — it is a stale schema, not a bug.
+PRS-G23. (P2) Odoo 19 JS `sprintf` with a keyed dict substitutes `%(x)s` only:
+        a literal "%%" stays TWO characters. Write a bare "%" in a keyed `_t`
+        sentence ("%(pct)s% of the total cost").
+PRS-G24. (P2) `pb_std_work_days` ("Full month in working days") had no readonly
+        rule at all — it could be changed on an approved run. The run screen's
+        view now locks it outside draft, like every other run setting.
+
+PRS-G25. (P2) A bubbling `keydown` listener on `window` never sees Escape in
+        this web client — another window-level listener consumes it first. The
+        screen listens in the CAPTURE phase (`useExternalListener(window,
+        "keydown", fn, {capture: true})`) and steps aside whenever an Odoo
+        dialog is open, so it never steals Escape from a dialog.
+PRS-G26. (P2) Bootstrap owns `.row` (flex-wrap, negative margins, `> *`
+        width 100%) and `.badge` (upper-case). A component class named `row`
+        or `badge` inside a backend screen is silently re-laid out; prefix them
+        (`prs-row`, `prs-badge`).
+PRS-G27. (P2, local testing) A cloned scratch DB has no filestore, so its
+        cached asset bundles 404 and the web client never boots. Purge
+        `/web/assets/%` attachments (or copy the source filestore) after
+        `createdb -T`, and insert an `orm_signaling_assets` row after a JS
+        change on a running server, or the old bundle keeps being served.

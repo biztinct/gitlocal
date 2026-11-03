@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PRS P2 — the pay run screen. Visual + behavioural spec:
+  docs/design/payrun-screen-prototype.html (owner-approved 2026-11-03).
+  Every word comes from the server payload or a whole `_t` sentence.
+-->
+<templates xml:space="preserve">
+
+<t t-name="pb_payruns.PayrunScreen">
+  <div class="pb-prs" t-ref="root" t-att-data-k="recordKey">
+
+    <!-- ============================================== loading skeleton -->
+    <t t-if="state.loading and !state.data">
+      <div class="pb-prs-skel" aria-busy="true" aria-label="Loading the pay run">
+        <div class="pb-prs-head"><div class="pb-prs-chips">
+          <span class="sk sk-chip"/><span class="sk sk-chip"/><span class="sk sk-chip w2"/><span class="sk sk-chip"/>
+        </div><div class="pb-prs-actions"><span class="sk sk-btn"/><span class="sk sk-btn"/><span class="sk sk-btn w2"/></div></div>
+        <div class="pb-prs-journey"><t t-foreach="[1,2,3,4,5]" t-as="i" t-key="i"><div class="jstep"><span class="sk sk-dot"/><span class="sk sk-line"/></div></t></div>
+        <div class="pb-prs-top">
+          <div class="pb-prs-card pb-prs-money"><span class="sk sk-line w3"/><span class="sk sk-big"/><span class="sk sk-line w4"/><span class="sk sk-bar"/></div>
+          <div class="pb-prs-card pb-prs-checks"><t t-foreach="[1,2,3,4]" t-as="i" t-key="i"><div class="check"><span class="sk sk-dot"/><span class="sk sk-line w3"/></div></t></div>
+        </div>
+        <div class="pb-prs-card"><t t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i"><div class="sk-row"><span class="sk sk-dot"/><span class="sk sk-line w3"/><span class="sk sk-line"/></div></t></div>
+      </div>
+    </t>
+
+    <!-- ============================================== the load failed -->
+    <t t-elif="state.error and !state.data">
+      <section class="pb-prs-card pb-prs-failed" role="alert">
+        <span class="art"><span class="ic" t-out="icon('triangleAlert', 28)"/></span>
+        <h2>This pay run's screen could not be loaded</h2>
+        <p t-esc="state.error"/>
+        <p class="muted">Nothing was changed. Try again, or use the classic layout to work on the run in the meantime.</p>
+        <div class="prs-row">
+          <button type="button" class="pb-btn primary" t-on-click="retry"><span class="ic" t-out="icon('refresh', 16)"/>Try again</button>
+          <button type="button" class="pb-btn outline" t-on-click="toggleClassic">
+            <span class="ic" t-out="icon('columns', 16)"/>
+            <t t-if="state.classic">Hide the classic layout</t><t t-else="">Show the classic layout</t>
+          </button>
+        </div>
+      </section>
+    </t>
+
+    <t t-elif="state.data">
+      <t t-set="data" t-value="state.data"/>
+
+      <!-- ================================================ header -->
+      <div class="pb-prs-head">
+        <div class="pb-prs-chips">
+          <span t-attf-class="pill {{pillTone}}"><i/><t t-esc="header.status.label"/></span>
+          <span class="chip"><span class="ic" t-out="icon('calendar', 14)"/><t t-esc="workDatesChip"/></span>
+          <span t-if="header.scheme" class="chip" t-att-title="header.scheme"><span class="ic" t-out="icon('layers', 14)"/><span class="chip-t" t-esc="header.scheme"/></span>
+          <span class="chip"><span class="ic" t-out="icon('users', 14)"/><t t-esc="peopleChip"/></span>
+          <span class="chip"><span class="ic" t-out="icon('wallet', 14)"/><t t-esc="paidInChip"/></span>
+        </div>
+        <div class="pb-prs-actions">
+          <div t-if="downloads.length" class="pb-prs-dd">
+            <button type="button" class="pb-btn outline pb-prs-menu-btn" t-on-click="(ev) => this.toggleMenu('dl', ev)"
+                    t-att-aria-expanded="state.menu === 'dl' ? 'true' : 'false'">
+              <span class="ic" t-out="icon('download', 16)"/>Downloads<span class="ic" t-out="icon('chevronDown', 16)"/>
+            </button>
+            <div t-if="state.menu === 'dl'" class="pb-prs-menu left" role="menu">
+              <t t-foreach="downloads" t-as="item" t-key="item.key">
+                <button type="button" role="menuitem" t-on-click="() => this.runItem(item)">
+                  <span class="ic" t-out="icon(menuIcon(item), 17)"/>
+                  <span><b t-esc="item.label"/><small t-esc="item.hint"/></span>
+                </button>
+              </t>
+            </div>
+          </div>
+          <div class="pb-prs-dd">
+            <button type="button" class="pb-btn outline pb-prs-menu-btn" t-on-click="(ev) => this.toggleMenu('more', ev)"
+                    aria-label="More actions" t-att-aria-expanded="state.menu === 'more' ? 'true' : 'false'">
+              <span class="ic rot" t-out="icon('moreVertical', 16)"/>More
+            </button>
+            <div t-if="state.menu === 'more'" class="pb-prs-menu" role="menu">
+              <t t-if="moreLook.length">
+                <h6>Look closer</h6>
+                <t t-foreach="moreLook" t-as="item" t-key="item.key">
+                  <button type="button" role="menuitem" t-on-click="() => this.runItem(item)">
+                    <span class="ic" t-out="icon(menuIcon(item), 17)"/><span><b t-esc="item.label"/><small t-esc="item.hint"/></span>
+                  </button>
+                </t>
+              </t>
+              <t t-if="moreChange.length">
+                <h6>Change this run</h6>
+                <t t-foreach="moreChange" t-as="item" t-key="item.key">
+                  <button type="button" role="menuitem" t-on-click="() => this.runItem(item)">
+                    <span class="ic" t-out="icon(menuIcon(item), 17)"/><span><b t-esc="item.label"/><small t-esc="item.hint"/></span>
+                  </button>
+                </t>
+              </t>
+              <t t-if="moreDanger.length">
+                <hr/>
+                <t t-foreach="moreDanger" t-as="item" t-key="item.key">
+                  <button type="button" role="menuitem" t-att-class="item.danger ? 'danger' : ''" t-on-click="() => this.runItem(item)">
+                    <span class="ic" t-out="icon(menuIcon(item), 17)"/><span><b t-esc="item.label"/><small t-esc="item.hint"/></span>
+                  </button>
+                </t>
+              </t>
+              <hr/>
+              <button type="button" role="menuitem" t-on-click="toggleClassic">
+                <span class="ic" t-out="icon('columns', 17)"/>
+                <span t-if="state.classic"><b>Hide the classic layout</b><small>Back to this screen only</small></span>
+                <span t-else=""><b>Show the classic layout</b><small>The old buttons and payslip list, under this screen, in this tab</small></span>
+              </button>
+            </div>
+          </div>
+          <button t-if="primary" type="button" class="pb-btn primary" t-att-disabled="state.busy"
+                  t-on-click="pressPrimary" t-attf-title="{{keyHint}} + Enter">
+            <span class="ic" t-out="icon(primaryIcon, 16)"/><t t-esc="primary.label"/>
+            <span t-if="primary.warn" class="prs-badge" t-esc="warnBadge"/>
+            <span class="kbd on-primary"><t t-esc="keyHint"/>↵</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================================ banners -->
+      <div t-if="state.classic" class="pb-prs-banner slate" role="status">
+        <span class="ic" t-out="icon('columns', 20)"/>
+        <div class="grow"><b>The classic layout is showing</b>The old buttons and the payslip list are back under this screen, for this browser tab.</div>
+        <button type="button" class="pb-btn sm outline" t-on-click="toggleClassic">Hide it</button>
+      </div>
+      <div t-if="data.date_mismatch" class="pb-prs-banner amber" role="alert">
+        <span class="ic" t-out="icon('calendar', 20)"/>
+        <div class="grow"><b>The name and the dates do not match</b><t t-esc="data.date_mismatch.text"/></div>
+      </div>
+      <div t-if="statusKey === 'sent_back'" class="pb-prs-banner amber" role="alert">
+        <span class="ic" t-out="icon('rotate', 20)"/>
+        <div class="grow"><b t-esc="sentBackTitle"/>“<t t-esc="data.run.return_note"/>”</div>
+        <button t-if="flaggedCount" type="button" class="pb-btn sm outline" t-on-click="showFlagged">Show who needs a look</button>
+      </div>
+      <div t-if="isRejected" class="pb-prs-banner rose" role="alert">
+        <span class="ic" t-out="icon('ban', 20)"/>
+        <div class="grow"><b t-esc="rejectedTitle"/><t t-if="data.run.reject_note">“<t t-esc="data.run.reject_note"/>” </t>A rejected run cannot be sent again or changed; start a new one for this period.</div>
+      </div>
+
+      <!-- ================================================ journey -->
+      <ol class="pb-prs-journey" t-att-aria-label="t.journeyAria">
+        <t t-foreach="data.journey" t-as="j" t-key="j.key">
+          <li t-attf-class="jstep {{j.state}}" t-att-aria-current="j.state === 'now' ? 'step' : false">
+            <span class="dot">
+              <t t-if="j.state === 'done'"><span class="ic" t-out="icon('check', 15)"/></t>
+              <t t-elif="j.state === 'warn'"><span class="ic" t-out="icon('triangleAlert', 15)"/></t>
+              <t t-else=""><t t-esc="j_index + 1"/></t>
+            </span>
+            <b t-esc="j.label"/><small t-esc="j.sub"/>
+          </li>
+        </t>
+      </ol>
+
+      <!-- ================================================ empty run -->
+      <section t-if="isEmpty" class="pb-prs-card pb-prs-empty">
+        <span class="art"><span class="ic" t-out="icon('sparkles', 36)"/></span>
+        <h2>No payslips on this run yet</h2>
+        <p t-esc="emptyText"/>
+        <div class="facts">
+          <span t-if="header.scheme" class="chip"><span class="ic" t-out="icon('layers', 14)"/><t t-esc="header.scheme"/></span>
+          <span class="chip"><span class="ic" t-out="icon('calendar', 14)"/><t t-esc="workDatesChip"/></span>
+          <span class="chip"><span class="ic" t-out="icon('userCheck', 14)"/><t t-esc="data.route.note"/></span>
+        </div>
+        <button t-if="primary" type="button" class="pb-btn primary" t-on-click="pressPrimary">
+          <span class="ic" t-out="icon(primaryIcon, 16)"/><t t-esc="primary.label"/>
+        </button>
+        <p t-else="" class="muted">You cannot make payslips on this run. Ask whoever runs payroll.</p>
+      </section>
+
+      <t t-else="">
+        <!-- ============================================ money + checks -->
+        <div class="pb-prs-top">
+          <section class="pb-prs-card pb-prs-money" aria-label="Money">
+            <div>
+              <div class="eyebrow">Take-home pay this run</div>
+              <div class="big num"><span class="cur" t-esc="header.symbol"/><t t-esc="moneyBare(data.money.net)"/></div>
+              <div class="sentence">
+                <t t-foreach="sentenceParts" t-as="part" t-key="part_index"><strong t-if="part.b" t-esc="part.t"/><t t-else="" t-esc="part.t"/></t>
+              </div>
+              <span t-if="data.compare" t-attf-class="cmp {{compareTone}}">
+                <span class="ic" t-out="icon(compareTone === 'down' ? 'trendingDown' : 'trendingUp', 14)"/><t t-esc="data.compare.sentence"/>
+              </span>
+              <span t-elif="data.compare_none" class="cmp"><span class="ic" t-out="icon('info', 14)"/><t t-esc="data.compare_none"/></span>
+            </div>
+            <div class="flow">
+              <div class="flow-bar" role="img" aria-label="Where the money goes">
+                <span class="net" t-attf-style="width: {{flow.net}}%"/>
+                <span class="ded" t-attf-style="width: {{flow.ded}}%"/>
+                <span class="emp" t-attf-style="width: {{flow.emp}}%"/>
+              </div>
+              <div class="legend">
+                <div class="lg"><div class="k"><i class="net"/>Take-home</div><div class="v num" t-esc="money(data.money.net)"/><div class="s" t-esc="netOfCostLabel"/></div>
+                <div class="lg"><div class="k"><i class="ded"/>Deductions</div><div class="v num" t-esc="money(data.money.deductions)"/><div class="s">Tax and the employee's own insurance</div></div>
+                <div class="lg"><div class="k"><i class="emp"/>Company contributions</div><div class="v num" t-esc="money(data.money.employer_cost)"/><div class="s">What the company pays on top</div></div>
+                <div class="lg total"><div class="k"><span class="ic" t-out="icon('wallet', 13)"/>Total cost</div><div class="v num" t-esc="money(data.money.total_cost)"/><div class="s" t-esc="totalCostSub"/></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="pb-prs-card pb-prs-checks" aria-label="Checks">
+            <div t-attf-class="verdict {{data.checks.verdict}}" t-attf-style="animation-delay: {{checkItems.length * 90 + 120}}ms">
+              <span class="shield"><span class="ic" t-out="icon(verdictIcon, 24)"/></span>
+              <div><b t-esc="data.checks.title"/><small t-esc="data.checks.sub"/></div>
+            </div>
+            <t t-foreach="checkItems" t-as="item" t-key="item.key">
+              <div t-attf-class="check {{item.tone}}" t-attf-style="animation-delay: {{item_index * 90}}ms">
+                <span class="tick"><span t-attf-class="ic {{item.tone === 'pending' ? 'spin' : ''}}" t-out="icon(tickIcon(item), 13)"/></span>
+                <div class="grow">
+                  <b t-esc="item.title"/><small t-esc="item.detail"/>
+                  <div t-if="item.door"><button type="button" class="pb-btn sm outline" t-on-click="() => this.checkDoor(item)"><t t-esc="item.door.label"/><span class="ic" t-out="icon('arrowRight', 14)"/></button></div>
+                </div>
+              </div>
+            </t>
+            <div t-if="state.routeError" class="check bad">
+              <span class="tick"><span class="ic" t-out="icon('triangleAlert', 13)"/></span>
+              <div class="grow"><b>Who signs it off could not be worked out just now</b><small t-esc="state.routeError"/>
+                <div><button type="button" class="pb-btn sm outline" t-on-click="retry">Try again</button></div></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ============================================ who signs it off -->
+        <section t-if="showRoute" t-attf-class="pb-prs-card pb-prs-route {{routeAmber ? 'amber' : ''}}" aria-label="Who signs it off">
+          <div class="card-h"><h2><span class="ic" t-out="icon('userCheck', 18)"/>Who signs it off</h2>
+            <span t-if="data.route.mode === 'pending'" class="muted small">Working it out…</span></div>
+          <t t-if="data.route.mode === 'pending'">
+            <div class="route"><t t-foreach="[1,2,3]" t-as="i" t-key="i"><div class="seat"><span class="sk sk-av"/><div><span class="sk sk-line"/><span class="sk sk-line w2"/></div></div><span t-if="i !== 3" class="link"/></t></div>
+          </t>
+          <t t-elif="data.route.error">
+            <div class="route-note bad"><span class="ic" t-out="icon('triangleAlert', 16)"/><span t-esc="data.route.error"/></div>
+          </t>
+          <t t-else="">
+            <div t-if="data.route.prepared_by or routeSeats.length" class="route">
+              <div t-if="data.route.prepared_by" class="seat done">
+                <span class="av" t-esc="data.route.prepared_by.initials"/>
+                <div><b t-esc="data.route.prepared_by.name"/><small><t t-if="data.route.prepared_by.me">Prepared it · you</t><t t-else="">Prepared it</t></small></div>
+              </div>
+              <t t-foreach="routeSeats" t-as="seat" t-key="seat_index">
+                <span t-attf-class="link {{seat.status !== 'later' ? 'done' : ''}}"/>
+                <div t-attf-class="seat {{seat.status}} {{seat.issue ? 'issue' : ''}}" t-att-title="seat.issue or ''">
+                  <span class="av"><t t-if="seat.status === 'done'"><span class="ic" t-out="icon('check', 16)"/></t><t t-else="" t-esc="seat.initials or '?'"/></span>
+                  <div><b t-esc="seat.name"/><small><t t-esc="seat.title"/><t t-if="seat.title"> · </t><t t-esc="seat.when"/></small></div>
+                </div>
+              </t>
+              <span class="link"/>
+              <div class="seat later"><span class="av"><span class="ic" t-out="icon('banknote', 16)"/></span>
+                <div><b>Ready to pay</b><small t-if="routeSeats.length">after the last sign-off</small><small t-else="">the moment it is sent</small></div></div>
+            </div>
+            <div t-if="routeAmber" class="route-note amber"><span class="ic" t-out="icon('triangleAlert', 16)"/><span>No sign-off is set for this scheme. Sending it approves it straight away.</span></div>
+            <div class="route-note" t-esc="data.route.note"/>
+          </t>
+        </section>
+
+        <!-- ============================================ pay and deliver -->
+        <section t-if="state_ === 'done'" class="pb-prs-card" aria-label="Pay and deliver">
+          <div class="card-h"><h2><span class="ic" t-out="icon('banknote', 18)"/>Pay and deliver</h2><span class="muted small" t-esc="deliveryLeft"/></div>
+          <div class="deliver">
+            <t t-foreach="deliverySteps" t-as="step" t-key="step.key">
+              <div t-attf-class="dl {{step.state === 'done' ? 'done' : step.state === 'now' ? 'next' : ''}}"
+                   t-att-role="step.state === 'now' and primary ? 'button' : false"
+                   t-on-click="() => this.deliveryClick(step)">
+                <span class="ic" t-out="icon(step.state === 'done' ? 'check' : deliveryIcon(step), 18)"/>
+                <b t-esc="step.label"/><small t-esc="step.sub"/>
+              </div>
+            </t>
+          </div>
+        </section>
+
+        <!-- ============================================ people -->
+        <section class="pb-prs-card pb-prs-people" aria-label="People on this run">
+          <div class="card-h"><h2><span class="ic" t-out="icon('users', 18)"/>People on this run</h2>
+            <span class="muted small hint">Click anyone to see their payslip · <span class="kbd">/</span> to search</span></div>
+          <div class="people">
+            <div class="teams">
+              <h3>By team · take-home</h3>
+              <button type="button" t-attf-class="team {{!state.team ? 'on' : ''}}" t-on-click="() => this.setTeam(null)">
+                <div class="prs-row"><b>Everyone</b><span t-esc="data.people.total"/></div>
+              </button>
+              <t t-foreach="teams" t-as="tm" t-key="tm.name">
+                <button type="button" t-attf-class="team {{state.team === tm.name ? 'on' : ''}}" t-on-click="() => this.setTeam(tm.name)">
+                  <div class="prs-row"><b t-att-title="tm.name" t-esc="tm.name"/><span><t t-esc="tm.count"/> · <t t-esc="short(tm.net)"/></span></div>
+                  <div class="bar"><i t-attf-style="width: {{pct(tm.net, maxTeamNet)}}%"/></div>
+                </button>
+              </t>
+            </div>
+            <div class="tbl-zone">
+              <div class="toolbar">
+                <label class="search"><span class="ic" t-out="icon('search', 16)"/>
+                  <input t-ref="search" type="search" placeholder="Search a name, team or job" aria-label="Search people"
+                         t-att-value="state.q" t-on-input="onSearch"/>
+                  <span class="kbd">/</span>
+                </label>
+                <div class="seg" role="tablist">
+                  <button type="button" role="tab" t-att-class="state.view === 'all' ? 'on' : ''" t-on-click="() => this.setView('all')">Everyone <em t-esc="data.people.counts.all"/></button>
+                  <button type="button" role="tab" t-att-class="state.view === 'flagged' ? 'on' : ''" t-on-click="() => this.setView('flagged')">Needs a look <em t-att-class="data.people.counts.flagged ? 'rose' : ''" t-esc="data.people.counts.flagged"/></button>
+                  <button t-if="data.people.changed_available" type="button" role="tab" t-att-class="state.view === 'changed' ? 'on' : ''" t-on-click="() => this.setView('changed')"><t t-esc="changedLabel"/> <em t-esc="data.people.counts.changed"/></button>
+                </div>
+              </div>
+              <div class="tbl-scroll">
+                <table>
+                  <thead><tr>
+                    <th t-if="anyBulk" class="cb"><button type="button" aria-label="Select all shown" t-on-click="toggleAll"><span t-attf-class="cbx {{allShownSelected ? 'on' : ''}}"><t t-if="allShownSelected"><span class="ic" t-out="icon('check', 12)"/></t></span></button></th>
+                    <th><button type="button" t-att-class="state.sort === 'name' ? 'on' : ''" t-on-click="() => this.sortBy('name')">Person<t t-if="state.sort === 'name'"><span class="ic" t-out="icon(sortIcon(), 12)"/></t></button></th>
+                    <th class="r"><button type="button" t-att-class="state.sort === 'gross' ? 'on' : ''" t-on-click="() => this.sortBy('gross')">Gross pay<t t-if="state.sort === 'gross'"><span class="ic" t-out="icon(sortIcon(), 12)"/></t></button></th>
+                    <th class="r"><button type="button" t-att-class="state.sort === 'deductions' ? 'on' : ''" t-on-click="() => this.sortBy('deductions')">Deductions<t t-if="state.sort === 'deductions'"><span class="ic" t-out="icon(sortIcon(), 12)"/></t></button></th>
+                    <th class="r"><button type="button" t-att-class="state.sort === 'net' ? 'on' : ''" t-on-click="() => this.sortBy('net')">Take-home<t t-if="state.sort === 'net'"><span class="ic" t-out="icon(sortIcon(), 12)"/></t></button></th>
+                    <th><button type="button" t-att-class="state.sort === 'flag' ? 'on' : ''" t-on-click="() => this.sortBy('flag')">Status<t t-if="state.sort === 'flag'"><span class="ic" t-out="icon(sortIcon(), 12)"/></t></button></th>
+                  </tr></thead>
+                  <tbody>
+                    <t t-if="shownRows.length">
+                      <t t-foreach="shownRows" t-as="row" t-key="row.slip_id">
+                        <tr t-att-data-slip="row.slip_id"
+                            t-attf-class="{{state.sel[row.slip_id] ? 'sel' : ''}} {{state.panel === row.slip_id ? 'open' : ''}} {{row.flag.kind === 'muted' ? 'muted' : ''}}"
+                            t-on-click="() => this.openPanel(row)">
+                          <td t-if="anyBulk" class="cb"><button type="button" t-att-aria-label="'Select ' + row.name" t-on-click="(ev) => this.toggleRow(row, ev)"><span t-attf-class="cbx {{state.sel[row.slip_id] ? 'on' : ''}}"><t t-if="state.sel[row.slip_id]"><span class="ic" t-out="icon('check', 12)"/></t></span></button></td>
+                          <td><div class="who"><span class="av" t-esc="row.initials"/><div><b t-esc="row.name"/><small><t t-esc="row.job"/><t t-if="row.job and row.team"> · </t><t t-esc="row.team"/></small></div></div></td>
+                          <td class="r num" t-esc="money(row.gross)"/>
+                          <td class="r num ded"><t t-if="row.deductions">−</t><t t-esc="money(row.deductions)"/></td>
+                          <td class="r num"><div class="netcell"><b t-esc="money(row.net)"/><i t-attf-style="width: {{netBar(row)}}px"/></div></td>
+                          <td><span t-attf-class="flag {{row.flag.kind}}"><span class="ic" t-out="icon(flagIcon(row), 13)"/><t t-esc="row.flag.text"/></span></td>
+                        </tr>
+                      </t>
+                    </t>
+                    <tr t-else="" class="empty-row"><td t-att-colspan="anyBulk ? 6 : 5"><t t-esc="nobodyLabel"/> <button type="button" class="pb-btn sm ghost" t-on-click="clearFilters">Show everyone</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div t-if="moreLeft" class="more-row"><button type="button" class="pb-btn sm outline" t-on-click="showMore"><t t-esc="showMoreLabel"/></button></div>
+              <div t-if="data.people.capped" class="tfoot warn">The first 2,000 people are listed here. The counts and the team totals cover everyone on the run.</div>
+              <div class="tfoot"><span t-esc="shownLabel"/><span class="num">Take-home shown: <b t-esc="money(shownNet)"/></span></div>
+            </div>
+          </div>
+        </section>
+      </t>
+
+      <!-- ================================================ layers (body) -->
+      <t t-portal="'body'">
+        <div class="pb-prs-layer">
+          <t t-if="panelRow">
+            <t t-set="pr" t-value="panelRow"/>
+            <div class="pb-prs-scrim" t-on-click="closePanel"/>
+            <aside class="pb-prs-panel" role="dialog" t-att-aria-label="'Payslip for ' + pr.name">
+              <div class="panel-h">
+                <span class="av" t-esc="pr.initials"/>
+                <div class="grow"><h3 t-esc="pr.name"/><small><t t-esc="pr.job"/><t t-if="pr.job and pr.team"> · </t><t t-esc="pr.team"/></small>
+                  <div class="mt8"><span t-attf-class="flag {{pr.flag.kind}}"><span class="ic" t-out="icon(flagIcon(pr), 13)"/><t t-esc="pr.flag.text"/></span></div></div>
+                <button type="button" class="x" aria-label="Close" t-on-click="closePanel"><span class="ic" t-out="icon('x', 18)"/></button>
+              </div>
+              <div class="panel-b">
+                <div class="netbox"><span>Take-home</span><b class="num" t-esc="money(pr.net)"/></div>
+                <t t-if="panelLoading">
+                  <div class="lines"><span class="sk sk-line w3"/><span class="sk sk-line"/><span class="sk sk-line w2"/><span class="sk sk-line"/></div>
+                </t>
+                <t t-elif="panelStatement">
+                  <t t-set="st" t-value="panelStatement"/>
+                  <div class="lines"><h4>Pay</h4>
+                    <t t-foreach="st.earnings" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{ln.detail ? 'detail' : ''}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount)"/></div></t>
+                    <div class="ln tot"><span>Gross pay</span><span class="num" t-esc="money(pr.gross)"/></div>
+                  </div>
+                  <div class="lines"><h4>Deductions</h4>
+                    <t t-foreach="st.deductions" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{ln.detail ? 'detail' : ''}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount, true)"/></div></t>
+                    <div t-if="!st.deductions.length" class="ln"><span class="muted">No deductions</span></div>
+                    <div class="ln tot"><span>Total deductions</span><span class="num" t-esc="stmtMoney(pr.deductions, true)"/></div>
+                  </div>
+                  <div t-if="st.employer.length" class="lines"><h4>Company pays on top</h4>
+                    <t t-foreach="st.employer" t-as="ln" t-key="ln_index"><div t-attf-class="ln {{ln.detail ? 'detail' : ''}}"><span t-esc="ln.name"/><b class="num" t-esc="stmtMoney(ln.amount)"/></div></t>
+                  </div>
+                </t>
+                <t t-else="">
+                  <div class="lines">
+                    <div class="ln"><span>Gross pay</span><b class="num" t-esc="money(pr.gross)"/></div>
+                    <div class="ln"><span>Deductions</span><b class="num" t-esc="stmtMoney(pr.deductions, true)"/></div>
+                    <div class="ln tot"><span>Take-home</span><span class="num" t-esc="money(pr.net)"/></div>
+                  </div>
+                  <div t-if="pr.employer_cost" class="lines"><h4>Company pays on top</h4>
+                    <div class="ln"><span>Company contributions</span><b class="num" t-esc="money(pr.employer_cost)"/></div></div>
+                </t>
+              </div>
+              <div class="panel-f">
+                <span class="muted small"><t t-esc="panelPos"/> · <span class="kbd">↑</span> <span class="kbd">↓</span> to move · <span class="kbd">Esc</span> to close</span>
+                <div class="prs-row">
+                  <button t-if="atlasItem" type="button" class="pb-btn sm outline" t-on-click="traceFromPanel"><span class="ic" t-out="icon('gitBranch', 14)"/>Trace</button>
+                  <button type="button" class="pb-btn sm primary" t-on-click="() => this.openSlip(pr.slip_id)">Open full payslip</button>
+                </div>
+              </div>
+            </aside>
+          </t>
+          <div t-if="selIds.length and !panelRow" class="pb-prs-bulk" role="toolbar" aria-label="Selected payslips">
+            <b t-esc="selCountLabel"/>
+            <button t-if="data.bulk.recalc" type="button" class="pb-btn sm" t-on-click="() => this.bulk('recalc')"><span class="ic" t-out="icon('refresh', 14)"/>Recalculate</button>
+            <button t-if="data.bulk.pdf" type="button" class="pb-btn sm" t-on-click="() => this.bulk('pdf')"><span class="ic" t-out="icon('printer', 14)"/>Payslips PDF</button>
+            <button t-if="data.bulk.delete" type="button" class="pb-btn sm danger" t-on-click="() => this.bulk('delete')"><span class="ic" t-out="icon('trash', 14)"/>Delete these draft payslips</button>
+            <button type="button" class="pb-btn sm" aria-label="Clear selection" t-on-click="clearSelection"><span class="ic" t-out="icon('x', 14)"/></button>
+          </div>
+        </div>
+      </t>
+    </t>
+  </div>
+</t>
+
+<t t-name="pb_payruns.PayrunHistory">
+  <section class="pb-prs-card pb-prs-history" aria-label="What happened">
+    <div class="card-h"><h2><span class="ic" t-out="icon('history', 18)"/>What happened</h2></div>
+    <div class="tl">
+      <t t-if="events === null">
+        <div class="ev"><i/><div><span class="sk sk-line w3"/><span class="sk sk-line w2"/></div></div>
+        <div class="ev"><i/><div><span class="sk sk-line w3"/><span class="sk sk-line w2"/></div></div>
+      </t>
+      <t t-elif="events.length">
+        <t t-foreach="events" t-as="ev" t-key="ev_index">
+          <div t-attf-class="ev {{ev[1] ? '' : 'wait'}}"><i/><div><b t-esc="ev[0]"/><small><t t-if="ev[1]" t-esc="ev[1]"/><t t-else="">now</t></small></div></div>
+        </t>
+      </t>
+      <p t-else="" class="muted">Nothing has happened to this run yet.</p>
+    </div>
+  </section>
+</t>
+
+</templates>

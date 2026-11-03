@@ -15,7 +15,10 @@
     # pb_comp_ben and pb_close stay OUT of depends).
     # 3.3.0: FILTER wave 5 — the board is on the shared filter panel
     # (pb_filter_kit): server-counted filters, saved views, paged lanes.
-    'version': '19.0.3.3.1',
+    # 3.4.0: PRS P1 + P2 — the pay run form IS the new pay run screen (one
+    # OWL widget fed by pb.payruns.get_run_screen; the old pieces hidden,
+    # never deleted; "Show the classic layout" brings them back per tab).
+    'version': '19.0.3.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -49,12 +52,15 @@
             'pb_payruns/static/src/scss/payruns.scss',
             'pb_payruns/static/src/scss/payrun_form.scss',
             'pb_payruns/static/src/scss/payruns_kanban.scss',
+            'pb_payruns/static/src/scss/payrun_screen.scss',
             'pb_payruns/static/src/js/pipeline_field.js',
             'pb_payruns/static/src/js/payruns.js',
             'pb_payruns/static/src/js/payruns_kanban.js',
+            'pb_payruns/static/src/js/payrun_screen.js',
             'pb_payruns/static/src/xml/pipeline_field.xml',
             'pb_payruns/static/src/xml/payruns.xml',
             'pb_payruns/static/src/xml/payruns_kanban.xml',
+            'pb_payruns/static/src/xml/payrun_screen.xml',
         ],
     },
     'installable': True,

@@ -629,9 +629,25 @@ class PbPayruns(models.AbstractModel):
     # failure never blanks the screen.
 
     @api.model
-    def get_run_screen(self, run_id):
+    def get_run_screen(self, run_id, parts=None):
         """The pay run screen's payload for one run. See the handover for
-        the exact keys; a run the reader cannot read raises AccessError."""
+        the exact keys; a run the reader cannot read raises AccessError.
+
+        `parts` (PRS P2, item 16) lets the screen draw before the slowest
+        read — working out who signs a DRAFT off (the approval engine's own
+        route preview, ~230 ms of a 520-payslip run's ~630 ms):
+
+        * None / 'all' — everything, in one go (tests, the old callers);
+        * 'main'  — everything except that preview: a draft with payslips
+          comes back with `route.mode == 'pending'`, a pending route check
+          row, and `route_pending: True`;
+        * 'route' — ONLY the pieces the route decides: route, checks,
+          journey, primary, actions (Split needs the same groups read).
+
+        The screen asks for 'main', then for 'route' whenever
+        `route_pending` is set — the same code path for every run.
+        """
+        parts = parts if parts in ('main', 'route') else 'all'
         _ = self.env._
         Run = self.env['hr.payslip.run']
         try:
@@ -680,24 +696,25 @@ class PbPayruns(models.AbstractModel):
         if live_count:
             prev = self._safe(lambda: self._screen_previous_run(run, currency),
                               default=Run.browse()) or Run.browse()
-        prev_net_of = {}
-        if prev:
-            prev_net_of = self._safe(lambda: self._screen_net_by_employee(prev),
-                                     default={}) or {}
         prev_month = (self._safe(lambda: format_date(
             self.env, prev.date_end or prev.date_start, date_format='MMMM'),
             default='') if prev else '')
 
-        people = self._screen_people(facts, totals, state, prev,
-                                     prev_net_of, prev_month)
+        # PRS P2 item 16: only a draft with payslips previews its route, so
+        # only that case is ever deferred.
+        defer = parts == 'main' and state == 'draft' and bool(live_count)
         # Which (scheme, part of the business, currency) groups the payslips
         # fall in, worked out ONCE: the route preview and the Split offer both
         # need it, and on rize it is the single most expensive read here.
         groups = None
-        if state == 'draft' and live_count:
+        if state == 'draft' and live_count and not defer:
             run = run.with_context(**{_PB_GROUPS_MEMO_KEY: ReviewGroupsMemo()})
             groups = self._safe(lambda: run._pb_review_groups(), default=None)
-        route = self._screen_route(run, card, state, live_count, groups=groups)
+        if defer:
+            route = self._screen_route_pending(run)
+        else:
+            route = self._screen_route(run, card, state, live_count,
+                                       groups=groups)
         checks = self._screen_checks(run, card, state, live_count,
                                      uncalculated, facts, route,
                                      may_write)
@@ -706,6 +723,22 @@ class PbPayruns(models.AbstractModel):
                                        len(checks['items']), sent_back)
         primary = self._screen_primary(run, card, state, live_count, bad,
                                        sent_back, may_write, route)
+        split_ok = bool(state == 'draft' and may_write and groups
+                        and len(groups) > 1)
+        actions = self._screen_actions(run, card, state, may_write,
+                                       live_count, calculated_count, prev_month,
+                                       split_ok)
+        if parts == 'route':
+            return {'route': route, 'checks': checks, 'journey': journey,
+                    'primary': primary, 'actions': actions,
+                    'route_pending': False}
+
+        prev_net_of = {}
+        if prev:
+            prev_net_of = self._safe(lambda: self._screen_net_by_employee(prev),
+                                     default={}) or {}
+        people = self._screen_people(facts, totals, state, prev,
+                                     prev_net_of, prev_month)
 
         net = card['net'] or 0.0
         gross = card['gross'] or 0.0
@@ -737,18 +770,12 @@ class PbPayruns(models.AbstractModel):
             compare = self._safe(
                 lambda: self._screen_compare(prev, net), default=None)
         elif live_count:
-            compare_none = _("This is the first run on this scheme, so there "
-                             "is nothing to compare with yet.")
+            compare_none = self._screen_compare_none(run)
 
         delivery = dict(card['delivery'])
         delivery.update(self._screen_delivery_steps(run, card, state,
                                                      live_count, net, money))
 
-        split_ok = bool(state == 'draft' and may_write and groups
-                        and len(groups) > 1)
-        actions = self._screen_actions(run, card, state, may_write,
-                                       live_count, calculated_count, prev_month,
-                                       split_ok)
         Slip = self.env['hr.payslip']
         return {
             'run': card,
@@ -793,6 +820,7 @@ class PbPayruns(models.AbstractModel):
                 'delete': state == 'draft' and may_write and bool(live_count),
             },
             'statement_available': 'pb_statement_json' in Slip._fields,
+            'route_pending': defer,
         }
 
     # ---------------------------------------------------------- run screen: words
@@ -969,26 +997,60 @@ class PbPayruns(models.AbstractModel):
                 in self.env.cr.fetchall()}
 
     @api.model
+    def _screen_month_before(self, run):
+        """(first, last) day of the calendar month just before the month
+        this run is filed under — its END date's month, as on the board."""
+        anchor = run.date_end or run.date_start
+        if not anchor:
+            return None
+        first = anchor.replace(day=1) - relativedelta(months=1)
+        return first, first + relativedelta(day=31)
+
+    @api.model
     def _screen_previous_run(self, run, currency):
-        """The run before this one on the same scheme and part of the
-        business, in the same money (R3): not rejected, ended before this one
-        starts, and with payslips to compare against."""
+        """The run "Compared with" reads (R5, 2026-11-04, narrowing R3).
+
+        ONLY a run of the SAME KIND — the scheme map's kind of run
+        (`_pb_kind_key`: regular / mid-month advance / end of month / final
+        settlement), the same notion the approval route is chosen by — whose
+        end date falls in the CALENDAR MONTH JUST BEFORE this run's month, on
+        the same scheme, part of the business and currency, not rejected, and
+        with payslips. Nothing else is "last month": a June mid-month advance
+        is not the comparison for a July end-of-month run, and neither is May.
+        """
         Run = self.env['hr.payslip.run']
-        if not run.date_start:
+        window = self._screen_month_before(run)
+        if not window:
             return Run.browse()
+        first, last = window
         domain = [('id', '!=', run.id), ('state', '!=', 'cancel'),
-                  ('date_end', '<', run.date_start),
+                  ('date_end', '>=', first), ('date_end', '<=', last),
                   ('pb_currency_id', '=', currency.id)]
+        if run.date_start:
+            domain.append(('date_end', '<', run.date_start))
         if 'pb_formula_config_id' in Run._fields:
             domain.append(('pb_formula_config_id', '=',
                            run.pb_formula_config_id.id or False))
         division = run.pb_division or ''
+        kind = run._pb_kind_key()
         for candidate in Run.search(domain, order='date_end desc, id desc',
                                     limit=20):
             if (candidate.pb_division or '') == division \
-                    and candidate.pb_employee_count:
+                    and candidate.pb_employee_count \
+                    and candidate._pb_kind_key() == kind:
                 return candidate
         return Run.browse()
+
+    @api.model
+    def _screen_compare_none(self, run):
+        """Why there is no "Compared with" (R5), as one sentence."""
+        _ = self.env._
+        window = self._screen_month_before(run)
+        if not window:
+            return _("There is nothing to compare this run with yet.")
+        return _("There is no run of the same kind for %s on this scheme, so "
+                 "there is nothing to compare with yet.",
+                 self._month_label(window[0]))
 
     @api.model
     def _screen_net_by_employee(self, run):
@@ -1289,6 +1351,18 @@ class PbPayruns(models.AbstractModel):
         return out
 
     @api.model
+    def _screen_route_pending(self, run):
+        """The route of a draft with payslips, not worked out yet (P2 item
+        16): the screen fills it from a second `parts='route'` call."""
+        preparer = run.pb_prepared_uid or run.create_uid
+        return {'mode': 'pending', 'seats': [], 'note': '', 'error': None,
+                'fast': False,
+                'prepared_by': ({'name': preparer.name or '',
+                                 'initials': self._initials(preparer.name),
+                                 'me': preparer.id == self.env.uid}
+                                if preparer else None)}
+
+    @api.model
     def _screen_route_preview(self, run, groups=None):
         """What `biz.approval.engine.submit` would resolve for this draft,
         minus every write (engine.py `submit`, `preview`). The engine's
@@ -1398,7 +1472,15 @@ class PbPayruns(models.AbstractModel):
                 'detail': _("Last calculated on %s.", when) if when else '',
                 'door': None})
 
-        if route.get('error'):
+        if route.get('mode') == 'pending':
+            # P2 item 16: the screen asks for the route a moment later and
+            # replaces this row. Never counted as a problem.
+            items.append({
+                'key': 'route', 'ok': True, 'tone': 'pending',
+                'title': _("Working out who signs it off"),
+                'detail': _("This takes a moment on a big run."),
+                'door': None})
+        elif route.get('error'):
             setup = self._screen_setup_door()
             items.append({
                 'key': 'route', 'ok': False,
@@ -1410,24 +1492,52 @@ class PbPayruns(models.AbstractModel):
         else:
             titles = [s['title'] for s in route.get('seats') or [] if s['title']]
             title = _("Approval route is set")
+            tone = 'ok'
             if route.get('fast') and not titles:
-                title = _("No sign-off is needed")
-                detail = _("Nobody needs to sign it off: it is approved the "
-                           "moment it is sent, and that is recorded.")
+                # R4 (2026-11-04): a scheme with no sign-off is AMBER — it is
+                # allowed, but whoever presses Send should know nobody looks.
+                # Amber never makes the run unready and never adds to the
+                # primary's warn badge (that counts rose rows only).
+                title = _("No sign-off is set for this scheme")
+                detail = _("Sending it approves it straight away.")
+                tone = 'amber'
             elif not titles and route.get('mode') != 'preview':
                 title = _("No sign-off was needed")
                 detail = _("Nobody needed to sign it off.")
             elif not titles:
-                title = _("No sign-off is needed")
-                detail = _("No step of the route applies to this run.")
+                title = _("No step of the route applies to this run")
+                detail = _("Sending it approves it straight away.")
+                tone = 'amber'
             elif len(titles) == 1:
                 detail = _("1 sign-off: %s.", titles[0])
             else:
                 detail = _("%(n)s sign-offs: %(steps)s.", n=len(titles),
                            steps=' → '.join(titles))
-            items.append({'key': 'route', 'ok': True, 'title': title,
-                          'detail': detail, 'door': None})
+            items.append({'key': 'route', 'ok': True, 'tone': tone,
+                          'title': title, 'detail': detail, 'door': None})
 
+        # The board's own amber ADVICE (never a block) for an open run —
+        # today FILLIN's "answers Payobook filled in that nobody has checked"
+        # (12e57634d). Same words as the board card; never counted as a
+        # problem (R4's amber rule).
+        if state in ('draft', 'approval_pending'):
+            for advice in card.get('checks') or []:
+                if advice.get('advisory') and advice.get('tone') == 'amber':
+                    # The board's own door, when it has one (`next`: key +
+                    # label, e.g. 'close' → Workforce › Close); none, no
+                    # button — 'fillin' has none today.
+                    nxt = advice.get('next') or None
+                    door = (dict(nxt, kind='board')
+                            if nxt and nxt.get('label') else None)
+                    items.append({
+                        'key': advice.get('key') or 'advice', 'ok': True,
+                        'tone': 'amber', 'title': advice.get('text') or '',
+                        'detail': advice.get('detail') or '', 'door': door})
+
+        for item in items:
+            item.setdefault('tone', 'ok' if item['ok'] else 'bad')
+        amber = any(item['tone'] == 'amber' for item in items
+                    if item['key'] == 'route')
         bad = sum(1 for item in items if not item['ok'])
         if state == 'cancel':
             return {'verdict': 'bad', 'title': _("This pay run was rejected"),
@@ -1459,11 +1569,15 @@ class PbPayruns(models.AbstractModel):
                         else _("You can still send it. The approver will see "
                                "these too.")),
                 'items': items}
+        if run.pb_return_note:
+            sub = _("Fix what was sent back, then send it again.")
+        elif amber:
+            sub = _("Ready to send. Nobody signs it off, so it is approved "
+                    "the moment it is sent.")
+        else:
+            sub = _("Ready to send for approval.")
         return {'verdict': 'ok', 'title': _("Everything checks out"),
-                'sub': (_("Fix what was sent back, then send it again.")
-                        if run.pb_return_note
-                        else _("Ready to send for approval.")),
-                'items': items}
+                'sub': sub, 'items': items}
 
     @api.model
     def _screen_atlas_ok(self):
@@ -1629,9 +1743,16 @@ class PbPayruns(models.AbstractModel):
                 elif names:
                     where = _("It goes to %(n)s people in turn, starting with "
                               "%(first)s.", n=len(names), first=names[0])
-                elif route.get('fast'):
-                    where = _("Nobody needs to sign it off, so it is approved "
-                              "the moment it is sent.")
+                elif route.get('mode') == 'preview' and not route.get('error'):
+                    # R4: fast lane, or no step applies — the same words as
+                    # the amber route row, and nothing about "while it is
+                    # being approved": it is approved on the spot.
+                    where = (_("No sign-off is set for this scheme. Sending it "
+                               "approves it straight away.")
+                             if route.get('fast')
+                             else _("No step of the route applies to this run. "
+                                    "Sending it approves it straight away."))
+                    keep = ''
                 else:
                     where = ''
                 confirm = {'title': _("Send for approval?"),
@@ -1721,9 +1842,10 @@ class PbPayruns(models.AbstractModel):
             return callable(getattr(Run, method, None))
 
         def item(key, label, hint, method=None, action=None, danger=False,
-                 confirm=None):
+                 confirm=None, context=None):
             return {'key': key, 'label': label, 'hint': hint, 'method': method,
-                    'action': action, 'danger': danger, 'confirm': confirm}
+                    'action': action, 'danger': danger, 'confirm': confirm,
+                    'context': context}
 
         def ask(title, body, ok, cancel, danger=False):
             return {'title': title, 'body': body, 'ok': ok, 'cancel': cancel,
@@ -1762,6 +1884,16 @@ class PbPayruns(models.AbstractModel):
                 _("Pay data that is new or different this time"),
                 method='action_input_changes'))
         if state == 'draft' and may_write and live_count:
+            # PRS P2: the old header's Generate Payslips lives on as the
+            # primary while a run is empty, and here once it has payslips —
+            # a joiner added late still needs a way onto the run.
+            if self.env.ref(_MAKE_ACTION, raise_if_not_found=False):
+                more.append(item(
+                    'remake', _("Add or remake payslips"),
+                    _("Pick people and make their payslips for these dates"),
+                    action=_MAKE_ACTION,
+                    context={'active_model': 'hr.payslip.run',
+                             'active_id': run.id, 'active_ids': [run.id]}))
             if has('action_recompute_formula_lines_batch'):
                 more.append(item(
                     'recalc', _("Recalculate everyone"),
