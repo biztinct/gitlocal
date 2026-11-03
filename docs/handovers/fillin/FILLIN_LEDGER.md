@@ -264,3 +264,25 @@ sentence there in the same change.
 **FI10 — a pay data file that states the same value Payobook filled in CONFIRMS the line** (P1 deviation 4, accepted by Fable): the import sync stamps `pb_checked_*` and clears `pb_fill` when the file value equals the filled-in value, so file-confirmed answers never sit in "not checked" forever.
 
 **FI11 — P1 code landed in commit `ef836533e`** (the parallel CONTRACTLIFE report commit swept its staged files, FI6). History was not rewritten; the P1 report carries the intended message.
+
+<!-- FI12–FI15 taken verbatim from FILLIN_P2_REPORT.md §7 (2026-11-04) -->
+
+**FI12 — the brand rewrite renames "Payobook" in these strings.** On a tenant
+with a brand (rize) every "Filled in by Payobook" reads "Filled in by Rize",
+in Python and JS strings alike. Screenshots and tests must expect the tenant
+brand; never hard-code "Payobook" in a test assertion that runs on a tenant.
+
+**FI13 — on rize an HR officer cannot read contracts without "Records desk —
+view".** `hr.group_hr_user` alone gets an AccessError on `hr.contract`; rights
+tests there need that group too.
+
+**FI14 — the New contract dialog says "No contract exists yet" even when the
+route applied at once** (NEW00001 applied in the same call and contract 3650
+exists). Not a FILLIN bug; worth a look in `pb_people_advanced` contract wizard.
+Also: the Contracts board's own "New contract" button opens the wizard with
+no employee (no person field) — only the employee page's button works.
+
+**FI15 — pb_payruns is shared with the PAY RUN SCREEN session**: commit only
+your hunk (blob on HEAD + `update-index`), never `git add` the whole file, and
+bump the manifest past HEAD right before committing.
+
