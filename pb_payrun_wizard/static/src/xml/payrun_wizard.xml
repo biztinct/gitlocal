@@ -87,8 +87,7 @@
                                      hidden when nobody has anything to check. -->
                                 <p t-if="schemeUnchecked" class="pw-fillin" data-coach="pw-fillin">
                                     <span class="pw-fillin__ic" t-out="ic('listChecks',14)"/>
-                                    <span class="pw-fillin__tx" t-esc="schemeUncheckedLine"/>
-                                    <button type="button" class="pw-fillin__go" t-on-click="openFillin">Open the Contracts list</button>
+                                    <span class="pw-fillin__tx"><t t-esc="schemeUncheckedLine"/> · <button type="button" class="pw-fillin__go" t-on-click="openFillin">Open the Contracts list</button></span>
                                 </p>
                                 <div t-if="state.scheme.open" class="pw-notcovered">
                                     <p class="pw-muted">

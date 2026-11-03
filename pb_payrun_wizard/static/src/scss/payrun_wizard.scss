@@ -409,10 +409,11 @@ $pw-lock-bd: #A7E3D5;
 
 /* FILLIN P2 C2 — a muted line, not an alarm: the run may go ahead. */
 .pw-root .pw-fillin {
-    margin: 8px 0 0; display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
-    font-size: 12.5px; color: var(--pw-muted); line-height: 1.4;
+    margin: 8px 0 12px; display: flex; align-items: flex-start; gap: 7px;
+    font-size: 12.5px; color: var(--pw-muted); line-height: 1.45;
 }
-.pw-root .pw-fillin__ic { display: inline-flex; color: #B45309; flex: none; }
+.pw-root .pw-fillin__ic { display: inline-flex; color: #B45309; flex: none; margin-top: 2px; }
+.pw-root .pw-fillin__tx { flex: 1; min-width: 0; }
 .pw-root .pw-fillin__go {
     border: none; background: none; padding: 0; cursor: pointer; font: inherit;
     font-weight: 700; color: var(--pw-brand); text-decoration: underline;
