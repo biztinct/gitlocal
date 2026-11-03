@@ -719,8 +719,12 @@ class PbPayruns(models.AbstractModel):
                                      uncalculated, facts, route,
                                      may_write)
         bad = sum(1 for item in checks['items'] if not item['ok'])
+        # "All N checks pass" counts the four real checks, never the board's
+        # amber advice lines shown under them.
+        n_checks = sum(1 for item in checks['items'] if item['key'] in
+                       ('data', 'balance', 'calculated', 'route'))
         journey = self._screen_journey(run, card, state, live_count, bad,
-                                       len(checks['items']), sent_back)
+                                       n_checks, sent_back)
         primary = self._screen_primary(run, card, state, live_count, bad,
                                        sent_back, may_write, route)
         split_ok = bool(state == 'draft' and may_write and groups

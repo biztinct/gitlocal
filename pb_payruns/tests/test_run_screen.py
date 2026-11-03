@@ -952,3 +952,18 @@ class TestRunScreen(TransactionCase):
         self.assertNotIn('nodata', rows)
         self.assertTrue(all(rows[k]['ok'] for k in ('fillin', 'close')))
         self.assertEqual(checks['verdict'], 'ok')
+        # through the real entry point: the journey counts the four real
+        # checks, never the advice lines shown under them
+        from unittest.mock import patch
+        Board = type(self.board)
+        real = Board._board_cards
+
+        def with_advice(board, runs, *a, **kw):
+            built = real(board, runs, *a, **kw)
+            for c in built['batches']:
+                c['checks'] = list(c.get('checks') or []) + card['checks'][-3:]
+            return built
+        with patch.object(Board, '_board_cards', with_advice):
+            screen = self._screen(run)
+        self.assertEqual(screen['journey'][1]['sub'], 'All 4 checks pass')
+        self.assertEqual(len(screen['checks']['items']), 6)

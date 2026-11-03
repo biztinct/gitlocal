@@ -823,7 +823,13 @@ class HrPayslipRun(models.Model):
     def _pb_overtime_included(self):
         """Does this run pay overtime? Read off the components it actually has."""
         self.ensure_one()
-        slips = self.slip_ids.filtered(lambda s: s.state != 'cancel')
+        # PRS P2: one search, not `slip_ids.filtered(lambda s: s.state …)` —
+        # `state` is a guarded field for biz_access, so reading it payslip by
+        # payslip ran an access lookup per payslip (~1 s for a non-admin on a
+        # 520-payslip run, on every Submit and every route preview). The same
+        # payslips: the run's own, as this reader may see them, not cancelled.
+        slips = self.env['hr.payslip'].search([
+            ('payslip_run_id', '=', self.id), ('state', '!=', 'cancel')])
         if not slips:
             return False
         # PRS P1 — the DISTINCT codes, in one grouped read, instead of loading

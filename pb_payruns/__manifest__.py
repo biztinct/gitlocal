@@ -18,7 +18,9 @@
     # 3.4.0: PRS P1 + P2 — the pay run form IS the new pay run screen (one
     # OWL widget fed by pb.payruns.get_run_screen; the old pieces hidden,
     # never deleted; "Show the classic layout" brings them back per tab).
-    'version': '19.0.3.4.0',
+    # 3.4.1: the route preview no longer reads each payslip's state one by one
+    # (a biz_access lookup per payslip); "All N checks pass" counts real checks.
+    'version': '19.0.3.4.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
