@@ -224,7 +224,9 @@ msgstr "Hồ sơ hợp đồng"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/js/contractlife_palette.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "Contracts"
 msgstr "Hợp đồng"
 
@@ -298,7 +300,9 @@ msgstr "Con người"
 
 #. module: pb_contract_lifecycle
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "All contracts"
 msgstr "Tất cả hợp đồng"
 
@@ -484,7 +488,9 @@ msgid "No contract matches these filters"
 msgstr "Không có hợp đồng nào khớp với các bộ lọc này"
 
 #. module: pb_contract_lifecycle
+#. odoo-javascript
 #. odoo-python
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
 #: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
 msgid "No end date"
 msgstr "Không có ngày kết thúc"
@@ -646,3 +652,75 @@ msgstr "nữa"
 #: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
 msgid "of"
 msgstr "trên"
+
+# ===================================================================
+#  CONTRACTLIFE SCOPE (2026-11-04): With an end date / Open-ended / All contracts.
+# ===================================================================
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "With an end date"
+msgstr "Có ngày kết thúc"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Open-ended"
+msgstr "Không thời hạn"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+msgid "Nothing to decide"
+msgstr "Không có gì cần quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "nothing to decide"
+msgstr "không cần quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "1 open-ended contract has nothing to decide —"
+msgstr "1 hợp đồng không thời hạn không cần quyết định gì —"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/js/contractlife_board.js:0
+msgid "%s open-ended contracts have nothing to decide —"
+msgstr "%s hợp đồng không thời hạn không cần quyết định gì —"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Open-ended · nothing to decide"
+msgstr "Không thời hạn · không cần quyết định"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "see Open-ended"
+msgstr "xem Không thời hạn"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "Everybody here is on an open-ended contract, so nothing is running out and there is nothing to decide. They are all under Open-ended."
+msgstr "Mọi người ở đây đều có hợp đồng không thời hạn, nên không có gì sắp hết hạn và không có gì cần quyết định. Tất cả nằm trong mục Không thời hạn."
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "See Open-ended"
+msgstr "Xem Không thời hạn"
+
+#. module: pb_contract_lifecycle
+#. odoo-javascript
+#: code:addons/pb_contract_lifecycle/static/src/xml/contractlife_board.xml:0
+msgid "No contract has an end date on it"
+msgstr "Không có hợp đồng nào có ngày kết thúc"
+

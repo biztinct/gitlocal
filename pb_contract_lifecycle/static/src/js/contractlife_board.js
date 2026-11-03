@@ -88,7 +88,9 @@ export class PbContractLifeBoard extends Component {
             leadDays: 60,
             defaultMonths: 12,
             kpis: {},
-            total: 0,               // every contract the board is about
+            total: 0,               // every contract the board decides about
+            allTotal: 0,            // every draft or running contract (CONTRACTLIFE SCOPE)
+            openEnded: 0,           // of which open-ended: nothing to decide
             glanceFilters: {},      // what each figure means as a filter
 
             // the page the filter panel produced (FILTER wave 2)
@@ -142,6 +144,8 @@ export class PbContractLifeBoard extends Component {
                 defaultMonths: d.default_months || 12,
                 kpis: d.kpis || {},
                 total: d.total || 0,
+                allTotal: d.all_total || 0,
+                openEnded: d.open_ended || 0,
                 glanceFilters: d.glance_filters || {},
                 loaded: true,
             });
@@ -197,14 +201,37 @@ export class PbContractLifeBoard extends Component {
         }
     }
 
-    /** Back to every contract the board is about (the first view). */
-    showAll() { this.kit.toggleFilters({}); }
+    /** Back to every contract: the "All contracts" view (CONTRACTLIFE
+     *  SCOPE), or the first view where a database lacks it. */
+    showAll() {
+        if ((this.kit.views || []).some((v) => v.key === "all")) {
+            this.kit.useView("all");
+        } else {
+            this.kit.toggleFilters({});
+        }
+    }
+
+    /** The line under the four steps: "170 open-ended contracts have
+     *  nothing to decide". Empty (and hidden) at zero. */
+    get openEndedNote() {
+        const n = this.state.openEnded || 0;
+        if (!n) { return ""; }
+        return n === 1
+            ? _t("1 open-ended contract has nothing to decide —")
+            : _t("%s open-ended contracts have nothing to decide —", this.fmtInt(n));
+    }
+
+    showOpenEnded() {
+        if ((this.kit.views || []).some((v) => v.key === "open_ended")) {
+            this.kit.useView("open_ended");
+        }
+    }
 
     /** Why the list is empty, in one translatable sentence (R34). */
     get emptyText() {
         if (this.kit.chips.length) {
             return _t("There are %s contracts on this board, but none of them fits every filter you have set. Remove a filter above, or start again from all of them.",
-                      this.fmtInt(this.state.total));
+                      this.fmtInt(this.state.allTotal || this.state.total));
         }
         if (this.kit.search) {
             return _t("Nobody matches “%s”. Check the spelling, or search by job, team or contract.",
@@ -316,6 +343,10 @@ export class PbContractLifeBoard extends Component {
     }
 
     stepMeta(r) {
+        if (r.open_ended) {
+            // a quiet card: no step, nothing to decide (CONTRACTLIFE SCOPE)
+            return { label: _t("Open-ended"), title: _t("nothing to decide"), marks: [] };
+        }
         const defs = this.stepDefs;
         const index = defs.findIndex((st) => st.key === this.stepOf(r));
         return {

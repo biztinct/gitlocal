@@ -212,7 +212,20 @@ class PbContractLife(models.AbstractModel):
         needs = bool(
             days is not None and days <= lead
             and (not review or review.state in ('upcoming', 'decide')))
+        # CONTRACTLIFE SCOPE: the Python twin of `_cl_open_ended_domain` —
+        # no end date and not an active non-permanent person. The type is
+        # read under sudo (R56: `employee_type` is HR-gated).
+        temp = bool(emp) and self._safe(
+            lambda: bool(emp.sudo().active
+                         and emp.sudo().employee_type in NON_PERMANENT_TYPES),
+            default=False)
+        open_ended = not contract.date_end and not temp
+        if open_ended:
+            # a quiet card: nothing to decide, no decision shown on it
+            review = Review.browse()
+            needs = False
         return {
+            'open_ended': open_ended,
             'id': contract.id,
             'employee_id': emp.id if emp else 0,
             'employee': (emp.name if emp else '') or _('Nobody on it'),
@@ -247,7 +260,8 @@ class PbContractLife(models.AbstractModel):
             'needs_decision': needs,
             'review_id': review.id if review else 0,
             'review_state': review.state if review else '',
-            'review_label': (REVIEW_STATE_LABEL.get(review.state, '')
+            'review_label': (_('Nothing to decide') if open_ended
+                             else REVIEW_STATE_LABEL.get(review.state, '')
                              if review else _('Not raised')),
             'decision': review.decision if review else '',
             'decision_label': (DECISION_LABEL.get(review.decision, '')
@@ -299,15 +313,38 @@ class PbContractLife(models.AbstractModel):
         return Contract.sudo() if self._cl_may_list() else Contract
 
     def _pbf_base_domain(self):
-        """Everybody with an end date, plus every intern and contractor —
-        the two searches the board always made, as ONE domain (no cap)."""
+        """EVERY draft or running contract of the reader's companies.
+
+        CONTRACTLIFE SCOPE (2026-11-04): the board used to hold only the
+        decision population (an end date, or an intern/contractor) and said
+        "All 40" on a tenant with 210 contracts. The base is now every
+        contract; the decision population is the `dated` rule
+        (`_cl_dated_domain`), which every decision/step/attention rule and
+        the first tab carry, so their counts did not move."""
         co_ids = self.env.companies.ids or [self.env.company.id]
-        return ['&', '&',
+        return ['&',
                 ('company_id', 'in', co_ids),
-                ('state', 'in', ['draft', 'open']),
-                '|', ('date_end', '!=', False),
-                '&', ('employee_id.active', '=', True),
-                ('employee_id.employee_type', 'in', list(NON_PERMANENT_TYPES))]
+                ('state', 'in', ['draft', 'open'])]
+
+    @api.model
+    def _cl_temp_people(self):
+        """An active intern / contractor / … on the contract. As `any` on the
+        many2one, so its negation (`not any`) also keeps contracts with no
+        employee — a `!=` on a dotted path would silently drop those."""
+        return [('active', '=', True),
+                ('employee_type', 'in', list(NON_PERMANENT_TYPES))]
+
+    @api.model
+    def _cl_dated_domain(self):
+        """The decision population: an end date, or a non-permanent person."""
+        return (Domain('date_end', '!=', False)
+                | Domain('employee_id', 'any', self._cl_temp_people()))
+
+    @api.model
+    def _cl_open_ended_domain(self):
+        """Exactly the complement of `_cl_dated_domain` within the base."""
+        return (Domain('date_end', '=', False)
+                & Domain('employee_id', 'not any', self._cl_temp_people()))
 
     def _pbf_search_fields(self):
         return ['employee_id.name', 'employee_id.job_title',
@@ -339,12 +376,19 @@ class PbContractLife(models.AbstractModel):
         urgent = _urgent_days(lead)
         ds = fields.Date.to_string
 
+        # CONTRACTLIFE SCOPE: the base now holds every contract, so every
+        # decision fact below carries `dated` — an open-ended contract for a
+        # permanent person has nothing to decide and must never count as
+        # "Not raised yet", "Running" or "Nothing needed".
+        dated = self._cl_dated_domain()
+        open_ended = self._cl_open_ended_domain()
+
         def rev(*states):
-            return Domain('pb_review_ids', 'any', [('state', 'in', list(states))])
+            return dated & Domain('pb_review_ids', 'any', [('state', 'in', list(states))])
 
         no_live = Domain('pb_review_ids', 'not any', [('state', 'in', list(REVIEW_OPEN))])
         review = {
-            'none': Domain('pb_review_ids', '=', False),
+            'none': dated & Domain('pb_review_ids', '=', False),
             'upcoming': rev('upcoming'),
             'decide': rev('decide'),
             'extension': rev('extension'),
@@ -357,13 +401,16 @@ class PbContractLife(models.AbstractModel):
         needs = (Domain('date_end', '<=', ds(today + timedelta(days=lead)))
                  & (review['none'] | rev('upcoming', 'decide')))
         soon = Domain('date_end', '<=', ds(today + timedelta(days=urgent)))
-        undated = (Domain('date_end', '=', False)
+        # an intern or contractor with no end date (`dated` keeps the old
+        # "active person" condition the base used to carry)
+        undated = (dated & Domain('date_end', '=', False)
                    & Domain('employee_id.employee_type', 'in', list(NON_PERMANENT_TYPES)))
         attention = needs | soon | review['lapsed'] | undated
         return {
             'today': today, 'lead': lead, 'urgent': urgent,
             'review': review, 'needs': needs, 'soon': soon,
             'undated': undated, 'attention': attention,
+            'dated': dated, 'open_ended': open_ended,
             # the four steps; a contract is at exactly one of them
             'steps': {
                 'running': review['none'] | review['upcoming'],
@@ -440,7 +487,18 @@ class PbContractLife(models.AbstractModel):
                  {'value': 'undated', 'label': _('Intern or contractor with no end date'),
                   'tone': 'amber', 'domain': rules['undated']},
                  {'value': 'fine', 'label': _('Nothing needed'), 'tone': 'green',
-                  'domain': ~rules['attention']},
+                  'domain': rules['dated'] & ~rules['attention']},
+             ]},
+            # CONTRACTLIFE SCOPE: which contracts the board is about. Hidden
+            # from the panel; the "With an end date" and "Open-ended" tabs
+            # switch it on (and its chip names it while on).
+            {'key': 'scope', 'label': _('Contracts'), 'icon': 'calendarClock',
+             'group': 'contract', 'type': 'choice', 'hidden': True,
+             'options': [
+                 {'value': 'dated', 'label': _('With an end date'),
+                  'tone': 'blue', 'domain': rules['dated']},
+                 {'value': 'open_ended', 'label': _('Open-ended'),
+                  'tone': 'slate', 'domain': rules['open_ended']},
              ]},
             {'key': 'step', 'label': _('Where it stands'), 'icon': 'listChecks',
              'group': 'contract', 'type': 'choice', 'requires': ['pb_review_ids'],
@@ -477,8 +535,11 @@ class PbContractLife(models.AbstractModel):
     def _pbf_builtin_views(self):
         rules = self._cl_rules()
         glance = self._cl_glance_filters(rules)
+        # The FIRST view is the start view (pb_filter_kit) — the decision
+        # population, as before; "All contracts" is the base with no filter.
         return [
-            {'key': 'all', 'label': _('All'), 'icon': 'fileText', 'filters': {}},
+            {'key': 'dated', 'label': _('With an end date'), 'icon': 'calendarClock',
+             'filters': {'scope': ['dated']}},
             {'key': 'ending', 'label': _('Ending within %s days', rules['lead']),
              'filters': glance['ending']},
             {'key': 'undecided', 'label': _('Nobody has decided'),
@@ -486,7 +547,10 @@ class PbContractLife(models.AbstractModel):
             {'key': 'waiting', 'label': _('Waiting to be agreed'),
              'filters': glance['waiting']},
             {'key': 'temps', 'label': _('Interns and contractors'),
-             'filters': {'kind': list(NON_PERMANENT_TYPES)}},
+             'filters': {'kind': list(NON_PERMANENT_TYPES), 'scope': ['dated']}},
+            {'key': 'open_ended', 'label': _('Open-ended'),
+             'filters': {'scope': ['open_ended']}},
+            {'key': 'all', 'label': _('All contracts'), 'icon': 'fileText', 'filters': {}},
         ]
 
     @api.model
@@ -504,10 +568,13 @@ class PbContractLife(models.AbstractModel):
         if not self._cl_may_list():
             return {'allowed': False, 'can_write': False, 'kpis': {},
                     'auto_on': False, 'would_raise': 0, 'lead_days': 60,
-                    'default_months': 12, 'total': 0, 'glance_filters': {}}
+                    'default_months': 12, 'total': 0, 'all_total': 0,
+                    'open_ended': 0, 'glance_filters': {}}
         Rec = self._pbf_records()
         rules = self._cl_rules()
-        base = Domain(self._pbf_base_domain())
+        every = Domain(self._pbf_base_domain())
+        # the numbers line counts the decision population only (as before)
+        base = every & rules['dated']
         co_ids = self.env.companies.ids or [self.env.company.id]
 
         def count(dom):
@@ -537,6 +604,11 @@ class PbContractLife(models.AbstractModel):
             'default_months': number(self.env, P_EXTENSION_MONTHS, 12),
             'kpis': kpis,
             'total': self._safe(lambda: Rec.search_count(base)),
+            # CONTRACTLIFE SCOPE: the line under the four steps, and whether
+            # the board has any contract at all to list
+            'all_total': self._safe(lambda: Rec.search_count(every)),
+            'open_ended': self._safe(lambda: Rec.search_count(
+                every & rules['open_ended'])),
             'glance_filters': self._cl_glance_filters(rules),
         }
 
@@ -579,6 +651,8 @@ class PbContractLife(models.AbstractModel):
         Rec = self._pbf_records()
         rules = self._cl_rules()
         dom = self.pbf_domain(filters, search, skip='step', spec=spec)
+        # every step rule already carries `dated` (_cl_rules), so on the
+        # Open-ended tab the four steps read 0: they count decisions only
         out = {}
         for key, step_dom in rules['steps'].items():
             at = dom & step_dom

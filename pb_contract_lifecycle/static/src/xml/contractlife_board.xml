@@ -85,10 +85,10 @@
               <b>Contracts are not being raised by themselves yet</b>
               <p>
                 <t t-esc="state.wouldRaise === 0
-                          ? 'No contract is inside its two-month window tonight, so nothing would be raised. An administrator can switch the nightly step on whenever it suits.'
+                          ? 'No contract is inside its two-month window tonight, so nothing would be raised. This screen tracks contracts with an end date, plus interns and contractors. An administrator can switch the nightly step on whenever it suits.'
                           : (state.wouldRaise === 1
-                             ? 'One contract is inside its two-month window. Nothing happens automatically until an administrator switches the nightly step on — until then, press Run today\'s steps or raise it from a card below.'
-                             : state.wouldRaise + ' contracts are inside their two-month window. Nothing happens automatically until an administrator switches the nightly step on — until then, press Run today\'s steps or raise them from the cards below.')"/>
+                             ? 'One contract is inside its two-month window. This screen tracks contracts with an end date, plus interns and contractors. Nothing happens automatically until an administrator switches the nightly step on — until then, press Run today\'s steps or raise it from a card below.'
+                             : state.wouldRaise + ' contracts are inside their two-month window. This screen tracks contracts with an end date, plus interns and contractors. Nothing happens automatically until an administrator switches the nightly step on — until then, press Run today\'s steps or raise them from the cards below.')"/>
               </p>
             </div>
           </div>
@@ -115,8 +115,17 @@
           </t>
           </div>
 
+          <!-- ======= what the four steps leave out (CONTRACTLIFE SCOPE) =======
+               The steps count decisions only. One muted line says how many
+               contracts have nothing to decide, and opens their tab. -->
+          <div t-if="openEndedNote" class="ctl-scope-note">
+            <t t-out="ic('info',14)"/>
+            <span t-esc="openEndedNote"/>
+            <button type="button" class="ctl-scope-link" t-on-click="showOpenEnded">see Open-ended</button>
+          </div>
+
           <!-- ================== nothing here yet ================== -->
-          <div t-if="!state.total" class="pbim-panel ctl-empty" data-coach="cl-list">
+          <div t-if="!state.allTotal" class="pbim-panel ctl-empty" data-coach="cl-list">
             <div class="ctl-empty-ic"><t t-out="ic('scrollText',30)"/></div>
             <h2>No contract has an end date on it</h2>
             <p>Everybody here is on an open-ended agreement, so there is nothing
@@ -139,9 +148,11 @@
             <div t-foreach="state.rows" t-as="row" t-key="row.id"
                  class="pbim-panel ctl-card"
                  t-att-class="{ 'is-urgent': row.urgent,
-                                'is-lapsed': row.review_state === 'lapsed' }">
+                                'is-lapsed': row.review_state === 'lapsed',
+                                'is-open-ended': row.open_ended }">
 
-              <div class="ctl-card-top" t-on-click="() => this.openContract(row.id)">
+              <div class="ctl-card-top"
+                   t-on-click="() => row.open_ended ? this.openContractDrawer(row.id) : this.openContract(row.id)">
                 <img t-if="row.avatar" class="ctl-av" t-att-src="row.avatar"
                      t-att-alt="row.employee"/>
                 <div t-else="" class="ctl-av ctl-av--none" t-esc="row.initials"/>
@@ -151,14 +162,21 @@
                     <t t-esc="row.job"/><t t-if="row.job and row.dept"> · </t><t t-esc="row.dept"/>
                   </div>
                 </div>
-                <div class="ctl-when">
+                <div t-if="row.open_ended" class="ctl-when">
+                  <div class="ctl-when-d ctl-when-d--none">No end date</div>
+                </div>
+                <div t-else="" class="ctl-when">
                   <div class="ctl-when-d" t-esc="day(row.date_end)"/>
                   <div t-attf-class="ctl-when-w ctl-when-w--{{ countdownCls(row) }}"
                        t-esc="row.when"/>
                 </div>
               </div>
 
-              <div class="pbim-where">
+              <div t-if="row.open_ended" class="pbim-where ctl-where-quiet">
+                <t t-out="ic('calendar',13)"/>
+                <span>Open-ended · nothing to decide</span>
+              </div>
+              <div t-else="" class="pbim-where">
                 <span class="pbim-where-marks"><i t-foreach="stepMeta(row).marks" t-as="mk" t-key="mk_index" t-att-class="mk"/></span>
                 <span><t t-esc="stepMeta(row).label"/> · <b t-esc="stepMeta(row).title"/></span>
               </div>
@@ -179,7 +197,7 @@
                 </div>
                 <div class="ctl-fact">
                   <span class="ctl-fact-l">Where it stands</span>
-                  <span t-attf-class="ctl-fact-v {{ row.needs_decision ? 'warn' : '' }}"
+                  <span t-attf-class="ctl-fact-v {{ row.needs_decision ? 'warn' : (row.open_ended ? 'muted' : '') }}"
                         t-esc="row.review_label"/>
                 </div>
               </div>
@@ -197,7 +215,7 @@
                       class="pbim-badge warn ctl-sentence">
                   Somebody has to choose
                 </span>
-                <span t-if="row.days === null" class="pbim-badge muted ctl-sentence">
+                <span t-if="row.days === null and !row.open_ended" class="pbim-badge muted ctl-sentence">
                   No end date on the paperwork
                 </span>
               </div>
@@ -207,11 +225,11 @@
                         t-on-click="() => this.openContractDrawer(row.id)">
                   <t t-out="ic('fileText',13)"/> Open this contract
                 </button>
-                <button class="pbim-btn ghost pbim-btn-sm"
+                <button t-if="!row.open_ended" class="pbim-btn ghost pbim-btn-sm"
                         t-on-click="() => this.openContract(row.id)">
                   <t t-out="ic('scale',13)"/> The decision
                 </button>
-                <button t-if="state.canWrite and !row.review_id and row.date_end"
+                <button t-if="state.canWrite and !row.open_ended and !row.review_id and row.date_end"
                         class="pbim-btn primary pbim-btn-sm"
                         t-on-click="() => this.raiseDecision(row)">
                   <t t-out="ic('play',13)"/> Raise the decision
@@ -233,6 +251,20 @@
           <!-- ============ still loading the first page ============ -->
           <div t-elif="!state.listLoaded" class="ctl-grid ctl-skeleton" aria-label="Loading the contracts">
             <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbim-panel ctl-card ctl-card--ghost"/>
+          </div>
+
+          <!-- ===== the first tab is empty, but there are contracts =====
+               CONTRACTLIFE SCOPE: on a database where every contract is
+               open-ended, the start tab says so and opens the right tab,
+               instead of blaming the filters. -->
+          <div t-elif="kit.viewKey === 'dated' and !kit.search and !state.total and state.openEnded"
+               class="pbim-panel ctl-empty ctl-empty--filter">
+            <div class="ctl-empty-ic"><t t-out="ic('calendarClock',30)"/></div>
+            <h2>No contract has an end date on it</h2>
+            <p>Everybody here is on an open-ended contract, so nothing is running out and there is nothing to decide. They are all under Open-ended.</p>
+            <button class="pbim-btn outline" t-on-click="showOpenEnded">
+              <t t-out="ic('fileText',15)"/> See Open-ended
+            </button>
           </div>
 
           <!-- ============ the filters match nobody ============

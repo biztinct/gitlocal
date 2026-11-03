@@ -51,6 +51,26 @@
 
         &.is-urgent { border-color: var(--pbim-amber); }
         &.is-lapsed { border-color: var(--pbim-rose); }
+        // CONTRACTLIFE SCOPE: open-ended, nothing to decide — the quiet
+        // board's grey; colour stays for the cards somebody has to act on
+        &.is-open-ended { background: var(--pbim-line-2, #F8FAFC); }
+    }
+    .ctl-where-quiet {
+        svg { color: var(--pbim-muted); flex: 0 0 auto; }
+    }
+    .ctl-when-d--none { color: var(--pbim-muted); font-weight: 600; }
+
+    // the line under the four steps: what they leave out, and its tab
+    .ctl-scope-note {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        margin: -4px 2px 12px; font-size: 12.5px; color: var(--pbim-muted);
+        svg { flex: 0 0 auto; }
+    }
+    .ctl-scope-link {
+        border: 0; background: transparent; padding: 0; font: inherit;
+        font-weight: 700; color: var(--pbim-primary-strong, #3730A3);
+        cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+        &:hover { color: var(--pbim-primary, #4F46E5); }
     }
     // Every moving declaration inside the no-preference block, so under a
     // reduced-motion preference the surface simply paints finished (R85).
