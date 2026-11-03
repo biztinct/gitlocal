@@ -23,16 +23,18 @@ Both phases are live on `payobook`, `payobook_template`, `p0clone`, `rize`.
   **Words for each value**.
 
 ## Open items
-1. **Test contract 3650 (Aradea Putra Suriya, draft, rize)** — created for
-   T3 with BPJS TK and Tax allowance changed during testing. Owner decides:
-   delete, or keep and reset TK=Yes / Tax mode=Insurance-premium tax only.
+1. ~~Test contract 3650~~ — **DONE 2026-11-04**: owner chose delete; removed
+   with its 3 lines and 8 history rows (shell, rize).
 2. **Pay run card advisory has no door yet** (kept out of the run screen
    while the PAY RUN SCREEN session owns it). Add `next` → Contracts › To
    check once that session has shipped.
-3. **New contract dialog** says "No contract exists yet" after creating one
-   at once; the Contracts list's own **New contract** button opens the
-   dialog with no person field (FI14, `pb_people_advanced` wizard). Not a
-   FILLIN bug; worth a small fix.
+3. ~~New contract dialog bugs (FI14)~~ — **DONE 2026-11-04**, commit
+   `d7b552637`, pb_people_advanced 19.0.1.1.2 live ×4: `create_contract`
+   returns `applied=True` on the direct path ("Contract created" now shows;
+   verified by a rolled-back shell call: applied True, reference NEW00002);
+   opened without a person the dialog asks "Who is this contract for?" with
+   a search-as-you-type picker (verified on rize in the browser, no console
+   errors).
 4. **Pay data file column note** — add "1 = Yes, 0 = No" / the words to the
    note of a rule with labels (P2 C4, skipped: no single small seam found).
 5. **Contract category** on rize: all 210 contracts read "Vietnam Permanent
