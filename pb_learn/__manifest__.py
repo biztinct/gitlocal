@@ -32,7 +32,7 @@
     # 20.7.2: FILTER wave 5 — Pay Runs, Payslips and Salary Structures on the
     # shared filter panel: anchors (pk-divchips, sr-filters, new ps-filters),
     # replica strips and the division lesson follow the screens.
-    'version': '19.0.20.8.3',
+    'version': '19.0.20.8.4',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

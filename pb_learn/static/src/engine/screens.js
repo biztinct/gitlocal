@@ -3045,9 +3045,14 @@ export const SCREENS = {
                  Filters button that opens the left panel, the search, and the
                  applied filters as chips. The numbers and steps still filter. -->
             <div class="lrn-strip" data-coach="cl-filters">
-                <span class="lrn-chip b">${esc(tx(B("All", "Tất cả")))}</span>
+                <!-- CONTRACTLIFE SCOPE (2026-11-04): the board says what it
+                     counts — contracts with an end date — and offers the
+                     open-ended ones and all of them as tabs of their own. -->
+                <span class="lrn-chip b">${esc(tx(B("With an end date", "Có ngày kết thúc")))}</span>
                 <span class="lrn-chip">${esc(tx(B("Nobody has decided", "Chưa ai quyết định")))}</span>
                 <span class="lrn-chip">${esc(tx(B("Interns and contractors", "Thực tập sinh và nhà thầu")))}</span>
+                <span class="lrn-chip">${esc(tx(B("Open-ended", "Không thời hạn")))}</span>
+                <span class="lrn-chip">${esc(tx(B("All contracts", "Tất cả hợp đồng")))}</span>
                 <span class="lrn-chip">${ic("sliders")}${esc(tx(B("Filters", "Bộ lọc")))}</span>
                 <span class="lrn-chip">${ic("search")}${esc(tx(B("Search by name, job, team or contract…", "Tìm theo tên, công việc, nhóm hoặc hợp đồng…")))}</span>
             </div>
