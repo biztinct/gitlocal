@@ -246,3 +246,23 @@ PRS-G27. (P2, local testing) A cloned scratch DB has no filestore, so its
         `/web/assets/%` attachments (or copy the source filestore) after
         `createdb -T`, and insert an `orm_signaling_assets` row after a JS
         change on a running server, or the old bundle keeps being served.
+PRS-G28. (P2) Timing the payload in an `odoo-bin shell` with repeated calls in
+        ONE env is misleading: the second call reads a warm field cache. Each
+        web request starts cold. On payobook run 2419 (520 payslips) as the QA
+        user the shell said 0.56 s (main) where the browser saw ~4.0 s main +
+        ~5.4 s route (server log: 2,060 and 3,160 queries). Time with
+        `env.invalidate_all()` before each call, or read the werkzeug line's
+        query count / time in the server log. The cost is biz_access: every
+        field `__get__` on a guarded model runs `_studio_field_allowed` →
+        `_studio_acl_sources`, an UNCACHED `ir.model.access` search. P2 removed
+        the biggest pb_payruns hot spot (`_pb_overtime_included` read `state`
+        per payslip); the rest is app-wide and belongs to biz_access (a cache
+        on `_studio_acl_sources` per model/operation/request).
+PRS-G29. (P2) The app-wide logo loader covers any screen while an ordinary
+        `orm.call` is slow. A screen with its own skeletons must load with
+        `orm.silent` or the loader hides them (seen over the money card).
+PRS-G30. (P2, testing) The payobook QA account may not create pay runs ("This
+        field cannot be supplied when creating this record: name") and there
+        is no run waiting for approval in the demo world, so the empty-run and
+        pending moments (B2, B3) cannot be walked there without submitting a
+        demo run. They are covered by T2/T5 and the local smoke test.
