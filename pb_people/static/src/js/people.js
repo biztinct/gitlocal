@@ -178,6 +178,11 @@ export class PbPeople extends Component {
         if (a >= 1e3) return cur + (n / 1e3).toFixed(0) + "K";
         return cur + Math.round(n);
     }
+    /** One figure per currency ("₫1.2B · Rp612M"); a single currency reads as before. */
+    moneyTotals(totals, fallback) {
+        if (!totals || !totals.length) return this.money(fallback || 0);
+        return totals.map((t) => this.money(t.amount, t.symbol)).join(" · ");
+    }
     moneyFull(n) {
         if (!n) return (this.state.currency || "₫") + "0";
         return (this.state.currency || "₫") + Math.round(n).toLocaleString("en-US");
@@ -198,7 +203,7 @@ export class PbPeople extends Component {
             { key: "expiring", n: k.expiring_soon || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring_soon, "amber"), run: pick("expiring") },
             { key: "new", n: k.new_hires || 0, label: _t("New this month"), tone: tone(k.new_hires, "green"), run: pick("new") },
             { key: "notready", n: k.not_ready || 0, label: _t("Not payroll-ready"), tone: tone(k.not_ready, "amber"), run: pick("notready") },
-            { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "wage", n: this.moneyTotals(k.wage_totals, k.total_wage), label: _t("Monthly wage"), tone: "", run: null },
             { key: "ready", n: (k.ready_pct || 0) + "%", label: _t("Payroll-ready"), tone: "", run: null },
         ];
     }

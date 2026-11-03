@@ -107,13 +107,22 @@ class PbContracts(models.AbstractModel):
         except Exception:
             total_wage = 0.0
         avg_wage = round(total_wage / running) if running else 0
+        # One total (and average) per currency: a group paying in several
+        # never sees ₫ + Rp + ₹ added into one number. Soft: pb_people owns
+        # the per-person currency and is not a dependency of this board.
+        wage_totals = []
+        People = self.env.get('pb.people')
+        if People is not None and hasattr(People, '_wage_totals'):
+            wage_totals = self._safe(
+                lambda: People._wage_totals(DOM + [('state', '=', 'open')]), [])
         step_counts = {'draft': draft, 'ending': expiring, 'ended': expired,
                        'running': max(running - expiring, 0), 'open': running}
 
         return {
             'currency': cur.symbol or '',
             'kpis': {'running': running, 'expiring': expiring, 'expired': expired,
-                     'draft': draft, 'total_wage': total_wage, 'avg_wage': avg_wage},
+                     'draft': draft, 'total_wage': total_wage, 'avg_wage': avg_wage,
+                     'wage_totals': wage_totals},
             'total': self._safe(lambda: C.search_count(DOM)),
             'step_counts': step_counts,
             # CD-1: the contract drawer's bundled read exists on this build, so
@@ -222,10 +231,17 @@ class PbContracts(models.AbstractModel):
         ]
 
     @api.model
-    def _contract_row(self, c, today):
+    def _contract_row(self, c, today, pay_signs=None):
         dte = (c.date_end - today).days if c.date_end else None
+        # the card's money sign is the person's pay-scheme currency (pb_people
+        # owns it; soft, absent -> the board's company sign)
+        People = self.env.get('pb.people')
+        currency = (self._safe(lambda: People._pay_symbol(c.employee_id, pay_signs), '')
+                    if People is not None and hasattr(People, '_pay_symbol')
+                    and c.employee_id else '')
         return {
             'id': c.id, 'name': c.name or '—',
+            'currency': currency,
             'employee': c.employee_id.name if c.employee_id else '—',
             'employee_id': c.employee_id.id if c.employee_id else False,
             'avatar': ('/web/image/hr.employee/%s/avatar_128' % c.employee_id.id) if c.employee_id else '',
@@ -267,9 +283,10 @@ class PbContracts(models.AbstractModel):
         order = self.pbf_order(sort) or 'date_start desc, id desc'
         today = date.today()
         rows = []
+        pay_signs = {}
         for c in C.search(domain, order=order, offset=offset, limit=limit):
             try:
-                rows.append(self._contract_row(c, today))
+                rows.append(self._contract_row(c, today, pay_signs))
             except Exception as ex:  # noqa: BLE001 — one bad card never blanks the list
                 _logger.debug("Contract row failed: %s", ex)
         out = {'rows': rows, 'total': C.search_count(domain), 'offset': offset}

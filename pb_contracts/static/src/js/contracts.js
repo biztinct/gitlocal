@@ -136,9 +136,14 @@ export class PbContracts extends Component {
 
     ic(n, s = 16) { return ic(n, s); }
     stateCls(s) { return STATE_CLS[s] || "muted"; }
-    money(n) {
+    /** One figure per currency ("₫1.2B · Rp612M"), or its average; a single currency reads as before. */
+    moneyTotals(totals, fallback, average) {
+        if (!totals || !totals.length) return this.money(fallback || 0);
+        return totals.map((t) => this.money(average ? (t.count ? t.amount / t.count : 0) : t.amount, t.symbol)).join(" · ");
+    }
+    money(n, cur) {
         if (n === null || n === undefined) return "—";
-        const cur = this.state.currency || "₫";
+        cur = cur || this.state.currency || "₫";
         const a = Math.abs(n);
         if (a >= 1e9) return cur + (n / 1e9).toFixed(1) + "B";
         if (a >= 1e6) return cur + (n / 1e6).toFixed(1) + "M";
@@ -159,8 +164,8 @@ export class PbContracts extends Component {
             { key: "expiring", n: k.expiring || 0, label: _t("Expiring within 30 days"), tone: tone(k.expiring, "amber"), run: pick("expiring") },
             { key: "draft", n: k.draft || 0, label: _t("Draft"), tone: "", run: pick("draft") },
             { key: "close", n: k.expired || 0, label: _t("Expired"), tone: "", run: pick("close") },
-            { key: "wage", n: this.money(k.total_wage || 0), label: _t("Monthly wage"), tone: "", run: null },
-            { key: "avg", n: this.money(k.avg_wage || 0), label: _t("Average wage"), tone: "", run: null },
+            { key: "wage", n: this.moneyTotals(k.wage_totals, k.total_wage, false), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "avg", n: this.moneyTotals(k.wage_totals, k.avg_wage, true), label: _t("Average wage"), tone: "", run: null },
         ];
     }
     /** Which figure is lit: the one whose filters are exactly what is on. */

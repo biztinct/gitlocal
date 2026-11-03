@@ -69,6 +69,25 @@ class PbPeople(models.AbstractModel):
         return sign
 
     @api.model
+    def _wage_totals(self, contract_domain):
+        """Wages summed per currency — never one number across two currencies.
+
+        Each contract counts in its person's pay-scheme money (`_pay_symbol`),
+        so a group paying in ₫, Rp, ₹ and S$ gets four totals, most people first,
+        each with its own count (the Contracts board divides by it for an
+        average). One currency in use gives a list of one — the figure reads
+        exactly as it did before.
+        """
+        signs, sums = {}, {}
+        for c in self.env['hr.contract'].search(contract_domain):
+            sign = self._pay_symbol(c.employee_id, signs)
+            amount, count = sums.get(sign, (0.0, 0))
+            sums[sign] = (amount + (c.wage or 0.0), count + 1)
+        return sorted(
+            ({'symbol': k, 'amount': v[0], 'count': v[1]} for k, v in sums.items()),
+            key=lambda t: -t['count'])
+
+    @api.model
     def _roster_kpis(self):
         """The quiet numbers + department list, over every active employee."""
         Emp = self.env['hr.employee']
@@ -90,6 +109,8 @@ class PbPeople(models.AbstractModel):
             total_wage = (groups and groups[0].get('wage')) or 0.0
         except Exception:
             total_wage = 0.0
+        wage_totals = self._safe(
+            lambda: self._wage_totals(CON_DOM + [('state', '=', 'open')]), [])
 
         # The quiet numbers and what pressing one lists are both read over
         # EVERY active employee (the roster below is capped), so a figure
@@ -130,7 +151,8 @@ class PbPeople(models.AbstractModel):
             'currency': cur.symbol or '',
             'kpis': {
                 'headcount': headcount, 'running': running, 'expiring': expiring,
-                'total_wage': total_wage, 'with_bank': with_bank,
+                'total_wage': total_wage, 'wage_totals': wage_totals,
+                'with_bank': with_bank,
                 'new_hires': new_hires, 'expiring_soon': expiring_soon,
                 'not_ready': not_ready,
                 'ready_pct': round(100 * with_bank / headcount) if headcount else 0,
