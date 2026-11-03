@@ -231,3 +231,36 @@ skip their codes.
 **FI3 — scope can be unknown at create.** A contract created before the
 employee has a team or before the map covers them resolves `known=False`.
 Fill nothing, raise nothing; trigger (b) catches it later.
+
+<!-- FI4–FI9 taken verbatim from FILLIN_P1_REPORT.md §9 (2026-11-04) -->
+
+**FI4 — `contract.copy()` copies no component lines.** `advantages_ids` is a
+One2many (default `copy=False`); a copy goes through `create` and is filled like
+a new contract. Any path that copies a contract and then writes its components
+itself must pass `pb_skip_fill_in` (the import's
+`_create_new_contract_for_components` does).
+
+**FI5 — the scheme map answers in raw SQL.** `pb.scheme.map._departments_for`
+reads `hr_version`/`hr_contract` with `cr.execute`, so a team written earlier in
+the same transaction is invisible until flushed. The fill flushes first; tests
+must `env.flush_all()` before resolving.
+
+**FI6 — a parallel session's bare `git commit` sweeps your staged files.**
+Stage and commit in one call (`git commit -m … -- <paths>`), or commit
+immediately after `git add`; never leave files staged while waiting on a test.
+
+**FI7 — `TestSchemeMapStaticContract` errors when run from a scratch addons
+dir** (it reads sibling modules' static files relative to its own root). Five
+`FileNotFoundError`s there are not a regression.
+
+**FI8 — archived schemes keep stale usual answers** (rize 3938: a salary as
+`default_value`). Read usual answers from active schemes only.
+
+**FI9 — the History tab calls every unknown change source "From a pay data
+file"** (`pb_contract_360._cd_change_sentence`); a new `change_source` needs a
+sentence there in the same change.
+
+
+**FI10 — a pay data file that states the same value Payobook filled in CONFIRMS the line** (P1 deviation 4, accepted by Fable): the import sync stamps `pb_checked_*` and clears `pb_fill` when the file value equals the filled-in value, so file-confirmed answers never sit in "not checked" forever.
+
+**FI11 — P1 code landed in commit `ef836533e`** (the parallel CONTRACTLIFE report commit swept its staged files, FI6). History was not rewritten; the P1 report carries the intended message.

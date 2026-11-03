@@ -5,11 +5,18 @@ decisions §2, gotchas §3), then `FILLIN_P1_REPORT.md` — **where the P1 repor
 names a field or method differently from this document, the report wins.**
 
 P1 shipped (server): `hr.contract.advantage.pb_fill / pb_checked_by /
-pb_checked_at`; `hr.contract.pb_fillin_unchecked()` and
-`pb_fillin_check(line_ids=None)`; change-log sources `auto_default` and
-`checked`; `hr.formula.rule.value_labels` with `value_label_options()` and
-`value_label_for(amount)`; rize scheme 7121 seeded with usual answers and
-words.
+pb_checked_at`; `hr.contract.pb_fillin_unchecked()` (returns a recordset —
+wrap it, return ids/rows over RPC) and `pb_fillin_check(line_ids=None)`
+(returns int; raises `AccessError` for non-managers — its rule is
+`_pb_fillin_may_check`, mirror it for every new write RPC instead of
+`_cd_may_write`); change-log sources `auto_default` and `checked`;
+`hr.formula.rule.value_labels` with `value_label_options()`,
+`value_label_for(amount)` and **`value_label_control()` → 'toggle' |
+'select' | ''** (use this to pick the editor, do not re-derive the {0,1}
+rule in JS); rize scheme 7121 seeded with usual answers and words. Read
+FILLIN_P1_REPORT.md §6 ("Facts P2 needs") in full — it also tells you that
+the History tab today prints every unknown source as "From a pay data file"
+(`_cd_change_sentence`, `pb_contract_360.py:1073-1087`), which A4 fixes.
 
 ## 1. Scope — six surfaces, in this order (one commit + deploy per block)
 
