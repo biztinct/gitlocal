@@ -2113,3 +2113,15 @@ msgstr "nhóm đông (10+)"
 #: code:addons/pb_orgchart/static/src/js/orgchart.js:0
 msgid "wide teams (10+)"
 msgstr "nhóm đông (10+)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Coach, time-off approver and expense approver stay as they are — change them on the employee record if they should follow."
+msgstr "Người hướng dẫn, người duyệt nghỉ phép và người duyệt chi phí vẫn giữ nguyên — hãy đổi trên hồ sơ nhân viên nếu cần thay theo."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_write.py:0
+msgid "That change could not be saved. The system said: %(m)s"
+msgstr "Không lưu được thay đổi này. Hệ thống báo: %(m)s"

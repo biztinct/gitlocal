@@ -351,8 +351,8 @@ class TestOrgChartP2(TransactionCase):
 
     def test_15_coach_never_changes_and_undo_restores_approvers(self):
         """The stock rule makes an empty coach (and the time-off / expense
-        approvers) follow a new manager. The chart never changes the coach,
-        and undo puts the approvers back exactly."""
+        approvers) follow a new manager. The chart changes the manager only:
+        coach and approvers keep their value through a move and its undo."""
         Emp = self.env['hr.employee']
         boss_user = new_test_user(self.env, login='oc2_boss', groups='base.group_user',
                                   company_id=self.co.id, company_ids=[self.co.id])
@@ -365,6 +365,8 @@ class TestOrgChartP2(TransactionCase):
         self.lone.invalidate_recordset()
         self.assertEqual(self.lone.parent_id, self.h2)
         self.assertFalse(self.lone.coach_id, "the chart never sets a coach")
+        for f, v in before.items():
+            self.assertEqual(self.lone[f], v, "the chart changes the manager only, not %s" % f)
         self.undo(res)
         self.lone.invalidate_recordset()
         self.assertFalse(self.lone.parent_id)
@@ -375,3 +377,17 @@ class TestOrgChartP2(TransactionCase):
         self.oc().move(self.s[3].id, self.h1.id)
         self.s[3].invalidate_recordset()
         self.assertEqual(self.s[3].coach_id, self.ceo)
+
+    def test_16_portal_login_can_become_a_manager(self):
+        """payobook 2026-11-04: swapping with a manager failed because the
+        stock follow-up made the new manager's PORTAL login a time-off
+        approver ("exclusive groups Portal / User"). The chart changes the
+        manager only, so the swap goes through."""
+        portal = new_test_user(self.env, login='oc2_portal', groups='base.group_portal',
+                               company_id=self.co.id, company_ids=[self.co.id])
+        self.s[0].sudo().user_id = portal.id
+        res = self.oc().swap(self.s[0].id)
+        self.assertTrue(res.get('ok'), res)
+        self.assertEqual(self.mgr(self.h1), self.s[0])
+        self.undo(res)
+        self.assertEqual(self.mgr(self.s[0]), self.h1)

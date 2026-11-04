@@ -143,7 +143,10 @@ class PbOrgChartWrite(models.AbstractModel):
     #: Fields the stock employee record recomputes when the manager changes:
     #: the coach (`hr`), the time-off approver (`hr_holidays`) and the expense
     #: approver (`hr_expense`) follow the new manager's login when they were
-    #: empty or the old manager's.
+    #: empty or the old manager's. The chart changes the MANAGER ONLY: these
+    #: are written back with their current value in the same write, which
+    #: protects them from that recompute (G16 — on payobook a swap failed
+    #: because the follow-up made a portal login a time-off approver).
     FOLLOWERS = ('coach_id', 'leave_manager_id', 'expense_manager_id')
 
     @api.model
@@ -166,23 +169,24 @@ class PbOrgChartWrite(models.AbstractModel):
 
     @api.model
     def _set_managers(self, changes):
-        """Write {emp: manager or False} in as few writes as values.
+        """Write {emp: manager or False}, the manager and nothing else.
 
-        The coach is NEVER changed by the chart (ORGCHART_P2 non-goal): the
-        stock rule that makes an empty coach follow the new manager is put
-        back right after the write. Approvers are left to follow the manager
-        as they do on the employee form; the undo snapshot restores them."""
+        The coach and the approvers keep their value (the coach is a binding
+        non-goal; the approvers because following would hand approval rights
+        to whatever login the new manager has). They are written in the SAME
+        write as the manager, which stops the stock recompute. People with
+        the same new manager and the same current values share one write."""
         Emp = self.env['hr.employee']
-        coach = {int(k): v.get('coach_id') for k, v in self._followers(changes).items()}
-        by_val = {}
+        fol = self._followers(changes)
+        groups = {}
         for e, m in changes.items():
-            by_val.setdefault(m or False, []).append(e)
-        for m, ids in by_val.items():
-            Emp.browse(ids).write({'parent_id': m})
-        if 'coach_id' in Emp._fields:
-            for e in Emp.sudo().browse(list(coach)).exists():
-                if (e.coach_id.id or False) != (coach.get(e.id) or False):
-                    e.coach_id = coach.get(e.id) or False
+            keep = fol.get(str(e), {})
+            key = (m or False,) + tuple(sorted(keep.items()))
+            groups.setdefault(key, []).append(e)
+        for key, ids in groups.items():
+            vals = {'parent_id': key[0]}
+            vals.update(dict(key[1:]))
+            Emp.browse(ids).write(vals)
 
     @api.model
     def _run(self, fn):
@@ -199,8 +203,9 @@ class PbOrgChartWrite(models.AbstractModel):
         except AccessError:
             return {'error': _("You don't have the rights to change this record. Ask an HR manager.")}
         except (UserError, ValidationError) as e:
-            msg = getattr(e, 'args', [''])[0] or ''
-            return {'error': str(msg) or _("That change could not be saved.")}
+            msg = str(getattr(e, 'args', [''])[0] or '')
+            return {'error': _("That change could not be saved. The system said: %(m)s", m=msg)
+                    if msg else _("That change could not be saved.")}
 
     @api.model
     def _answer(self, label, undo, emps=(), jobs=()):

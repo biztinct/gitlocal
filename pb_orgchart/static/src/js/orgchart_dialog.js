@@ -154,6 +154,7 @@ export class PbOcDialog extends Component {
         if (after >= WIDE) {
             out.push({ k: "wide", warn: true, t: _t("%(m)s will have %(n)s direct reports — that is a wide span.", { m: m.name, n: after }) });
         }
+        out.push({ k: "keep", t: _t("Coach, time-off approver and expense approver stay as they are — change them on the employee record if they should follow.") });
         out.push({ k: "rec", t: _t("It is recorded on each employee record — the History tab shows who changed it and when.") });
         return out;
     }
