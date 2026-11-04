@@ -2147,6 +2147,7 @@ msgstr "Thực nhận tháng này"
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 #: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
 msgid "Not now"
 msgstr "Để sau"
 
@@ -4363,8 +4364,11 @@ msgid "Ready to pay"
 msgstr "Sẵn sàng thanh toán"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_payruns/static/src/xml/payrun_screen.xml:0
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
 msgid "Recalculate"
 msgstr "Tính lại"
 
@@ -4678,3 +4682,76 @@ msgstr "Dùng để tính lương cho người vào làm hoặc nghỉ việc gi
 #: model_terms:ir.ui.view,arch_db:pb_payruns.hr_payslip_run_form_pb_enhance
 msgid "Turn on only to cancel out a run that was paid by mistake."
 msgstr "Chỉ bật khi cần hủy bỏ một kỳ lương đã trả nhầm."
+
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Ready to send, with %s notes below. Nobody signs it off, so it is approved the moment it is sent."
+msgstr "Sẵn sàng gửi, có %s ghi chú bên dưới. Không ai ký duyệt, nên kỳ lương được duyệt ngay khi gửi."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Ready to send for approval, with 1 note below."
+msgstr "Sẵn sàng gửi phê duyệt, có 1 ghi chú bên dưới."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Ready to send for approval, with %s notes below."
+msgstr "Sẵn sàng gửi phê duyệt, có %s ghi chú bên dưới."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Checks pass · 1 note"
+msgstr "Kiểm tra đạt · 1 ghi chú"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Checks pass · %s notes"
+msgstr "Kiểm tra đạt · %s ghi chú"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "There is no approved run of the same kind for %s on this scheme, so there is nothing to compare with yet."
+msgstr "Chưa có kỳ lương cùng loại đã duyệt cho %s trong phương án lương này, nên chưa có gì để so sánh."
+
+#. module: pb_payruns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
+msgid "Recalculate the payslip?"
+msgstr "Tính lại phiếu lương này?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Recalculate %s payslips?"
+msgstr "Tính lại %s phiếu lương?"
+
+#. module: pb_payruns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
+msgid "Its figures may change."
+msgstr "Số liệu của phiếu có thể thay đổi."
+
+#. module: pb_payruns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
+msgid "Their figures may change."
+msgstr "Số liệu của các phiếu có thể thay đổi."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
+msgid "Recalculate %(n)s payslips?"
+msgstr "Tính lại %(n)s phiếu lương?"

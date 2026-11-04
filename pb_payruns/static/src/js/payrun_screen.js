@@ -812,7 +812,16 @@ export class PbPayrunScreen extends Component {
                 this.clearSelection();
             }
         });
-        if (verb === "delete") {
+        if (verb === "recalc") {
+            // R7: recalculating changes figures, so it asks first (not danger).
+            const n = ids.length;
+            this.confirmThen({
+                title: n === 1 ? _t("Recalculate the payslip?")
+                    : sprintf(_t("Recalculate %(n)s payslips?"), { n }),
+                body: n === 1 ? _t("Its figures may change.") : _t("Their figures may change."),
+                ok: _t("Recalculate"), cancel: _t("Not now"), danger: false,
+            }, go);
+        } else if (verb === "delete") {
             const n = ids.length;
             this.confirmThen({
                 title: n === 1 ? _t("Delete this draft payslip?")

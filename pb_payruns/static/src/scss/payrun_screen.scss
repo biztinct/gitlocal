@@ -25,8 +25,15 @@ body:not(.pb-prs-classic) .pb-payrun-form {
     .o_form_statusbar, .pb-prs-legacy { display: none !important; }
 }
 .pb-payrun-form {
-    .o_form_sheet_bg { background: var(--prs-bg); }
-    .o_form_sheet { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+    /* Follow-up 1: the screen fills the content area like the mock-up — one
+       centred 1320px column (Run settings the same width), not the form's
+       1400px sheet pinned to the left. */
+    .o_form_sheet_bg { background: var(--prs-bg); max-width: none !important; margin-left: auto !important; margin-right: auto !important; width: 100%; }
+    .o_form_sheet {
+        background: transparent !important; border: 0 !important; box-shadow: none !important;
+        max-width: 1320px !important; width: 100%; margin-left: auto !important; margin-right: auto !important;
+        padding-left: 0 !important; padding-right: 0 !important;
+    }
     /* the widget is a block of its own, full width */
     .o_widget_pb_payrun_screen, .o_widget_pb_payrun_history { display: block; width: 100%; }
 
@@ -110,6 +117,13 @@ body.pb-prs-classic .pb-payrun-form .pb-prs-legacy { margin-top: 14px; }
     display: flex; align-items: center; justify-content: space-between; gap: 14px 20px; flex-wrap: wrap;
 }
 .pb-prs-chips { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; min-width: 0; }
+/* Wide screens: Downloads / More / the primary stay on the RIGHT of the chips
+   row (the chips wrap inside their own box), as in the mock-up. */
+@media (min-width: 1181px) {
+    .pb-prs-head { flex-wrap: nowrap; align-items: flex-start; }
+    .pb-prs-head .pb-prs-chips { flex: 1 1 auto; }
+    .pb-prs-head .pb-prs-actions { flex: none; flex-wrap: nowrap; }
+}
 .pb-prs {
     .chip {
         display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 999px;
@@ -194,9 +208,11 @@ body.pb-prs-classic .pb-payrun-form .pb-prs-legacy { margin-top: 14px; }
         h2 .ic { color: var(--prs-p); }
     }
 }
-.pb-prs-top { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 18px; }
+/* Follow-up 1: each card sizes to its content (no empty band in the money
+   card when the checks card is taller). */
+.pb-prs-top { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 .pb-prs-money {
-    padding: 22px 24px; display: flex; flex-direction: column; gap: 20px; justify-content: space-between;
+    padding: 22px 24px; display: flex; flex-direction: column; gap: 20px; justify-content: flex-start;
     background: linear-gradient(var(--prs-p-wash), var(--prs-card) 55%);
     .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--prs-p600); }
     .big {

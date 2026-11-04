@@ -108,6 +108,17 @@ R5. (2026-11-04) "Compared with" = ONLY the run of the SAME KIND (end of
     MONTH JUST BEFORE this run's month, same scheme + division + currency, with
     payslips. None → compare None + "nothing to compare with yet". This
     narrows R3 and drives the per-person "changed" flags too.
+R6. (2026-11-04) "Compared with" counts only an APPROVED (done) run of the
+    same kind for the month just before. Top-up runs only ever compare with
+    top-ups, never with a full month — using the existing notion of kind; do
+    not invent one. A draft or pending earlier run → nothing to compare with
+    yet. (P2 follow-up 1: the approved-only half is built. NO existing field
+    tells a top-up apart — payobook's top-up / awards / bonus runs carry the
+    same scheme and the same scheme cycle type as the full month — so the
+    top-up half waits for a decision; see PRS_P2_REPORT "Follow-up 1".)
+R7. (2026-11-04) "Recalculate everyone" and bulk Recalculate ask first:
+    "Recalculate 63 payslips? Their figures may change." (1/N variants), OK
+    "Recalculate", cancel "Not now". Not a danger style.
 
 ## The ten view layers on the pay run form (verified 2026-11-03, rize)
 

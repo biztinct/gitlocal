@@ -723,8 +723,9 @@ class PbPayruns(models.AbstractModel):
         # amber advice lines shown under them.
         n_checks = sum(1 for item in checks['items'] if item['key'] in
                        ('data', 'balance', 'calculated', 'route'))
+        notes = sum(1 for item in checks['items'] if item.get('tone') == 'amber')
         journey = self._screen_journey(run, card, state, live_count, bad,
-                                       n_checks, sent_back)
+                                       n_checks, sent_back, notes=notes)
         primary = self._screen_primary(run, card, state, live_count, bad,
                                        sent_back, may_write, route)
         split_ok = bool(state == 'draft' and may_write and groups
@@ -1027,7 +1028,9 @@ class PbPayruns(models.AbstractModel):
         if not window:
             return Run.browse()
         first, last = window
-        domain = [('id', '!=', run.id), ('state', '!=', 'cancel'),
+        # R6 (2026-11-04): only an APPROVED run is "last month" — a draft
+        # or one still waiting for approval has paid nobody yet.
+        domain = [('id', '!=', run.id), ('state', '=', 'done'),
                   ('date_end', '>=', first), ('date_end', '<=', last),
                   ('pb_currency_id', '=', currency.id)]
         if run.date_start:
@@ -1052,8 +1055,8 @@ class PbPayruns(models.AbstractModel):
         window = self._screen_month_before(run)
         if not window:
             return _("There is nothing to compare this run with yet.")
-        return _("There is no run of the same kind for %s on this scheme, so "
-                 "there is nothing to compare with yet.",
+        return _("There is no approved run of the same kind for %s on this "
+                 "scheme, so there is nothing to compare with yet.",
                  self._month_label(window[0]))
 
     @api.model
@@ -1573,15 +1576,26 @@ class PbPayruns(models.AbstractModel):
                         else _("You can still send it. The approver will see "
                                "these too.")),
                 'items': items}
+        # Follow-up 1: amber rows are NOTES — they never make the run unready
+        # (R4), but the verdict names them so nobody reads "Everything checks
+        # out" as "there is nothing below".
+        notes = sum(1 for item in items if item['tone'] == 'amber')
         if run.pb_return_note:
             sub = _("Fix what was sent back, then send it again.")
+        elif amber and notes > 1:
+            sub = _("Ready to send, with %s notes below. Nobody signs it off, "
+                    "so it is approved the moment it is sent.", notes)
         elif amber:
             sub = _("Ready to send. Nobody signs it off, so it is approved "
                     "the moment it is sent.")
+        elif notes == 1:
+            sub = _("Ready to send for approval, with 1 note below.")
+        elif notes:
+            sub = _("Ready to send for approval, with %s notes below.", notes)
         else:
             sub = _("Ready to send for approval.")
         return {'verdict': 'ok', 'title': _("Everything checks out"),
-                'sub': sub, 'items': items}
+                'sub': sub, 'items': items, 'notes': notes}
 
     @api.model
     def _screen_atlas_ok(self):
@@ -1606,7 +1620,7 @@ class PbPayruns(models.AbstractModel):
     # ------------------------------------------------- run screen: journey, next
     @api.model
     def _screen_journey(self, run, card, state, live_count, bad, n_checks,
-                        sent_back):
+                        sent_back, notes=0):
         """Prepare · Check · Approve · Pay · Send payslips — the mock-up's
         `journey()`, from the run's real state."""
         _ = self.env._
@@ -1638,6 +1652,11 @@ class PbPayruns(models.AbstractModel):
             elif sent_back:
                 check = step('check', 'warn', labels['check'],
                              _("Sent back — fix and send again"))
+            elif notes:
+                # Follow-up 1: never "All 4 checks pass" above amber notes.
+                check = step('check', 'done', labels['check'],
+                             _("Checks pass · 1 note") if notes == 1
+                             else _("Checks pass · %s notes", notes))
             else:
                 check = step('check', 'done', labels['check'], all_pass)
             return [prepare, check,
@@ -1899,10 +1918,18 @@ class PbPayruns(models.AbstractModel):
                     context={'active_model': 'hr.payslip.run',
                              'active_id': run.id, 'active_ids': [run.id]}))
             if has('action_recompute_formula_lines_batch'):
+                # R7 (2026-11-04): it changes figures, so it asks first —
+                # not a danger style.
                 more.append(item(
                     'recalc', _("Recalculate everyone"),
                     _("After you fix a pay item or the pay data"),
-                    method='action_recompute_formula_lines_batch'))
+                    method='action_recompute_formula_lines_batch',
+                    confirm=ask(
+                        _("Recalculate the payslip?") if live_count == 1
+                        else _("Recalculate %s payslips?", live_count),
+                        _("Its figures may change.") if live_count == 1
+                        else _("Their figures may change."),
+                        _("Recalculate"), _("Not now"))))
             if split_ok:
                 more.append(item(
                     'split', _("Split into review groups"),

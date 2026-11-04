@@ -400,6 +400,7 @@ class TestRunScreen(TransactionCase):
                            config=self.viet)
         self._slip(august, self.emp_a, net=9000000.0)
         self._slip(august, self.emp_b, net=5000000.0)
+        august.state = 'done'          # R6: only an approved run compares
         september = self._run('PRS September 2026', config=self.viet)
         self._slip(september, self.emp_a, net=9000000.0)
         b = self._slip(september, self.emp_b, net=6000000.0)
@@ -409,9 +410,9 @@ class TestRunScreen(TransactionCase):
         self.assertIsNone(first['compare'])
         # R5: the sentence names the month that has no run of this kind
         self.assertEqual(first['compare_none'],
-                         'There is no run of the same kind for July 2026 on '
-                         'this scheme, so there is nothing to compare with '
-                         'yet.')
+                         'There is no approved run of the same kind for July '
+                         '2026 on this scheme, so there is nothing to compare '
+                         'with yet.')
         self.assertFalse(first['people']['changed_available'])
 
         screen = self._screen(september)
@@ -777,6 +778,7 @@ class TestRunScreen(TransactionCase):
         # payslips' scheme, exactly as `_pb_kind_key` reads it for a route
         june_mid = self._run('PRS June advance', '2026-06-01', '2026-06-15')
         self._slip(june_mid, self.emp_a, formula_config_id=mid.id)
+        june_mid.state = 'done'
         july_end = self._run('PRS July 2026', '2026-07-01', '2026-07-31')
         self._slip(july_end, self.emp_a, formula_config_id=end.id)
         self.assertEqual(june_mid._pb_kind_key(), 'mid_cycle')
@@ -788,6 +790,7 @@ class TestRunScreen(TransactionCase):
         # a June END-of-month run IS the comparison
         june_end = self._run('PRS June 2026', '2026-06-16', '2026-06-30')
         self._slip(june_end, self.emp_a, formula_config_id=end.id)
+        june_end.state = 'done'
         self.assertEqual(self._screen(july_end)['compare']['run_id'],
                          june_end.id)
 
@@ -795,6 +798,7 @@ class TestRunScreen(TransactionCase):
         may = self._run('PRS May 2026', '2026-05-01', '2026-05-31',
                         config=self.viet)
         self._slip(may, self.emp_a)
+        may.state = 'done'
         july = self._run('PRS July 2026', '2026-07-01', '2026-07-31',
                          config=self.viet)
         self._slip(july, self.emp_a)
@@ -965,5 +969,74 @@ class TestRunScreen(TransactionCase):
             return built
         with patch.object(Board, '_board_cards', with_advice):
             screen = self._screen(run)
-        self.assertEqual(screen['journey'][1]['sub'], 'All 4 checks pass')
+        # the four real checks pass; the two amber advice lines are notes
+        self.assertEqual(screen['journey'][1]['sub'], 'Checks pass · 2 notes')
         self.assertEqual(len(screen['checks']['items']), 6)
+
+    # ================================================== Follow-up 1 (R6, R7)
+    def test_r6_a_draft_or_pending_month_before_is_not_compared(self):
+        """R6: "Compared with" reads only an APPROVED run; a draft (or one
+        still waiting) for the month before has paid nobody yet."""
+        august = self._run('PRS August 2026', '2026-08-01', '2026-08-31',
+                           config=self.viet)
+        self._slip(august, self.emp_a)
+        september = self._run('PRS September 2026', config=self.viet)
+        self._slip(september, self.emp_a)
+        for state in ('draft', 'approval_pending'):
+            august.state = state
+            screen = self._screen(september)
+            self.assertIsNone(screen['compare'], state)
+            self.assertIn('no approved run', screen['compare_none'])
+            self.assertFalse(screen['people']['changed_available'])
+        august.state = 'done'
+        self.assertEqual(self._screen(september)['compare']['run_id'],
+                         august.id)
+
+    def test_r7_recalculate_everyone_asks_first(self):
+        run = self._ready_draft()
+        more = {i['key']: i for i in self._screen(run)['actions']['more']}
+        if 'recalc' not in more:
+            self.skipTest('the formula engine is not installed here')
+        confirm = more['recalc']['confirm']
+        self.assertEqual(confirm['title'], 'Recalculate 2 payslips?')
+        self.assertEqual(confirm['body'], 'Their figures may change.')
+        self.assertEqual(confirm['ok'], 'Recalculate')
+        self.assertEqual(confirm['cancel'], 'Not now')
+        self.assertFalse(confirm['danger'])
+
+    def test_notes_are_named_in_the_journey_and_the_verdict(self):
+        """Amber rows are notes: "Checks pass · N notes", and the verdict
+        still says Everything checks out but mentions them."""
+        from unittest.mock import patch
+        self._route_two_steps()
+        run = self._run()
+        self._slip(run, self.emp_a)
+        advice = [{'key': 'close', 'tone': 'amber', 'text': 'Week not closed.',
+                   'detail': 'Advice only.', 'advisory': True, 'next': None},
+                  {'key': 'fillin', 'tone': 'amber', 'text': 'Filled in.',
+                   'detail': 'Check once.', 'advisory': True, 'next': None}]
+        Board = type(self.board)
+        real = Board._board_cards
+
+        def with_advice(n):
+            def wrapped(board, runs, *a, **kw):
+                built = real(board, runs, *a, **kw)
+                for c in built['batches']:
+                    c['checks'] = list(c.get('checks') or []) + advice[:n]
+                return built
+            return wrapped
+        with patch.object(Board, '_board_cards', with_advice(1)):
+            one = self._screen(run)
+        with patch.object(Board, '_board_cards', with_advice(2)):
+            two = self._screen(run)
+        self.assertEqual(one['journey'][1]['sub'], 'Checks pass · 1 note')
+        self.assertEqual(two['journey'][1]['sub'], 'Checks pass · 2 notes')
+        self.assertEqual(one['checks']['title'], 'Everything checks out')
+        self.assertEqual(one['checks']['sub'],
+                         'Ready to send for approval, with 1 note below.')
+        self.assertEqual(two['checks']['sub'],
+                         'Ready to send for approval, with 2 notes below.')
+        plain = self._screen(run)
+        self.assertEqual(plain['journey'][1]['sub'], 'All 4 checks pass')
+        self.assertEqual(plain['checks']['sub'], 'Ready to send for approval.')
+

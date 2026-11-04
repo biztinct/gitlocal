@@ -20,7 +20,10 @@
     # never deleted; "Show the classic layout" brings them back per tab).
     # 3.4.1: the route preview no longer reads each payslip's state one by one
     # (a biz_access lookup per payslip); "All N checks pass" counts real checks.
-    'version': '19.0.3.4.1',
+    # 3.4.2: PRS P2 follow-up 1 — full-width centred screen, cards sized to
+    # content, "Checks pass · N notes", R6 approved-only compare, R7 asks
+    # before Recalculate.
+    'version': '19.0.3.4.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
