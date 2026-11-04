@@ -287,7 +287,11 @@ export function layout(idx, opts) {
     let lane = null;
     const laneIds = [];
     let moreId = null;
-    const lone = idx.lone;
+    // a focus brings the people it lights to the front of the lane
+    const first = opts.laneFirst;
+    const lone = first && first.size
+        ? [...idx.lone.filter((n) => first.has(n.id)), ...idx.lone.filter((n) => !first.has(n.id))]
+        : idx.lone;
     let oy = 0;
     const lanePos = [];
     if (lone.length) {

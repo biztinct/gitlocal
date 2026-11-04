@@ -245,6 +245,7 @@ export class PbOrgChart extends Component {
             this.lay = layout(this.idx, {
                 view: s.view, compact: s.compact, levels: s.levels,
                 collapsed: this.collapsed, laneOpen: s.laneOpen,
+                laneFirst: s.focus ? new Set(this.nodes.filter((n) => this.emphasised(n)).map((n) => n.id)) : null,
             });
             this.edgeList = edges(this.idx, this.lay, s.view === "lr");
             this._buildCards();
@@ -681,6 +682,8 @@ export class PbOrgChart extends Component {
                 opened++;
             }
         }
+        // a few lit cards: the view fits to them, not to the whole chart
+        this._fitToLit = true;
         this._relayoutAndFit();
     }
 
@@ -998,6 +1001,21 @@ export class PbOrgChart extends Component {
         this.applyTransform(anim);
     }
 
+    /** Fit the view to a handful of cards (a focus that lit only a few). */
+    fitTo(cards) {
+        const cv = this._canvasRect();
+        const x0 = Math.min(...cards.map((c) => c.x));
+        const y0 = Math.min(...cards.map((c) => c.y));
+        const x1 = Math.max(...cards.map((c) => c.x + c.w));
+        const y1 = Math.max(...cards.map((c) => c.y + c.h));
+        const want = Math.min((cv.width - 120) / (x1 - x0), (cv.height - 160) / (y1 - y0));
+        const z = Math.min(1, Math.max(MIN_FIT, want));
+        this.vp.zoom = z;
+        this.vp.px = cv.width / 2 - ((x0 + x1) / 2) * z;
+        this.vp.py = cv.height / 2 - ((y0 + y1) / 2) * z;
+        this.applyTransform(true);
+    }
+
     centerOn(id, anim = true) {
         const p = this.lay && this.lay.pos.get(id);
         if (!p) { return; }
@@ -1086,7 +1104,10 @@ export class PbOrgChart extends Component {
         }
         if (this._pendingFit && this.worldRef.el) {
             this._pendingFit = false;
-            this.fit(!this.firstDraw);
+            const lit = this._fitToLit ? this.cards.filter((c) => !this.cardState(c).includes("dim")) : [];
+            this._fitToLit = false;
+            if (lit.length && lit.length <= 40 && lit.length < this.cards.length) { this.fitTo(lit); }
+            else { this.fit(!this.firstDraw); }
             if (this.firstDraw) { setTimeout(() => { this.firstDraw = false; }, 900); }
         } else {
             this.applyTransform(false);
