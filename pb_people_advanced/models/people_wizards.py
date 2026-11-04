@@ -88,6 +88,12 @@ class PbOnboardWizard(models.AbstractModel):
                 evals[k_dst] = int(vals[k_src])
         if vals.get('job_title'):
             evals['job_title'] = vals['job_title']
+        # The manager, when the form was opened from the org chart.
+        try:
+            if vals.get('parent_id'):
+                evals['parent_id'] = int(vals['parent_id'])
+        except (TypeError, ValueError):
+            pass
         if vals.get('work_email'):
             evals['work_email'] = vals['work_email']
         if vals.get('work_phone'):

@@ -6,6 +6,10 @@
     .pplw-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 26px; border-bottom: 1px solid var(--pbim-line); }
     .pplw-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-muted); }
     .pplw-head h2 { font-size: 20px; font-weight: 800; margin-top: 3px; }
+    .pplw-prefill { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 9px 12px; border-radius: 12px;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); font-size: 13px; }
+    .pplw-prefill b { font-weight: 700; }
+    .pplw-prefill-x { margin-left: auto; border: none; background: none; color: inherit; cursor: pointer; display: inline-flex; padding: 2px; border-radius: 6px; }
     .pplw-x { border: none; background: var(--pbim-bg); width: 34px; height: 34px; border-radius: 10px; cursor: pointer; color: var(--pbim-muted); display: flex; align-items: center; justify-content: center; }
 
     .pplw-rail { display: flex; align-items: center; justify-content: center; padding: 20px 26px 4px; flex-wrap: wrap; }

@@ -9,6 +9,11 @@
           <div><div class="pplw-eyebrow">Payobook · People</div><h2>Add employee</h2></div>
           <button class="pplw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
         </div>
+        <div t-if="prefill and prefill.parent_name and state.form.parent_id and !state.result" class="pplw-prefill">
+          <t t-out="ic('users',15)"/>
+          <span>Reports to <b t-esc="prefill.parent_name"/> — set from the org chart</span>
+          <button class="pplw-prefill-x" title="Do not set a manager" t-on-click="clearManager"><t t-out="ic('x',13)"/></button>
+        </div>
 
         <div class="pplw-rail" t-if="!state.result">
           <t t-foreach="steps" t-as="s" t-key="s_index">
@@ -75,18 +80,18 @@
                 <label class="pplw-label">Department</label>
                 <select class="pplw-in" t-on-change="(ev) => this.onField('department_id', ev)">
                   <option value="">— Optional —</option>
-                  <option t-foreach="state.defaults.departments" t-as="d" t-key="d.id" t-att-value="d.id" t-esc="d.name"/>
+                  <option t-foreach="state.defaults.departments" t-as="d" t-key="d.id" t-att-value="d.id" t-att-selected="isSel('department_id', d.id)" t-esc="d.name"/>
                 </select>
                 <label class="pplw-label">Job position</label>
                 <select class="pplw-in" t-on-change="(ev) => this.onField('job_id', ev)">
                   <option value="">— Optional —</option>
-                  <option t-foreach="state.defaults.jobs" t-as="j" t-key="j.id" t-att-value="j.id" t-esc="j.name"/>
+                  <option t-foreach="state.defaults.jobs" t-as="j" t-key="j.id" t-att-value="j.id" t-att-selected="isSel('job_id', j.id)" t-esc="j.name"/>
                 </select>
               </div>
               <div class="pplw-sec">
                 <h4>Title</h4>
                 <label class="pplw-label">Job title (free text)</label>
-                <input class="pplw-in" t-on-change="(ev) => this.onField('job_title', ev)"/>
+                <input class="pplw-in" t-att-value="state.form.job_title" t-on-change="(ev) => this.onField('job_title', ev)"/>
               </div>
             </div>
           </t>
