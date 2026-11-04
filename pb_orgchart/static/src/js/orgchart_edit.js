@@ -143,6 +143,8 @@ class OcEdit {
             if (this._undo.length > UNDO_KEEP) { this._undo.shift(); }
             const close = this.notif.add(res.label, {
                 type: "success",
+                // long enough to read the sentence and reach for Undo
+                autocloseDelay: 10000,
                 buttons: [{ name: _t("Undo"), primary: true, onClick: () => { close(); this.undo(entry); } }],
             });
         } else {

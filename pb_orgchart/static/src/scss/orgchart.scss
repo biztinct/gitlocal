@@ -364,14 +364,17 @@
         left: 50%; top: 14px; transform: translateX(-50%); background: var(--oc-navy); color: #fff; border-radius: 999px;
         padding: 7px 14px; font-size: 12.5px; align-items: center; gap: 8px; box-shadow: var(--oc-sh-3); white-space: nowrap;
     }
+    // top-left of the canvas: the canvas can run below the fold on a short
+    // window, and the zoom tools own the top-right corner
     .pboc-pickbar {
-        left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; white-space: nowrap;
+        left: 14px; top: 14px; display: flex; align-items: center; gap: 10px; white-space: nowrap;
         background: var(--oc-navy); color: #fff; border-radius: 16px; padding: 7px 8px 7px 14px; box-shadow: var(--oc-sh-3);
-        animation: pboc-up .2s ease-out;
+        animation: pboc-down .2s ease-out;
         .n { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; font-size: 13px; }
         .pboc-btn.primary { box-shadow: none; }
         .pboc-btn.clr { color: #fff; background: rgba(255, 255, 255, .14); &:hover { background: rgba(255, 255, 255, .26); } }
         .tip { color: rgba(255, 255, 255, .62); font-size: 11.5px; padding-right: 6px; }
+        @media (max-width: 1400px) { .tip { display: none; } }
     }
     .pboc-ctx {
         position: absolute; right: auto; z-index: 70; min-width: 290px; max-width: 330px;
@@ -531,6 +534,7 @@
 @keyframes pboc-pop { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes pboc-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pboc-slide { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@keyframes pboc-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes pboc-up { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translateX(-50%); } }
 // opacity + scale only: the card's position lives in its inline transform,
 // so the entrance animates `scale` and `opacity`, never `transform`

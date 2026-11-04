@@ -140,15 +140,49 @@ class PbOrgChartWrite(models.AbstractModel):
         return _("Can't do that — %(m)s is inside %(p)s's own team.",
                  m=Emp.browse(mgr_id).name or _("that manager"), p=Emp.browse(emp_id).name)
 
+    #: Fields the stock employee record recomputes when the manager changes:
+    #: the coach (`hr`), the time-off approver (`hr_holidays`) and the expense
+    #: approver (`hr_expense`) follow the new manager's login when they were
+    #: empty or the old manager's.
+    FOLLOWERS = ('coach_id', 'leave_manager_id', 'expense_manager_id')
+
+    @api.model
+    def _followers(self, ids):
+        """{emp: {field: id or False}} for the FOLLOWERS present here."""
+        Emp = self.env['hr.employee']
+        flds = [f for f in self.FOLLOWERS if f in Emp._fields]
+        out = {}
+        for e in Emp.sudo().browse(list(ids)).exists():
+            out[str(e.id)] = {f: e[f].id or False for f in flds}
+        return out
+
+    @api.model
+    def _snap(self, changes):
+        """The undo snapshot of a manager change, taken BEFORE it is written:
+        each person's manager and the approvers the system moves with it."""
+        Emp = self.env['hr.employee']
+        return {'managers': {str(e): (Emp.browse(e).parent_id.id or False) for e in changes},
+                'followers': self._followers(changes)}
+
     @api.model
     def _set_managers(self, changes):
-        """Write {emp: manager or False} in as few writes as values."""
+        """Write {emp: manager or False} in as few writes as values.
+
+        The coach is NEVER changed by the chart (ORGCHART_P2 non-goal): the
+        stock rule that makes an empty coach follow the new manager is put
+        back right after the write. Approvers are left to follow the manager
+        as they do on the employee form; the undo snapshot restores them."""
         Emp = self.env['hr.employee']
+        coach = {int(k): v.get('coach_id') for k, v in self._followers(changes).items()}
         by_val = {}
         for e, m in changes.items():
             by_val.setdefault(m or False, []).append(e)
         for m, ids in by_val.items():
             Emp.browse(ids).write({'parent_id': m})
+        if 'coach_id' in Emp._fields:
+            for e in Emp.sudo().browse(list(coach)).exists():
+                if (e.coach_id.id or False) != (coach.get(e.id) or False):
+                    e.coach_id = coach.get(e.id) or False
 
     @api.model
     def _run(self, fn):
@@ -224,8 +258,7 @@ class PbOrgChartWrite(models.AbstractModel):
                     changes[k.id] = old.id or False
             if self._loop_in(changes):
                 raise _Refused(self._loop_sentence(emp.id, mgr.id))
-            undo = {'managers': {str(e): (self.env['hr.employee'].browse(e).parent_id.id or False)
-                                 for e in changes}}
+            undo = self._snap(changes)
             self._set_managers(changes)
             if whole_team or not kids:
                 label = _("%(p)s now reports to %(m)s", p=emp.name, m=mgr.name)
@@ -267,7 +300,7 @@ class PbOrgChartWrite(models.AbstractModel):
             if bad:
                 raise _Refused(self._loop_sentence(bad, mgr.id))
             Emp = self.env['hr.employee']
-            undo = {'managers': {str(e): (Emp.browse(e).parent_id.id or False) for e in changes}}
+            undo = self._snap(changes)
             olds = {Emp.browse(e).parent_id.id for e in changes} - {False}
             self._set_managers(changes)
             n = len(changes)
@@ -285,7 +318,7 @@ class PbOrgChartWrite(models.AbstractModel):
             old = emp.parent_id
             if not old:
                 raise _Refused(_("%(p)s has no manager to remove.", p=emp.name))
-            undo = {'managers': {str(emp.id): old.id}}
+            undo = self._snap({emp.id: False})
             self._set_managers({emp.id: False})
             return self._answer(_("%(p)s removed from %(m)s's team", p=emp.name, m=old.name),
                                 undo, [emp.id, old.id])
@@ -316,7 +349,7 @@ class PbOrgChartWrite(models.AbstractModel):
                 changes[k.id] = mgr.id
             if self._loop_in(changes):
                 raise _Refused(self._loop_sentence(emp.id, grand.id))
-            undo = {'managers': {str(e): (Emp.browse(e).parent_id.id or False) for e in changes}}
+            undo = self._snap(changes)
             self._set_managers(changes)
             return self._answer(_("%(p)s and %(m)s swap places", p=emp.name, m=mgr.name),
                                 undo, list(changes) + [grand.id])
@@ -419,13 +452,13 @@ class PbOrgChartWrite(models.AbstractModel):
             undo = {
                 'emp_jobs': {str(emp.id): {'job_id': emp.job_id.id or False,
                                            'job_title': emp.job_title or False}},
-                'managers': {str(emp.id): old_mgr.id or False},
                 'jobs': {str(job.id): {'no_of_recruitment': job.no_of_recruitment}},
             }
-            vals = {'job_id': job.id, 'job_title': job.name}
             if mgr:
-                vals['parent_id'] = mgr.id
-            emp.write(vals)
+                undo.update(self._snap({emp.id: mgr.id}))
+            emp.write({'job_id': job.id, 'job_title': job.name})
+            if mgr and emp.parent_id != mgr:
+                self._set_managers({emp.id: mgr.id})
             job.write({'no_of_recruitment': max(0, job.no_of_recruitment - 1)})
             touched = [emp.id] + ([mgr.id] if mgr else []) + ([old_mgr.id] if old_mgr else [])
             return self._answer(_("%(p)s fills the %(t)s role", p=emp.name, t=job.name),
@@ -486,6 +519,13 @@ class PbOrgChartWrite(models.AbstractModel):
                                      'job_title': vals.get('job_title') or False})
             if managers:
                 self._set_managers(managers)
+            # the approvers (and coach) exactly as they were before the change
+            Fl = [f for f in self.FOLLOWERS if f in Emp._fields]
+            for e, vals in self._k(snap.get('followers')).items():
+                w = {f: vals.get(f) or False for f in Fl if f in vals}
+                rec = Emp.sudo().browse(e).exists()
+                if rec and any((rec[f].id or False) != w[f] for f in w):
+                    rec.write(w)
             for e, m in dotted.items():
                 Emp.browse(e).write({'pb_dotted_manager_id': m or False})
             for j, vals in jobs.items():

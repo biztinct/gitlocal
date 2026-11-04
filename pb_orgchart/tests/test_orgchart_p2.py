@@ -83,7 +83,7 @@ class TestOrgChartP2(TransactionCase):
         self.assertEqual(self.mgr(self.h1), self.h2)
         for s in self.s[:3]:
             self.assertEqual(self.mgr(s), self.h1, "the team comes along")
-        self.assertEqual(res['undo']['args'][0], {'managers': {str(self.h1.id): self.ceo.id}})
+        self.assertEqual(res['undo']['args'][0]['managers'], {str(self.h1.id): self.ceo.id})
         # the refresh carries the moved person and the managers above them
         rows = {r['id']: r for r in res['refresh']['people']}
         self.assertEqual(rows[self.h1.id]['manager_id'], self.h2.id)
@@ -348,3 +348,30 @@ class TestOrgChartP2(TransactionCase):
         self.oc().move(self.h1.id, self.s[0].id)
         out = self.oc().restore(*res['undo']['args'])
         self.assertIn("can't be undone", out['error'])
+
+    def test_15_coach_never_changes_and_undo_restores_approvers(self):
+        """The stock rule makes an empty coach (and the time-off / expense
+        approvers) follow a new manager. The chart never changes the coach,
+        and undo puts the approvers back exactly."""
+        Emp = self.env['hr.employee']
+        boss_user = new_test_user(self.env, login='oc2_boss', groups='base.group_user',
+                                  company_id=self.co.id, company_ids=[self.co.id])
+        self.h2.user_id = boss_user.id
+        self.lone.coach_id = False
+        before = {f: self.lone[f] for f in ('coach_id', 'leave_manager_id', 'expense_manager_id')
+                  if f in Emp._fields}
+        res = self.oc().move(self.lone.id, self.h2.id)
+        self.assertTrue(res.get('ok'), res)
+        self.lone.invalidate_recordset()
+        self.assertEqual(self.lone.parent_id, self.h2)
+        self.assertFalse(self.lone.coach_id, "the chart never sets a coach")
+        self.undo(res)
+        self.lone.invalidate_recordset()
+        self.assertFalse(self.lone.parent_id)
+        for f, v in before.items():
+            self.assertEqual(self.lone[f], v, "undo puts %s back" % f)
+        # a coach that was set stays exactly as it was through a move
+        self.s[3].coach_id = self.ceo.id
+        self.oc().move(self.s[3].id, self.h1.id)
+        self.s[3].invalidate_recordset()
+        self.assertEqual(self.s[3].coach_id, self.ceo)
