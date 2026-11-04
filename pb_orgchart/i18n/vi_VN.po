@@ -1,0 +1,1030 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_orgchart
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-04 12:00+0000\n"
+"PO-Revision-Date: 2026-11-04 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid " · leads the team"
+msgstr " · trưởng nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(d)s direct"
+msgstr "%(d)s trực tiếp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(d)s direct · %(t)s total"
+msgstr "%(d)s trực tiếp · %(t)s tổng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(levels)s · %(open)s · updates itself whenever an employee record changes"
+msgstr "%(levels)s · %(open)s · tự cập nhật mỗi khi hồ sơ nhân viên thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s days"
+msgstr "%(n)s ngày"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s direct reports"
+msgstr "%(n)s cấp dưới trực tiếp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s levels"
+msgstr "%(n)s cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s levels deep"
+msgstr "sâu %(n)s cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s months"
+msgstr "%(n)s tháng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s of %(m)s"
+msgstr "%(n)s / %(m)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s open roles"
+msgstr "%(n)s vị trí đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s people"
+msgstr "%(n)s người"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s people have no manager yet"
+msgstr "%(n)s người chưa có quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s teams"
+msgstr "%(n)s nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(n)s years"
+msgstr "%(n)s năm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(p)s people"
+msgstr "%(p)s người"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(p)s people · %(o)s open"
+msgstr "%(p)s người · %(o)s đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "%(people)s across %(teams)s"
+msgstr "%(people)s trong %(teams)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "+%(n)s more"
+msgstr "+%(n)s người nữa"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1 level deep"
+msgstr "sâu 1 cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1 month"
+msgstr "1 tháng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1 open role"
+msgstr "1 vị trí đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1 team"
+msgstr "1 nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "1–3 years"
+msgstr "1–3 năm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "2 levels · leadership"
+msgstr "2 cấp · ban lãnh đạo"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "3 levels · leads"
+msgstr "3 cấp · trưởng nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "3+ years"
+msgstr "Trên 3 năm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "4 levels"
+msgstr "4 cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "All levels"
+msgstr "Mọi cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Also reports to"
+msgstr "Báo cáo thêm cho"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Average number of direct reports per manager"
+msgstr "Số cấp dưới trực tiếp trung bình của mỗi quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Centre the chart on you"
+msgstr "Đưa sơ đồ về vị trí của bạn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Classic chart"
+msgstr "Sơ đồ cổ điển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Clear"
+msgstr "Xoá"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Close (Esc)"
+msgstr "Đóng (Esc)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Collapse team (Space)"
+msgstr "Thu gọn nhóm (Space)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Collapse to the top two levels (C)"
+msgstr "Thu gọn về hai cấp đầu (C)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Colour cards by"
+msgstr "Tô màu thẻ theo"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Colour: employment"
+msgstr "Màu: loại hợp đồng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Colour: location"
+msgstr "Màu: địa điểm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Colour: team"
+msgstr "Màu: nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Colour: time with us"
+msgstr "Màu: thâm niên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Coming soon"
+msgstr "Sắp có"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Compact"
+msgstr "Thu nhỏ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Contractor"
+msgstr "Cộng tác viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Direct"
+msgstr "Trực tiếp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Dotted line"
+msgstr "Báo cáo phụ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Drawing the chart…"
+msgstr "Đang vẽ sơ đồ…"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Employee record"
+msgstr "Hồ sơ nhân viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Employment"
+msgstr "Loại hợp đồng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Employment type"
+msgstr "Loại hợp đồng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Expand all (E)"
+msgstr "Mở rộng tất cả (E)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Expand all / collapse"
+msgstr "Mở rộng tất cả / thu gọn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Expand or collapse"
+msgstr "Mở rộng hoặc thu gọn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Expand team (Space)"
+msgstr "Mở rộng nhóm (Space)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Export"
+msgstr "Xuất"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Find a person, title or team…"
+msgstr "Tìm người, chức danh hoặc nhóm…"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Find me"
+msgstr "Tìm tôi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Fit everything on screen (F)"
+msgstr "Vừa khít màn hình (F)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Fit to screen"
+msgstr "Vừa khít màn hình"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Full-time"
+msgstr "Toàn thời gian"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Indented list"
+msgstr "Danh sách phân cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Joined"
+msgstr "Ngày vào làm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Joined %(t)s ago"
+msgstr "Vào làm %(t)s trước"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Jump to"
+msgstr "Đi tới"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Keyboard"
+msgstr "Bàn phím"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Keyboard shortcuts"
+msgstr "Phím tắt"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+msgid "Last day %(date)s"
+msgstr "Ngày làm cuối %(date)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Leaving"
+msgstr "Sắp nghỉ việc"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Left to right — good for deep teams"
+msgstr "Từ trái sang phải — hợp với nhóm nhiều cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Legend"
+msgstr "Chú giải"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Level"
+msgstr "Cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "List"
+msgstr "Danh sách"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Load the team"
+msgstr "Tải nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Location"
+msgstr "Địa điểm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Move between people"
+msgstr "Di chuyển giữa các người"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Name, title, team, manager, location"
+msgstr "Tên, chức danh, nhóm, quản lý, địa điểm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "No manager"
+msgstr "Chưa có quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "No manager yet · set a manager on the employee record"
+msgstr "Chưa có quản lý · đặt quản lý trong hồ sơ nhân viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "No peers — the only one reporting to %(m)s."
+msgstr "Không có đồng cấp — là người duy nhất báo cáo cho %(m)s."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "No team"
+msgstr "Chưa có nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Nobody called “%(q)s”. Try a title or a team."
+msgstr "Không có ai tên “%(q)s”. Hãy thử một chức danh hoặc một nhóm."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Nobody has a manager set yet"
+msgstr "Chưa ai được đặt quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Nobody is in the roster yet"
+msgstr "Danh sách nhân sự đang trống"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Nobody reports to %(n)s yet."
+msgstr "Chưa có ai báo cáo cho %(n)s."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "None"
+msgstr "Không có"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Nothing was changed. If it keeps happening, the employee records may be busy — wait a moment."
+msgstr "Không có gì bị thay đổi. Nếu lỗi lặp lại, hồ sơ nhân viên có thể đang bận — hãy đợi một lát."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "On leave"
+msgstr "Đang nghỉ phép"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+msgid "On leave today"
+msgstr "Hôm nay nghỉ phép"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Open"
+msgstr "Mở"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Open Employees"
+msgstr "Mở Nhân viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Open employee record"
+msgstr "Mở hồ sơ nhân viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Open role"
+msgstr "Vị trí đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Open role: %(t)s"
+msgstr "Vị trí đang tuyển: %(t)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Open side panel"
+msgstr "Mở bảng bên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Open the side panel"
+msgstr "Mở bảng bên"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+msgid "Open · %(n)s to fill"
+msgstr "Đang tuyển · cần %(n)s người"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: model:ir.actions.client,name:pb_orgchart.action_pb_orgchart
+#: code:addons/pb_orgchart/static/src/js/orgchart_lens.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Org chart"
+msgstr "Sơ đồ tổ chức"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_lens.js:0
+msgid "Org chart · who reports to whom"
+msgstr "Sơ đồ tổ chức · ai báo cáo cho ai"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Organisation chart"
+msgstr "Sơ đồ tổ chức"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "PDF · one page per team"
+msgstr "PDF · mỗi nhóm một trang"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Part-time"
+msgstr "Bán thời gian"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Peers"
+msgstr "Đồng cấp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "People · Org chart"
+msgstr "Nhân sự · Sơ đồ tổ chức"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Picture (PNG)"
+msgstr "Hình ảnh (PNG)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Print"
+msgstr "In"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Reports to"
+msgstr "Báo cáo cho"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Reset to 100%"
+msgstr "Về 100%"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Retry"
+msgstr "Thử lại"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Set managers on the employee records"
+msgstr "Đặt quản lý trong hồ sơ nhân viên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Share a read-only link"
+msgstr "Chia sẻ đường dẫn chỉ xem"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Show everyone"
+msgstr "Hiện tất cả"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Show everyone with no manager"
+msgstr "Hiện tất cả người chưa có quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Show fewer"
+msgstr "Thu gọn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Show the lane"
+msgstr "Xem danh sách chờ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing only dotted-line reports"
+msgstr "Chỉ hiện các quan hệ báo cáo phụ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing only managers with 10 or more direct reports"
+msgstr "Chỉ hiện quản lý có từ 10 cấp dưới trực tiếp"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing only open roles"
+msgstr "Chỉ hiện vị trí đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing only people who joined recently"
+msgstr "Chỉ hiện người mới vào làm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing only people without a manager"
+msgstr "Chỉ hiện người chưa có quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing the top %(l)s levels of %(n)s people — open a team to load it"
+msgstr "Đang hiện %(l)s cấp đầu của %(n)s người — mở một nhóm để tải nhóm đó"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Showing the top level of %(n)s people — open a team to load it"
+msgstr "Đang hiện cấp đầu của %(n)s người — mở một nhóm để tải nhóm đó"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Sideways"
+msgstr "Ngang"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Smaller cards, more on screen"
+msgstr "Thẻ nhỏ hơn, thấy nhiều hơn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Spreadsheet"
+msgstr "Bảng tính"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Spreadsheet saved with %(n)s rows."
+msgstr "Đã lưu bảng tính với %(n)s dòng."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Team (%(n)s)"
+msgstr "Nhóm (%(n)s)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Team size"
+msgstr "Quy mô nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Teams"
+msgstr "Các nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "That team could not be loaded. Try again."
+msgstr "Không tải được nhóm này. Hãy thử lại."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "The chart as you see it now"
+msgstr "Sơ đồ đúng như bạn đang thấy"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "The chart could not be loaded. Try again."
+msgstr "Không tải được sơ đồ. Hãy thử lại."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "The chart draws itself from the employee records. Add your people and set each one's manager — the chart appears here."
+msgstr "Sơ đồ tự vẽ từ hồ sơ nhân viên. Thêm nhân viên và đặt quản lý cho từng người — sơ đồ sẽ hiện ở đây."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "The chart is drawn from the manager on each employee record. Set a manager for a few people and their teams appear here; everyone else waits in the “no manager yet” lane."
+msgstr "Sơ đồ được vẽ từ người quản lý trong hồ sơ của mỗi nhân viên. Đặt quản lý cho vài người và nhóm của họ sẽ hiện ở đây; những người còn lại nằm trong danh sách “chưa có quản lý”."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "This team is very large — the nearest people are shown."
+msgstr "Nhóm này rất lớn — chỉ hiện những người gần nhất."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Time with us"
+msgstr "Thâm niên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Title"
+msgstr "Chức danh"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Top of the chart — no peers."
+msgstr "Đứng đầu sơ đồ — không có đồng cấp."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Top-down"
+msgstr "Từ trên xuống"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Trainee"
+msgstr "Thực tập sinh"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Under 3 months"
+msgstr "Dưới 3 tháng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Under a year"
+msgstr "Dưới 1 năm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Who is in each team"
+msgstr "Ai trong từng nhóm"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "With us"
+msgstr "Thâm niên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "You"
+msgstr "Bạn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Zoom in (+)"
+msgstr "Phóng to (+)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Zoom in / out"
+msgstr "Phóng to / thu nhỏ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Zoom out (−)"
+msgstr "Thu nhỏ (−)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "dotted lines"
+msgstr "báo cáo phụ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "new this month"
+msgstr "mới trong tháng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "no manager yet"
+msgstr "chưa có quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "open role"
+msgstr "vị trí đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "open roles"
+msgstr "vị trí đang tuyển"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "per manager"
+msgstr "mỗi quản lý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "wide team (10+)"
+msgstr "nhóm đông (10+)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "wide teams (10+)"
+msgstr "nhóm đông (10+)"

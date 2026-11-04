@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People › Org chart (ORG CHART P1, read-only).
+
+       Rules kept here (WF ledger): comments are ruled with `=`, never a
+       doubled hyphen; t-if / t-elif / t-else are adjacent siblings; no
+       expression says `not` (use `!`); loop variables are never named
+       lt / gt / and / or / not / in.
+
+       A <button> never contains a menu with buttons (G1): every trigger
+       and its menu sit in a `pboc-cw` span.
+       ==================================================================== -->
+
+  <t t-name="pb_orgchart.PbOrgChart">
+    <div class="pbim pbim-page pboc" t-ref="root" tabindex="0">
+
+      <div t-if="!state.loaded" class="pbim-busy pboc-busy">
+        <div class="pbim-spin"/><span>Drawing the chart…</span>
+      </div>
+
+      <div t-elif="state.failed" class="pboc-state">
+        <div class="pboc-state-box">
+          <div class="pboc-state-bd rose"><t t-out="icon('triangleAlert', 30)"/></div>
+          <h3>The chart could not be loaded. Try again.</h3>
+          <p>Nothing was changed. If it keeps happening, the employee records may be busy — wait a moment.</p>
+          <button class="pboc-btn primary" t-on-click="() => this.retry()"><t t-out="icon('refresh')"/> Retry</button>
+        </div>
+      </div>
+
+      <div t-elif="!nodes.length" class="pboc-state">
+        <div class="pboc-state-box">
+          <div class="pboc-state-bd"><t t-out="icon('network', 30)"/></div>
+          <h3>Nobody is in the roster yet</h3>
+          <p>The chart draws itself from the employee records. Add your people and set each one's manager — the chart appears here.</p>
+          <button class="pboc-btn primary" t-on-click="() => this.openEmployees()"><t t-out="icon('users')"/> Open Employees</button>
+        </div>
+      </div>
+
+      <t t-else="">
+        <!-- ============================== head ============================== -->
+        <div class="pboc-head">
+          <div class="pboc-head-id">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <span class="pboc-crumb"><t t-out="icon('users', 14)"/> People · Org chart</span>
+            <h1>Org chart</h1>
+            <div class="pboc-sub"><strong t-esc="headline"/><span> · </span><t t-esc="subline"/></div>
+          </div>
+          <div class="pboc-actions">
+            <button t-if="data.me" class="pboc-btn outline" t-on-click="() => this.findMe()" title="Centre the chart on you">
+              <t t-out="icon('crosshair')"/> Find me
+            </button>
+            <span class="pboc-cw">
+              <button class="pboc-btn outline" t-on-click="() => this.toggleMenu('export')">
+                <t t-out="icon('download')"/> Export <t t-out="icon('chevronDown', 14)"/>
+              </button>
+              <div t-if="state.menu === 'export'" class="pboc-menu">
+                <h6>Export</h6>
+                <button disabled="disabled"><t t-out="icon('image', 17)"/><span><b>Picture (PNG)</b><small>Coming soon</small></span></button>
+                <button disabled="disabled"><t t-out="icon('printer', 17)"/><span><b>PDF · one page per team</b><small>Coming soon</small></span></button>
+                <button t-on-click="() => this.exportCsv()"><t t-out="icon('fileSpreadsheet', 17)"/><span><b>Spreadsheet</b><small>Name, title, team, manager, location</small></span></button>
+                <hr/>
+                <button disabled="disabled"><t t-out="icon('link', 17)"/><span><b>Share a read-only link</b><small>Coming soon</small></span></button>
+                <button t-on-click="() => this.printChart()"><t t-out="icon('printer', 17)"/><span><b>Print</b><small>The chart as you see it now</small></span></button>
+              </div>
+            </span>
+            <!-- the primary slot: "Plan changes" arrives in P2 -->
+          </div>
+        </div>
+
+        <!-- ============================== the six numbers ============================== -->
+        <div class="pboc-kpis">
+          <div class="pboc-kpi" title="Average number of direct reports per manager">
+            <span class="bd p"><t t-out="icon('users', 18)"/></span>
+            <span><b class="num" t-esc="avgSpan"/><small>per manager</small></span>
+          </div>
+          <t t-foreach="kpis" t-as="k" t-key="k.key">
+            <button t-att-class="'pboc-kpi' + (state.focus === k.key ? ' on' : '') + (k.zero ? ' zero' : '')"
+                    t-on-click="() => this.setFocus(k.key)">
+              <span t-att-class="'bd ' + k.tone"><t t-out="icon(k.ic, 18)"/></span>
+              <span><b class="num" t-esc="fmtInt(k.val)"/><small t-esc="k.label"/></span>
+            </button>
+          </t>
+        </div>
+
+        <div t-if="data.truncated" class="pboc-banner">
+          <t t-out="icon('info', 16)"/><span t-esc="truncatedLine"/>
+        </div>
+
+        <!-- ============================== toolbar ============================== -->
+        <div class="pboc-bar">
+          <div class="pboc-search">
+            <t t-out="icon('search')"/>
+            <input t-ref="search" placeholder="Find a person, title or team…" autocomplete="off"
+                   t-att-value="state.q" t-on-input="onSearchInput" t-on-keydown="onSearchKey"/>
+            <span class="pboc-kbd">/</span>
+            <div t-if="suggestions" class="pboc-sugg">
+              <t t-if="suggestions.length">
+                <h6>Jump to</h6>
+                <t t-foreach="suggestions" t-as="su" t-key="su.id">
+                  <button t-att-class="su_index === state.sugg ? 'hi' : ''" t-on-mousedown.prevent="() => this.jump(su.id)">
+                    <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="su"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+                    <span><b t-esc="nameOf(su)"/><small><t t-esc="su.title"/> · <t t-esc="su.dept"/></small></span>
+                  </button>
+                </t>
+              </t>
+              <div t-else="" class="pboc-sugg-none" t-esc="noMatchText"/>
+            </div>
+          </div>
+
+          <t t-call="pb_orgchart.Chip"><t t-set="key" t-value="'dept'"/><t t-set="chipIc" t-value="'building'"/><t t-set="chipLabel" t-value="chipLabels.dept"/><t t-set="opts" t-value="deptOptions"/></t>
+          <t t-call="pb_orgchart.Chip"><t t-set="key" t-value="'loc'"/><t t-set="chipIc" t-value="'mapPin'"/><t t-set="chipLabel" t-value="chipLabels.loc"/><t t-set="opts" t-value="locOptions"/></t>
+          <t t-call="pb_orgchart.Chip"><t t-set="key" t-value="'type'"/><t t-set="chipIc" t-value="'briefcase'"/><t t-set="chipLabel" t-value="chipLabels.type"/><t t-set="opts" t-value="typeOptions"/></t>
+
+          <span class="pboc-cw">
+            <button class="pboc-chip" t-on-click="() => this.toggleMenu('color')"><t t-out="icon('palette', 14)"/> <t t-esc="colorLabel"/> <t t-out="icon('chevronDown', 13)"/></button>
+            <div t-if="state.menu === 'color'" class="pboc-menu left">
+              <h6>Colour cards by</h6>
+              <t t-foreach="colorOptions" t-as="co" t-key="co.k">
+                <button t-on-click="() => this.setColor(co.k)"><t t-out="icon(state.colorBy === co.k ? 'check' : 'minus', 17)"/><span><b t-esc="co.label"/></span></button>
+              </t>
+            </div>
+          </span>
+          <span class="pboc-cw">
+            <button class="pboc-chip" t-on-click="() => this.toggleMenu('levels')"><t t-out="icon('layers', 14)"/> <t t-esc="levelsLabel"/> <t t-out="icon('chevronDown', 13)"/></button>
+            <div t-if="state.menu === 'levels'" class="pboc-menu left">
+              <h6>Show</h6>
+              <t t-foreach="levelOptions" t-as="lv" t-key="lv.k">
+                <button t-on-click="() => this.setLevels(lv.k)"><t t-out="icon(state.levels === lv.k ? 'check' : 'minus', 17)"/><span><b t-esc="lv.label"/></span></button>
+              </t>
+            </div>
+          </span>
+
+          <span class="pboc-grow"/>
+          <div class="pboc-seg">
+            <t t-foreach="viewOptions" t-as="vo" t-key="vo.k">
+              <button t-att-class="state.view === vo.k ? 'on' : ''" t-att-title="vo.title" t-on-click="() => this.setView(vo.k)">
+                <t t-out="icon(vo.ic, 15)"/> <t t-esc="vo.label"/>
+              </button>
+            </t>
+          </div>
+          <button t-att-class="'pboc-chip' + (state.compact ? ' on' : '')" title="Smaller cards, more on screen" t-on-click="() => this.toggleCompact()">
+            <t t-out="icon('rows2', 14)"/> Compact
+          </button>
+        </div>
+
+        <!-- ============================== stage ============================== -->
+        <div t-att-class="'pboc-stage' + (sideNode ? ' has-side' : '')">
+          <div class="pboc-canvas" t-ref="canvas" aria-label="Organisation chart">
+
+            <t t-if="state.view === 'tree' or state.view === 'lr'">
+              <div t-att-class="'pboc-world' + (state.view === 'lr' ? ' lr' : '')" t-ref="world">
+                <svg class="pboc-edges" t-att-width="worldSize.w" t-att-height="worldSize.h">
+                  <t t-foreach="[state.rev]" t-as="rv" t-key="rv">
+                    <g class="pboc-edges-g">
+                      <t t-foreach="edgeList" t-as="ed" t-key="ed.id">
+                        <path t-att-d="ed.d" t-att-class="ed.dot ? 'dot' : ''"/>
+                      </t>
+                    </g>
+                  </t>
+                  <g>
+                    <t t-foreach="hiEdges" t-as="he" t-key="he.id">
+                      <path t-att-d="he.d" class="hi"/>
+                    </t>
+                  </g>
+                </svg>
+                <div t-if="lay.lane" class="pboc-lane"
+                     t-attf-style="transform:translate({{lay.lane.x}}px,{{lay.lane.y}}px);width:{{lay.lane.w}}px;height:{{lay.lane.h}}px">
+                  <h5><t t-out="icon('userX', 13)"/> <t t-esc="laneTitle"/>
+                    <button t-if="lay.lane.open" class="pboc-lane-act" t-on-click="() => this.foldLane()">Show fewer</button>
+                  </h5>
+                </div>
+                <div class="pboc-nodes" t-on-mouseleave="() => this.onLeave()">
+                  <t t-foreach="cards" t-as="c" t-key="c.id">
+                    <div t-att-class="cardClass(c)" t-att-style="cardStyle(c)" t-att-data-id="c.id"
+                         tabindex="-1" role="treeitem" t-att-aria-label="cardLabel(c.n)"
+                         t-on-mouseenter="() => this.onHover(c.id)" t-on-click="(ev) => this.onCardClick(c, ev)"
+                         t-on-dblclick="() => this.onCardDbl(c)">
+                      <span t-if="isMe(c.n)" class="pboc-you">You</span>
+                      <div class="top">
+                        <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="c.n"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+                        <div class="who">
+                          <div class="nm" t-esc="nameOf(c.n)"/>
+                          <div class="jt" t-esc="c.n.title"/>
+                          <div class="dp"><i t-att-style="deptDot(c.n)"/><t t-esc="c.n.dept or '—'"/> · <t t-esc="c.n.loc"/></div>
+                        </div>
+                      </div>
+                      <div t-if="c.tags.length" class="tags">
+                        <t t-foreach="c.tags" t-as="tg" t-key="tg.k">
+                          <span t-att-class="'pboc-tag ' + tg.cls"><t t-out="icon(tg.ic, 11)"/> <t t-esc="tg.text"/></span>
+                        </t>
+                      </div>
+                      <div class="qa">
+                        <button title="Open side panel" t-on-click.stop="() => this.select(c.id)"><t t-out="icon('eye', 13)"/></button>
+                      </div>
+                      <button t-if="c.hasTeam" class="tog" t-att-title="toggleTitle(c)" t-on-click.stop="() => this.toggle(c)">
+                        <t t-if="state.branchBusy === c.id"><span class="pboc-mini-spin"/></t>
+                        <t t-elif="c.folded"><t t-out="icon('plus', 12)"/> <t t-esc="fmtInt(c.total)"/></t>
+                        <t t-else=""><t t-out="icon(state.view === 'lr' ? 'chevronLeft' : 'chevronUp', 13)"/></t>
+                      </button>
+                    </div>
+                  </t>
+                  <button t-if="moreTile" class="pboc-more" t-attf-style="transform:translate({{moreTile.x}}px,{{moreTile.y}}px);width:{{moreTile.w}}px;height:{{moreTile.h}}px"
+                          t-on-click="() => this.openLane()">
+                    <b t-esc="moreLabel(moreTile.n)"/><small>Show everyone with no manager</small>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ============ floating helpers ============ -->
+              <div class="pboc-float pboc-tools">
+                <div class="pboc-zoom">
+                  <button title="Zoom out (−)" t-on-click="() => this.zoomOut()"><t t-out="icon('zoomOut')"/></button>
+                  <span class="pct num" t-ref="pct" title="Reset to 100%" t-on-click="() => this.zoomReset()">100%</span>
+                  <button title="Zoom in (+)" t-on-click="() => this.zoomIn()"><t t-out="icon('zoomIn')"/></button>
+                  <button title="Fit everything on screen (F)" t-on-click="() => this.fit()"><t t-out="icon('maximize')"/></button>
+                </div>
+                <button class="pboc-btn outline sm icon" title="Expand all (E)" t-on-click="() => this.expandAll()"><t t-out="icon('expand')"/></button>
+                <button class="pboc-btn outline sm icon" title="Collapse to the top two levels (C)" t-on-click="() => this.collapseAll()"><t t-out="icon('shrink')"/></button>
+                <span class="pboc-cw">
+                  <button class="pboc-btn outline sm icon" title="Keyboard shortcuts" t-on-click="() => this.toggleMenu('help')"><t t-out="icon('keyboard')"/></button>
+                  <div t-if="state.menu === 'help'" class="pboc-menu pboc-keys">
+                    <h6>Keyboard</h6>
+                    <t t-foreach="shortcuts" t-as="sc" t-key="sc_index">
+                      <div class="sw"><span class="pboc-kbd" t-esc="sc[0]"/><small t-esc="sc[1]"/></div>
+                    </t>
+                  </div>
+                </span>
+              </div>
+
+              <div class="pboc-float pboc-legend">
+                <span class="lg key"><t t-out="icon('palette', 13)"/> Legend</span>
+                <t t-foreach="legendItems" t-as="li" t-key="li.k">
+                  <span class="lg"><i t-attf-style="background:{{li.color}}"/><t t-esc="li.label"/></span>
+                </t>
+                <span class="lg"><i class="op"/>Open role</span>
+                <span class="lg"><svg width="18" height="8"><path d="M1 4h16" class="dotkey"/></svg>Dotted line</span>
+              </div>
+
+              <div t-if="minimap" class="pboc-float pboc-minimap" t-on-click="onMinimapClick">
+                <svg t-att-viewBox="minimap.vb" preserveAspectRatio="xMidYMid meet">
+                  <t t-foreach="minimap.rects" t-as="mr" t-key="mr.id">
+                    <rect t-att-class="'n' + (mr.op ? ' op' : '')" t-att-x="mr.x" t-att-y="mr.y" t-att-width="mr.w" t-att-height="mr.h" rx="8"/>
+                  </t>
+                  <rect class="vp" t-ref="vp" x="0" y="0" width="10" height="10" rx="6"/>
+                </svg>
+              </div>
+
+              <div t-if="state.focus" class="pboc-float pboc-hint amber">
+                <t t-out="icon('filter', 14)"/> <t t-esc="focusHint"/>
+                <button t-on-click="() => this.setFocus(state.focus)">Show everyone</button>
+              </div>
+              <div t-elif="bigLane" class="pboc-float pboc-hint amber">
+                <t t-out="icon('userX', 14)"/> <t t-esc="laneHint"/>
+                <button t-on-click="() => this.openEmployees()">Set managers on the employee records</button>
+              </div>
+
+              <div t-if="nobodyManaged and !state.nomgrDismissed" class="pboc-empty">
+                <div class="box">
+                  <div class="bd"><t t-out="icon('network', 30)"/></div>
+                  <h3>Nobody has a manager set yet</h3>
+                  <p>The chart is drawn from the manager on each employee record. Set a manager for a few people and their teams appear here; everyone else waits in the “no manager yet” lane.</p>
+                  <div class="acts">
+                    <button class="pboc-btn primary" t-on-click="() => this.openEmployees()"><t t-out="icon('users')"/> Set managers on the employee records</button>
+                    <button class="pboc-btn ghost" t-on-click="() => this.dismissNomgr()">Show the lane</button>
+                  </div>
+                </div>
+              </div>
+            </t>
+
+            <!-- ============================== teams ============================== -->
+            <div t-elif="state.view === 'teams'" class="pboc-teams">
+              <t t-foreach="teamGroups" t-as="g" t-key="g.k">
+                <div class="pboc-team">
+                  <h4><i t-attf-style="background:{{g.color}}"/><t t-esc="g.name"/><small t-esc="g.sub"/></h4>
+                  <t t-foreach="g.list" t-as="tp" t-key="tp.id">
+                    <div t-att-class="'pboc-rep' + (g.lead === tp ? ' lead' : '') + (rowDim(tp) ? ' dim' : '')" t-on-click="() => this.select(tp.id)">
+                      <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="tp"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+                      <span><b t-esc="nameOf(tp)"/><small><t t-esc="tp.title"/><t t-esc="leadNote(g, tp)"/></small></span>
+                      <t t-out="icon('chevron', 14)"/>
+                    </div>
+                  </t>
+                </div>
+              </t>
+            </div>
+
+            <!-- ============================== list ============================== -->
+            <div t-else="" class="pboc-listview">
+              <table class="pboc-lt">
+                <thead><tr><th>Person</th><th>Title</th><th>Team</th><th>Reports to</th><th>Location</th><th>Direct</th><th>Total</th><th>With us</th></tr></thead>
+                <tbody>
+                  <t t-foreach="listRows" t-as="r" t-key="r.n.id">
+                    <tr t-att-class="(rowDim(r.n) ? 'dim' : '') + (state.sel === r.n.id ? ' sel' : '')" t-on-click="() => this.select(r.n.id)">
+                      <td><div class="nm" t-att-style="rowStyle(r)">
+                        <button t-if="r.direct" class="tw" t-on-click.stop="() => this.toggle(r.n)"><t t-out="icon(r.folded ? 'chevron' : 'chevronDown', 14)"/></button>
+                        <span t-else="" class="tw"/>
+                        <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="r.n"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+                        <i t-if="r.n.isRole" class="role">Open role</i>
+                        <t t-else="" t-esc="r.n.name"/>
+                      </div></td>
+                      <td t-esc="r.n.title"/>
+                      <td t-esc="r.n.dept"/>
+                      <td><t t-if="listMgr(r.n)" t-esc="listMgr(r.n)"/><span t-else="" class="pboc-tag rose">None</span></td>
+                      <td t-esc="r.n.loc"/>
+                      <td class="num"><t t-if="r.direct" t-esc="r.direct"/></td>
+                      <td class="num"><t t-if="r.total" t-esc="r.total"/></td>
+                      <td><t t-if="!r.n.isRole" t-esc="tenure(r.n)"/></td>
+                    </tr>
+                  </t>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ============================== side panel ============================== -->
+          <aside t-if="sideNode" class="pboc-side">
+            <div class="sh">
+              <h3><t t-out="icon(sideNode.isRole ? 'briefcase' : 'user', 17)"/> <t t-if="sideNode.isRole">Open role</t><t t-else="">Person</t></h3>
+              <button class="pboc-btn icon ghost" title="Close (Esc)" t-on-click="() => this.closeSide()"><t t-out="icon('x')"/></button>
+            </div>
+            <div class="sb">
+              <div class="prof">
+                <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="sideNode"/><t t-set="avCls" t-value="'pboc-av lg'"/></t>
+                <div>
+                  <div class="nm" t-esc="sideNode.isRole ? sideNode.title : sideNode.name"/>
+                  <div class="jt" t-esc="sideNode.isRole ? (sideNode.hiring or nameOf(sideNode)) : sideNode.title"/>
+                  <div class="dp"><t t-esc="sideNode.dept or '—'"/> · <t t-esc="sideNode.loc"/></div>
+                </div>
+              </div>
+              <div t-if="sideNode.note" class="pboc-note"><t t-out="icon('info', 14)"/> <t t-esc="sideNode.note"/></div>
+              <div class="chain">
+                <t t-foreach="sideChain" t-as="a" t-key="a.id">
+                  <t t-if="a_index"><t t-out="icon('chevron', 13)"/></t>
+                  <button t-att-title="a.title" t-on-click="() => this.select(a.id)"><t t-esc="nameOf(a)"/></button>
+                </t>
+                <t t-if="sideChain.length"><t t-out="icon('chevron', 13)"/></t>
+                <span class="me" t-esc="sideNode.isRole ? sideNode.title : sideNode.name"/>
+                <span t-if="!sideChain.length and !sideNode.isRole and data.counts.people > 1" class="pboc-tag rose"><t t-out="icon('userX', 11)"/> No manager</span>
+              </div>
+              <div class="facts">
+                <t t-foreach="sideFacts" t-as="fc" t-key="fc.k">
+                  <div class="fact"><small t-esc="fc.label"/><b t-esc="fc.val"/></div>
+                </t>
+                <div t-if="!sideNode.isRole" class="fact">
+                  <small>Employee record</small>
+                  <b><a href="#" t-on-click.prevent="() => this.openRecord(sideNode)">Open <t t-out="icon('arrowRight', 12)"/></a></b>
+                </div>
+              </div>
+              <div class="stabs">
+                <button t-att-class="state.sideTab === 'team' ? 'on' : ''" t-on-click="() => this.setSideTab('team')" t-esc="teamTabLabel(sideTeam.length)"/>
+                <button t-att-class="state.sideTab === 'peers' ? 'on' : ''" t-on-click="() => this.setSideTab('peers')">Peers</button>
+              </div>
+              <t t-if="state.sideTab === 'team'">
+                <t t-if="sideTeam.length">
+                  <t t-foreach="sideTeam" t-as="tm" t-key="tm.id">
+                    <div class="pboc-rep" t-on-click="() => this.select(tm.id)">
+                      <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="tm"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+                      <span><b t-esc="nameOf(tm)"/><small t-esc="tm.title"/></span>
+                      <t t-out="icon('chevron', 14)"/>
+                    </div>
+                  </t>
+                </t>
+                <div t-elif="sideNode.nReports" class="pboc-quiet">
+                  <button class="pboc-btn outline sm" t-on-click="() => this.toggle(sideNode)"><t t-out="icon('users', 14)"/> Load the team</button>
+                </div>
+                <div t-else="" class="pboc-quiet" t-esc="sideNoTeamText"/>
+              </t>
+              <t t-else="">
+                <t t-if="sidePeers.length">
+                  <t t-foreach="sidePeers" t-as="pe" t-key="pe.id">
+                    <div class="pboc-rep" t-on-click="() => this.select(pe.id)">
+                      <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="pe"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+                      <span><b t-esc="nameOf(pe)"/><small t-esc="pe.title"/></span>
+                      <t t-out="icon('chevron', 14)"/>
+                    </div>
+                  </t>
+                </t>
+                <div t-else="" class="pboc-quiet" t-esc="sideNoPeersText"/>
+              </t>
+            </div>
+            <div t-if="!sideNode.isRole" class="sf">
+              <button class="pboc-btn primary sm" t-on-click="() => this.openRecord(sideNode)"><t t-out="icon('externalLink', 15)"/> Open employee record</button>
+            </div>
+          </aside>
+        </div>
+      </t>
+
+      <t t-if="state.drawerEmpId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
+    </div>
+  </t>
+
+  <!-- ============================== an avatar ============================== -->
+  <t t-name="pb_orgchart.Avatar">
+    <span t-if="n.isRole" t-att-class="avCls + ' role'"><t t-out="icon('briefcase', 16)"/></span>
+    <span t-else="" t-att-class="avCls" t-att-style="avatarStyle(n)">
+      <img t-if="n.avatar" t-att-src="n.avatar" alt="" loading="lazy"/>
+      <t t-else="" t-esc="n.ini"/>
+      <i t-if="n.status" t-att-class="'st ' + n.status"/>
+    </span>
+  </t>
+
+  <!-- ============================== a filter chip ============================== -->
+  <t t-name="pb_orgchart.Chip">
+    <span class="pboc-cw">
+      <button t-att-class="'pboc-chip' + (chipValue(key) ? ' on' : '')" t-on-click="() => this.toggleMenu(key)">
+        <t t-out="icon(chipIc, 14)"/>
+        <t t-if="chipValue(key)"><t t-esc="chipValue(key)"/> <span class="x" t-on-click.stop="(ev) => this.clearFilter(key, ev)" title="Clear"><t t-out="icon('x', 13)"/></span></t>
+        <t t-else=""><t t-esc="chipLabel"/> <t t-out="icon('chevronDown', 13)"/></t>
+      </button>
+      <div t-if="state.menu === key" class="pboc-menu left pboc-menu-scroll">
+        <h6 t-esc="chipLabel"/>
+        <t t-foreach="opts" t-as="op" t-key="op.k">
+          <button t-on-click="() => this.setFilter(key, op.k)">
+            <i t-if="op.color" class="sw" t-attf-style="background:{{op.color}}"/>
+            <t t-else="" t-out="icon(state.filters[key] === op.k ? 'check' : 'minus', 17)"/>
+            <span><b><t t-esc="op.label"/> · <t t-esc="op.n"/></b></span>
+            <span t-if="state.filters[key] === op.k" class="tick"><t t-out="icon('check', 16)"/></span>
+          </button>
+        </t>
+      </div>
+    </span>
+  </t>
+
+</templates>

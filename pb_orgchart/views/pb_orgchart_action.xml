@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The standalone door to the chart. Declared as a RECORD rather than
+         reached by a bare tag, so a deep link and the later command-palette
+         row have an XMLID and a NAME (a bare tag lands on a crumb labelled
+         "Unnamed"). Not on the sidebar: the People hub tab is the door.
+
+         Test URL: /bizapp/action-pb_orgchart.action_pb_orgchart -->
+
+    <record id="action_pb_orgchart" model="ir.actions.client">
+        <field name="name">Org chart</field>
+        <field name="tag">pb_orgchart</field>
+        <field name="context">{'pb_back': {'label': 'People', 'tag': '', 'xmlid': 'pb_people_hub.action_pb_people_hub', 'lens': 'orgchart', 'context': {}}}</field>
+    </record>
+
+</odoo>
