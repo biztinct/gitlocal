@@ -771,6 +771,35 @@ class TestMissionStaticGates(TransactionCase):
         self.assertRegex(self._js(), re.compile(
             r'runPaletteAction\(id\).*?allowed\[a\.lens\]', re.S))
 
+    def test_every_lens_palette_row_carries_the_lens_gate(self):
+        """pb_hub's `wf_<lens>` rows must be gated exactly like the lens.
+
+        The Access home draws those rows as the screens inside Workforce, and
+        the ⌘K palette offers them. Ungated, the board told an administrator
+        that rize's thao could open Today, Schedule, Time, Time Off, Overtime
+        and Close while her own rail showed only Approvals, Holidays and
+        Insights (2026-11-04). pb_mission depends on pb_hub, so the rows cannot
+        import LENSES; this test is what keeps the two copies equal.
+        """
+        palette = _read('pb_hub', 'static', 'src', 'js', 'hub_palette_entries.js')
+        consts = {name: re.findall(r'"([\w.]+)"|\b(PAYROLL_MGR)\b', body)
+                  for name, body in re.findall(
+                      r'const (WF_\w+) = \[([^\]]*)\];', palette)}
+        resolve = {'PAYROLL_MGR': 'om_hr_payroll.group_hr_payroll_manager'}
+        consts = {name: {q or resolve[n] for q, n in found}
+                  for name, found in consts.items()}
+        lenses = re.findall(r'key: "(\w+)", icon: "\w+",\s*groups: \[(.*?)\]',
+                            _lenses_block(self._js()), re.S)
+        self.assertEqual([k for k, _g in lenses], [k for k, _c in _LENSES])
+        for key, groups in lenses:
+            want = set(re.findall(r'"([\w.]+)"', groups))
+            row = re.search(r'id: "wf_%s".*?(?=\{ id:|\n\];)' % key, palette, re.S)
+            self.assertTrue(row, 'pb_hub has no wf_%s palette row' % key)
+            gate = re.search(r'groups: (WF_\w+)', row.group(0))
+            got = consts.get(gate.group(1), set()) if gate else set()
+            self.assertEqual(got, want, 'wf_%s is gated %s, its lens %s'
+                             % (key, sorted(got), sorted(want)))
+
     def test_the_refusal_note_is_required_exactly_where_it_is_kept(self):
         """The Team cockpit's note is optional. In the dock it is required — but
         only on the two sources that actually KEEP it.

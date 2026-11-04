@@ -99,6 +99,16 @@ const SYSTEM = "base.group_system";
 const ANALYTICS = [ANALYTICS_USER, ANALYTICS_MGR, MANAGER, FINAL_APPROVER, SUPER];
 const OPS = [OFFICER, MANAGER, SUPER];
 
+// Mission Control's lens gates, copied from `LENSES[].groups` in pb_mission.js
+// (pb_mission depends on this module, so it cannot be imported back). Rule 1
+// above, for the lens rail rather than the left menu: the Access home draws
+// these rows as the screens inside Workforce, so an ungated row told the board
+// a person could open a lens their own rail hides (rize, thao, 2026-11-04).
+// pb_mission's test_static asserts the two copies agree.
+const WF_ATTENDANCE = ["hr_attendance.group_hr_attendance_officer"];
+const WF_TIMEOFF = ["hr_holidays.group_hr_holidays_user", "hr.group_hr_manager", PAYROLL_MGR];
+const WF_MANAGER = ["hr_attendance.group_hr_attendance_manager", PAYROLL_MGR];
+
 /** Registered in reading order; `sequence` is what the palette's list obeys. */
 const ENTRIES = [
     // ------------------------------------------------------------ everyday
@@ -155,17 +165,22 @@ const ENTRIES = [
     { id: "workforce", label: _t("Workforce"), sublabel: _t("Mission Control"),
       icon: "compass", seq: 140, action: { tag: "pb_workforce" } },
     { id: "wf_today", label: _t("Today"), sublabel: _t("Mission Control"), icon: "activity",
-      action: { tag: "pb_workforce", lens: "today", lensKey: "pb_shell_lens" } },
+      action: { tag: "pb_workforce", lens: "today", lensKey: "pb_shell_lens" },
+      groups: WF_ATTENDANCE },
     { id: "wf_schedule", label: _t("Schedule"), sublabel: _t("Mission Control"),
       icon: "calendar",
-      action: { tag: "pb_workforce", lens: "schedule", lensKey: "pb_shell_lens" } },
+      action: { tag: "pb_workforce", lens: "schedule", lensKey: "pb_shell_lens" },
+      groups: WF_ATTENDANCE },
     { id: "wf_time", label: _t("Time"), sublabel: _t("Mission Control"), icon: "clock",
-      action: { tag: "pb_workforce", lens: "time", lensKey: "pb_shell_lens" } },
+      action: { tag: "pb_workforce", lens: "time", lensKey: "pb_shell_lens" },
+      groups: WF_ATTENDANCE },
     { id: "wf_timeoff", label: _t("Time Off"), sublabel: _t("Mission Control"),
       icon: "umbrella",
-      action: { tag: "pb_workforce", lens: "timeoff", lensKey: "pb_shell_lens" } },
+      action: { tag: "pb_workforce", lens: "timeoff", lensKey: "pb_shell_lens" },
+      groups: WF_TIMEOFF },
     { id: "wf_overtime", label: _t("Overtime"), sublabel: _t("Mission Control"), icon: "zap",
-      action: { tag: "pb_workforce", lens: "overtime", lensKey: "pb_shell_lens" } },
+      action: { tag: "pb_workforce", lens: "overtime", lensKey: "pb_shell_lens" },
+      groups: WF_MANAGER },
     // NAV P2: Trips moved from Workforce to the Expenses hub. The row keeps
     // its id (recents) and lands on the new place; "workforce" stays a keyword.
     { id: "wf_trips", label: _t("Trips"), sublabel: _t("Expenses"), icon: "plane",
@@ -177,7 +192,8 @@ const ENTRIES = [
       action: { tag: "pb_workforce", lens: "approvals", lensKey: "pb_shell_lens" } },
     { id: "wf_close", label: _t("Close the week"), sublabel: _t("Mission Control"),
       icon: "lock",
-      action: { tag: "pb_workforce", lens: "close", lensKey: "pb_shell_lens" } },
+      action: { tag: "pb_workforce", lens: "close", lensKey: "pb_shell_lens" },
+      groups: WF_MANAGER },
 
     // ------------------------------------------------------------- insight
     { id: "insights", label: _t("Insights"), sublabel: _t("Analytics"), icon: "trendingUp",
