@@ -84,6 +84,36 @@ class PbDemoGenerator(models.TransientModel):
         weights += [max(2, weights[-1] // 2)] * (n - len(weights))
         return rnd.choices(range(n), weights=weights[:n])[0]
 
+    def ensure_demo_bank_details(self):
+        """Pay & Deliver and the bank file read the Vietnam bank fields; the
+        generator writes the bank and account number to the formula engine's
+        `bank_name` / `account_number` only, so every demo run showed
+        "Total net ₫0" with everybody left out. Copy them across for demo
+        employees whose Vietnam fields are empty. Adds, never overwrites;
+        idempotent; a no-op without the Vietnam pack."""
+        Employee = self.env['hr.employee']
+        needed = ('vietnam_bank_name', 'vietnam_bank_account_number',
+                  'vietnam_bank_account_name', 'bank_name', 'account_number')
+        if not all(f in Employee._fields for f in needed):
+            return 0
+        self.env.flush_all()
+        self.env.cr.execute("""
+            UPDATE hr_employee
+               SET vietnam_bank_name = bank_name,
+                   vietnam_bank_account_number = account_number,
+                   vietnam_bank_account_name = COALESCE(NULLIF(vietnam_bank_account_name, ''), name)
+             WHERE is_demo
+               AND COALESCE(vietnam_bank_name, '') = ''
+               AND COALESCE(vietnam_bank_account_number, '') = ''
+               AND COALESCE(bank_name, '') <> ''
+               AND COALESCE(account_number, '') <> ''
+        """)
+        count = self.env.cr.rowcount
+        Employee.invalidate_model(['vietnam_bank_name', 'vietnam_bank_account_number',
+                                   'vietnam_bank_account_name'])
+        _logger.info('pb_demo: bank details copied for %s demo employees.', count)
+        return count
+
     # -------------------------------------------------------------- generation
     def generate_employees(self):
         self = self.with_context(**self._GEN_CTX)
@@ -167,6 +197,7 @@ class PbDemoGenerator(models.TransientModel):
             self.env.invalidate_all()
 
         self.ensure_young_worker_demos()
+        self.ensure_demo_bank_details()
 
         _logger.info('pb_demo: total ~%s employees generated.', total)
         return total
