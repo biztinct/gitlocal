@@ -308,3 +308,61 @@ the closeout as an owner question, not into a phase.
   attachment whose mimetype is a raster image counts (`_photo_ids`).
   Also met: `pb_formula_studio` styles a bare global `.pct` class — scope
   every class (`pboc-…`).
+* G14 (P2): **a Sass `min()`/`max()` with mixed units breaks the WHOLE
+  backend style bundle on every database.** `width: min(540px, 100%)` →
+  libsass "Incompatible units: '%' and 'px'" → every backend page fell back
+  to "A css error occured, using an old style" on all four DBs for ~6 min
+  (2026-11-04 16:24–16:30 UTC). Write `width: 540px; max-width: 100%`.
+  **Gate before every deploy that touches SCSS**: compile the module's files
+  with the server's own libsass —
+  `python3 -c "import sass; sass.compile(string=open('orgchart.scss').read())"`
+  on the box (it refuses `min(540px,100%)` the same way the bundle does).
+* G15 (P2): **an inline `style` write costs a whole-page style check too.**
+  Measured on payobook at 657 cards: writing the drag ghost's
+  `style.transform` = ~60 ms per pointer move (median 61 ms); a data
+  attribute = 0.01–0.4 ms; a PAUSED Web Animation whose keyframes are
+  rewritten (`el.animate([{transform},{transform}], {duration:1e9,
+  fill:'forwards'}).pause()` then `effect.setKeyframes`) = 0.08 ms. Overlays
+  that follow the pointer (ghost, hover pill) move that way and show/hide by
+  `data-on`. Also: `z-index` in a card state made each new drop target a
+  125 ms frame (re-stacking 657 cards); without it ~40 ms. Handler work is
+  now 9.8 ms median; frames 16.7 ms while the target is unchanged. P1's pan
+  still writes the world's inline transform — the same trick would speed up
+  pan/zoom (P4 candidate).
+* G16 (P2): **`parent_id` drags three other fields with it.** The stock
+  computes make an EMPTY coach (`hr`), time-off approver (`hr_holidays`) and
+  expense approver (`hr_expense`) follow the new manager. Consequences seen
+  live: (a) on rize a move + undo left five people with a coach they never
+  had (restored from the backup); (b) on payobook a swap was refused with
+  "cannot be at the same time in exclusive groups Portal / User" because the
+  new manager had an employee-PORTAL login and became a time-off approver.
+  The chart now writes those three fields back with their current value IN
+  THE SAME `write()` as `parent_id` (a field written in the same call is not
+  recomputed) and the undo snapshot carries them. Any future writer of
+  `parent_id` (P3 plan apply, suggest-a-chart) must use `_set_managers`.
+* G17 (P2): **HR officers may only READ `hr.job` once recruitment is
+  installed.** `hr_recruitment/security/ir.model.access.csv:4` re-declares
+  `hr.access_hr_job_user` as 1,0,0,0 (the vendored `hr` CSV says 1,1,1,1 —
+  the server copy wins). Writing a job's interviewers is recruitment-only
+  too. The chart writes jobs with `sudo()` after `_may_write()`; `sudo()`
+  keeps the user as the tracking author.
+* G18 (P2): **`filter_deploy.sh`'s lock is inherited by the server it
+  restarts.** `exec 9>/tmp/payobook-studio-deploy.lock` is open when the
+  script runs `service odoo-server start`, so an odoo worker keeps the lock
+  until it is recycled; the next deploy then queues on `flock` (up to 600 s,
+  then LOCK_FAILED). Seen 16:25: a looks fix had to be applied by hand
+  (same steps). Fix for the ops owner: `service odoo-server start 9>&-`.
+  Check before a follow-up deploy: `sudo fuser /tmp/payobook-studio-deploy.lock`.
+* G19 (P2): **`/web/webclient/translations` is cached by the browser.** A
+  check right after a deploy returned P1's 163 terms; with `cache:'no-store'`
+  and a cache-buster it returned the new 291. Check that way.
+* G20 (P2): **every rize employee row is rewritten hourly (at :41 UTC)** by a
+  job outside this programme — `write_date` cannot tell what a test touched.
+  Compare values against the deploy's pre-backup instead
+  (`sudo cat <run>/rize.dump | sudo -u postgres pg_restore -a -t hr_employee -f -`).
+* G21 (P2): **testing notes.** The browser tool's drag happens in one go (no
+  mid-drag screenshot; measure with dispatched `PointerEvent`s and the
+  `data-drag-worst-ms` the chart writes on its root). The default toast closes
+  in ~4 s — Undo toasts are 10 s. The chart component is reachable for
+  measurements by walking `odoo.__WOWL_DEBUG__.root.__owl__` children to the
+  `PbOrgChart` instance.
