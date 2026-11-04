@@ -23,7 +23,7 @@
     # 3.4.2: PRS P2 follow-up 1 — full-width centred screen, cards sized to
     # content, "Checks pass · N notes", R6 approved-only compare, R7 asks
     # before Recalculate.
-    'version': '19.0.3.4.2',
+    'version': '19.0.3.4.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

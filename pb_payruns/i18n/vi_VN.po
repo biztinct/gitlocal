@@ -4755,3 +4755,9 @@ msgstr "Số liệu của các phiếu có thể thay đổi."
 #: code:addons/pb_payruns/static/src/js/payrun_screen.js:0
 msgid "Recalculate %(n)s payslips?"
 msgstr "Tính lại %(n)s phiếu lương?"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Open Contracts › To check"
+msgstr "Mở Hợp đồng › Cần kiểm tra"

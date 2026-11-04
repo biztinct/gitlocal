@@ -718,6 +718,9 @@ export class PbPayruns extends Component {
     async openCheck(b, c) {
         const key = c && c.next && c.next.key;
         if (key === "run") return this.openBatch(b.id);
+        // A line that carries its own action (FILLIN's "Open Contracts ›
+        // To check") opens it as given; the server names the destination.
+        if (c && c.next && c.next.action) return this.action.doAction(c.next.action);
         if (key !== "close") return;
         this.state.peek = 0;
         this.state.menu = 0;

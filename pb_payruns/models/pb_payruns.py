@@ -2595,7 +2595,17 @@ class PbPayruns(models.AbstractModel):
                             "were created. Check them once under Contracts "
                             "› To check; the run can still go ahead."),
                 'owner': self._person(team=_("HR team")),
-                'next': None, 'advisory': True, 'more': ''})
+                # The door: the Contracts roster opened on its "To check"
+                # view (contracts.js reads `params.view`). The card's
+                # `openCheck` and the run screen's `boardDoor` both open a
+                # `next.action` as it is, so no screen change is needed.
+                'next': {'key': 'contracts',
+                         'label': _("Open Contracts › To check"),
+                         'action': {'type': 'ir.actions.client',
+                                    'tag': 'pb_contracts',
+                                    'name': _("Contracts"),
+                                    'params': {'view': 'fillin'}}},
+                'advisory': True, 'more': ''})
 
         close_weeks = None
         status = (readiness.get('close') or {}).get(run.id)
