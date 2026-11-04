@@ -73,6 +73,20 @@ with this programme's additions:
    person in try/except and logs at DEBUG (`pb.people` `_roster_rows` style).
 10. **Lessons follow screen changes**: P4 adds the lesson; P1–P3 note in their
     report which Learn lessons/tours mention People tabs so P4 can update them.
+11. **SCSS gate before every deploy that touches a stylesheet** (G14): compile
+    the module's SCSS with the server's own libsass on the box
+    (`python3 -c "import sass; sass.compile(string=open('<file>').read())"`)
+    — one bad unit mix took every backend page on four databases back to the
+    plain look for six minutes on 2026-11-04. No `min()`/`max()` with mixed
+    units; `width: 540px; max-width: 100%` instead.
+12. **`parent_id` is written only through `_set_managers`** (G16): coach,
+    time-off approver and expense approver keep their value in the same
+    `write()`. Any new writer (plan apply, suggest-a-chart, bulk) goes
+    through it and judges loops with `_loop_in(changes)` first.
+13. **Check a follow-up deploy's lock first** (G18): `sudo fuser
+    /tmp/payobook-studio-deploy.lock`; a held lock means the previous restart
+    inherited it — wait for the worker to recycle or apply the looks fix by
+    hand as P2 did, and say so.
 
 ## 1. Verified facts — do NOT re-derive
 
