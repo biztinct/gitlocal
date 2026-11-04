@@ -1,6 +1,8 @@
 /** @odoo-module **/
 /**
- * ORG CHART P1 — People › Org chart, read-only.
+ * ORG CHART P1 + P2 — People › Org chart. P1 drew it read-only; P2's
+ * editing half (drag, multi-select, dialogs, menus, undo, history) lives in
+ * orgchart_edit.js and orgchart_dialog.js and is installed onto this class.
  *
  * The product version of docs/design/org-chart-poc (the spec). One payload
  * (`pb.orgchart.get_chart`), everything else client-side: layout, numbers that
@@ -30,6 +32,8 @@ import {
     directCount, totalCount, isUnloaded, colorOf, cardSize,
     LOC_COLORS, TYPE_COLORS, TENURE, daysSince,
 } from "@pb_orgchart/js/orgchart_layout";
+import { installEdit, personNode, roleNode } from "@pb_orgchart/js/orgchart_edit";
+import { PbOcDialog } from "@pb_orgchart/js/orgchart_dialog";
 
 const ICONS = new Map();
 /** One markup object per (icon, size), for ever. */
@@ -60,7 +64,7 @@ export class PbOcCard extends Component {
 
 export class PbOrgChart extends Component {
     static template = "pb_orgchart.PbOrgChart";
-    static components = { HubBackChip, PbOcCard };
+    static components = { HubBackChip, PbOcCard, PbOcDialog };
     static props = { embedded: { type: Boolean, optional: true }, "*": true };
 
     setup() {
@@ -75,6 +79,9 @@ export class PbOrgChart extends Component {
         this.searchRef = useRef("search");
         this.nodesRef = useRef("nodes");
         this.hiRef = useRef("hi");
+        this.ghostRef = useRef("ghost");
+        this.hintRef = useRef("draghint");
+        this.qaRef = useRef("qa");
         this._hover = null;
         this._marked = [];
         // ONE object for the cards' callbacks, made once: a card re-renders
@@ -103,7 +110,11 @@ export class PbOrgChart extends Component {
             sel: null, side: null, sideTab: "team",
             menu: null, laneOpen: false, branchBusy: null,
             drawerEmpId: null, nomgrDismissed: false,
+            // P2: the open dialog, the right-click menu, how many cards are
+            // picked, a write in flight, the history cache's revision
+            dlg: null, ctx: null, pickN: 0, writing: false, histRev: 0,
         });
+        this._setupEdit();
         this.data = null;
         this.nodes = [];
         this.idx = null;
@@ -144,6 +155,7 @@ export class PbOrgChart extends Component {
         const d = this.data;
         this.deptColor = new Map((d.departments || []).map((x) => [x.id, x.color]));
         this.nodes = [];
+        this._order = 0;
         this._ingest(d.people || [], d.open_roles || []);
         this.idx = buildIndex(this.nodes);
         this._initialFold();
@@ -155,33 +167,15 @@ export class PbOrgChart extends Component {
 
     _ingest(people, roles) {
         const have = new Set(this.nodes.map((n) => n.id));
-        let order = this.nodes.length;
         for (const p of people) {
             const id = String(p.id);
             if (have.has(id)) { continue; }
-            this.nodes.push({
-                id, empId: p.id, isRole: false, name: p.name || "", ini: p.ini || "",
-                title: p.title || "", dept_id: p.dept_id || false, dept: p.dept || "",
-                loc: p.loc || "", type: p.type || "", typeKey: p.type_key || "",
-                joined: p.joined || false,
-                mgr: p.manager_id ? String(p.manager_id) : null,
-                dotted: p.dotted_id ? String(p.dotted_id) : null,
-                status: p.status || "", note: p.status_note || "",
-                avatar: p.avatar || false, nReports: p.n_reports || 0,
-                nTotal: p.n_total || 0, order: order++,
-            });
+            this.nodes.push(personNode(p, this._order++));
             have.add(id);
         }
         for (const o of roles) {
             if (have.has(o.id)) { continue; }
-            this.nodes.push({
-                id: o.id, jobId: o.job_id, isRole: true, name: "", ini: "",
-                title: o.title || "", dept_id: o.dept_id || false, dept: o.dept || "",
-                loc: o.loc || "", type: "", typeKey: "", joined: false,
-                mgr: o.manager_id ? String(o.manager_id) : null, dotted: null,
-                status: "", note: "", avatar: false, nReports: 0, nTotal: 0,
-                count: o.count || 1, hiring: o.hiring || "", order: order++,
-            });
+            this.nodes.push(roleNode(o, this._order++));
             have.add(o.id);
         }
     }
@@ -531,7 +525,9 @@ export class PbOrgChart extends Component {
     }
 
     get laneTitle() {
-        return _t("No manager yet · set a manager on the employee record");
+        return this.mayWrite
+            ? _t("No manager yet · drag onto a manager, or pick several")
+            : _t("No manager yet · set a manager on the employee record");
     }
 
     moreLabel(n) { return _t("+%(n)s more", { n: this.fmtInt(n) }); }
@@ -627,7 +623,10 @@ export class PbOrgChart extends Component {
             ["↑ ↓ ← →", _t("Move between people")], ["Enter", _t("Open the side panel")],
             ["Space", _t("Expand or collapse")], ["/", _t("Search")], ["F", _t("Fit to screen")],
             ["E / C", _t("Expand all / collapse")], ["+ / −", _t("Zoom in / out")], ["Esc", _t("Close")],
-        ];
+        ].concat(this.mayWrite ? [
+            ["M", _t("Change manager")], ["A", _t("Add a team member")],
+            ["⌘ / Ctrl click", _t("Pick several people")], ["⌘ / Ctrl Z", _t("Undo the last change")],
+        ] : []);
     }
 
     // ============================================================ actions
@@ -748,6 +747,10 @@ export class PbOrgChart extends Component {
         s.menu = null;
         s.sel = id;
         s.side = id;
+        const sn = this.idx.byId.get(id);
+        if (s.sideTab === "history") {
+            if (sn.isRole) { s.sideTab = "team"; } else { this.loadHistory(id); }
+        }
         const moved = this._revealIn(id);
         if (moved) { this.relayout(); }
         if (s.view === "tree" || s.view === "lr") { this._pendingCenter = id; }
@@ -794,15 +797,27 @@ export class PbOrgChart extends Component {
         this.select(String(me));
     }
 
-    setSideTab(t) { this.state.sideTab = t; }
+    setSideTab(t) {
+        this.state.sideTab = t;
+        if (t === "history") { this.loadHistory(this.state.side); }
+    }
 
-    onHover(id) { if (this._hover !== id) { this._hover = id; this._paintPath(); } }
+    onHover(id) {
+        if (this._hover !== id) { this._hover = id; this._paintPath(); this._placePill(id); }
+    }
 
-    onLeave() { if (this._hover) { this._hover = null; this._paintPath(); } }
+    onLeave() {
+        if (this._hover) { this._hover = null; this._paintPath(); this._placePill(this.state.sel); }
+    }
 
     onCardClick(c, ev) {
         if (this._dragged) { return; }
         if (ev && ev.target.closest("button")) { return; }
+        // ⌘/Ctrl-click and Shift-click pick several people (P2)
+        if (ev && this.mayWrite && !c.n.isRole && (ev.metaKey || ev.ctrlKey)) { this.pickToggle(c.id); return; }
+        if (ev && this.mayWrite && !c.n.isRole && ev.shiftKey) { this.pickRange(c.id); return; }
+        if (this.picked.size) { this.pickClear(); }
+        this._anchor = c.id;
         this.select(c.id);
     }
 
@@ -838,10 +853,16 @@ export class PbOrgChart extends Component {
             { k: "team", label: _t("Team size"),
               val: _t("%(d)s direct · %(t)s total", { d: directCount(this.idx, n), t: totalCount(this.idx, n) }) },
             { k: "lvl", label: _t("Level"), val: _t("%(n)s of %(m)s", { n: lv, m: Math.max(this.counts.levels || 1, lv) }) },
-            { k: "with", label: _t("With us"), val: n.isRole ? "—" : this.tenure(n) },
-            { k: "type", label: _t("Employment"), val: n.isRole ? "—" : (n.type || "—") },
+            n.isRole
+                ? { k: "why", label: _t("Why it is open"), val: n.reasonLabel || "—" }
+                : { k: "with", label: _t("With us"), val: this.tenure(n) },
+            n.isRole
+                ? { k: "count", label: _t("To hire"), val: String(n.count || 1) }
+                : { k: "type", label: _t("Employment"), val: n.type || "—" },
         ];
     }
+
+    get sideReadOnlyLine() { return _t("Ask an HR user to change who reports to whom."); }
 
     get sideNoTeamText() {
         const n = this.sideNode;
@@ -1125,6 +1146,7 @@ export class PbOrgChart extends Component {
             this.applyTransform(false);
         }
         this._paintPath();
+        this._afterEdit();
         if (this._pendingCenter && this.worldRef.el) {
             const id = this._pendingCenter;
             this._pendingCenter = null;
@@ -1154,6 +1176,8 @@ export class PbOrgChart extends Component {
             if (!e.target.closest(".pboc-cw")) {
                 if (this.state.menu) { this.state.menu = null; }
             }
+            if (this.state.ctx && !e.target.closest(".pboc-ctx")) { this.state.ctx = null; }
+            if (this._dragPress(e)) { return; }
             const cv = e.target.closest(".pboc-canvas");
             if (!cv || !this.worldRef.el || e.button !== 0) { return; }
             if (e.target.closest(".pboc-node, .pboc-float, button, .pboc-more, .pboc-lane-act")) { return; }
@@ -1161,6 +1185,7 @@ export class PbOrgChart extends Component {
             cv.dataset.grab = "1";
         };
         this._onMove = (e) => {
+            if (this._dragMove(e)) { return; }
             if (!this._pan) { return; }
             const dx = e.clientX - this._pan.x;
             const dy = e.clientY - this._pan.y;
@@ -1170,6 +1195,7 @@ export class PbOrgChart extends Component {
             this.applyTransform(false);
         };
         this._onUp = () => {
+            if (this._dragUp()) { return; }
             if (!this._pan) { return; }
             this._pan = null;
             const cv = this.canvasRef.el;
@@ -1202,9 +1228,17 @@ export class PbOrgChart extends Component {
         if (!s.loaded || s.failed || s.drawerEmpId) { return; }
         const typing = /INPUT|SELECT|TEXTAREA/.test(document.activeElement && document.activeElement.tagName);
         if (e.key === "Escape") {
-            if (s.menu) { s.menu = null; }
+            if (s.dlg) { s.dlg = null; }
+            else if (s.ctx) { s.ctx = null; }
+            else if (s.menu) { s.menu = null; }
+            else if (s.pickN) { this.pickClear(); }
             else if (s.q) { s.q = ""; }
             else { s.side = null; s.sel = null; }
+            return;
+        }
+        if (s.dlg) { return; }
+        if (!typing && (e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === "z" || e.key === "Z")) {
+            if (this.mayWrite) { e.preventDefault(); this.undo(); }
             return;
         }
         if (typing || e.metaKey || e.ctrlKey || e.altKey) { return; }
@@ -1217,6 +1251,8 @@ export class PbOrgChart extends Component {
         if ((e.key === "-" || e.key === "−") && canvas) { this.zoomOut(); return; }
         const cur = s.sel ? this.idx.byId.get(s.sel) : null;
         if (e.key === "Enter" && cur) { s.side = cur.id; return; }
+        if ((e.key === "m" || e.key === "M") && cur && this.mayWrite) { e.preventDefault(); this.act("changemgr", cur.id); return; }
+        if ((e.key === "a" || e.key === "A") && cur && this.mayWrite && !cur.isRole) { e.preventDefault(); this.act("addmember", cur.id); return; }
         if (e.key === " " && cur) { e.preventDefault(); if (directCount(this.idx, cur)) { this.toggle(cur); } return; }
         if (e.key.startsWith("Arrow")) {
             e.preventDefault();
@@ -1258,5 +1294,7 @@ export class PbOrgChart extends Component {
 
     get cardW() { return cardSize(this.state.compact).w; }
 }
+
+installEdit(PbOrgChart);
 
 registry.category("actions").add("pb_orgchart", PbOrgChart);

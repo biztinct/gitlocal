@@ -164,10 +164,11 @@
                 <div t-if="lay.lane" class="pboc-lane"
                      t-attf-style="transform:translate({{lay.lane.x}}px,{{lay.lane.y}}px);width:{{lay.lane.w}}px;height:{{lay.lane.h}}px">
                   <h5><t t-out="icon('userX', 13)"/> <t t-esc="laneTitle"/>
+                    <button t-if="laneCanSelect" class="pboc-lane-act pick" t-on-click="() => this.pickLane()"><t t-out="icon('checkCheck', 13)"/> <t t-esc="laneSelectLabel"/></button>
                     <button t-if="lay.lane.open" class="pboc-lane-act" t-on-click="() => this.foldLane()">Show fewer</button>
                   </h5>
                 </div>
-                <div class="pboc-nodes" t-ref="nodes" t-on-mouseleave="() => this.onLeave()">
+                <div class="pboc-nodes" t-ref="nodes" t-on-mouseleave="() => this.onLeave()" t-on-contextmenu="onContextMenu">
                   <t t-foreach="cards" t-as="c" t-key="c.id">
                     <PbOcCard c="c" cls="cardClass(c)" flags="cardState(c)" st="cardStyle(c)" color="colorOf(c.n)"
                               busy="state.branchBusy === c.id" lr="state.view === 'lr'" api="api"/>
@@ -176,6 +177,17 @@
                           t-on-click="() => this.openLane()">
                     <b t-esc="moreLabel(moreTile.n)"/><small>Show everyone with no manager</small>
                   </button>
+                  <!-- ONE quick-action pill for the whole chart, moved onto the
+                       hovered card by inline style (P2 §3.1, G12) -->
+                  <div class="pboc-qa" t-ref="qa" style="display:none">
+                    <button title="Open side panel" t-on-click="(ev) => this.qaRun('open', ev)"><t t-out="icon('eye', 13)"/></button>
+                    <t t-if="data.may_write">
+                      <button class="p-only" title="Add a team member (A)" t-on-click="(ev) => this.qaRun('addmember', ev)"><t t-out="icon('userPlus', 13)"/></button>
+                      <button class="r-only" title="Fill this role" t-on-click="(ev) => this.qaRun('fill', ev)"><t t-out="icon('userCheck', 13)"/></button>
+                      <button title="Change manager (M)" t-on-click="(ev) => this.qaRun('changemgr', ev)"><t t-out="icon('move', 13)"/></button>
+                      <button title="More" t-on-click="(ev) => this.qaRun('more', ev)"><t t-out="icon('ellipsis', 13)"/></button>
+                    </t>
+                  </div>
                 </div>
               </div>
 
@@ -218,13 +230,24 @@
                 </svg>
               </div>
 
-              <div t-if="state.focus" class="pboc-float pboc-hint amber">
+              <div class="pboc-float pboc-draghint" t-ref="draghint" style="display:none">
+                <t t-out="icon('move', 14)"/> Drop on the new manager · takes effect straight away
+              </div>
+
+              <div t-if="state.pickN" class="pboc-float pboc-pickbar">
+                <span class="n"><t t-out="icon('users', 15)"/> <t t-esc="pickLine"/></span>
+                <button class="pboc-btn primary sm" t-att-disabled="state.writing" t-on-click="() => this.openPickMgr()"><t t-out="icon('move', 14)"/> Set manager…</button>
+                <button class="pboc-btn sm clr" t-on-click="() => this.pickClear()">Clear</button>
+                <span class="tip">Drag any picked card onto a manager to move them all</span>
+              </div>
+              <div t-elif="state.focus" class="pboc-float pboc-hint amber">
                 <t t-out="icon('filter', 14)"/> <t t-esc="focusHint"/>
                 <button t-on-click="() => this.setFocus(state.focus)">Show everyone</button>
               </div>
               <div t-elif="bigLane" class="pboc-float pboc-hint amber">
                 <t t-out="icon('userX', 14)"/> <t t-esc="laneHint"/>
-                <button t-on-click="() => this.openEmployees()">Set managers on the employee records</button>
+                <button t-if="data.may_write" t-on-click="() => this.pickLane()">Pick them all and set a manager</button>
+                <button t-else="" t-on-click="() => this.openEmployees()">Set managers on the employee records</button>
               </div>
 
               <div t-if="nobodyManaged and !state.nomgrDismissed" class="pboc-empty">
@@ -232,9 +255,11 @@
                   <div class="bd"><t t-out="icon('network', 30)"/></div>
                   <h3>Nobody has a manager set yet</h3>
                   <p>The chart is drawn from the manager on each employee record. Set a manager for a few people and their teams appear here; everyone else waits in the “no manager yet” lane.</p>
+                  <p t-if="data.may_write">You can do it right here: drag someone onto their manager, or pick several people and give them one manager.</p>
                   <div class="acts">
-                    <button class="pboc-btn primary" t-on-click="() => this.openEmployees()"><t t-out="icon('users')"/> Set managers on the employee records</button>
-                    <button class="pboc-btn ghost" t-on-click="() => this.dismissNomgr()">Show the lane</button>
+                    <button t-if="data.may_write" class="pboc-btn primary" t-on-click="() => this.dismissNomgr()"><t t-out="icon('move')"/> Start here</button>
+                    <button t-att-class="'pboc-btn ' + (data.may_write ? 'ghost' : 'primary')" t-on-click="() => this.openEmployees()"><t t-out="icon('users')"/> Set managers on the employee records</button>
+                    <button t-if="!data.may_write" class="pboc-btn ghost" t-on-click="() => this.dismissNomgr()">Show the lane</button>
                   </div>
                 </div>
               </div>
@@ -288,7 +313,10 @@
           <aside t-if="sideNode" class="pboc-side">
             <div class="sh">
               <h3><t t-out="icon(sideNode.isRole ? 'briefcase' : 'user', 17)"/> <t t-if="sideNode.isRole">Open role</t><t t-else="">Person</t></h3>
-              <button class="pboc-btn icon ghost" title="Close (Esc)" t-on-click="() => this.closeSide()"><t t-out="icon('x')"/></button>
+              <span class="pboc-sh-acts">
+                <button class="pboc-btn icon ghost" title="More" t-on-click="(ev) => this.openCtx(sideNode.id, ev.currentTarget.getBoundingClientRect().left - 250, ev.currentTarget.getBoundingClientRect().bottom + 4)"><t t-out="icon('ellipsis')"/></button>
+                <button class="pboc-btn icon ghost" title="Close (Esc)" t-on-click="() => this.closeSide()"><t t-out="icon('x')"/></button>
+              </span>
             </div>
             <div class="sb">
               <div class="prof">
@@ -321,6 +349,7 @@
               <div class="stabs">
                 <button t-att-class="state.sideTab === 'team' ? 'on' : ''" t-on-click="() => this.setSideTab('team')" t-esc="teamTabLabel(sideTeam.length)"/>
                 <button t-att-class="state.sideTab === 'peers' ? 'on' : ''" t-on-click="() => this.setSideTab('peers')">Peers</button>
+                <button t-if="!sideNode.isRole" t-att-class="state.sideTab === 'history' ? 'on' : ''" t-on-click="() => this.setSideTab('history')">History</button>
               </div>
               <t t-if="state.sideTab === 'team'">
                 <t t-if="sideTeam.length">
@@ -335,7 +364,20 @@
                 <div t-elif="sideNode.nReports" class="pboc-quiet">
                   <button class="pboc-btn outline sm" t-on-click="() => this.toggle(sideNode)"><t t-out="icon('users', 14)"/> Load the team</button>
                 </div>
-                <div t-else="" class="pboc-quiet" t-esc="sideNoTeamText"/>
+                <div t-else="" class="pboc-quiet">
+                  <t t-esc="sideNoTeamText"/>
+                  <a t-if="data.may_write and !sideNode.isRole" href="#" class="pboc-link" t-on-click.prevent="() => this.act('addmember', sideNode.id)"> Add a team member</a>
+                </div>
+              </t>
+              <t t-elif="state.sideTab === 'history'">
+                <div t-if="sideHistory === null or sideHistory === undefined" class="pboc-quiet"><span class="pboc-mini-spin"/> Reading the record…</div>
+                <t t-else="">
+                  <t t-foreach="sideHistory" t-as="h" t-key="h_index">
+                    <div t-att-class="'pboc-hist ' + h.kind"><span class="dot"/><span><b t-esc="h.what"/><small t-esc="histWhen(h)"/></span></div>
+                  </t>
+                  <div t-if="joinedLine" class="pboc-hist first"><span class="dot"/><span><b>Joined</b><small t-esc="joinedLine"/></span></div>
+                  <div t-if="!sideHistory.length" class="pboc-quiet">No manager changes recorded yet. Changes made from now on appear here with who made them and when.</div>
+                </t>
               </t>
               <t t-else="">
                 <t t-if="sidePeers.length">
@@ -350,12 +392,38 @@
                 <div t-else="" class="pboc-quiet" t-esc="sideNoPeersText"/>
               </t>
             </div>
-            <div t-if="!sideNode.isRole" class="sf">
-              <button class="pboc-btn primary sm" t-on-click="() => this.openRecord(sideNode)"><t t-out="icon('external', 15)"/> Open employee record</button>
+            <div t-if="data.may_write" class="sf">
+              <t t-if="sideNode.isRole">
+                <button class="pboc-btn primary sm" t-on-click="() => this.act('fill', sideNode.id)"><t t-out="icon('userCheck', 15)"/> Fill this role</button>
+                <button class="pboc-btn outline sm" t-on-click="() => this.act('changemgr', sideNode.id)"><t t-out="icon('move', 15)"/> Change manager</button>
+              </t>
+              <t t-else="">
+                <button class="pboc-btn primary sm" t-on-click="() => this.act('addmember', sideNode.id)"><t t-out="icon('userPlus', 15)"/> Add team member</button>
+                <button class="pboc-btn outline sm" t-on-click="() => this.act('changemgr', sideNode.id)"><t t-out="icon('move', 15)"/> Change manager</button>
+                <button class="pboc-btn outline sm" t-on-click="() => this.act('dotted', sideNode.id)"><t t-out="icon('ellipsis', 15)"/> Dotted line</button>
+              </t>
             </div>
+            <div t-else="" class="sf ro"><t t-out="icon('lock', 14)"/> <t t-esc="sideReadOnlyLine"/></div>
           </aside>
         </div>
       </t>
+
+      <!-- ============================== P2 overlays ============================== -->
+      <div class="pboc-ghost" t-ref="ghost" style="display:none" aria-hidden="true">
+        <span class="ga"/><span class="gw"><b class="gn"/><small class="gt"/></span><span class="gc"/>
+      </div>
+
+      <div t-if="state.ctx and ctxNode" class="pboc-menu pboc-ctx" t-att-style="ctxStyle" role="menu">
+        <h6 t-esc="ctxNode.isRole ? ctxNode.title : ctxNode.name"/>
+        <t t-foreach="ctxRows" t-as="row" t-key="row.k">
+          <hr t-if="row.hr"/>
+          <button t-else="" t-att-class="row.danger ? 'danger' : ''" role="menuitem" t-on-click="() => this.ctxRun(row)">
+            <t t-out="icon(row.ic, 17)"/><span><b t-esc="row.label"/><small t-if="row.sub" t-esc="row.sub"/></span>
+          </button>
+        </t>
+      </div>
+
+      <PbOcDialog t-if="state.dlg" dlg="state.dlg" chart="this" t-key="state.dlg.seq"/>
 
       <t t-if="state.drawerEmpId and drawerCmp"
          t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
@@ -382,14 +450,95 @@
           <span t-att-class="'pboc-tag ' + tg.cls"><t t-out="icon(tg.ic, 11)"/> <t t-esc="tg.text"/></span>
         </t>
       </div>
-      <div class="qa">
-        <button title="Open side panel" t-on-click.stop="() => props.api.select(props.c.id)"><t t-out="icon('eye', 13)"/></button>
-      </div>
       <button t-if="props.c.hasTeam" class="tog" t-att-title="props.api.toggleTitle(props.c)" t-on-click.stop="() => props.api.toggle(props.c)">
         <t t-if="props.busy"><span class="pboc-mini-spin"/></t>
         <t t-elif="props.c.folded"><t t-out="icon('plus', 12)"/> <t t-esc="props.api.fmtInt(props.c.total)"/></t>
         <t t-else=""><t t-out="icon(props.lr ? 'chevronLeft' : 'chevronUp', 13)"/></t>
       </button>
+    </div>
+  </t>
+
+  <!-- ============================== a dialog (PbOcDialog, P2) ============================== -->
+  <t t-name="pb_orgchart.Dialog">
+    <div class="pboc-scrim" t-on-click.self="() => this.close()" t-on-keydown="onKey">
+      <div class="pboc-dlg" role="dialog" aria-modal="true">
+        <div class="dh">
+          <span class="bd"><t t-out="icon(head.ic, 20)"/></span>
+          <div><h3 t-esc="head.title"/><small t-esc="head.sub"/></div>
+          <button class="pboc-btn icon ghost x" title="Close (Esc)" t-on-click="() => this.close()"><t t-out="icon('x')"/></button>
+        </div>
+        <div class="db">
+          <!-- the move sheet -->
+          <t t-if="d.kind === 'move'">
+            <button t-att-class="'opt' + (!state.only ? ' on' : '')" t-on-click="() => this.setOnly(false)">
+              <t t-out="icon(moveTeam ? 'users' : 'user', 18)"/><span><b t-esc="optTeam.b"/><small t-esc="optTeam.s"/></span>
+            </button>
+            <button t-if="moveTeam" t-att-class="'opt' + (state.only ? ' on' : '')" t-on-click="() => this.setOnly(true)">
+              <t t-out="icon('user', 18)"/><span><b t-esc="optOnly.b"/><small t-esc="optOnly.s"/></span>
+            </button>
+          </t>
+          <div t-if="d.kind === 'many'" class="pboc-names"><t t-out="icon('users', 15)"/> <span t-esc="manyNames"/></div>
+          <div t-if="d.kind === 'move' or d.kind === 'many'" class="impact">
+            <b>What changes</b>
+            <ul><t t-foreach="impact" t-as="im" t-key="im.k"><li t-att-class="im.warn ? 'warn' : ''" t-esc="im.t"/></t></ul>
+          </div>
+          <!-- P3: planning mode adds an "Effective from" date here -->
+
+          <!-- modes: add a team member / fill a role -->
+          <t t-if="d.kind === 'addmember'">
+            <button t-att-class="'opt' + (state.mode === 'existing' ? ' on' : '')" t-on-click="() => this.setMode('existing')">
+              <t t-out="icon('users', 18)"/><span><b>Someone already here</b><small>Move an existing employee into this team.</small></span>
+            </button>
+            <button t-att-class="'opt' + (state.mode === 'role' ? ' on' : '')" t-on-click="() => this.setMode('role')">
+              <t t-out="icon('briefcase', 18)"/><span><b>A new open role</b><small>A dashed card appears under them and Hiring gets the job to fill.</small></span>
+            </button>
+            <button t-att-class="'opt' + (state.mode === 'hire' ? ' on' : '')" t-on-click="() => this.setMode('hire')">
+              <t t-out="icon('userPlus', 18)"/><span><b>A new starter</b><small>Opens the new-employee form with the manager and team already filled in.</small></span>
+            </button>
+          </t>
+          <t t-if="d.kind === 'fill'">
+            <button t-att-class="'opt' + (state.mode === 'existing' ? ' on' : '')" t-on-click="() => this.setMode('existing')">
+              <t t-out="icon('users', 18)"/><span><b>Promote or move someone already here</b><small>Their job, title and manager become the role's.</small></span>
+            </button>
+            <button t-att-class="'opt' + (state.mode === 'hire' ? ' on' : '')" t-on-click="() => this.setMode('hire')">
+              <t t-out="icon('userPlus', 18)"/><span><b>A new starter</b><small>Opens the new-employee form with the title, team and manager already filled in.</small></span>
+            </button>
+          </t>
+          <t t-if="d.kind === 'addmember' and state.mode === 'role'">
+            <div class="field"><label>Job title</label><input t-ref="title" placeholder="e.g. Field agronomist" t-att-value="state.title" t-on-input="onTitle"/></div>
+            <div class="field"><label>Why</label>
+              <select t-on-change="onReason">
+                <t t-foreach="reasons" t-as="rs" t-key="rs[0]"><option t-att-value="rs[0]" t-att-selected="state.reason === rs[0]" t-esc="rs[1]"/></t>
+              </select>
+            </div>
+          </t>
+
+          <!-- the picker: fixed rows rewritten in place -->
+          <t t-if="showPicker">
+            <div class="field"><label>Search</label><input t-ref="q" placeholder="Type a name or title…" t-att-value="state.q" t-on-input="onQ"/></div>
+            <div class="picker">
+              <t t-foreach="slots" t-as="r" t-key="r.i">
+                <div t-att-class="'pboc-rep' + (rowOn(r.n) ? ' on' : '')" t-att-style="rowStyle(r)" t-on-click="() => this.pick(r.n)">
+                  <span class="pboc-av" t-att-style="avStyle(r.n)" t-esc="r.n ? r.n.ini : ''"/>
+                  <span><b t-esc="r.n ? r.n.name : ''"/><small t-esc="rowSub(r.n)"/></span>
+                  <span class="tick"><t t-out="icon('check', 16)"/></span>
+                </div>
+              </t>
+              <div t-if="noMatch" class="pboc-quiet">No match.</div>
+            </div>
+            <small t-if="truncatedNote" class="pboc-note-sm" t-esc="truncatedNote"/>
+          </t>
+          <small class="pboc-live"><t t-out="icon('info', 13)"/> <t t-esc="liveNote"/></small>
+        </div>
+        <div class="df">
+          <button t-if="d.kind === 'dotted' and p.dotted" class="pboc-btn ghost danger" t-att-disabled="state.busy" t-on-click="() => this.removeDotted()">Remove dotted line</button>
+          <span class="pboc-grow"/>
+          <button class="pboc-btn outline" t-on-click="() => this.close()">Cancel</button>
+          <button class="pboc-btn primary" t-att-disabled="okDisabled" t-on-click="() => this.confirm()">
+            <span t-if="state.busy" class="pboc-mini-spin w"/><t t-else="" t-out="icon('check')"/> <t t-esc="okLabel"/>
+          </button>
+        </div>
+      </div>
     </div>
   </t>
 
