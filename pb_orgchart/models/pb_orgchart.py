@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ORG CHART P1 — the read-only payload behind People › Org chart.
+"""ORG CHART P1/P2 — the payload behind People › Org chart.
 
 One RPC (`get_chart`) returns every active employee of the allowed companies
 in ONE call, with their manager, team, location, status and team sizes; the
@@ -92,7 +92,7 @@ class PbOrgChart(models.AbstractModel):
     def _graph(self):
         """The whole tree's shape from one light read.
 
-        Returns ``{ids, mgr, kids, depth, total, roots}``: `mgr` maps a person
+        Returns ``{ids, mgr, kids, depth, total, roots, dotted}``: `mgr` maps a person
         to a manager who is ALSO active in the allowed companies (an archived
         or out-of-company manager makes the person a root, ledger §4 rail);
         `depth` 0 = top; `total` = everyone under a person, any depth. A loop
@@ -106,11 +106,18 @@ class PbOrgChart(models.AbstractModel):
         # managers the shape never shows (G11).
         ids = Emp.search([('company_id', 'in', self._company_ids())], order='id').ids
         idset = set(ids)
-        Emp.flush_model(['parent_id'])
+        Emp.flush_model(['parent_id', 'pb_dotted_manager_id'])
         parent = {}
+        dot_raw = {}
         if ids:
-            self.env.cr.execute("SELECT id, parent_id FROM hr_employee WHERE id = ANY(%s)", [ids])
-            parent = dict(self.env.cr.fetchall())
+            self.env.cr.execute(
+                "SELECT id, parent_id, pb_dotted_manager_id FROM hr_employee WHERE id = ANY(%s)", [ids])
+            for i, p, dm in self.env.cr.fetchall():
+                parent[i] = p
+                if dm:
+                    dot_raw[i] = dm
+        # the dotted line (ledger D2) counts only between two people on the chart
+        dotted = {i: dm for i, dm in dot_raw.items() if dm in idset and dm != i}
         mgr = {}
         for i in ids:
             m = parent.get(i)
@@ -156,7 +163,7 @@ class PbOrgChart(models.AbstractModel):
             if m:
                 total[m] += 1 + total[i]
         return {'ids': ids, 'mgr': mgr, 'kids': kids, 'depth': depth,
-                'total': total, 'roots': roots}
+                'total': total, 'roots': roots, 'dotted': dotted}
 
     @api.model
     def _team_count(self, ids, rows):
@@ -200,10 +207,13 @@ class PbOrgChart(models.AbstractModel):
     def _job_manager(self, job, depts, active):
         """Who an open role hangs under on the chart (ledger D3).
 
-        P2 adds the job's own `pb_manager_id` as the FIRST branch here; P1
-        has only the fallback: the job's department's manager. A manager who
-        is not an active person of the allowed companies is no manager.
+        The job's own `pb_manager_id` first (P2), else its department's
+        manager. A manager who is not an active person of the allowed
+        companies is no manager (the role waits in the lane).
         """
+        own = _m2o_id(job.get('pb_manager_id'))
+        if own and own in active:
+            return own
         dept = depts.get(_m2o_id(job.get('department_id')))
         m = dept and dept.get('manager_id')
         return m if (m and m in active) else False
@@ -213,7 +223,8 @@ class PbOrgChart(models.AbstractModel):
         Job = self.env['hr.job']
         dom = [('no_of_recruitment', '>', 0),
                ('company_id', 'in', self._company_ids() + [False])]
-        flds = ['name', 'department_id', 'no_of_recruitment', 'company_id']
+        flds = ['name', 'department_id', 'no_of_recruitment', 'company_id',
+                'pb_manager_id', 'pb_reason']
         if 'address_id' in Job._fields:
             flds.append('address_id')
         try:
@@ -229,6 +240,7 @@ class PbOrgChart(models.AbstractModel):
                     cities[p['id']] = p['city'] or ''
             except Exception as e:  # noqa: BLE001
                 _logger.debug("pb_orgchart: job address cities unreadable: %s", e)
+        reasons = dict(Job._fields['pb_reason']._description_selection(self.env))
         out = []
         for j in jobs:
             try:
@@ -242,6 +254,8 @@ class PbOrgChart(models.AbstractModel):
                     'count': n,
                     'manager_id': self._job_manager(j, depts, active),
                     'hiring': _("Open · %(n)s to fill", n=n),
+                    'reason': j.get('pb_reason') or False,
+                    'reason_label': reasons.get(j.get('pb_reason')) or '',
                 })
             except Exception as e:  # noqa: BLE001 — one bad job never blocks the chart
                 _logger.debug("pb_orgchart: open role %s skipped: %s", j.get('id'), e)
@@ -427,7 +441,7 @@ class PbOrgChart(models.AbstractModel):
                                                _m2o_name(r.get('contract_type_id'))),
                     'joined': fields.Date.to_string(joined) if joined else False,
                     'manager_id': graph['mgr'].get(i) or False,
-                    'dotted_id': False,  # P2 fills this (ledger D2)
+                    'dotted_id': graph['dotted'].get(i) or False,
                     'status': status,
                     'status_note': note,
                     'user_id': _m2o_id(r['user_id']),
@@ -486,11 +500,6 @@ class PbOrgChart(models.AbstractModel):
                  if not o['manager_id'] or o['manager_id'] in loaded]
 
         # Numbers over the WHOLE company, whatever was cut.
-        managers = [i for i in ids if graph['kids'].get(i)]
-        lone_roots = [i for i in graph['roots'] if not graph['kids'].get(i)]
-        has_tree = any(graph['kids'].get(i) for i in graph['roots'])
-        if not has_tree and len(ids) == 1:
-            lone_roots = []  # a one-person company: that person IS the chart
         new = sum(1 for r in rows if r['status'] == 'new') if not truncated else \
             self._count_new(ids)
         used_depts = {r['dept_id'] for r in rows if r['dept_id']} | \
@@ -506,25 +515,37 @@ class PbOrgChart(models.AbstractModel):
             'may_write': self._may_write(),
             'truncated': truncated,
             'shown_levels': shown_levels,
-            'counts': {
-                'people': len(ids),
-                'open': len(all_roles),
-                'no_manager': len(lone_roots),
-                'levels': (max(graph['depth'].values()) + 1) if ids else 0,
-                'managers': len(managers),
-                'avg_span': round(sum(len(graph['kids'][m]) for m in managers) / len(managers), 1)
-                if managers else 0,
-                'wide': sum(1 for m in managers if len(graph['kids'][m]) >= WIDE_SPAN),
-                'dotted': 0,  # P2 (ledger D2)
-                'new': new,
-                'teams': self._team_count(ids, rows),
-            },
+            'counts': dict(self._shape_counts(graph, len(all_roles)),
+                           people=len(ids), new=new,
+                           teams=self._team_count(ids, rows)),
         }
         ms = int((time.time() - t0) * 1000)
         payload['build_ms'] = ms
         _logger.debug("pb_orgchart: payload of %s people (%s sent) built in %s ms",
                       len(ids), len(rows), ms)
         return payload
+
+    @api.model
+    def _shape_counts(self, graph, n_open):
+        """The numbers that only depend on who reports to whom (and the open
+        roles). A write in P2 can change these and nothing else, so the
+        write RPCs send them back with their refresh."""
+        ids = graph['ids']
+        managers = [i for i in ids if graph['kids'].get(i)]
+        lone_roots = [i for i in graph['roots'] if not graph['kids'].get(i)]
+        has_tree = any(graph['kids'].get(i) for i in graph['roots'])
+        if not has_tree and len(ids) == 1:
+            lone_roots = []  # a one-person company: that person IS the chart
+        return {
+            'open': n_open,
+            'no_manager': len(lone_roots),
+            'levels': (max(graph['depth'].values()) + 1) if ids else 0,
+            'managers': len(managers),
+            'avg_span': round(sum(len(graph['kids'][m]) for m in managers) / len(managers), 1)
+            if managers else 0,
+            'wide': sum(1 for m in managers if len(graph['kids'][m]) >= WIDE_SPAN),
+            'dotted': len(graph['dotted']),
+        }
 
     @api.model
     def _count_new(self, ids):

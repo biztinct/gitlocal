@@ -19,13 +19,17 @@ WHAT THIS MODULE ADDS
     chart shows only those people.
   * FIND ANYONE: search by name, title or team and jump straight to them;
     follow their chain of managers to the top.
+  * CHANGE IT LIVE: drag someone onto their new manager, pick several people
+    and give them all one manager, add a dotted-line manager, add an open
+    role under a manager, fill or close a role, swap places with a manager —
+    each with one-tap Undo and a History tab on the person.
   * SPREADSHEET AND PRINT: the chart as a list of names, titles, teams,
     managers and locations, or printed as you see it.
 
-It reads the employee records and changes nothing. The chart updates itself
-whenever an employee record changes.
+Only HR users can change the chart; everyone else sees it read-only. Every
+change is recorded on the employee record.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -45,6 +49,8 @@ whenever an employee record changes.
         'web.assets_backend': [
             'pb_orgchart/static/src/scss/orgchart.scss',
             'pb_orgchart/static/src/js/orgchart_layout.js',
+            'pb_orgchart/static/src/js/orgchart_edit.js',
+            'pb_orgchart/static/src/js/orgchart_dialog.js',
             'pb_orgchart/static/src/js/orgchart.js',
             'pb_orgchart/static/src/js/orgchart_lens.js',
             'pb_orgchart/static/src/xml/orgchart.xml',
