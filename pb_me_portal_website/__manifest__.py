@@ -1,7 +1,8 @@
 # Part of Payobook. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Employee Self-Service Portal — website bridge',
-    'summary': 'Hides the backend shortcut on portal pages for portal-only employees',
+    'summary': 'Employee pages: slim top bar with the tenant logo, no website menu or footer; '
+               'no backend shortcut for portal-only employees',
     'description': """
 TIERS T1 — the fence, website half.
 
@@ -20,15 +21,27 @@ enough. Everyone else sees it exactly as before.
 
 THE REAL BLOCK is pb_me_portal's web-client route bounce to `/my`; this module
 only stops offering a link that would bounce.
+
+EMPLOYEE TOP BAR (2026-11-04). On `/my…` the website header (menu, search,
+phone, call-to-action) and the whole website footer are not rendered; a slim
+bar shows the tenant's own logo (website logo if changed, else the company
+logo, else the company name — never the stock placeholder), the language
+switch and the account menu.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Hidden/Tools',
     'author': 'Payobook',
     'license': 'LGPL-3',
     'depends': ['pb_me_portal', 'website'],
     'data': [
         'views/frontend_backend_nav.xml',
+        'views/pbme_chrome.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'pb_me_portal_website/static/src/scss/pbme_topbar.scss',
+        ],
+    },
     'auto_install': True,
     'installable': True,
 }

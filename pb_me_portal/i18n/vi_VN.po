@@ -1844,3 +1844,10 @@ msgstr "Ra ca"
 #: model_terms:ir.ui.view,arch_db:pb_me_portal.pbme_card_week
 msgid "Clock in"
 msgstr "Vào ca"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_user_dropdown_my_home
+msgid ""
+"<i class=\"fa fa-fw fa-home me-1 small text-primary-emphasis\"/> My Home"
+msgstr ""
+"<i class=\"fa fa-fw fa-home me-1 small text-primary-emphasis\"/> Trang của tôi"

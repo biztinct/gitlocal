@@ -4,6 +4,7 @@
 from datetime import timedelta
 
 from odoo import fields
+from odoo.exceptions import UserError
 from odoo.tests.common import tagged
 
 from .common import EssWorkforceCase
@@ -124,6 +125,23 @@ class TestP8Portal(EssWorkforceCase):
         self.assertEqual(data['employee']['id'], self.emp_a.id)
         self.assertIsInstance(data['requests'], list)
         self.assertIsInstance(data['balances'], list)
+
+    def test_leave_types_follow_the_employees_country(self):
+        """My Leave offers the types of the country the employee works in, plus
+        types naming no country — never another country's, and applying for
+        one is refused."""
+        sg = self.env.ref('base.sg')
+        other = 'SG' if self.env['pb.timeoff']._emp_country(self.emp_a) != 'SG' else 'VN'
+        other_country = sg if other == 'SG' else self.env.ref('base.vn')
+        foreign = self.env['hr.leave.type'].sudo().create({
+            'name': 'ESS Foreign Only', 'requires_allocation': False,
+            'company_id': self.company.id,
+            'pb_policy_country_id': other_country.id})
+        offered = [t['id'] for t in self._as(self.user_a).get_my_leave()['types']]
+        self.assertNotIn(foreign.id, offered, "another country's leave type was offered")
+        day = self._future_day().isoformat()
+        with self.assertRaises(UserError):
+            self._as(self.user_a).apply_leave(foreign.id, day, day)
 
     # ------------------------------------------------------------ overtime
     def test_overtime_page_returns_own_requests_only(self):

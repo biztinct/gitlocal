@@ -1013,4 +1013,17 @@
     </xpath>
   </template>
 
+  <!-- The account menu's way back to the employee home. Stock "My Account"
+       opens /my/home, which is the same page as /my — so it is renamed
+       rather than doubled (owner ask 2026-11-04: "My Home" → /my). -->
+  <template id="portal_user_dropdown_my_home"
+            inherit_id="portal.my_account_link"
+            name="Account menu: My Home">
+    <xpath expr="//a[@href='/my/home']" position="replace">
+      <a href="/my" role="menuitem" class="dropdown-item ps-3" id="o_pbme_my_home">
+        <i class="fa fa-fw fa-home me-1 small text-primary-emphasis"/> My Home
+      </a>
+    </xpath>
+  </template>
+
 </odoo>

@@ -1,0 +1,51 @@
+// Part of Payobook. See LICENSE file for full copyright and licensing details.
+// The employee pages' slim top bar (views/pbme_chrome.xml).
+
+.o_pbme_topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: #fff;
+    border-bottom: 1px solid #e7e8ee;
+
+    .o_pbme_topbar_in {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+    }
+
+    .o_pbme_brand {
+        display: inline-flex;
+        align-items: center;
+        min-width: 0;
+        text-decoration: none;
+
+        img {
+            display: block;
+            height: 40px;
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+        }
+    }
+
+    .o_pbme_brand_name {
+        font-weight: 700;
+        font-size: 18px;
+        color: #1b1b2f;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .navbar-nav .nav-link {
+        color: #3b3d4a;
+        padding: 6px 8px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+    }
+}

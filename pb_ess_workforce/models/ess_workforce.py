@@ -473,12 +473,7 @@ class PbEssWorkforce(models.AbstractModel):
                 'note': lv.name or '',
             })
 
-        # Appliable types: whatever the employee's company offers. Company-scoped
-        # (C18.11/18) — a shared type (company_id unset) is offered too.
-        co = emp.company_id.id or self.env.company.id
-        appliable = self.env['hr.leave.type'].sudo().search(
-            ['|', ('company_id', '=', False), ('company_id', '=', co)],
-            order='name')
+        appliable = self._my_appliable_types(emp)
         return {
             'employee': {'id': emp.id, 'name': emp.name or ''},
             'balances': balances,
@@ -486,6 +481,22 @@ class PbEssWorkforce(models.AbstractModel):
             'types': [{'id': t.id, 'name': t.name} for t in appliable],
             'pending': sum(1 for r in rows if r['state'] in _OPEN_LEAVE_STATES),
         }
+
+    @api.model
+    def _my_appliable_types(self, emp):
+        """The leave types this employee may ask for: their company's (C18.11/18,
+        a shared type with company_id unset too), narrowed to the country they
+        work in — the rule the Time Off "Apply for" drawer uses (pb.timeoff
+        `_type_country` / `_emp_country`). A type naming no country is offered
+        to everyone."""
+        co = emp.company_id.id or self.env.company.id
+        types = self.env['hr.leave.type'].sudo().search(
+            ['|', ('company_id', '=', False), ('company_id', '=', co)],
+            order='name')
+        TO = self.env['pb.timeoff'].sudo()
+        country = TO._emp_country(emp.sudo())
+        return types.filtered(
+            lambda t: TO._type_country(t) in ('', country))
 
     @api.model
     def _leave_state_label(self, state):
@@ -514,9 +525,7 @@ class PbEssWorkforce(models.AbstractModel):
         emp = self._require_own_employee()
         if not type_id:
             raise UserError(_("Choose a leave type."))
-        co = emp.company_id.id or self.env.company.id
-        offered = self.env['hr.leave.type'].sudo().search(
-            ['|', ('company_id', '=', False), ('company_id', '=', co)])
+        offered = self._my_appliable_types(emp)
         try:
             type_id = int(type_id)
         except (TypeError, ValueError):
