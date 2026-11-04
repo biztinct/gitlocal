@@ -22,7 +22,7 @@ systray
     # says this is not an increment: the rail a user opens tomorrow is not the
     # rail they closed today.
     # 19.0.2.2.0 — IA redesign Cycle 1: the three audit fixes.
-    'version': '19.0.3.3.0',
+    'version': '19.0.3.3.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -44,6 +44,7 @@ systray
             'pb_sidebar/static/src/js/pb_sidebar.js',
             'pb_sidebar/static/src/js/webclient_patch.js',
             'pb_sidebar/static/src/js/hide_odoo_account.js',
+            'pb_sidebar/static/src/js/user_menu_my_home.js',
             'pb_sidebar/static/src/xml/pb_sidebar.xml',
             'pb_sidebar/static/src/xml/webclient_patch.xml',
         ],

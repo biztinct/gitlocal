@@ -559,3 +559,9 @@ msgstr ""
 #: code:addons/pb_sidebar/static/src/js/pb_sidebar.js:276
 msgid "Got it"
 msgstr "Hiểu rồi"
+
+#. module: pb_sidebar
+#. odoo-javascript
+#: code:addons/pb_sidebar/static/src/js/user_menu_my_home.js:0
+msgid "My Home"
+msgstr "Trang của tôi"
