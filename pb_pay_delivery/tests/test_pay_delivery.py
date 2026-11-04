@@ -275,6 +275,17 @@ class TestPayDelivery(TransactionCase):
         with self.assertRaises(AccessError):
             Facade.with_user(self.emp_user).get_delivery_data(self.payrun.id)
 
+    def test_11b_hero_total_counts_people_left_out(self):
+        # payobook run 1524 read "Total net ₫0": nobody had bank details, so
+        # the bank-ready sum was the headline. The headline is what the run
+        # pays; the bank-ready sum is said under it.
+        self._slip(self._employee('Ready One', '123456789012'), 5000000)
+        self._slip(self._employee('No Account', '123'), 3000000)
+        data = self.env['pb.pay.delivery'].with_user(self.mgr_user).get_delivery_data(self.payrun.id)
+        self.assertEqual(data['validation']['excluded_count'], 1)
+        self.assertEqual(data['run']['bank_ready_net'], 5000000)
+        self.assertEqual(data['run']['total_net'], 8000000)
+
     def test_12_password_never_stored_on_line(self):
         """Safety rail 4: no delivery-line field ever holds the password."""
         fields = self.env['pb.payslip.delivery']._fields

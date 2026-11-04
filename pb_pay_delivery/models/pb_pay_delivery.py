@@ -58,9 +58,10 @@ class PbPayDelivery(models.AbstractModel):
         """Format-independent row validation (account/holder/bank/net)."""
         wiz = self._wizard(run)
         registry = self.env['pb.bank.registry']
-        eligible, excluded, total_net = 0, [], 0.0
+        eligible, excluded, total_net, total_pay = 0, [], 0.0, 0.0
         for slip in self._done_slips(run).sorted(key=lambda s: s.employee_id.name or ''):
             sources, reasons, net = wiz._row_sources(slip, eligible + 1, registry)
+            total_pay += max(net, 0.0)
             if reasons:
                 excluded.append({
                     'employee': slip.employee_id.name or '',
@@ -70,7 +71,7 @@ class PbPayDelivery(models.AbstractModel):
             else:
                 eligible += 1
                 total_net += net
-        return eligible, excluded, total_net
+        return eligible, excluded, total_net, total_pay
 
     def _batch(self, run, create=False):
         batch = self.env['pb.payslip.delivery.batch'].search(
@@ -225,7 +226,7 @@ class PbPayDelivery(models.AbstractModel):
         run = self._run(run_id)
         done = self._done_slips(run)
 
-        eligible, excluded, total_net = self._validation_preview(run)
+        eligible, excluded, total_net, total_pay = self._validation_preview(run)
 
         # Recipient preview (payslips-out lane).
         recips, no_email = [], []
@@ -250,7 +251,10 @@ class PbPayDelivery(models.AbstractModel):
                 'period': "%s → %s" % (run.date_start, run.date_end)
                 if run.date_start and run.date_end else '',
                 'headcount': len(done),
-                'total_net': total_net,
+                # The hero shows what the approved run pays; the bank file
+                # carries only the people with valid bank details.
+                'total_net': total_pay,
+                'bank_ready_net': total_net,
                 'state': run.state,
                 'approved': (run.state or '') == 'done',
                 'paid': bool(getattr(run, 'pb_paid', False)),

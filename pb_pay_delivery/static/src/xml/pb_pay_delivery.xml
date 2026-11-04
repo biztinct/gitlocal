@@ -85,6 +85,13 @@
           <div class="pbpd-hero-net">
             <div class="l">Total net</div>
             <div class="v" t-esc="money(state.netShown)"/>
+            <div t-if="state.data.validation.excluded_count" class="ready">
+              <b t-esc="money(state.data.run.bank_ready_net)"/>
+              <span>ready for the bank file</span>
+              <span class="dot">•</span>
+              <a href="#" t-on-click.prevent="toggleExcl"
+                 title="See who is left out and why"><t t-esc="state.data.validation.excluded_count"/> <span>left out</span></a>
+            </div>
           </div>
         </div>
 

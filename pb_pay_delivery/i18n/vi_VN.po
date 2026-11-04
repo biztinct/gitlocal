@@ -1721,3 +1721,21 @@ msgstr "Phê duyệt tệp ngân hàng"
 msgid "Payslip send-out"
 msgstr "Gửi phiếu lương"
 
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "ready for the bank file"
+msgstr "sẵn sàng cho tệp ngân hàng"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "left out"
+msgstr "bị bỏ ra"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "See who is left out and why"
+msgstr "Xem ai bị bỏ ra và lý do"
