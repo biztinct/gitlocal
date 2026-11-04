@@ -234,6 +234,23 @@ CATALOGUE = [
      'Where they work',
      'Split a person\'s month between companies, join two employee records '
      'into one person, and choose how a split month is paid.', None),
+    # TIME AND TIME OFF, AS ROLES SOMEBODY CAN GIVE. The two attendance
+    # abilities were seeded with no role naming them, and time off had no
+    # ability at all, so Workforce's Today, Schedule, Time, Time Off, Overtime
+    # and Close tabs could only be reached through Tenant administrator
+    # (rize, 2026-11-04: three HR staff with 20+ roles saw three tabs).
+    (('time-attendance-work',), 'people', 80,
+     'Time and attendance team',
+     'See who is in today, plan shifts, and check and correct clock-in and '
+     'clock-out records. Cannot approve overtime or lock a week.', None),
+    (('time-attendance-manage',), 'people', 82,
+     'Time and attendance manager',
+     'Everything the team does, plus approving overtime, locking a finished '
+     'week for payroll, and setting the working-hours rules.', None),
+    (('time-off-officer',), 'people', 84,
+     'Time off officer',
+     'See and decide everybody\'s time-off requests, apply time off on '
+     'someone\'s behalf and keep public holidays and balances right.', None),
     (('field-staff',), 'people', 95,
      'Field staff',
      'For people who work away from a desk: check in and out with their '
@@ -551,6 +568,11 @@ NEW_ABILITIES = [
      'Everything above, plus setting the working-hours rules and signing the '
      'month off so payroll can use it.',
      ('hr_attendance.group_hr_attendance_manager',)),
+    ('time-off-officer', 'people', 120,
+     'Handle everybody\'s time off',
+     'See and decide every time-off request, not just a team\'s, and keep the '
+     'balances right. It cannot change the time-off rules themselves.',
+     ('hr_holidays.group_hr_holidays_user',)),
 
     # ------------------------------------------------------- money & budgets
     ('workforce-plan', 'money', 100,

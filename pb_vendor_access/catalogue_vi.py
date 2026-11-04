@@ -132,6 +132,18 @@ VI = {
     "Where they work": "Nơi họ làm việc",
     "Split a person's month between companies, join two employee records into one person, and choose how a split month is paid.":
         "Chia tháng làm việc của một người giữa các công ty, gộp hai hồ sơ nhân viên thành một người và chọn cách trả lương cho tháng bị chia.",
+    "Time and attendance team": "Nhóm chấm công",
+    "See who is in today, plan shifts, and check and correct clock-in and clock-out records. Cannot approve overtime or lock a week.":
+        "Xem hôm nay ai có mặt, xếp ca và kiểm tra, sửa dữ liệu giờ vào, giờ ra. Không duyệt được tăng ca và không khóa được tuần.",
+    "Time and attendance manager": "Quản lý chấm công",
+    "Everything the team does, plus approving overtime, locking a finished week for payroll, and setting the working-hours rules.":
+        "Mọi việc của nhóm chấm công, cộng thêm duyệt tăng ca, khóa tuần đã xong để tính lương và đặt quy tắc giờ làm.",
+    "Time off officer": "Cán bộ nghỉ phép",
+    "See and decide everybody's time-off requests, apply time off on someone's behalf and keep public holidays and balances right.":
+        "Xem và quyết định đơn nghỉ phép của mọi người, tạo đơn nghỉ thay cho người khác và giữ đúng ngày lễ cũng như số ngày phép còn lại.",
+    "Handle everybody's time off": "Xử lý nghỉ phép của mọi người",
+    "See and decide every time-off request, not just a team's, and keep the balances right. It cannot change the time-off rules themselves.":
+        "Xem và quyết định mọi đơn nghỉ phép, không chỉ của một nhóm, và giữ đúng số ngày phép còn lại. Không thay đổi được quy tắc nghỉ phép.",
     "Field staff": "Nhân viên hiện trường",
     "For people who work away from a desk: check in and out with their location and a photo from the Field app on their phone. Nothing else.":
         "Dành cho người làm việc bên ngoài văn phòng: chấm công vào và ra kèm vị trí và ảnh chụp từ ứng dụng Hiện trường trên điện thoại. Không gì khác.",
