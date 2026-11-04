@@ -23,13 +23,21 @@ WHAT THIS MODULE ADDS
     and give them all one manager, add a dotted-line manager, add an open
     role under a manager, fill or close a role, swap places with a manager —
     each with one-tap Undo and a History tab on the person.
+  * PLAN CHANGES FIRST: press Plan changes and the chart becomes a sandbox.
+    Drag people, add roles, swap places; amber outlines and dashed lines show
+    every change. Send the plan to the HR team in one tap; it goes live on
+    the day you pick, once approved.
+  * TIME MACHINE: slide back to see who reported to whom on any day of the
+    last year, or forward to see approved plans, leavers and new starters.
+  * SUGGEST A CHART: for a company where few managers are set, a starting
+    chart worked out from the team records, ready to adjust and send.
   * SPREADSHEET AND PRINT: the chart as a list of names, titles, teams,
     managers and locations, or printed as you see it.
 
 Only HR users can change the chart; everyone else sees it read-only. Every
 change is recorded on the employee record.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -41,8 +49,15 @@ change is recorded on the employee record.
         'pb_hub',           # hub_nav (openHub) for the Employees door
         'pb_people',        # the Employees cockpit and its drawer registry
         'pb_people_hub',    # the lens host (EMPLOYEE_GATE, PEOPLE_LENSES)
+        'pb_people_advanced',     # P3: the new-starter form lowers a role's to-hire count
+        'biz_approval_chain',     # P3: the plan's status ladder and its guard
+        'biz_approval_workflow',  # P3: the route a plan is approved on (orgplan)
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'security/pb_orgchart_security.xml',
+        'data/approval_process.xml',
+        'data/ir_cron.xml',
         'views/pb_orgchart_action.xml',
     ],
     'assets': {
@@ -51,11 +66,13 @@ change is recorded on the employee record.
             'pb_orgchart/static/src/js/orgchart_layout.js',
             'pb_orgchart/static/src/js/orgchart_edit.js',
             'pb_orgchart/static/src/js/orgchart_dialog.js',
+            'pb_orgchart/static/src/js/orgchart_plan.js',
             'pb_orgchart/static/src/js/orgchart.js',
             'pb_orgchart/static/src/js/orgchart_lens.js',
             'pb_orgchart/static/src/xml/orgchart.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,

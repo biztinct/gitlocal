@@ -89,7 +89,7 @@ class PbOrgChart(models.AbstractModel):
 
     # -------------------------------------------------------- tree shape
     @api.model
-    def _graph(self):
+    def _graph(self, view=None):
         """The whole tree's shape from one light read.
 
         Returns ``{ids, mgr, kids, depth, total, roots, dotted}``: `mgr` maps a person
@@ -98,6 +98,12 @@ class PbOrgChart(models.AbstractModel):
         `depth` 0 = top; `total` = everyone under a person, any depth. A loop
         in `parent_id` (the constraint should forbid it, but a raw import can
         write one) is broken by making the unreachable people roots.
+
+        `view` (P3) draws another day or a plan instead of today:
+        ``parents`` / ``dotted`` replace the columns for the people they name,
+        ``hide`` takes people off the chart — and a manager who is hidden is
+        skipped up the chain, so nobody hangs from someone who was not there
+        (the POC's `effMgr` rule).
         """
         Emp = self.env['hr.employee']
         # WHO is in the chart is the ORM's answer (access rules, multi-company,
@@ -105,7 +111,6 @@ class PbOrgChart(models.AbstractModel):
         # `search_read(['parent_id'])` of 4,500 people spends 450 ms naming
         # managers the shape never shows (G11).
         ids = Emp.search([('company_id', 'in', self._company_ids())], order='id').ids
-        idset = set(ids)
         Emp.flush_model(['parent_id', 'pb_dotted_manager_id'])
         parent = {}
         dot_raw = {}
@@ -116,6 +121,25 @@ class PbOrgChart(models.AbstractModel):
                 parent[i] = p
                 if dm:
                     dot_raw[i] = dm
+        if view:
+            over = view.get('parents')
+            if over:
+                for i in ids:
+                    if i in over:
+                        parent[i] = over[i] or None
+            if view.get('dotted') is not None:
+                dots = view['dotted']
+                dot_raw = {i: dots[i] for i in ids if dots.get(i)}
+            hide = view.get('hide')
+            if hide:
+                ids = [i for i in ids if i not in hide]
+                for i in ids:
+                    m, seen = parent.get(i), set()
+                    while m and m in hide and m not in seen:
+                        seen.add(m)
+                        m = parent.get(m) if m in parent else (over or {}).get(m)
+                    parent[i] = m
+        idset = set(ids)
         # the dotted line (ledger D2) counts only between two people on the chart
         dotted = {i: dm for i, dm in dot_raw.items() if dm in idset and dm != i}
         mgr = {}
@@ -219,7 +243,45 @@ class PbOrgChart(models.AbstractModel):
         return m if (m and m in active) else False
 
     @api.model
-    def _open_roles(self, depts, active):
+    def _open_roles(self, depts, active, view=None):
+        """Open roles, as today — or as a plan or a later day leaves them
+        (`view['roles']` overrides a role's count and manager; `virtual` are
+        roles a plan adds). A past day shows none: they are today's
+        vacancies."""
+        if view and view.get('no_roles'):
+            return []
+        out = self._open_roles_live(depts, active)
+        if not view or not (view.get('roles') or view.get('virtual')):
+            return out
+        over = view.get('roles') or {}
+        kept = []
+        for o in out:
+            r = over.get(o['job_id'])
+            if r is not None:
+                if r['count'] <= 0:
+                    continue
+                m = r['mgr'] if (r['mgr'] and r['mgr'] in active) else False
+                if r['count'] != o['count'] or m != o['manager_id']:
+                    o = dict(o, count=r['count'], manager_id=m, changed=True,
+                             hiring=_("Open · %(n)s to fill", n=r['count']))
+            kept.append(o)
+        reasons = dict(self.env['hr.job']._fields['pb_reason']._description_selection(self.env))
+        for v in view.get('virtual') or ():
+            dept_id = v.get('dept_id') or False
+            kept.append({
+                'id': v['id'], 'job_id': False, 'virtual': True, 'changed': True,
+                'title': v['title'], 'dept_id': dept_id,
+                'dept': (depts.get(dept_id) or {}).get('name', ''),
+                'loc': '', 'count': 1,
+                'manager_id': v['mgr'] if (v['mgr'] and v['mgr'] in active) else False,
+                'hiring': _("New in this plan"),
+                'reason': v.get('reason') or False,
+                'reason_label': reasons.get(v.get('reason')) or '',
+            })
+        return kept
+
+    @api.model
+    def _open_roles_live(self, depts, active):
         Job = self.env['hr.job']
         dom = [('no_of_recruitment', '>', 0),
                ('company_id', 'in', self._company_ids() + [False])]
@@ -369,8 +431,12 @@ class PbOrgChart(models.AbstractModel):
                 and 'svg' not in r['mimetype']}
 
     @api.model
-    def _rows(self, ids, graph, depts):
-        """Full rows for these employee ids, in the order given."""
+    def _rows(self, ids, graph, depts, view=None):
+        """Full rows for these employee ids, in the order given.
+
+        With a `view` (P3) the statuses are worked out for the day shown
+        (`ref_day`), a plan's new titles replace today's, and the people a
+        plan changes carry `changed`."""
         if not ids:
             return []
         Emp = self.env['hr.employee']
@@ -378,10 +444,13 @@ class PbOrgChart(models.AbstractModel):
         want = next(iter(recs.values()), {}).keys() if recs else ()
         photos = self._photo_ids(ids)
 
-        today = fields.Date.context_today(self)
+        real_today = fields.Date.context_today(self)
+        today = (view or {}).get('ref_day') or real_today
+        titles = (view or {}).get('titles') or {}
+        changed = (view or {}).get('changed') or ()
         # Who is away today (hr_holidays): one search, never a per-row compute.
         absent = set()
-        if 'is_absent' in Emp._fields:
+        if 'is_absent' in Emp._fields and today == real_today:
             try:
                 absent = set(Emp.search([('id', 'in', ids), ('is_absent', '=', True)]).ids)
             except Exception as e:  # noqa: BLE001
@@ -431,7 +500,8 @@ class PbOrgChart(models.AbstractModel):
                     'id': i,
                     'name': r['name'] or '',
                     'ini': _initials(r['name']),
-                    'title': r.get('job_title') or _m2o_name(r.get('job_id')) or '',
+                    'title': titles.get(i) or r.get('job_title') or _m2o_name(r.get('job_id')) or '',
+                    'changed': i in changed,
                     'dept_id': dept_id,
                     'dept': (depts.get(dept_id) or {}).get('name') or _m2o_name(r['department_id']),
                     'loc': loc or '',
@@ -457,10 +527,20 @@ class PbOrgChart(models.AbstractModel):
 
     # --------------------------------------------------------------- API
     @api.model
-    def get_chart(self):
-        """Everything the chart draws, in one call (ledger D4)."""
+    def get_chart(self, plan_id=None, as_of=None, expand=None):
+        """Everything the chart draws, in one call (ledger D4).
+
+        P3: ``plan_id`` draws that plan's projection over the live chart
+        (with `changed_ids`, `ghost_edges`, virtual roles and the plan);
+        ``as_of`` ('YYYY-MM-DD') draws another day — the past from field
+        tracking, the future from approved plans, leavers and accepted
+        offers. ``expand`` lists managers whose teams were opened on a cut
+        chart, so a redraw keeps them. A read: nothing is written."""
         t0 = time.time()
-        graph = self._graph()
+        view, extra = self._view_for(plan_id, as_of)
+        if extra.get('error'):
+            return {'error': extra['error']}
+        graph = self._graph(view)
         ids = graph['ids']
         active = set(ids)
         depts = self._departments()
@@ -468,6 +548,11 @@ class PbOrgChart(models.AbstractModel):
 
         me_emp = self.env.user.employee_id
         me = me_emp.id if (me_emp and me_emp.id in active) else False
+
+        def chain(i, into):
+            while i and i not in into:
+                into.add(i)
+                i = graph['mgr'].get(i)
 
         keep = ids
         truncated = False
@@ -483,24 +568,38 @@ class PbOrgChart(models.AbstractModel):
             shown_levels = d + 1
             keep_set = {i for i in ids if graph['depth'][i] <= d}
             # Find me must work: my chain to the top always comes along.
-            c = me
-            while c:
-                keep_set.add(c)
-                c = graph['mgr'].get(c)
+            must = set()
+            chain(me, must)
+            # A plan's changes are always on screen, with where they came from.
+            if view:
+                for i in view.get('changed') or ():
+                    if i in active:
+                        chain(i, must)
+                for g in view.get('ghost') or ():
+                    chain(g['from_manager_id'], must)
+            # Teams opened before a redraw stay open (bounded by the limit).
+            for m in expand or ():
+                try:
+                    m = int(m)
+                except (TypeError, ValueError):
+                    continue
+                if m in active:
+                    chain(m, must)
+                    must.update(graph['kids'].get(m, ()))
+            keep_set |= must
             keep = [i for i in ids if i in keep_set]
             if len(keep) > limit:
                 # Even the top level is too many: the biggest teams first.
                 keep = sorted(keep, key=lambda x: -graph['total'][x])[:limit]
-                if me and me not in keep:
-                    keep.append(me)
-        rows = self._rows(keep, graph, depts)
+                keep += [i for i in ids if i in must and i not in set(keep)]
+        rows = self._rows(keep, graph, depts, view)
         loaded = {r['id'] for r in rows}
-        all_roles = self._open_roles(depts, active)
+        all_roles = self._open_roles(depts, active, view)
         roles = [o for o in all_roles
                  if not o['manager_id'] or o['manager_id'] in loaded]
 
         # Numbers over the WHOLE company, whatever was cut.
-        new = sum(1 for r in rows if r['status'] == 'new') if not truncated else \
+        new = sum(1 for r in rows if r['status'] == 'new') if (not truncated or view) else \
             self._count_new(ids)
         used_depts = {r['dept_id'] for r in rows if r['dept_id']} | \
             {o['dept_id'] for o in roles if o['dept_id']}
@@ -519,6 +618,19 @@ class PbOrgChart(models.AbstractModel):
                            people=len(ids), new=new,
                            teams=self._team_count(ids, rows)),
         }
+        if extra:
+            payload.update(extra)
+            # ghost lines are drawn only between people who are on screen
+            if extra.get('ghost_edges'):
+                payload['ghost_edges'] = [g for g in extra['ghost_edges']
+                                          if g['emp_id'] in loaded and g['from_manager_id'] in loaded]
+            if extra.get('changed_ids'):
+                payload['changed_ids'] = [i for i in extra['changed_ids'] if i in active]
+            if extra.get('starters'):
+                payload['starters'] = [dict(s, manager_id=s['manager_id'] if s['manager_id'] in loaded else False)
+                                       for s in extra['starters']]
+        if payload['may_write'] and not view:
+            payload['my_draft'] = self._my_draft_summary()
         ms = int((time.time() - t0) * 1000)
         payload['build_ms'] = ms
         _logger.debug("pb_orgchart: payload of %s people (%s sent) built in %s ms",
@@ -560,17 +672,21 @@ class PbOrgChart(models.AbstractModel):
             ('first_contract_date', '<=', today)])
 
     @api.model
-    def get_branch(self, manager_id):
+    def get_branch(self, manager_id, plan_id=None, as_of=None):
         """Everyone under this manager, any depth — same row shape.
 
         Used when a "+N" is pressed on a chart that was cut to its top levels.
         Bounded by the same limit (nearest people first); `truncated` says so.
+        `plan_id` / `as_of` as `get_chart` (P3).
         """
         try:
             manager_id = int(manager_id)
         except (TypeError, ValueError):
             return {'people': [], 'open_roles': [], 'truncated': False}
-        graph = self._graph()
+        view, extra = self._view_for(plan_id, as_of)
+        if extra.get('error'):
+            return {'people': [], 'open_roles': [], 'truncated': False}
+        graph = self._graph(view)
         if manager_id not in graph['depth']:
             return {'people': [], 'open_roles': [], 'truncated': False}
         limit = self._limit()
@@ -585,8 +701,8 @@ class PbOrgChart(models.AbstractModel):
         truncated = len(under) > limit
         under = under[:limit]
         depts = self._departments()
-        rows = self._rows(under, graph, depts)
+        rows = self._rows(under, graph, depts, view)
         branch = set(under) | {manager_id}
-        roles = [o for o in self._open_roles(depts, set(graph['ids']))
+        roles = [o for o in self._open_roles(depts, set(graph['ids']), view)
                  if o['manager_id'] and o['manager_id'] in branch]
         return {'people': rows, 'open_roles': roles, 'truncated': truncated}

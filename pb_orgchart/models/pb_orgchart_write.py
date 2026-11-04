@@ -245,243 +245,271 @@ class PbOrgChartWrite(models.AbstractModel):
         return {int(k): v for k, v in (d or {}).items()}
 
     # ============================================================== moves
+    # Each write is split in two (P3 §1.1.2): the RPC (rights, savepoint,
+    # answer) and a `_do_*` helper that judges and writes and returns
+    # ``(label, undo, touched people[, touched jobs])`` or raises _Refused.
+    # A plan's apply step runs the same helpers, so a planned change and a
+    # live one are judged and written the same way.
+
     @api.model
     def move(self, emp_id, manager_id, whole_team=True):
         """`emp` reports to `manager`. Whole team (default): their reports
         come along. Only them: their direct reports first move up to `emp`'s
         old manager (or to nobody when there was none)."""
-        def go():
-            emp = self._person(emp_id)
-            mgr = self._manager_for(emp, manager_id)
-            old = emp.parent_id
-            if old == mgr:
-                raise _Refused(_("%(p)s already reports to %(m)s.", p=emp.name, m=mgr.name))
-            kids = self.env['hr.employee'].search([('parent_id', '=', emp.id)])
-            changes = {emp.id: mgr.id}
-            if not whole_team:
-                for k in kids:
-                    changes[k.id] = old.id or False
-            if self._loop_in(changes):
-                raise _Refused(self._loop_sentence(emp.id, mgr.id))
-            undo = self._snap(changes)
-            self._set_managers(changes)
-            if whole_team or not kids:
-                label = _("%(p)s now reports to %(m)s", p=emp.name, m=mgr.name)
-            elif old:
-                label = _("%(p)s now reports to %(m)s; their %(n)s reports stay with %(o)s",
-                          p=emp.name, m=mgr.name, n=len(kids), o=old.name)
-            else:
-                label = _("%(p)s now reports to %(m)s; their %(n)s reports have no manager now",
-                          p=emp.name, m=mgr.name, n=len(kids))
-            return self._answer(label, undo, list(changes) + [mgr.id] + ([old.id] if old else []))
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_move(emp_id, manager_id, whole_team)))
+
+    @api.model
+    def _do_move(self, emp_id, manager_id, whole_team=True):
+        emp = self._person(emp_id)
+        mgr = self._manager_for(emp, manager_id)
+        old = emp.parent_id
+        if old == mgr:
+            raise _Refused(_("%(p)s already reports to %(m)s.", p=emp.name, m=mgr.name))
+        kids = self.env['hr.employee'].search([('parent_id', '=', emp.id)])
+        changes = {emp.id: mgr.id}
+        if not whole_team:
+            for k in kids:
+                changes[k.id] = old.id or False
+        if self._loop_in(changes):
+            raise _Refused(self._loop_sentence(emp.id, mgr.id))
+        undo = self._snap(changes)
+        self._set_managers(changes)
+        if whole_team or not kids:
+            label = _("%(p)s now reports to %(m)s", p=emp.name, m=mgr.name)
+        elif old:
+            label = _("%(p)s now reports to %(m)s; their %(n)s reports stay with %(o)s",
+                      p=emp.name, m=mgr.name, n=len(kids), o=old.name)
+        else:
+            label = _("%(p)s now reports to %(m)s; their %(n)s reports have no manager now",
+                      p=emp.name, m=mgr.name, n=len(kids))
+        return label, undo, list(changes) + [mgr.id] + ([old.id] if old else [])
 
     @api.model
     def move_many(self, emp_ids, manager_id):
         """Several people under one manager, all or nothing — what a company
         with nobody's manager set needs most (rize: 234 of 241)."""
-        def go():
-            ids = []
-            for i in emp_ids or []:
-                try:
-                    i = int(i)
-                except (TypeError, ValueError):
-                    continue
-                if i not in ids:
-                    ids.append(i)
-            if not ids:
-                raise _Refused(_("Pick at least one person."))
-            mgr = self._person(manager_id, role='manager')
-            if mgr.id in ids:
-                raise _Refused(_("%(m)s can't report to themselves — take them out of the selection.",
-                                 m=mgr.name))
-            people = [self._person(i) for i in ids]
-            for p in people:
-                self._manager_for(p, mgr.id)
-            changes = {p.id: mgr.id for p in people if p.parent_id != mgr}
-            if not changes:
-                raise _Refused(_("Everyone you picked already reports to %(m)s.", m=mgr.name))
-            bad = self._loop_in(changes)
-            if bad:
-                raise _Refused(self._loop_sentence(bad, mgr.id))
-            Emp = self.env['hr.employee']
-            undo = self._snap(changes)
-            olds = {Emp.browse(e).parent_id.id for e in changes} - {False}
-            self._set_managers(changes)
-            n = len(changes)
-            label = (_("%(p)s now reports to %(m)s", p=Emp.browse(next(iter(changes))).name, m=mgr.name)
-                     if n == 1 else _("%(n)s people now report to %(m)s", n=n, m=mgr.name))
-            return self._answer(label, undo, list(changes) + [mgr.id] + list(olds))
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_move_many(emp_ids, manager_id)))
+
+    @api.model
+    def _do_move_many(self, emp_ids, manager_id):
+        ids = []
+        for i in emp_ids or []:
+            try:
+                i = int(i)
+            except (TypeError, ValueError):
+                continue
+            if i not in ids:
+                ids.append(i)
+        if not ids:
+            raise _Refused(_("Pick at least one person."))
+        mgr = self._person(manager_id, role='manager')
+        if mgr.id in ids:
+            raise _Refused(_("%(m)s can't report to themselves — take them out of the selection.",
+                             m=mgr.name))
+        people = [self._person(i) for i in ids]
+        for p in people:
+            self._manager_for(p, mgr.id)
+        changes = {p.id: mgr.id for p in people if p.parent_id != mgr}
+        if not changes:
+            raise _Refused(_("Everyone you picked already reports to %(m)s.", m=mgr.name))
+        bad = self._loop_in(changes)
+        if bad:
+            raise _Refused(self._loop_sentence(bad, mgr.id))
+        Emp = self.env['hr.employee']
+        undo = self._snap(changes)
+        olds = {Emp.browse(e).parent_id.id for e in changes} - {False}
+        self._set_managers(changes)
+        n = len(changes)
+        label = (_("%(p)s now reports to %(m)s", p=Emp.browse(next(iter(changes))).name, m=mgr.name)
+                 if n == 1 else _("%(n)s people now report to %(m)s", n=n, m=mgr.name))
+        return label, undo, list(changes) + [mgr.id] + list(olds)
 
     @api.model
     def unassign(self, emp_id):
         """Remove from their manager's team: no manager (their own team stays
         with them)."""
-        def go():
-            emp = self._person(emp_id)
-            old = emp.parent_id
-            if not old:
-                raise _Refused(_("%(p)s has no manager to remove.", p=emp.name))
-            undo = self._snap({emp.id: False})
-            self._set_managers({emp.id: False})
-            return self._answer(_("%(p)s removed from %(m)s's team", p=emp.name, m=old.name),
-                                undo, [emp.id, old.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_unassign(emp_id)))
+
+    @api.model
+    def _do_unassign(self, emp_id):
+        emp = self._person(emp_id)
+        old = emp.parent_id
+        if not old:
+            raise _Refused(_("%(p)s has no manager to remove.", p=emp.name))
+        undo = self._snap({emp.id: False})
+        self._set_managers({emp.id: False})
+        return (_("%(p)s removed from %(m)s's team", p=emp.name, m=old.name),
+                undo, [emp.id, old.id])
 
     @api.model
     def swap(self, emp_id):
         """Swap places with the manager (POC semantics): `emp` takes the
         manager's manager and the manager's other reports; the manager
         reports to `emp` and takes `emp`'s former reports."""
-        def go():
-            emp = self._person(emp_id)
-            mgr = emp.parent_id
-            if not mgr:
-                raise _Refused(_("%(p)s has no manager to swap places with.", p=emp.name))
-            if not mgr.parent_id:
-                raise _Refused(_("The top of the chart has nobody to swap with."))
-            if not mgr.active or mgr.company_id != emp.company_id:
-                raise _Refused(_("%(m)s can't swap places with %(p)s here.", m=mgr.name, p=emp.name))
-            Emp = self.env['hr.employee']
-            grand = mgr.parent_id
-            mine = Emp.search([('parent_id', '=', emp.id)])
-            theirs = Emp.search([('parent_id', '=', mgr.id), ('id', '!=', emp.id)])
-            changes = {emp.id: grand.id, mgr.id: emp.id}
-            for k in theirs:
-                changes[k.id] = emp.id
-            for k in mine:
-                changes[k.id] = mgr.id
-            if self._loop_in(changes):
-                raise _Refused(self._loop_sentence(emp.id, grand.id))
-            undo = self._snap(changes)
-            self._set_managers(changes)
-            return self._answer(_("%(p)s and %(m)s swap places", p=emp.name, m=mgr.name),
-                                undo, list(changes) + [grand.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_swap(emp_id)))
+
+    @api.model
+    def _do_swap(self, emp_id, expect_manager_id=None):
+        emp = self._person(emp_id)
+        mgr = emp.parent_id
+        if not mgr:
+            raise _Refused(_("%(p)s has no manager to swap places with.", p=emp.name))
+        if expect_manager_id and mgr.id != int(expect_manager_id):
+            # a planned swap names the manager it was planned against
+            raise _Refused(_("%(p)s no longer reports to %(m)s, so they can't swap places.",
+                             p=emp.name, m=self.env['hr.employee'].sudo().with_context(
+                                 active_test=False).browse(int(expect_manager_id)).name))
+        if not mgr.parent_id:
+            raise _Refused(_("The top of the chart has nobody to swap with."))
+        if not mgr.active or mgr.company_id != emp.company_id:
+            raise _Refused(_("%(m)s can't swap places with %(p)s here.", m=mgr.name, p=emp.name))
+        Emp = self.env['hr.employee']
+        grand = mgr.parent_id
+        mine = Emp.search([('parent_id', '=', emp.id)])
+        theirs = Emp.search([('parent_id', '=', mgr.id), ('id', '!=', emp.id)])
+        changes = {emp.id: grand.id, mgr.id: emp.id}
+        for k in theirs:
+            changes[k.id] = emp.id
+        for k in mine:
+            changes[k.id] = mgr.id
+        if self._loop_in(changes):
+            raise _Refused(self._loop_sentence(emp.id, grand.id))
+        undo = self._snap(changes)
+        self._set_managers(changes)
+        return (_("%(p)s and %(m)s swap places", p=emp.name, m=mgr.name),
+                undo, list(changes) + [grand.id])
 
     @api.model
     def set_dotted(self, emp_id, manager_id=False):
         """Add, change or clear the dotted-line manager (ledger D2)."""
-        def go():
-            emp = self._person(emp_id)
-            old = emp.pb_dotted_manager_id
-            if manager_id:
-                mgr = self._manager_for(emp, manager_id)
-                if mgr == emp.parent_id:
-                    raise _Refused(_("%(p)s already reports to %(m)s directly.", p=emp.name, m=mgr.name))
-                if mgr == old:
-                    raise _Refused(_("%(p)s already has a dotted line to %(m)s.", p=emp.name, m=mgr.name))
-                label = _("%(p)s also reports to %(m)s (dotted line)", p=emp.name, m=mgr.name)
-            else:
-                mgr = self.env['hr.employee']
-                if not old:
-                    raise _Refused(_("%(p)s has no dotted line to remove.", p=emp.name))
-                label = _("%(p)s no longer has a dotted line to %(m)s", p=emp.name, m=old.name)
-            undo = {'dotted': {str(emp.id): old.id or False}}
-            emp.write({'pb_dotted_manager_id': mgr.id or False})
-            return self._answer(label, undo, [emp.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_set_dotted(emp_id, manager_id)))
+
+    @api.model
+    def _do_set_dotted(self, emp_id, manager_id=False):
+        emp = self._person(emp_id)
+        old = emp.pb_dotted_manager_id
+        if manager_id:
+            mgr = self._manager_for(emp, manager_id)
+            if mgr == emp.parent_id:
+                raise _Refused(_("%(p)s already reports to %(m)s directly.", p=emp.name, m=mgr.name))
+            if mgr == old:
+                raise _Refused(_("%(p)s already has a dotted line to %(m)s.", p=emp.name, m=mgr.name))
+            label = _("%(p)s also reports to %(m)s (dotted line)", p=emp.name, m=mgr.name)
+        else:
+            mgr = self.env['hr.employee']
+            if not old:
+                raise _Refused(_("%(p)s has no dotted line to remove.", p=emp.name))
+            label = _("%(p)s no longer has a dotted line to %(m)s", p=emp.name, m=old.name)
+        undo = {'dotted': {str(emp.id): old.id or False}}
+        emp.write({'pb_dotted_manager_id': mgr.id or False})
+        return label, undo, [emp.id]
 
     # ============================================================== roles
     @api.model
     def add_open_role(self, manager_id, title, reason=False):
         """A new open role under `manager`: a job in their team, one to fill.
         The same title in the same team already exists → one more to fill."""
-        def go():
-            mgr = self._person(manager_id, role='manager')
-            name = (title or '').strip()
-            if not name:
-                raise _Refused(_("Give the role a title."))
-            if reason and reason not in ('growth', 'backfill', 'cover'):
-                raise _Refused(_("Pick why the role is open from the list."))
-            Job = self.env['hr.job'].sudo()  # see _job(): officers may only read jobs
-            dept = mgr.department_id
-            job = Job.search([('name', '=ilike', name), ('department_id', '=', dept.id or False),
-                              ('company_id', '=', mgr.company_id.id)], limit=1)
-            if job:
-                undo = {'jobs': {str(job.id): {
-                    'no_of_recruitment': job.no_of_recruitment,
-                    'pb_manager_id': job.pb_manager_id.id or False,
-                    'pb_reason': job.pb_reason or False}}}
-                vals = {'no_of_recruitment': job.no_of_recruitment + 1, 'pb_manager_id': mgr.id}
-                if reason:
-                    vals['pb_reason'] = reason
-                job.write(vals)
-                label = _("One more %(t)s to hire under %(m)s", t=job.name, m=mgr.name)
-            else:
-                job = Job.create({
-                    'name': name, 'department_id': dept.id or False,
-                    'company_id': mgr.company_id.id, 'no_of_recruitment': 1,
-                    'pb_manager_id': mgr.id, 'pb_reason': reason or False,
-                })
-                undo = {'created_jobs': [job.id]}
-                label = _("New open role: %(t)s under %(m)s", t=job.name, m=mgr.name)
-            return self._answer(label, undo, [mgr.id], [job.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_add_open_role(manager_id, title, reason)))
+
+    @api.model
+    def _do_add_open_role(self, manager_id, title, reason=False):
+        mgr = self._person(manager_id, role='manager')
+        name = (title or '').strip()
+        if not name:
+            raise _Refused(_("Give the role a title."))
+        if reason and reason not in ('growth', 'backfill', 'cover'):
+            raise _Refused(_("Pick why the role is open from the list."))
+        Job = self.env['hr.job'].sudo()  # see _job(): officers may only read jobs
+        dept = mgr.department_id
+        job = Job.search([('name', '=ilike', name), ('department_id', '=', dept.id or False),
+                          ('company_id', '=', mgr.company_id.id)], limit=1)
+        if job:
+            undo = {'jobs': {str(job.id): {
+                'no_of_recruitment': job.no_of_recruitment,
+                'pb_manager_id': job.pb_manager_id.id or False,
+                'pb_reason': job.pb_reason or False}}}
+            vals = {'no_of_recruitment': job.no_of_recruitment + 1, 'pb_manager_id': mgr.id}
+            if reason:
+                vals['pb_reason'] = reason
+            job.write(vals)
+            label = _("One more %(t)s to hire under %(m)s", t=job.name, m=mgr.name)
+        else:
+            job = Job.create({
+                'name': name, 'department_id': dept.id or False,
+                'company_id': mgr.company_id.id, 'no_of_recruitment': 1,
+                'pb_manager_id': mgr.id, 'pb_reason': reason or False,
+            })
+            undo = {'created_jobs': [job.id]}
+            label = _("New open role: %(t)s under %(m)s", t=job.name, m=mgr.name)
+        return label, undo, [mgr.id], [job.id]
 
     @api.model
     def move_role(self, job_id, manager_id):
         """Hang an open role under another manager (`pb_manager_id`)."""
-        def go():
-            job = self._job(job_id)
-            mgr = self._person(manager_id, role='manager')
-            if job.company_id and mgr.company_id != job.company_id:
-                raise _Refused(_("%(m)s works for %(c)s — the role is in %(r)s.",
-                                 m=mgr.name, c=mgr.company_id.name, r=job.company_id.name))
-            if self._role_manager(job) == mgr:
-                raise _Refused(_("The %(t)s role already sits under %(m)s.", t=job.name, m=mgr.name))
-            old = self._role_manager(job)
-            undo = {'jobs': {str(job.id): {'pb_manager_id': job.pb_manager_id.id or False}}}
-            job.write({'pb_manager_id': mgr.id})
-            return self._answer(_("The open %(t)s role now sits under %(m)s", t=job.name, m=mgr.name),
-                                undo, [mgr.id] + ([old.id] if old else []), [job.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_move_role(job_id, manager_id)))
+
+    @api.model
+    def _do_move_role(self, job_id, manager_id):
+        job = self._job(job_id)
+        mgr = self._person(manager_id, role='manager')
+        if job.company_id and mgr.company_id != job.company_id:
+            raise _Refused(_("%(m)s works for %(c)s — the role is in %(r)s.",
+                             m=mgr.name, c=mgr.company_id.name, r=job.company_id.name))
+        if self._role_manager(job) == mgr:
+            raise _Refused(_("The %(t)s role already sits under %(m)s.", t=job.name, m=mgr.name))
+        old = self._role_manager(job)
+        undo = {'jobs': {str(job.id): {'pb_manager_id': job.pb_manager_id.id or False}}}
+        job.write({'pb_manager_id': mgr.id})
+        return (_("The open %(t)s role now sits under %(m)s", t=job.name, m=mgr.name),
+                undo, [mgr.id] + ([old.id] if old else []), [job.id])
 
     @api.model
     def fill_role(self, job_id, emp_id):
         """Someone already here takes the open role: their job, title and
         manager become the role's; one fewer to hire (never below 0)."""
-        def go():
-            job = self._job(job_id)
-            emp = self._person(emp_id)
-            if job.company_id and emp.company_id != job.company_id:
-                raise _Refused(_("%(p)s works for %(c)s — the role is in %(r)s.",
-                                 p=emp.name, c=emp.company_id.name, r=job.company_id.name))
-            mgr = self._role_manager(job)
-            if mgr == emp:
-                raise _Refused(_("%(p)s can't fill a role that reports to them.", p=emp.name))
-            old_mgr = emp.parent_id
-            if mgr and self._loop_in({emp.id: mgr.id}):
-                raise _Refused(self._loop_sentence(emp.id, mgr.id))
-            undo = {
-                'emp_jobs': {str(emp.id): {'job_id': emp.job_id.id or False,
-                                           'job_title': emp.job_title or False}},
-                'jobs': {str(job.id): {'no_of_recruitment': job.no_of_recruitment}},
-            }
-            if mgr:
-                undo.update(self._snap({emp.id: mgr.id}))
-            emp.write({'job_id': job.id, 'job_title': job.name})
-            if mgr and emp.parent_id != mgr:
-                self._set_managers({emp.id: mgr.id})
-            job.write({'no_of_recruitment': max(0, job.no_of_recruitment - 1)})
-            touched = [emp.id] + ([mgr.id] if mgr else []) + ([old_mgr.id] if old_mgr else [])
-            return self._answer(_("%(p)s fills the %(t)s role", p=emp.name, t=job.name),
-                                undo, touched, [job.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_fill_role(job_id, emp_id)))
+
+    @api.model
+    def _do_fill_role(self, job_id, emp_id):
+        job = self._job(job_id)
+        emp = self._person(emp_id)
+        if job.company_id and emp.company_id != job.company_id:
+            raise _Refused(_("%(p)s works for %(c)s — the role is in %(r)s.",
+                             p=emp.name, c=emp.company_id.name, r=job.company_id.name))
+        mgr = self._role_manager(job)
+        if mgr == emp:
+            raise _Refused(_("%(p)s can't fill a role that reports to them.", p=emp.name))
+        old_mgr = emp.parent_id
+        if mgr and self._loop_in({emp.id: mgr.id}):
+            raise _Refused(self._loop_sentence(emp.id, mgr.id))
+        undo = {
+            'emp_jobs': {str(emp.id): {'job_id': emp.job_id.id or False,
+                                       'job_title': emp.job_title or False}},
+            'jobs': {str(job.id): {'no_of_recruitment': job.no_of_recruitment}},
+        }
+        if mgr:
+            undo.update(self._snap({emp.id: mgr.id}))
+        emp.write({'job_id': job.id, 'job_title': job.name})
+        if mgr and emp.parent_id != mgr:
+            self._set_managers({emp.id: mgr.id})
+        job.write({'no_of_recruitment': max(0, job.no_of_recruitment - 1)})
+        touched = [emp.id] + ([mgr.id] if mgr else []) + ([old_mgr.id] if old_mgr else [])
+        return _("%(p)s fills the %(t)s role", p=emp.name, t=job.name), undo, touched, [job.id]
 
     @api.model
     def close_role(self, job_id):
         """Nobody more to hire for this role: the target goes to 0. The job
         itself (and anyone already in it) stays."""
-        def go():
-            job = self._job(job_id)
-            undo = {'jobs': {str(job.id): {'no_of_recruitment': job.no_of_recruitment}}}
-            mgr = self._role_manager(job)
-            job.write({'no_of_recruitment': 0})
-            return self._answer(_("The open %(t)s role is closed", t=job.name), undo,
-                                [mgr.id] if mgr else [], [job.id])
-        return self._run(go)
+        return self._run(lambda: self._answer(*self._do_close_role(job_id)))
+
+    @api.model
+    def _do_close_role(self, job_id):
+        job = self._job(job_id)
+        undo = {'jobs': {str(job.id): {'no_of_recruitment': job.no_of_recruitment}}}
+        mgr = self._role_manager(job)
+        job.write({'no_of_recruitment': 0})
+        return (_("The open %(t)s role is closed", t=job.name), undo,
+                [mgr.id] if mgr else [], [job.id])
 
     # =============================================================== undo
     @api.model
