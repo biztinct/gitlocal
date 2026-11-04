@@ -384,7 +384,7 @@
         display: grid; place-items: center; padding: 20px; animation: pboc-fade .15s ease-out; cursor: default;
     }
     .pboc-dlg {
-        width: min(540px, 100%); max-height: calc(100vh - 40px); display: flex; flex-direction: column; background: var(--oc-card);
+        width: 540px; max-width: 100%; max-height: calc(100vh - 40px); display: flex; flex-direction: column; background: var(--oc-card);
         border-radius: 20px; box-shadow: var(--oc-sh-3); overflow: hidden; animation: pboc-pop .18s var(--oc-ease);
         .dh { display: flex; gap: 14px; align-items: flex-start; padding: 20px 20px 14px;
             .bd { width: 44px; height: 44px; border-radius: 14px; background: var(--oc-p-soft); color: var(--oc-p); display: grid; place-items: center; flex: none; }
