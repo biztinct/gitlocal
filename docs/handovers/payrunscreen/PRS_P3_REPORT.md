@@ -186,3 +186,97 @@ one sentence under it; the run says what it is at a glance and nothing for
 the normal case (quiet board pattern). Honest about the gap: the wizard tells
 a person picking Top-up that it still pays everyone. What keeps it from
 "best in class": a top-up should start from "who and how much" (question 1).
+
+## Follow-up 1 (2026-11-04, owner rulings R9–R11)
+
+The owner answered §9: R9 (a Regular run ignores top-ups), R10 (top-ups keep
+paying the full month; no work), R11 (mark payobook's existing top-up runs).
+R9–R11 and PRS-G34 are in the ledger.
+
+Commit **8d773a537**, pb_payrun_wizard **19.0.1.41.0**, pb_demo
+**19.0.1.13.2**. LIVE on p0clone, payobook_template, rize, payobook
+02:50:22–02:54:48 UTC.
+
+### R9 — a Regular run ignores top-ups (built)
+
+* `_period_runs(kind=...)` now filters for BOTH kinds; every wizard door
+  passes the kind (no `run_kind` in the request = Regular), so making a
+  Regular run after a top-up asks nothing about the top-up, and Clean and
+  Run cannot reach it. `kind=None` stays kind-blind for direct callers.
+* `_clean_period(runs, kind=...)` filters whatever it is handed — a second
+  rail behind the guard. Both wizard paths pass the kind.
+* pb_demo's own clear step (both demo paths) filters by the kind being made
+  and passes it to the clean.
+* Unchanged on purpose: a Regular run still adopts LOOSE payslips (they
+  belong to no run, so there is no kind to read) — as before P3.
+* Tests (pb_payrun_wizard/tests/test_run_kind.py, 5 new, replacing the old
+  "Regular unchanged" case): a Regular run does not meet the month's top-up
+  (plan preview + prepare_run); Regular + force_clean on both paths never
+  clears a top-up; a second Regular run asks and clears only the Regular;
+  `_clean_period` with a kind never clears the other kind; adoption and the
+  kind-blind answer unchanged. Whole pb_payrun_wizard suite on the scratch
+  DB: **84 tests, 0 failed** (pb_payruns unchanged this round).
+
+### R11 — payobook's top-up runs marked Top-up
+
+Listed before writing (every payobook run name was read; only these three
+say top-up / award / bonus; none is a full month — 3, 1 and 1 people against
+400–1,000 on the monthly runs):
+
+| id | name | state | people |
+|---|---|---|---|
+| 1524 | Retail top-up — Sep 2026 | approved | 3 |
+| 1525 | Awards run — Oct 2026 | approved | 1 |
+| 1526 | Retail bonus run — Nov 2026 | approved | 1 |
+
+One-time SQL on `payobook` only, after the deploy, past the draft-only lock
+(a plain stored selection; nothing is computed from it):
+`UPDATE hr_payslip_run SET pb_run_kind='topup' WHERE id IN (1524,1525,1526)
+AND pb_run_kind='regular' AND name ~* '(top-up|award|bonus)'` → 3 rows.
+payobook now: regular 50, topup 3. payobook_template (no runs), p0clone
+(regular 10), rize (regular 10) unchanged. Nothing deleted.
+
+**Generator: nothing to change (PRS-G34).** These three runs are not
+pb_demo generator runs — `is_demo` is false, they were made by hand by
+ash@biztinct.com on 2026-09-01 (04:35–04:52 UTC), and no pb_demo code or
+server script creates them (their names exist only in the board prototype
+HTML). A demo regeneration clears `is_demo` runs only, so it neither
+recreates nor deletes them; they keep Top-up.
+
+"Compared with" before → after the write (read on the live payload):
+
+| run | before | after |
+|---|---|---|
+| 1524 | none (no approved run of the same kind for August) | none: "There is no approved top-up for August 2026 on this scheme…" |
+| 1525 | 1524, −71.7% | 1524 (a top-up), −71.7% |
+| 1526 | 1525, −10.3% | 1525 (a top-up), −10.3% |
+
+(Before the write they were already paired with each other, because the
+same scheme had no approved regular month in those windows; now they are
+paired BECAUSE they are top-ups, and a Regular run can no longer pick them.)
+
+### Deploy evidence (normal tier, same ritual)
+
+gitlocal-f3 messaged first; their "go" (and no objection to the marking)
+relayed by Fable. Live pb_payrun_wizard / pb_demo checked byte-identical to
+the last deploy before staging. `/opt/deploy-notes.md` read, START 02:50,
+DONE 02:55. `filter_deploy.sh full`, staged from `git archive HEAD`:
+backups `/odoo/backups/prs-p3f-run-20261104025022/` (p0clone 26.7 MB,
+template 26.5 MB, rize 40.6 MB, payobook 79.4 MB); `-u pb_payrun_wizard,pb_demo`
+EXIT=0 errors=0 ×4; active jobs 31/28/74/42 unchanged; pb_payrun_wizard
+19.0.1.41.0 on all 4, pb_demo 19.0.1.13.2 on payobook (not installed
+elsewhere); tree hash OK; server log since restart: 0 ERROR / Traceback;
+sites 200.
+
+### Browser (payobook.com, QA login; console clean except the existing app-icon warning)
+
+| | Result |
+|---|---|
+| Pay Runs board (kanban, 53 cards) | "TOP-UP" tag on exactly the three runs, beside their "RETAIL" tag; no other card tagged. `p3_screens/F1_board_topup_tags_payobook.png` |
+| Card board (this month, 19 cards) | "Retail bonus run — Nov 2026" carries the tag; quick look shows "Kind of run: Top-up". `p3_screens/F1_quicklook_topup_payobook_1526.png` |
+| Run 1525 screen | chips "Approved · Top-up · …"; Kind of run row shows Top-up, locked (approved); money card: "71.7% less take-home than September 2026. 3 people were paid then." — September = 1524, the Sep top-up. `p3_screens/F1_topup_compares_with_topup_payobook_1525.png` |
+
+### Owner questions
+
+None open from §9 (all three answered). One note: R10 leaves a top-up
+paying a full month for everyone the scheme covers; the wizard note says so.
