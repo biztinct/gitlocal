@@ -225,8 +225,10 @@
         .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
         // P2 drag, pick and flash states — data attributes, never classes (G12)
         &[data-drag] { opacity: .35; border-style: dashed; }
-        &[data-over="ok"] { border-color: var(--oc-green); box-shadow: 0 0 0 4px rgba(15, 123, 79, .22), var(--oc-sh-2); z-index: 4; }
-        &[data-over="bad"] { border-color: var(--oc-rose); box-shadow: 0 0 0 4px rgba(220, 38, 85, .2); z-index: 4; cursor: not-allowed; }
+        // no z-index here: re-stacking 657 cards made each new target a
+        // 125 ms frame on payobook; without it, ~40 ms (G15)
+        &[data-over="ok"] { border-color: var(--oc-green); box-shadow: 0 0 0 4px rgba(15, 123, 79, .22), var(--oc-sh-2); }
+        &[data-over="bad"] { border-color: var(--oc-rose); box-shadow: 0 0 0 4px rgba(220, 38, 85, .2); cursor: not-allowed; }
         &[data-over="same"] { border-color: var(--oc-line2); box-shadow: 0 0 0 3px var(--oc-slate-soft); }
         &[data-pk] { border-color: var(--oc-p); background: var(--oc-p-wash); box-shadow: 0 0 0 2px var(--oc-p-ring); }
         &[data-pk]::after {
