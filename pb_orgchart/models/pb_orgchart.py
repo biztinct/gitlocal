@@ -381,7 +381,19 @@ class PbOrgChart(models.AbstractModel):
                 raise AccessError('no versions')
             emps = Emp.search_read([('id', 'in', ids)], efields + ['current_version_id'], load=None)
             vids = [e['current_version_id'] for e in emps if e['current_version_id']]
-            vers = {v['id']: v for v in Ver.browse(vids).read(vfields, load=None)}
+            try:
+                vers = {v['id']: v for v in Ver.browse(vids).read(vfields, load=None)}
+            except AccessError:
+                # G29 (P4): a roster reader who is not an HR officer (a Records
+                # viewer) may read the people but not their versions, and the
+                # employee's own title/team fields are related through the
+                # HR-only `version_id`, so both reads refused and the chart
+                # did not open for them at all. The title, team and location
+                # are what the roster already shows them: read those columns
+                # of the versions of the people THEY could read (`emps` came
+                # from their own search). The HR-only columns were left out
+                # by `_readable` above.
+                vers = {v['id']: v for v in Ver.sudo().browse(vids).read(vfields, load=None)}
         except AccessError:
             return {r['id']: r for r in Emp.search_read([('id', 'in', ids)], efields + vfields)}
         m2o = {'job_id': 'hr.job', 'work_location_id': 'hr.work.location',
