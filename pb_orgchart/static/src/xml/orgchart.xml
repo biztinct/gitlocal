@@ -212,7 +212,7 @@
               <div class="pboc-float pboc-tools">
                 <div class="pboc-zoom">
                   <button title="Zoom out (−)" t-on-click="() => this.zoomOut()"><t t-out="icon('zoomOut')"/></button>
-                  <span class="pct num" t-ref="pct" title="Reset to 100%" t-on-click="() => this.zoomReset()">100%</span>
+                  <span class="pboc-pct num" t-ref="pct" title="Reset to 100%" t-on-click="() => this.zoomReset()">100%</span>
                   <button title="Zoom in (+)" t-on-click="() => this.zoomIn()"><t t-out="icon('zoomIn')"/></button>
                   <button title="Fit everything on screen (F)" t-on-click="() => this.fit()"><t t-out="icon('maximize')"/></button>
                 </div>
@@ -380,7 +380,7 @@
               </t>
             </div>
             <div t-if="!sideNode.isRole" class="sf">
-              <button class="pboc-btn primary sm" t-on-click="() => this.openRecord(sideNode)"><t t-out="icon('externalLink', 15)"/> Open employee record</button>
+              <button class="pboc-btn primary sm" t-on-click="() => this.openRecord(sideNode)"><t t-out="icon('external', 15)"/> Open employee record</button>
             </div>
           </aside>
         </div>

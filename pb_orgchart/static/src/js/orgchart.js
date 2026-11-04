@@ -266,10 +266,16 @@ export class PbOrgChart extends Component {
     }
 
     // ============================================================ emphasis
+    /** The hovered (or selected) person and their managers — memoised per
+     *  render key, because every card asks for it. */
     get pathIds() {
         const hl = this.state.hover || this.state.sel;
-        if (!hl || !this.idx || !this.idx.byId.has(hl)) { return null; }
-        return new Set([hl, ...ancestors(this.idx, hl).map((a) => a.id)]);
+        const key = hl + ":" + this.state.rev;
+        if (this._pathKey === key) { return this._path; }
+        this._pathKey = key;
+        this._path = (!hl || !this.idx || !this.idx.byId.has(hl)) ? null
+            : new Set([hl, ...ancestors(this.idx, hl).map((a) => a.id)]);
+        return this._path;
     }
 
     get anyFilter() {
@@ -580,9 +586,14 @@ export class PbOrgChart extends Component {
 
     setFocus(key) {
         const s = this.state;
+        const was = s.focus;
         s.focus = s.focus === key ? null : key;
         s.menu = null;
-        if (!s.focus) { return; }
+        if (!s.focus) {
+            // the lane was opened for this focus: fold it again
+            if (was === "nomgr" && s.laneOpen) { s.laneOpen = false; this._relayoutAndFit(); }
+            return;
+        }
         if (s.focus === "nomgr") { s.laneOpen = true; }
         if (s.view !== "tree" && s.view !== "lr" && s.focus === "nomgr") { s.view = "tree"; }
         // Unfold the branches that hide what the number counts.

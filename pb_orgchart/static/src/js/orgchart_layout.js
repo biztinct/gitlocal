@@ -101,7 +101,9 @@ export function buildIndex(nodes) {
     // A tree is a root with a team (loaded or not); the rest is the lane.
     const hasTeam = (n) => kids.has(n.id) || (n.nReports || 0) > 0;
     let trees = roots.filter(hasTeam);
-    let lone = roots.filter((n) => !hasTeam(n));
+    // people first, open roles after them
+    let lone = roots.filter((n) => !hasTeam(n))
+        .sort((a, b) => (a.isRole - b.isRole) || a.order - b.order);
     if (!trees.length && lone.length === 1) { trees = lone; lone = []; }
     return { byId, eff, kids, roots, depth, total, maxDepth, trees, lone,
              loneSet: new Set(lone.map((n) => n.id)) };
@@ -261,7 +263,8 @@ export function layout(idx, opts) {
     const lone = idx.lone;
     let oy = 0;
     if (lone.length) {
-        const cols = Math.max(4, Math.min(10, Math.floor((forestW || 6 * (W + GX)) / (W + GX)) || 6));
+        // as wide as the chart below it, but never a thin column: 8 to 10 cards
+        const cols = Math.max(8, Math.min(10, Math.floor(forestW / (W + GX)) || 8));
         const cap = cols * 2;
         let showN = lone.length;
         let hidden = 0;

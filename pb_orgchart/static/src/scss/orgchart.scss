@@ -286,7 +286,7 @@
         border-radius: 10px; height: 36px; padding: 0 4px;
         button { width: 30px; height: 28px; border-radius: 7px; display: grid; place-items: center; color: var(--oc-ink2);
             &:hover { background: var(--oc-p-wash); color: var(--oc-p); } }
-        .pct { font-size: 12.5px; font-weight: 600; min-width: 44px; text-align: center; color: var(--oc-ink2); cursor: pointer; }
+        .pboc-pct { display: inline-block; position: static; font-size: 12.5px; line-height: 28px; font-weight: 600; min-width: 44px; text-align: center; color: var(--oc-ink2); cursor: pointer; }
     }
     .pboc-legend {
         left: 14px; bottom: 14px; display: flex; gap: 6px; flex-wrap: wrap; max-width: 60%;
@@ -331,7 +331,8 @@
         &:hover { background: var(--oc-p-wash); }
         &.dim { opacity: .35; }
         .pboc-av { width: 30px; height: 30px; font-size: 11px; border-radius: 9px; }
-        > span { min-width: 0; flex: 1; }
+        > span:not(.pboc-av) { min-width: 0; flex: 1; }
+        .pboc-av { flex: none; }
         b { display: block; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         small { color: var(--oc-muted); font-size: 11.5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         > svg { margin-left: auto; color: var(--oc-faint); }
@@ -425,3 +426,8 @@
     }
     .pbim.pboc .pboc-float, .pbim.pboc .pboc-node .qa { display: none !important; }
 }
+
+// The floating helper pills (Ask PayAI, the coach) make every pbim page pad
+// 168–236px at the bottom so a LIST can scroll past them. A canvas tool wants
+// the room: the chart ends just above the pill instead.
+body .pbim.pbim-page.pboc { padding-bottom: 76px !important; }
