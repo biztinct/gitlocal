@@ -638,6 +638,9 @@ class PbPayrunWizard(models.AbstractModel):
             # no component marked as carrying employment status, in which case
             # the wizard shows no filter and behaves exactly as it always has.
             'statuses': self.employment_status_options(),
+            # PRS P3 (R8) — the "Kind of run" choice on the first step, shown
+            # only where pb_payruns gives the run that field.
+            'run_kinds': 'pb_run_kind' in self.env['hr.payslip.run']._fields,
         }
 
     def _eligible_employees(self, statuses=None, employee_ids=None,
@@ -842,10 +845,12 @@ class PbPayrunWizard(models.AbstractModel):
             preview = self.scheme_preview(dict(vals, formula_config_id=config_id))
             covered = preview.get('covered', covered)
             not_covered = preview.get('not_covered', 0)
-        existing = self._period_runs(ds, de, config=config)
+        kind = self._run_kind_from_vals(vals)
+        existing = self._period_runs(ds, de, config=config, kind=kind)
         blockers = self._clean_blockers(existing) if existing else []
-        adopt = self._loose_slips(ds, de, config=config) if not existing else \
-            self.env['hr.payslip']
+        # A top-up adopts nothing (see `_adopt_loose_slips`).
+        adopt = self._loose_slips(ds, de, config=config) \
+            if not existing and kind != 'topup' else self.env['hr.payslip']
         return {
             'formula_config_id': config_id,
             'covered': covered,
@@ -856,6 +861,32 @@ class PbPayrunWizard(models.AbstractModel):
                          for r in existing.sorted('id')],
             'blockers': blockers,
         }
+
+    # ---------------- Kind of run (PRS P3, owner ruling R8) ----------------
+    @api.model
+    def _run_kind_from_vals(self, vals):
+        """'topup' when the person picked Top-up, else 'regular'.
+
+        Anything that is not exactly 'topup' — no key at all (PayAI, the
+        older door, every caller before R8), or a value nobody offers — is a
+        Regular run, which is what every run was before the choice existed.
+        """
+        return 'topup' if (vals or {}).get('run_kind') == 'topup' else 'regular'
+
+    @api.model
+    def _run_kind_vals(self, kind):
+        """{'pb_run_kind': kind} where pb_payruns adds the field, else {}.
+
+        This module does not depend on pb_payruns, so the run's kind is
+        written only where it exists — the same rule as the scheme below.
+        """
+        if 'pb_run_kind' in self.env['hr.payslip.run']._fields:
+            return {'pb_run_kind': kind}
+        return {}
+
+    @api.model
+    def _run_kind_of(self, run):
+        return getattr(run, 'pb_run_kind', False) or 'regular'
 
     # ---------------- Existing-payroll detection + cleanup ----------------
     @api.model
@@ -874,7 +905,7 @@ class PbPayrunWizard(models.AbstractModel):
             ids |= set(run.slip_ids.mapped('formula_config_id').ids)
         return ids
 
-    def _period_runs(self, ds, de, config=None):
+    def _period_runs(self, ds, de, config=None, kind=None):
         """Runs in the active company set overlapping [ds, de] that have payslips.
 
         **Scoped to one scheme when the run names one.** A company running two
@@ -888,6 +919,12 @@ class PbPayrunWizard(models.AbstractModel):
         A run that names no scheme at all is still returned: it cannot be shown
         to belong to a different payroll, it may well cover the same people, and
         warning about it is the safe side of the guess.
+
+        PRS P3 (R8) — **a top-up only ever meets top-ups.** With
+        `kind='topup'` only Top-up runs are returned, so the "already exists"
+        question, *Clean and Run* (`_clean_period` is handed exactly this) and
+        the plan preview can never reach a Regular run's payslips. Any other
+        `kind` (None, 'regular') is the unchanged, kind-blind answer.
         """
         runs = self.env['hr.payslip.run'].search([
             ('date_start', '<=', de), ('date_end', '>=', ds),
@@ -904,6 +941,8 @@ class PbPayrunWizard(models.AbstractModel):
             runs = runs.filtered(lambda r: (
                 lambda cids: not cids or bool(cids & mine)
             )(set(r.slip_ids.mapped('company_id').ids)))
+        if kind == 'topup':
+            runs = runs.filtered(lambda r: self._run_kind_of(r) == 'topup')
         if not config:
             return runs
         wanted = config.id
@@ -911,10 +950,21 @@ class PbPayrunWizard(models.AbstractModel):
             lambda r: (lambda s: not s or wanted in s)(self._run_scheme_ids(r)))
 
     @api.model
-    def _exists_message(self, existing, config):
+    def _exists_message(self, existing, config, kind=None):
         """The "already exists" sentence, naming what *Clean and Run* would clear."""
         names = [r.name for r in existing if r.name][:3]
         what = config.name if config else None
+        if kind == 'topup':
+            # PRS P3 (R8): only top-ups were found, and only they are cleared.
+            lead = (_("This month’s %(scheme)s top-up already exists.",
+                      scheme=what) if what
+                    else _("This month’s top-up already exists."))
+            if names:
+                lead += ' ' + _("It is %(runs)s.", runs=', '.join(names))
+            return lead + ' ' + _(
+                "Would you like to clear it and run this top-up again? The "
+                "month’s regular run, and anything belonging to another "
+                "payroll scheme, are not touched.")
         lead = (_("This month’s %(scheme)s payroll already exists.",
                   scheme=what) if what
                 else _("This month’s payroll already exists."))
@@ -964,6 +1014,10 @@ class PbPayrunWizard(models.AbstractModel):
         of one that already exists. Nothing is recomputed: the numbers a batch
         produced are the numbers the run shows.
         """
+        # PRS P3 (R8): a top-up never claims the period's loose payslips —
+        # they are the month's regular pay, not an extra on top of it.
+        if self._run_kind_of(run) == 'topup':
+            return self.env['hr.payslip']
         config = (run.pb_formula_config_id
                   if 'pb_formula_config_id' in run._fields else None) or None
         slips = self._loose_slips(ds, de, config=config)
@@ -1043,7 +1097,9 @@ class PbPayrunWizard(models.AbstractModel):
         # did when one was not.
         config = self._scheme_from_vals(vals)
         self._check_period(ds, de)
-        existing = self._period_runs(ds, de, config=config)
+        # PRS P3 (R8): a top-up's guard and clean see top-ups only.
+        kind = self._run_kind_from_vals(vals)
+        existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
             blockers = self._clean_blockers(existing)      # PAYAI P0
             if blockers:
@@ -1059,7 +1115,7 @@ class PbPayrunWizard(models.AbstractModel):
                 }
             return {
                 'needs_confirmation': True, 'kind': 'exists',
-                'message': self._exists_message(existing, config),
+                'message': self._exists_message(existing, config, kind=kind),
             }
         if force_clean and existing:
             self._clean_period(existing)
@@ -1069,6 +1125,7 @@ class PbPayrunWizard(models.AbstractModel):
             run_vals['pb_formula_config_id'] = config.id
         if 'pb_prepared_uid' in Run._fields:
             run_vals['pb_prepared_uid'] = self.env.uid
+        run_vals.update(self._run_kind_vals(kind))
         run = Run.create(run_vals)
 
         adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
@@ -1175,8 +1232,10 @@ class PbPayrunWizard(models.AbstractModel):
 
         # Scoped to the scheme this run is for: two schemes in one month are two
         # payrolls, not a duplicate, and *Clean and Run* must never reach into
-        # the other one. See `_period_runs`.
-        existing = self._period_runs(ds, de, config=config)
+        # the other one. See `_period_runs`. PRS P3 (R8): and a top-up is
+        # scoped to top-ups, so it can never clear the month's regular run.
+        kind = self._run_kind_from_vals(vals)
+        existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
             # PAYAI P0 — approved, paid or pending payroll is never offered
             # for clearing. The answer names each run and what stands in the
@@ -1195,7 +1254,7 @@ class PbPayrunWizard(models.AbstractModel):
                 }
             return {
                 'needs_confirmation': True, 'kind': 'exists',
-                'message': self._exists_message(existing, config),
+                'message': self._exists_message(existing, config, kind=kind),
             }
         # Run the mutations as sudo: on the shared demo the acting user can create
         # and compute payslips but not *unlink* them (record rules), so cleaning a
@@ -1217,6 +1276,8 @@ class PbPayrunWizard(models.AbstractModel):
         # PAYAI P0 — who prepared it. The field existed and nothing wrote it.
         if 'pb_prepared_uid' in Run._fields:
             run_vals['pb_prepared_uid'] = self.env.uid
+        # PRS P3 (R8) — Regular or Top-up, as picked on the first step.
+        run_vals.update(self._run_kind_vals(kind))
         run = Run.create(run_vals)
 
         # Claim the period's existing payslips before computing anything, and

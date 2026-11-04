@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Demo Environment',
-    'version': '19.0.1.13.0',
+    # 1.13.1: PRS P3 (R8) — the demo Run payroll path writes the kind of
+    # run and a top-up never clears the division's regular run.
+    'version': '19.0.1.13.1',
     'category': 'Human Resources/Payroll',
     'summary': 'World-class, regenerable demo world: multilingual component library, '
                'division schemes, thousands of realistic employees and months of payroll history.',

@@ -715,3 +715,51 @@ msgstr "Danh sách Hợp đồng chưa có trên máy chủ này."
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Open the Contracts list"
 msgstr "Mở danh sách Hợp đồng"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Kind of run"
+msgstr "Loại đợt lương"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Regular"
+msgstr "Thường kỳ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Top-up"
+msgstr "Bổ sung"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Top-up: an extra run that pays a few people something on top of their normal month — a bonus, a correction, an award. Top-ups are only compared with other top-ups."
+msgstr "Bổ sung: một đợt lương thêm, trả cho một vài người một khoản ngoài lương tháng thông thường — tiền thưởng, khoản điều chỉnh, giải thưởng. Đợt bổ sung chỉ được so sánh với các đợt bổ sung khác."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "A top-up still makes a payslip for everyone this scheme covers. Remove anyone it is not for on the pay run before sending it."
+msgstr "Đợt bổ sung vẫn tạo phiếu lương cho mọi người thuộc phương án lương này. Hãy xóa những người không thuộc đợt này trên kỳ lương trước khi gửi."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This month’s %(scheme)s top-up already exists."
+msgstr "Đợt bổ sung %(scheme)s của tháng này đã tồn tại."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This month’s top-up already exists."
+msgstr "Đợt bổ sung của tháng này đã tồn tại."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Would you like to clear it and run this top-up again? The month’s regular run, and anything belonging to another payroll scheme, are not touched."
+msgstr "Bạn có muốn xóa đợt này và chạy lại đợt bổ sung không? Kỳ lương thường kỳ của tháng và mọi thứ thuộc phương án lương khác đều không bị ảnh hưởng."

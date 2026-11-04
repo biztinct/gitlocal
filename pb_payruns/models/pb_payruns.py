@@ -608,6 +608,8 @@ class PbPayruns(models.AbstractModel):
                 'division': division,
                 'division_label': division_name.get(division)
                 or run.pb_division_label or '',
+                # R8 (PRS P3): 'regular' / 'topup' — the card tags a top-up.
+                'kind': run.pb_run_kind or 'regular',
                 # Each run priced in ITS OWN company's money.
                 'company_id': run_company,
                 'currency': run_currency['symbol'],
@@ -798,6 +800,12 @@ class PbPayruns(models.AbstractModel):
                 'symbol': currency.symbol or currency.name or '',
                 'decimals': currency.decimal_places,
                 'status': self._screen_status(state, sent_back),
+                # R8 (PRS P3): a chip for a top-up; nothing for Regular.
+                'kind': ({'key': 'topup', 'label': _("Top-up"),
+                          'hint': _("An extra run on top of the normal "
+                                    "month. It is only compared with other "
+                                    "top-ups.")}
+                         if run.pb_run_kind == 'topup' else None),
             },
             'date_mismatch': self._safe(
                 lambda: self._screen_date_mismatch(run), default=None),
@@ -1022,6 +1030,10 @@ class PbPayruns(models.AbstractModel):
         the same scheme, part of the business and currency, not rejected, and
         with payslips. Nothing else is "last month": a June mid-month advance
         is not the comparison for a July end-of-month run, and neither is May.
+
+        R8 (PRS P3): and the same KIND OF RUN the person picked
+        (`pb_run_kind`, Regular / Top-up) — a top-up is never compared with a
+        full month, nor a full month with a top-up.
         """
         Run = self.env['hr.payslip.run']
         window = self._screen_month_before(run)
@@ -1038,6 +1050,9 @@ class PbPayruns(models.AbstractModel):
         if 'pb_formula_config_id' in Run._fields:
             domain.append(('pb_formula_config_id', '=',
                            run.pb_formula_config_id.id or False))
+        # R8 (PRS P3): and of the same KIND OF RUN — a top-up compares only
+        # with an approved top-up, a regular run only with a regular one.
+        domain.append(('pb_run_kind', '=', run.pb_run_kind or 'regular'))
         division = run.pb_division or ''
         kind = run._pb_kind_key()
         for candidate in Run.search(domain, order='date_end desc, id desc',
@@ -1055,6 +1070,11 @@ class PbPayruns(models.AbstractModel):
         window = self._screen_month_before(run)
         if not window:
             return _("There is nothing to compare this run with yet.")
+        if run.pb_run_kind == 'topup':
+            # R8: a top-up only ever compares with a top-up, so say which.
+            return _("There is no approved top-up for %s on this scheme, so "
+                     "there is nothing to compare with yet.",
+                     self._month_label(window[0]))
         return _("There is no approved run of the same kind for %s on this "
                  "scheme, so there is nothing to compare with yet.",
                  self._month_label(window[0]))

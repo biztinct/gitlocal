@@ -15,3 +15,5 @@ from . import test_p0_runner_gate
 from . import test_contract_period_population
 
 from . import test_application_payroll_wizard
+# PRS P3 (R8) — Regular / Top-up; a top-up never touches a Regular run.
+from . import test_run_kind

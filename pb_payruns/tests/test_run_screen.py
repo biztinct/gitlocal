@@ -918,6 +918,11 @@ class TestRunScreen(TransactionCase):
                        "//widget[@name='vu_progress_rail']"):
             self.assertTrue(arch.xpath(anchor), anchor)
         self.assertTrue(arch.xpath("//*[contains(@class, 'pb-prs-settings')]"))
+        # P3 (R8): "Kind of run" is a Run settings row, locked outside draft
+        kind = arch.xpath("//*[contains(@class, 'pb-prs-settings')]"
+                          "//field[@name='pb_run_kind']")
+        self.assertEqual(len(kind), 1)
+        self.assertEqual(kind[0].get('readonly'), "state != 'draft'")
 
     def test_t16_the_auto_hero_is_switched_off(self):
         arch = self._composed_form()
@@ -1040,3 +1045,64 @@ class TestRunScreen(TransactionCase):
         self.assertEqual(plain['journey'][1]['sub'], 'All 4 checks pass')
         self.assertEqual(plain['checks']['sub'], 'Ready to send for approval.')
 
+
+    # ======================================================== P3 (R8)
+    def test_t19_a_run_is_regular_unless_someone_says_top_up(self):
+        """R8: every run is Regular by default — no chip, no board tag — and
+        the kind can be changed only while the run is a draft."""
+        run = self._run()
+        self._slip(run, self.emp_a)
+        self.assertEqual(run.pb_run_kind, 'regular')
+        screen = self._screen(run)
+        self.assertIsNone(screen['header']['kind'])
+        run.pb_run_kind = 'topup'
+        self.assertEqual(self._screen(run)['header']['kind']['label'], 'Top-up')
+        run.pb_run_kind = 'regular'
+        run.state = 'done'
+        run.write({'pb_run_kind': 'regular'})        # the same value is fine
+        with self.assertRaises(UserError):
+            run.write({'pb_run_kind': 'topup'})
+        self.assertEqual(run.pb_run_kind, 'regular')
+
+    def test_t20_a_top_up_compares_only_with_last_months_top_up(self):
+        """R8: a top-up is compared with an APPROVED top-up of the month
+        before — never with that month's approved Regular run — and a
+        Regular run is never compared with a top-up."""
+        aug_regular = self._run('PRS August 2026', '2026-08-01', '2026-08-31',
+                                config=self.viet)
+        self._slip(aug_regular, self.emp_a, net=9000000.0)
+        self._slip(aug_regular, self.emp_b, net=5000000.0)
+        aug_regular.state = 'done'
+        sep_topup = self._run('PRS September awards', config=self.viet)
+        sep_topup.pb_run_kind = 'topup'
+        self._slip(sep_topup, self.emp_a, net=500000.0)
+
+        alone = self._screen(sep_topup)
+        self.assertIsNone(alone['compare'])
+        self.assertEqual(alone['compare_none'],
+                         'There is no approved top-up for August 2026 on this '
+                         'scheme, so there is nothing to compare with yet.')
+        self.assertFalse(alone['people']['changed_available'])
+
+        aug_topup = self._run('PRS August awards', '2026-08-01', '2026-08-31',
+                              config=self.viet)
+        aug_topup.pb_run_kind = 'topup'
+        self._slip(aug_topup, self.emp_a, net=400000.0)
+        aug_topup.state = 'done'
+        paired = self._screen(sep_topup)
+        self.assertEqual(paired['compare']['run_id'], aug_topup.id)
+        self.assertEqual(paired['compare']['change_pct'], 25.0)
+
+        sep_regular = self._run('PRS September 2026', config=self.viet)
+        self._slip(sep_regular, self.emp_a, net=9000000.0)
+        self.assertEqual(self._screen(sep_regular)['compare']['run_id'],
+                         aug_regular.id)
+
+    def test_t22_the_board_card_carries_the_kind(self):
+        regular = self._run()
+        topup = self._run('PRS September awards')
+        topup.pb_run_kind = 'topup'
+        cards = {c['id']: c for c in
+                 self.board._board_cards(regular | topup)['batches']}
+        self.assertEqual(cards[regular.id]['kind'], 'regular')
+        self.assertEqual(cards[topup.id]['kind'], 'topup')

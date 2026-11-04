@@ -59,6 +59,11 @@ PB_STAGE_NAME = dict(PB_STATES)
 #: rejected run is an outcome, not a stage on the way somewhere.
 PB_BOARD_STATES = ('draft', 'approval_pending', 'done')
 
+#: PRS P3 (R8) — the two kinds of pay run. Regular is every run made before
+#: this existed; a top-up pays a few people something extra in a month that
+#: already has its regular run.
+PB_RUN_KINDS = [('regular', 'Regular'), ('topup', 'Top-up')]
+
 #: The payslip state a run in each state expects. Slips wait in the standard
 #: "Waiting" state while an approval is open, so the bank export — which filters
 #: on slip state ``done`` — can never see a run nobody has approved.
@@ -333,6 +338,23 @@ class HrPayslipRun(models.Model):
     # structure-based payroll.
     pb_division_label = fields.Char(
         string='Division (label)', compute='_compute_pb_division', store=True)
+
+    # PRS P3 (owner ruling R8, 2026-11-04) — what KIND of run this is, said
+    # by the person who made it. No existing field could tell a top-up from a
+    # full month (P2 follow-up 1: payobook's top-up / awards / bonus runs carry
+    # the same scheme and the same scheme cycle type as the full month), so
+    # "Compared with" set a bonus run against the whole month. Picked in the
+    # Run payroll wizard, changeable on the run while it is a draft (the
+    # write guard below holds that rule server-side too). Existing runs are
+    # Regular: the column is created with its default, nothing else is
+    # backfilled. Deliberately NOT the scheme map's `cycle_type`
+    # (`_pb_kind_key`), which still chooses the approval route.
+    pb_run_kind = fields.Selection(
+        PB_RUN_KINDS, string='Kind of run', default='regular', required=True,
+        tracking=False,
+        help="Top-up: an extra run that pays a few people something on top "
+             "of their normal month — a bonus, a correction, an award. "
+             "Top-ups are only compared with other top-ups.")
 
     @api.depends('slip_ids.formula_config_id')
     def _compute_pb_division(self):
@@ -692,6 +714,16 @@ class HrPayslipRun(models.Model):
             raise AccessError(_(
                 "A pay run's approval status can only change through Submit "
                 "for approval, an approval decision, or Reject."))
+        # PRS P3 (R8): the kind of run is a draft-time choice, like every
+        # other run setting. Changing it afterwards would change what an
+        # approved run is compared with, after the approver saw it.
+        if 'pb_run_kind' in vals:
+            locked = self.filtered(lambda r: r.state != 'draft'
+                                   and r.pb_run_kind != vals['pb_run_kind'])
+            if locked:
+                raise UserError(_(
+                    "The kind of run can only be changed while the pay run "
+                    "is a draft."))
         return super().write(vals)
 
     # ==================================================================

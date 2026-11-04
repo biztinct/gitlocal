@@ -328,7 +328,7 @@
           <span t-attf-class="pbr-mg lg is-{{ hue(b) }}" t-esc="mono(b)"/>
           <div class="pbr-ct-txt">
             <div class="pbr-nm" t-esc="b.name"/>
-            <div class="pbr-pd"><t t-esc="b.period"/><span t-if="b.credit_note" class="pbr-k">refund</span></div>
+            <div class="pbr-pd"><t t-esc="b.period"/><span t-if="b.credit_note" class="pbr-k">refund</span><span t-if="b.kind === 'topup'" class="pbr-k topup">Top-up</span></div>
           </div>
         </div>
         <div class="pbr-money"><span class="l">Net pay</span><span class="v num" t-att-class="{ cn: b.credit_note }" t-esc="runMoney(b)"/></div>
@@ -459,6 +459,8 @@
           <div class="pbr-steps3">
             <div t-foreach="peekSteps(b)" t-as="s" t-key="s.key" t-attf-class="s {{ s.cls }}"><span class="k" t-esc="s.n"/><t t-esc="s.title"/></div>
           </div>
+          <!-- PRS P3 (R8): one line for a top-up; nothing for Regular. -->
+          <p t-if="b.kind === 'topup'" class="pbr-pline kind"><span class="ic" t-out="ic('plus', 13)"/> Kind of run: Top-up</p>
           <p t-if="b.state === 'cancel'" class="pbr-pline rose">Rejected<t t-if="b.reject_by"> by <t t-esc="b.reject_by"/></t>: <span t-esc="b.reject_note"/></p>
           <p t-elif="b.state === 'draft' and !b.return_note and !b.ready" class="pbr-pline">Still being prepared. When the figures are right, submit it and it goes to its sign-off route.</p>
           <!-- NAV P3b: the card's checklist in full sentences, owners named in full. -->

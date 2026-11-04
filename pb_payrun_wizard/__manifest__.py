@@ -2,7 +2,10 @@
 {
     'name': 'Payobook Run Payroll Wizard',
     'summary': 'Guided multi-step Run Payroll cockpit (Select period → Compute → Review → Approve)',
-    'version': '19.0.1.39.0',
+    # 1.40.0: PRS P3 (R8) — "Kind of run" on the first step; a top-up's
+    # period guard and Clean and Run see top-ups only, and it adopts no
+    # loose payslips. Regular runs behave exactly as before.
+    'version': '19.0.1.40.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -115,6 +115,13 @@
             </xpath>
             <xpath expr="//sheet/group/label[@for='date_start']" position="before">
                 <field name="name" string="Run name"/>
+                <!-- PRS P3 (R8): Regular / Top-up. A draft-time choice like
+                     every other setting here (the model refuses a change
+                     after the draft too); "Compared with" pairs runs of the
+                     same kind only. -->
+                <field name="pb_run_kind" widget="radio"
+                       options="{'horizontal': true}"
+                       readonly="state != 'draft'"/>
             </xpath>
             <xpath expr="//sheet/group/label[@for='date_start']" position="attributes">
                 <attribute name="string">Work dates</attribute>

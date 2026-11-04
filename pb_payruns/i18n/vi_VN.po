@@ -2582,6 +2582,7 @@ msgstr "Mọi kiểm tra đều đạt"
 #. module: pb_payruns
 #. odoo-python
 #: code:addons/pb_payruns/models/pb_payruns.py:0
+#: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_run_kind
 msgid "Kind of run"
 msgstr "Loại đợt lương"
 
@@ -4761,3 +4762,47 @@ msgstr "Tính lại %(n)s phiếu lương?"
 #: code:addons/pb_payruns/models/pb_payruns.py:0
 msgid "Open Contracts › To check"
 msgstr "Mở Hợp đồng › Cần kiểm tra"
+
+#. module: pb_payruns
+#: model:ir.model.fields.selection,name:pb_payruns.selection__hr_payslip_run__pb_run_kind__regular
+msgid "Regular"
+msgstr "Thường kỳ"
+
+#. module: pb_payruns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+#: model:ir.model.fields.selection,name:pb_payruns.selection__hr_payslip_run__pb_run_kind__topup
+#: model_terms:ir.ui.view,arch_db:pb_payruns.view_hr_payslip_run_kanban_pb
+msgid "Top-up"
+msgstr "Bổ sung"
+
+#. module: pb_payruns
+#: model:ir.model.fields,help:pb_payruns.field_hr_payslip_run__pb_run_kind
+msgid "Top-up: an extra run that pays a few people something on top of their normal month — a bonus, a correction, an award. Top-ups are only compared with other top-ups."
+msgstr "Bổ sung: một đợt lương thêm, trả cho một vài người một khoản ngoài lương tháng thông thường — tiền thưởng, khoản điều chỉnh, giải thưởng. Đợt bổ sung chỉ được so sánh với các đợt bổ sung khác."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "The kind of run can only be changed while the pay run is a draft."
+msgstr "Chỉ có thể đổi loại đợt lương khi kỳ lương còn là bản nháp."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "There is no approved top-up for %s on this scheme, so there is nothing to compare with yet."
+msgstr "Chưa có đợt bổ sung đã duyệt cho %s trong phương án lương này, nên chưa có gì để so sánh."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "An extra run on top of the normal month. It is only compared with other top-ups."
+msgstr "Một đợt lương thêm ngoài lương tháng thông thường. Đợt này chỉ được so sánh với các đợt bổ sung khác."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Kind of run: Top-up"
+msgstr "Loại đợt lương: Bổ sung"

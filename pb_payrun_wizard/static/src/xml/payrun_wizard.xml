@@ -122,11 +122,36 @@
                                 <div><label>From</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_start" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_start',ev)"/></div>
                                 <div><label>To</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_end" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_end',ev)"/></div>
                             </div>
+                            <!-- PRS P3 (R8) — Regular / Top-up, shown only
+                                 where the run has the field (pb_payruns). -->
+                            <t t-if="state.defaults and state.defaults.run_kinds">
+                                <label id="pw-kind-l">Kind of run</label>
+                                <div class="pw-kind" role="radiogroup" aria-labelledby="pw-kind-l">
+                                    <button type="button" role="radio"
+                                            t-att-aria-checked="runKind === 'regular' ? 'true' : 'false'"
+                                            t-attf-class="pw-kind__opt {{ runKind === 'regular' ? 'on' : '' }}"
+                                            t-on-click="() => this.setRunKind('regular')">
+                                        <span class="pw-kind__dot"/>Regular
+                                    </button>
+                                    <button type="button" role="radio"
+                                            t-att-aria-checked="runKind === 'topup' ? 'true' : 'false'"
+                                            t-attf-class="pw-kind__opt {{ runKind === 'topup' ? 'on' : '' }}"
+                                            t-on-click="() => this.setRunKind('topup')">
+                                        <span class="pw-kind__dot"/>Top-up
+                                    </button>
+                                </div>
+                                <p class="pw-kind__help">Top-up: an extra run that pays a few people something on top of their normal month — a bonus, a correction, an award. Top-ups are only compared with other top-ups.</p>
+                                <p t-if="runKind === 'topup'" class="pw-kind__note">
+                                    <span class="pw-kind__ic" t-out="ic('info',14)"/>
+                                    <span>A top-up still makes a payslip for everyone this scheme covers. Remove anyone it is not for on the pay run before sending it.</span>
+                                </p>
+                            </t>
                         </div>
                         <div class="pw-sec" data-coach="pw-summary">
                             <h4>Scope</h4>
                             <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
                             <div class="pw-kv"><span>Currency</span><b t-esc="moneyLabel"/></div>
+                            <div class="pw-kv" t-if="state.defaults.run_kinds and runKind === 'topup'"><span>Kind of run</span><b>Top-up</b></div>
                             <div class="pw-kv" t-if="chosenScheme"><span>Payroll scheme</span><b t-esc="chosenScheme.name"/></div>
                             <div class="pw-kv" t-elif="divInfo and !hasSchemePicker"><span>Configuration</span><b t-esc="divInfo.config"/></div>
                             <!-- VALUEKIND P4 — who this run covers. Shown only

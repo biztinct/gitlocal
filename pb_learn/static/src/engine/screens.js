@@ -1051,6 +1051,7 @@ export const SCREENS = {
                     <input class="lrn-in" value="${esc(tx(RUN.name))}" readonly="readonly"/>
                     <div class="lrn-kv2"><span>${esc(tx(B("From", "Từ")))}</span><b>${esc(RUN.from)}</b></div>
                     <div class="lrn-kv2"><span>${esc(tx(B("To", "Đến")))}</span><b>${esc(RUN.to)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Kind of run", "Loại đợt lương")))}</span><b>${esc(tx(B("Regular", "Thường kỳ")))}</b></div>
                 </div>
                 <div class="lrn-panel" data-coach="pw-summary">
                     <h3>${ic("target")}${esc(tx(B("Scope", "Phạm vi")))}</h3>

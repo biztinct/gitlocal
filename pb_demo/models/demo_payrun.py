@@ -301,6 +301,12 @@ class PbPayrunWizardDemo(models.AbstractModel):
         # preserves the Mid-Cycle Advance run.
         division_runs = self._period_config_runs(ds, de, end_cfg).filtered(
             lambda r: getattr(r, 'is_demo', False))
+        # PRS P3 (R8): a top-up only ever meets top-ups — the division's
+        # regular run is never offered for clearing, never cleared.
+        kind = self._run_kind_from_vals(vals)
+        if kind == 'topup':
+            division_runs = division_runs.filtered(
+                lambda r: self._run_kind_of(r) == 'topup')
         if division_runs and not force_clean:
             n = len(division_runs)
             return {
@@ -327,6 +333,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
             run_vals['pb_formula_config_id'] = end_cfg.id
         if 'pb_prepared_uid' in Run._fields:
             run_vals['pb_prepared_uid'] = self.env.uid      # PAYAI P0
+        run_vals.update(self._run_kind_vals(kind))          # PRS P3 (R8)
         run = Run.create(run_vals)
 
         cmap = self._division_contracts(key, m_end)
@@ -491,6 +498,12 @@ class PbPayrunWizardDemo(models.AbstractModel):
         # real payroll data even on the same division/period.
         division_runs = self._period_config_runs(ds, de, end_cfg).filtered(
             lambda r: getattr(r, 'is_demo', False))
+        # PRS P3 (R8): a top-up only ever meets top-ups — the division's
+        # regular run is never offered for clearing, never cleared.
+        kind = self._run_kind_from_vals(vals)
+        if kind == 'topup':
+            division_runs = division_runs.filtered(
+                lambda r: self._run_kind_of(r) == 'topup')
         if division_runs and not force_clean:
             n = len(division_runs)
             return {
@@ -521,6 +534,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
             run_vals['pb_formula_config_id'] = end_cfg.id
         if 'pb_prepared_uid' in Run._fields:
             run_vals['pb_prepared_uid'] = self.env.uid      # PAYAI P0
+        run_vals.update(self._run_kind_vals(kind))          # PRS P3 (R8)
         run = Run.create(run_vals)
 
         cmap = self._division_contracts(key, m_end)

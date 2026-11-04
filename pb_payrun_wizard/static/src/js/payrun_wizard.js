@@ -271,6 +271,10 @@ export class PayrunWizard extends Component {
                 // which case nothing is asked and the step reads as it always
                 // did.
                 formula_config_id: 0,
+                // PRS P3 (R8) — Regular (the default) or Top-up. Sent with
+                // the run as `run_kind`; a top-up's period guard and clean
+                // see top-ups only, and it adopts no loose payslips.
+                run_kind: "regular",
             },
             // What picking a scheme showed: how many people it covers and who
             // it leaves out, both known BEFORE anything is created.
@@ -617,6 +621,14 @@ export class PayrunWizard extends Component {
     get stepKey() { return this.stepKeys[this.state.step - 1] || "period"; }
     gotoKey(k) { const i = this.stepKeys.indexOf(k); if (i >= 0) { this.state.step = i + 1; } }
     back() { if (this.state.step > 1) { this.state.step -= 1; } }
+
+    // PRS P3 (R8) — the "Kind of run" choice on the first step.
+    get runKind() {
+        return this.state.form.run_kind === "topup" ? "topup" : "regular";
+    }
+    setRunKind(kind) {
+        this.state.form.run_kind = kind === "topup" ? "topup" : "regular";
+    }
 
     onField(f, ev) {
         const automaticName = this.chosenScheme

@@ -115,10 +115,24 @@ R6. (2026-11-04) "Compared with" counts only an APPROVED (done) run of the
     yet. (P2 follow-up 1: the approved-only half is built. NO existing field
     tells a top-up apart — payobook's top-up / awards / bonus runs carry the
     same scheme and the same scheme cycle type as the full month — so the
-    top-up half waits for a decision; see PRS_P2_REPORT "Follow-up 1".)
+    top-up half waits for a decision; see PRS_P2_REPORT "Follow-up 1".
+    2026-11-04: decided and built as R8 — "Kind of run" on the run.)
 R7. (2026-11-04) "Recalculate everyone" and bulk Recalculate ask first:
     "Recalculate 63 payslips? Their figures may change." (1/N variants), OK
     "Recalculate", cancel "Not now". Not a danger style.
+R8. (2026-11-04) A pay run has a **Kind of run**: Regular (default) or
+    Top-up (`hr.payslip.run.pb_run_kind`, pb_payruns 19.0.3.5.0). Picked on
+    the Run payroll wizard's first step, changeable on the run while it is a
+    draft (view `readonly` AND a server write guard). "Compared with" (R5/R6)
+    pairs only runs of the same kind: a top-up compares only with an APPROVED
+    top-up of the month before. Existing runs stay Regular; NO backfill on any
+    database. Safety rail (PRS P3, built): choosing Top-up never cleans,
+    deletes or adopts payslips from a Regular run — a top-up's period guard,
+    Clean and Run and plan preview see top-ups only, and a top-up adopts no
+    loose payslips (base wizard AND pb_demo's override, PRS-G31). Regular
+    behaviour is unchanged (it still sees every run of the month, top-ups
+    included — an owner question in PRS_P3_REPORT). The kind is NOT the scheme
+    map's cycle type (`_pb_kind_key`), which still chooses the approval route.
 
 ## The ten view layers on the pay run form (verified 2026-11-03, rize)
 
@@ -277,3 +291,23 @@ PRS-G30. (P2, testing) The payobook QA account may not create pay runs ("This
         is no run waiting for approval in the demo world, so the empty-run and
         pending moments (B2, B3) cannot be walked there without submitting a
         demo run. They are covered by T2/T5 and the local smoke test.
+PRS-G31. (P3) pb_demo OVERRIDES `prepare_run` and `create_and_compute` on the
+        Run payroll wizard (`pb_demo/models/demo_payrun.py`) and, for a demo
+        division, never calls super(): it has its own "already exists" guard
+        and its own Clean and Run over `_period_config_runs`. Any rule added
+        to the base wizard's guard / clean / run values must be mirrored there
+        or it does not hold on payobook.com (demo world). P3 mirrors the kind
+        filter and the kind value through the base helpers
+        `_run_kind_from_vals` / `_run_kind_vals` / `_run_kind_of`. pb_demo
+        depends on pb_payrun_wizard, so `-u pb_payrun_wizard` upgrades it too
+        on payobook (the only DB where it is installed).
+PRS-G32. (P3) Every `data-coach="…"` in a template pb_learn scans (the Run
+        payroll wizard's XML is one) must be registered in
+        `pb_learn/static/src/anchors.json`, or pb_learn's anchor lint
+        (`test_anchor_registry`, direction 3) fails. Do not add a coach anchor
+        to a control unless a lesson needs it; P3 added none.
+PRS-G33. (P3) "Kind of run" was already translated "Loại đợt lương" in
+        pb_payruns (the approval route's kind label), so the new field and the
+        wizard use that, not the handover's "Loại kỳ lương" (C9: match what
+        the .po already says). "Regular" = "Thường kỳ" (65 of 82 .po files),
+        "Top-up" = "Bổ sung".

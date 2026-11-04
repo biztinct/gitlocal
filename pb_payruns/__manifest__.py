@@ -23,7 +23,11 @@
     # 3.4.2: PRS P2 follow-up 1 — full-width centred screen, cards sized to
     # content, "Checks pass · N notes", R6 approved-only compare, R7 asks
     # before Recalculate.
-    'version': '19.0.3.4.3',
+    # 3.5.0: PRS P3 (R8) — "Kind of run" (Regular / Top-up) on the run:
+    # Run settings row, header chip, board tag + quick look line; "Compared
+    # with" pairs runs of the same kind only. New stored column (default
+    # Regular, no backfill).
+    'version': '19.0.3.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

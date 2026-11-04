@@ -198,6 +198,8 @@
     .pbr-nm { font-size: 13.5px; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -.005em; }
     .pbr-pd { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 2px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
     .pbr-k { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--rose); background: var(--rose-soft); border-radius: 5px; padding: 1px 6px; }
+    /* PRS P3 (R8): a top-up run's tag, in the division chips' violet */
+    .pbr-k.topup { color: var(--i600); background: var(--i-soft); }
     .pbr-ck { position: absolute; top: 10px; right: 10px; width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--line2); background: #fff; display: grid; place-items: center; color: #fff; opacity: 0; transition: opacity .14s, background .14s, border-color .14s; z-index: 1; cursor: pointer; padding: 0; }
     .pbr-card:hover .pbr-ck, .pbr-card.sel .pbr-ck, .pbr-board.selecting .pbr-ck { opacity: 1; }
     .pbr-card.sel .pbr-ck { background: var(--i); border-color: var(--i); }
@@ -429,6 +431,7 @@
     .pbr-pline { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
     .pbr-pline.amber { color: var(--amber); font-weight: 700; } .pbr-pline.amber span { color: var(--ink); font-weight: 600; }
     .pbr-pline.rose { color: var(--rose); font-weight: 700; } .pbr-pline.rose span { color: var(--ink); font-weight: 600; }
+    .pbr-pline.kind { color: var(--i600); font-weight: 700; display: flex; align-items: center; gap: 6px; }
     .pbr-fig { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .pbr-fig .f { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; min-width: 0; }
     .pbr-fig .f .k { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
