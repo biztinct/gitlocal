@@ -209,6 +209,26 @@ class TestOrgChartP3(TransactionCase):
         self.assertIn('already been sent', res.get('error') or '')
         self.assertEqual(self.mgr(self.s[0]), self.h1, "nothing live before approval")
 
+    def test_05b_withdrawn_plan_is_a_draft_again(self):
+        """Found in the browser on rize: a withdrawn plan stayed "Waiting
+        for approval" with no request behind it (G23)."""
+        if not self.laid:
+            self.skipTest("no orgplan route")
+        p = self.open_plan()
+        self.ok(self.oc().plan_add_change(p['plan_id'], {
+            'kind': 'move', 'employee_id': self.s[0].id, 'to_manager_id': self.h2.id}))
+        self.submit(p['plan_id'])
+        plan = self.plan(p['plan_id'])
+        req = self.env['biz.approval.request'].sudo().search(
+            [('res_model', '=', 'pb.orgchart.plan'), ('res_id', '=', plan.id)])
+        self.env['biz.approval.engine'].with_user(self.hr).cancel(req.id, 'changed my mind')
+        plan.invalidate_recordset()
+        self.assertEqual(plan.state, 'draft')
+        res = self.ok(self.oc().plan_add_change(p['plan_id'], {
+            'kind': 'move', 'employee_id': self.s[1].id, 'to_manager_id': self.h2.id}))
+        self.assertEqual(res['n'], 2, "editable again")
+        self.assertEqual(self.mgr(self.s[0]), self.h1, "nothing went live")
+
     # ------------------------------------------------------------------ 6
     def test_06_approve_today_applies(self):
         if not self.laid:

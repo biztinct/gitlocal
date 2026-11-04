@@ -606,14 +606,15 @@
         .pboc-live.plan { color: var(--oc-amber); font-weight: 600; }
         .pboc-note { margin-top: 10px; }
         .pboc-sugprev { margin-top: 10px; border: 1px solid var(--oc-line); border-radius: 12px; padding: 6px 10px;
-            .row { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; padding: 5px 0; font-size: 12.5px;
-                svg { color: var(--oc-faint); }
+            // never `.row`: Bootstrap's grid row makes every child 100% wide
+            .pboc-sr { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; padding: 5px 0; font-size: 12.5px;
+                b { display: inline; font-weight: 650; } svg { color: var(--oc-faint); flex: none; }
                 small { flex-basis: 100%; color: var(--oc-muted); font-size: 11.5px; margin-top: -2px; } }
-            .row + .row { border-top: 1px solid var(--oc-line); }
+            .pboc-sr + .pboc-sr { border-top: 1px solid var(--oc-line); }
             .more { display: block; color: var(--oc-muted); padding: 4px 0 2px; } }
         .pboc-sugleft { margin-top: 10px; font-size: 12.5px;
             > b { display: block; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--oc-faint); margin-bottom: 4px; }
-            .row { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; color: var(--oc-ink2); }
+            .pboc-sr { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; color: var(--oc-ink2); }
             .num { min-width: 28px; text-align: right; font-weight: 700; color: var(--oc-amber); } }
     }
 

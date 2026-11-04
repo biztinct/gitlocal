@@ -178,7 +178,7 @@ export class PbOcDialog extends Component {
         if (after >= WIDE) {
             out.push({ k: "wide", warn: true, t: _t("%(m)s will have %(n)s direct reports — that is a wide span.", { m: m.name, n: after }) });
         }
-        out.push({ k: "keep", t: _t("Coach, time-off approver and expense approver stay as they are — change them on the employee record if they should follow.") });
+        out.push({ k: "keep", t: _t("Leave and expense approvals stay with whoever approves them now — change them on the employee record when you mean to.") });
         out.push({ k: "rec", t: _t("It is recorded on each employee record — the History tab shows who changed it and when.") });
         return out;
     }
@@ -298,7 +298,7 @@ export class PbOcDialog extends Component {
             ? _t("Once approved, the changes are made on the employee records on %(d)s.", { d: this.pdateLabel })
             : _t("Once approved, the changes are made on the employee records straight away.");
         out.push(when);
-        out.push(_t("Coach, time-off approver and expense approver stay as they are. Each move shows on the person's History tab."));
+        out.push(_t("Leave and expense approvals stay with whoever approves them now. Each move shows on the person's History tab."));
         return out;
     }
 
@@ -351,8 +351,8 @@ export class PbOcDialog extends Component {
         const d = this.d;
         const s = this.state;
         switch (d.kind) {
-            case "move": return _t("Move now");
-            case "many": return _t("Move %(n)s people", { n: this.many.length });
+            case "move": return this.chart.inPlan ? _t("Add to plan") : _t("Move now");
+            case "many": return this.chart.inPlan ? _t("Add to plan") : _t("Move %(n)s people", { n: this.many.length });
             case "changemgr": return this.p.isRole ? _t("Move the role") : _t("Continue");
             case "pickmgr": return _t("Move %(n)s people", { n: this.many.length });
             case "dotted": return _t("Save dotted line");

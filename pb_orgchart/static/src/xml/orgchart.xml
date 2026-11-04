@@ -646,14 +646,14 @@
               </div>
               <div t-if="sugPreview.length" class="pboc-sugprev">
                 <t t-foreach="sugPreview" t-as="sp" t-key="sp.employee_id">
-                  <div class="row"><b t-esc="sp.name"/><t t-out="icon('arrowRight', 13)"/><b t-esc="sp.to_name"/><small t-esc="sp.why"/></div>
+                  <div class="pboc-sr"><b t-esc="sp.name"/><t t-out="icon('arrowRight', 13)"/><b t-esc="sp.to_name"/><small t-esc="sp.why"/></div>
                 </t>
                 <small t-if="sugMore" class="more" t-esc="sugMore"/>
               </div>
               <div t-if="sugReasons.length" class="pboc-sugleft">
                 <b>Left for you to place</b>
                 <t t-foreach="sugReasons" t-as="sr" t-key="sr_index">
-                  <div class="row"><span class="num" t-esc="sr.n"/><span t-esc="sr.why"/></div>
+                  <div class="pboc-sr"><span class="num" t-esc="sr.n"/><span t-esc="sr.why"/></div>
                 </t>
               </div>
               <small class="pboc-live">You can drag anyone afterwards — this is a starting point, not a decision. It goes into your plan; nothing is live until you publish.</small>

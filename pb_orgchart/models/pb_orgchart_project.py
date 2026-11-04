@@ -410,9 +410,11 @@ class PbOrgChartProject(models.AbstractModel):
             hide = {r[0] for r in self.env.cr.fetchall()}
         view = dict(view, hide=hide, ref_day=day)
         n_plans = len(plans)
+        dlabel = format_date(self.env, day, date_format='d MMM y')
         return view, {
             'as_of': fields.Date.to_string(day),
-            'as_of_note': (_("Showing the chart on %(d)s · %(n)s approved plans, announced leavers and "
+            'as_of_note': _("Showing the chart on %(d)s · announced leavers and accepted offers up to that day",
+                            d=dlabel) if not n_plans else (_("Showing the chart on %(d)s · %(n)s approved plans, announced leavers and "
                              "accepted offers up to that day", d=format_date(self.env, day, date_format='d MMM y'),
                              n=n_plans) if n_plans != 1 else
                            _("Showing the chart on %(d)s · 1 approved plan, announced leavers and "
@@ -928,6 +930,7 @@ class PbOrgChartProject(models.AbstractModel):
                                  "placed in your plan."))
             out = self._plan_payload(plan)
             out.update(ok=True, added=added, skipped=skipped,
-                       label=_("%(n)s suggested changes added to your plan", n=added))
+                       label=_("1 suggested change added to your plan") if added == 1 else
+                       _("%(n)s suggested changes added to your plan", n=added))
             return out
         return self._plan_run(go)

@@ -2123,8 +2123,8 @@ msgstr "nhóm đông (10+)"
 #. module: pb_orgchart
 #. odoo-javascript
 #: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
-msgid "Coach, time-off approver and expense approver stay as they are — change them on the employee record if they should follow."
-msgstr "Người hướng dẫn, người duyệt nghỉ phép và người duyệt chi phí vẫn giữ nguyên — hãy đổi trên hồ sơ nhân viên nếu cần thay theo."
+msgid "Leave and expense approvals stay with whoever approves them now — change them on the employee record when you mean to."
+msgstr "Việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận — hãy đổi trên hồ sơ nhân viên khi bạn thật sự muốn."
 
 #. module: pb_orgchart
 #. odoo-python
@@ -2428,8 +2428,8 @@ msgstr "Thay đổi trong kế hoạch"
 #. module: pb_orgchart
 #. odoo-javascript
 #: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
-msgid "Coach, time-off approver and expense approver stay as they are. Each move shows on the person's History tab."
-msgstr "Người hướng dẫn, người duyệt nghỉ phép và người duyệt chi phí giữ nguyên. Mỗi lần chuyển được ghi ở thẻ Lịch sử của người đó."
+msgid "Leave and expense approvals stay with whoever approves them now. Each move shows on the person's History tab."
+msgstr "Việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận. Mỗi lần chuyển được ghi ở thẻ Lịch sử của người đó."
 
 #. module: pb_orgchart
 #. odoo-javascript
@@ -3358,3 +3358,27 @@ msgstr "“%(n)s” · %(s)s · áp dụng %(d)s. Sơ đồ sẽ trông như th�
 #: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
 msgid "“%(n)s” · %(s)s."
 msgstr "“%(n)s” · %(s)s."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Add to plan"
+msgstr "Thêm vào kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "1 suggested change added to your plan"
+msgstr "Đã thêm 1 thay đổi được gợi ý vào kế hoạch của bạn"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Showing the chart on %(d)s · announced leavers and accepted offers up to that day"
+msgstr "Sơ đồ vào ngày %(d)s · người sắp nghỉ và ứng viên đã nhận việc tính đến ngày đó"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Withdrawn. The plan is a draft again — change it and send it again, or discard it."
+msgstr "Đã rút lại. Kế hoạch trở lại bản nháp — hãy sửa rồi gửi lại, hoặc hủy."

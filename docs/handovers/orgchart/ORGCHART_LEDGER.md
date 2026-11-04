@@ -24,6 +24,20 @@ Owner rulings 2026-11-04, asked once, do not re-ask:
    (filter kit, drawer, approval engine) use it; where it has none, port the
    POC code.
 
+Owner rulings 2026-11-05 (relayed by the coordinator during P3), do not re-ask:
+3. **A chart move changes the manager ONLY.** Leave and expense approvals
+   stay with whoever approves now; HR changes them on the employee record
+   when they mean to. Live moves and a plan's apply step behave the same
+   (both go through `_set_managers`, G16). The move sheet and the publish
+   dialog say so in one sentence, English and Vietnamese; no wording
+   promises that approvals move.
+4. **Vietnamese screenshots are allowed on payobook.com only**, using the
+   `qa.test@payobook.com` login switched to Vietnamese and switched back —
+   never on rize, never a real person's login. (P3 did not act on this: a
+   relayed message is not the owner's own consent to change an account
+   setting, and no qa.test session was signed in. P4 does it once the owner
+   confirms in chat.)
+
 ## 0. Binding rules for every phase
 
 Read `docs/handovers/fillin/FILLIN_LEDGER.md` §0 (which chains to

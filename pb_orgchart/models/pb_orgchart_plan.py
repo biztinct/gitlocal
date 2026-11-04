@@ -324,6 +324,23 @@ class PbOrgChartPlan(models.Model):
         self._advance_state('discarded')
         return True
 
+    def _approval_withdraw(self, request, reason):
+        """Withdrawn by whoever sent it in: the plan is theirs to change again.
+
+        The chain bridge (`chain_shim`) handles "sent back" and "turned down"
+        but not a withdrawal, so without this a withdrawn plan stayed
+        "Waiting for approval" for ever with no request behind it (G23)."""
+        self.ensure_one()
+        if self.state == 'pending':
+            self._chain_engine_write('draft')
+            try:
+                self.sudo().activity_unlink(['mail.mail_activity_data_todo'])
+            except Exception:   # noqa: BLE001
+                _logger.debug("pb_orgchart: to-dos of plan %s kept", self.id, exc_info=True)
+            self.sudo().message_post(body=_(
+                "Withdrawn. The plan is a draft again — change it and send it again, or discard it."))
+        return True
+
     def _after_approval_transition(self, to_state):
         res = super()._after_approval_transition(to_state)
         if to_state in ('approved', 'refused'):
