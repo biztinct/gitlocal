@@ -394,3 +394,42 @@ the closeout as an owner question, not into a phase.
   in ~4 s — Undo toasts are 10 s. The chart component is reachable for
   measurements by walking `odoo.__WOWL_DEBUG__.root.__owl__` children to the
   `PbOrgChart` instance.
+* G22 (P3): **`filter_deploy.sh` switches a NEW scheduled job off.** It
+  snapshots which jobs are on before the upgrade and restores exactly that
+  list afterwards, so a job a module adds comes out inactive on every database
+  where it was not already present (P3's "Org chart: make approved plans live"
+  was off on three of four). After the first deploy of a module that adds a
+  job, switch it on by hand (`update ir_cron set active = true where id =
+  (select res_id from ir_model_data where module=… and name=…)`), log it in the
+  deploy notes, and expect the job counts to rise by one.
+* G23 (P3): **the approval chain bridge has no "withdrawn" hook.** `chain_shim`
+  maps "sent back" and "turned down" onto the record's status but not a
+  withdrawal (`engine.cancel` → `record._approval_withdraw`), so a chain record
+  withdrawn from the inbox stays in its "sent in" status for ever with no
+  request behind it. Plans now go back to draft (`_approval_withdraw` in
+  `pb_orgchart_plan.py`, test 05b). The other chain consumers very likely share
+  the gap — engine owner item.
+* G24 (P3): **never name a class `row` inside a pbim screen.** Bootstrap's grid
+  `.row > *` makes every child 100 % wide (`flex-shrink: 0; width: 100%`); the
+  suggest dialog's rows stacked one word per line. Use a module prefix
+  (`pboc-sr`).
+* G25 (P3): **there is no "people" responsibility in the approval catalogue.**
+  The plan route asks `lifecycle` ("HR lifecycle team", the seat that already
+  decides contract extensions), step titled "HR team". The seed copies the
+  company's contract-extension route's independence setting, so rize (one
+  login, independence off by owner ruling) can decide its own plans.
+  payobook's "SG Company" has no lifecycle holder, so no route was laid there
+  (same as its extension route); sending a plan there tries to lay it and
+  otherwise refuses with a sentence.
+* G26 (P3): **a new company is given an HR lifecycle holder automatically** (the
+  approval configuration seeds one on company create). A test that creates its
+  own responsibility for a new company hits the overlap constraint — reuse the
+  seat and change its holder.
+* G27 (P3): **`_()` needs an env in its frame.** A module-level helper or a
+  generator expression has none ("no translation language detected", string
+  not translated). Use `env._()` in helpers and hoist the translated string out
+  of comprehensions.
+* G28 (P3): **the browser tool may refuse an Approve click** (its safety
+  check). Apply-on-approval was proved by unit tests (06, 07, 08, 11); in the
+  browser the request was opened, read and withdrawn. Do not route around the
+  refusal with a script.
