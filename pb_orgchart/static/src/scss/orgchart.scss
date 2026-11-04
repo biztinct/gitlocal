@@ -191,8 +191,10 @@
         background-image: radial-gradient(circle, var(--oc-line2) 1px, transparent 1.2px); background-size: 22px 22px;
         &[data-grab] { cursor: grabbing; }
     }
-    .pboc-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;
-        &[data-anim] { transition: transform .35s var(--oc-ease); } }
+    // P4: moved by a paused Web Animation (never an inline style, G15)
+    .pboc-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+    // P4 virtual canvas: every card's box in one path, under the mounted cards
+    .pboc-edges path.pboc-skel { fill: #F1F2F8; stroke: none; }
     .pboc-edges { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none;
         path { fill: none; stroke: var(--oc-line2); stroke-width: 1.6; transition: stroke .2s; }
         path.hi { stroke: var(--oc-p); stroke-width: 2.2; }
@@ -211,9 +213,9 @@
         &[data-hl] { border-color: var(--oc-p); box-shadow: 0 0 0 2px var(--oc-p-ring); }
         &[data-hl][data-st~="dim"] { opacity: 1; }
         &[data-hl][data-st~="sel"] { box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); }
-        // off-screen cards skip style and layout work (most of a 650-card chart)
-        .top { content-visibility: auto; contain-intrinsic-size: auto 186px auto 48px; }
-        .tags { content-visibility: auto; contain-intrinsic-size: auto 186px auto 22px; }
+        // P4: no `content-visibility` here any more — only cards near the
+        // viewport are mounted, and the browser re-judged every card's
+        // visibility on every pan frame
         &[data-st~="dim"] { opacity: .25; }
         &.open { border-style: dashed; border-color: var(--oc-amber-line); background: #FFFCF2; }
         .top { display: flex; gap: 10px; align-items: flex-start; }
@@ -656,13 +658,50 @@
 
 // ------------------------------------------------------------ print: the chart alone
 @media print {
-    body * { visibility: hidden !important; }
-    .pbim.pboc .pboc-canvas, .pbim.pboc .pboc-canvas * { visibility: visible !important; }
-    .pbim.pboc .pboc-canvas {
+    html:not([data-pboc-print]) body * { visibility: hidden !important; }
+    html:not([data-pboc-print]) .pbim.pboc .pboc-canvas, html:not([data-pboc-print]) .pbim.pboc .pboc-canvas * { visibility: visible !important; }
+    html:not([data-pboc-print]) .pbim.pboc .pboc-canvas {
         position: fixed !important; inset: 0 !important; border: 0 !important; box-shadow: none !important;
         background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
     .pbim.pboc .pboc-float, .pbim.pboc .pboc-qa { display: none !important; }
+}
+
+// ------------------------------------------------------------ P4: the PDF
+// The print view is drawn by the template (hidden) and copied onto a sheet
+// that sits straight on <body> for the print only; `html[data-pboc-print]`
+// and the `@page` size are set for that one print and taken off after.
+.pbim.pboc .pboc-print-src { display: none !important; }
+.pboc-print-host { display: none; }
+@media print {
+    html[data-pboc-print], html[data-pboc-print] body {
+        height: auto !important; overflow: visible !important; background: #fff !important;
+    }
+    html[data-pboc-print] body > *:not(.pboc-print-host) { display: none !important; }
+    html[data-pboc-print] .pboc-print-host {
+        display: block !important; color: #1B1733; font-size: 10.5pt; line-height: 1.35;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .pboc-print-host {
+        .pboc-pp { break-after: page; page-break-after: always; }
+        .pboc-pp:last-child { break-after: auto; page-break-after: auto; }
+        header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #E4E5F1;
+            i { width: 14px; height: 14px; border-radius: 4px; margin-top: 18px; flex: none; }
+            small { color: #6F6B86; font-size: 9pt; font-weight: 600; letter-spacing: .02em; }
+            h2 { margin: 2px 0 2px; font-size: 18pt; font-weight: 700; letter-spacing: -.01em; }
+            span { color: #6F6B86; font-size: 9.5pt; } }
+        table { width: 100%; border-collapse: collapse; }
+        thead { display: table-header-group; }
+        th { text-align: left; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .05em; color: #6F6B86; padding: 5px 8px; border-bottom: 1px solid #D6D7E8; }
+        td { padding: 5px 8px; border-bottom: 1px solid #EEEFF6; vertical-align: top; }
+        tr { break-inside: avoid; }
+        tr.lead td { font-weight: 700; background: #F6F4FC; }
+        tr.chg td:first-child { box-shadow: inset 3px 0 0 #B45309; }
+        td small { color: #6F6B86; font-weight: 400; }
+        td.num { text-align: right; }
+        i.role { color: #B45309; font-style: normal; font-weight: 600; }
+        footer { margin-top: 10px; color: #9D99B4; font-size: 8.5pt; }
+    }
 }
 
 // The floating helper pills (Ask PayAI, the coach) make every pbim page pad

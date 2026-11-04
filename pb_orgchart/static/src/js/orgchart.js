@@ -34,6 +34,7 @@ import {
 } from "@pb_orgchart/js/orgchart_layout";
 import { installEdit, personNode, roleNode, starterNode } from "@pb_orgchart/js/orgchart_edit";
 import { installPlan } from "@pb_orgchart/js/orgchart_plan";
+import { installExport, takeArrival } from "@pb_orgchart/js/orgchart_export";
 import { PbOcDialog } from "@pb_orgchart/js/orgchart_dialog";
 
 const ICONS = new Map();
@@ -48,6 +49,13 @@ function icon(name, size = 16) {
 const MIN_FIT = 0.42;     // G3: never shrink below readable
 const WIDE = 10;
 const BIG_DRAW = 400;     // fold more when a first draw would exceed this
+// P4 — the virtual canvas: above VIRT_MIN cards only the ones whose box is
+// within MARGIN screen pixels of the viewport are mounted; the rest are drawn
+// as one skeleton <path> under the cards, so the shape is there while panning.
+const VIRT_MIN = 150;
+const MARGIN = 400;
+const VIS_IDLE = 140;     // ms after the last pan/zoom move: re-work what is mounted
+const GLIDE_MS = 350;
 
 /**
  * One card. Its own component so that a page of 650 cards re-renders only the
@@ -117,6 +125,9 @@ export class PbOrgChart extends Component {
             // P3: the plan on screen (the server's plan payload), the redo
             // depth, the time machine (days from today) and the Plans menu
             plan: null, redoN: 0, asOf: 0, asOfDraft: 0, timeBusy: false, plans: null,
+            // P4: an export in flight ("png" | "csv"), the PDF print view, the
+            // virtual canvas's revision (bumped when the mounted set changes)
+            exporting: null, printPdf: false, visRev: 0,
         });
         this._setupEdit();
         this._setupPlan();
@@ -133,12 +144,19 @@ export class PbOrgChart extends Component {
         this.perf = { payloadMs: 0, layoutMs: 0, renderMs: 0 };
         this._t0 = 0;
         this._pendingFit = false;
+        // P4: what a ⌘K row or a shared link asked for — applied once
+        this._arrival = takeArrival(this.props.arrival);
+        this._vis = null;
+        this._visT = 0;
+        this._worldTf = "";
+        this._glide = null;
 
         onWillStart(() => this.load());
         onMounted(() => {
             this._bind();
             this._afterDraw();
             if (this.root.el) { this.root.el.focus({ preventScroll: true }); }
+            if (this._arrival) { this._arrivalAfterLoad(); }
         });
         onPatched(() => this._afterDraw());
         onWillUnmount(() => this._unbind());
@@ -153,6 +171,7 @@ export class PbOrgChart extends Component {
     async load(opts = {}) {
         const keep = !!(opts.keep && this.data);
         this.state.failed = false;
+        if (!keep && !this.data && this._arrival) { this._arrivalBeforeLoad(); }
         const t = performance.now();
         let d = null;
         try {
@@ -160,6 +179,16 @@ export class PbOrgChart extends Component {
         } catch (e) {
             console.warn("pb_orgchart: chart failed", e);
             d = null;
+        }
+        if (!keep && d && d.error && (this.state.plan || this.state.asOf) && !opts.retried) {
+            // a shared link named a plan this reader may not open: say so and
+            // show today's chart instead of an error page
+            this.notif.add(d.error, { type: "warning" });
+            this.state.plan = null;
+            this.state.asOf = 0;
+            this.state.asOfDraft = 0;
+            if (this._arrival) { this._arrival.plan = null; this._arrival.asOf = null; }
+            return this.load({ retried: true });
         }
         if (!d || d.error) {
             if (keep) {
@@ -336,6 +365,82 @@ export class PbOrgChart extends Component {
         }
         this.cards = out;
         this._cardMap = new Map(out.map((c) => [c.id, c]));
+        // a redraw of a big chart mounts what the current view shows at once
+        // (the render that follows picks it up; no second render)
+        if (this.virtual && this._vis) { this._updateVisible(true); }
+    }
+
+    // ======================================================= virtual canvas
+    /** True when the chart is big enough to mount only what is in view. */
+    get virtual() { return this.cards.length > VIRT_MIN; }
+
+    /** The cards that are mounted: all of them on a small chart. */
+    get visibleCards() {
+        void this.state.visRev;
+        if (!this.virtual) { return this.cards; }
+        // the first draw of a big chart: the skeleton only, until the canvas
+        // has a size and the view has been fitted (then `_updateVisible`)
+        if (!this._vis) { return []; }
+        const key = this.state.rev + ":" + this.state.visRev;
+        if (this._visKey !== key) {
+            this._visKey = key;
+            this._visList = this.cards.filter((c) => this._vis.has(c.id));
+        }
+        return this._visList;
+    }
+
+    /** One <path> with every card's box: the shape while cards mount. */
+    get skeletonD() {
+        if (!this.virtual) { return ""; }
+        if (this._skRev !== this.state.rev) {
+            this._skRev = this.state.rev;
+            this._skD = this.cards.map((c) => `M${c.x} ${c.y}h${c.w}v${c.h}h${-c.w}z`).join("");
+        }
+        return this._skD;
+    }
+
+    /**
+     * Work out which cards should be mounted for the current viewport (plus
+     * MARGIN px each side), and re-render only when that set changed. Called
+     * after a draw and VIS_IDLE ms after the last pan or zoom move — never per
+     * frame: mounting is a DOM insertion, which on this app re-checks the whole
+     * page's styles (G12).
+     */
+    _updateVisible(silent = false) {
+        clearTimeout(this._visT);
+        if (!this.lay || !this.canvasView || !this.canvasRef.el) { return; }
+        if (!this.virtual) {
+            if (this._vis) { this._vis = null; this.state.visRev++; }
+            return;
+        }
+        const cv = this._canvasRect();
+        const z = this.vp.zoom || 1;
+        const x0 = (-this.vp.px - MARGIN) / z;
+        const y0 = (-this.vp.py - MARGIN) / z;
+        const x1 = (cv.width - this.vp.px + MARGIN) / z;
+        const y1 = (cv.height - this.vp.py + MARGIN) / z;
+        const keep = new Set();
+        for (const c of this.cards) {
+            if (c.x + c.w >= x0 && c.x <= x1 && c.y + c.h >= y0 && c.y <= y1) { keep.add(c.id); }
+        }
+        // whoever is selected, hovered or picked stays mounted (keyboard
+        // travel, the pill, the pick marks)
+        for (const id of [this.state.sel, this._hover, ...(this.picked || [])]) {
+            if (id && this._cardMap && this._cardMap.has(id)) { keep.add(id); }
+        }
+        const old = this._vis;
+        let same = !!old && old.size === keep.size;
+        if (same) { for (const id of keep) { if (!old.has(id)) { same = false; break; } } }
+        if (same) { return; }
+        this._vis = keep;
+        if (!silent) { this.state.visRev++; }
+        if (this.root.el) { this.root.el.dataset.mounted = keep.size; }
+    }
+
+    _visLater() {
+        if (!this.virtual) { return; }
+        clearTimeout(this._visT);
+        this._visT = setTimeout(() => this._updateVisible(), VIS_IDLE);
     }
 
     get moreTile() {
@@ -959,31 +1064,6 @@ export class PbOrgChart extends Component {
     }
 
     // ---- export / print
-    exportCsv() {
-        this.state.menu = null;
-        const esc = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
-        const head = [_t("Name"), _t("Title"), _t("Team"), _t("Reports to"), _t("Location"), _t("Employment"), _t("Joined")];
-        const lines = [head.map(esc).join(",")];
-        const rows = this.nodes.slice().sort((a, b) =>
-            (this.idx.depth.get(a.id) - this.idx.depth.get(b.id)) || a.order - b.order);
-        for (const n of rows) {
-            const m = this.idx.eff.get(n.id);
-            const mgr = m ? this.idx.byId.get(m) : null;
-            lines.push([this.nameOf(n), n.title, n.dept, mgr ? this.nameOf(mgr) : "", n.loc,
-                        n.isRole ? "" : n.type, n.joined || ""].map(esc).join(","));
-        }
-        const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        const d = new Date();
-        const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-        a.download = `org-chart-${day}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-        this.notif.add(_t("Spreadsheet saved with %(n)s rows.", { n: this.fmtInt(rows.length) }), { type: "success" });
-    }
-
     printChart() {
         this.state.menu = null;
         setTimeout(() => window.print(), 50);
@@ -1052,18 +1132,52 @@ export class PbOrgChart extends Component {
     leadNote(g, n) { return g.lead === n ? _t(" · leads the team") : ""; }
 
     // ========================================================= pan & zoom
+    /** The canvas box, measured once per draw or resize — never per pan frame
+     *  (a measure right after a move forces the page's style work). */
     _canvasRect() {
         const el = this.canvasRef.el;
-        return el ? el.getBoundingClientRect() : { width: 800, height: 600, left: 0, top: 0 };
+        if (!el) { return { width: 800, height: 600, left: 0, top: 0 }; }
+        if (!this._cvRect || this._cvEl !== el) {
+            this._cvRect = el.getBoundingClientRect();
+            this._cvEl = el;
+        }
+        return this._cvRect;
     }
 
+    /**
+     * Move the world. P4: never an inline style — a paused Web Animation whose
+     * keyframes are rewritten (P2's ghost trick, G15): an inline transform
+     * re-checked the page's styles on every pan frame (42 ms at 657 cards,
+     * 70 ms at 1,500). A glide (`anim`) is a short animation played over the
+     * paused one and dropped when it ends.
+     */
     applyTransform(anim) {
         const w = this.worldRef.el;
         if (!w) { return; }
-        if (anim) { w.dataset.anim = "1"; } else if (w.dataset.anim) { delete w.dataset.anim; }
-        w.style.transform = `translate(${this.vp.px}px,${this.vp.py}px) scale(${this.vp.zoom})`;
-        if (this.pctRef.el) { this.pctRef.el.textContent = Math.round(this.vp.zoom * 100) + "%"; }
+        const tf = `translate(${this.vp.px}px,${this.vp.py}px) scale(${this.vp.zoom})`;
+        if (this._glide) {
+            if (!anim) { this._glide.cancel(); this._glide = null; }
+        }
+        if (anim && this._worldTf && this._worldTf !== tf && this._worldEl === w) {
+            let from = this._worldTf;
+            if (this._glide) {
+                try { from = getComputedStyle(w).transform; } catch { /* keep the last one */ }
+                this._glide.cancel();
+            }
+            const g = w.animate([{ transform: from }, { transform: tf }],
+                                { duration: GLIDE_MS, easing: "cubic-bezier(.2,.8,.2,1)" });
+            this._glide = g;
+            g.onfinish = () => { if (this._glide === g) { this._glide = null; g.cancel(); } };
+        }
+        if (this._worldTf !== tf || this._worldEl !== w) {
+            this._slide(w, tf);
+            this._worldTf = tf;
+            this._worldEl = w;
+        }
+        const pct = Math.round(this.vp.zoom * 100) + "%";
+        if (this.pctRef.el && this.pctRef.el.textContent !== pct) { this.pctRef.el.textContent = pct; }
         this._drawViewport();
+        this._visLater();
     }
 
     fit(anim = true) {
@@ -1183,6 +1297,7 @@ export class PbOrgChart extends Component {
     }
 
     _afterDraw() {
+        this._cvRect = null;
         if (this.state.loaded && this._t0) {
             this.perf.renderMs = Math.round(performance.now() - this._t0);
             this._t0 = 0;
@@ -1210,6 +1325,7 @@ export class PbOrgChart extends Component {
             this._pendingCenter = null;
             this.centerOn(id);
         }
+        this._updateVisible();
     }
 
     // ===================================================== global listeners
@@ -1260,7 +1376,7 @@ export class PbOrgChart extends Component {
             if (cv) { delete cv.dataset.grab; }
         };
         this._onKey = (e) => this.onKey(e);
-        this._onResize = () => this._drawViewport();
+        this._onResize = () => { this._cvRect = null; this._drawViewport(); this._visLater(); };
         root.addEventListener("wheel", this._onWheel, { passive: false });
         root.addEventListener("keydown", this._onKey);
         document.addEventListener("pointerdown", this._onDown, true);
@@ -1279,6 +1395,8 @@ export class PbOrgChart extends Component {
         window.removeEventListener("pointermove", this._onMove);
         window.removeEventListener("pointerup", this._onUp);
         window.removeEventListener("resize", this._onResize);
+        clearTimeout(this._visT);
+        if (this._glide) { this._glide.cancel(); this._glide = null; }
     }
 
     onKey(e) {
@@ -1358,5 +1476,6 @@ export class PbOrgChart extends Component {
 
 installEdit(PbOrgChart);
 installPlan(PbOrgChart);
+installExport(PbOrgChart);
 
 registry.category("actions").add("pb_orgchart", PbOrgChart);

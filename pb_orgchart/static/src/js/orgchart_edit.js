@@ -641,6 +641,7 @@ class OcEdit {
             case "focusteam": this.focusTeam(n.id); break;
             case "record": this.openRecord(n); break;
             case "rmvirtual": this.removeVirtual(n); break;
+            case "branchpng": this.exportBranch(n.id); break;
         }
     }
 
@@ -731,6 +732,10 @@ class OcEdit {
                         sub: _t("Everyone under %(p)s, the rest folded", { p: n.name }) });
         }
         rows.push({ k: "record", ic: "external", label: _t("Open employee record") });
+        if (team && this.canvasView) {
+            rows.push({ k: "branchpng", ic: "image", label: _t("Export this branch as a picture"),
+                        sub: _t("%(p)s and everyone under them, as drawn", { p: n.name }) });
+        }
         if (w && m) {
             rows.push({ hr: true, k: "hr2" });
             rows.push({ k: "unassign", ic: "userX", label: _t("Remove from %(m)s's team", { m: m.name }),

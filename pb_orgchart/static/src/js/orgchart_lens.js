@@ -25,4 +25,7 @@ registry.category(PEOPLE_LENSES).add("orgchart", {
     title: _t("Org chart · who reports to whom"),
     Component: PbOrgChart,
     groups: EMPLOYEE_GATE,
+    // P4: ⌘K rows say what they meant ("me", "plan", "suggest") in the
+    // arrival payload; the shell hands it only to a lens that asks for it.
+    wantsArrival: true,
 }, { sequence: 30 });

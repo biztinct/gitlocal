@@ -48,25 +48,28 @@
             <div class="pboc-sub"><strong t-esc="headline"/><span> · </span><t t-esc="subline"/></div>
           </div>
           <div class="pboc-actions">
-            <button t-if="data.me" class="pboc-btn outline" t-on-click="() => this.findMe()" title="Centre the chart on you">
+            <button t-if="data.me" class="pboc-btn outline" data-coach="oc-findme" t-on-click="() => this.findMe()" title="Centre the chart on you">
               <t t-out="icon('crosshair')"/> Find me
             </button>
-            <span class="pboc-cw">
+            <span class="pboc-cw" data-coach="oc-export">
               <button class="pboc-btn outline" t-on-click="() => this.toggleMenu('export')">
-                <t t-out="icon('download')"/> Export <t t-out="icon('chevronDown', 14)"/>
+                <span t-if="state.exporting" class="pboc-mini-spin"/><t t-else="" t-out="icon('download')"/> Export <t t-out="icon('chevronDown', 14)"/>
               </button>
               <div t-if="state.menu === 'export'" class="pboc-menu">
-                <h6>Export</h6>
-                <button disabled="disabled"><t t-out="icon('image', 17)"/><span><b>Picture (PNG)</b><small>Coming soon</small></span></button>
-                <button disabled="disabled"><t t-out="icon('printer', 17)"/><span><b>PDF · one page per team</b><small>Coming soon</small></span></button>
-                <button t-on-click="() => this.exportCsv()"><t t-out="icon('fileSpreadsheet', 17)"/><span><b>Spreadsheet</b><small>Name, title, team, manager, location</small></span></button>
+                <h6 t-if="state.plan">Export this plan</h6>
+                <h6 t-else="">Export</h6>
+                <button t-att-disabled="state.exporting" t-on-click="() => this.exportPng()"><t t-out="icon('image', 17)"/><span><b>Picture (PNG)</b>
+                  <small t-if="state.plan">The plan as drawn — outlines and where people came from</small>
+                  <small t-else="">What you see now, at print quality</small></span></button>
+                <button t-att-disabled="state.exporting" t-on-click="() => this.exportPdf()"><t t-out="icon('printer', 17)"/><span><b>PDF · one page per team</b><small>Opens your print dialog — choose Save as PDF</small></span></button>
+                <button t-att-disabled="state.exporting" t-on-click="() => this.exportCsv()"><t t-out="icon('fileSpreadsheet', 17)"/><span><b>Spreadsheet</b><small>Everyone — name, title, team, manager, location</small></span></button>
                 <hr/>
-                <button disabled="disabled"><t t-out="icon('link', 17)"/><span><b>Share a read-only link</b><small>Coming soon</small></span></button>
+                <button t-on-click="() => this.copyLink()"><t t-out="icon('link', 17)"/><span><b>Copy a link to this view</b><small>For anyone in the company who can see the chart</small></span></button>
                 <button t-on-click="() => this.printChart()"><t t-out="icon('printer', 17)"/><span><b>Print</b><small>The chart as you see it now</small></span></button>
               </div>
             </span>
             <!-- P3: the Plans menu and the primary slot (Plan changes / Publish) -->
-            <span t-if="data.may_write" class="pboc-cw">
+            <span t-if="data.may_write" class="pboc-cw" data-coach="oc-plans">
               <button class="pboc-btn outline" t-on-click="() => this.togglePlans()" title="Your plans, and plans waiting for approval">
                 <t t-out="icon('listChecks')"/> Plans <span t-if="myDraft and !state.plan" class="pboc-dotb"/> <t t-out="icon('chevronDown', 14)"/>
               </button>
@@ -94,10 +97,10 @@
               </div>
             </span>
             <t t-if="data.may_write and !state.asOf">
-              <button t-if="inPlan" class="pboc-btn primary" t-att-disabled="!planN or state.writing" t-on-click="() => this.openPublish()">
+              <button t-if="inPlan" class="pboc-btn primary" data-coach="oc-publish" t-att-disabled="!planN or state.writing" t-on-click="() => this.openPublish()">
                 <t t-out="icon('send')"/> Publish changes <span class="pboc-badge num" t-esc="planN"/>
               </button>
-              <button t-elif="!state.plan" class="pboc-btn primary" t-att-disabled="state.writing" t-on-click="() => this.startPlan()" title="Try changes on a copy of the chart, then send them for approval">
+              <button t-elif="!state.plan" class="pboc-btn primary" data-coach="oc-plan" t-att-disabled="state.writing" t-on-click="() => this.startPlan()" title="Try changes on a copy of the chart, then send them for approval">
                 <t t-out="icon('pencil')"/> Plan changes
               </button>
             </t>
@@ -105,7 +108,7 @@
         </div>
 
         <!-- ============================== the six numbers ============================== -->
-        <div class="pboc-kpis">
+        <div class="pboc-kpis" data-coach="oc-kpis">
           <div class="pboc-kpi" title="Average number of direct reports per manager">
             <span class="bd p"><t t-out="icon('users', 18)"/></span>
             <span><b class="num" t-esc="avgSpan"/><small>per manager</small></span>
@@ -125,7 +128,7 @@
 
         <!-- ============================== toolbar ============================== -->
         <div class="pboc-bar">
-          <div class="pboc-search">
+          <div class="pboc-search" data-coach="oc-search">
             <t t-out="icon('search')"/>
             <input t-ref="search" placeholder="Find a person, title or team…" autocomplete="off"
                    t-att-value="state.q" t-on-input="onSearchInput" t-on-keydown="onSearchKey"/>
@@ -168,7 +171,7 @@
           </span>
 
           <span class="pboc-grow"/>
-          <div class="pboc-seg">
+          <div class="pboc-seg" data-coach="oc-views">
             <t t-foreach="viewOptions" t-as="vo" t-key="vo.k">
               <button t-att-class="state.view === vo.k ? 'on' : ''" t-att-title="vo.title" t-on-click="() => this.setView(vo.k)">
                 <t t-out="icon(vo.ic, 15)"/> <t t-esc="vo.label"/>
@@ -181,7 +184,7 @@
         </div>
 
         <!-- ============================== P3 bars ============================== -->
-        <div t-if="inPlan" class="pboc-draftbar">
+        <div t-if="inPlan" class="pboc-draftbar" data-coach="oc-draftbar">
           <t t-out="icon('pencil', 18)"/>
           <span class="grow"><b>Planning mode.</b> Nothing you do here changes the real chart until you publish. <t t-esc="planBarText"/></span>
           <button class="pboc-btn outline sm" t-on-click="() => this.showChanges()"><t t-out="icon('list', 15)"/> See changes</button>
@@ -203,11 +206,12 @@
 
         <!-- ============================== stage ============================== -->
         <div t-att-class="'pboc-stage' + (sideNode or showChangesPanel ? ' has-side' : '')">
-          <div class="pboc-canvas" t-ref="canvas" aria-label="Organisation chart">
+          <div class="pboc-canvas" t-ref="canvas" aria-label="Organisation chart" data-coach="oc-canvas">
 
             <t t-if="state.view === 'tree' or state.view === 'lr'">
               <div t-att-class="'pboc-world' + (state.view === 'lr' ? ' lr' : '') + (cards.length > 150 ? ' calm' : '')" t-ref="world">
                 <svg class="pboc-edges" t-att-width="worldSize.w" t-att-height="worldSize.h">
+                  <path t-if="virtual" class="pboc-skel" t-att-d="skeletonD"/>
                   <t t-foreach="[state.rev]" t-as="rv" t-key="rv">
                     <g class="pboc-edges-g">
                       <t t-foreach="edgeList" t-as="ed" t-key="ed.id">
@@ -226,7 +230,7 @@
                   </h5>
                 </div>
                 <div class="pboc-nodes" t-ref="nodes" t-on-mouseleave="() => this.onLeave()" t-on-contextmenu="onContextMenu">
-                  <t t-foreach="cards" t-as="c" t-key="c.id">
+                  <t t-foreach="visibleCards" t-as="c" t-key="c.id">
                     <PbOcCard c="c" cls="cardClass(c)" flags="cardState(c)" st="cardStyle(c)" color="colorOf(c.n)"
                               busy="state.branchBusy === c.id" lr="state.view === 'lr'" api="api"/>
                   </t>
@@ -258,7 +262,7 @@
                 </div>
                 <button class="pboc-btn outline sm icon" title="Expand all (E)" t-on-click="() => this.expandAll()"><t t-out="icon('expand')"/></button>
                 <button class="pboc-btn outline sm icon" title="Collapse to the top two levels (C)" t-on-click="() => this.collapseAll()"><t t-out="icon('shrink')"/></button>
-                <span class="pboc-cw">
+                <span class="pboc-cw" data-coach="oc-time">
                   <button t-att-class="'pboc-btn outline sm pboc-timebtn' + (state.asOf ? ' on' : '')" t-att-disabled="state.plan ? 'disabled' : false"
                           t-att-title="state.plan ? 'Leave planning mode to use the time machine' : 'See the chart as at another date'"
                           t-on-click="() => this.toggleTime()">
@@ -312,7 +316,7 @@
                 <t t-out="icon('move', 14)"/> <t t-if="inPlan">Drop on the new manager · added to your planned changes</t><t t-else="">Drop on the new manager · takes effect straight away</t>
               </div>
 
-              <div t-if="state.pickN" class="pboc-float pboc-pickbar">
+              <div t-if="state.pickN" class="pboc-float pboc-pickbar" data-coach="oc-pickbar">
                 <span class="n"><t t-out="icon('users', 15)"/> <t t-esc="pickLine"/></span>
                 <button class="pboc-btn primary sm" t-att-disabled="state.writing" t-on-click="() => this.openPickMgr()"><t t-out="icon('move', 14)"/> Set manager…</button>
                 <button class="pboc-btn sm clr" t-on-click="() => this.pickClear()">Clear</button>
@@ -390,7 +394,7 @@
           </div>
 
           <!-- ============================== side panel ============================== -->
-          <aside t-if="sideNode" class="pboc-side">
+          <aside t-if="sideNode" class="pboc-side" data-coach="oc-side">
             <div class="sh">
               <h3><t t-out="icon(sideNode.isRole ? 'briefcase' : 'user', 17)"/> <t t-if="sideNode.isRole">Open role</t><t t-else="">Person</t></h3>
               <span class="pboc-sh-acts">
@@ -485,7 +489,7 @@
             </div>
             <div t-else="" class="sf ro"><t t-out="icon('lock', 14)"/> <t t-esc="sideReadOnlyLine"/></div>
           </aside>
-          <aside t-elif="showChangesPanel" class="pboc-side pboc-chgside">
+          <aside t-elif="showChangesPanel" class="pboc-side pboc-chgside" data-coach="oc-changes">
             <!-- ============ P3: the planned changes (a sibling of the person panel: no comment between them) ============ -->
             <div class="sh">
               <h3><t t-out="icon('pencil', 17)"/> <t t-if="inPlan">Planned changes</t><t t-else="" t-esc="state.plan.name"/></h3>
@@ -549,6 +553,33 @@
       </div>
 
       <PbOcDialog t-if="state.dlg" dlg="state.dlg" chart="this" t-key="state.dlg.seq"/>
+
+      <!-- ============ P4: the PDF's print view (copied to a body-level sheet when printing) ============ -->
+      <div t-if="state.printPdf" class="pboc-print-src" aria-hidden="true">
+        <t t-foreach="printTeams" t-as="pt" t-key="pt.k">
+          <section class="pboc-pp">
+            <header>
+              <i t-attf-style="background:{{pt.color}}"/>
+              <div><small t-esc="printHead"/><h2 t-esc="pt.name"/><span><t t-esc="pt.sub"/> · <t t-esc="exportSubline"/></span></div>
+            </header>
+            <table>
+              <thead><tr><th>Person</th><th>Title</th><th>Reports to</th><th>Location</th><th>Direct</th></tr></thead>
+              <tbody>
+                <t t-foreach="pt.rows" t-as="pr" t-key="pr.id">
+                  <tr t-att-class="(pr.lead ? 'lead' : '') + (pr.changed ? ' chg' : '')">
+                    <td><i t-if="pr.n.isRole" class="role">Open role</i><t t-else="" t-esc="pr.name"/><small t-esc="pr.note"/></td>
+                    <td t-esc="pr.title"/>
+                    <td t-esc="pr.mgr"/>
+                    <td t-esc="pr.loc"/>
+                    <td class="num" t-esc="pr.direct"/>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+            <footer t-esc="exportFooter"/>
+          </section>
+        </t>
+      </div>
 
       <t t-if="state.drawerEmpId and drawerCmp"
          t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>

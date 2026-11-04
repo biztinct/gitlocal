@@ -31,13 +31,17 @@ WHAT THIS MODULE ADDS
     last year, or forward to see approved plans, leavers and new starters.
   * SUGGEST A CHART: for a company where few managers are set, a starting
     chart worked out from the team records, ready to adjust and send.
-  * SPREADSHEET AND PRINT: the chart as a list of names, titles, teams,
-    managers and locations, or printed as you see it.
+  * EXPORT AND SHARE: a picture of the whole chart or one team, ready for a
+    slide; a PDF with one page per team; a spreadsheet of everyone with
+    their title, team, manager and location; a link that opens the same
+    view for a colleague who can see the chart; print as you see it.
+  * QUICK SEARCH: Org chart, Who reports to me?, Plan org chart changes and
+    Suggest a chart are in the ⌘K search.
 
 Only HR users can change the chart; everyone else sees it read-only. Every
 change is recorded on the employee record.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -67,8 +71,11 @@ change is recorded on the employee record.
             'pb_orgchart/static/src/js/orgchart_edit.js',
             'pb_orgchart/static/src/js/orgchart_dialog.js',
             'pb_orgchart/static/src/js/orgchart_plan.js',
+            'pb_orgchart/static/src/js/orgchart_arrival.js',
+            'pb_orgchart/static/src/js/orgchart_export.js',
             'pb_orgchart/static/src/js/orgchart.js',
             'pb_orgchart/static/src/js/orgchart_lens.js',
+            'pb_orgchart/static/src/js/orgchart_palette.js',
             'pb_orgchart/static/src/xml/orgchart.xml',
         ],
     },

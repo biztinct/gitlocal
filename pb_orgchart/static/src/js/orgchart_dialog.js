@@ -29,7 +29,10 @@ export class PbOcDialog extends Component {
             mode: "existing", only: false, title: "", reason: "growth",
             // P3: the publish dialog's fields, the suggestion
             pname: "", pdate: "", pnote: "", sug: null, sugFailed: false,
+            // P4: who approves the person's leave and expenses today (move sheet)
+            appr: null,
         });
+        if (d.kind === "move") { this.loadApprovers(); }
         if (d.kind === "publish") {
             const pl = this.chart.state.plan || {};
             this.state.pname = pl.name || "";
@@ -178,9 +181,37 @@ export class PbOcDialog extends Component {
         if (after >= WIDE) {
             out.push({ k: "wide", warn: true, t: _t("%(m)s will have %(n)s direct reports — that is a wide span.", { m: m.name, n: after }) });
         }
-        out.push({ k: "keep", t: _t("Leave and expense approvals stay with whoever approves them now — change them on the employee record when you mean to.") });
+        out.push({ k: "keep", t: this.approversLine });
         out.push({ k: "rec", t: _t("It is recorded on each employee record — the History tab shows who changed it and when.") });
         return out;
+    }
+
+    /** Owner ruling 3 (2026-11-05): a move changes the manager ONLY. Say who
+     *  keeps approving, by name when the record says. */
+    async loadApprovers() {
+        const p = this.p;
+        if (!p || !p.empId) { return; }
+        try {
+            this.state.appr = await this.chart.orm.call("pb.orgchart", "approvers_of", [p.empId]);
+        } catch (e) {
+            console.warn("pb_orgchart: approvers unknown", e);
+        }
+    }
+
+    get approversLine() {
+        const a = this.d.kind === "move" ? this.state.appr || {} : {};
+        const leave = a.leave || "";
+        const exp = a.expense || "";
+        if (leave && exp === leave) {
+            return _t("Leave and expense approvals stay with %(a)s — change them on the employee record if they should move.", { a: leave });
+        }
+        if (leave && exp) {
+            return _t("Leave approvals stay with %(a)s and expense approvals with %(b)s — change them on the employee record if they should move.", { a: leave, b: exp });
+        }
+        if (leave) {
+            return _t("Leave approvals stay with %(a)s, and expense approvals with whoever approves them now — change them on the employee record if they should move.", { a: leave });
+        }
+        return _t("Leave and expense approvals stay with whoever approves them now — change them on the employee record if they should move.");
     }
 
     get manyNames() {
