@@ -34,7 +34,7 @@
     # replica strips and the division lesson follow the screens.
     # 20.8.5: FILLIN P2 — the practice contract panel shows a Yes / No answer
     # as a word and one "Filled in by Payobook · not checked" tag (JS only).
-    'version': '19.0.20.8.6',
+    'version': '19.0.20.8.7',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

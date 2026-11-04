@@ -415,7 +415,9 @@ KINDS = {
 ANCHOR_RE = re.compile(
     r'"((?:pw|pk|ps|im|iw|lg|rep|fs|st|sr|ig|dash|pa|pe|ct|in|ex|wa|gr'
     # LEARN REFRESH step 3 (setup) and step 4 (the wider app).
-    r'|bp|mp|tr|am|rd|gp|ai|pp|dr|hi|nj|ex2|pr|gw|cl|wf|ac|cp)'
+    r'|bp|mp|tr|am|rd|gp|ai|pp|dr|hi|nj|ex2|pr|gw|cl|wf|ac|cp'
+    # ORG CHART (2026-11-05): People › Org chart (pb_orgchart).
+    r'|oc)'
     r'-[a-z0-9][a-z0-9-]*)"')
 
 

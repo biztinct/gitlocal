@@ -136,6 +136,10 @@ SCREEN_ACTION_TAGS = {
     # The Runs board grounds by its place (Pay Run › Runs); the tag covers the
     # standalone door /bizapp/action-pb_payruns, which showed no Guide (LR80).
     'payruns': 'pb_payruns',
+    # ORG CHART (2026-11-05): People › Org chart grounds by its place
+    # (pb_people_hub:orgchart); the tag covers the standalone door
+    # pb_orgchart.action_pb_orgchart, which the sidebar does not carry.
+    'orgchart': 'pb_orgchart',
     # LEARN REFRESH step 3 — the setup cockpits a Settings card opens. None of
     # them has a sidebar leaf (they live behind Settings), so the action tag is
     # how the helper knows one is on screen. The Records Desk is also a tab

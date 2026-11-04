@@ -1995,6 +1995,80 @@
       "file": "pb_people/static/src/xml/people.xml",
       "desc": "The per-row Contract button: opens that person's contract drawer without leaving the list."
     },
+    "oc-kpis": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the numbers row: per manager, then open roles, no manager yet, wide teams (10+), dotted lines and new this month. Pressing one of the five shows only those people on the chart."
+    },
+    "oc-search": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the search box \"Find a person, title or team…\" (the / key). Picking a person jumps to them and opens the side panel; searching changes nothing."
+    },
+    "oc-findme": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, Find me: centres the chart on the reader. Drawn only when the reader has an employee record.",
+      "reserved": true
+    },
+    "oc-views": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the view switch: Top-down, Sideways, Teams and List. Switching only changes how the chart is read."
+    },
+    "oc-canvas": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the chart itself: a card per person under their manager, the +N button that folds or opens a team (Space), and the no manager yet lane."
+    },
+    "oc-export": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the Export menu: Picture (PNG), PDF · one page per team, Spreadsheet, a link to this view, Print.",
+      "reserved": true
+    },
+    "oc-plans": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the Plans menu (HR users only): your draft plan, plans waiting for approval, and Back to the live chart.",
+      "reserved": true
+    },
+    "oc-plan": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, Plan changes (HR users only): turns the chart into planning mode, a copy nobody else sees until it is published."
+    },
+    "oc-publish": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, Publish changes with the count of planned changes (planning mode only). Opens the publish dialog: name, Goes live on, Send for approval."
+    },
+    "oc-draftbar": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the Planning mode bar: See changes, Undo, Redo, Discard. Amber outlines mark who moved; a dashed red line shows where they came from."
+    },
+    "oc-time": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the time machine button (reads Today): a slider from a year back to 90 days ahead, and Back to today. Off while planning."
+    },
+    "oc-pickbar": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the bar shown when several people are picked (⌘ / Ctrl click, or Pick them all and set a manager on the no-manager lane): Set manager…, Clear."
+    },
+    "oc-side": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the person side panel: the chain of managers up to the top, the facts, and the Team, Peers and History tabs. History lists every manager change on the employee record."
+    },
+    "oc-changes": {
+      "screen": "orgchart",
+      "file": "pb_orgchart/static/src/xml/orgchart.xml",
+      "desc": "People › Org chart, the planned-changes panel (planning mode, or viewing a plan): every change, the effect of the plan, Publish, Undo, Discard plan.",
+      "reserved": true
+    },
     "cd-tabs": {
       "screen": "employees",
       "file": "pb_contracts/static/src/xml/contract_360.xml",
@@ -2190,6 +2264,7 @@
       "pb_dashboard/static/src/xml/pb_dashboard.xml",
       "pb_people/static/src/xml/people.xml",
       "pb_contracts/static/src/xml/contracts.xml",
+      "pb_orgchart/static/src/xml/orgchart.xml",
       "pb_insights/static/src/xml/insights.xml",
       "pb_explorer/static/src/xml/explorer.xml",
       "pb_workforce_insights/static/src/xml/workforce_insights.xml",

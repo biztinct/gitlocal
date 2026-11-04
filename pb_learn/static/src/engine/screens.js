@@ -678,6 +678,94 @@ export const SCREENS = {
             ${newEmployeeHTML()}`;
     },
 
+    /* --------------------------------------------------------- Org chart */
+    /* ORG CHART (2026-11-05) — People › Org chart as pb_orgchart's
+       orgchart.xml draws it, in its List view: Find me / Export / Plans /
+       Plan changes, the six numbers, the search and the view switch, one row
+       per person indented under their manager ("+N" on a folded team), the
+       no-manager lane, the bar two picked people open, the time machine
+       button, and the side panel open on Mai. The tree drawing itself is not
+       copied — the List view is the same chart, and every lesson step that
+       stands on a real control plays on the real tab when it can. */
+    orgchart() {
+        const o = PRACTICE.orgchart;
+        const nums = `<span><b>${esc(tx(o.avgSpan))}</b>${SP}${esc(tx(B("per manager", "mỗi quản lý")))}</span>${
+            o.numbers.map(([l, v]) => `<span><b>${esc(N(v))}</b>${SP}${esc(tx(l))}</span>`).join("")}`;
+        const views = [B("Top-down", "Từ trên xuống"), B("Sideways", "Ngang"), B("Teams", "Các nhóm"), B("List", "Danh sách")]
+            .map((v, i) => `<span class="lrn-chip ${i === 3 ? "b" : ""}">${esc(tx(v))}</span>`).join("");
+        const rows = o.rows.map((r) => {
+            const who = r.role ? tx(B("Open role", "Vị trí đang tuyển")) : r.name;
+            const meta = tx(r.title) + DOT + tx(r.team);
+            const fold = r.folded
+                ? `<span class="lrn-chip" title="${esc(tx(B("Expand team (Space)", "Mở rộng nhóm (Space)")))}">${ic("plus")}${esc(N(r.total))}</span>`
+                : "";
+            const tags = (r.picked ? `<span class="lrn-chip b">${ic("check")}</span>` : "")
+                + (r.role ? `<span class="lrn-chip warn">${ic("briefcase")}</span>` : "");
+            return `
+            <div class="lrn-row ${r.open ? "hit" : ""}" style="padding-left:${12 + r.depth * 22}px">
+                <span class="lrn-avatar">${r.role ? ic("briefcase") : esc(initial(r.name))}</span>
+                <span><span class="lrn-nm">${esc(who)}</span><br>
+                    <span class="lrn-sub2">${esc(meta)}</span></span>
+                <span class="lrn-rr">${tags}${fold}${r.direct ? `<span class="lrn-sub2">${esc(tx(B("Direct", "Trực tiếp")))}${SP}<b>${esc(N(r.direct))}</b></span>` : ""}</span>
+            </div>`;
+        }).join("");
+        const lone = `
+            <div class="lrn-row">
+                <span class="lrn-avatar">${esc(initial(o.lone.name))}</span>
+                <span><span class="lrn-nm">${esc(o.lone.name)}</span><br>
+                    <span class="lrn-sub2">${esc(tx(o.lone.title) + DOT + tx(o.lone.team))}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip danger">${esc(tx(B("No manager", "Chưa có quản lý")))}</span></span>
+            </div>`;
+        const mai = PRACTICE.people.rows[0];
+        const chain = o.side.chain.map((n) => `<span class="lrn-chip">${esc(n)}</span>`).join(ic("chevron-right"));
+        const hist = o.side.history.map((h) => `<div class="lrn-kv2"><span>${esc(tx(h.what))}<br><span class="lrn-sub2">${
+            esc(h.when)}</span></span></div>`).join("");
+
+        return `
+            <div class="lrn-zhead"><span class="lrn-push"></span>
+                <button class="lrn-btn sm ghost" data-coach="oc-findme">${ic("crosshair")}${esc(tx(B("Find me", "Tìm tôi")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="oc-export">${ic("download")}${esc(tx(B("Export", "Xuất")))}</button>
+                <button class="lrn-btn sm ghost" data-coach="oc-plans">${ic("list-checks")}${esc(tx(B("Plans", "Kế hoạch")))}</button>
+                <button class="lrn-btn sm pri" data-coach="oc-plan">${esc(tx(B("Plan changes", "Lập kế hoạch")))}</button>
+            </div>
+            <div class="lrn-ynums" data-coach="oc-kpis">${nums}</div>
+            <div class="lrn-strip">
+                <span class="lrn-chip" data-coach="oc-search">${ic("search")}${esc(tx(B("Find a person, title or team…", "Tìm người, chức danh hoặc nhóm…")))}</span>
+                <span class="lrn-push"></span>
+                <span class="lrn-strip" data-coach="oc-views">${views}</span>
+            </div>
+            <div class="lrn-ywf">
+                <div class="lrn-ywfmain">
+                    <div class="lrn-rows" data-coach="oc-canvas">${rows}
+                        <p class="lrn-sub2">${ic("users")}${esc(tx(B("No manager yet · drag onto a manager, or pick several",
+                            "Chưa có quản lý · kéo vào một quản lý, hoặc chọn nhiều người")))}</p>${lone}
+                    </div>
+                    <div class="lrn-strip" data-coach="oc-pickbar">
+                        <span class="lrn-chip b">${ic("users")}${esc(tx(B("2 people selected", "Đã chọn 2 người")))}</span>
+                        <button class="lrn-btn sm pri">${esc(tx(B("Set manager…", "Đặt quản lý…")))}</button>
+                        <button class="lrn-btn sm ghost">${esc(tx(B("Clear", "Xoá")))}</button>
+                        <span class="lrn-sub2">${esc(tx(B("Drag any picked card onto a manager to move them all",
+                            "Kéo bất kỳ thẻ đã chọn nào vào một quản lý để chuyển tất cả")))}</span>
+                    </div>
+                    <div class="lrn-strip">
+                        <button class="lrn-btn sm ghost" data-coach="oc-time">${ic("clock")}${esc(tx(B("Today", "Hôm nay")))}</button>
+                    </div>
+                    <p class="lrn-note">${esc(tx(B(
+                        "The practice company in the List view. The real tab also draws the chart top-down or sideways, with a card per person.",
+                        "Công ty thực hành ở dạng Danh sách. Tab thật còn vẽ sơ đồ từ trên xuống hoặc ngang, mỗi người một thẻ.")))}</p>
+                </div>
+                <aside class="lrn-panel lrn-ydock" data-coach="oc-side">
+                    <h3>${esc(mai.emp.name)}</h3>
+                    <span class="lrn-sub2">${esc(tx(mai.job) + DOT + tx(mai.emp.dept))}</span>
+                    <div class="lrn-strip">${chain}${ic("chevron-right")}<b>${esc(mai.emp.name)}</b></div>
+                    <div class="lrn-kv2"><span>${esc(tx(B("Reports to", "Báo cáo cho")))}</span><b>${esc(EMP.trang.name)}</b></div>
+                    <div class="lrn-tabs">${[B("Team (1)", "Nhóm (1)"), B("Peers", "Đồng cấp"), B("History", "Lịch sử")].map(
+                        (t, i) => `<button aria-selected="${i === 2}">${esc(tx(t))}</button>`).join("")}</div>
+                    <div class="lrn-panel">${hist}</div>
+                </aside>
+            </div>`;
+    },
+
     /* --------------------------------------------------------- Contracts */
     contracts() {
         const c = PRACTICE.contracts;

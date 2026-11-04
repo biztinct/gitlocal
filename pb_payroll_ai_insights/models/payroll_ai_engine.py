@@ -166,7 +166,7 @@ Answer "how do I…" / "where is…" / "show me" questions about USING %(brand)s
 NAVIGATION: a left menu of nine pages, each with tabs. On most screens the menu and a page's tabs show icons only; pointing at them shows the names, and they fold back once you choose. A page's tabs are the column of icons down its left edge.
 - Home — Pulse (where payroll people land: the latest pay run, which month the figures are for, four numbers), Approvals (the ONE inbox for every decision, pay runs included), Wall, Announce. Hiring-only people start on Lifecycle › Hiring and employee-only people on My %(brand)s (their own page: payslips, profile, documents, time off); for both, Home has no Pulse tab and opens on Approvals.
 - Pay Run — Run, Runs, Payslips, Results, Import, Deliver, Adjust (Retro, Proration), Settle (Full & Final), Calendar, Awards.
-- People — Employees (with a Contracts button and a contract per row), Records, Pay, Where they work, Assets, Praise, Goals, Announce, Plan.
+- People — Employees (with a Contracts button and a contract per row), Org chart (who reports to whom), Records, Pay, Where they work, Assets, Praise, Goals, Announce, Plan.
 - Lifecycle — Journeys, Hiring, New joiners, Exits, Probation, Growth plans, Contracts.
 - Workforce — Today, Schedule, Time, Time Off, Overtime, Trips, Approvals, Close, Holidays, Field.
 - Insights — Pulse, Explorer, Workforce, Payroll Report, Budget, Hiring, Training, Goals.
@@ -217,6 +217,7 @@ AFTER THE RUN, PEOPLE AND NUMBERS:
 - Back pay and part months: Pay Run › Adjust has two tabs, Retro and Proration, filled by the pay data load (nobody types them). Retro: a pay change dated before this month, compared with what was paid, the difference added to this month (needs the scheme's Back-pay switch). Proration: amounts for part of a month; the row shows old, new and prorated, the drawer shows the days. Never reopen a paid month.
 - Final settlements: Pay Run › Settle — Being prepared → Waiting for approval → Approved (HR lead, then Finance); Download only once approved.
 - Employees: People › Employees. The numbers line is the filter (Headcount, Running contracts, Expiring within 30 days, New this month, Not payroll-ready — press one to narrow the list, again for everyone); there are no status buttons. A row is ready only with a running contract AND bank details (Not payroll-ready lists everyone missing either; the Payroll-ready number counts bank details only). The Contract button on a row opens the contract drawer: Terms, Components (each amount says where it comes from), History; nothing is saved until Save.
+- Org chart: People › Org chart — who reports to whom, drawn from the manager on each employee record. Search "Find a person, title or team…" or Find me; the side panel shows the chain of managers and a History tab. The +N button on a card (or Space) folds or opens a team. HR users drag a card onto a new manager, or pick several (⌘ / Ctrl click, or "Pick them all and set a manager") and press "Set manager…"; it takes effect at once, with Undo in the message (⌘Z). A move changes the manager only — leave and expense approvals stay with whoever approves them now. "Plan changes" opens planning mode (amber outline = moved, dashed red line = where they came from; nothing is real until published); "Publish changes" → "Send for approval": the HR team approves and it goes live on the chosen day. The "Today" button is a time machine (slider, "Back to today"). Everyone else sees the chart read-only.
 - Salary structures: Settings › Salary Structures. Active, Draft and Deprecated are figures on the numbers line that filter the list. A contract that names a structure is computed by it; a contract with none is paid by its pay scheme.
 - Integrations: Settings › Integrations — read the last sync, not the Connected badge; a connection's own screen has Test connection, Pull data and its Automatic fetch schedule. "Arrivals" (search bar) lists what the connected system sent.
 - Insights › Pulse: the newest run's net payroll in any state (read its state chip); compare per head, not totals. Insights › Explorer: Measure, By, When, Where (Main runs only is on by default); quote the tags with the number. Insights › Workforce: people PAID, not employed. Insights › Payroll Report (one run against the one before) and Budget (money gone against year gone: On pace, Running warm, Behind the year).
@@ -267,6 +268,7 @@ A lesson (a short lesson in a practice company):
 - "L38": Payroll Report and Budget
 - "L39": A role's board — move candidates, share, scorecards, confirm they joined
 - "L40": Hiring set-up, and the hiring numbers
+- "L41": The org chart — find anyone, give people a new manager, plan a change for approval
 A walkthrough of the real screens:
 - "sc_welcome": the tour — Pulse, a pay run, the Approvals inbox, the Formula Engine
 - "sc_payrun": run a pay run, step by step
@@ -291,6 +293,7 @@ A walkthrough of the real screens:
 - "sc_wfclose": close the week
 - "sc_access": access, and handing it over
 - "sc_filings": file the month's government reports
+- "sc_orgchart": find your way round the org chart
 
 ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
 {
@@ -300,7 +303,7 @@ ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
   "action": { "type": "open_lesson", "lesson": "<one lesson key above>", "label": "Show me" }
 }
 For a walkthrough use instead: "action": { "type": "open_walkthrough", "walkthrough": "<one walkthrough key above>", "label": "Show me" }. Prefer a walkthrough for "show me around" / "where is" questions and a lesson for "how does it work" questions.
-Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), and so does one about THE WIDER APP (pay bands: L13 / sc_paybands; pay review: L14 / sc_payreview; next year's plan: L15 / sc_decisionroom; opening a role or its hiring request: L16 / sc_hiring; moving, sharing or scoring candidates, or a signed offer: L39; hiring set-up or the hiring numbers: L40; new joiner: L17 / sc_joiners; someone leaving: L18 / sc_exits; probation: L19 / sc_probation; Workforce today or approving overtime: L20 / sc_wftoday, L21 / sc_wftime; locking the week: L22 / sc_wfclose; access while away: L23 / sc_access; government filings: L24 / sc_filings), and so does one about AFTER THE RUN, PEOPLE AND NUMBERS (paying out, the bank file, calendar or awards: L32; back pay or part months: L30; a final settlement: L31; an employee's contract or payroll-ready: L29; salary structures: L33; connections or sync: L34; Pulse: L35; Explorer: L36; people paid: L37; payroll report or budget: L38), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
+Include "action" ONLY when a listed lesson or walkthrough clearly matches the request; otherwise omit it or set it to null. A "how do I…" question about one of the PAYROLL SETUP areas above clearly matches its lesson or walkthrough (new pay scheme: L7 / sc_blueprint; where a number comes from: L8 / sc_mapjourney; figures that do not add up: L9 / sc_treatment; who approves what: L10 / sc_matrix; many employees at once: L11 / sc_records; another currency: L12 / sc_schemes), and so does one about THE WIDER APP (pay bands: L13 / sc_paybands; pay review: L14 / sc_payreview; next year's plan: L15 / sc_decisionroom; opening a role or its hiring request: L16 / sc_hiring; moving, sharing or scoring candidates, or a signed offer: L39; hiring set-up or the hiring numbers: L40; new joiner: L17 / sc_joiners; someone leaving: L18 / sc_exits; probation: L19 / sc_probation; Workforce today or approving overtime: L20 / sc_wftoday, L21 / sc_wftime; locking the week: L22 / sc_wfclose; access while away: L23 / sc_access; government filings: L24 / sc_filings), and so does one about AFTER THE RUN, PEOPLE AND NUMBERS (paying out, the bank file, calendar or awards: L32; back pay or part months: L30; a final settlement: L31; an employee's contract or payroll-ready: L29; who reports to whom, a new manager or the org chart: L41 / sc_orgchart; salary structures: L33; connections or sync: L34; Pulse: L35; Explorer: L36; people paid: L37; payroll report or budget: L38), so offer it. Never invent pages, tabs, buttons, lesson keys or walkthrough keys that are not listed above.""" + IDENTITY_RULES
 
 
 def data_query_prompt(message, payload_json):
@@ -760,7 +763,9 @@ class PayrollAIEngine(models.Model):
                       'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',
                       'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38',
                       # LEARN REFRESH 2 — the rebuilt Hiring.
-                      'L39', 'L40')
+                      'L39', 'L40',
+                      # ORG CHART (2026-11-05) — People › Org chart.
+                      'L41')
 
     # LEARN REFRESH step 2: a WALKTHROUGH is the second thing "Show me" may
     # open — the real screens, narrated, in Watch mode. Same rule as lessons:
@@ -775,7 +780,9 @@ class PayrollAIEngine(models.Model):
                            'sc_paybands', 'sc_payreview', 'sc_decisionroom',
                            'sc_hiring', 'sc_joiners', 'sc_exits',
                            'sc_probation', 'sc_wftoday', 'sc_wftime',
-                           'sc_wfclose', 'sc_access', 'sc_filings')
+                           'sc_wfclose', 'sc_access', 'sc_filings',
+                           # ORG CHART (2026-11-05) — People › Org chart.
+                           'sc_orgchart')
 
     # The old tour ids, and the lesson each became. Kept because the SYSTEM
     # PROMPT and the model behind it may lag a deploy — a cached conversation,

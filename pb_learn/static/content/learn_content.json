@@ -9174,6 +9174,112 @@
       "blocks": [
         {
           "body": {
+            "en": "People › <b>Org chart</b>. Drag their card onto the new manager, or pick several people with ⌘ or Ctrl and press <b>Set manager…</b>. It takes effect straight away, and Undo is one tap in the message that appears.",
+            "vi": "Con người › <b>Sơ đồ tổ chức</b>. Kéo thẻ của họ vào quản lý mới, hoặc chọn nhiều người bằng ⌘ hoặc Ctrl rồi bấm <b>Đặt quản lý…</b>. Thay đổi có hiệu lực ngay, và có thể hoàn tác chỉ với một chạm trong thông báo hiện ra."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": "",
+          "capability": "any",
+          "kind": "steps",
+          "live_fallback": "",
+          "steps": [
+            {
+              "anchor": "oc-search",
+              "text": {
+                "en": "Find the person with the search box",
+                "vi": "Tìm người đó bằng ô tìm kiếm"
+              }
+            },
+            {
+              "anchor": "oc-pickbar",
+              "text": {
+                "en": "Drag them onto their new manager, or pick several and press Set manager…",
+                "vi": "Kéo họ vào quản lý mới, hoặc chọn nhiều người và bấm Đặt quản lý…"
+              }
+            },
+            {
+              "anchor": "oc-plan",
+              "text": {
+                "en": "For a bigger change, press Plan changes and send it for approval",
+                "vi": "Với thay đổi lớn hơn, bấm Lập kế hoạch và gửi duyệt"
+              }
+            }
+          ]
+        },
+        {
+          "body": {
+            "en": "A move changes the manager only. Leave and expense approvals stay with whoever approves them now — change them on the employee record when you mean to.",
+            "vi": "Việc chuyển chỉ đổi quản lý. Việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận — hãy đổi trên hồ sơ nhân viên khi bạn thật sự muốn."
+          },
+          "capability": "any",
+          "kind": "warn",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Only HR users can change the chart; everyone else sees it read-only. Every change is recorded on the employee record, in the History tab.",
+            "vi": "Chỉ nhân sự mới thay đổi được sơ đồ; những người khác chỉ xem. Mọi thay đổi đều được ghi trên hồ sơ nhân viên, ở thẻ Lịch sử."
+          },
+          "capability": "any",
+          "kind": "ok",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "The manager on each employee record, as People › Org chart draws it.",
+            "vi": "Quản lý ghi trên hồ sơ của từng nhân viên, như Con người › Sơ đồ tổ chức vẽ ra."
+          },
+          "capability": "any",
+          "kind": "source",
+          "live_fallback": "",
+          "steps": []
+        }
+      ],
+      "dynamic": "none",
+      "key": "orgmove",
+      "label": {
+        "en": "How do I give someone a new manager?",
+        "vi": "Làm sao để đặt quản lý mới cho một người?"
+      },
+      "offer": true,
+      "phrases": [
+        "change someone's manager",
+        "new manager",
+        "who reports to whom",
+        "org chart",
+        "organisation chart",
+        "move someone to another team",
+        "restructure the team",
+        "doi quan ly",
+        "đổi quản lý",
+        "so do to chuc",
+        "sơ đồ tổ chức",
+        "ai bao cao cho ai",
+        "ai báo cáo cho ai",
+        "How do I give someone a new manager?",
+        "Làm sao để đặt quản lý mới cho một người?"
+      ],
+      "practice_key": "",
+      "screens": "orgchart,employees,hub_people",
+      "show_me": [
+        "oc-search",
+        "oc-pickbar"
+      ],
+      "simpler": "",
+      "try": "",
+      "watch": "sc_orgchart"
+    },
+    {
+      "blocks": [
+        {
+          "body": {
             "en": "On a ROW it means both things are present: a running contract, and bank details the payment file can use. Miss either and the payslip still computes perfectly and the money still does not arrive. The tick tells you which one is missing — hover it.",
             "vi": "Trên một DÒNG, nó nghĩa là có đủ cả hai thứ: một hợp đồng đang hiệu lực, và thông tin ngân hàng mà tệp chi lương dùng được. Thiếu một trong hai thì phiếu lương vẫn tính hoàn hảo và tiền vẫn không tới nơi. Dấu tích cho biết đang thiếu thứ nào — hãy rê chuột lên nó."
           },
@@ -15331,6 +15437,212 @@
     },
     {
       "entry": {
+        "nav": "orgchart",
+        "screen": ""
+      },
+      "icon": "network",
+      "key": "sc_orgchart",
+      "line": "people",
+      "modes": [
+        "watch"
+      ],
+      "name": {
+        "en": "Find your way round the org chart",
+        "vi": "Làm quen với sơ đồ tổ chức"
+      },
+      "phrases": [
+        "the org chart",
+        "organisation chart",
+        "who reports to whom",
+        "reporting lines",
+        "sơ đồ tổ chức",
+        "xem sơ đồ tổ chức",
+        "ai báo cáo cho ai",
+        "so do to chuc",
+        "xem so do to chuc",
+        "ai bao cao cho ai",
+        "Find your way round the org chart",
+        "Làm quen với sơ đồ tổ chức"
+      ],
+      "retired": false,
+      "screens": [
+        "orgchart"
+      ],
+      "steps": [
+        {
+          "act": "observe",
+          "affects": {
+            "en": "Pressing a number shows only those people on the chart.",
+            "vi": "Bấm một con số, sơ đồ chỉ hiện những người đó."
+          },
+          "anchor": "oc-kpis",
+          "body": "",
+          "guard": false,
+          "key": "numbers",
+          "kicker": {
+            "en": "People › Org chart",
+            "vi": "Con người › Sơ đồ tổ chức"
+          },
+          "look": {
+            "en": "The numbers row: per manager, open roles, no manager yet, wide teams (10+), dotted lines and new this month.",
+            "vi": "Dòng con số: mỗi quản lý, vị trí đang tuyển, chưa có quản lý, nhóm đông (10+), báo cáo phụ và mới trong tháng."
+          },
+          "means": {
+            "en": "The chart is drawn from the manager on each employee record. A number with a colour needs someone to act.",
+            "vi": "Sơ đồ được vẽ từ quản lý ghi trên hồ sơ của từng nhân viên. Con số có màu là việc cần người xử lý."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "orgchart",
+          "screen": "",
+          "timeout": 0,
+          "tip": {
+            "en": "I only read. Nothing is moved by this walkthrough.",
+            "vi": "Tôi chỉ đọc. Lượt hướng dẫn này không chuyển ai cả."
+          },
+          "title": {
+            "en": "Who reports to whom",
+            "vi": "Ai báo cáo cho ai"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "The side panel opens on them, with their chain of managers up to the top.",
+            "vi": "Bảng bên mở ra cho người đó, với chuỗi quản lý của họ lên tới cấp cao nhất."
+          },
+          "anchor": "oc-search",
+          "body": "",
+          "guard": false,
+          "key": "search",
+          "kicker": "",
+          "look": {
+            "en": "The search box, Find a person, title or team….",
+            "vi": "Ô tìm kiếm Tìm người, chức danh hoặc nhóm…."
+          },
+          "means": {
+            "en": "Type a name, a job title or a team, then pick the person. Find me, at the top, centres the chart on you.",
+            "vi": "Gõ tên, chức danh hoặc nhóm, rồi chọn người đó. Tìm tôi, ở phía trên, đưa sơ đồ về vị trí của bạn."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Find anyone",
+            "vi": "Tìm bất kỳ ai"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "Switching only changes how you read the chart. Nobody's manager changes.",
+            "vi": "Đổi cách xem chỉ đổi cách bạn đọc sơ đồ. Không ai bị đổi quản lý."
+          },
+          "anchor": "oc-views",
+          "body": "",
+          "guard": false,
+          "key": "views",
+          "kicker": "",
+          "look": {
+            "en": "Top-down, Sideways, Teams and List.",
+            "vi": "Từ trên xuống, Ngang, Các nhóm và Danh sách."
+          },
+          "means": {
+            "en": "Sideways suits deep teams. Teams shows who is in each team. List is an indented list.",
+            "vi": "Ngang hợp với nhóm nhiều cấp. Các nhóm cho thấy ai ở trong mỗi nhóm. Danh sách là một danh sách thụt lề."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Four ways to read it",
+            "vi": "Bốn cách xem"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "A move changes the manager only. Leave and expense approvals stay with whoever approves them now.",
+            "vi": "Việc chuyển chỉ đổi quản lý. Việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận."
+          },
+          "anchor": "oc-plan",
+          "body": "",
+          "guard": false,
+          "key": "plan",
+          "kicker": "",
+          "look": {
+            "en": "Plan changes, at the top. Only HR users have it; everyone else sees the chart read-only.",
+            "vi": "Lập kế hoạch, ở phía trên. Chỉ nhân sự mới có nút này; những người khác chỉ xem sơ đồ."
+          },
+          "means": {
+            "en": "In planning mode you drag people freely. Nothing is real until you publish and the HR team approves.",
+            "vi": "Trong chế độ lập kế hoạch, bạn kéo mọi người thoải mái. Chưa có gì thật cho đến khi bạn công bố và đội Nhân sự duyệt."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Plan a bigger change first",
+            "vi": "Lập kế hoạch trước cho thay đổi lớn hơn"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "Looking back changes nothing. Back to today returns to the live chart.",
+            "vi": "Xem lại quá khứ không thay đổi gì. Về hôm nay đưa bạn về sơ đồ hiện tại."
+          },
+          "anchor": "oc-time",
+          "body": "",
+          "guard": false,
+          "key": "time",
+          "kicker": "",
+          "look": {
+            "en": "The Today button at the bottom left.",
+            "vi": "Nút Hôm nay ở góc dưới bên trái."
+          },
+          "means": {
+            "en": "Its slider shows the chart on another day: back to see who reported to whom, forward to see approved plans.",
+            "vi": "Thanh trượt của nó cho thấy sơ đồ vào một ngày khác: lùi để xem ai báo cáo cho ai, tới để xem kế hoạch đã duyệt."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "The time machine",
+            "vi": "Xem theo thời gian"
+          },
+          "value": ""
+        }
+      ],
+      "tagline": {
+        "en": "Find anyone, read their managers, and see where a planned change is sent.",
+        "vi": "Tìm bất kỳ ai, đọc các cấp quản lý của họ, và xem một thay đổi đã lập được gửi đi đâu."
+      }
+    },
+    {
+      "entry": {
         "nav": "pb_formula_studio.action_pb_formula_studio",
         "screen": ""
       },
@@ -21098,6 +21410,55 @@
       ]
     },
     {
+      "action_tags": "pb_orgchart",
+      "blurb": {
+        "en": "People › Org chart: who reports to whom, drawn from the manager on each employee record.",
+        "vi": "Con người › Sơ đồ tổ chức: ai báo cáo cho ai, vẽ từ quản lý ghi trên hồ sơ của từng nhân viên."
+      },
+      "hub": null,
+      "key": "orgchart",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Org chart",
+        "vi": "Sơ đồ tổ chức"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Press no manager yet first and give those people a manager. For a bigger change, press Plan changes and send it for approval.",
+        "vi": "Hãy bấm chưa có quản lý trước và đặt quản lý cho những người đó. Với thay đổi lớn hơn, hãy bấm Lập kế hoạch và gửi duyệt."
+      },
+      "open": "",
+      "places": [
+        "pb_people_hub:orgchart"
+      ],
+      "sequence": 190,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "orgmove",
+          "label": {
+            "en": "How do I give someone a new manager?",
+            "vi": "Làm sao để đặt quản lý mới cho một người?"
+          }
+        },
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
       "action_tags": "",
       "blurb": {
         "en": "Insights › Pulse: the newest run's net payroll with its state, the cost story, the department leaderboard, the statutory split and the workforce pulse.",
@@ -21120,7 +21481,7 @@
       "places": [
         "pb_insights_hub:pulse"
       ],
-      "sequence": 190,
+      "sequence": 200,
       "sidebar_key": "pb_sidebar.item_analytics",
       "suggest": [
         {
@@ -21178,7 +21539,7 @@
       "places": [
         "pb_insights_hub:explorer"
       ],
-      "sequence": 200,
+      "sequence": 210,
       "sidebar_key": "pb_sidebar.item_explorer",
       "suggest": [
         {
@@ -21227,7 +21588,7 @@
       "places": [
         "pb_insights_hub:workforce"
       ],
-      "sequence": 210,
+      "sequence": 220,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
       "suggest": [
         {
@@ -21277,7 +21638,7 @@
         "pb_insights_hub:payroll",
         "pb_insights_hub:budget"
       ],
-      "sequence": 220,
+      "sequence": 230,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21326,7 +21687,7 @@
       "places": [
         "pb_compliance_hub:filings"
       ],
-      "sequence": 230,
+      "sequence": 240,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "suggest": [
         {
@@ -21375,7 +21736,7 @@
       },
       "open": "pb_blueprint.action_pb_blueprint",
       "places": [],
-      "sequence": 240,
+      "sequence": 250,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21429,7 +21790,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 250,
+      "sequence": 260,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21480,7 +21841,7 @@
         "pb_mapping_studio:scheme",
         "pb_mapping_studio:cycle"
       ],
-      "sequence": 260,
+      "sequence": 270,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21534,7 +21895,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 270,
+      "sequence": 280,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21576,7 +21937,7 @@
       "places": [
         "pb_mapping_studio:treatment"
       ],
-      "sequence": 280,
+      "sequence": 290,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21625,7 +21986,7 @@
       },
       "open": "pb_approval_config.action_pb_approval_matrix",
       "places": [],
-      "sequence": 290,
+      "sequence": 300,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21679,7 +22040,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 300,
+      "sequence": 310,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21723,7 +22084,7 @@
       "places": [
         "pb_people_hub:records"
       ],
-      "sequence": 310,
+      "sequence": 320,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21772,7 +22133,7 @@
       },
       "open": "pb_group.action_pb_group",
       "places": [],
-      "sequence": 320,
+      "sequence": 330,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21823,7 +22184,7 @@
         "pb_people_hub:pay/fairness",
         "pb_people_hub:pay"
       ],
-      "sequence": 330,
+      "sequence": 340,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21873,7 +22234,7 @@
         "pb_people_hub:pay/review",
         "pb_people_hub:pay/changes"
       ],
-      "sequence": 340,
+      "sequence": 350,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21922,7 +22283,7 @@
       "places": [
         "pb_people_hub:plan"
       ],
-      "sequence": 350,
+      "sequence": 360,
       "sidebar_key": "",
       "suggest": [
         {
@@ -21976,7 +22337,7 @@
         "pb_talent_hub:praise",
         "pb_talent_hub:goals"
       ],
-      "sequence": 360,
+      "sequence": 370,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22018,7 +22379,7 @@
       "places": [
         "pb_hiring_hub:overview/role"
       ],
-      "sequence": 370,
+      "sequence": 380,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22074,7 +22435,7 @@
       "places": [
         "pb_hiring_hub:overview"
       ],
-      "sequence": 380,
+      "sequence": 390,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22128,7 +22489,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 390,
+      "sequence": 400,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22175,7 +22536,7 @@
       },
       "open": "pb_hiring.action_pb_hiring_setup",
       "places": [],
-      "sequence": 400,
+      "sequence": 410,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22217,7 +22578,7 @@
       "places": [
         "pb_insights_hub:hiring"
       ],
-      "sequence": 410,
+      "sequence": 420,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22259,7 +22620,7 @@
       "places": [
         "pb_people_hub:newjoiners"
       ],
-      "sequence": 420,
+      "sequence": 430,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22308,7 +22669,7 @@
       "places": [
         "pb_people_hub:probation"
       ],
-      "sequence": 430,
+      "sequence": 440,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22357,7 +22718,7 @@
       "places": [
         "pb_talent_hub:pip"
       ],
-      "sequence": 440,
+      "sequence": 450,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22399,7 +22760,7 @@
       "places": [
         "pb_people_hub:contracts"
       ],
-      "sequence": 450,
+      "sequence": 460,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22448,7 +22809,7 @@
       "places": [
         "pb_people_hub:exits"
       ],
-      "sequence": 460,
+      "sequence": 470,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22497,7 +22858,7 @@
       "places": [
         "pb_workforce:today"
       ],
-      "sequence": 470,
+      "sequence": 480,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22546,7 +22907,7 @@
       "places": [
         "pb_workforce:time"
       ],
-      "sequence": 480,
+      "sequence": 490,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22588,7 +22949,7 @@
       "places": [
         "pb_workforce:timeoff"
       ],
-      "sequence": 490,
+      "sequence": 500,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22630,7 +22991,7 @@
       "places": [
         "pb_workforce:overtime"
       ],
-      "sequence": 500,
+      "sequence": 510,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22672,7 +23033,7 @@
       "places": [
         "pb_workforce:close"
       ],
-      "sequence": 510,
+      "sequence": 520,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22712,7 +23073,7 @@
       },
       "open": "biz_access.action_pb_access_board",
       "places": [],
-      "sequence": 520,
+      "sequence": 530,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22752,7 +23113,7 @@
       },
       "open": "pb_govt_reports.action_pb_filing_flow",
       "places": [],
-      "sequence": 530,
+      "sequence": 540,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22796,7 +23157,7 @@
         "pb_compliance_hub:young",
         "pb_compliance_hub:audit"
       ],
-      "sequence": 540,
+      "sequence": 550,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22918,7 +23279,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 550,
+      "sequence": 560,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23101,7 +23462,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 560,
+      "sequence": 570,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23137,8 +23498,8 @@
     {
       "action_tags": "pb_people_hub",
       "blurb": {
-        "en": "Your people and what is written down about them: who they are, their contracts and their pay, and the days they join and leave.",
-        "vi": "Nhân sự của bạn và những gì được ghi lại về họ: họ là ai, hợp đồng, lương của họ, và những ngày họ vào làm và nghỉ việc."
+        "en": "Your people and what is written about them: who they are and who they report to, their contracts and pay, and the days they join and leave.",
+        "vi": "Nhân sự của bạn và những gì được ghi lại về họ: họ là ai và báo cáo cho ai, hợp đồng, lương của họ, và những ngày họ vào làm và nghỉ việc."
       },
       "hub": {
         "lens_key": "pb_lens",
@@ -23216,6 +23577,16 @@
               "vi": "Người mới"
             }
           },
+          "orgchart": {
+            "line": {
+              "en": "Who reports to whom. Find anyone, give people a new manager, or plan a change and send it for approval.",
+              "vi": "Ai báo cáo cho ai. Tìm bất kỳ ai, đặt quản lý mới cho mọi người, hoặc lập kế hoạch thay đổi và gửi duyệt."
+            },
+            "name": {
+              "en": "Org chart",
+              "vi": "Sơ đồ tổ chức"
+            }
+          },
           "pay": {
             "line": {
               "en": "Pay bands drawn as a picture, and the yearly pay review.",
@@ -23284,7 +23655,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 570,
+      "sequence": 580,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23403,7 +23774,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 580,
+      "sequence": 590,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23569,7 +23940,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 590,
+      "sequence": 600,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23651,7 +24022,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 600,
+      "sequence": 610,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23800,7 +24171,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 610,
+      "sequence": 620,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23902,7 +24273,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 620,
+      "sequence": 630,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23994,7 +24365,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 630,
+      "sequence": 640,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24173,7 +24544,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 640,
+      "sequence": 650,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24265,7 +24636,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 650,
+      "sequence": 660,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24541,7 +24912,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 660,
+      "sequence": 670,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24700,7 +25071,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 670,
+      "sequence": 680,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25075,7 +25446,7 @@
         "vi": "báo cáo nộp cơ quan, nộp báo cáo bảo hiểm hằng tháng, tạo hồ sơ, bảo hiểm xã hội"
       },
       "section": "payroll",
-      "sequence": 300,
+      "sequence": 310,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "star": true,
       "summary": {
@@ -25357,7 +25728,7 @@
         "vi": "xác minh ngân hàng, yêu cầu đổi ngân hàng, lao động chưa thành niên, nhật ký kiểm toán, ai đã sửa gì"
       },
       "section": "payroll",
-      "sequence": 310,
+      "sequence": 320,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -25678,7 +26049,7 @@
         "vi": "phân tích, tổng quan, diễn biến chi phí, lương thực chi, bình quân đầu người"
       },
       "section": "payroll",
-      "sequence": 260,
+      "sequence": 270,
       "sidebar_key": "pb_sidebar.item_analytics",
       "star": false,
       "summary": {
@@ -26002,7 +26373,7 @@
         "vi": "khám phá dữ liệu, chỉ tiêu, chia theo, so sánh chương trình lương, bộ lọc, giải thích biến động"
       },
       "section": "payroll",
-      "sequence": 270,
+      "sequence": 280,
       "sidebar_key": "pb_sidebar.item_explorer",
       "star": false,
       "summary": {
@@ -26292,7 +26663,7 @@
         "vi": "phân tích lực lượng lao động, nhân viên được trả lương, người vào, người nghỉ, chi phí bình quân"
       },
       "section": "payroll",
-      "sequence": 280,
+      "sequence": 290,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
       "star": false,
       "summary": {
@@ -26618,7 +26989,7 @@
         "vi": "báo cáo lương, ngân sách, đúng nhịp, đang nóng lên, đã chi so với ngân sách"
       },
       "section": "payroll",
-      "sequence": 290,
+      "sequence": 300,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -27063,7 +27434,7 @@
         "vi": "tuyển dụng, mở một vị trí, đề xuất tuyển dụng, nhờ quản lý, vị trí mới, yêu cầu đã được đồng ý"
       },
       "section": "payroll",
-      "sequence": 320,
+      "sequence": 330,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -27543,7 +27914,7 @@
         "vi": "ứng viên, chuyển ứng viên, giai đoạn, danh sách chọn, chia sẻ ứng viên, phiếu đánh giá, so sánh ứng viên cuối, đăng tin vị trí, chờ nhận việc, xác nhận đã vào làm"
       },
       "section": "payroll",
-      "sequence": 330,
+      "sequence": 340,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -27876,7 +28247,7 @@
         "vi": "nhân viên mới, ngày đầu tiên, người đồng hành, nhận việc, sắp vào làm"
       },
       "section": "payroll",
-      "sequence": 340,
+      "sequence": 350,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28172,7 +28543,7 @@
         "vi": "thử việc, hết thử việc, xác nhận chính thức, kéo dài thử việc"
       },
       "section": "payroll",
-      "sequence": 350,
+      "sequence": 360,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -28457,7 +28828,7 @@
         "vi": "kế hoạch phát triển, kèm cặp, kế hoạch cải thiện, mục tiêu có rủi ro"
       },
       "section": "payroll",
-      "sequence": 360,
+      "sequence": 370,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -28736,7 +29107,7 @@
         "vi": "hợp đồng sắp hết hạn, gia hạn hợp đồng, chuyển chính thức"
       },
       "section": "payroll",
-      "sequence": 370,
+      "sequence": 380,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29069,7 +29440,7 @@
         "vi": "nghỉ việc, thôi việc, đơn nghỉ việc, bàn giao, quyết toán, ngày làm cuối"
       },
       "section": "payroll",
-      "sequence": 380,
+      "sequence": 390,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -29478,7 +29849,7 @@
         "vi": "thiết lập tuyển dụng, giai đoạn, cột, mẫu đơn ứng tuyển, phiếu đánh giá, email ứng viên, tự động hoá, đơn vị tuyển dụng, kênh đăng tin, số liệu tuyển dụng, số ngày tuyển"
       },
       "section": "payroll",
-      "sequence": 390,
+      "sequence": 400,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -33909,6 +34280,482 @@
       }
     },
     {
+      "after": "employees",
+      "duration_min": 8,
+      "icon": "network",
+      "key": "orgchart",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 8,
+          "goal": {
+            "en": "Find anyone and their managers, give people a new manager safely, and plan a bigger change for approval.",
+            "vi": "Tìm bất kỳ ai và các cấp quản lý của họ, đặt quản lý mới cho mọi người một cách an toàn, và lập kế hoạch cho một thay đổi lớn hơn để gửi duyệt."
+          },
+          "key": "L41",
+          "name": {
+            "en": "The org chart: find, move, plan",
+            "vi": "Sơ đồ tổ chức: tìm, chuyển, lập kế hoạch"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Leave and expense approvals stay where they are. Change them on the employee record when you mean to.",
+                    "vi": "Đúng vậy. Việc duyệt nghỉ phép và chi phí vẫn giữ nguyên. Hãy đổi trên hồ sơ nhân viên khi bạn thật sự muốn."
+                  },
+                  "label": {
+                    "en": "Whoever approves it now — a move changes the manager only",
+                    "vi": "Người đang duyệt hiện nay — việc chuyển chỉ đổi quản lý"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. The chart changes who he reports to, not who approves his leave.",
+                    "vi": "Hãy nghĩ lại một chút. Sơ đồ đổi người anh báo cáo, không đổi người duyệt nghỉ phép của anh."
+                  },
+                  "label": {
+                    "en": "His new manager, from the moment you move him",
+                    "vi": "Quản lý mới của anh, ngay khi bạn chuyển"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "You move Hùng to a new manager on the org chart. Who approves his leave next week?",
+                "vi": "Bạn chuyển Hùng sang một quản lý mới trên sơ đồ tổ chức. Tuần sau ai duyệt nghỉ phép cho anh?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "Only HR users can change the chart. Everyone else sees it read-only.",
+                "vi": "Chỉ nhân sự mới thay đổi được sơ đồ. Những người khác chỉ xem được."
+              },
+              "anchor": "oc-kpis",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "look": {
+                "en": "The numbers row: per manager, open roles, no manager yet, wide teams (10+), dotted lines and new this month.",
+                "vi": "Dòng con số: mỗi quản lý, vị trí đang tuyển, chưa có quản lý, nhóm đông (10+), báo cáo phụ và mới trong tháng."
+              },
+              "means": {
+                "en": "The chart is drawn from the manager on each employee record. Press a number and the chart shows only those people.",
+                "vi": "Sơ đồ được vẽ từ quản lý ghi trên hồ sơ của từng nhân viên. Bấm một con số, sơ đồ chỉ hiện những người đó."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "orgchart",
+              "tip": {
+                "en": "Top-down, Sideways, Teams and List only change how you read it.",
+                "vi": "Từ trên xuống, Ngang, Các nhóm và Danh sách chỉ đổi cách bạn xem."
+              },
+              "title": {
+                "en": "This tab draws who reports to whom",
+                "vi": "Tab này vẽ ai báo cáo cho ai"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The chart opens the teams above them and the side panel opens on them. Searching changes nothing.",
+                "vi": "Sơ đồ mở các nhóm phía trên họ và bảng bên mở ra cho người đó. Tìm kiếm không thay đổi gì."
+              },
+              "anchor": "oc-search",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Find someone",
+                "vi": "Tìm một người"
+              },
+              "lines": [],
+              "look": {
+                "en": "The search box, Find a person, title or team…, and the Find me button at the top.",
+                "vi": "Ô tìm kiếm Tìm người, chức danh hoặc nhóm…, và nút Tìm tôi ở phía trên."
+              },
+              "means": {
+                "en": "Type a name, a job title or a team, then pick the person from the list. Find me centres the chart on you.",
+                "vi": "Gõ tên, chức danh hoặc nhóm, rồi chọn người đó trong danh sách. Tìm tôi đưa sơ đồ về vị trí của bạn."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "The search box, or the / key.",
+                "vi": "Ô tìm kiếm, hoặc phím /."
+              },
+              "screen": "orgchart",
+              "tip": "",
+              "title": {
+                "en": "Search, or Find me",
+                "vi": "Tìm kiếm, hoặc Tìm tôi"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The History tab lists every manager change on the employee record, with who made it and when.",
+                "vi": "Thẻ Lịch sử liệt kê mọi lần đổi quản lý trên hồ sơ nhân viên, kèm người thực hiện và thời gian."
+              },
+              "anchor": "oc-side",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Their managers",
+                "vi": "Các cấp quản lý của họ"
+              },
+              "lines": [],
+              "look": {
+                "en": "The line under their name in the side panel: each manager above them, up to the top of the company.",
+                "vi": "Dòng dưới tên họ trong bảng bên: từng quản lý phía trên họ, lên tới người đứng đầu công ty."
+              },
+              "means": {
+                "en": "Press a name in that line to open that manager. A red No manager tag means nobody is set yet.",
+                "vi": "Bấm một tên trong dòng đó để mở quản lý ấy. Nhãn đỏ Chưa có quản lý nghĩa là chưa đặt ai."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "orgchart",
+              "tip": "",
+              "title": {
+                "en": "Read the chain up to the top",
+                "vi": "Đọc chuỗi quản lý lên tới cấp cao nhất"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Folding only changes what you see. Nobody's manager changes.",
+                "vi": "Thu gọn chỉ đổi những gì bạn thấy. Không ai bị đổi quản lý."
+              },
+              "anchor": "oc-canvas",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Big teams",
+                "vi": "Nhóm lớn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The +N button at the foot of a manager's card. N is how many people are under them.",
+                "vi": "Nút +N ở chân thẻ của một quản lý. N là số người dưới quyền họ."
+              },
+              "means": {
+                "en": "Press it, or Space on the card you are on, to open or fold that team. Expand all and Collapse, beside the zoom, do the whole chart.",
+                "vi": "Bấm nút đó, hoặc phím Space trên thẻ bạn đang ở, để mở hoặc thu gọn nhóm đó. Mở rộng tất cả và Thu gọn, cạnh nút thu phóng, áp dụng cho cả sơ đồ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "The +N button on a card.",
+                "vi": "Nút +N trên một thẻ."
+              },
+              "screen": "orgchart",
+              "tip": {
+                "en": "Collapse goes back to the top two levels.",
+                "vi": "Thu gọn đưa sơ đồ về hai cấp đầu."
+              },
+              "title": {
+                "en": "Fold and open teams",
+                "vi": "Thu gọn và mở rộng nhóm"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Outside planning mode it takes effect straight away. A move changes the manager only; leave and expense approvals stay with whoever approves them now.",
+                "vi": "Ngoài chế độ lập kế hoạch, thay đổi có hiệu lực ngay. Việc chuyển chỉ đổi quản lý; việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận."
+              },
+              "anchor": "oc-pickbar",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Several people",
+                "vi": "Nhiều người"
+              },
+              "lines": [],
+              "look": {
+                "en": "Hold ⌘ or Ctrl and click each card, or press Pick them all and set a manager on the no manager yet lane. A bar counts who you picked.",
+                "vi": "Giữ ⌘ hoặc Ctrl và bấm từng thẻ, hoặc bấm Chọn tất cả và đặt quản lý ở hàng chưa có quản lý. Một thanh đếm số người bạn đã chọn."
+              },
+              "means": {
+                "en": "Set manager… asks for one manager for all of them. You can also drag any picked card onto a manager.",
+                "vi": "Đặt quản lý… hỏi một quản lý chung cho tất cả. Bạn cũng có thể kéo bất kỳ thẻ đã chọn nào vào một quản lý."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Set manager…, once the right people are picked.",
+                "vi": "Đặt quản lý…, khi đã chọn đúng người."
+              },
+              "screen": "orgchart",
+              "tip": "",
+              "title": {
+                "en": "Pick them, then Set manager…",
+                "vi": "Chọn họ, rồi Đặt quản lý…"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Every change is recorded on the employee record. The person's History tab shows who made it and when.",
+                "vi": "Mọi thay đổi đều được ghi trên hồ sơ nhân viên. Thẻ Lịch sử của người đó cho biết ai đã đổi và khi nào."
+              },
+              "anchor": "",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Changed your mind?",
+                "vi": "Đổi ý?"
+              },
+              "lines": [],
+              "look": {
+                "en": "The message that appears after a change, with its Undo button.",
+                "vi": "Thông báo hiện ra sau một thay đổi, với nút Hoàn tác."
+              },
+              "means": {
+                "en": "Undo puts the manager back as it was. ⌘ Z or Ctrl Z does the same for the last change.",
+                "vi": "Hoàn tác đưa quản lý về như cũ. ⌘ Z hoặc Ctrl Z làm điều tương tự cho thay đổi gần nhất."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "orgchart",
+              "tip": "",
+              "title": {
+                "en": "Undo is one tap",
+                "vi": "Hoàn tác chỉ một chạm"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Nothing in planning mode is real until it is published and approved.",
+                "vi": "Mọi thứ trong chế độ lập kế hoạch chưa có thật cho đến khi được công bố và được duyệt."
+              },
+              "anchor": "oc-plan",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "A bigger change",
+                "vi": "Một thay đổi lớn hơn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Plan changes button at the top. Only HR users have it.",
+                "vi": "Nút Lập kế hoạch ở phía trên. Chỉ nhân sự mới có nút này."
+              },
+              "means": {
+                "en": "It turns the chart into a copy you can change freely. Nobody else sees your plan.",
+                "vi": "Nút này biến sơ đồ thành một bản sao để bạn thay đổi thoải mái. Không ai khác thấy kế hoạch của bạn."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Plan changes.",
+                "vi": "Lập kế hoạch."
+              },
+              "screen": "orgchart",
+              "tip": "",
+              "title": {
+                "en": "Plan changes first",
+                "vi": "Lập kế hoạch trước"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Each move is added to your planned changes. The real chart stays as it is.",
+                "vi": "Mỗi lần chuyển được thêm vào kế hoạch của bạn. Sơ đồ thật vẫn giữ nguyên."
+              },
+              "anchor": "oc-draftbar",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Planning mode",
+                "vi": "Chế độ lập kế hoạch"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Planning mode bar, with See changes, Undo and Discard. Drag a card onto its new manager.",
+                "vi": "Thanh Chế độ lập kế hoạch, với Xem thay đổi, Hoàn tác và Hủy. Kéo một thẻ vào quản lý mới của người đó."
+              },
+              "means": {
+                "en": "An amber outline marks who moved. A dashed red line shows where they came from.",
+                "vi": "Viền vàng đánh dấu người được chuyển. Đường đỏ nét đứt cho biết họ chuyển từ đâu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "orgchart",
+              "tip": "",
+              "title": {
+                "en": "Drag people where they should go",
+                "vi": "Kéo mọi người tới chỗ họ cần ở"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The HR team approves it. The changes go live on the day you picked, all together.",
+                "vi": "Đội Nhân sự sẽ duyệt. Các thay đổi được áp dụng cùng lúc vào ngày bạn đã chọn."
+              },
+              "anchor": "oc-publish",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Send it",
+                "vi": "Gửi đi"
+              },
+              "lines": [],
+              "look": {
+                "en": "Publish changes at the top, with the number of changes on it.",
+                "vi": "Nút Công bố thay đổi ở phía trên, kèm số thay đổi trên nút."
+              },
+              "means": {
+                "en": "It lists every change, asks for a name and the day it goes live, then Send for approval.",
+                "vi": "Nút này liệt kê mọi thay đổi, hỏi tên kế hoạch và ngày áp dụng, rồi Gửi duyệt."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Publish changes, once the plan is right.",
+                "vi": "Công bố thay đổi, khi kế hoạch đã đúng."
+              },
+              "screen": "orgchart",
+              "tip": {
+                "en": "Your plan waits in the Plans menu until it is approved.",
+                "vi": "Kế hoạch của bạn nằm trong mục Kế hoạch cho đến khi được duyệt."
+              },
+              "title": {
+                "en": "Publish changes, then Send for approval",
+                "vi": "Công bố thay đổi, rồi Gửi duyệt"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Looking back changes nothing. Press Back to today to work on the chart again.",
+                "vi": "Xem lại quá khứ không thay đổi gì. Bấm Về hôm nay để làm việc tiếp trên sơ đồ."
+              },
+              "anchor": "oc-time",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Time machine",
+                "vi": "Xem theo thời gian"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Today button at the bottom left. It opens a slider.",
+                "vi": "Nút Hôm nay ở góc dưới bên trái. Nút này mở một thanh trượt."
+              },
+              "means": {
+                "en": "Drag back to see who reported to whom then. Drag forward to see approved plans, leavers and new starters.",
+                "vi": "Kéo lùi để xem ai báo cáo cho ai lúc đó. Kéo tới để xem kế hoạch đã duyệt, người sắp nghỉ và nhân viên mới."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Today, then drag the slider.",
+                "vi": "Hôm nay, rồi kéo thanh trượt."
+              },
+              "screen": "orgchart",
+              "tip": {
+                "en": "Export gives the chart as Picture (PNG), PDF · one page per team, Spreadsheet, Copy a link to this view, or Print.",
+                "vi": "Xuất cho bạn sơ đồ dạng Hình ảnh (PNG), PDF · mỗi nhóm một trang, Bảng tính, Sao chép đường dẫn tới chế độ xem này, hoặc In."
+              },
+              "title": {
+                "en": "See the chart on another day",
+                "vi": "Xem sơ đồ vào một ngày khác"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "people",
+      "name": {
+        "en": "Org chart",
+        "vi": "Sơ đồ tổ chức"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Expecting a move to change who approves leave or expenses. A move changes the manager only; those approvals stay with whoever approves them now.",
+            "vi": "Nghĩ rằng chuyển một người sẽ đổi người duyệt nghỉ phép hay chi phí. Việc chuyển chỉ đổi quản lý; việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận."
+          },
+          {
+            "en": "Treating a plan as done. Nothing in planning mode is real until it is published and approved.",
+            "vi": "Coi một kế hoạch như đã xong. Mọi thứ trong chế độ lập kế hoạch chưa có thật cho đến khi được công bố và được duyệt."
+          },
+          {
+            "en": "Moving many people one at a time. Pick them with ⌘ or Ctrl, then press Set manager… once.",
+            "vi": "Chuyển nhiều người từng người một. Hãy chọn họ bằng ⌘ hoặc Ctrl, rồi bấm Đặt quản lý… một lần."
+          }
+        ],
+        "prereq": {
+          "en": "Anyone who can open People › Employees can read the chart. Only HR users can change it; everyone else sees it read-only.",
+          "vi": "Ai mở được Con người › Nhân viên thì xem được sơ đồ. Chỉ nhân sự mới thay đổi được; những người khác chỉ xem."
+        },
+        "what": {
+          "en": "People › Org chart. A card per person under their manager, a row of numbers that focus the chart, a search box, and a side panel for whoever you open.",
+          "vi": "Con người › Sơ đồ tổ chức. Mỗi người một thẻ nằm dưới quản lý của họ, một dòng con số để lọc sơ đồ, một ô tìm kiếm, và một bảng bên cho người bạn mở."
+        },
+        "when": {
+          "en": "When someone joins, moves team or gets a new manager, and before a restructure.",
+          "vi": "Khi có người vào làm, chuyển nhóm hoặc có quản lý mới, và trước một đợt tái cơ cấu."
+        },
+        "why": {
+          "en": "The chart reads the manager on each employee record. Seeing the whole company at once makes a wrong or missing manager stand out.",
+          "vi": "Sơ đồ đọc quản lý ghi trên hồ sơ của từng nhân viên. Nhìn cả công ty cùng lúc giúp một quản lý bị sai hoặc bị thiếu lộ ra ngay."
+        }
+      },
+      "required": false,
+      "roles": [
+        "hr",
+        "manager"
+      ],
+      "search": {
+        "en": "org chart, organisation chart, who reports to whom, manager, change manager, reporting line, team, restructure, plan changes",
+        "vi": "sơ đồ tổ chức, ai báo cáo cho ai, quản lý, đổi quản lý, cấp trên, nhóm, tái cơ cấu, lập kế hoạch"
+      },
+      "section": "payroll",
+      "sequence": 220,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "Who reports to whom, drawn from each person's manager. Find anyone, give people a new manager, or plan a bigger change and send it for approval.",
+        "vi": "Ai báo cáo cho ai, vẽ từ quản lý của từng người. Tìm bất kỳ ai, đặt quản lý mới cho mọi người, hoặc lập kế hoạch cho một thay đổi lớn hơn và gửi duyệt."
+      }
+    },
+    {
       "after": "",
       "duration_min": 7,
       "icon": "bar-chart",
@@ -34243,7 +35090,7 @@
         "vi": "khoảng lương, dải lương, công bằng, chênh lệch lương, ai được trả dưới khoảng lương"
       },
       "section": "payroll",
-      "sequence": 220,
+      "sequence": 230,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -34690,7 +35537,7 @@
         "vi": "xét lương, tăng lương, ai ký đợt xét lương, thay đổi lương"
       },
       "section": "payroll",
-      "sequence": 230,
+      "sequence": 240,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -35022,7 +35869,7 @@
         "vi": "phòng quyết định, kế hoạch năm sau, nếu như, kế hoạch nhân sự, chi phí chính xác"
       },
       "section": "payroll",
-      "sequence": 240,
+      "sequence": 250,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -35288,7 +36135,7 @@
         "vi": "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc, địa điểm"
       },
       "section": "payroll",
-      "sequence": 250,
+      "sequence": 260,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -40061,7 +40908,7 @@
         "vi": "hôm nay, ai có mặt, ai đi trễ, cần bạn, duyệt tăng ca sạch"
       },
       "section": "payroll",
-      "sequence": 400,
+      "sequence": 410,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -40396,7 +41243,7 @@
         "vi": "chấm công, ngoại lệ chấm công, nghỉ phép, đơn nghỉ phép, duyệt tăng ca"
       },
       "section": "payroll",
-      "sequence": 410,
+      "sequence": 420,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -40725,7 +41572,7 @@
         "vi": "chốt tuần, khoá tuần, gửi vào bảng lương, cờ chấm công"
       },
       "section": "payroll",
-      "sequence": 420,
+      "sequence": 430,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -40734,5 +41581,5 @@
       }
     }
   ],
-  "version": "f8882a484f5b"
+  "version": "5b68333b3c33"
 }

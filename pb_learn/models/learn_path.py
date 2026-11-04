@@ -35,7 +35,9 @@ _logger = logging.getLogger(__name__)
 # (line_order), so these are sets, not sequences.
 #
 # LEARN REFRESH step 5 — rebuilt over the final station set (39 stations);
-# LEARN REFRESH 2 added the two Hiring stations to the HR path.
+# LEARN REFRESH 2 added the two Hiring stations to the HR path; ORG CHART
+# (2026-11-05) added People › Org chart to it (only HR users can change the
+# chart, so it is their month, not a line manager's).
 # Each path is what that person does in a normal month, not everything they
 # may open. Notes on the choices:
 #   officer  — the whole month (run → deliver → adjust / settle) plus the
@@ -57,9 +59,9 @@ ROLE_PATHS = {
                 'mapping'),
     'approver': ('dashboard', 'approvals', 'payruns', 'payslips', 'insights',
                  'reports', 'payreview'),
-    'hr': ('dashboard', 'employees', 'records', 'hiring', 'hiringrole',
-           'hiringsetup', 'joiners', 'probation', 'exits', 'contractends',
-           'wftime', 'paybands'),
+    'hr': ('dashboard', 'employees', 'orgchart', 'records', 'hiring',
+           'hiringrole', 'hiringsetup', 'joiners', 'probation', 'exits',
+           'contractends', 'wftime', 'paybands'),
     'manager': ('approvals', 'wftoday', 'wftime', 'wfclose', 'hiring',
                 'probation', 'growth'),
     'owner': ('dashboard', 'approvals', 'insights', 'explorer', 'reports',

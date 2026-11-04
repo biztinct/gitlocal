@@ -2709,6 +2709,39 @@ const STATIONS = {
           ],
         },
       },
+      /* ORG CHART (2026-11-05). People › Org chart, the tab right after
+         Employees (pb_orgchart, lens sequence 30). Words are the screen's
+         own: pb_orgchart/static/src/xml/orgchart.xml and its vi_VN.po. Two
+         owner rulings are taught as facts: a move changes the MANAGER only
+         (leave and expense approvals stay where they are), and only HR users
+         can change the chart. */
+      {
+        id: "orgchart", icon: "network", mins: 8, after: "employees",
+        roles: ["hr", "manager"],
+        search: B("org chart, organisation chart, who reports to whom, manager, change manager, reporting line, team, restructure, plan changes",
+                  "sơ đồ tổ chức, ai báo cáo cho ai, quản lý, đổi quản lý, cấp trên, nhóm, tái cơ cấu, lập kế hoạch"),
+        title: B("Org chart", "Sơ đồ tổ chức"),
+        desc: B("Who reports to whom, drawn from each person's manager. Find anyone, give people a new manager, or plan a bigger change and send it for approval.",
+                "Ai báo cáo cho ai, vẽ từ quản lý của từng người. Tìm bất kỳ ai, đặt quản lý mới cho mọi người, hoặc lập kế hoạch cho một thay đổi lớn hơn và gửi duyệt."),
+        outline: {
+          what: B("People › Org chart. A card per person under their manager, a row of numbers that focus the chart, a search box, and a side panel for whoever you open.",
+                  "Con người › Sơ đồ tổ chức. Mỗi người một thẻ nằm dưới quản lý của họ, một dòng con số để lọc sơ đồ, một ô tìm kiếm, và một bảng bên cho người bạn mở."),
+          why: B("The chart reads the manager on each employee record. Seeing the whole company at once makes a wrong or missing manager stand out.",
+                 "Sơ đồ đọc quản lý ghi trên hồ sơ của từng nhân viên. Nhìn cả công ty cùng lúc giúp một quản lý bị sai hoặc bị thiếu lộ ra ngay."),
+          when: B("When someone joins, moves team or gets a new manager, and before a restructure.",
+                  "Khi có người vào làm, chuyển nhóm hoặc có quản lý mới, và trước một đợt tái cơ cấu."),
+          prereq: B("Anyone who can open People › Employees can read the chart. Only HR users can change it; everyone else sees it read-only.",
+                    "Ai mở được Con người › Nhân viên thì xem được sơ đồ. Chỉ nhân sự mới thay đổi được; những người khác chỉ xem."),
+          mistakes: [
+            B("Expecting a move to change who approves leave or expenses. A move changes the manager only; those approvals stay with whoever approves them now.",
+              "Nghĩ rằng chuyển một người sẽ đổi người duyệt nghỉ phép hay chi phí. Việc chuyển chỉ đổi quản lý; việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận."),
+            B("Treating a plan as done. Nothing in planning mode is real until it is published and approved.",
+              "Coi một kế hoạch như đã xong. Mọi thứ trong chế độ lập kế hoạch chưa có thật cho đến khi được công bố và được duyệt."),
+            B("Moving many people one at a time. Pick them with ⌘ or Ctrl, then press Set manager… once.",
+              "Chuyển nhiều người từng người một. Hãy chọn họ bằng ⌘ hoặc Ctrl, rồi bấm Đặt quản lý… một lần."),
+          ],
+        },
+      },
       /* -----------------------------------------------------------------------
          LEARN REFRESH step 4 — THE WIDER APP. People › Pay (bands, the pay
          review), People › Plan (the Decision Room) and a short tour of the
@@ -7637,6 +7670,176 @@ const LESSONS = {
     },
   },
 
+  /* ------------------------------------------------ ORG CHART (2026-11-05)
+     People › Org chart. Ten steps on the real tab, in the order a person
+     uses it: find someone, read their managers, fold teams, give several
+     people one manager, undo, plan a bigger change, send it for approval,
+     look back in time. Every label is the screen's own — orgchart.xml /
+     orgchart*.js and, in Vietnamese, pb_orgchart/i18n/vi_VN.po. The steps
+     about the side panel, the picked-people bar and planning mode stand on
+     controls that only appear once you do the thing; the look line says what
+     to do first. The practice copy (screens.js orgchart) draws the List view
+     for readers who cannot open the tab. */
+  L41: {
+    id: "L41", station: "orgchart", mins: 8,
+    title: B("The org chart: find, move, plan", "Sơ đồ tổ chức: tìm, chuyển, lập kế hoạch"),
+    goal: B("Find anyone and their managers, give people a new manager safely, and plan a bigger change for approval.",
+            "Tìm bất kỳ ai và các cấp quản lý của họ, đặt quản lý mới cho mọi người một cách an toàn, và lập kế hoạch cho một thay đổi lớn hơn để gửi duyệt."),
+    steps: [
+      {
+        screen: "orgchart", anchor: "oc-kpis",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:108 · orgchart.js:530 */
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("This tab draws who reports to whom", "Tab này vẽ ai báo cáo cho ai"),
+        look: B("The numbers row: per manager, open roles, no manager yet, wide teams (10+), dotted lines and new this month.",
+                "Dòng con số: mỗi quản lý, vị trí đang tuyển, chưa có quản lý, nhóm đông (10+), báo cáo phụ và mới trong tháng."),
+        means: B("The chart is drawn from the manager on each employee record. Press a number and the chart shows only those people.",
+                 "Sơ đồ được vẽ từ quản lý ghi trên hồ sơ của từng nhân viên. Bấm một con số, sơ đồ chỉ hiện những người đó."),
+        affects: B("Only HR users can change the chart. Everyone else sees it read-only.",
+                   "Chỉ nhân sự mới thay đổi được sơ đồ. Những người khác chỉ xem được."),
+        tip: B("Top-down, Sideways, Teams and List only change how you read it.",
+               "Từ trên xuống, Ngang, Các nhóm và Danh sách chỉ đổi cách bạn xem."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-search",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:128 (search), :51 (Find me) */
+        kicker: B("Find someone", "Tìm một người"),
+        title: B("Search, or Find me", "Tìm kiếm, hoặc Tìm tôi"),
+        look: B("The search box, Find a person, title or team…, and the Find me button at the top.",
+                "Ô tìm kiếm Tìm người, chức danh hoặc nhóm…, và nút Tìm tôi ở phía trên."),
+        means: B("Type a name, a job title or a team, then pick the person from the list. Find me centres the chart on you.",
+                 "Gõ tên, chức danh hoặc nhóm, rồi chọn người đó trong danh sách. Tìm tôi đưa sơ đồ về vị trí của bạn."),
+        affects: B("The chart opens the teams above them and the side panel opens on them. Searching changes nothing.",
+                   "Sơ đồ mở các nhóm phía trên họ và bảng bên mở ra cho người đó. Tìm kiếm không thay đổi gì."),
+        press: B("The search box, or the / key.", "Ô tìm kiếm, hoặc phím /."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-side",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:393 (side panel), :411 (chain), :432 (History) */
+        kicker: B("Their managers", "Các cấp quản lý của họ"),
+        title: B("Read the chain up to the top", "Đọc chuỗi quản lý lên tới cấp cao nhất"),
+        look: B("The line under their name in the side panel: each manager above them, up to the top of the company.",
+                "Dòng dưới tên họ trong bảng bên: từng quản lý phía trên họ, lên tới người đứng đầu công ty."),
+        means: B("Press a name in that line to open that manager. A red No manager tag means nobody is set yet.",
+                 "Bấm một tên trong dòng đó để mở quản lý ấy. Nhãn đỏ Chưa có quản lý nghĩa là chưa đặt ai."),
+        affects: B("The History tab lists every manager change on the employee record, with who made it and when.",
+                   "Thẻ Lịch sử liệt kê mọi lần đổi quản lý trên hồ sơ nhân viên, kèm người thực hiện và thời gian."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-canvas",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:578 (+N), :259-260 (Expand all, Collapse) · orgchart.js:601 */
+        kicker: B("Big teams", "Nhóm lớn"),
+        title: B("Fold and open teams", "Thu gọn và mở rộng nhóm"),
+        look: B("The +N button at the foot of a manager's card. N is how many people are under them.",
+                "Nút +N ở chân thẻ của một quản lý. N là số người dưới quyền họ."),
+        means: B("Press it, or Space on the card you are on, to open or fold that team. Expand all and Collapse, beside the zoom, do the whole chart.",
+                 "Bấm nút đó, hoặc phím Space trên thẻ bạn đang ở, để mở hoặc thu gọn nhóm đó. Mở rộng tất cả và Thu gọn, cạnh nút thu phóng, áp dụng cho cả sơ đồ."),
+        affects: B("Folding only changes what you see. Nobody's manager changes.",
+                   "Thu gọn chỉ đổi những gì bạn thấy. Không ai bị đổi quản lý."),
+        press: B("The +N button on a card.", "Nút +N trên một thẻ."),
+        tip: B("Collapse goes back to the top two levels.", "Thu gọn đưa sơ đồ về hai cấp đầu."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-pickbar",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:315 (pick bar), :328 (lane button) · orgchart.js:869 */
+        kicker: B("Several people", "Nhiều người"),
+        title: B("Pick them, then Set manager…", "Chọn họ, rồi Đặt quản lý…"),
+        look: B("Hold ⌘ or Ctrl and click each card, or press Pick them all and set a manager on the no manager yet lane. A bar counts who you picked.",
+                "Giữ ⌘ hoặc Ctrl và bấm từng thẻ, hoặc bấm Chọn tất cả và đặt quản lý ở hàng chưa có quản lý. Một thanh đếm số người bạn đã chọn."),
+        means: B("Set manager… asks for one manager for all of them. You can also drag any picked card onto a manager.",
+                 "Đặt quản lý… hỏi một quản lý chung cho tất cả. Bạn cũng có thể kéo bất kỳ thẻ đã chọn nào vào một quản lý."),
+        affects: B("Outside planning mode it takes effect straight away. A move changes the manager only; leave and expense approvals stay with whoever approves them now.",
+                   "Ngoài chế độ lập kế hoạch, thay đổi có hiệu lực ngay. Việc chuyển chỉ đổi quản lý; việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận."),
+        press: B("Set manager…, once the right people are picked.", "Đặt quản lý…, khi đã chọn đúng người."),
+      },
+      {
+        screen: "orgchart", anchor: "",
+        /* source: pb_orgchart/static/src/js/orgchart_edit.js:195 (Undo on the message) · orgchart.js:680 (⌘ / Ctrl Z) */
+        kicker: B("Changed your mind?", "Đổi ý?"),
+        title: B("Undo is one tap", "Hoàn tác chỉ một chạm"),
+        look: B("The message that appears after a change, with its Undo button.",
+                "Thông báo hiện ra sau một thay đổi, với nút Hoàn tác."),
+        means: B("Undo puts the manager back as it was. ⌘ Z or Ctrl Z does the same for the last change.",
+                 "Hoàn tác đưa quản lý về như cũ. ⌘ Z hoặc Ctrl Z làm điều tương tự cho thay đổi gần nhất."),
+        affects: B("Every change is recorded on the employee record. The person's History tab shows who made it and when.",
+                   "Mọi thay đổi đều được ghi trên hồ sơ nhân viên. Thẻ Lịch sử của người đó cho biết ai đã đổi và khi nào."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-plan",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:100 */
+        kicker: B("A bigger change", "Một thay đổi lớn hơn"),
+        title: B("Plan changes first", "Lập kế hoạch trước"),
+        look: B("The Plan changes button at the top. Only HR users have it.",
+                "Nút Lập kế hoạch ở phía trên. Chỉ nhân sự mới có nút này."),
+        means: B("It turns the chart into a copy you can change freely. Nobody else sees your plan.",
+                 "Nút này biến sơ đồ thành một bản sao để bạn thay đổi thoải mái. Không ai khác thấy kế hoạch của bạn."),
+        affects: B("Nothing in planning mode is real until it is published and approved.",
+                   "Mọi thứ trong chế độ lập kế hoạch chưa có thật cho đến khi được công bố và được duyệt."),
+        press: B("Plan changes.", "Lập kế hoạch."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-draftbar",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:184 (Planning mode bar), :298-299 (legend) */
+        kicker: B("Planning mode", "Chế độ lập kế hoạch"),
+        title: B("Drag people where they should go", "Kéo mọi người tới chỗ họ cần ở"),
+        look: B("The Planning mode bar, with See changes, Undo and Discard. Drag a card onto its new manager.",
+                "Thanh Chế độ lập kế hoạch, với Xem thay đổi, Hoàn tác và Hủy. Kéo một thẻ vào quản lý mới của người đó."),
+        means: B("An amber outline marks who moved. A dashed red line shows where they came from.",
+                 "Viền vàng đánh dấu người được chuyển. Đường đỏ nét đứt cho biết họ chuyển từ đâu."),
+        affects: B("Each move is added to your planned changes. The real chart stays as it is.",
+                   "Mỗi lần chuyển được thêm vào kế hoạch của bạn. Sơ đồ thật vẫn giữ nguyên."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-publish",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:97 (Publish changes), :613-630 (publish dialog) */
+        kicker: B("Send it", "Gửi đi"),
+        title: B("Publish changes, then Send for approval", "Công bố thay đổi, rồi Gửi duyệt"),
+        look: B("Publish changes at the top, with the number of changes on it.",
+                "Nút Công bố thay đổi ở phía trên, kèm số thay đổi trên nút."),
+        means: B("It lists every change, asks for a name and the day it goes live, then Send for approval.",
+                 "Nút này liệt kê mọi thay đổi, hỏi tên kế hoạch và ngày áp dụng, rồi Gửi duyệt."),
+        affects: B("The HR team approves it. The changes go live on the day you picked, all together.",
+                   "Đội Nhân sự sẽ duyệt. Các thay đổi được áp dụng cùng lúc vào ngày bạn đã chọn."),
+        press: B("Publish changes, once the plan is right.", "Công bố thay đổi, khi kế hoạch đã đúng."),
+        tip: B("Your plan waits in the Plans menu until it is approved.",
+               "Kế hoạch của bạn nằm trong mục Kế hoạch cho đến khi được duyệt."),
+      },
+      {
+        screen: "orgchart", anchor: "oc-time",
+        /* source: pb_orgchart/static/src/xml/orgchart.xml:261-277 (time machine) · :54-65 (Export) */
+        kicker: B("Time machine", "Xem theo thời gian"),
+        title: B("See the chart on another day", "Xem sơ đồ vào một ngày khác"),
+        look: B("The Today button at the bottom left. It opens a slider.",
+                "Nút Hôm nay ở góc dưới bên trái. Nút này mở một thanh trượt."),
+        means: B("Drag back to see who reported to whom then. Drag forward to see approved plans, leavers and new starters.",
+                 "Kéo lùi để xem ai báo cáo cho ai lúc đó. Kéo tới để xem kế hoạch đã duyệt, người sắp nghỉ và nhân viên mới."),
+        affects: B("Looking back changes nothing. Press Back to today to work on the chart again.",
+                   "Xem lại quá khứ không thay đổi gì. Bấm Về hôm nay để làm việc tiếp trên sơ đồ."),
+        press: B("Today, then drag the slider.", "Hôm nay, rồi kéo thanh trượt."),
+        tip: B("Export gives the chart as Picture (PNG), PDF · one page per team, Spreadsheet, Copy a link to this view, or Print.",
+               "Xuất cho bạn sơ đồ dạng Hình ảnh (PNG), PDF · mỗi nhóm một trang, Bảng tính, Sao chép đường dẫn tới chế độ xem này, hoặc In."),
+      },
+    ],
+    quiz: {
+      question: B("You move Hùng to a new manager on the org chart. Who approves his leave next week?",
+                  "Bạn chuyển Hùng sang một quản lý mới trên sơ đồ tổ chức. Tuần sau ai duyệt nghỉ phép cho anh?"),
+      options: [
+        {
+          text: B("Whoever approves it now — a move changes the manager only", "Người đang duyệt hiện nay — việc chuyển chỉ đổi quản lý"),
+          correct: true,
+          explanation: B("Yes. Leave and expense approvals stay where they are. Change them on the employee record when you mean to.",
+                         "Đúng vậy. Việc duyệt nghỉ phép và chi phí vẫn giữ nguyên. Hãy đổi trên hồ sơ nhân viên khi bạn thật sự muốn."),
+        },
+        {
+          text: B("His new manager, from the moment you move him", "Quản lý mới của anh, ngay khi bạn chuyển"),
+          correct: false,
+          explanation: B("Let's rethink that. The chart changes who he reports to, not who approves his leave.",
+                         "Hãy nghĩ lại một chút. Sơ đồ đổi người anh báo cáo, không đổi người duyệt nghỉ phép của anh."),
+        },
+      ],
+    },
+  },
+
   L33: {
     id: "L33", station: "structures", mins: 6,
     title: B("Salary structures, and when you need one", "Cấu trúc lương, và khi nào bạn cần"),
@@ -9405,6 +9608,16 @@ const SCREEN_CTX = {
             "Hãy đọc tab Thành phần trước khi trả lời một câu hỏi về lương: mỗi khoản ghi rõ nó đến từ đâu. Hợp đồng nháp không trả gì; hợp đồng kết thúc giữa tháng chỉ trả một phần tháng."),
     chips: ["expirysoon", "whopays", "prorata", "whatpage"],
   },
+  /* ORG CHART (2026-11-05) — People › Org chart (pb_orgchart, lens
+     sequence 30). The standalone door `pb_orgchart` is in SCREEN_ACTION_TAGS. */
+  orgchart: {
+    places: ["pb_people_hub:orgchart"],
+    blurb: B("People › Org chart: who reports to whom, drawn from the manager on each employee record.",
+             "Con người › Sơ đồ tổ chức: ai báo cáo cho ai, vẽ từ quản lý ghi trên hồ sơ của từng nhân viên."),
+    next: B("Press no manager yet first and give those people a manager. For a bigger change, press Plan changes and send it for approval.",
+            "Hãy bấm chưa có quản lý trước và đặt quản lý cho những người đó. Với thay đổi lớn hơn, hãy bấm Lập kế hoạch và gửi duyệt."),
+    chips: ["orgmove", "whatpage", "whatnext"],
+  },
   insights: {
     places: ["pb_insights_hub:pulse"],
     blurb: B("Insights › Pulse: the newest run's net payroll with its state, the cost story, the department leaderboard, the statutory split and the workforce pulse.",
@@ -9838,6 +10051,14 @@ const SCREEN_CTX = {
         employees: [B("Employees", "Nhân viên"),
                     B("The people list. Open a person, or their contract, from their row.",
                       "Danh sách nhân sự. Mở một người, hoặc hợp đồng của họ, ngay từ dòng của họ.")],
+        // ORG CHART (2026-11-05) — sequence 30, right after Employees.
+        orgchart: [B("Org chart", "Sơ đồ tổ chức"),
+                   B("Who reports to whom. Find anyone, give people a new manager, or plan a change and send it for approval.",
+                     "Ai báo cáo cho ai. Tìm bất kỳ ai, đặt quản lý mới cho mọi người, hoặc lập kế hoạch thay đổi và gửi duyệt.")],
+        // RAIL FIT 2026-11-02 — Contracts (38) sits before Records (40).
+        contracts: [B("Contracts", "Hợp đồng"),
+                    B("Contracts that end soon, decided in good time: renew, change or let them end. All contracts opens every contract.",
+                      "Các hợp đồng sắp hết hạn, được quyết định sớm: gia hạn, thay đổi hoặc để kết thúc. Nút Tất cả hợp đồng mở toàn bộ hợp đồng.")],
         records: [B("Records", "Hồ sơ"),
                   B("Update employee, contract and bank details for many people at once, with a file or on screen.",
                     "Cập nhật thông tin nhân viên, hợp đồng và ngân hàng cho nhiều người cùng lúc, bằng tệp hoặc ngay trên màn hình.")],
@@ -9861,9 +10082,6 @@ const SCREEN_CTX = {
         exits: [B("Exits", "Nghỉ việc"),
                 B("From resignation to final pay: notice, approval, handover.",
                   "Từ đơn nghỉ việc tới khoản chi cuối: báo trước, phê duyệt, bàn giao.")],
-        contracts: [B("Contracts", "Hợp đồng"),
-                    B("Contracts that end soon, decided in good time: renew, change or let them end. All contracts opens every contract.",
-                      "Các hợp đồng sắp hết hạn, được quyết định sớm: gia hạn, thay đổi hoặc để kết thúc. Nút Tất cả hợp đồng mở toàn bộ hợp đồng.")],
         plan: [B("Plan", "Kế hoạch"),
                B("Try out next year's headcount and cost before you commit to it.",
                  "Thử trước số người và chi phí của năm sau trước khi quyết định.")],
@@ -9874,8 +10092,8 @@ const SCREEN_CTX = {
         ["pay", B("Check pay against the bands", "Đối chiếu lương với các dải lương")],
       ],
     },
-    blurb: B("Your people and what is written down about them: who they are, their contracts and their pay, and the days they join and leave.",
-             "Nhân sự của bạn và những gì được ghi lại về họ: họ là ai, hợp đồng, lương của họ, và những ngày họ vào làm và nghỉ việc."),
+    blurb: B("Your people and what is written about them: who they are and who they report to, their contracts and pay, and the days they join and leave.",
+             "Nhân sự của bạn và những gì được ghi lại về họ: họ là ai và báo cáo cho ai, hợp đồng, lương của họ, và những ngày họ vào làm và nghỉ việc."),
     next: B("Start in Employees. Clear anyone who is not ready to be paid before the month's pay run, not after it.",
             "Hãy bắt đầu ở Nhân viên. Xử lý những người chưa sẵn sàng nhận lương trước đợt lương tháng, đừng để sau."),
     chips: ["whatpage", "whatnext", "practice"],
@@ -11822,6 +12040,33 @@ const QA = [
       { k: "src", v: B("Compliance › Filings and its Generate a filing flow.", "Tuân thủ › Tờ khai và luồng Tạo hồ sơ.") },
     ],
   },
+  /* ORG CHART (2026-11-05). Appended, like every intent after Phase C1. The
+     two owner rulings the chart's own dialogs state: a move changes the
+     manager only, and only HR users can change the chart. */
+  {
+    id: "orgmove", screens: ["orgchart", "employees", "hub_people"],
+    label: B("How do I give someone a new manager?", "Làm sao để đặt quản lý mới cho một người?"),
+    match: ["change someone's manager", "new manager", "who reports to whom", "org chart", "organisation chart",
+            "move someone to another team", "restructure the team",
+            "doi quan ly", "đổi quản lý", "so do to chuc", "sơ đồ tổ chức", "ai bao cao cho ai", "ai báo cáo cho ai"],
+    showMe: ["oc-search", "oc-pickbar"],
+    watch: "sc_orgchart",
+    blocks: [
+      { k: "p", v: B("People › <b>Org chart</b>. Drag their card onto the new manager, or pick several people with ⌘ or Ctrl and press <b>Set manager…</b>. It takes effect straight away, and Undo is one tap in the message that appears.",
+                     "Con người › <b>Sơ đồ tổ chức</b>. Kéo thẻ của họ vào quản lý mới, hoặc chọn nhiều người bằng ⌘ hoặc Ctrl rồi bấm <b>Đặt quản lý…</b>. Thay đổi có hiệu lực ngay, và có thể hoàn tác chỉ với một chạm trong thông báo hiện ra.") },
+      { k: "steps", v: [
+        { t: B("Find the person with the search box", "Tìm người đó bằng ô tìm kiếm"), a: "oc-search" },
+        { t: B("Drag them onto their new manager, or pick several and press Set manager…", "Kéo họ vào quản lý mới, hoặc chọn nhiều người và bấm Đặt quản lý…"), a: "oc-pickbar" },
+        { t: B("For a bigger change, press Plan changes and send it for approval", "Với thay đổi lớn hơn, bấm Lập kế hoạch và gửi duyệt"), a: "oc-plan" },
+      ] },
+      { k: "warn", v: B("A move changes the manager only. Leave and expense approvals stay with whoever approves them now — change them on the employee record when you mean to.",
+                        "Việc chuyển chỉ đổi quản lý. Việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận — hãy đổi trên hồ sơ nhân viên khi bạn thật sự muốn.") },
+      { k: "ok", v: B("Only HR users can change the chart; everyone else sees it read-only. Every change is recorded on the employee record, in the History tab.",
+                      "Chỉ nhân sự mới thay đổi được sơ đồ; những người khác chỉ xem. Mọi thay đổi đều được ghi trên hồ sơ nhân viên, ở thẻ Lịch sử.") },
+      { k: "src", v: B("The manager on each employee record, as People › Org chart draws it.",
+                       "Quản lý ghi trên hồ sơ của từng nhân viên, như Con người › Sơ đồ tổ chức vẽ ra.") },
+    ],
+  },
 ];
 
 /* =============================================================================
@@ -13248,6 +13493,94 @@ const SCENARIOS = [
                      "Thêm người mới là phần dễ. Hợp đồng đang hiệu lực và thông tin ngân hàng mới quyết định họ có trong đợt lương tới hay không."),
           tip: B("Payroll-ready on the numbers line counts bank details over headcount. Read it before a run, not after.",
                  "Sẵn sàng tính lương trên dòng con số đếm số người đã có thông tin ngân hàng trên tổng sĩ số. Hãy đọc nó trước khi chạy đợt lương, đừng đọc sau."),
+        },
+      },
+    ],
+  },
+
+  /* --------------------------------------------------------- sc_orgchart
+     ORG CHART (2026-11-05). Watch only, on the real tab: it reads the
+     controls a person sees before they change anything, and never presses
+     one. Every step is `observe`, so nothing is moved, planned or sent.
+     Labels from pb_orgchart/static/src/xml/orgchart.xml and its vi_VN.po. */
+  {
+    key: "sc_orgchart",
+    icon: "network",
+    line: "people",
+    modes: ["watch"],
+    screens: ["orgchart"],
+    name: B("Find your way round the org chart", "Làm quen với sơ đồ tổ chức"),
+    /* ONECHAT OC1 — what "let me practise …" is matched against: English,
+       Vietnamese with marks, Vietnamese without. Never on two scenarios. */
+    match: ["the org chart", "organisation chart", "who reports to whom", "reporting lines",
+            "sơ đồ tổ chức", "xem sơ đồ tổ chức", "ai báo cáo cho ai",
+            "so do to chuc", "xem so do to chuc", "ai bao cao cho ai"],
+    tagline: B("Find anyone, read their managers, and see where a planned change is sent.",
+               "Tìm bất kỳ ai, đọc các cấp quản lý của họ, và xem một thay đổi đã lập được gửi đi đâu."),
+    entry: { nav: "orgchart" },
+    steps: [
+      {
+        key: "numbers", anchor: "oc-kpis", nav: "orgchart", act: "observe",
+        say: {
+          /* source: pb_orgchart/static/src/xml/orgchart.xml:108 · orgchart.js:530 */
+          kicker: B("People › Org chart", "Con người › Sơ đồ tổ chức"),
+          title: B("Who reports to whom", "Ai báo cáo cho ai"),
+          look: B("The numbers row: per manager, open roles, no manager yet, wide teams (10+), dotted lines and new this month.",
+                  "Dòng con số: mỗi quản lý, vị trí đang tuyển, chưa có quản lý, nhóm đông (10+), báo cáo phụ và mới trong tháng."),
+          means: B("The chart is drawn from the manager on each employee record. A number with a colour needs someone to act.",
+                   "Sơ đồ được vẽ từ quản lý ghi trên hồ sơ của từng nhân viên. Con số có màu là việc cần người xử lý."),
+          affects: B("Pressing a number shows only those people on the chart.",
+                     "Bấm một con số, sơ đồ chỉ hiện những người đó."),
+          tip: B("I only read. Nothing is moved by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không chuyển ai cả."),
+        },
+      },
+      {
+        key: "search", anchor: "oc-search", act: "observe",
+        say: {
+          /* source: pb_orgchart/static/src/xml/orgchart.xml:128 */
+          title: B("Find anyone", "Tìm bất kỳ ai"),
+          look: B("The search box, Find a person, title or team….", "Ô tìm kiếm Tìm người, chức danh hoặc nhóm…."),
+          means: B("Type a name, a job title or a team, then pick the person. Find me, at the top, centres the chart on you.",
+                   "Gõ tên, chức danh hoặc nhóm, rồi chọn người đó. Tìm tôi, ở phía trên, đưa sơ đồ về vị trí của bạn."),
+          affects: B("The side panel opens on them, with their chain of managers up to the top.",
+                     "Bảng bên mở ra cho người đó, với chuỗi quản lý của họ lên tới cấp cao nhất."),
+        },
+      },
+      {
+        key: "views", anchor: "oc-views", act: "observe",
+        say: {
+          /* source: pb_orgchart/static/src/xml/orgchart.xml:171 · orgchart.js:663 */
+          title: B("Four ways to read it", "Bốn cách xem"),
+          look: B("Top-down, Sideways, Teams and List.", "Từ trên xuống, Ngang, Các nhóm và Danh sách."),
+          means: B("Sideways suits deep teams. Teams shows who is in each team. List is an indented list.",
+                   "Ngang hợp với nhóm nhiều cấp. Các nhóm cho thấy ai ở trong mỗi nhóm. Danh sách là một danh sách thụt lề."),
+          affects: B("Switching only changes how you read the chart. Nobody's manager changes.",
+                     "Đổi cách xem chỉ đổi cách bạn đọc sơ đồ. Không ai bị đổi quản lý."),
+        },
+      },
+      {
+        key: "plan", anchor: "oc-plan", act: "observe",
+        say: {
+          /* source: pb_orgchart/static/src/xml/orgchart.xml:100 */
+          title: B("Plan a bigger change first", "Lập kế hoạch trước cho thay đổi lớn hơn"),
+          look: B("Plan changes, at the top. Only HR users have it; everyone else sees the chart read-only.",
+                  "Lập kế hoạch, ở phía trên. Chỉ nhân sự mới có nút này; những người khác chỉ xem sơ đồ."),
+          means: B("In planning mode you drag people freely. Nothing is real until you publish and the HR team approves.",
+                   "Trong chế độ lập kế hoạch, bạn kéo mọi người thoải mái. Chưa có gì thật cho đến khi bạn công bố và đội Nhân sự duyệt."),
+          affects: B("A move changes the manager only. Leave and expense approvals stay with whoever approves them now.",
+                     "Việc chuyển chỉ đổi quản lý. Việc duyệt nghỉ phép và chi phí vẫn do người đang duyệt đảm nhận."),
+        },
+      },
+      {
+        key: "time", anchor: "oc-time", act: "observe",
+        say: {
+          /* source: pb_orgchart/static/src/xml/orgchart.xml:261 */
+          title: B("The time machine", "Xem theo thời gian"),
+          look: B("The Today button at the bottom left.", "Nút Hôm nay ở góc dưới bên trái."),
+          means: B("Its slider shows the chart on another day: back to see who reported to whom, forward to see approved plans.",
+                   "Thanh trượt của nó cho thấy sơ đồ vào một ngày khác: lùi để xem ai báo cáo cho ai, tới để xem kế hoạch đã duyệt."),
+          affects: B("Looking back changes nothing. Back to today returns to the live chart.",
+                     "Xem lại quá khứ không thay đổi gì. Về hôm nay đưa bạn về sơ đồ hiện tại."),
         },
       },
     ],

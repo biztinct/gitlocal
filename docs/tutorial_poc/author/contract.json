@@ -206,7 +206,7 @@
       "kind": "contains",
       "why": "PayAI may only offer to open something it can actually open, through this whitelist. Phase C2 re-targeted the envelope from pb_coach tours to pb_learn LESSONS, which is the change that lets this be checked at all: a tour was a registry entry in a module nobody validated against, and a lesson is a record whose key `learn.lesson` either has or has not. Both halves are pinned — the whitelist itself, and the old-tour compatibility map, whose ids are documentation of what each tour BECAME. If a lesson key here stops existing, PayAI's \"Show me\" opens a Journey that lands on the map and the offer was a lie.",
       "expect": [
-        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',\n                      # LEARN REFRESH step 4 — the wider app.\n                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',\n                      'L20', 'L21', 'L22', 'L23', 'L24',\n                      # LEARN REFRESH step 5 — every remaining lesson.\n                      'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',\n                      'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38',\n                      # LEARN REFRESH 2 — the rebuilt Hiring.\n                      'L39', 'L40')",
+        "_KNOWN_LESSONS = ('LW', 'L1', 'L5', 'L3', 'L4', 'LA', 'L2', 'L6',\n                      # LEARN REFRESH step 3 — payroll setup.\n                      'L7', 'L8', 'L9', 'L10', 'L11', 'L12',\n                      # LEARN REFRESH step 4 — the wider app.\n                      'L13', 'L14', 'L15', 'L16', 'L17', 'L18', 'L19',\n                      'L20', 'L21', 'L22', 'L23', 'L24',\n                      # LEARN REFRESH step 5 — every remaining lesson.\n                      'L25', 'L26', 'L27', 'L28', 'L29', 'L30', 'L31',\n                      'L32', 'L33', 'L34', 'L35', 'L36', 'L37', 'L38',\n                      # LEARN REFRESH 2 — the rebuilt Hiring.\n                      'L39', 'L40',\n                      # ORG CHART (2026-11-05) — People › Org chart.\n                      'L41')",
         "'hero_path': 'LW'",
         "'tour_payrun': 'L1'",
         "'tour_formula': 'L5'",
@@ -1780,6 +1780,39 @@
         "lessons L23, L24, L40",
         "walkthroughs sc_access, sc_filings"
       ]
+    },
+    {
+      "id": "orgchart-lesson-anchors",
+      "kind": "contains",
+      "why": "People › Org chart's lesson, walkthrough and intent point at data-coach anchors in pb_orgchart, a module pb_learn does not own. Nothing over there reads them, so a tidy-up could delete one without any test in that module noticing, and a lesson step would then spotlight nothing. The labels the lesson quotes (Plan changes, Publish changes, Set manager…, Find a person, title or team…) are pinned too, so a renamed button is a failure here rather than a lesson that names a button nobody can find.",
+      "files": [
+        "pb_orgchart/static/src/xml/orgchart.xml"
+      ],
+      "expect": [
+        "data-coach=\"oc-kpis\"",
+        "data-coach=\"oc-search\"",
+        "data-coach=\"oc-views\"",
+        "data-coach=\"oc-canvas\"",
+        "data-coach=\"oc-side\"",
+        "data-coach=\"oc-pickbar\"",
+        "data-coach=\"oc-plan\"",
+        "data-coach=\"oc-draftbar\"",
+        "data-coach=\"oc-publish\"",
+        "data-coach=\"oc-time\"",
+        "placeholder=\"Find a person, title or team…\"",
+        "Plan changes",
+        "Publish changes",
+        "Set manager…",
+        "Back to today",
+        "Pick them all and set a manager"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "lesson L41",
+        "walkthrough sc_orgchart",
+        "intent orgmove",
+        "anchors.json product block (oc-*)"
+      ]
     }
   ],
   "anchorLint": {
@@ -1845,7 +1878,8 @@
       "pb_hiring/static/src/xml/hiring_privacy_p4.xml",
       "pb_hiring/static/src/xml/hiring_p6.xml",
       "pb_hiring/static/src/xml/hiring_setup.xml",
-      "pb_hiring/static/src/xml/hiring_numbers.xml"
+      "pb_hiring/static/src/xml/hiring_numbers.xml",
+      "pb_orgchart/static/src/xml/orgchart.xml"
     ]
   },
   "tokenLint": {

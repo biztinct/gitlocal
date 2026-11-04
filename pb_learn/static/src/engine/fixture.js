@@ -1190,6 +1190,51 @@ const PRACTICE = {
     },
   },
 
+  /* ----------------------------------------------- People › Org chart
+     ORG CHART (2026-11-05). The practice company's reporting lines, as the
+     Org chart's List view draws them (pb_orgchart orgchart.xml): one row per
+     person, indented under their manager. The same four people as the
+     Employees roster, under their area manager and the managing director.
+     Five managers carry nine reports, so "per manager" reads 1.8. Bùi Văn
+     Tâm has no manager yet, so he waits in the no-manager lane. Hùng and Đức
+     are drawn PICKED, which is what opens the bar with Set manager…; the side
+     panel is open on Mai. Labels are the screen's own (pb_orgchart
+     vi_VN.po). */
+  orgchart: {
+    avgSpan: B("1.8", "1,8"),
+    numbers: [[B("open role", "vị trí đang tuyển"), 1], [B("no manager yet", "chưa có quản lý"), 1],
+              [B("wide teams (10+)", "nhóm đông (10+)"), 0], [B("dotted lines", "báo cáo phụ"), 0],
+              [B("new this month", "mới trong tháng"), 0]],
+    /* depth: indent under the manager · total: everyone under them ·
+       folded: drawn closed, so the row shows "+N" */
+    rows: [
+      { name: "Đỗ Minh Khoa", title: B("Managing director", "Giám đốc điều hành"), team: B("Head office", "Văn phòng chính"),
+        depth: 0, direct: 3, total: 9 },
+      { name: "Đặng Thu Hà", title: B("HR lead", "Trưởng nhân sự"), team: B("HR", "Nhân sự"),
+        depth: 1, direct: 1, total: 1, folded: true },
+      { name: "Trịnh Quốc Bảo", title: B("Finance director", "Giám đốc tài chính"), team: B("Finance", "Tài chính"),
+        depth: 1, direct: 1, total: 1, folded: true },
+      { name: EMP.trang.name, title: B("Area manager", "Quản lý khu vực"), team: EMP.trang.dept,
+        depth: 1, direct: 3, total: 4 },
+      { name: EMP.mai.name, title: B("Store supervisor", "Giám sát cửa hàng"), team: EMP.mai.dept,
+        depth: 2, direct: 1, total: 1, open: true },
+      { name: EMP.duc.name, title: B("Stock keeper", "Nhân viên kho"), team: EMP.duc.dept,
+        depth: 3, picked: true },
+      { name: EMP.hung.name, title: B("Sales associate", "Nhân viên bán hàng"), team: EMP.hung.dept,
+        depth: 2, picked: true },
+      { role: true, title: B("Cashier", "Thu ngân"), team: EMP.mai.dept, depth: 2 },
+    ],
+    lone: { name: "Bùi Văn Tâm", title: B("Driver", "Lái xe"), team: B("Retail — Hà Nội", "Bán lẻ — Hà Nội") },
+    /* The side panel, open on Mai: her chain of managers to the top, and the
+       one manager change on her record. */
+    side: {
+      chain: ["Đỗ Minh Khoa", EMP.trang.name],
+      history: [
+        { what: B("Manager set to Lê Thu Trang", "Đặt quản lý là Lê Thu Trang"), when: "12/03/2026 · Đặng Thu Hà" },
+      ],
+    },
+  },
+
   /* Contracts. A person is not a contract: the same four people, read as the
      agreements payroll is actually paid from. */
   contracts: {
@@ -2162,6 +2207,9 @@ const MENU = [
     lenses: [
       { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
         also: ["contracts"] },
+      /* ORG CHART (2026-11-05): sequence 30, right after Employees and
+         before Contracts (38) — pb_orgchart orgchart_lens.js. */
+      { key: "orgchart", label: B("Org chart", "Sơ đồ tổ chức"), screen: "orgchart" },
       /* RAIL FIT 2026-11-02: Contracts sits right after Employees; Where they
          work reads LOCATION on the rail. */
       { key: "contracts", label: B("Contracts", "Hợp đồng"), screen: "contractends" },

@@ -1,7 +1,7 @@
 /**
  * LEARNREV P3 — the Library (the Learning page) and the drawer polish, in node.
  *
- *   T1  the Library from a fixture bootstrap: the real 42 stations of the
+ *   T1  the Library from a fixture bootstrap: the real 43 stations of the
  *       content plane, 3 role paths, progress for 5 — the Continue card's
  *       words, the path strip (= the required stations), the menu groups in
  *       MENU_ORDER (LEARNING L0: twelve, empty ones not drawn), every station exactly once, no row with more than three
@@ -103,7 +103,8 @@ function librarySuite() {
 
     // -- every station exactly once, the groups in menu order
     const rows = Array.from(html.matchAll(/data-lib-row="([a-z0-9_]+)"/g), (m) => m[1]);
-    check(stations.length === 42, "the fixture has the 42 stations of the content plane", String(stations.length));
+    // ORG CHART (2026-11-05): People › Org chart is the 43rd station.
+    check(stations.length === 43, "the fixture has the 43 stations of the content plane", String(stations.length));
     check(rows.length === stations.length && new Set(rows).size === rows.length,
           "every station appears exactly once", `${rows.length} rows, ${new Set(rows).size} distinct`);
     const groups = Array.from(html.matchAll(/class="lrn-lib-group[^"]*" data-group="([a-z]+)"/g), (m) => m[1]);
