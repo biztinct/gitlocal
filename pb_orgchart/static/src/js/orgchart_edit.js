@@ -10,7 +10,10 @@
  *   * drag state is DATA ATTRIBUTES (`data-drag`, `data-over`), picks are
  *     `data-pk`, the flash after a move is `data-flash`;
  *   * the ghost card, the drag hint and the quick-action pill are mounted
- *     ONCE with the chart and only their inline style / text change;
+ *     ONCE with the chart; they show and hide by `data-on`, and they MOVE by
+ *     a paused Web Animation whose keyframe is rewritten (`_slide`). Writing
+ *     their inline `style` costs ~60 ms of whole-page style work per pointer
+ *     move on payobook (657 cards); the animation costs 0.08 ms (G15);
  *   * `elementFromPoint` → closest card is the drop target: nothing is
  *     inserted per pointer move;
  *   * after a write the server's own rows for what it touched are patched
@@ -57,6 +60,31 @@ export function roleNode(o, order) {
 }
 
 class OcEdit {
+    /**
+     * Put `el` at transform `tf` without touching its style attribute: one
+     * paused, never-ending animation per element whose keyframes are
+     * replaced. An inline style write re-checks the whole page's styles on
+     * this app (G12/G15); an animation update does not.
+     */
+    _slide(el, tf) {
+        if (!el) { return; }
+        this._anims = this._anims || new WeakMap();
+        let a = this._anims.get(el);
+        if (!a) {
+            a = el.animate([{ transform: tf }, { transform: tf }], { duration: 1e9, fill: "forwards" });
+            a.pause();
+            this._anims.set(el, a);
+        } else {
+            a.effect.setKeyframes([{ transform: tf }, { transform: tf }]);
+        }
+    }
+
+    _show(el, on) {
+        if (!el) { return; }
+        if (on && !el.dataset.on) { el.dataset.on = "1"; }
+        if (!on && el.dataset.on) { delete el.dataset.on; }
+    }
+
     _setupEdit() {
         this.picked = new Set();
         this._pkMarked = [];
@@ -416,15 +444,15 @@ class OcEdit {
         g.querySelector(".gt").textContent = n.title || n.dept || "";
         const gc = g.querySelector(".gc");
         gc.textContent = ids.length > 1 ? "+" + (ids.length - 1) : "";
-        gc.style.display = ids.length > 1 ? "" : "none";
-        g.style.display = "flex";
+        if (ids.length > 1) { gc.dataset.on = "1"; } else { delete gc.dataset.on; }
+        this._show(g, true);
         const marks = [];
         for (const x of ids) {
             const el = this._cardEl(x);
             if (el) { el.dataset.drag = "1"; marks.push(el); }
         }
-        if (this.hintRef.el) { this.hintRef.el.style.display = "flex"; }
-        if (this.qaRef.el) { this.qaRef.el.style.display = "none"; }
+        this._show(this.hintRef.el, true);
+        this._show(this.qaRef.el, false);
         const cv = this.canvasRef.el.getBoundingClientRect();
         this._drag = { ids, over: null, overEl: null, verdict: null, marks, rr, cv,
                        x: e.clientX, y: e.clientY, vx: 0, vy: 0, raf: 0, t0: performance.now(), moves: 0, worst: 0 };
@@ -437,8 +465,8 @@ class OcEdit {
         d.x = e.clientX;
         d.y = e.clientY;
         const s = Math.max(0.7, Math.min(1, this.vp.zoom));
-        this.ghostRef.el.style.transform =
-            `translate(${d.x - d.rr.left + 14}px,${d.y - d.rr.top + 14}px) scale(${s}) rotate(-2deg)`;
+        this._slide(this.ghostRef.el,
+            `translate(${d.x - d.rr.left + 14}px,${d.y - d.rr.top + 14}px) scale(${s}) rotate(-2deg)`);
         const hit = document.elementFromPoint(d.x, d.y);
         const el = hit && hit.closest ? hit.closest(".pboc-node") : null;
         const id = el && this.nodesRef.el.contains(el) ? el.dataset.id : null;
@@ -478,8 +506,8 @@ class OcEdit {
         this._drag = null;
         this._press = null;
         if (d.raf) { cancelAnimationFrame(d.raf); }
-        this.ghostRef.el.style.display = "none";
-        if (this.hintRef.el) { this.hintRef.el.style.display = "none"; }
+        this._show(this.ghostRef.el, false);
+        this._show(this.hintRef.el, false);
         for (const el of d.marks) { delete el.dataset.drag; }
         if (d.overEl) { delete d.overEl.dataset.over; }
         // the click that follows a drag must not select the card
@@ -508,15 +536,18 @@ class OcEdit {
         if (!el) { return; }
         const p = id && this.lay && this.lay.pos.get(id);
         if (!p || this._drag || !this.canvasView) {
-            if (el.style.display !== "none") { el.style.display = "none"; }
+            this._show(el, false);
             this._pillId = null;
             return;
         }
         const n = this.nodeOf(id);
         const role = n && n.isRole ? "1" : "";
         if ((el.dataset.role || "") !== role) { el.dataset.role = role; }
-        el.style.transform = `translate(${p.x + p.w - 10}px,${p.y - 14}px) translateX(-100%)`;
-        if (el.style.display !== "flex") { el.style.display = "flex"; }
+        if (this._pillId !== id || this._pillAt !== p) {
+            this._slide(el, `translate(${p.x + p.w - 10}px,${p.y - 14}px) translateX(-100%)`);
+            this._pillAt = p;
+        }
+        this._show(el, true);
         this._pillId = id;
     }
 

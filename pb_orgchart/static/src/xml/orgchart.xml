@@ -179,7 +179,7 @@
                   </button>
                   <!-- ONE quick-action pill for the whole chart, moved onto the
                        hovered card by inline style (P2 §3.1, G12) -->
-                  <div class="pboc-qa" t-ref="qa" style="display:none">
+                  <div class="pboc-qa" t-ref="qa">
                     <button title="Open side panel" t-on-click="(ev) => this.qaRun('open', ev)"><t t-out="icon('eye', 13)"/></button>
                     <t t-if="data.may_write">
                       <button class="p-only" title="Add a team member (A)" t-on-click="(ev) => this.qaRun('addmember', ev)"><t t-out="icon('userPlus', 13)"/></button>
@@ -230,7 +230,7 @@
                 </svg>
               </div>
 
-              <div class="pboc-float pboc-draghint" t-ref="draghint" style="display:none">
+              <div class="pboc-float pboc-draghint" t-ref="draghint">
                 <t t-out="icon('move', 14)"/> Drop on the new manager · takes effect straight away
               </div>
 
@@ -409,7 +409,7 @@
       </t>
 
       <!-- ============================== P2 overlays ============================== -->
-      <div class="pboc-ghost" t-ref="ghost" style="display:none" aria-hidden="true">
+      <div class="pboc-ghost" t-ref="ghost" aria-hidden="true">
         <span class="ga"/><span class="gw"><b class="gn"/><small class="gt"/></span><span class="gc"/>
       </div>
 

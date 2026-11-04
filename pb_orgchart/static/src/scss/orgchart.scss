@@ -251,7 +251,7 @@
     }
     // ONE quick-action pill, moved onto the hovered card (P2)
     .pboc-qa {
-        position: absolute; left: 0; top: 0; z-index: 6; gap: 3px; background: var(--oc-card); border: 1px solid var(--oc-line);
+        position: absolute; left: 0; top: 0; z-index: 6; display: flex; gap: 3px; background: var(--oc-card); border: 1px solid var(--oc-line);
         border-radius: 999px; padding: 3px; box-shadow: var(--oc-sh-2); align-items: center;
         button { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: var(--oc-p); &:hover { background: var(--oc-p-soft); } }
         .r-only { display: none; }
@@ -349,6 +349,9 @@
     }
 
     // ------------------------------------------------------------ P2: drag, pick bar, menu
+    // shown by data-on, moved by a Web Animation (never an inline style, G15)
+    .pboc-ghost:not([data-on]), .pboc-draghint:not([data-on]), .pboc-qa:not([data-on]),
+    .pboc-ghost .gc:not([data-on]) { display: none !important; }
     .pboc-ghost {
         position: absolute; left: 0; top: 0; z-index: 60; pointer-events: none; transform-origin: 0 0;
         display: flex; align-items: center; gap: 10px; width: 224px; padding: 10px 12px; border-radius: 14px;
@@ -361,7 +364,7 @@
             background: var(--oc-p); color: #fff; font-size: 12px; font-weight: 800; display: grid; place-items: center; box-shadow: var(--oc-sh-2); }
     }
     .pboc-draghint {
-        left: 50%; top: 14px; transform: translateX(-50%); background: var(--oc-navy); color: #fff; border-radius: 999px;
+        left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 6; display: flex; background: var(--oc-navy); color: #fff; border-radius: 999px;
         padding: 7px 14px; font-size: 12.5px; align-items: center; gap: 8px; box-shadow: var(--oc-sh-3); white-space: nowrap;
     }
     // top-left of the canvas: the canvas can run below the fold on a short
