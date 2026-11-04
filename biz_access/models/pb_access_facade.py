@@ -40,6 +40,11 @@ from .access_common import (BOARD_GROUPS, DELEGATION_ROW_CAP, HOLDER_CAP,
 
 _logger = logging.getLogger(__name__)
 
+
+class _ProbeAnswered(Exception):
+    """Raised inside a probe's savepoint so it always rolls back."""
+
+
 # `BOARD_GROUPS` — everybody with a login, because the "hand my access over"
 # half is for everybody by requirement — and `MANAGE_GROUPS` — who may grant
 # and remove on somebody else's behalf — are REGISTRIES in `access_common`
@@ -1651,9 +1656,15 @@ class PbAccess(models.AbstractModel):
             target = self.env(user=user.id, su=False, context=context)[model]
             func = getattr(target, method, None)
             if callable(func):
+                # The savepoint is ALWAYS rolled back: the caller chooses which
+                # `can_*` runs, as somebody else, so even a predicate that one
+                # day writes must leave nothing behind.
                 try:
                     with self.env.cr.savepoint():
                         answer = bool(func())
+                        raise _ProbeAnswered()
+                except _ProbeAnswered:
+                    self.env.invalidate_all()
                 except Exception:                       # noqa: BLE001
                     _logger.info('biz_access: %s.%s could not be asked for '
                                  'user %s', model, method, user.id,
