@@ -51,7 +51,7 @@ const BIG_DRAW = 400;     // fold more when a first draw would exceed this
  */
 export class PbOcCard extends Component {
     static template = "pb_orgchart.Card";
-    static props = ["c", "cls", "st", "color", "busy", "lr", "api"];
+    static props = ["c", "cls", "flags", "st", "color", "busy", "lr", "api"];
 
     icon(n, s = 16) { return icon(n, s); }
 
@@ -357,17 +357,28 @@ export class PbOrgChart extends Component {
         }
     }
 
+    /**
+     * The card's LOOK (classes) and its STATE (a data attribute) are kept
+     * apart on purpose. On this app any class change anywhere costs a
+     * whole-page style check (~130 ms with a big chart: 646 `:has()` rules,
+     * G12); an attribute change costs ~0.1 ms. Selection, dimming and the
+     * hover chain therefore never touch a class.
+     */
     cardClass(c) {
-        const s = this.state;
         const cls = ["pboc-node"];
-        if (s.compact) { cls.push("compact"); }
-        if (s.sel === c.id) { cls.push("sel"); }
-        if (this.anyFilter && !this.emphasised(c.n)) { cls.push("dim"); }
+        if (this.state.compact) { cls.push("compact"); }
         if (c.n.isRole) { cls.push("open"); }
         if (this.isMe(c.n)) { cls.push("me"); }
         if (c.stk) { cls.push("stk"); }
         cls.push("pboc-in");
         return cls.join(" ");
+    }
+
+    cardState(c) {
+        const st = [];
+        if (this.state.sel === c.id) { st.push("sel"); }
+        if (this.anyFilter && !this.emphasised(c.n)) { st.push("dim"); }
+        return st.join(" ");
     }
 
     cardStyle(c) {
@@ -386,7 +397,7 @@ export class PbOrgChart extends Component {
      * an SVG group the template leaves empty. Re-applied after every patch.
      */
     _paintPath() {
-        for (const el of this._marked) { el.classList.remove("hl"); }
+        for (const el of this._marked) { delete el.dataset.hl; }
         this._marked = [];
         const host = this.nodesRef.el;
         const g = this.hiRef.el;
@@ -399,7 +410,7 @@ export class PbOrgChart extends Component {
         if (!host || !path) { return; }
         for (const id of path) {
             const el = host.querySelector(`[data-id="${CSS.escape(id)}"]`);
-            if (el) { el.classList.add("hl"); this._marked.push(el); }
+            if (el) { el.dataset.hl = "1"; this._marked.push(el); }
         }
     }
 
@@ -955,7 +966,7 @@ export class PbOrgChart extends Component {
     applyTransform(anim) {
         const w = this.worldRef.el;
         if (!w) { return; }
-        w.classList.toggle("anim", !!anim);
+        if (anim) { w.dataset.anim = "1"; } else if (w.dataset.anim) { delete w.dataset.anim; }
         w.style.transform = `translate(${this.vp.px}px,${this.vp.py}px) scale(${this.vp.zoom})`;
         if (this.pctRef.el) { this.pctRef.el.textContent = Math.round(this.vp.zoom * 100) + "%"; }
         this._drawViewport();
@@ -1114,7 +1125,7 @@ export class PbOrgChart extends Component {
             if (!cv || !this.worldRef.el || e.button !== 0) { return; }
             if (e.target.closest(".pboc-node, .pboc-float, button, .pboc-more, .pboc-lane-act")) { return; }
             this._pan = { x: e.clientX, y: e.clientY, px: this.vp.px, py: this.vp.py, moved: false };
-            cv.classList.add("grabbing");
+            cv.dataset.grab = "1";
         };
         this._onMove = (e) => {
             if (!this._pan) { return; }
@@ -1129,7 +1140,7 @@ export class PbOrgChart extends Component {
             if (!this._pan) { return; }
             this._pan = null;
             const cv = this.canvasRef.el;
-            if (cv) { cv.classList.remove("grabbing"); }
+            if (cv) { delete cv.dataset.grab; }
         };
         this._onKey = (e) => this.onKey(e);
         this._onResize = () => this._drawViewport();

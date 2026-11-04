@@ -188,10 +188,10 @@
         position: relative; overflow: hidden; background: var(--oc-card); border: 1px solid var(--oc-line); border-radius: 16px;
         box-shadow: var(--oc-sh-1); cursor: grab; touch-action: none; min-height: 0;
         background-image: radial-gradient(circle, var(--oc-line2) 1px, transparent 1.2px); background-size: 22px 22px;
-        &.grabbing { cursor: grabbing; }
+        &[data-grab] { cursor: grabbing; }
     }
     .pboc-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform;
-        &.anim { transition: transform .35s var(--oc-ease); } }
+        &[data-anim] { transition: transform .35s var(--oc-ease); } }
     .pboc-edges { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none;
         path { fill: none; stroke: var(--oc-line2); stroke-width: 1.6; transition: stroke .2s; }
         path.hi { stroke: var(--oc-p); stroke-width: 2.2; }
@@ -206,11 +206,14 @@
         box-shadow: var(--oc-sh-1); padding: 12px 12px 10px; cursor: pointer; user-select: none; outline: 0;
         transition: transform .35s var(--oc-ease), box-shadow .15s, border-color .15s, opacity .3s;
         &:hover { box-shadow: var(--oc-sh-2); border-color: var(--oc-p-soft2); z-index: 3; }
-        &.sel { border-color: var(--oc-p); box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); z-index: 3; }
-        &.hl { border-color: var(--oc-p); box-shadow: 0 0 0 2px var(--oc-p-ring); }
-        &.dim.hl { opacity: 1; }
-        &.sel.hl { box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); }
-        &.dim { opacity: .25; }
+        &[data-st~="sel"] { border-color: var(--oc-p); box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); z-index: 3; }
+        &[data-hl] { border-color: var(--oc-p); box-shadow: 0 0 0 2px var(--oc-p-ring); }
+        &[data-hl][data-st~="dim"] { opacity: 1; }
+        &[data-hl][data-st~="sel"] { box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); }
+        // off-screen cards skip style and layout work (most of a 650-card chart)
+        .top { content-visibility: auto; contain-intrinsic-size: auto 186px auto 48px; }
+        .tags { content-visibility: auto; contain-intrinsic-size: auto 186px auto 22px; }
+        &[data-st~="dim"] { opacity: .25; }
         &.open { border-style: dashed; border-color: var(--oc-amber-line); background: #FFFCF2; }
         .top { display: flex; gap: 10px; align-items: flex-start; }
         .who { min-width: 0; flex: 1; }
@@ -222,7 +225,7 @@
         .qa { position: absolute; top: -14px; right: 10px; display: none; gap: 4px; background: var(--oc-card); border: 1px solid var(--oc-line);
             border-radius: 999px; padding: 3px; box-shadow: var(--oc-sh-2);
             button { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: var(--oc-p); &:hover { background: var(--oc-p-soft); } } }
-        &:hover .qa, &.sel .qa { display: flex; }
+        &:hover .qa, &[data-st~="sel"] .qa { display: flex; }
         .tog {
             position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); height: 24px; min-width: 24px; padding: 0 7px;
             border-radius: 999px; background: var(--oc-card); border: 1px solid var(--oc-line2); display: inline-flex; align-items: center;

@@ -169,7 +169,7 @@
                 </div>
                 <div class="pboc-nodes" t-ref="nodes" t-on-mouseleave="() => this.onLeave()">
                   <t t-foreach="cards" t-as="c" t-key="c.id">
-                    <PbOcCard c="c" cls="cardClass(c)" st="cardStyle(c)" color="colorOf(c.n)"
+                    <PbOcCard c="c" cls="cardClass(c)" flags="cardState(c)" st="cardStyle(c)" color="colorOf(c.n)"
                               busy="state.branchBusy === c.id" lr="state.view === 'lr'" api="api"/>
                   </t>
                   <button t-if="moreTile" class="pboc-more" t-attf-style="transform:translate({{moreTile.x}}px,{{moreTile.y}}px);width:{{moreTile.w}}px;height:{{moreTile.h}}px"
@@ -364,7 +364,7 @@
 
   <!-- ============================== one card (PbOcCard) ============================== -->
   <t t-name="pb_orgchart.Card">
-    <div t-att-class="props.cls" t-att-style="props.st" t-att-data-id="props.c.id"
+    <div t-att-class="props.cls" t-att-data-st="props.flags" t-att-style="props.st" t-att-data-id="props.c.id"
          tabindex="-1" role="treeitem" t-att-aria-label="props.api.cardLabel(props.c.n)"
          t-on-mouseenter="() => props.api.hover(props.c.id)" t-on-click="(ev) => props.api.click(props.c, ev)"
          t-on-dblclick="() => props.api.dbl(props.c)">
