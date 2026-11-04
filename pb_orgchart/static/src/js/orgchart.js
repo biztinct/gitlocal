@@ -404,9 +404,21 @@ export class PbOrgChart extends Component {
         const g = this.hiRef.el;
         const path = this.pathIds;
         if (g) {
-            g.innerHTML = path ? this.edgeList
-                .filter((e) => !e.dot && path.has(e.id) && path.has(e.from))
-                .map((e) => `<path class="hi" d="${e.d}"/>`).join("") : "";
+            // a pool of <path>s whose `d` is rewritten: an attribute change is
+            // ~free here, an inserted element re-checks the page's styles (G12)
+            const ds = path ? this.edgeList
+                .filter((e) => !e.dot && path.has(e.id) && path.has(e.from)).map((e) => e.d) : [];
+            while (g.childNodes.length < ds.length) {
+                const el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                el.setAttribute("class", "hi");
+                g.appendChild(el);
+            }
+            g.childNodes.forEach((el, i) => {
+                const d = ds[i] || "M0,0";
+                if (el.getAttribute("d") !== d) { el.setAttribute("d", d); }
+                const vis = i < ds.length ? "visible" : "hidden";
+                if (el.getAttribute("visibility") !== vis) { el.setAttribute("visibility", vis); }
+            });
         }
         if (!host || !path) { return; }
         for (const id of path) {
@@ -510,7 +522,7 @@ export class PbOrgChart extends Component {
     }
 
     get bigLane() {
-        return !!(this.idx && this.idx.trees.length && this.idx.lone.filter((n) => !n.isRole).length > 10);
+        return !!(this.idx && this.idx.lone.filter((n) => !n.isRole).length > 10);
     }
 
     get laneHint() {
