@@ -221,3 +221,45 @@ For Fable / the owner:
    screen's own figure, seen in passing.
 5. Rize 1591 is still a fast lane with the wrong month in its name (R2,
    PRS-G18) — the screen now says both plainly; nothing was changed.
+
+## Follow-up 1 (2026-11-04, Fable's rize review + owner rulings R6, R7)
+
+Commit **cff91d69c**, pb_payruns **19.0.3.4.2**, LIVE on payobook,
+payobook_template, p0clone, rize (00:06:33–00:11:10 UTC; EXIT=0 errors=0 ×4;
+active jobs 31/28/74/42 unchanged; tree byte-identical, 47 files; log clean;
+gitlocal-f3 asked first and said go; START/DONE logged; evidence
+`/tmp/prs-p2e-run-20261104000633`, backups `/odoo/backups/prs-p2e-run-20261104000633`).
+
+| Item | Done | Checked live (payobook, 1568 px, QA) |
+|---|---|---|
+| 1 Width | Sheet is one centred 1320 px column; Run settings row the same width; above 1180 px Downloads / More / the primary stay on the right of the chips row (chips wrap in their own box) | screen 1320 px, 87 / 86 px either side; actions on the chips row |
+| 2 Money gap | money / checks grid aligned to the top; each card sizes to its content | money card 353 px vs checks 554 px; 20 px from the compare line to the bar |
+| 3 Notes | amber rows are "notes": journey "Checks pass · 1 note" / "· N notes"; verdict keeps "Everything checks out" + "Ready to send for approval, with N notes below." (fast lane: "Ready to send, with N notes below. Nobody signs it off…") | 2419: "Checks pass · 2 notes", "…with 2 notes below."; rize 1591 (read-only): "Checks pass · 3 notes" + the fast-lane sentence |
+| R6 approved only | the previous run must be approved; wording "There is no approved run of the same kind for … " | 1524 top-up no longer compares with the draft 902-person August run |
+| R6 top-ups | **NOT built — needs a decision.** No existing field or setting tells a top-up apart: payobook's "Retail top-up", "Awards run" and "Retail bonus run" carry the same scheme and the same scheme cycle type (end of month) as the full monthly runs, and no code creates them specially. The only "kind" notion is the scheme's cycle type (regular / mid-month / end of month / final settlement). R6 forbids inventing one, so a top-up would still compare with an APPROVED full month on the same scheme. | — |
+| R7 Recalculate asks | More › Recalculate everyone and the bulk bar: "Recalculate N payslips? Their figures may change." / "Recalculate the payslip? Its figures may change.", OK "Recalculate", "Not now", primary (not danger) style | More: "Recalculate 520 payslips?"; bulk (3 ticked): "Recalculate 3 payslips?" — both cancelled |
+
+Tests: T7 / T18 / T18b now approve their earlier runs; new
+`test_r6_a_draft_or_pending_month_before_is_not_compared`,
+`test_r7_recalculate_everyone_asks_first`,
+`test_notes_are_named_in_the_journey_and_the_verdict`; the board-advice test
+expects "Checks pass · 2 notes". Suite **158 classes, 0 failed**. No top-up
+test (nothing to tell a top-up apart with — see R6 above). vi_VN: 11 new
+entries, 7 merged; PoFileReader on the box: 819 rows, clean.
+
+Console: clean on every screen walked (only the existing app-icon size
+warning). The logo loader seen in some shots now comes from the Learn helper's
+own request (`learn.guide.rpc_guide`, ~11 s), not from this screen.
+
+Screenshots: `p2_screens/F1_wide_draft_payobook_2419.png` (1568 px),
+`p2_screens/F1_phone_approved_payobook_1524.png` (400 px; page scroll width
+= 400).
+
+Ledger: R6, R7 added.
+
+**Decision needed (owner):** how should a top-up be told apart from a full
+month? Options in plain words: (a) a "kind of run" choice when a run is made
+(Regular / Top-up), shown on the run and used for "Compared with"; (b) a
+top-up is any run whose scheme is not set on the run itself (fragile —
+some full months have no scheme set either); (c) leave it: compare with the
+approved full month and accept the large percentages on top-ups.
