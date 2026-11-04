@@ -150,7 +150,7 @@
           <div class="pboc-canvas" t-ref="canvas" aria-label="Organisation chart">
 
             <t t-if="state.view === 'tree' or state.view === 'lr'">
-              <div t-att-class="'pboc-world' + (state.view === 'lr' ? ' lr' : '')" t-ref="world">
+              <div t-att-class="'pboc-world' + (state.view === 'lr' ? ' lr' : '') + (cards.length > 150 ? ' calm' : '')" t-ref="world">
                 <svg class="pboc-edges" t-att-width="worldSize.w" t-att-height="worldSize.h">
                   <t t-foreach="[state.rev]" t-as="rv" t-key="rv">
                     <g class="pboc-edges-g">
@@ -159,11 +159,7 @@
                       </t>
                     </g>
                   </t>
-                  <g>
-                    <t t-foreach="hiEdges" t-as="he" t-key="he.id">
-                      <path t-att-d="he.d" class="hi"/>
-                    </t>
-                  </g>
+                  <g t-ref="hi" class="pboc-hi"/>
                 </svg>
                 <div t-if="lay.lane" class="pboc-lane"
                      t-attf-style="transform:translate({{lay.lane.x}}px,{{lay.lane.y}}px);width:{{lay.lane.w}}px;height:{{lay.lane.h}}px">
@@ -171,35 +167,10 @@
                     <button t-if="lay.lane.open" class="pboc-lane-act" t-on-click="() => this.foldLane()">Show fewer</button>
                   </h5>
                 </div>
-                <div class="pboc-nodes" t-on-mouseleave="() => this.onLeave()">
+                <div class="pboc-nodes" t-ref="nodes" t-on-mouseleave="() => this.onLeave()">
                   <t t-foreach="cards" t-as="c" t-key="c.id">
-                    <div t-att-class="cardClass(c)" t-att-style="cardStyle(c)" t-att-data-id="c.id"
-                         tabindex="-1" role="treeitem" t-att-aria-label="cardLabel(c.n)"
-                         t-on-mouseenter="() => this.onHover(c.id)" t-on-click="(ev) => this.onCardClick(c, ev)"
-                         t-on-dblclick="() => this.onCardDbl(c)">
-                      <span t-if="isMe(c.n)" class="pboc-you">You</span>
-                      <div class="top">
-                        <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="c.n"/><t t-set="avCls" t-value="'pboc-av'"/></t>
-                        <div class="who">
-                          <div class="nm" t-esc="nameOf(c.n)"/>
-                          <div class="jt" t-esc="c.n.title"/>
-                          <div class="dp"><i t-att-style="deptDot(c.n)"/><t t-esc="c.n.dept or '—'"/> · <t t-esc="c.n.loc"/></div>
-                        </div>
-                      </div>
-                      <div t-if="c.tags.length" class="tags">
-                        <t t-foreach="c.tags" t-as="tg" t-key="tg.k">
-                          <span t-att-class="'pboc-tag ' + tg.cls"><t t-out="icon(tg.ic, 11)"/> <t t-esc="tg.text"/></span>
-                        </t>
-                      </div>
-                      <div class="qa">
-                        <button title="Open side panel" t-on-click.stop="() => this.select(c.id)"><t t-out="icon('eye', 13)"/></button>
-                      </div>
-                      <button t-if="c.hasTeam" class="tog" t-att-title="toggleTitle(c)" t-on-click.stop="() => this.toggle(c)">
-                        <t t-if="state.branchBusy === c.id"><span class="pboc-mini-spin"/></t>
-                        <t t-elif="c.folded"><t t-out="icon('plus', 12)"/> <t t-esc="fmtInt(c.total)"/></t>
-                        <t t-else=""><t t-out="icon(state.view === 'lr' ? 'chevronLeft' : 'chevronUp', 13)"/></t>
-                      </button>
-                    </div>
+                    <PbOcCard c="c" cls="cardClass(c)" st="cardStyle(c)" color="colorOf(c.n)"
+                              busy="state.branchBusy === c.id" lr="state.view === 'lr'" api="api"/>
                   </t>
                   <button t-if="moreTile" class="pboc-more" t-attf-style="transform:translate({{moreTile.x}}px,{{moreTile.y}}px);width:{{moreTile.w}}px;height:{{moreTile.h}}px"
                           t-on-click="() => this.openLane()">
@@ -388,6 +359,37 @@
 
       <t t-if="state.drawerEmpId and drawerCmp"
          t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
+    </div>
+  </t>
+
+  <!-- ============================== one card (PbOcCard) ============================== -->
+  <t t-name="pb_orgchart.Card">
+    <div t-att-class="props.cls" t-att-style="props.st" t-att-data-id="props.c.id"
+         tabindex="-1" role="treeitem" t-att-aria-label="props.api.cardLabel(props.c.n)"
+         t-on-mouseenter="() => props.api.hover(props.c.id)" t-on-click="(ev) => props.api.click(props.c, ev)"
+         t-on-dblclick="() => props.api.dbl(props.c)">
+      <span t-if="props.api.isMe(props.c.n)" class="pboc-you">You</span>
+      <div class="top">
+        <t t-call="pb_orgchart.Avatar"><t t-set="n" t-value="props.c.n"/><t t-set="avCls" t-value="'pboc-av'"/></t>
+        <div class="who">
+          <div class="nm" t-esc="props.api.nameOf(props.c.n)"/>
+          <div class="jt" t-esc="props.c.n.title"/>
+          <div class="dp"><i t-att-style="props.api.deptDot(props.c.n)"/><t t-esc="props.c.n.dept or '—'"/> · <t t-esc="props.c.n.loc"/></div>
+        </div>
+      </div>
+      <div t-if="props.c.tags.length" class="tags">
+        <t t-foreach="props.c.tags" t-as="tg" t-key="tg.k">
+          <span t-att-class="'pboc-tag ' + tg.cls"><t t-out="icon(tg.ic, 11)"/> <t t-esc="tg.text"/></span>
+        </t>
+      </div>
+      <div class="qa">
+        <button title="Open side panel" t-on-click.stop="() => props.api.select(props.c.id)"><t t-out="icon('eye', 13)"/></button>
+      </div>
+      <button t-if="props.c.hasTeam" class="tog" t-att-title="props.api.toggleTitle(props.c)" t-on-click.stop="() => props.api.toggle(props.c)">
+        <t t-if="props.busy"><span class="pboc-mini-spin"/></t>
+        <t t-elif="props.c.folded"><t t-out="icon('plus', 12)"/> <t t-esc="props.api.fmtInt(props.c.total)"/></t>
+        <t t-else=""><t t-out="icon(props.lr ? 'chevronLeft' : 'chevronUp', 13)"/></t>
+      </button>
     </div>
   </t>
 

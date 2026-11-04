@@ -207,7 +207,9 @@
         transition: transform .35s var(--oc-ease), box-shadow .15s, border-color .15s, opacity .3s;
         &:hover { box-shadow: var(--oc-sh-2); border-color: var(--oc-p-soft2); z-index: 3; }
         &.sel { border-color: var(--oc-p); box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); z-index: 3; }
-        &.path { border-color: var(--oc-p); box-shadow: 0 0 0 2px var(--oc-p-ring); }
+        &.hl { border-color: var(--oc-p); box-shadow: 0 0 0 2px var(--oc-p-ring); }
+        &.dim.hl { opacity: 1; }
+        &.sel.hl { box-shadow: 0 0 0 3px var(--oc-p-ring), var(--oc-sh-2); }
         &.dim { opacity: .25; }
         &.open { border-style: dashed; border-color: var(--oc-amber-line); background: #FFFCF2; }
         .top { display: flex; gap: 10px; align-items: flex-start; }
@@ -238,6 +240,13 @@
     .pboc-world.lr .pboc-node .tog { left: auto; right: -13px; bottom: auto; top: 50%; transform: translateY(-50%); }
     // the chart draws itself: cards settle in, top first
     .pboc-node.pboc-in { animation: pboc-settle .45s var(--oc-ease) both; }
+    // Above 150 cards the entrance would restyle every card on every frame
+    // (657 cards = 100 ms frames for two seconds, G12): a big chart just
+    // appears, and its cards do not glide when the layout changes.
+    .pboc-world.calm {
+        .pboc-node { transition: box-shadow .15s, border-color .15s, opacity .3s; }
+        .pboc-node.pboc-in, .pboc-edges-g { animation: none; }
+    }
     .pboc-you {
         position: absolute; top: -9px; left: 12px; font-size: 10px; font-weight: 700; letter-spacing: .05em; background: var(--oc-p);
         color: #fff; border-radius: 999px; padding: 1px 7px; line-height: 1.5;

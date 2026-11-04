@@ -44,9 +44,23 @@ const MIN_FIT = 0.42;     // G3: never shrink below readable
 const WIDE = 10;
 const BIG_DRAW = 400;     // fold more when a first draw would exceed this
 
+/**
+ * One card. Its own component so that a page of 650 cards re-renders only the
+ * cards whose props changed (OWL skips a child whose props are equal): a
+ * selection redraws two cards, a filter redraws the ones it dims.
+ */
+export class PbOcCard extends Component {
+    static template = "pb_orgchart.Card";
+    static props = ["c", "cls", "st", "color", "busy", "lr", "api"];
+
+    icon(n, s = 16) { return icon(n, s); }
+
+    avatarStyle(n) { return n.isRole ? "" : `background:${this.props.color}`; }
+}
+
 export class PbOrgChart extends Component {
     static template = "pb_orgchart.PbOrgChart";
-    static components = { HubBackChip };
+    static components = { HubBackChip, PbOcCard };
     static props = { embedded: { type: Boolean, optional: true }, "*": true };
 
     setup() {
@@ -59,6 +73,26 @@ export class PbOrgChart extends Component {
         this.pctRef = useRef("pct");
         this.vpRef = useRef("vp");
         this.searchRef = useRef("search");
+        this.nodesRef = useRef("nodes");
+        this.hiRef = useRef("hi");
+        this._hover = null;
+        this._marked = [];
+        // ONE object for the cards' callbacks, made once: a card re-renders
+        // only when its props change, and a fresh arrow per render would be
+        // a change on every card every time.
+        this.api = {
+            select: (id) => this.select(id),
+            toggle: (c) => this.toggle(c),
+            hover: (id) => this.onHover(id),
+            click: (c, ev) => this.onCardClick(c, ev),
+            dbl: (c) => this.onCardDbl(c),
+            nameOf: (n) => this.nameOf(n),
+            deptDot: (n) => this.deptDot(n),
+            isMe: (n) => this.isMe(n),
+            toggleTitle: (c) => this.toggleTitle(c),
+            cardLabel: (n) => this.cardLabel(n),
+            fmtInt: (n) => this.fmtInt(n),
+        };
         this.back = this.props.embedded ? null : hubBack(this.props);
 
         this.state = useState({
@@ -66,7 +100,7 @@ export class PbOrgChart extends Component {
             view: "tree", compact: false, colorBy: "dept", levels: 0,
             filters: { dept: null, loc: null, type: null },
             focus: null, q: "", sugg: -1,
-            sel: null, hover: null, side: null, sideTab: "team",
+            sel: null, side: null, sideTab: "team",
             menu: null, laneOpen: false, branchBusy: null,
             drawerEmpId: null, nomgrDismissed: false,
         });
@@ -223,6 +257,7 @@ export class PbOrgChart extends Component {
         const idx = this.idx;
         const lay = this.lay;
         const out = [];
+        const prev = this._cardMap || new Map();
         for (const [id, p] of lay.pos) {
             if (id === lay.moreId) { continue; }
             const n = idx.byId.get(id);
@@ -243,14 +278,21 @@ export class PbOrgChart extends Component {
                             text: total > direct ? _t("%(d)s direct · %(t)s total", { d: direct, t: total })
                                                  : _t("%(d)s direct", { d: direct }) });
             }
+            const folded = this.collapsed.has(id) || isUnloaded(idx, n);
+            // the same card object when nothing about it moved: its props are
+            // then equal and OWL does not re-render it
+            const sig = [p.x, p.y, p.w, p.h, !!p.stack, !!p.lane, folded, direct, total,
+                         tags.map((t) => t.k + t.text).join(",")].join("|");
+            const old = prev.get(id);
+            if (old && old.sig === sig && old.n === n) { out.push(old); continue; }
             out.push({
-                id, n, x: p.x, y: p.y, w: p.w, h: p.h, stk: !!p.stack, lane: !!p.lane,
-                tags, direct, total, hasTeam: direct > 0,
-                folded: this.collapsed.has(id) || isUnloaded(idx, n),
+                id, n, sig, x: p.x, y: p.y, w: p.w, h: p.h, stk: !!p.stack, lane: !!p.lane,
+                tags, direct, total, hasTeam: direct > 0, folded,
                 delay: this.firstDraw ? Math.min(60 * (idx.depth.get(id) || 0) + (p.lane ? 120 : 0), 480) : 0,
             });
         }
         this.cards = out;
+        this._cardMap = new Map(out.map((c) => [c.id, c]));
     }
 
     get moreTile() {
@@ -261,15 +303,19 @@ export class PbOrgChart extends Component {
     }
 
     get worldSize() {
-        const b = bounds(this.lay.pos, this.lay.lane);
-        return { w: b.x + b.w + 400, h: b.y + b.h + 400 };
+        if (this._wsRev !== this.state.rev) {
+            const b = bounds(this.lay.pos, this.lay.lane);
+            this._ws = { w: b.x + b.w + 400, h: b.y + b.h + 400 };
+            this._wsRev = this.state.rev;
+        }
+        return this._ws;
     }
 
     // ============================================================ emphasis
     /** The hovered (or selected) person and their managers — memoised per
      *  render key, because every card asks for it. */
     get pathIds() {
-        const hl = this.state.hover || this.state.sel;
+        const hl = this._hover || this.state.sel;
         const key = hl + ":" + this.state.rev;
         if (this._pathKey === key) { return this._path; }
         this._pathKey = key;
@@ -313,12 +359,10 @@ export class PbOrgChart extends Component {
 
     cardClass(c) {
         const s = this.state;
-        const path = this.pathIds;
         const cls = ["pboc-node"];
         if (s.compact) { cls.push("compact"); }
         if (s.sel === c.id) { cls.push("sel"); }
-        else if (path && path.has(c.id)) { cls.push("path"); }
-        if (this.anyFilter && !this.emphasised(c.n) && !(path && path.has(c.id))) { cls.push("dim"); }
+        if (this.anyFilter && !this.emphasised(c.n)) { cls.push("dim"); }
         if (c.n.isRole) { cls.push("open"); }
         if (this.isMe(c.n)) { cls.push("me"); }
         if (c.stk) { cls.push("stk"); }
@@ -336,10 +380,27 @@ export class PbOrgChart extends Component {
         return !!(this.data && this.data.me && n.empId === this.data.me);
     }
 
-    get hiEdges() {
+    /**
+     * The chain to the top, painted straight onto the page (the POC's way):
+     * hover never re-renders a card. `hl` marks the cards, the paths go into
+     * an SVG group the template leaves empty. Re-applied after every patch.
+     */
+    _paintPath() {
+        for (const el of this._marked) { el.classList.remove("hl"); }
+        this._marked = [];
+        const host = this.nodesRef.el;
+        const g = this.hiRef.el;
         const path = this.pathIds;
-        if (!path) { return []; }
-        return this.edgeList.filter((e) => !e.dot && path.has(e.id) && path.has(e.from));
+        if (g) {
+            g.innerHTML = path ? this.edgeList
+                .filter((e) => !e.dot && path.has(e.id) && path.has(e.from))
+                .map((e) => `<path class="hi" d="${e.d}"/>`).join("") : "";
+        }
+        if (!host || !path) { return; }
+        for (const id of path) {
+            const el = host.querySelector(`[data-id="${CSS.escape(id)}"]`);
+            if (el) { el.classList.add("hl"); this._marked.push(el); }
+        }
     }
 
     // ============================================================= colours
@@ -709,9 +770,9 @@ export class PbOrgChart extends Component {
 
     setSideTab(t) { this.state.sideTab = t; }
 
-    onHover(id) { if (this.state.hover !== id) { this.state.hover = id; } }
+    onHover(id) { if (this._hover !== id) { this._hover = id; this._paintPath(); } }
 
-    onLeave() { if (this.state.hover) { this.state.hover = null; } }
+    onLeave() { if (this._hover) { this._hover = null; this._paintPath(); } }
 
     onCardClick(c, ev) {
         if (this._dragged) { return; }
@@ -955,8 +1016,14 @@ export class PbOrgChart extends Component {
     zoomReset() { this.vp.zoom = 1; this.applyTransform(true); }
 
     get minimap() {
-        void this.state.rev;
         if (!this.lay) { return null; }
+        if (this._mmRev === this.state.rev) { return this._mm; }
+        this._mmRev = this.state.rev;
+        this._mm = this._buildMinimap();
+        return this._mm;
+    }
+
+    _buildMinimap() {
         const b = bounds(this.lay.pos, this.lay.lane);
         const pad = 40;
         const rects = [];
@@ -1013,6 +1080,7 @@ export class PbOrgChart extends Component {
         } else {
             this.applyTransform(false);
         }
+        this._paintPath();
         if (this._pendingCenter && this.worldRef.el) {
             const id = this._pendingCenter;
             this._pendingCenter = null;
