@@ -25,9 +25,11 @@ Both phases are live on `payobook`, `payobook_template`, `p0clone`, `rize`.
 ## Open items
 1. ~~Test contract 3650~~ — **DONE 2026-11-04**: owner chose delete; removed
    with its 3 lines and 8 history rows (shell, rize).
-2. **Pay run card advisory has no door yet** (kept out of the run screen
-   while the PAY RUN SCREEN session owns it). Add `next` → Contracts › To
-   check once that session has shipped.
+2. ~~Pay run card advisory door~~ — **DONE 2026-11-04**, commit `e5622ef72`,
+   pb_payruns 19.0.3.4.3 live ×4: the advisory carries `next` = client
+   action `pb_contracts` with `params.view='fillin'` ("Open Contracts › To
+   check", VI added); the run card's `openCheck` opens any `next.action`;
+   the new pay run screen renders it as an outline button without change.
 3. ~~New contract dialog bugs (FI14)~~ — **DONE 2026-11-04**, commit
    `d7b552637`, pb_people_advanced 19.0.1.1.2 live ×4: `create_contract`
    returns `applied=True` on the direct path ("Contract created" now shows;
