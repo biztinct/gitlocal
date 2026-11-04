@@ -100,15 +100,21 @@ class PbOrgChart(models.AbstractModel):
         write one) is broken by making the unreachable people roots.
         """
         Emp = self.env['hr.employee']
-        light = Emp.search_read(
-            [('company_id', 'in', self._company_ids())],
-            ['parent_id', 'department_id'], order='id')
-        ids = [r['id'] for r in light]
+        # WHO is in the chart is the ORM's answer (access rules, multi-company,
+        # archived); only the parent column of those ids is read in SQL. A
+        # `search_read(['parent_id'])` of 4,500 people spends 450 ms naming
+        # managers the shape never shows (G11).
+        ids = Emp.search([('company_id', 'in', self._company_ids())], order='id').ids
         idset = set(ids)
+        Emp.flush_model(['parent_id'])
+        parent = {}
+        if ids:
+            self.env.cr.execute("SELECT id, parent_id FROM hr_employee WHERE id = ANY(%s)", [ids])
+            parent = dict(self.env.cr.fetchall())
         mgr = {}
-        for r in light:
-            m = _m2o_id(r['parent_id'])
-            mgr[r['id']] = m if (m and m in idset and m != r['id']) else False
+        for i in ids:
+            m = parent.get(i)
+            mgr[i] = m if (m and m in idset and m != i) else False
         kids = {}
         for i in ids:
             m = mgr[i]
@@ -149,9 +155,23 @@ class PbOrgChart(models.AbstractModel):
             m = mgr[i]
             if m:
                 total[m] += 1 + total[i]
-        dept = {r['id']: _m2o_id(r['department_id']) for r in light}
         return {'ids': ids, 'mgr': mgr, 'kids': kids, 'depth': depth,
-                'total': total, 'roots': roots, 'dept': dept}
+                'total': total, 'roots': roots}
+
+    @api.model
+    def _team_count(self, ids, rows):
+        """Distinct teams across everyone (the subline), from the current versions."""
+        try:
+            self.env['hr.employee'].flush_model(['current_version_id'])
+            self.env['hr.version'].flush_model(['department_id'])
+            self.env.cr.execute("""
+                SELECT count(DISTINCT v.department_id)
+                  FROM hr_employee e JOIN hr_version v ON v.id = e.current_version_id
+                 WHERE e.id = ANY(%s)""", [list(ids)])
+            return self.env.cr.fetchone()[0] or 0
+        except Exception as e:  # noqa: BLE001 — fall back to what was sent
+            _logger.debug("pb_orgchart: team count failed: %s", e)
+            return len({r['dept_id'] for r in rows if r['dept_id']})
 
     # ---------------------------------------------------- reference data
     @api.model
@@ -249,23 +269,100 @@ class PbOrgChart(models.AbstractModel):
         }.get(self._type_key(code, contract_type)) or _("Full-time")
 
     @api.model
+    def _names(self, model, id_set):
+        """{id: display name} for a handful of many2one targets, one read."""
+        id_set = [i for i in id_set if i]
+        if not id_set:
+            return {}
+        M = self.env[model]
+        try:
+            rows = M.browse(id_set).read(['display_name'])
+        except AccessError:
+            rows = M.sudo().browse(id_set).read(['display_name'])
+        return {r['id']: r['display_name'] for r in rows}
+
+    @api.model
+    def _employee_data(self, ids, depts):
+        """Each person's fields, keyed by id, in `search_read` shape.
+
+        The team, title and location live on the person's VERSION (Odoo 19
+        `_inherits`). Read through the employee they cost ~1.5 ms a person
+        (945 ms for 657 on payobook); read from the stored current version in
+        one batch they cost a third of that. Both reads are as the user: when
+        the user may not read versions directly, the slow path answers.
+        """
+        Emp = self.env['hr.employee']
+        Ver = self.env['hr.version'] if 'hr.version' in self.env else None
+        vfields = ['job_title', 'job_id', 'department_id', 'work_location_id', 'address_id']
+        for f in ('employee_type', 'departure_date', 'contract_type_id'):
+            if self._readable(Emp, f) and (Ver is None or self._readable(Ver, f)):
+                vfields.append(f)
+        efields = ['name', 'company_id', 'user_id', 'create_date']
+        if self._readable(Emp, 'first_contract_date'):
+            efields.append('first_contract_date')
+        try:
+            if Ver is None or 'current_version_id' not in Emp._fields:
+                raise AccessError('no versions')
+            emps = Emp.search_read([('id', 'in', ids)], efields + ['current_version_id'], load=None)
+            vids = [e['current_version_id'] for e in emps if e['current_version_id']]
+            vers = {v['id']: v for v in Ver.browse(vids).read(vfields, load=None)}
+        except AccessError:
+            return {r['id']: r for r in Emp.search_read([('id', 'in', ids)], efields + vfields)}
+        m2o = {'job_id': 'hr.job', 'work_location_id': 'hr.work.location',
+               'contract_type_id': 'hr.contract.type'}
+        names = {f: self._names(model, {v.get(f) for v in vers.values()})
+                 for f, model in m2o.items() if f in vfields}
+        companies = self._names('res.company', {e['company_id'] for e in emps})
+        out = {}
+        for e in emps:
+            v = vers.get(e['current_version_id']) or {}
+            r = dict(e)
+            r['company_id'] = (e['company_id'], companies.get(e['company_id'], '')) if e['company_id'] else False
+            r['user_id'] = (e['user_id'], '') if e['user_id'] else False
+            for f in vfields:
+                val = v.get(f, False)
+                if f in names:
+                    val = (val, names[f].get(val, '')) if val else False
+                elif f == 'department_id':
+                    val = (val, (depts.get(val) or {}).get('name', '')) if val else False
+                elif f == 'address_id':
+                    val = (val, '') if val else False
+                r[f] = val
+            out[e['id']] = r
+        return out
+
+    @api.model
+    def _photo_ids(self, ids):
+        """Employees with a REAL photo.
+
+        Every employee gets an image on file the moment they are created: the
+        system draws a letter on a coloured square and stores it as an SVG
+        (hr.employee create, `_avatar_generate_svg`). Showing that would hide
+        the chart's own colours (team, location, ...) on every card, so only
+        a raster image counts as a photo. One read of the image attachments'
+        types — `sudo()` because field attachments are not searchable as the
+        user; it returns ids the caller has already read, nothing else.
+        """
+        try:
+            rows = self.env['ir.attachment'].sudo().search_read([
+                ('res_model', '=', 'hr.employee'), ('res_field', '=', 'image_1920'),
+                ('res_id', 'in', list(ids))], ['res_id', 'mimetype'])
+        except Exception as e:  # noqa: BLE001 — no photos is a fine answer
+            _logger.debug("pb_orgchart: photo lookup failed: %s", e)
+            return set()
+        return {r['res_id'] for r in rows
+                if r['mimetype'] and r['mimetype'].startswith('image/')
+                and 'svg' not in r['mimetype']}
+
+    @api.model
     def _rows(self, ids, graph, depts):
         """Full rows for these employee ids, in the order given."""
         if not ids:
             return []
         Emp = self.env['hr.employee']
-        want = ['name', 'job_title', 'job_id', 'department_id', 'company_id',
-                'work_location_id', 'address_id', 'user_id', 'create_date']
-        for f in ('employee_type', 'departure_date', 'first_contract_date',
-                  'contract_type_id'):
-            if self._readable(Emp, f):
-                want.append(f)
-        # image presence without the bytes: bin_size answers a size or False
-        has_img = 'image_128' in Emp._fields and self._readable(Emp, 'image_128')
-        if has_img:
-            want.append('image_128')
-        recs = {r['id']: r for r in Emp.with_context(bin_size=True).search_read(
-            [('id', 'in', ids)], want)}
+        recs = self._employee_data(ids, depts)
+        want = next(iter(recs.values()), {}).keys() if recs else ()
+        photos = self._photo_ids(ids)
 
         today = fields.Date.context_today(self)
         # Who is away today (hr_holidays): one search, never a per-row compute.
@@ -335,7 +432,7 @@ class PbOrgChart(models.AbstractModel):
                     'status_note': note,
                     'user_id': _m2o_id(r['user_id']),
                     'avatar': ('/web/image/hr.employee/%s/avatar_128' % i)
-                    if (has_img and r.get('image_128')) else False,
+                    if i in photos else False,
                     'n_reports': len(graph['kids'].get(i, ())),
                     'n_total': graph['total'].get(i, 0),
                     'depth': graph['depth'].get(i, 0),
@@ -420,7 +517,7 @@ class PbOrgChart(models.AbstractModel):
                 'wide': sum(1 for m in managers if len(graph['kids'][m]) >= WIDE_SPAN),
                 'dotted': 0,  # P2 (ledger D2)
                 'new': new,
-                'teams': len({d for d in graph['dept'].values() if d}),
+                'teams': self._team_count(ids, rows),
             },
         }
         ms = int((time.time() - t0) * 1000)

@@ -586,21 +586,25 @@ export class PbOrgChart extends Component {
 
     setFocus(key) {
         const s = this.state;
-        const was = s.focus;
+        // grey at zero: a number with nothing behind it filters nothing
+        const k = this.kpis.find((x) => x.key === key);
+        if (k && k.zero && s.focus !== key) { return; }
         s.focus = s.focus === key ? null : key;
         s.menu = null;
         if (!s.focus) {
             // the lane was opened for this focus: fold it again
-            if (was === "nomgr" && s.laneOpen) { s.laneOpen = false; this._relayoutAndFit(); }
+            if (this._laneByFocus && s.laneOpen) { s.laneOpen = false; this._relayoutAndFit(); }
+            this._laneByFocus = false;
             return;
         }
-        if (s.focus === "nomgr") { s.laneOpen = true; }
         if (s.view !== "tree" && s.view !== "lr" && s.focus === "nomgr") { s.view = "tree"; }
-        // Unfold the branches that hide what the number counts.
+        // Unfold whatever hides what the number counts: folded branches, and
+        // the lane when any of them waits there behind "+N more".
         let opened = 0;
         for (const n of this.nodes) {
-            if (opened > 200) { break; }
-            if (this.emphasised(n)) {
+            if (!this.emphasised(n)) { continue; }
+            if (this.idx.loneSet.has(n.id)) { this._laneByFocus = true; s.laneOpen = true; }
+            if (opened < 200) {
                 for (const a of ancestors(this.idx, n.id)) { this.collapsed.delete(a.id); }
                 opened++;
             }
@@ -806,7 +810,9 @@ export class PbOrgChart extends Component {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `org-chart-${new Date().toISOString().slice(0, 10)}.csv`;
+        const d = new Date();
+        const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        a.download = `org-chart-${day}.csv`;
         a.click();
         URL.revokeObjectURL(url);
         this.notif.add(_t("Spreadsheet saved with %(n)s rows.", { n: this.fmtInt(rows.length) }), { type: "success" });
@@ -843,6 +849,9 @@ export class PbOrgChart extends Component {
         const m = this.idx.eff.get(n.id);
         return m ? this.nameOf(this.idx.byId.get(m)) : "";
     }
+
+    /** No manager and no team: the "no manager yet" lane. */
+    isLone(n) { return !!(this.idx && this.idx.loneSet.has(n.id)); }
 
     rowStyle(r) { return `padding-left:${r.d * 22}px`; }
 
@@ -902,9 +911,14 @@ export class PbOrgChart extends Component {
         const top = this.idx.trees.length
             ? this.idx.trees.slice().sort((a, b2) => totalCount(this.idx, b2) - totalCount(this.idx, a))[0] : null;
         const rp = top && this.lay.pos.get(top.id);
-        if (want < MIN_FIT && rp) {
+        if (want < MIN_FIT && rp && this.idx.trees.length === 1) {
+            // one big tree: its top in the middle, people pan down
             this.vp.px = cv.width / 2 - (rp.x + rp.w / 2) * z;
-            this.vp.py = 36 - Math.min(b.y, this.lay.lane ? this.lay.lane.y : b.y) * z;
+            this.vp.py = 36 - b.y * z;
+        } else if (want < MIN_FIT) {
+            // many teams side by side: start reading at the top left
+            this.vp.px = 30 - b.x * z;
+            this.vp.py = 36 - b.y * z;
         } else {
             this.vp.px = (cv.width - b.w * z) / 2 - b.x * z;
             this.vp.py = 36 - b.y * z;

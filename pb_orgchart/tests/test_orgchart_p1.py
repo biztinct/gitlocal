@@ -270,3 +270,13 @@ class TestOrgChartP1(TransactionCase):
         d = self.env['pb.orgchart'].with_context(allowed_company_ids=[co.id]).get_chart()
         self.assertEqual(d['counts']['no_manager'], 0)
         self.assertEqual(d['counts']['people'], 1)
+
+    def test_14_only_real_photos_count(self):
+        """A generated letter avatar (SVG) is not a photo; a PNG is."""
+        png = ('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGA'
+               'hKmMIQAAAABJRU5ErkJggg==')
+        self.staff[1].image_1920 = png
+        rows = self.by_id(self.chart().get_chart())
+        self.assertTrue(rows[self.staff[1].id]['avatar'])
+        self.assertIn('/web/image/hr.employee/%s/' % self.staff[1].id, rows[self.staff[1].id]['avatar'])
+        self.assertFalse(rows[self.staff[0].id]['avatar'], "the generated letter avatar is not a photo")

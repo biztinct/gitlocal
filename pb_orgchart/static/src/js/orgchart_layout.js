@@ -166,8 +166,16 @@ export function isUnloaded(idx, n) {
  */
 export function layout(idx, opts) {
     const { w: W, h: H } = cardSize(opts.compact);
+    const LR = opts.view === "lr";
+    // The tree is laid out in BREADTH x DEPTH units and rotated for sideways:
+    // top-down a card is W broad and H deep; sideways it is H broad (cards
+    // stack down the page) and W deep (levels step right). Rotating x/y alone
+    // (the POC) packs 224-px cards into 166-px columns.
+    const BW = LR ? H : W;
+    const BH = LR ? W : H;
+    const SIB = LR ? 14 : GX;          // gap between siblings along the breadth
     const pos = new Map();
-    const STACK = opts.view === "tree";
+    const STACK = !LR;
     const collapsed = opts.collapsed || new Set();
     const levels = opts.levels || 0;
 
@@ -201,47 +209,48 @@ export function layout(idx, opts) {
     };
     const measure = (n) => {
         const ss = slots(n);
-        if (!ss.length) { hgt.set(n.id, H); wid.set(n.id, W); return W; }
+        if (!ss.length) { hgt.set(n.id, BH); wid.set(n.id, BW); return BW; }
         let w = 0;
         let hh = 0;
         for (const s of ss) {
             if (s.stack) {
-                w += W + IND + GX;
-                hh = Math.max(hh, s.stack.length * (H + SY) - SY + 8);
+                w += BW + IND + SIB;
+                hh = Math.max(hh, s.stack.length * (BH + SY) - SY + 8);
             } else {
-                w += measure(s.node) + GX;
+                w += measure(s.node) + SIB;
                 hh = Math.max(hh, hgt.get(s.node.id));
             }
         }
-        hgt.set(n.id, H + GY + hh);
-        const ww = Math.max(W, w - GX);
+        hgt.set(n.id, BH + GY + hh);
+        const ww = Math.max(BW, w - SIB);
         wid.set(n.id, ww);
         return ww;
     };
+    const tree = new Map();   // positions in breadth/depth units
     const place = (n, x, y) => {
         const ss = slots(n);
-        pos.set(n.id, { x: x + (wid.get(n.id) - W) / 2, y, w: W, h: H });
+        tree.set(n.id, { x: x + (wid.get(n.id) - BW) / 2, y });
         let cx = x;
         for (const s of ss) {
             if (s.stack) {
                 const tx = cx + IND / 2;
-                const ty = y + H + GY - 24;
-                s.stack.forEach((k, i) => pos.set(k.id, {
-                    x: cx + IND, y: y + H + GY + i * (H + SY), w: W, h: H, stack: { tx, ty },
+                const ty = y + BH + GY - 24;
+                s.stack.forEach((k, i) => tree.set(k.id, {
+                    x: cx + IND, y: y + BH + GY + i * (BH + SY), stack: { tx, ty },
                 }));
-                cx += W + IND + GX;
+                cx += BW + IND + SIB;
             } else {
-                place(s.node, cx, y + H + GY);
-                cx += wid.get(s.node.id) + GX;
+                place(s.node, cx, y + BH + GY);
+                cx += wid.get(s.node.id) + SIB;
             }
         }
     };
 
-    // ---- the forest: biggest tree first, rows that wrap
+    // ---- the forest: biggest tree first, rows (columns, sideways) that wrap
     const trees = idx.trees.slice().sort((a, b) => totalCount(idx, b) - totalCount(idx, a));
     for (const t of trees) { measure(t); }
     const widest = trees.reduce((m, t) => Math.max(m, wid.get(t.id)), 0);
-    const rowMax = Math.max(widest, 3000);
+    const rowMax = Math.max(widest, LR ? 2000 : 3000);
     const rows = [];
     let row = null;
     for (const t of trees) {
@@ -254,14 +263,33 @@ export function layout(idx, opts) {
         row.w += TREE_GAP + tw;
         row.h = Math.max(row.h, hgt.get(t.id));
     }
-    const forestW = rows.reduce((m, r) => Math.max(m, r.w), 0);
+    const forestBreadth = rows.reduce((m, r) => Math.max(m, r.w), 0);
+    let y = 0;
+    for (const r of rows) {
+        let x = (forestBreadth - r.w) / 2;
+        for (const t of r.items) {
+            place(t, x, y);
+            x += wid.get(t.id) + TREE_GAP;
+        }
+        y += r.h + GY;
+    }
+    // Real coordinates (rotated when sideways), forest at the origin.
+    let fx1 = 0;
+    for (const [id, t] of tree) {
+        const p = LR ? { x: t.y, y: t.x, w: W, h: H } : { x: t.x, y: t.y, w: W, h: H, stack: t.stack };
+        pos.set(id, p);
+        fx1 = Math.max(fx1, p.x + W);
+    }
+    const forestW = tree.size ? fx1 : 0;
 
-    // ---- the lane above the chart (people with no manager and no team)
+    // ---- the lane above the chart (people with no manager and no team);
+    // always a grid that reads left to right, whichever way the tree runs
     let lane = null;
     const laneIds = [];
     let moreId = null;
     const lone = idx.lone;
     let oy = 0;
+    const lanePos = [];
     if (lone.length) {
         // as wide as the chart below it, but never a thin column: 8 to 10 cards
         const cols = Math.max(8, Math.min(10, Math.floor(forestW / (W + GX)) || 8));
@@ -275,58 +303,29 @@ export function layout(idx, opts) {
         const lw = usedCols * (W + GX) - GX + LANE_PAD * 2;
         const lh = LANE_HEAD + nRows * (H + SY) - SY + LANE_PAD;
         lane = { x: 0, y: 0, w: lw, h: lh, hidden, total: lone.length, open: !!opts.laneOpen && lone.length > cap };
+        const cell = (i) => ({ x: LANE_PAD + (i % cols) * (W + GX), y: LANE_HEAD + Math.floor(i / cols) * (H + SY), w: W, h: H, lane: true });
         for (let i = 0; i < showN; i++) {
-            const n = lone[i];
-            pos.set(n.id, { x: LANE_PAD + (i % cols) * (W + GX), y: LANE_HEAD + Math.floor(i / cols) * (H + SY), w: W, h: H, lane: true });
-            laneIds.push(n.id);
+            lanePos.push([lone[i].id, cell(i)]);
+            laneIds.push(lone[i].id);
         }
         if (hidden) {
             moreId = "__more";
-            const i = showN;
-            pos.set(moreId, { x: LANE_PAD + (i % cols) * (W + GX), y: LANE_HEAD + Math.floor(i / cols) * (H + SY), w: W, h: H, lane: true, more: hidden });
+            lanePos.push([moreId, { ...cell(showN), more: hidden }]);
         }
         oy = lh + GY;
     }
-    // Centre the narrower of lane and forest on the wider.
+    // Centre the narrower of lane and forest on the wider; forest under the lane.
     const fullW = Math.max(forestW, lane ? lane.w : 0);
+    const fdx = (fullW - forestW) / 2;
+    for (const p of pos.values()) {
+        p.x += fdx;
+        p.y += oy;
+        if (p.stack) { p.stack = { tx: p.stack.tx + fdx, ty: p.stack.ty + oy }; }
+    }
     if (lane) {
         const dx = (fullW - lane.w) / 2;
         lane.x = dx;
-        for (const id of laneIds) { pos.get(id).x += dx; }
-        if (moreId) { pos.get(moreId).x += dx; }
-    }
-    let y = oy;
-    for (const r of rows) {
-        let x = (fullW - r.w) / 2;
-        for (const t of r.items) {
-            place(t, x, y);
-            x += wid.get(t.id) + TREE_GAP;
-        }
-        y += r.h + GY;
-    }
-
-    if (opts.view === "lr") {
-        for (const p of pos.values()) {
-            const x = p.x;
-            p.x = p.y;
-            p.y = x;
-            delete p.stack;
-        }
-        if (lane) {
-            const t = lane.x;
-            lane.x = lane.y;
-            lane.y = t;
-            // the lane's grid is transposed: its height becomes its width
-            let maxX = 0;
-            let maxY = 0;
-            for (const id of [...laneIds, ...(moreId ? [moreId] : [])]) {
-                const p = pos.get(id);
-                maxX = Math.max(maxX, p.x + W);
-                maxY = Math.max(maxY, p.y + H);
-            }
-            lane.w = maxX - lane.x + LANE_PAD;
-            lane.h = maxY - lane.y + LANE_PAD;
-        }
+        for (const [id, p] of lanePos) { p.x += dx; pos.set(id, p); }
     }
     return { pos, lane, laneIds, moreId, W, H };
 }

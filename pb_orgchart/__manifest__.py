@@ -25,7 +25,7 @@ WHAT THIS MODULE ADDS
 It reads the employee records and changes nothing. The chart updates itself
 whenever an employee record changes.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

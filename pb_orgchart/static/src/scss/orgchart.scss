@@ -138,6 +138,7 @@
         small { color: var(--oc-muted); font-size: 11.5px; display: block; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         > span:last-child { min-width: 0; }
         &.zero b { color: var(--oc-faint); }
+        &:disabled { cursor: default; &:hover { box-shadow: var(--oc-sh-1); transform: none; } }
     }
     .pboc-banner {
         display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 9px 14px; border-radius: 12px;
@@ -350,6 +351,7 @@
         .tw { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; color: var(--oc-p); flex: none;
             &:is(button):hover { background: var(--oc-p-soft); } }
         .role { color: var(--oc-amber); }
+        .pboc-dash { color: var(--oc-faint); }
     }
 
     // ------------------------------------------------------------ side panel

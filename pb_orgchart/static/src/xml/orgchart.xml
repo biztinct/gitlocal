@@ -77,7 +77,7 @@
           </div>
           <t t-foreach="kpis" t-as="k" t-key="k.key">
             <button t-att-class="'pboc-kpi' + (state.focus === k.key ? ' on' : '') + (k.zero ? ' zero' : '')"
-                    t-on-click="() => this.setFocus(k.key)">
+                    t-att-disabled="k.zero and state.focus !== k.key" t-on-click="() => this.setFocus(k.key)">
               <span t-att-class="'bd ' + k.tone"><t t-out="icon(k.ic, 18)"/></span>
               <span><b class="num" t-esc="fmtInt(k.val)"/><small t-esc="k.label"/></span>
             </button>
@@ -301,7 +301,7 @@
                       </div></td>
                       <td t-esc="r.n.title"/>
                       <td t-esc="r.n.dept"/>
-                      <td><t t-if="listMgr(r.n)" t-esc="listMgr(r.n)"/><span t-else="" class="pboc-tag rose">None</span></td>
+                      <td><t t-if="listMgr(r.n)" t-esc="listMgr(r.n)"/><span t-elif="isLone(r.n)" class="pboc-tag rose">None</span><span t-else="" class="pboc-dash">—</span></td>
                       <td t-esc="r.n.loc"/>
                       <td class="num"><t t-if="r.direct" t-esc="r.direct"/></td>
                       <td class="num"><t t-if="r.total" t-esc="r.total"/></td>
@@ -336,7 +336,7 @@
                 </t>
                 <t t-if="sideChain.length"><t t-out="icon('chevron', 13)"/></t>
                 <span class="me" t-esc="sideNode.isRole ? sideNode.title : sideNode.name"/>
-                <span t-if="!sideChain.length and !sideNode.isRole and data.counts.people > 1" class="pboc-tag rose"><t t-out="icon('userX', 11)"/> No manager</span>
+                <span t-if="isLone(sideNode) and !sideNode.isRole" class="pboc-tag rose"><t t-out="icon('userX', 11)"/> No manager</span>
               </div>
               <div class="facts">
                 <t t-foreach="sideFacts" t-as="fc" t-key="fc.k">
