@@ -51,11 +51,18 @@ class StudioPolicyService(models.AbstractModel):
         sources = self._studio_cached_sources(model, user.pb_access_revision, fields.Date.today())
         return sources if any(s['policy'] is not None for s in sources) else []
 
-    def _studio_acl_sources(self, model, operation, sources):
-        mode = 'read' if operation in ('export', 'download', 'reveal') else 'write' if operation in ('archive', 'reassign', 'approve') else operation
+    @tools.ormcache('model', 'mode')
+    def _studio_acl_groups(self, model, mode):
+        # Asked once per field of every fetched record, so it must not query.
+        # Any ir.model.access create/write/unlink clears this cache.
         acls = self.env['ir.model.access'].sudo().search([
             ('model_id.model', '=', model), ('active', '=', True), ('perm_%s' % mode, '=', True)])
-        return [s for s in sources if any(not a.group_id or a.group_id.id in s['group_ids'] for a in acls)]
+        return tuple(a.group_id.id for a in acls)
+
+    def _studio_acl_sources(self, model, operation, sources):
+        mode = 'read' if operation in ('export', 'download', 'reveal') else 'write' if operation in ('archive', 'reassign', 'approve') else operation
+        groups = self._studio_acl_groups(model, mode)
+        return [s for s in sources if any(not g or g in s['group_ids'] for g in groups)]
 
     def _studio_team(self, user):
         # Team means the employee hierarchy, not everybody with the same role.
@@ -255,6 +262,12 @@ class StudioResourceGuard(models.AbstractModel):
         if not super()._has_field_access(field, operation):
             return False
         if self._name not in RESOURCES or self.env.context.get('_pb_reveal') is REVEAL and self.env.context.get('_pb_reveal_field') == field.name:
+            return True
+        if operation == 'read' and not self.env.su and field.name not in RESOURCES[self._name]['fields']:
+            # A field outside the catalogue has no field rule: its answer is the
+            # record scope alone, which every non-sudo fetch and search already
+            # enforces through _check_access and the record-rule domain. Sudo
+            # keeps the full check (no record rules run there).
             return True
         return self.env['pb.access']._studio_field_allowed(self._name, field.name, 'create' if self.env.context.get('_pb_studio_creating') is CREATING and operation == 'write' else operation, self.ids if self and all(isinstance(i, int) for i in self.ids) else None)
 

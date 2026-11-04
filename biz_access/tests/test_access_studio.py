@@ -347,6 +347,28 @@ class TestAccessStudio(TransactionCase):
         with self.assertRaises(AccessError): record.export_data(['name'])
         with self.assertRaises(AccessError): record.write({'work_email': 'forbidden@example.invalid'})
 
+    def test_unlisted_field_follows_record_scope(self):
+        # Fields outside the catalogue skip the per-field check on a normal
+        # read; the record scope must still decide, and sudo keeps the check.
+        self.grant(); self.policy()
+        self.other_employee.write({'color': 7})
+        Employee = self.env['hr.employee'].with_user(self.person)
+        self.assertEqual(Employee.browse(self.employee.id).read(['color'])[0]['color'], 0)
+        with self.assertRaises(AccessError): Employee.browse(self.other_employee.id).read(['color'])
+        self.assertFalse(Employee.search([('color', '=', 7)]))
+        self.assertEqual(Employee.search([('id', 'in', (self.employee | self.other_employee).ids)]).mapped('color'), [0])
+        self.env.invalidate_all()
+        with self.assertRaises(AccessError): _ = self.other_employee.with_user(self.person).sudo().color
+
+    def test_application_acl_change_applies_at_once(self):
+        acl = self.env['ir.model.access'].search([('group_id', '=', self.group.id)])
+        Access = self.env['pb.access']
+        self.assertIn(self.group.id, Access._studio_acl_groups('hr.employee', 'write'))
+        acl.write({'perm_write': False})
+        self.assertNotIn(self.group.id, Access._studio_acl_groups('hr.employee', 'write'))
+        acl.write({'perm_write': True})
+        self.assertIn(self.group.id, Access._studio_acl_groups('hr.employee', 'write'))
+
     def test_facade_sudo_retains_policy(self):
         self.grant(); self.policy()
         record = self.employee.with_user(self.person).sudo()
