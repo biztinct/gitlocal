@@ -63,22 +63,44 @@ In `pb_orgchart` (bump to `19.0.1.3.0`), plus `pb_learn` content:
    generator wipes `pb_learn` `vi_VN.po` — restore it if that happens).
 8. **Vietnamese completeness**: diff every `_t()`/`_()` string in
    `pb_orgchart` against `vi_VN.po`; add what is missing; run the PO gate.
-   Take the Vietnamese screenshots the owner allowed: switch
-   `qa.test@payobook.com` on payobook.com to Vietnamese, photograph the
-   chart, a move sheet, the draft bar and the publish dialog, switch it
-   back (say so).
+   Take the Vietnamese screenshots the owner allowed — **the owner answered
+   Fable's question card directly on 2026-11-05: "Yes, on payobook demo
+   only", recorded in the ledger's owner rulings; this is first-hand, not
+   relayed** — switch `qa.test@payobook.com` on payobook.com to Vietnamese,
+   photograph the chart, a move sheet, the draft bar, the publish dialog and
+   the time machine, switch it back (say so).
 9. **Approvals ruling** (owner, 2026-11-05): a move changes the manager
    only; leave and expense approvals stay. Make sure the move sheet's "What
    changes" text says "Leave and expense approvals stay with <current
    approver> — change them on the employee record if they should move"
    (one sentence), in both languages. Remove any text that still promises
    approvals move.
+9b. **Prove Approve → live, in the browser, on payobook only** (P3 could
+    not click Approve: the browser tool refused the click). On payobook.com,
+    in a demo company that HAS the `orgplan` route (P3 report names which),
+    make a two-change plan on demo people, publish it, then approve it as a
+    user who holds the HR lifecycle seat (the signed-in admin session if
+    there is one). If the browser tool refuses the Approve click again, do
+    NOT work around the refusal in the browser: run the engine's own approve
+    method from an `odoo-bin shell` as that approver user, then show in the
+    browser that the chart changed and the plan reads "Applied". Afterwards
+    put the two demo people back (a reversing plan approved the same way, or
+    P2's undo), and say so. Never on rize.
+9c. **Picture / PDF of a plan**: the exports in §1.1–1.2 work in plan mode
+    on the projection (amber outlines and ghost lines included in the PNG;
+    the file name carries the plan name).
 10. **Closeout document** `ORGCHART_CLOSEOUT.md`: what shipped per phase with
     module versions, what is live where, every owner question collected
     across P1–P4 as plain questions with the default taken (pay on the
     chart; public share link; scenario compare; archived people in the past
     view; server-side PDF; hr_org_chart stock widget — keep or hide; the
-    deploy-script lock fix for the ops owner; anything P3 added), and the
+    deploy-script lock fix for the ops owner; from P3: should rize fill in
+    team managers on its team records so Suggest can place more than 1 of
+    236 people; "SG Company" on payobook has nobody in the HR lifecycle seat
+    so no plan — or contract extension — can be sent there; the
+    withdrawn-request bug P3 fixed for plans probably affects other approval
+    types — for whoever owns approvals; the approvers of a plan are the HR
+    lifecycle team because the engine has no separate people team), and the
     known limits (the 4,500-person demo numbers).
 11. **Tests** (§5) and the **report** (§7).
 
