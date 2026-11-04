@@ -26,6 +26,7 @@ goes through `res.groups.all_user_ids`, which is the transitive set.
 """
 
 import logging
+import re
 
 from odoo import _, Command, api, fields, models
 from odoo.exceptions import AccessError, UserError
@@ -1591,6 +1592,7 @@ class PbAccess(models.AbstractModel):
                 if (token or '').strip():
                     owners.setdefault(token.strip(), item.name or '')
         answer = {}
+        probed = {}
         for row in list(rows or [])[:200]:
             if not isinstance(row, dict):
                 continue
@@ -1617,10 +1619,47 @@ class PbAccess(models.AbstractModel):
             # not shown Hiring, and the Hiring board refuses them anyway.
             # Saying "they see it" here over that was the lie the owner
             # found on 2026-09-24 (Payobook user, Lifecycle → Hiring).
-            answer[key] = {'allowed': bool(
-                not names
-                or set(groups.ids) & held),
-                'parent': parent}
+            allowed = bool(not names or set(groups.ids) & held)
+            # A tab gated by a server question rather than a group list
+            # (Hiring, Goals, Growth plans, Skills, the payroll calendar):
+            # ask it AS THE PERSON, the way their own hub does, and only
+            # once their groups have let them that far — the order
+            # `resolveLensAccess` uses.
+            probe = row.get('probe')
+            if allowed and isinstance(probe, dict):
+                allowed = self._surface_probe(user, probe, probed)
+            answer[key] = {'allowed': allowed, 'parent': parent}
+        return answer
+
+    def _surface_probe(self, user, probe, cache):
+        """A hub tab's "can open" question, answered for `user`.
+
+        Only `can_*` predicates are asked — the row names them, so this is
+        never a way to call an arbitrary method. Each runs once per call, in
+        a savepoint, as the person with their own company, and FAILS CLOSED
+        like the tab rail does: a question that cannot be answered is a tab
+        that is not drawn.
+        """
+        model = str(probe.get('model') or '')[:120]
+        method = str(probe.get('method') or '')[:120]
+        if (model, method) in cache:
+            return cache[(model, method)]
+        answer = False
+        if model in self.env and re.fullmatch(r'can_[a-z0-9_]+', method):
+            context = {k: v for k, v in self.env.context.items()
+                       if k != 'allowed_company_ids'}
+            target = self.env(user=user.id, su=False, context=context)[model]
+            func = getattr(target, method, None)
+            if callable(func):
+                try:
+                    with self.env.cr.savepoint():
+                        answer = bool(func())
+                except Exception:                       # noqa: BLE001
+                    _logger.info('biz_access: %s.%s could not be asked for '
+                                 'user %s', model, method, user.id,
+                                 exc_info=True)
+                    answer = False
+        cache[(model, method)] = answer
         return answer
 
     @api.model

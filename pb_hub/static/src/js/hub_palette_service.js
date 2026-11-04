@@ -101,6 +101,27 @@ export const hubPaletteService = {
             return groupCache.get(xmlid);
         }
 
+        // "model.method" -> Promise<boolean>. A row whose tab is gated by a
+        // server question as well as groups (`probe`, the tab's own — Hiring,
+        // Goals, Growth plans, Skills) asks it once per session. It FAILS
+        // CLOSED, unlike `hasGroup` and exactly like the hub rail
+        // (`resolveLensAccess`): a question that cannot be answered is a tab
+        // the hub will not draw, so the row would open onto nothing.
+        const probeCache = new Map();
+
+        function askProbe(probe) {
+            const key = `${probe.model}.${probe.method}`;
+            if (!probeCache.has(key)) {
+                probeCache.set(key, orm.call(probe.model, probe.method, [])
+                    .then(Boolean)
+                    .catch((e) => {
+                        console.warn("pb_hub: could not ask", key, e);
+                        return false;
+                    }));
+            }
+            return probeCache.get(key);
+        }
+
         // ------------------------------------------------------ restrictions
         //
         // The rail can LOCK a door: `pb.sidebar.section.restricted` (and
@@ -233,9 +254,17 @@ export const hubPaletteService = {
                 .filter((e) => featureOf(e).shown);
             const flags = await Promise.all(all.map(async (e) => {
                 const groups = e.groups || [];
-                if (!groups.length) { return true; }
-                const answers = await Promise.all(groups.map(hasGroup));
-                return answers.some(Boolean);
+                if (groups.length) {
+                    const answers = await Promise.all(groups.map(hasGroup));
+                    if (!answers.some(Boolean)) { return false; }
+                }
+                // Groups first, then the tab's own question — the order the
+                // hub rail asks them in.
+                const probe = e.probe;
+                if (probe && probe.model && probe.method) {
+                    return askProbe(probe);
+                }
+                return true;
             }));
             return all.filter((_e, i) => flags[i]).map((e) => ({
                 id: e.id,

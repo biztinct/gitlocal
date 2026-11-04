@@ -473,6 +473,7 @@ export class PbAccessBoard extends Component {
                 this.orm.call("pb.access", "surface_access", [
                     catalogue.map((row) => ({
                         key: row.key, groups: row.groups, action: row.action,
+                        probe: row.probe,
                     })), id,
                 ]),
             ]);
@@ -505,6 +506,11 @@ export class PbAccessBoard extends Component {
                 label, icon: entry.icon || "circle",
                 action: entry.action || {},
                 groups: Array.isArray(entry.groups) ? entry.groups : [],
+                // A tab gated by a server question (`{model, method}`) as well
+                // as groups; the facade asks it as the person.
+                probe: entry.probe && entry.probe.model && entry.probe.method
+                    ? { model: entry.probe.model, method: entry.probe.method }
+                    : undefined,
             });
         }
         return out;
@@ -536,9 +542,14 @@ export class PbAccessBoard extends Component {
         for (const section of passport.rail || []) {
             for (const item of section.items || []) {
                 const surfaces = byParent.get(item.label);
+                // A screen cannot open through an entry that is not on their
+                // menu (or is shown locked) — the rule the role builder's
+                // `_rail_states` already applies to sub-entries.
+                const reachable = item.state === "on";
                 item.children = [
                     ...(item.children || []),
-                    ...(surfaces ? [...surfaces.values()] : []),
+                    ...(surfaces ? [...surfaces.values()].map((child) => (
+                        reachable ? child : { ...child, state: "off" })) : []),
                 ];
             }
         }

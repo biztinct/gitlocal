@@ -45,7 +45,7 @@ const HIRING_SETUP_GATE = [
     "pb_hiring.group_hiring_manager", "pb_hiring.group_hiring_admin", "base.group_system",
 ];
 
-const PROBE = { model: "pb.hiring", method: "can_open" };
+export const PROBE = { model: "pb.hiring", method: "can_open" };
 
 /** Where a later module bolts a lens onto the Hiring hub. */
 export const HIRING_LENSES = "pb_hiring_hub_lens";

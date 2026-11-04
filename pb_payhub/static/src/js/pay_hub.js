@@ -35,6 +35,7 @@ import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
 import { setPlaceSub } from "@pb_hub/js/hub_place";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PayrunWizard } from "@pb_payrun_wizard/js/payrun_wizard";
 import { PbPayruns } from "@pb_payruns/js/payruns";
@@ -69,6 +70,14 @@ const STAGE_LENS = { 1: "run", 2: "runs", 3: "payslips", 4: "deliver", 5: "runs"
  * advisory — every facade re-asks the question server-side (W12).
  */
 export const PAY_LENSES = "pb_payhub_lens";
+
+/** Payroll › Insights. Shared by the tab below and its gate registration. */
+const PAY_INSIGHTS_GATE = [
+    "pb_hr_payroll_base.group_payroll_base_manager",
+    "pb_hr_payroll_base.group_payroll_analytics_user",
+    "pb_hr_payroll_base.group_payroll_super_admin",
+    "base.group_system",
+];
 
 export class PbPayHub extends Component {
     static template = "pb_payhub.PbPayHub";
@@ -168,10 +177,7 @@ export class PbPayHub extends Component {
                 },
                 ...this.extraLenses(),
                 { key: "insights", icon: "barChart", label: _t("Insights"),
-                  Component: PbModuleInsights,
-                  groups: ["pb_hr_payroll_base.group_payroll_base_manager",
-                           "pb_hr_payroll_base.group_payroll_analytics_user",
-                           "pb_hr_payroll_base.group_payroll_super_admin", "base.group_system"],
+                  Component: PbModuleInsights, groups: PAY_INSIGHTS_GATE,
                   props: { area: "payroll", explorerComponent: PbExplorer } },
             ],
         };
@@ -271,3 +277,16 @@ export class PbPayHub extends Component {
 }
 
 registry.category("actions").add("pb_pay_hub", PbPayHub);
+
+// The tabs' gates, as the config above declares them (the hub kit's
+// HUB_LENS_GATES), so a lesson and the Access home can say "not for you"
+// before anybody opens the hub. The eight shipped tabs carry no group: the
+// Payroll entry on the left menu is their door.
+registry.category(HUB_LENS_GATES).add("pb_pay_hub", () => [
+    { key: "run" }, { key: "runs" }, { key: "payslips" }, { key: "results" },
+    { key: "import" }, { key: "deliver" },
+    { key: "adjust", feature: "retro_proration" },
+    { key: "settle", feature: "fullfinal" },
+    ...registry.category(PAY_LENSES).getAll(),
+    { key: "insights", groups: PAY_INSIGHTS_GATE },
+]);

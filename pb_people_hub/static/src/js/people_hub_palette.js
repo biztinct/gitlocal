@@ -28,7 +28,7 @@
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { EMPLOYEE_GATE, CONTRACT_GATE } from "@pb_people_hub/js/people_hub";
-import { PLAN_GATE } from "@pb_people_hub/js/plan_launcher";
+import { PLAN_GATE, heroGroups } from "@pb_people_hub/js/plan_launcher";
 
 const palette = registry.category("pb_hub_palette");
 
@@ -52,12 +52,21 @@ const LENSES = [
     { id: "peoplehub_contracts", label: _t("Contracts"), icon: "file",
       groups: CONTRACT_GATE, requires: "pb_contracts",
       action: { xmlid: "pb_people_hub.action_pb_people_contracts" } },
+    // The Plan tab is offered to PLAN_GATE AND whoever the registered
+    // planning product is offered to (`planGate()` in people_hub.js). That
+    // product registers after this file loads, so the union is read when the
+    // row is read — by ⌘K and by the Access home, which ticks it (2026-11-04:
+    // PLAN_GATE alone said "off" to an administrator the rail showed Plan).
     { id: "peoplehub_plan", label: _t("Workforce Planning"), icon: "trendingUp",
-      groups: PLAN_GATE, requires: HUB_TAG,
+      get groups() { return [...new Set([...PLAN_GATE, ...heroGroups()])]; },
+      requires: HUB_TAG,
       action: { xmlid: HUB_XMLID, lens: "plan" } },
 ];
 
 LENSES.forEach((entry, i) => {
-    palette.add(entry.id, { sublabel: SUB, ...entry },
+    // Copied by descriptor, not spread: a spread would read the Plan row's
+    // gate NOW, before the planning product has registered.
+    palette.add(entry.id, Object.defineProperties(
+        { sublabel: SUB }, Object.getOwnPropertyDescriptors(entry)),
                 { sequence: 1400 + (i + 1) * 10 });
 });

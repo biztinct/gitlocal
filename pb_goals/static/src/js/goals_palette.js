@@ -73,6 +73,11 @@ export const GOALS_GATE = [
     "pb_goals.group_goals_admin",
 ];
 
+/** Talent › Insights: the HR side, plus an administrator. */
+const GOALS_NUMBERS_GATE = GOALS_GATE.concat(["base.group_system"]);
+/** Asked after the groups, by the tab AND its ⌘K row (2026-11-04). */
+const GOALS_PROBE = { model: "pb.goals", method: "can_open" };
+
 // NAV P2 (2026-10-21): a Talent tab now (it was a People tab).
 registry.category(TALENT_LENSES).add("goals", {
     key: "goals",
@@ -82,7 +87,7 @@ registry.category(TALENT_LENSES).add("goals", {
     groups: GOALS_ANYBODY,
     // Everybody may ASK; the tab shows only when the board has something
     // for them (a goals group, or a sheet the rules let them read).
-    probe: { model: "pb.goals", method: "can_open" },
+    probe: GOALS_PROBE,
     // NAV P3c: Home › TEAM opens this tab on check-ins or reviews.
     wantsArrival: true,
 }, { sequence: 10 });
@@ -94,7 +99,10 @@ palette.add("goals_board", {
     label: _t("Goals"),
     sublabel: _t("Talent"),
     icon: "target",
+    // The tab's gate AND its probe: the Access home ticks this row from them,
+    // and ⌘K no longer offers a board that would say "not for you".
     groups: GOALS_ANYBODY,
+    probe: GOALS_PROBE,
     requires: "pb_goals_board",
     action: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "goals" },
     keywords: ["people", "mục tiêu"],
@@ -156,7 +164,7 @@ registerModuleInsight("goals", {
     label: _t("Insights"),
     Component: PbModuleInsights,
     props: { area: "talent" },
-    groups: GOALS_GATE.concat(["base.group_system"]),
+    groups: GOALS_NUMBERS_GATE,
 }, { sequence: 50 });
 
 /*
@@ -189,7 +197,7 @@ palette.add("goals_numbers", {
     label: _t("Goal numbers"),
     sublabel: _t("Talent"),
     icon: "barChart",
-    groups: GOALS_GATE,
+    groups: GOALS_NUMBERS_GATE,
     requires: "pb_goals_numbers",
     action: { xmlid: "pb_talent_hub.action_pb_talent_hub", lens: "goal_numbers" },
 }, { sequence: 3660 });

@@ -307,9 +307,18 @@ class PayrollCalendar extends Component {
     }
 }
 // Keep the existing route and planning workflow; one Calendar entry per module.
+const PAYCAL_GATE = ["om_hr_payroll.group_hr_payroll_user", "pb_hr_payroll_base.group_payroll_base_officer", ...COMP_GATE];
+const PAYCAL_PROBE = { model: "pb.shared.calendar", method: "can_payroll" };
 registry.category("pb_payhub_lens").add("paycal", { key: "paycal", label: _t("Calendar"), icon: "calendar", Component: PayrollCalendar,
-    groups: ["om_hr_payroll.group_hr_payroll_user", "pb_hr_payroll_base.group_payroll_base_officer", ...COMP_GATE],
-    probe: { model: "pb.shared.calendar", method: "can_payroll" } }, { sequence: 20, force: true });
+    groups: PAYCAL_GATE, probe: PAYCAL_PROBE }, { sequence: 20, force: true });
+// The Payroll › Calendar ⌘K row (pb_comp_ben's cb_paycal) follows the tab this
+// module just replaced: same groups, same probe — the Access home ticks the
+// row from them. Forced without a sequence, so it keeps its place (2800).
+const paycalRow = registry.category("pb_hub_palette").get("cb_paycal", null);
+if (paycalRow) {
+    registry.category("pb_hub_palette").add("cb_paycal", {
+        ...paycalRow, groups: PAYCAL_GATE, probe: PAYCAL_PROBE }, { force: true });
+}
 registry.category("pb_hub_palette").add("hiring_shared_calendar", { id: "hiring_shared_calendar", label: _t("Calendar"),
     sublabel: _t("Your meetings, interviews and permitted payroll dates"), icon: "calendar",
     requires: "pb_shared_calendar", action: { xmlid: "pb_hiring.action_shared_calendar" }, groups: ["base.group_user"] }, { sequence: 3525 });

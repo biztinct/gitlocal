@@ -75,6 +75,9 @@ palette.add("pip_board", {
     sublabel: _t("Talent"),
     icon: "trendingUp",
     groups: PIP_GATE,
+    // The tab's own question too, so the Access home and ⌘K answer as the
+    // Talent rail does.
+    probe: { model: "pb.pip", method: "can_open" },
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_pip_board",

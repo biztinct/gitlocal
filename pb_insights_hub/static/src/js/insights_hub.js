@@ -48,6 +48,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { HubShell } from "@pb_hub/js/hub_shell";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { HUB_LENS_GATES } from "@pb_hub/js/hub_gates";
 
 import { PbInsights } from "@pb_insights/js/insights";
 import { PbExplorer } from "@pb_explorer/js/explorer";
@@ -197,3 +198,12 @@ export class PbInsightsHub extends Component {
 }
 
 registry.category("actions").add("pb_insights_hub", PbInsightsHub);
+
+// The tabs' gates, as the config above declares them, so a lesson and the
+// Access home can say "not for you" before anybody opens the hub.
+registry.category(HUB_LENS_GATES).add("pb_insights_hub", () => [
+    { key: "pulse", groups: ANALYTICS_GATE },
+    { key: "explorer", groups: ANALYTICS_GATE },
+    { key: "reports", groups: ANALYTICS_GATE },
+    ...registry.category(INSIGHTS_LENSES).getAll(),
+].map((l) => ({ ...l, hubFeature: "insights" })));

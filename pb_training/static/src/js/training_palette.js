@@ -384,11 +384,15 @@ palette.add("training_requests", {
     keywords: ["request", "ask", "course", "yêu cầu", "training"],
 }, { sequence: 3961 });
 
+// The Skills tab's own question (every login may ASK; the training team and
+// people managers are told yes): the Access home ticks this row from it, and
+// ⌘K asks it the way the rail does.
 palette.add("training_skills", {
     id: "training_skills",
     label: _t("Skills"),
     sublabel: _t("Learning"),
     icon: "sparkles",
+    probe: { model: "pb.training", method: "can_see_skills" },
     requires: "pb_training_board",
     action: { xmlid: HUB_XMLID, lens: "skills" },
     keywords: ["skill", "gap", "kỹ năng", "competency", "training"],

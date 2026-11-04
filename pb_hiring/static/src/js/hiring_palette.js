@@ -46,6 +46,18 @@ import { _t } from "@web/core/l10n/translation";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
 import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
 import { PbModuleInsights } from "@pb_insights/js/module_insights";
+import { HIRING_BANK_GATE, HIRING_HUB_GATE, PROBE } from "@pb_hiring/js/hiring_hub";
+
+/**
+ * The Hiring › Insights tab's gate, shared by the tab and its ⌘K row: the
+ * Access home ticks that row from these exact values.
+ */
+const HIRING_NUMBERS_GATE = [
+    "pb_hiring.group_hiring_user",
+    "pb_hiring.group_hiring_manager",
+    "pb_hiring.group_hiring_admin",
+    "base.group_system",
+];
 
 // NAV P2 (2026-10-21): the board is no longer a tab of the Lifecycle hub. It
 // is the Hiring hub's three rail items (`hiring_hub.js`), so nothing is
@@ -72,15 +84,10 @@ registerModuleInsight("hiring", {
     label: _t("Insights"),
     Component: PbModuleInsights,
     props: { area: "hiring" },
-    groups: [
-        "pb_hiring.group_hiring_user",
-        "pb_hiring.group_hiring_manager",
-        "pb_hiring.group_hiring_admin",
-        "base.group_system",
-    ],
+    groups: HIRING_NUMBERS_GATE,
     // The board's own question (R-gate): Lifecycle readers who are not on
     // the hiring team, administrators included, are not offered this tab.
-    probe: { model: "pb.hiring", method: "can_open" },
+    probe: PROBE,
 }, { sequence: 30 });
 
 const HUB_XMLID = "pb_hiring.action_pb_hiring_hub";
@@ -90,14 +97,21 @@ const HIRING_GATE = [
     "pb_hiring.group_hiring_admin",
     "base.group_system",
 ];
-// The two doors onto the board itself. No administrator and no Lifecycle
-// group here: `pb.hiring._can_read()` lets neither in, and a ⌘K row that opens
-// onto "looked after by the hiring team" is the same lie as the tab was.
+// The mission row's gate. No administrator and no Lifecycle group here:
+// `pb.hiring._can_read()` lets neither in, and a ⌘K row that opens onto
+// "looked after by the hiring team" is the same lie as the tab was.
 const HIRING_BOARD_GATE = [
     "pb_hiring.group_hiring_user",
     "pb_hiring.group_hiring_manager",
     "pb_hiring.group_hiring_admin",
 ];
+// THE ROWS THAT OPEN A TAB carry that tab's gate exactly — its groups AND its
+// `probe` — imported from hiring_hub.js rather than restated (2026-11-04). The
+// Access home ticks "they see it" from a row's gate, and these rows' narrower
+// copy said "off" for a line manager whose own Hiring rail showed the board.
+// The palette asks the probe too, so ⌘K still offers the board only to
+// someone `pb.hiring.can_open()` lets in. pb_hub's test_palette_lens_gates
+// keeps every tab row equal to its tab.
 const HIRING_ADMIN = [
     "pb_hiring.group_hiring_admin",
     "base.group_system",
@@ -181,7 +195,8 @@ palette.add("hiring_board", {
     label: _t("Who we are hiring"),
     sublabel: _t("Hiring"),
     icon: "userPlus",
-    groups: HIRING_BOARD_GATE,
+    groups: HIRING_HUB_GATE,
+    probe: PROBE,
     // The presence probe: the actions registry holding this tag is what says
     // the module shipped its JS.
     requires: "pb_hiring_hub",
@@ -195,7 +210,8 @@ palette.add("hiring_applicants", {
     label: _t("Applicants"),
     sublabel: _t("Hiring"),
     icon: "columns",
-    groups: HIRING_BOARD_GATE,
+    groups: HIRING_HUB_GATE,
+    probe: PROBE,
     requires: "pb_hiring_hub",
     action: { xmlid: HUB_XMLID, lens: "applicants" },
     keywords: ["applications", "candidates", "pipeline", "ứng viên"],
@@ -206,7 +222,8 @@ palette.add("hiring_offers", {
     label: _t("Offers"),
     sublabel: _t("Hiring"),
     icon: "send",
-    groups: HIRING_BOARD_GATE,
+    groups: HIRING_HUB_GATE,
+    probe: PROBE,
     requires: "pb_hiring_hub",
     action: { xmlid: HUB_XMLID, lens: "offers" },
     keywords: ["offer letters", "joining", "lời mời", "nhận việc"],
@@ -290,7 +307,8 @@ palette.add("hiring_analytics", {
     label: _t("Hiring numbers"),
     sublabel: _t("Hiring"),
     icon: "barChart",
-    groups: HIRING_BOARD_GATE,
+    groups: HIRING_NUMBERS_GATE,
+    probe: PROBE,
     // The presence probe is the lens's OWN action tag, not the board's: a
     // build that shipped the board and not the numbers must not offer a door
     // into a screen that is not there.
@@ -338,7 +356,8 @@ palette.add("hiring_bank", {
     label: _t("Resume bank"),
     sublabel: _t("Future-fit people, searched by skill, country and tag"),
     icon: "bookOpen",
-    groups: ["pb_hiring.group_hiring_user"],
+    groups: HIRING_BANK_GATE,
+    probe: PROBE,
     requires: "pb_hiring_board",
     action: { xmlid: HUB_XMLID, lens: "bank" },
     keywords: ["talent pool"],

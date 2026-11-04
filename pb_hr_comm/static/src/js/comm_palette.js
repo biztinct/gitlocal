@@ -128,12 +128,17 @@ registry.category(SETTINGS_CATEGORIES).add("announcements", {
 /* ---------------------------------------------------------- command bar --- */
 const palette = registry.category("pb_hub_palette");
 
+// THE TAB'S OWN GATE (2026-11-04). This row opens Home › Announce, which is
+// every login's tab (above); the Access home ticks the row from its gate, and
+// COMM_GATE here told an administrator that a payroll officer could not see
+// the Announce tab their Home rail showed. The calendar inside the tab keeps
+// its own gate, and so does the row below that lands on it.
 palette.add("comm_calendar", {
     id: "comm_calendar",
     label: _t("Announcements"),
     sublabel: _t("Home"),
     icon: "megaphone",
-    groups: COMM_GATE,
+    groups: ["base.group_user"],
     requires: "pb_hr_comm_calendar",
     action: { xmlid: "pb_home_hub.action_pb_home_hub", lens: "coming_up" },
     keywords: ["announce", "people", "calendar", "thông báo"],

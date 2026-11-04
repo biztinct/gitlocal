@@ -14,6 +14,9 @@
  *       action:  { tag } | { xmlid },        // exactly one door
  *                { lens, lensKey },          // optional arrival lens
  *       groups:  [group xmlid, …],           // ANY-of; omitted = ungated
+ *       probe:   { model, method },          // optional: the tab's own
+ *                                            // "can open" question, asked
+ *                                            // after `groups` (fails closed)
  *       requires: "<client action tag>",     // presence probe for xmlid doors
  *       keywords: ["pay run", …],            // optional; old or other words
  *                                            // the matcher also searches
@@ -89,14 +92,11 @@ const OFFICER = "pb_hr_payroll_base.group_payroll_base_officer";
 const MANAGER = "pb_hr_payroll_base.group_payroll_base_manager";
 const SUPER = "pb_hr_payroll_base.group_payroll_super_admin";
 const INTEGRATION = "pb_hr_payroll_base.group_payroll_integration_user";
-const FINAL_APPROVER = "pb_hr_payroll_base.group_payroll_final_approver";
 const ANALYTICS_USER = "pb_hr_payroll_base.group_payroll_analytics_user";
-const ANALYTICS_MGR = "pb_hr_payroll_base.group_payroll_analytics_manager";
 const PAYROLL_MGR = "om_hr_payroll.group_hr_payroll_manager";
 const PAYROLL_USER = "om_hr_payroll.group_hr_payroll_user";
 const SYSTEM = "base.group_system";
 
-const ANALYTICS = [ANALYTICS_USER, ANALYTICS_MGR, MANAGER, FINAL_APPROVER, SUPER];
 const OPS = [OFFICER, MANAGER, SUPER];
 
 // Mission Control's lens gates, copied from `LENSES[].groups` in pb_mission.js
@@ -108,6 +108,45 @@ const OPS = [OFFICER, MANAGER, SUPER];
 const WF_ATTENDANCE = ["hr_attendance.group_hr_attendance_officer"];
 const WF_TIMEOFF = ["hr_holidays.group_hr_holidays_user", "hr.group_hr_manager", PAYROLL_MGR];
 const WF_MANAGER = ["hr_attendance.group_hr_attendance_manager", PAYROLL_MGR];
+// The Insights lens pb_mission bolts on through `pb_mission_lens` (pb_mission.js).
+const WF_INSIGHTS = [MANAGER, ANALYTICS_USER, SUPER, SYSTEM];
+
+// THE SAME RULE FOR EVERY OTHER LEFT-MENU ENTRY (2026-11-04). The Access home
+// nests a row under the entry whose door or match list names its action, and
+// ticks it from `groups`/`probe`. A deep link whose screen is ALSO a tab of
+// that entry's hub therefore carries the TAB's gate, copied from the module
+// that owns it (each depends on this one, so none can be imported here).
+// pb_hub's test_palette_lens_gates asserts every copy below still agrees.
+//
+// Insights › Pulse / Explorer / Reports, and People › Insights › Workforce:
+// `ANALYTICS_GATE` in pb_insights_hub/insights_hub.js. (Was analytics user or
+// manager, payroll manager, final approver or super admin — a final approver
+// was told they see Explorer while the Insights rail hid it.)
+const ANALYTICS = [MANAGER, ANALYTICS_USER, SUPER, SYSTEM];
+// People › Employees, and the Contracts register inside it: `EMPLOYEE_GATE` /
+// `CONTRACT_GATE` in pb_people_hub/people_hub.js (W95 — the payroll tiers
+// these rows carried are a different group family).
+const PEOPLE_EMPLOYEES = ["pb_records.group_records_viewer", SYSTEM, "hr.group_hr_user",
+                          "pb_demo.group_payobook_demo"];
+const PEOPLE_CONTRACTS = ["pb_records.group_records_viewer",
+                          "hr_contract.group_hr_contract_employee_manager",
+                          "hr_contract.group_hr_contract_manager",
+                          "pb_demo.group_payobook_demo"];
+// Compliance › Filings / Bank / Safeguards / Audit: pb_compliance_hub's
+// lens gates (compliance_hub.js).
+const CMP_FILINGS = ["pb_hr_govt.group_pb_hr_govt_user"];
+const CMP_BANK = ["base.group_user"];
+const CMP_YOUNG = [PAYROLL_USER, "hr_attendance.group_hr_attendance_officer"];
+const CMP_AUDIT = [PAYROLL_MGR, SYSTEM];
+// Settings' cards: the category gates in pb_settings/settings_hub.js, which
+// were read off the model ACLs (G_FORMULA, G_STRUCTURES, G_STATUTORY,
+// G_INTEGRATIONS). Mapping sits in the Integrations category.
+const SET_FORMULA = ["pb_hr_payroll_formula.group_formula_manager",
+                     "pb_hr_payroll_formula.group_formula_user"];
+const SET_STRUCTURES = [PAYROLL_USER, "hr.group_hr_user"];
+const SET_STATUTORY = ["pb_hr_payroll_base.group_payroll_base_user", MANAGER];
+const SET_INTEGRATIONS = ["pb_hr_payroll_formula.group_formula_admin",
+                          "pb_hr_payroll_formula.group_formula_user"];
 
 /** Registered in reading order; `sequence` is what the palette's list obeys. */
 const ENTRIES = [
@@ -154,9 +193,9 @@ const ENTRIES = [
 
     // -------------------------------------------------------------- people
     { id: "employees", label: _t("Employees"), sublabel: _t("People"), icon: "users",
-      action: { tag: "pb_people" }, groups: OPS },
+      action: { tag: "pb_people" }, groups: PEOPLE_EMPLOYEES },
     { id: "contracts", label: _t("Contracts"), sublabel: _t("People"), icon: "file",
-      action: { tag: "pb_contracts" }, groups: OPS },
+      action: { tag: "pb_contracts" }, groups: PEOPLE_CONTRACTS },
 
     // ----------------------------------------------------------- workforce
     // The hub itself, then its eight lenses. `pb_shell_lens` — see the header.
@@ -194,6 +233,15 @@ const ENTRIES = [
       icon: "lock",
       action: { tag: "pb_workforce", lens: "close", lensKey: "pb_shell_lens" },
       groups: WF_MANAGER },
+    // The tenth rail item, bolted on by pb_mission itself: the time and
+    // attendance figures (PbModuleInsights, area "workforce"). NOT the
+    // `workforce_insights` row below — that one opens the head-count report,
+    // which lives under Insights / People › Insights › Workforce.
+    { id: "wf_insights", label: _t("Insights"), sublabel: _t("Mission Control"),
+      icon: "barChart",
+      action: { tag: "pb_workforce", lens: "insights", lensKey: "pb_shell_lens" },
+      groups: WF_INSIGHTS,
+      keywords: ["workforce insights", "attendance numbers", "time numbers"] },
 
     // ------------------------------------------------------------- insight
     { id: "insights", label: _t("Insights"), sublabel: _t("Analytics"), icon: "trendingUp",
@@ -206,29 +254,29 @@ const ENTRIES = [
 
     // ---------------------------------------------------------- compliance
     { id: "govt_reports", label: _t("Government Reports"), sublabel: _t("Compliance"),
-      icon: "fileText", action: { tag: "pb_govt_reports" } },
+      icon: "fileText", action: { tag: "pb_govt_reports" }, groups: CMP_FILINGS },
     { id: "bank_ocr", label: _t("Bank Verification"), sublabel: _t("Compliance"),
-      icon: "scan", action: { tag: "pb_bank_ocr" }, groups: [PAYROLL_USER] },
+      icon: "scan", action: { tag: "pb_bank_ocr" }, groups: CMP_BANK },
     { id: "young_worker", label: _t("Young Workers"), sublabel: _t("Compliance"),
-      icon: "shield", action: { tag: "pb_young_worker" }, groups: [PAYROLL_USER],
+      icon: "shield", action: { tag: "pb_young_worker" }, groups: CMP_YOUNG,
       keywords: ["safeguards", "lao động chưa thành niên"] },
 
     // --------------------------------------------------------------- setup
     { id: "formula_studio", label: _t("Formula Engine"), sublabel: _t("Setup"),
-      icon: "calculator", action: { tag: "pb_formula_studio" }, groups: OPS },
+      icon: "calculator", action: { tag: "pb_formula_studio" }, groups: SET_FORMULA },
     { id: "structures", label: _t("Salary Structures"), sublabel: _t("Setup"),
-      icon: "layers", action: { tag: "pb_structures" }, groups: [MANAGER, SUPER] },
+      icon: "layers", action: { tag: "pb_structures" }, groups: SET_STRUCTURES },
     { id: "statutory", label: _t("Statutory"), sublabel: _t("Setup"), icon: "shield",
-      action: { tag: "pb_statutory" }, groups: [MANAGER, SUPER] },
+      action: { tag: "pb_statutory" }, groups: SET_STATUTORY },
     { id: "integrations", label: _t("Integrations"), sublabel: _t("Setup"),
       icon: "database", action: { tag: "pb_integrations" },
-      groups: [INTEGRATION, MANAGER, SUPER] },
+      groups: SET_INTEGRATIONS },
     // Integrations Cycle 2. Gated exactly like Integrations: the studio reads
     // and writes the same connectors and field mappings, so an entry offered
     // more widely would be an entry that can only produce an access dialog.
     { id: "mapping_studio", label: _t("Mapping"), sublabel: _t("Setup"),
       icon: "gitMerge", action: { tag: "pb_mapping_studio" },
-      groups: [INTEGRATION, MANAGER, SUPER] },
+      groups: SET_INTEGRATIONS },
 
     // --------------------------------------------------------------- learn
     // A MISSION too: GROW > Help (was "Learn" until LEARNING L0), whose rail
@@ -240,7 +288,7 @@ const ENTRIES = [
 
     // --------------------------------------------------------------- admin
     { id: "audit", label: _t("Audit Trail"), sublabel: _t("Admin"), icon: "scrollText",
-      group: G_ADMIN, action: { tag: "pb_audit" }, groups: [PAYROLL_MGR] },
+      group: G_ADMIN, action: { tag: "pb_audit" }, groups: CMP_AUDIT },
     { id: "tenants", label: _t("Tenants"), sublabel: _t("Admin"), icon: "building",
       group: G_ADMIN, action: { tag: "pb_tenants" }, groups: [SYSTEM] },
 ];
