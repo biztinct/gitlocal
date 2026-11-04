@@ -920,11 +920,13 @@ class PbPayrunWizard(models.AbstractModel):
         to belong to a different payroll, it may well cover the same people, and
         warning about it is the safe side of the guess.
 
-        PRS P3 (R8) — **a top-up only ever meets top-ups.** With
-        `kind='topup'` only Top-up runs are returned, so the "already exists"
-        question, *Clean and Run* (`_clean_period` is handed exactly this) and
-        the plan preview can never reach a Regular run's payslips. Any other
-        `kind` (None, 'regular') is the unchanged, kind-blind answer.
+        PRS P3 (R8, R9) — **a run only ever meets runs of its own kind.**
+        With `kind='topup'` only Top-up runs are returned, with
+        `kind='regular'` only Regular runs, so the "already exists" question,
+        *Clean and Run* (`_clean_period` is handed exactly this) and the plan
+        preview can never reach the other kind's payslips. Every wizard door
+        passes the kind (no `run_kind` in the request = Regular). `kind=None`
+        is the old kind-blind answer, kept for direct callers.
         """
         runs = self.env['hr.payslip.run'].search([
             ('date_start', '<=', de), ('date_end', '>=', ds),
@@ -941,8 +943,8 @@ class PbPayrunWizard(models.AbstractModel):
             runs = runs.filtered(lambda r: (
                 lambda cids: not cids or bool(cids & mine)
             )(set(r.slip_ids.mapped('company_id').ids)))
-        if kind == 'topup':
-            runs = runs.filtered(lambda r: self._run_kind_of(r) == 'topup')
+        if kind in ('regular', 'topup'):
+            runs = runs.filtered(lambda r: self._run_kind_of(r) == kind)
         if not config:
             return runs
         wanted = config.id
@@ -1041,9 +1043,16 @@ class PbPayrunWizard(models.AbstractModel):
         return {'name': 'Payroll July %s' % year,
                 'date_start': '%s-07-01' % year, 'date_end': '%s-07-31' % year}
 
-    def _clean_period(self, runs):
+    def _clean_period(self, runs, kind=None):
         """Remove a period's generated artefacts: payslips, journal moves, formula
-        computation logs and the runs themselves (fully reversible demo cleanup)."""
+        computation logs and the runs themselves (fully reversible demo cleanup).
+
+        PRS P3 (R9): with `kind`, only runs of that kind are ever cleared — a
+        second rail behind `_period_runs`, so a Regular run can never clear a
+        top-up nor a top-up a Regular run, whatever recordset arrives here.
+        """
+        if kind in ('regular', 'topup'):
+            runs = runs.filtered(lambda r: self._run_kind_of(r) == kind)
         if not runs:
             return 0
         # PAYAI P0 — re-asked HERE, not only where the dialog was offered: this
@@ -1097,7 +1106,7 @@ class PbPayrunWizard(models.AbstractModel):
         # did when one was not.
         config = self._scheme_from_vals(vals)
         self._check_period(ds, de)
-        # PRS P3 (R8): a top-up's guard and clean see top-ups only.
+        # PRS P3 (R8, R9): the guard and the clean see this kind of run only.
         kind = self._run_kind_from_vals(vals)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
@@ -1118,7 +1127,7 @@ class PbPayrunWizard(models.AbstractModel):
                 'message': self._exists_message(existing, config, kind=kind),
             }
         if force_clean and existing:
-            self._clean_period(existing)
+            self._clean_period(existing, kind=kind)
 
         run_vals = {'name': name, 'date_start': ds, 'date_end': de}
         if config and 'pb_formula_config_id' in Run._fields:
@@ -1232,8 +1241,9 @@ class PbPayrunWizard(models.AbstractModel):
 
         # Scoped to the scheme this run is for: two schemes in one month are two
         # payrolls, not a duplicate, and *Clean and Run* must never reach into
-        # the other one. See `_period_runs`. PRS P3 (R8): and a top-up is
-        # scoped to top-ups, so it can never clear the month's regular run.
+        # the other one. See `_period_runs`. PRS P3 (R8, R9): and to this kind
+        # of run — a top-up never clears the month's regular run, nor a
+        # regular run a top-up.
         kind = self._run_kind_from_vals(vals)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
@@ -1262,7 +1272,7 @@ class PbPayrunWizard(models.AbstractModel):
         # produces a reversible DRAFT run, and the demo is explicitly shared /
         # overwritable, so elevating these data operations is safe & intended.
         if force_clean and existing:
-            self.sudo()._clean_period(existing.sudo())
+            self.sudo()._clean_period(existing.sudo(), kind=kind)
 
         Run = self.env['hr.payslip.run'].sudo()
         run_vals = {'name': name, 'date_start': ds, 'date_end': de}

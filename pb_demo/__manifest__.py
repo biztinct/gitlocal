@@ -3,7 +3,9 @@
     'name': 'Payobook Demo Environment',
     # 1.13.1: PRS P3 (R8) — the demo Run payroll path writes the kind of
     # run and a top-up never clears the division's regular run.
-    'version': '19.0.1.13.1',
+    # 1.13.2: PRS P3 follow-up (R9) — the demo clear step sees only runs of
+    # the kind being made.
+    'version': '19.0.1.13.2',
     'category': 'Human Resources/Payroll',
     'summary': 'World-class, regenerable demo world: multilingual component library, '
                'division schemes, thousands of realistic employees and months of payroll history.',

@@ -5,7 +5,9 @@
     # 1.40.0: PRS P3 (R8) — "Kind of run" on the first step; a top-up's
     # period guard and Clean and Run see top-ups only, and it adopts no
     # loose payslips. Regular runs behave exactly as before.
-    'version': '19.0.1.40.0',
+    # 1.41.0: PRS P3 follow-up (R9) — a Regular run ignores top-ups the
+    # same way: its guard and Clean and Run see Regular runs only.
+    'version': '19.0.1.41.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

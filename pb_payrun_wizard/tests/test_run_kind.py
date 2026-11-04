@@ -8,7 +8,8 @@ rail. The wizard writes the kind the person picked on BOTH create paths
 loose-payslip adoption all used to treat any run over the same dates as "this
 month's payroll", **choosing Top-up must never clean, delete or adopt
 payslips from a Regular run**: a top-up's guard and clean see top-ups only,
-and a top-up adopts nothing. Regular behaviour is pinned unchanged.
+and a top-up adopts nothing. R9 (follow-up): the mirror — a Regular run's
+guard and clean see Regular runs only, so it never clears a top-up.
 """
 from odoo.tests import TransactionCase, tagged
 
@@ -134,22 +135,65 @@ class TestRunKind(TransactionCase):
         self.assertTrue(regular.exists())
         self.assertEqual(len(regular.slip_ids), 1)
 
-    # ------------------------------------------- Regular is unchanged
-    def test_regular_behaviour_is_unchanged(self):
-        """A Regular run still meets every run of the month, top-ups too —
-        exactly as before R8 (the handover: do not change Regular)."""
+    # ----------------------------- R9: a Regular run ignores top-ups
+    def test_a_regular_run_does_not_meet_the_months_topup(self):
+        """R9 (owner, 2026-11-04): the mirror of the top-up rail. Making the
+        regular month after a top-up asks nothing about the top-up."""
         topup = self._august('topup', name='August awards')
         for vals in (dict(self.vals), dict(self.vals, run_kind='regular')):
-            prep = self.Wizard.prepare_run(vals)
-            self.assertTrue(prep.get('needs_confirmation'))
-            self.assertIn('August awards', prep['message'])
+            plan = self.Wizard.plan_preview(vals)
+            self.assertEqual(plan['existing'], [])
+        prep = self.Wizard.prepare_run(dict(self.vals))
+        self.assertFalse(prep.get('needs_confirmation'))
+        self.assertEqual(self.Run.browse(prep['run_id']).pb_run_kind, 'regular')
+        self.assertTrue(topup.exists())
+        self.assertEqual(len(topup.slip_ids), 1)
+
+    def test_a_regular_run_with_force_clean_never_clears_a_topup(self):
+        topup = self._august('topup', name='August awards')
+        slip = topup.slip_ids
+        for path in ('prepare_run', 'create_and_compute'):
+            getattr(self.Wizard, path)(dict(self.vals, force_clean=True))
+            self.assertTrue(topup.exists(), path)
+            self.assertTrue(slip.exists(), path)
+            self.assertEqual(slip.payslip_run_id, topup, path)
+
+    def test_a_second_regular_run_asks_and_clears_only_the_regular(self):
+        regular = self._august()
+        topup = self._august('topup', name='August awards')
+        prep = self.Wizard.prepare_run(dict(self.vals))
+        self.assertTrue(prep.get('needs_confirmation'))
+        self.assertIn('August regular', prep['message'])
+        self.assertNotIn('August awards', prep['message'])
+        again = self.Wizard.prepare_run(dict(self.vals, force_clean=True))
+        self.assertTrue(again.get('run_id'))
+        self.assertFalse(regular.exists())
+        self.assertTrue(topup.exists())
+        self.assertEqual(len(topup.slip_ids), 1)
+
+    def test_the_clean_itself_refuses_the_other_kind(self):
+        """A second rail behind the guard: whatever reaches `_clean_period`
+        with a kind, the other kind is never cleared."""
+        regular = self._august()
+        topup = self._august('topup', name='August awards')
+        self.Wizard.sudo()._clean_period((regular | topup).sudo(), kind='regular')
+        self.assertFalse(regular.exists())
+        self.assertTrue(topup.exists())
+        again = self._august()
+        self.Wizard.sudo()._clean_period((again | topup).sudo(), kind='topup')
+        self.assertTrue(again.exists())
+        self.assertFalse(topup.exists())
+
+    def test_regular_adoption_and_the_kind_blind_answer_are_unchanged(self):
+        """Loose payslips belong to no run, so a Regular run still adopts
+        them (as before); `_period_runs` with no kind is still kind-blind
+        for direct callers."""
+        topup = self._august('topup', name='August awards')
         self.assertEqual(self.Wizard._period_runs('2026-08-01', '2026-08-31'),
                          topup)
         loose = self._slip()
-        topup.slip_ids.unlink()     # an empty run is no longer "the month"
         prep = self.Wizard.prepare_run(dict(self.vals))
         self.assertEqual(prep['adopted'], 1)
-        self.assertEqual(self.Run.browse(prep['run_id']).pb_run_kind, 'regular')
         self.assertEqual(loose.payslip_run_id.id, prep['run_id'])
 
     def test_the_first_step_offers_the_choice(self):

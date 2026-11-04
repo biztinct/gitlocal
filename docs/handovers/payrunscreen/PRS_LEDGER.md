@@ -133,6 +133,25 @@ R8. (2026-11-04) A pay run has a **Kind of run**: Regular (default) or
     behaviour is unchanged (it still sees every run of the month, top-ups
     included — an owner question in PRS_P3_REPORT). The kind is NOT the scheme
     map's cycle type (`_pb_kind_key`), which still chooses the approval route.
+R9. (2026-11-04, owner) A REGULAR run ignores top-ups completely — the mirror
+    of R8's rail. The wizard's period guard ("exists → clear?"),
+    `_clean_period` (second rail: `kind=` filters whatever it is handed) and
+    pb_demo's own clear step see only runs of the kind being made. A Regular
+    run never clears or deletes a top-up's payslips. Loose payslips (no run)
+    are still adopted by a Regular run as before — they belong to no run, so
+    there is no kind to read. `_period_runs(kind=None)` stays kind-blind for
+    direct callers; every wizard door passes the kind (no `run_kind` =
+    Regular). pb_payrun_wizard 19.0.1.41.0, pb_demo 19.0.1.13.2.
+R10. (2026-11-04, owner) Top-ups keep paying everyone's full month for now.
+    The kind is for labels and "Compared with" only. The wizard's note line
+    ("A top-up still makes a payslip for everyone…") stays. Do not build a
+    people picker or component-only top-ups without a new ruling.
+R11. (2026-11-04, owner) payobook ONLY: the existing top-up / award / bonus
+    runs are marked Top-up, approved ones included — a one-time direct write
+    past the draft-only lock, after the P3 follow-up deploy. Ids and names in
+    PRS_P3_REPORT "Follow-up 1". Nothing on payobook_template, p0clone or rize
+    changes. (Those runs were made by hand, not by the pb_demo generator —
+    PRS-G34 — so there was no generator to change.)
 
 ## The ten view layers on the pay run form (verified 2026-11-03, rize)
 
@@ -311,3 +330,13 @@ PRS-G33. (P3) "Kind of run" was already translated "Loại đợt lương" in
         wizard use that, not the handover's "Loại kỳ lương" (C9: match what
         the .po already says). "Regular" = "Thường kỳ" (65 of 82 .po files),
         "Top-up" = "Bổ sung".
+PRS-G34. (P3 follow-up) payobook's "Retail top-up — Sep 2026" (1524), "Awards
+        run — Oct 2026" (1525) and "Retail bonus run — Nov 2026" (1526) are NOT
+        demo-generator runs: `is_demo` is false, they were created by
+        ash@biztinct.com on 2026-09-01 04:35–04:52 UTC, carry no run-level
+        scheme, and their payslips are on "Payobook Retail — End-Month
+        Payroll". No pb_demo code (or /odoo/ops script) makes them; their
+        names exist only in the board prototype HTML. A regenerated demo world
+        does not recreate them, so R11's "make the generator create them as
+        Top-up" had nothing to change. Regenerating does not delete them
+        either (the generator clears `is_demo` runs only).

@@ -301,12 +301,12 @@ class PbPayrunWizardDemo(models.AbstractModel):
         # preserves the Mid-Cycle Advance run.
         division_runs = self._period_config_runs(ds, de, end_cfg).filtered(
             lambda r: getattr(r, 'is_demo', False))
-        # PRS P3 (R8): a top-up only ever meets top-ups — the division's
-        # regular run is never offered for clearing, never cleared.
+        # PRS P3 (R8, R9): a run only ever meets runs of its own kind — a
+        # top-up never clears the division's regular run, nor a regular run
+        # a top-up.
         kind = self._run_kind_from_vals(vals)
-        if kind == 'topup':
-            division_runs = division_runs.filtered(
-                lambda r: self._run_kind_of(r) == 'topup')
+        division_runs = division_runs.filtered(
+            lambda r: self._run_kind_of(r) == kind)
         if division_runs and not force_clean:
             n = len(division_runs)
             return {
@@ -318,7 +318,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
                               'it' if n == 1 else 'them'),
             }
         if force_clean and division_runs:
-            self._clean_period(division_runs)
+            self._clean_period(division_runs, kind=kind)
 
         Run = self.env['hr.payslip.run'].sudo()
         company_id = self.env.company.id
@@ -498,12 +498,12 @@ class PbPayrunWizardDemo(models.AbstractModel):
         # real payroll data even on the same division/period.
         division_runs = self._period_config_runs(ds, de, end_cfg).filtered(
             lambda r: getattr(r, 'is_demo', False))
-        # PRS P3 (R8): a top-up only ever meets top-ups — the division's
-        # regular run is never offered for clearing, never cleared.
+        # PRS P3 (R8, R9): a run only ever meets runs of its own kind — a
+        # top-up never clears the division's regular run, nor a regular run
+        # a top-up.
         kind = self._run_kind_from_vals(vals)
-        if kind == 'topup':
-            division_runs = division_runs.filtered(
-                lambda r: self._run_kind_of(r) == 'topup')
+        division_runs = division_runs.filtered(
+            lambda r: self._run_kind_of(r) == kind)
         if division_runs and not force_clean:
             n = len(division_runs)
             return {
@@ -515,7 +515,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
                               'it' if n == 1 else 'them'),
             }
         if force_clean and division_runs:
-            self._clean_period(division_runs)
+            self._clean_period(division_runs, kind=kind)
 
         # Mid-cycle advance lookup from the PRESERVED Mid run → End pays remainder.
         adv = self._advance_map(self._period_config_runs(ds, de, mid_cfg)) if mid_cfg else {}
