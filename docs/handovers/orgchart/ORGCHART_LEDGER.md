@@ -251,3 +251,60 @@ the closeout as an owner question, not into a phase.
 * G4 (POC): an edit inside a dialog must not `stopPropagation` when the page
   uses one delegated click handler; give the dialog body a no-op action
   instead. (OWL: use `t-on-click` handlers, this is moot — noted for the port.)
+* G5 (P1): **`-u pb_import_kit` upgrades half the product.** `button_upgrade`
+  cascades to every installed module that depends on the kit. Glyphs added to
+  `import_icons.js` therefore ship as a FILE SYNC with the kit version
+  unchanged (precedent 47fc57e56 megaphone; P1 b2df028cf), never with `-u`.
+* G6 (P1): **real data is not the POC's one tree.** 2026-11-04: rize has 241
+  active people and only 5 with a manager (2 tiny teams, 234 people with no
+  manager and no team); payobook has 4,575 people in 657 tops — 639 small
+  teams with nobody above them. The POC draws one tree (the CEO's), puts every
+  other root in the lane (which silently drops their teams) and lays the lane
+  out as ONE row (234 cards = 57,000 px). The port draws a FOREST (every root
+  with a team is a tree; trees flow and wrap into rows), the lane is a grid
+  that folds behind "+N more", and a big first draw folds whole teams.
+* G7 (P1): **"the top three levels" does not bound a flat company.** On
+  payobook everyone is within two levels, so D4's rule would send all 4,575.
+  `get_chart` keeps three levels, or fewer while they still exceed the limit
+  (payobook → the top level, 657 people), always plus the viewer's own chain
+  so Find me works; `+N` pulls a team with `get_branch`.
+* G8 (P1): **`employee_type`, `departure_date`, `first_contract_date` are
+  HR-officer fields** (`groups="hr.group_hr_user"`), and `contract_type_id`
+  is HR-manager. Asking `search_read` for one as a Records-viewer or demo user
+  refuses the WHOLE read. The facade asks only for fields `_readable()` says
+  the user may read, and falls back (type → Full-time, join date → earliest
+  contract start → created on).
+* G9 (P1): **a contract end date is not "leaving".** rize has 26 fixed-term
+  contracts ending within 60 days that are waiting for a renewal decision;
+  P1 §1.3's fallback (running contract `date_end` within 30 days) would tag
+  them all "Leaving · Last day …". `departure_date` exists on every database,
+  so only it is read; the contract fallback is not used.
+* G10 (P1): **a CSS `content:"You"` cannot be translated.** The POC's "You"
+  ribbon is `::before` text; the port renders a real `<span>` with a `.po`
+  entry.
+* G11 (P1): **reading employees is slow in two hidden places.**
+  `search_read(['parent_id'])` of 4,500 people spends ~450 ms naming managers
+  nobody shows; the tree shape now takes the ids from `Emp.search()` (rules
+  apply) and the parent column from SQL on those ids (13 ms, flush first).
+  Team / title / location live on `hr.version`: through the employee they cost
+  ~1.5 ms a person; read from the stored `current_version_id` in one batch they
+  cost a third (fallback to the employee read on AccessError). payobook
+  `get_chart` 3.0 s → 0.48 s, `get_branch` 1.7 s → 0.1 s.
+* G12 (P1): **on this app a class change anywhere re-checks the whole page's
+  styles.** 646 `:has()` rules app-wide (e.g. `html:has(...)`,
+  `body:has(.lrn-coachhost) .pbim.pbim-page`). Measured on payobook with 667
+  cards: adding a class to ANY element (even the navbar) = 130–230 ms of style
+  work; setting a data attribute = 0.1 ms; inserting an element is as bad as a
+  class. Therefore: card state is `data-st` / `data-hl` (CSS `[data-st~="sel"]`),
+  the hover chain's lines are a pool of `<path>`s whose `d` is rewritten, each
+  card is its own component (equal props → no re-render), card contents use
+  `content-visibility: auto`, and above 150 cards there is no entrance
+  animation (657 animated cards = 100 ms frames for two seconds). P2's drag
+  must follow the same rule (`data-over`, not `.over`). Side effect:
+  `innerText` of off-screen cards is empty — tests read `textContent`.
+* G13 (P1): **every employee has an image: a generated SVG letter avatar.**
+  `image_128` is never empty (hr.employee create draws one), so "has an image"
+  is not "has a photo"; showing it hid the colour-by on every card. Only an
+  attachment whose mimetype is a raster image counts (`_photo_ids`).
+  Also met: `pb_formula_studio` styles a bare global `.pct` class — scope
+  every class (`pboc-…`).
