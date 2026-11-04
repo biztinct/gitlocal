@@ -1187,8 +1187,10 @@ msgid "Nobody is in the roster yet"
 msgstr "Danh sách nhân sự đang trống"
 
 #. module: pb_orgchart
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
 msgid "Nobody more to hire for it"
 msgstr "Không cần tuyển thêm cho vị trí này"
 
@@ -1211,8 +1213,10 @@ msgid "None"
 msgstr "Không có"
 
 #. module: pb_orgchart
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
 msgid "Nothing to undo."
 msgstr "Không có gì để hoàn tác."
 
@@ -2055,8 +2059,10 @@ msgid "no manager yet"
 msgstr "chưa có quản lý"
 
 #. module: pb_orgchart
+#. odoo-python
 #. odoo-javascript
 #: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0 code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
 msgid "nobody"
 msgstr "không ai"
 
@@ -2125,3 +2131,1230 @@ msgstr "Người hướng dẫn, người duyệt nghỉ phép và người duy�
 #: code:addons/pb_orgchart/models/pb_orgchart_write.py:0
 msgid "That change could not be saved. The system said: %(m)s"
 msgstr "Không lưu được thay đổi này. Hệ thống báo: %(m)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "%(a)s of %(b)s people get a manager. %(c)s left over."
+msgstr "%(a)s trên %(b)s người có quản lý. Còn lại %(c)s."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "%(d)s of %(n)s changes were made. These could not be, and are tried again every day:"
+msgstr "Đã thực hiện %(d)s trên %(n)s thay đổi. Các thay đổi sau chưa thực hiện được và sẽ được thử lại mỗi ngày:"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s changes"
+msgstr "%(n)s thay đổi"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "%(n)s changes added to your plan"
+msgstr "Đã thêm %(n)s thay đổi vào kế hoạch của bạn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s changes so far — amber outlines mark who moved, a dashed red line shows where they came from."
+msgstr "Đã có %(n)s thay đổi — viền vàng đánh dấu người được chuyển, đường đỏ nét đứt cho biết họ chuyển từ đâu."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s could not be made"
+msgstr "%(n)s chưa thực hiện được"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s days ago"
+msgstr "%(n)s ngày trước"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "%(n)s get the manager of the team above theirs."
+msgstr "%(n)s người nhận quản lý của nhóm cấp trên."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "%(n)s get the manager of their own team (from the team record)."
+msgstr "%(n)s người nhận quản lý của chính nhóm mình (theo hồ sơ nhóm)."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s new open roles for Hiring."
+msgstr "%(n)s vị trí tuyển mới cho Tuyển dụng."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s open roles closed."
+msgstr "%(n)s vị trí tuyển được đóng."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "%(n)s people have no manager yet."
+msgstr "%(n)s người chưa có quản lý."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "%(n)s people move or change."
+msgstr "%(n)s người được chuyển hoặc thay đổi."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "%(n)s suggested changes added to your plan"
+msgstr "Đã thêm %(n)s thay đổi được gợi ý vào kế hoạch của bạn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "%(n)s team leads report to the top of the company."
+msgstr "%(n)s trưởng nhóm báo cáo cho người đứng đầu công ty."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "%(p)s already reported to %(m)s."
+msgstr "%(p)s đã báo cáo cho %(m)s từ trước."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "%(p)s had moved to %(x)s in the meantime."
+msgstr "Trong thời gian đó %(p)s đã chuyển sang %(x)s."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "%(p)s had no manager any more."
+msgstr "%(p)s đã không còn quản lý."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+msgid "%(p)s has not started yet."
+msgstr "%(p)s chưa bắt đầu làm việc."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "%(p)s is at the top of the company (from their title)."
+msgstr "%(p)s đứng đầu công ty (theo chức danh)."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_write.py:0
+msgid "%(p)s no longer reports to %(m)s, so they can't swap places."
+msgstr "%(p)s không còn báo cáo cho %(m)s, nên không thể đổi vị trí."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "%(p)s now leads; %(m)s reports to them"
+msgstr "%(p)s giờ là quản lý; %(m)s báo cáo cho %(p)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "%(p)s works for %(c)s — this plan is for %(pc)s."
+msgstr "%(p)s làm việc cho %(c)s — kế hoạch này dành cho %(pc)s."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "%(who)s planned %(n)s. It goes live on %(d)s once approved."
+msgstr "%(who)s đã lập %(n)s. Kế hoạch được áp dụng vào %(d)s sau khi được duyệt."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "+90 d"
+msgstr "+90 ngày"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "1 change"
+msgstr "1 thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "1 change so far — the amber outline marks who moved, a dashed red line shows where they came from."
+msgstr "Đã có 1 thay đổi — viền vàng đánh dấu người được chuyển, đường đỏ nét đứt cho biết họ chuyển từ đâu."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "1 day ago"
+msgstr "1 ngày trước"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "1 gets the manager of the team above theirs."
+msgstr "1 người nhận quản lý của nhóm cấp trên."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "1 gets the manager of their own team (from the team record)."
+msgstr "1 người nhận quản lý của chính nhóm mình (theo hồ sơ nhóm)."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "1 new open role for Hiring."
+msgstr "1 vị trí tuyển mới cho Tuyển dụng."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "1 open role closed."
+msgstr "1 vị trí tuyển được đóng."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "1 person has no manager yet."
+msgstr "1 người chưa có quản lý."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "1 person moves or changes."
+msgstr "1 người được chuyển hoặc thay đổi."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "1 team lead reports to the top of the company."
+msgstr "1 trưởng nhóm báo cáo cho người đứng đầu công ty."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "1 yr ago"
+msgstr "1 năm trước"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Add at least one change before sending the plan."
+msgstr "Hãy thêm ít nhất một thay đổi trước khi gửi kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Approvals for org chart changes are not set up for %(c)s yet. Ask whoever looks after approvals to set them up."
+msgstr "Quy trình duyệt thay đổi sơ đồ tổ chức chưa được thiết lập cho %(c)s. Hãy nhờ người phụ trách phê duyệt thiết lập."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Approve the org chart plan: %(n)s"
+msgstr "Duyệt kế hoạch sơ đồ tổ chức: %(n)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Approved straight away. The changes are made on %(d)s."
+msgstr "Đã được duyệt ngay. Các thay đổi sẽ được thực hiện vào %(d)s."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Approved. The changes are made on %(d)s."
+msgstr "Đã duyệt. Các thay đổi sẽ được thực hiện vào %(d)s."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Back to the live chart"
+msgstr "Về sơ đồ hiện tại"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "Back to the live chart."
+msgstr "Đã quay về sơ đồ hiện tại."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Back to today"
+msgstr "Về hôm nay"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Before it goes live"
+msgstr "Trước khi áp dụng"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Being planned"
+msgstr "Đang lập kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Changed in the plan"
+msgstr "Thay đổi trong kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Coach, time-off approver and expense approver stay as they are. Each move shows on the person's History tab."
+msgstr "Người hướng dẫn, người duyệt nghỉ phép và người duyệt chi phí giữ nguyên. Mỗi lần chuyển được ghi ở thẻ Lịch sử của người đó."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Could not be made:"
+msgstr "Chưa thực hiện được:"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Day to show"
+msgstr "Ngày muốn xem"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Discard"
+msgstr "Hủy"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Discard plan"
+msgstr "Hủy kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Discard this plan?"
+msgstr "Hủy kế hoạch này?"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Discarded"
+msgstr "Đã hủy"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "Drag anyone onto a new manager, or use the buttons on a card. Changes stack here; nothing is real until you publish."
+msgstr "Kéo bất kỳ ai thả vào quản lý mới, hoặc dùng các nút trên thẻ. Thay đổi được xếp ở đây; chưa có gì thật cho đến khi bạn công bố."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Drag back to see who reported to whom then. Drag forward to see approved plans, leavers and new starters."
+msgstr "Kéo lùi để xem ai báo cáo cho ai lúc đó. Kéo tới để xem kế hoạch đã duyệt, người sắp nghỉ và nhân viên mới."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "Drag people around, add roles, try things."
+msgstr "Kéo thả mọi người, thêm vị trí, cứ thử thoải mái."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Drop on the new manager · added to your planned changes"
+msgstr "Thả vào quản lý mới · được thêm vào kế hoạch của bạn"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Effect of the plan"
+msgstr "Tác động của kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Everything below goes live together"
+msgstr "Mọi thay đổi bên dưới được áp dụng cùng lúc"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "From %(o)s"
+msgstr "Từ %(o)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Give the plan a name."
+msgstr "Hãy đặt tên cho kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Go back to today to make changes."
+msgstr "Hãy quay về hôm nay để thay đổi."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Goes into your planned changes — nothing moves until you publish."
+msgstr "Được thêm vào kế hoạch của bạn — chưa có gì thay đổi cho đến khi bạn công bố."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Goes live on"
+msgstr "Áp dụng từ ngày"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "HR team"
+msgstr "Đội Nhân sự"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Had no manager"
+msgstr "Trước đây chưa có quản lý"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Hiring sees it as a job to fill once the plan is live"
+msgstr "Tuyển dụng sẽ thấy vị trí cần tuyển khi kế hoạch được áp dụng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "How it was worked out"
+msgstr "Cách lập gợi ý"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "How many changes"
+msgstr "Số thay đổi"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "How many people move or change"
+msgstr "Số người được chuyển hoặc thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "In %(n)s days"
+msgstr "%(n)s ngày nữa"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "In 1 day"
+msgstr "1 ngày nữa"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+msgid "It was only planned — nothing is lost"
+msgstr "Vị trí chỉ có trong kế hoạch — không mất gì"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Keep planning"
+msgstr "Tiếp tục lập kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Leads a team, but no one top person could be worked out"
+msgstr "Đang quản lý một nhóm, nhưng không xác định được người đứng đầu công ty"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Leads the %(t)s team; %(c)s is at the top of the company"
+msgstr "Quản lý nhóm %(t)s; %(c)s đứng đầu công ty"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Left for you to place"
+msgstr "Còn lại để bạn sắp xếp"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Live"
+msgstr "Đã áp dụng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Made"
+msgstr "Đã thực hiện"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "Managers with 10+ direct reports after the plan: %(a)s (today %(b)s)."
+msgstr "Quản lý có từ 10 cấp dưới trực tiếp sau kế hoạch: %(a)s (hiện tại %(b)s)."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Manages %(p)s, the team above %(t)s"
+msgstr "Quản lý %(p)s, nhóm cấp trên của %(t)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Manages the %(t)s team"
+msgstr "Quản lý nhóm %(t)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Message to the approver (optional)"
+msgstr "Lời nhắn cho người duyệt (không bắt buộc)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Name of the plan"
+msgstr "Tên kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart.py:0
+msgid "New in this plan"
+msgstr "Mới trong kế hoạch này"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "New open roles"
+msgstr "Vị trí tuyển mới"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "New starter"
+msgstr "Nhân viên mới"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "No approval is needed for org chart changes here, so they are made as soon as you send them."
+msgstr "Ở đây thay đổi sơ đồ tổ chức không cần duyệt, nên sẽ được thực hiện ngay khi bạn gửi."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "No approval needed"
+msgstr "Không cần duyệt"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "No approval was needed, so the changes are live now."
+msgstr "Không cần duyệt nên các thay đổi đã được áp dụng ngay."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "No longer possible:"
+msgstr "Không còn thực hiện được:"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "No one top person could be worked out — %(n)s people have a top title."
+msgstr "Không xác định được một người đứng đầu — có %(n)s người mang chức danh cao nhất."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "No one top person could be worked out — nobody has a title like Chief Executive or General Director."
+msgstr "Không xác định được người đứng đầu — không ai có chức danh như Tổng giám đốc hay Giám đốc điều hành."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "No plans yet. Press Plan changes to try a change before anyone sees it."
+msgstr "Chưa có kế hoạch nào. Bấm Lập kế hoạch để thử thay đổi trước khi ai khác thấy."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Not in any team, so nobody can be suggested."
+msgstr "Không thuộc nhóm nào nên không gợi ý được ai."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Not now"
+msgstr "Để sau"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Nothing to add."
+msgstr "Không có gì để thêm."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Nothing you do here changes the real chart until you publish."
+msgstr "Mọi thao tác ở đây chưa thay đổi sơ đồ thật cho đến khi bạn công bố."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Now in the “no manager yet” lane"
+msgstr "Chuyển vào nhóm “Chưa có quản lý”"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Once approved, the changes are made on the employee records on %(d)s."
+msgstr "Sau khi được duyệt, các thay đổi được ghi vào hồ sơ nhân viên vào %(d)s."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Once approved, the changes are made on the employee records straight away."
+msgstr "Sau khi được duyệt, các thay đổi được ghi vào hồ sơ nhân viên ngay."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Only a plan that has not been sent can be discarded."
+msgstr "Chỉ có thể hủy kế hoạch chưa được gửi."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Only an HR user can plan changes to the chart."
+msgstr "Chỉ nhân sự mới lập được kế hoạch thay đổi sơ đồ."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Only the person who started a plan can change it."
+msgstr "Chỉ người lập kế hoạch mới thay đổi được kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Org chart change: %(name)s (%(n)s changes)"
+msgstr "Thay đổi sơ đồ tổ chức: %(name)s (%(n)s thay đổi)"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Org chart change: %(name)s (1 change)"
+msgstr "Thay đổi sơ đồ tổ chức: %(name)s (1 thay đổi)"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Org chart changes"
+msgstr "Thay đổi sơ đồ tổ chức"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Pick the day the changes should be made."
+msgstr "Hãy chọn ngày thực hiện các thay đổi."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Pick today or a later day."
+msgstr "Hãy chọn hôm nay hoặc một ngày sau đó."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Plan changes"
+msgstr "Lập kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Plan discarded — the chart is back to how it was."
+msgstr "Đã hủy kế hoạch — sơ đồ trở lại như cũ."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Planned by"
+msgstr "Người lập"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Planned changes"
+msgstr "Thay đổi đã lập"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Planning mode."
+msgstr "Chế độ lập kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Plans"
+msgstr "Kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Press Suggest a chart and a starting chart is worked out from your team records — nothing is live until you publish it. Or drag someone onto their manager right here."
+msgstr "Bấm Gợi ý sơ đồ để có một sơ đồ ban đầu lập từ hồ sơ các nhóm — chưa có gì được áp dụng cho đến khi bạn công bố. Hoặc kéo một người thả vào quản lý của họ ngay tại đây."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Publish"
+msgstr "Công bố"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Publish %(n)s planned changes?"
+msgstr "Công bố %(n)s thay đổi đã lập?"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Publish 1 planned change?"
+msgstr "Công bố 1 thay đổi đã lập?"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Publish changes"
+msgstr "Công bố thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Reading the plans…"
+msgstr "Đang đọc các kế hoạch…"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Reading the team records…"
+msgstr "Đang đọc hồ sơ các nhóm…"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Redo"
+msgstr "Làm lại"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Redo (⇧⌘Z)"
+msgstr "Làm lại (⇧⌘Z)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Resume planning where you left off"
+msgstr "Tiếp tục lập kế hoạch từ chỗ đã dừng"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "See changes"
+msgstr "Xem thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Sent to the HR team for approval."
+msgstr "Đã gửi đội Nhân sự để duyệt."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Sent to the HR team for approval. You'll be told when it is live."
+msgstr "Đã gửi đội Nhân sự để duyệt. Bạn sẽ được báo khi kế hoạch được áp dụng."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Showing the chart on %(d)s · %(n)s approved plans, announced leavers and accepted offers up to that day"
+msgstr "Sơ đồ vào ngày %(d)s · %(n)s kế hoạch đã duyệt, người sắp nghỉ và ứng viên đã nhận việc tính đến ngày đó"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Showing the chart on %(d)s · 1 approved plan, announced leavers and accepted offers up to that day"
+msgstr "Sơ đồ vào ngày %(d)s · 1 kế hoạch đã duyệt, người sắp nghỉ và ứng viên đã nhận việc tính đến ngày đó"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Showing who reported to whom on %(d)s · people who have since left are not shown"
+msgstr "Ai báo cáo cho ai vào ngày %(d)s · không hiển thị những người đã nghỉ việc sau đó"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Some changes are no longer possible — they are marked in the list. Take them out, then send the plan."
+msgstr "Một số thay đổi không còn thực hiện được — chúng được đánh dấu trong danh sách. Hãy bỏ chúng ra rồi gửi kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Some changes are no longer possible. Take them out in the list of changes, then send the plan."
+msgstr "Một số thay đổi không còn thực hiện được. Hãy bỏ chúng khỏi danh sách thay đổi, rồi gửi kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Someone moves to a manager in another team"
+msgstr "Có người chuyển sang quản lý ở nhóm khác"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "Someone moves to a manager in another team — their team stays as it is."
+msgstr "Có người chuyển sang quản lý ở nhóm khác — nhóm của họ giữ nguyên."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Starts %(d)s"
+msgstr "Bắt đầu %(d)s"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Suggest a chart"
+msgstr "Gợi ý sơ đồ"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Suggested chart"
+msgstr "Sơ đồ gợi ý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Take this change out of the plan"
+msgstr "Bỏ thay đổi này khỏi kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+msgid "Take this role out of the plan"
+msgstr "Bỏ vị trí này khỏi kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "That change could not be read. Refresh and try again."
+msgstr "Không đọc được thay đổi này. Hãy tải lại và thử lại."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "That change is no longer in the plan."
+msgstr "Thay đổi này không còn trong kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "That could not be saved. Nothing was changed — try again."
+msgstr "Không lưu được. Không có gì thay đổi — hãy thử lại."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "That kind of change is not known."
+msgstr "Loại thay đổi này không được hỗ trợ."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "That plan is no longer there. Refresh and try again."
+msgstr "Kế hoạch này không còn nữa. Hãy tải lại và thử lại."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "That plan is not yours to see."
+msgstr "Bạn không có quyền xem kế hoạch này."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart_edit.js:0
+msgid "That role is new in this plan. Take it out of the list of changes instead, or fill it once the plan is live."
+msgstr "Vị trí này chỉ mới có trong kế hoạch. Hãy bỏ nó khỏi danh sách thay đổi, hoặc tuyển người sau khi kế hoạch được áp dụng."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "That would put them inside their own team"
+msgstr "Như vậy họ sẽ nằm trong chính nhóm của mình"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "The %(n)s planned changes are thrown away. Nothing on the real chart changes."
+msgstr "%(n)s thay đổi đã lập sẽ bị bỏ. Sơ đồ thật không thay đổi gì."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "The 1 planned change is thrown away. Nothing on the real chart changes."
+msgstr "1 thay đổi đã lập sẽ bị bỏ. Sơ đồ thật không thay đổi gì."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "The changes"
+msgstr "Các thay đổi"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "The plan is live: %(n)s changes made."
+msgstr "Kế hoạch đã được áp dụng: %(n)s thay đổi đã thực hiện."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "The plan is live: 1 change made."
+msgstr "Kế hoạch đã được áp dụng: 1 thay đổi đã thực hiện."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "The suggestion could not be worked out. Try again."
+msgstr "Không lập được gợi ý. Hãy thử lại."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "The system said: %(m)s"
+msgstr "Hệ thống báo: %(m)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Their main manager stays the same"
+msgstr "Quản lý chính vẫn giữ nguyên"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Their team has no manager set, and no team above it has one"
+msgstr "Nhóm của họ chưa có quản lý, và các nhóm cấp trên cũng chưa có"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "Their title becomes %(t)s; one fewer to hire"
+msgstr "Chức danh đổi thành %(t)s; bớt một người cần tuyển"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "There was nothing to add — everyone the suggestion places is already placed in your plan."
+msgstr "Không có gì để thêm — mọi người trong gợi ý đều đã có trong kế hoạch của bạn."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "This change could not be made."
+msgstr "Không thực hiện được thay đổi này."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "This change could not be made. It will be tried again tomorrow."
+msgstr "Không thực hiện được thay đổi này. Hệ thống sẽ thử lại vào ngày mai."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "This plan has already been sent, so it can't be changed."
+msgstr "Kế hoạch này đã được gửi nên không thể thay đổi."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "This plan has already been sent."
+msgstr "Kế hoạch này đã được gửi."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "This plan has been sent — it can't be changed here."
+msgstr "Kế hoạch này đã được gửi — không thể thay đổi ở đây."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Time machine"
+msgstr "Xem theo thời gian"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "To keep the plan for later instead, close this and go back to the live chart — your draft waits in the Plans menu."
+msgstr "Muốn giữ kế hoạch để dùng sau, hãy đóng hộp này và quay về sơ đồ hiện tại — bản nháp nằm trong mục Kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Try changes on a copy of the chart, then send them for approval"
+msgstr "Thử thay đổi trên bản sao của sơ đồ, rồi gửi duyệt"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Turned down"
+msgstr "Bị từ chối"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Turned down. Nothing on the chart changed."
+msgstr "Bị từ chối. Sơ đồ không thay đổi gì."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Undo (⌘Z)"
+msgstr "Hoàn tác (⌘Z)"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart.js:0
+msgid "Undo / redo a planned change"
+msgstr "Hoàn tác / làm lại một thay đổi trong kế hoạch"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Use it"
+msgstr "Dùng gợi ý"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Viewing a plan."
+msgstr "Đang xem một kế hoạch."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Where they came from"
+msgstr "Vị trí trước đây"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Why these changes, and anything the approver should know"
+msgstr "Lý do thay đổi và những điều người duyệt cần biết"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Worked out from your team records. Nothing is saved until you press Use it."
+msgstr "Được lập từ hồ sơ các nhóm. Chưa có gì được lưu cho đến khi bạn bấm Dùng gợi ý."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "You are looking at %(d)s. Go back to today to make changes."
+msgstr "Bạn đang xem ngày %(d)s. Hãy quay về hôm nay để thay đổi."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "You can drag anyone afterwards — this is a starting point, not a decision. It goes into your plan; nothing is live until you publish."
+msgstr "Bạn có thể kéo thả bất kỳ ai sau đó — đây là điểm khởi đầu, chưa phải quyết định. Gợi ý được đưa vào kế hoạch; chưa có gì được áp dụng cho đến khi bạn công bố."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+msgid "You don't have the rights to change this plan. Ask an HR manager."
+msgstr "Bạn không có quyền thay đổi kế hoạch này. Hãy nhờ trưởng phòng nhân sự."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "You have a draft with %(n)s changes"
+msgstr "Bạn có một bản nháp với %(n)s thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "You have a draft with 1 change"
+msgstr "Bạn có một bản nháp với 1 thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Your approver, %(a)s, gets one request covering all %(n)s."
+msgstr "Người duyệt của bạn, %(a)s, nhận một yêu cầu cho cả %(n)s thay đổi."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "Your approver, %(a)s, gets one request covering this change."
+msgstr "Người duyệt của bạn, %(a)s, nhận một yêu cầu cho thay đổi này."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Your plan is kept as it is"
+msgstr "Kế hoạch của bạn được giữ nguyên"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "Your plans, and plans waiting for approval"
+msgstr "Kế hoạch của bạn và các kế hoạch đang chờ duyệt"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "and %(n)s more"
+msgstr "và %(n)s người khác"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "by %(u)s"
+msgstr "bởi %(u)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "changes"
+msgstr "thay đổi"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/xml/orgchart.xml:0
+msgid "e.g. Q1 restructure of the Southern field team"
+msgstr "vd: Tái cơ cấu nhóm hiện trường miền Nam quý 1"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "goes live %(d)s"
+msgstr "áp dụng %(d)s"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "no manager"
+msgstr "không có quản lý"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_plan.py:0
+msgid "roles"
+msgstr "vị trí"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_orgchart/models/pb_orgchart_project.py:0
+#: code:addons/pb_orgchart/static/src/js/orgchart_dialog.js:0
+msgid "the HR team"
+msgstr "đội Nhân sự"
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "“%(n)s” · %(s)s · goes live %(d)s. This is how the chart looks with it."
+msgstr "“%(n)s” · %(s)s · áp dụng %(d)s. Sơ đồ sẽ trông như thế này."
+
+#. module: pb_orgchart
+#. odoo-javascript
+#: code:addons/pb_orgchart/static/src/js/orgchart_plan.js:0
+msgid "“%(n)s” · %(s)s."
+msgstr "“%(n)s” · %(s)s."

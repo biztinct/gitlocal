@@ -510,6 +510,113 @@
         small { color: var(--oc-muted); font-size: 11.5px; }
         &:not(:last-child)::before { content: ""; position: absolute; left: 8px; top: 20px; bottom: -6px; width: 2px; background: var(--oc-line); } }
 
+    // ------------------------------------------------------------ P3: plans, time machine, suggest
+    // planned and future states are data attributes on the card (G12)
+    .pboc-node[data-st~="chg"]::after {
+        content: ""; position: absolute; inset: -1px; border-radius: 14px; border: 2px solid var(--oc-amber);
+        pointer-events: none; box-shadow: 0 0 0 4px rgba(180, 83, 9, .12);
+    }
+    .pboc-node[data-st~="fut"] { opacity: .62; border-style: dashed; border-color: var(--oc-blue); background: #F7FAFF; cursor: default; }
+    .pboc-node.open[data-st~="chg"] { background: #FBF8FF; }
+    .pboc-edges path.ghost { stroke: var(--oc-rose); stroke-dasharray: 3 4; opacity: .65; stroke-width: 1.8; }
+    .pboc-legend .lg i.chg { background: transparent; border: 2px solid var(--oc-amber); border-radius: 3px; }
+    .pboc-legend .lg .ghostkey { stroke: var(--oc-rose); stroke-width: 2; stroke-dasharray: 3 3; }
+
+    .pboc-badge { background: rgba(255, 255, 255, .24); border-radius: 999px; padding: 1px 8px; font-size: 11.5px; font-weight: 700; }
+    .pboc-btn.primary:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+    .pboc-btn.outline:disabled, .pboc-btn.ghost:disabled { opacity: .45; cursor: not-allowed; }
+    .pboc-btn.danger { color: var(--oc-rose); &:hover { background: var(--oc-rose-soft); } }
+    .pboc-btn.danger-fill { background: var(--oc-rose); box-shadow: 0 6px 16px rgba(220, 38, 85, .25); &:hover { background: #B91C47; } }
+    .pboc-dotb { width: 8px; height: 8px; border-radius: 50%; background: var(--oc-amber); box-shadow: 0 0 0 3px var(--oc-amber-soft); }
+
+    .pboc-draftbar {
+        display: flex; align-items: center; gap: 10px; padding: 9px 12px 9px 14px; margin: 0 0 10px; border-radius: 12px;
+        background: var(--oc-amber-soft); border: 1px solid var(--oc-amber-line); color: #7A3A06; font-size: 13px;
+        animation: pboc-down .2s ease-out;
+        > svg { flex: none; color: var(--oc-amber); }
+        .grow { flex: 1; min-width: 0; b { font-weight: 700; } small { display: block; color: #8A5A1E; font-size: 12px; } }
+        .pboc-btn.outline { background: rgba(255, 255, 255, .7); border-color: var(--oc-amber-line); color: #7A3A06;
+            &:hover { border-color: var(--oc-amber); color: var(--oc-amber); } }
+        &.view { background: var(--oc-p-wash); border-color: var(--oc-p-soft2); color: var(--oc-p600); > svg { color: var(--oc-p); }
+            .pboc-btn.outline { border-color: var(--oc-p-soft2); color: var(--oc-p600); } }
+        &.time { background: #FFF8EB; }
+    }
+
+    .pboc-plans { min-width: 360px; max-height: 440px; overflow: auto;
+        button { align-items: center; }
+        button > span:not(.pboc-tag) { flex: 1; min-width: 0; }
+        button b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        button.hl { background: var(--oc-amber-soft); > svg { color: var(--oc-amber); } &:hover { background: #FDEBB4; } }
+        .pboc-tag { flex: none; }
+    }
+
+    .pboc-timebtn { gap: 6px; &.on { background: var(--oc-amber-soft); border-color: var(--oc-amber-line); color: #7A3A06; } }
+    .pboc-time-menu { min-width: 380px; padding: 12px; right: 0;
+        .pboc-time-help { display: block; color: var(--oc-muted); font-size: 12px; margin: 8px 2px 4px; }
+        .pboc-time-note { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; color: var(--oc-ink2); background: var(--oc-bg);
+            border-radius: 9px; padding: 7px 9px; margin: 6px 0; svg { color: var(--oc-p); margin-top: 2px; } }
+    }
+    .pboc-time {
+        display: flex; align-items: center; gap: 10px; background: var(--oc-card); border: 1px solid var(--oc-line); border-radius: 12px;
+        padding: 8px 12px; height: 42px;
+        input[type=range] { flex: 1; accent-color: var(--oc-p); min-width: 0; }
+        b { font-size: 12.5px; min-width: 92px; text-align: right; font-weight: 700; }
+        small { color: var(--oc-muted); font-size: 11.5px; white-space: nowrap; }
+        &.past b { color: var(--oc-amber); }
+        &.future b { color: var(--oc-blue); }
+    }
+
+    .pboc-chg {
+        display: flex; gap: 10px; padding: 10px; border: 1px solid var(--oc-line); border-radius: 12px; margin-bottom: 8px;
+        align-items: flex-start; background: var(--oc-card); animation: pboc-pop .16s ease-out;
+        .bd { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; flex: none;
+            background: var(--oc-amber-soft); color: var(--oc-amber);
+            &.green { background: var(--oc-green-soft); color: var(--oc-green); }
+            &.rose { background: var(--oc-rose-soft); color: var(--oc-rose); }
+            &.p { background: var(--oc-p-soft); color: var(--oc-p); } }
+        .tx { flex: 1; min-width: 0; }
+        b { font-size: 12.5px; display: block; font-weight: 650; }
+        small { display: block; color: var(--oc-muted); font-size: 11.5px; }
+        small.warn { color: var(--oc-rose); font-weight: 600; display: flex; gap: 4px; align-items: flex-start; svg { margin-top: 2px; flex: none; } }
+        small.ok { color: var(--oc-green); font-weight: 600; display: flex; gap: 4px; align-items: center; }
+        .rm { margin-left: auto; color: var(--oc-faint); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; flex: none;
+            &:hover { color: var(--oc-rose); background: var(--oc-rose-soft); } &:disabled { opacity: .4; } }
+        &.bad { border-color: #F9C4D0; background: #FFF8FA; }
+        &.done { opacity: .8; }
+    }
+    .pboc-chgside {
+        .sb .impact { margin-top: 4px; background: var(--oc-bg); border-radius: 13px; padding: 11px 14px;
+            > b { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--oc-faint); }
+            ul { margin: 6px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--oc-ink2); }
+            li { margin: 3px 0; } }
+        .sf { align-items: center; }
+    }
+    .pboc-chg-empty { text-align: center; color: var(--oc-muted); font-size: 13px; padding: 26px 10px;
+        .bd { width: 56px; height: 56px; border-radius: 18px; background: var(--oc-amber-soft); color: var(--oc-amber);
+            display: grid; place-items: center; margin: 0 auto 12px; }
+        p { margin: 0 0 14px; }
+    }
+    .pboc-lane-act.sug { color: var(--oc-p); border-color: var(--oc-p-soft2) !important; &:hover { background: var(--oc-p-wash); } }
+
+    .pboc-dlg {
+        .pboc-chglist { max-height: 260px; overflow: auto; margin-bottom: 4px; }
+        textarea { width: 100%; border: 1px solid var(--oc-line2); border-radius: 10px; padding: 8px 12px; font-size: 13.5px;
+            background: var(--oc-card); color: var(--oc-ink); outline: 0; resize: vertical; font: inherit;
+            &:focus { border-color: var(--oc-p); box-shadow: 0 0 0 3px var(--oc-p-ring); } }
+        .pboc-live.plan { color: var(--oc-amber); font-weight: 600; }
+        .pboc-note { margin-top: 10px; }
+        .pboc-sugprev { margin-top: 10px; border: 1px solid var(--oc-line); border-radius: 12px; padding: 6px 10px;
+            .row { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; padding: 5px 0; font-size: 12.5px;
+                svg { color: var(--oc-faint); }
+                small { flex-basis: 100%; color: var(--oc-muted); font-size: 11.5px; margin-top: -2px; } }
+            .row + .row { border-top: 1px solid var(--oc-line); }
+            .more { display: block; color: var(--oc-muted); padding: 4px 0 2px; } }
+        .pboc-sugleft { margin-top: 10px; font-size: 12.5px;
+            > b { display: block; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--oc-faint); margin-bottom: 4px; }
+            .row { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; color: var(--oc-ink2); }
+            .num { min-width: 28px; text-align: right; font-weight: 700; color: var(--oc-amber); } }
+    }
+
     // ------------------------------------------------------------ smaller screens
     @media (max-width: 1500px) {
         .pboc-stage { grid-template-columns: minmax(0, 1fr); }

@@ -11,6 +11,7 @@
  * this app, ledger G12).
  */
 import { Component, useState, useRef, onMounted } from "@odoo/owl";
+const { DateTime } = luxon;
 import { _t } from "@web/core/l10n/translation";
 import { ancestors, descendants, kidsOf, directCount } from "@pb_orgchart/js/orgchart_layout";
 
@@ -26,7 +27,15 @@ export class PbOcDialog extends Component {
         this.state = useState({
             q: "", sel: null, busy: false,
             mode: "existing", only: false, title: "", reason: "growth",
+            // P3: the publish dialog's fields, the suggestion
+            pname: "", pdate: "", pnote: "", sug: null, sugFailed: false,
         });
+        if (d.kind === "publish") {
+            const pl = this.chart.state.plan || {};
+            this.state.pname = pl.name || "";
+            this.state.pdate = pl.effective_date || DateTime.local().toISODate();
+            this.state.pnote = pl.note || "";
+        }
         if (d.kind === "dotted") {
             const n = this.chart.nodeOf(d.id);
             this.state.sel = (n && n.dotted) || null;
@@ -36,6 +45,7 @@ export class PbOcDialog extends Component {
         onMounted(() => {
             const el = this.qRef.el || this.titleRef.el;
             if (el) { el.focus({ preventScroll: true }); }
+            if (d.kind === "suggest") { this.loadSuggestion(); }
         });
     }
 
@@ -97,6 +107,20 @@ export class PbOcDialog extends Component {
                 return { ic: "userCheck", title: _t("Fill the %(t)s role", { t: p.title }),
                          sub: _t("Reports to %(m)s · %(d)s", { m: mg ? mg.name : _t("nobody yet"), d: p.dept || "—" }) };
             }
+            case "publish": {
+                const n = this.chart.planN;
+                return { ic: "send", title: n === 1 ? _t("Publish 1 planned change?") : _t("Publish %(n)s planned changes?", { n }),
+                         sub: _t("Everything below goes live together") };
+            }
+            case "discard": {
+                const n = this.chart.planN;
+                return { ic: "trash", title: _t("Discard this plan?"),
+                         sub: n === 1 ? _t("The 1 planned change is thrown away. Nothing on the real chart changes.")
+                                      : _t("The %(n)s planned changes are thrown away. Nothing on the real chart changes.", { n }) };
+            }
+            case "suggest": return {
+                ic: "wand", title: _t("Suggested chart"),
+                sub: _t("Worked out from your team records. Nothing is saved until you press Use it.") };
         }
         return { ic: "info", title: "", sub: "" };
     }
@@ -246,6 +270,82 @@ export class PbOcDialog extends Component {
                 ["cover", _t("Cover for leave")]];
     }
 
+    // ---------------------------------------------------------- P3: publish
+    get plan() { return this.chart.state.plan || {}; }
+    changeIc(c) { return this.chart.changeIc(c); }
+    changeTone(c) { return this.chart.changeTone(c); }
+    onPname(ev) { this.state.pname = ev.target.value; }
+    onPdate(ev) { this.state.pdate = ev.target.value; }
+    onPnote(ev) { this.state.pnote = ev.target.value; }
+    get todayIso() { return DateTime.local().toISODate(); }
+
+    get pdateLabel() {
+        const d = this.state.pdate ? DateTime.fromISO(this.state.pdate) : null;
+        return d && d.isValid ? d.toLocaleString({ day: "numeric", month: "long", year: "numeric" }) : "";
+    }
+
+    get beforeLive() {
+        const ap = this.plan.approver || {};
+        const n = this.chart.planN;
+        const out = [];
+        if (ap.fast) {
+            out.push(_t("No approval is needed for org chart changes here, so they are made as soon as you send them."));
+        } else {
+            out.push(n === 1 ? _t("Your approver, %(a)s, gets one request covering this change.", { a: ap.line || _t("the HR team") })
+                             : _t("Your approver, %(a)s, gets one request covering all %(n)s.", { a: ap.line || _t("the HR team"), n }));
+        }
+        const when = this.state.pdate && this.state.pdate > this.todayIso
+            ? _t("Once approved, the changes are made on the employee records on %(d)s.", { d: this.pdateLabel })
+            : _t("Once approved, the changes are made on the employee records straight away.");
+        out.push(when);
+        out.push(_t("Coach, time-off approver and expense approver stay as they are. Each move shows on the person's History tab."));
+        return out;
+    }
+
+    get publishBad() { return this.chart.planChanges.filter((c) => c.stale).length; }
+
+    // ---------------------------------------------------------- P3: suggest
+    async loadSuggestion() {
+        try {
+            this.state.sug = await this.chart.orm.call("pb.orgchart", "suggest_chart", []);
+        } catch (e) {
+            console.warn("pb_orgchart: suggestion failed", e);
+            this.state.sugFailed = true;
+        }
+    }
+
+    get sugLines() {
+        const s = this.state.sug && this.state.sug.summary;
+        if (!s) { return []; }
+        const out = [];
+        out.push(s.no_manager === 1 ? _t("1 person has no manager yet.") : _t("%(n)s people have no manager yet.", { n: this.chart.fmtInt(s.no_manager) }));
+        if (s.by_team) {
+            out.push(s.by_team === 1 ? _t("1 gets the manager of their own team (from the team record).")
+                                     : _t("%(n)s get the manager of their own team (from the team record).", { n: this.chart.fmtInt(s.by_team) }));
+        }
+        if (s.by_parent) {
+            out.push(s.by_parent === 1 ? _t("1 gets the manager of the team above theirs.")
+                                       : _t("%(n)s get the manager of the team above theirs.", { n: this.chart.fmtInt(s.by_parent) }));
+        }
+        if (s.to_top) {
+            out.push(s.to_top === 1 ? _t("1 team lead reports to the top of the company.")
+                                    : _t("%(n)s team leads report to the top of the company.", { n: this.chart.fmtInt(s.to_top) }));
+        }
+        out.push(s.top_line);
+        out.push(_t("%(a)s of %(b)s people get a manager. %(c)s left over.",
+                    { a: this.chart.fmtInt(s.placed), b: this.chart.fmtInt(s.no_manager), c: this.chart.fmtInt(s.left_out) }));
+        return out;
+    }
+
+    get sugReasons() { return (this.state.sug && this.state.sug.summary.reasons) || []; }
+
+    get sugPreview() { return ((this.state.sug && this.state.sug.changes) || []).slice(0, 6); }
+
+    get sugMore() {
+        const n = ((this.state.sug && this.state.sug.changes) || []).length - 6;
+        return n > 0 ? _t("and %(n)s more", { n: this.chart.fmtInt(n) }) : "";
+    }
+
     // ---------------------------------------------------------- footer
     get okLabel() {
         const d = this.d;
@@ -258,6 +358,9 @@ export class PbOcDialog extends Component {
             case "dotted": return _t("Save dotted line");
             case "addmember": return s.mode === "hire" ? _t("Open the form") : s.mode === "role" ? _t("Add the role") : _t("Add to team");
             case "fill": return s.mode === "hire" ? _t("Open the form") : _t("Fill the role");
+            case "publish": return _t("Send for approval");
+            case "discard": return _t("Discard plan");
+            case "suggest": return _t("Use it");
         }
         return _t("OK");
     }
@@ -266,14 +369,23 @@ export class PbOcDialog extends Component {
         const d = this.d;
         const s = this.state;
         if (s.busy) { return true; }
-        if (d.kind === "move" || d.kind === "many") { return false; }
+        if (d.kind === "move" || d.kind === "many" || d.kind === "discard") { return false; }
+        if (d.kind === "publish") { return !s.pname.trim() || !s.pdate || s.pdate < this.todayIso || !!this.publishBad; }
+        if (d.kind === "suggest") { return !(s.sug && s.sug.summary.placed); }
         if (d.kind === "addmember" && s.mode === "role") { return !s.title.trim(); }
         if ((d.kind === "addmember" || d.kind === "fill") && s.mode === "hire") { return false; }
         if (d.kind === "dotted") { return !s.sel || s.sel === this.p.dotted; }
         return !s.sel;
     }
 
-    get liveNote() { return _t("Takes effect straight away. Undo is one tap in the message that appears."); }
+    get liveNote() {
+        return this.chart.inPlan ? _t("Goes into your planned changes — nothing moves until you publish.")
+                                 : _t("Takes effect straight away. Undo is one tap in the message that appears.");
+    }
+
+    get cancelLabel() {
+        return { publish: _t("Keep planning"), discard: _t("Keep planning"), suggest: _t("Not now") }[this.d.kind] || _t("Cancel");
+    }
 
     close() { if (!this.state.busy) { this.chart.closeDialog(); } }
 
@@ -305,13 +417,17 @@ export class PbOcDialog extends Component {
             case "fill":
                 if (s.mode === "hire") { c.openNewStarter({ role: this.p }); return; }
                 return this.run(() => c.doFill(d.id, s.sel));
+            case "publish":
+                return this.run(() => c.planSubmit({ name: s.pname.trim(), effective_date: s.pdate, note: s.pnote }));
+            case "discard": return this.run(() => c.planDiscard());
+            case "suggest": return this.run(() => c.useSuggestion());
         }
     }
 
     removeDotted() { return this.run(() => this.chart.doDotted(this.d.id, false)); }
 
     onKey(ev) {
-        if (ev.key === "Enter" && ev.target.tagName !== "SELECT") {
+        if (ev.key === "Enter" && ev.target.tagName !== "SELECT" && ev.target.tagName !== "TEXTAREA") {
             if (this.showPicker && !this.state.sel && this.hits.length === 1) { this.state.sel = this.hits[0].id; }
             if (!this.okDisabled) { ev.preventDefault(); this.confirm(); }
         }

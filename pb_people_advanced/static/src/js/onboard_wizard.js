@@ -20,7 +20,7 @@ export class OnboardWizard extends Component {
             step: 1, loading: false, busyMsg: "", defaults: null, result: null,
             form: {
                 name: "", work_email: "", work_phone: "", country_id: "",
-                department_id: "", job_id: "", job_title: "", parent_id: "",
+                department_id: "", job_id: "", job_title: "", parent_id: "", fill_job_id: "",
                 with_contract: true, struct_id: "", structure_type_id: "",
                 wage: "", date_start: "", date_end: "", resource_calendar_id: "",
                 activate: true, account_number: "", bank_name: "",
@@ -44,6 +44,9 @@ export class OnboardWizard extends Component {
                     if (pre[k]) { f[k] = String(pre[k]); }
                 }
                 if (pre.job_title) { f.job_title = pre.job_title; }
+                // "Fill this role › A new starter" (ORGCHART P3): saving the
+                // person lowers that role's "to hire" count by one
+                if (pre.fill_job_id) { f.fill_job_id = String(pre.fill_job_id); }
                 // a pre-filled team or job that is not in the short lists is still shown
                 const add = (list, id, name) => {
                     if (id && name && !list.some((x) => String(x.id) === String(id))) { list.unshift({ id, name }); }

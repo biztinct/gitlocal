@@ -29,10 +29,11 @@ import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack, openHub } from "@pb_hub/js/hub_nav";
 import {
     buildIndex, layout, bounds, edges, kidsOf, ancestors, descendants,
-    directCount, totalCount, isUnloaded, colorOf, cardSize,
+    directCount, totalCount, isUnloaded, colorOf, cardSize, edgePath,
     LOC_COLORS, TYPE_COLORS, TENURE, daysSince,
 } from "@pb_orgchart/js/orgchart_layout";
-import { installEdit, personNode, roleNode } from "@pb_orgchart/js/orgchart_edit";
+import { installEdit, personNode, roleNode, starterNode } from "@pb_orgchart/js/orgchart_edit";
+import { installPlan } from "@pb_orgchart/js/orgchart_plan";
 import { PbOcDialog } from "@pb_orgchart/js/orgchart_dialog";
 
 const ICONS = new Map();
@@ -113,8 +114,12 @@ export class PbOrgChart extends Component {
             // P2: the open dialog, the right-click menu, how many cards are
             // picked, a write in flight, the history cache's revision
             dlg: null, ctx: null, pickN: 0, writing: false, histRev: 0,
+            // P3: the plan on screen (the server's plan payload), the redo
+            // depth, the time machine (days from today) and the Plans menu
+            plan: null, redoN: 0, asOf: 0, asOfDraft: 0, timeBusy: false, plans: null,
         });
         this._setupEdit();
+        this._setupPlan();
         this.data = null;
         this.nodes = [];
         this.idx = null;
@@ -140,32 +145,57 @@ export class PbOrgChart extends Component {
     }
 
     // ================================================================ data
-    async load() {
+    /**
+     * Read the chart. `keep` (P3): a redraw of the same chart — a plan's
+     * projection after a change, another day in the time machine — keeps
+     * what was folded, the view and the opened teams.
+     */
+    async load(opts = {}) {
+        const keep = !!(opts.keep && this.data);
         this.state.failed = false;
         const t = performance.now();
+        let d = null;
         try {
-            this.data = await this.orm.call("pb.orgchart", "get_chart", []);
+            d = await this.orm.call("pb.orgchart", "get_chart", [], this.chartKw());
         } catch (e) {
             console.warn("pb_orgchart: chart failed", e);
+            d = null;
+        }
+        if (!d || d.error) {
+            if (keep) {
+                // the plan or the day could not be drawn: say so, keep the chart
+                this.notif.add((d && d.error) || _t("The chart could not be loaded. Try again."), { type: "danger" });
+                if (this.state.plan && d && d.error) { this.state.plan = null; if (this.state.side === "__changes") { this.state.side = null; } }
+                return;
+            }
             this.state.failed = true;
             this.state.loaded = true;
             return;
         }
+        this.data = d;
         this.perf.payloadMs = Math.round(performance.now() - t);
-        const d = this.data;
+        if (d.plan) { this.state.plan = d.plan; }
         this.deptColor = new Map((d.departments || []).map((x) => [x.id, x.color]));
         this.nodes = [];
         this._order = 0;
-        this._ingest(d.people || [], d.open_roles || []);
+        this._ingest(d.people || [], d.open_roles || [], d.starters || []);
         this.idx = buildIndex(this.nodes);
-        this._initialFold();
-        this.firstDraw = true;
-        this._pendingFit = true;
+        if (keep) {
+            for (const id of [...this.collapsed]) { if (!this.idx.byId.has(id)) { this.collapsed.delete(id); } }
+            const s = this.state;
+            if (s.sel && !this.idx.byId.has(s.sel)) { s.sel = null; }
+            if (s.side && s.side !== "__changes" && !this.idx.byId.has(s.side)) { s.side = null; }
+            this.hist.clear();
+        } else {
+            this._initialFold();
+            this.firstDraw = true;
+            this._pendingFit = true;
+        }
         this.relayout();
         this.state.loaded = true;
     }
 
-    _ingest(people, roles) {
+    _ingest(people, roles, starters = []) {
         const have = new Set(this.nodes.map((n) => n.id));
         for (const p of people) {
             const id = String(p.id);
@@ -177,6 +207,11 @@ export class PbOrgChart extends Component {
             if (have.has(o.id)) { continue; }
             this.nodes.push(roleNode(o, this._order++));
             have.add(o.id);
+        }
+        for (const f of starters) {
+            if (have.has(f.id)) { continue; }
+            this.nodes.push(starterNode(f, this._order++));
+            have.add(f.id);
         }
     }
 
@@ -211,7 +246,10 @@ export class PbOrgChart extends Component {
         if (this.state.branchBusy) { return; }
         this.state.branchBusy = n.id;
         try {
-            const b = await this.orm.call("pb.orgchart", "get_branch", [n.empId]);
+            const kw = this.chartKw();
+            delete kw.expand;
+            const b = await this.orm.call("pb.orgchart", "get_branch", [n.empId], kw);
+            this._branches.add(n.empId);
             this._ingest(b.people || [], b.open_roles || []);
             this.idx = buildIndex(this.nodes);
             // the new team opens one level; its own teams start folded
@@ -242,6 +280,15 @@ export class PbOrgChart extends Component {
                 laneFirst: s.focus ? new Set(this.nodes.filter((n) => this.emphasised(n)).map((n) => n.id)) : null,
             });
             this.edgeList = edges(this.idx, this.lay, s.view === "lr");
+            // P3: a dashed rose line from where each person a plan moves used to sit
+            for (const g of (this.data && this.data.ghost_edges) || []) {
+                const a = this.lay.pos.get(String(g.from_manager_id));
+                const b = this.lay.pos.get(String(g.emp_id));
+                if (a && b) {
+                    this.edgeList.push({ id: "g:" + g.emp_id, from: String(g.from_manager_id),
+                                         d: edgePath(a, b, s.view === "lr", true), ghost: true });
+                }
+            }
             this._buildCards();
         }
         this.perf.layoutMs = Math.round(performance.now() - t);
@@ -260,7 +307,8 @@ export class PbOrgChart extends Component {
             const direct = directCount(idx, n);
             const total = totalCount(idx, n);
             const tags = [];
-            if (n.isRole) { tags.push({ k: "role", cls: "amber", ic: "briefcase", text: n.hiring || _t("Open role") }); }
+            if (n.isRole) { tags.push({ k: "role", cls: n.virtual ? "p" : "amber", ic: "briefcase", text: n.hiring || _t("Open role") }); }
+            if (n.future) { tags.push({ k: "fut", cls: "blue", ic: "calendar", text: n.startLabel }); }
             if (n.status === "new") { tags.push({ k: "new", cls: "green", ic: "star", text: this.joinedAgo(n) }); }
             if (n.status === "leave") { tags.push({ k: "leave", cls: "amber", ic: "plane", text: _t("On leave") }); }
             if (n.status === "leaving") { tags.push({ k: "leaving", cls: "rose", ic: "userX", text: _t("Leaving") }); }
@@ -276,7 +324,7 @@ export class PbOrgChart extends Component {
             const folded = this.collapsed.has(id) || isUnloaded(idx, n);
             // the same card object when nothing about it moved: its props are
             // then equal and OWL does not re-render it
-            const sig = [p.x, p.y, p.w, p.h, !!p.stack, !!p.lane, folded, direct, total,
+            const sig = [p.x, p.y, p.w, p.h, !!p.stack, !!p.lane, folded, direct, total, !!n.changed,
                          tags.map((t) => t.k + t.text).join(",")].join("|");
             const old = prev.get(id);
             if (old && old.sig === sig && old.n === n) { out.push(old); continue; }
@@ -372,6 +420,8 @@ export class PbOrgChart extends Component {
     cardState(c) {
         const st = [];
         if (this.state.sel === c.id) { st.push("sel"); }
+        if (c.n.changed) { st.push("chg"); }
+        if (c.n.future) { st.push("fut"); }
         if (this.anyFilter && !this.emphasised(c.n)) { st.push("dim"); }
         return st.join(" ");
     }
@@ -625,8 +675,9 @@ export class PbOrgChart extends Component {
             ["E / C", _t("Expand all / collapse")], ["+ / −", _t("Zoom in / out")], ["Esc", _t("Close")],
         ].concat(this.mayWrite ? [
             ["M", _t("Change manager")], ["A", _t("Add a team member")],
-            ["⌘ / Ctrl click", _t("Pick several people")], ["⌘ / Ctrl Z", _t("Undo the last change")],
-        ] : []);
+            ["⌘ / Ctrl click", _t("Pick several people")],
+        ] : []).concat(this.inPlan ? [["⌘Z / ⇧⌘Z", _t("Undo / redo a planned change")]]
+            : this.mayWrite ? [["⌘ / Ctrl Z", _t("Undo the last change")]] : []);
     }
 
     // ============================================================ actions
@@ -744,6 +795,7 @@ export class PbOrgChart extends Component {
     select(id) {
         const s = this.state;
         if (!this.idx.byId.has(id)) { return; }
+        if (this.idx.byId.get(id).future) { return; }   // a starter's card is a preview
         s.menu = null;
         s.sel = id;
         s.side = id;
@@ -826,8 +878,10 @@ export class PbOrgChart extends Component {
     // ---- side panel data
     get sideNode() {
         const id = this.state.side;
-        return id && this.idx ? this.idx.byId.get(id) || null : null;
+        return id && id !== "__changes" && this.idx ? this.idx.byId.get(id) || null : null;
     }
+
+    get showChangesPanel() { return this.state.side === "__changes" && !!this.state.plan; }
 
     get sideChain() { return this.sideNode ? ancestors(this.idx, this.sideNode.id).reverse() : []; }
 
@@ -862,7 +916,11 @@ export class PbOrgChart extends Component {
         ];
     }
 
-    get sideReadOnlyLine() { return _t("Ask an HR user to change who reports to whom."); }
+    get sideReadOnlyLine() {
+        if (this.state.asOf) { return _t("Go back to today to make changes."); }
+        if (this.planView) { return _t("This plan has been sent — it can't be changed here."); }
+        return _t("Ask an HR user to change who reports to whom.");
+    }
 
     get sideNoTeamText() {
         const n = this.sideNode;
@@ -1237,8 +1295,11 @@ export class PbOrgChart extends Component {
             return;
         }
         if (s.dlg) { return; }
-        if (!typing && (e.metaKey || e.ctrlKey) && !e.shiftKey && (e.key === "z" || e.key === "Z")) {
-            if (this.mayWrite) { e.preventDefault(); this.undo(); }
+        if (!typing && (e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
+            if (this.inPlan) {
+                e.preventDefault();
+                if (e.shiftKey) { this.planRedo(); } else { this.planUndo(); }
+            } else if (this.mayWrite && !e.shiftKey) { e.preventDefault(); this.undo(); }
             return;
         }
         if (typing || e.metaKey || e.ctrlKey || e.altKey) { return; }
@@ -1296,5 +1357,6 @@ export class PbOrgChart extends Component {
 }
 
 installEdit(PbOrgChart);
+installPlan(PbOrgChart);
 
 registry.category("actions").add("pb_orgchart", PbOrgChart);

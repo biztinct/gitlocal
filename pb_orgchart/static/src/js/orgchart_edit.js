@@ -42,7 +42,19 @@ export function personNode(p, order) {
         dotted: p.dotted_id ? String(p.dotted_id) : null,
         status: p.status || "", note: p.status_note || "",
         avatar: p.avatar || false, nReports: p.n_reports || 0,
-        nTotal: p.n_total || 0, order,
+        nTotal: p.n_total || 0, changed: !!p.changed, order,
+    };
+}
+
+/** A future starter (an accepted offer, time machine P3): a preview card. */
+export function starterNode(f, order) {
+    return {
+        id: f.id, empId: null, isRole: false, future: true, name: f.name || "", ini: f.ini || "",
+        title: f.title || "", dept_id: f.dept_id || false, dept: f.dept || "",
+        loc: f.loc || "", type: "", typeKey: "", joined: false,
+        mgr: f.manager_id ? String(f.manager_id) : null, dotted: null,
+        status: "", note: "", avatar: false, nReports: 0, nTotal: 0,
+        startLabel: f.start_label || "", order,
     };
 }
 
@@ -55,7 +67,7 @@ export function roleNode(o, order) {
         mgr: o.manager_id ? String(o.manager_id) : null, dotted: null,
         status: "", note: "", avatar: false, nReports: 0, nTotal: 0,
         count: o.count || 1, hiring: o.hiring || "", reason: o.reason || false,
-        reasonLabel: o.reason_label || "", order,
+        reasonLabel: o.reason_label || "", virtual: !!o.virtual, changed: !!o.changed, order,
     };
 }
 
@@ -99,7 +111,11 @@ class OcEdit {
     }
 
     // ============================================================ facts
-    get mayWrite() { return !!(this.data && this.data.may_write); }
+    /** May change the chart NOW: HR rights, today, and not a sent plan. In
+     *  planning mode the changes go into the plan (P3). */
+    get mayWrite() {
+        return !!(this.data && this.data.may_write) && !this.state.asOf && !this.planView;
+    }
 
     get canvasView() { return this.state.view === "tree" || this.state.view === "lr"; }
 
@@ -122,6 +138,9 @@ class OcEdit {
         if (!to) { return { ok: false, why: "none", text: "" }; }
         if (to.isRole) {
             return { ok: false, why: "role", text: _t("An open role can't be a manager until someone fills it.") };
+        }
+        if (to.future) {
+            return { ok: false, why: "role", text: _t("%(p)s has not started yet.", { p: to.name }) };
         }
         for (const f of ids) {
             if (this.isInside(f, toId)) {
@@ -246,53 +265,86 @@ class OcEdit {
     }
 
     // The write actions the dialogs and menus call.
+    // In planning mode (P3) each of these becomes a planned change: the
+    // same arguments, sent to `plan_add_changes` instead of the live write.
     doMove(id, to, wholeTeam = true) {
         const n = this.nodeOf(id);
         const m = this.nodeOf(to);
+        if (this.inPlan) {
+            return this.planAdd([{ kind: "move", employee_id: n.empId, to_manager_id: m.empId, whole_team: wholeTeam }],
+                                { open: m.id, reveal: [n.id] });
+        }
         return this.runWrite("move", [n.empId, m.empId, wholeTeam], { open: m.id, reveal: [n.id] });
     }
 
     doMoveMany(ids, to) {
         const m = this.nodeOf(to);
-        const emps = ids.map((i) => this.nodeOf(i)).filter((n) => n && !n.isRole).map((n) => n.empId);
+        const emps = ids.map((i) => this.nodeOf(i)).filter((n) => n && !n.isRole && n.empId).map((n) => n.empId);
+        if (this.inPlan) {
+            const moving = emps.filter((e) => this.idx.eff.get(String(e)) !== m.id);
+            return this.planAdd(moving.map((e) => ({ kind: "move", employee_id: e, to_manager_id: m.empId })),
+                                { open: m.id, clearPicks: true, reveal: [] });
+        }
         return this.runWrite("move_many", [emps, m.empId], { open: m.id, clearPicks: true, reveal: [] });
     }
 
     doMoveRole(id, to) {
         const r = this.nodeOf(id);
         const m = this.nodeOf(to);
+        if (this.inPlan) {
+            return this.planAdd([{ kind: "move_role", job_id: r.jobId || r.id, to_manager_id: m.empId }],
+                                { open: m.id, reveal: [r.id] });
+        }
         return this.runWrite("move_role", [r.jobId, m.empId], { open: m.id, reveal: [r.id] });
     }
 
     doDotted(id, to) {
         const n = this.nodeOf(id);
         const m = to ? this.nodeOf(to) : null;
+        if (this.inPlan) {
+            return this.planAdd([{ kind: "dotted", employee_id: n.empId, to_manager_id: m ? m.empId : false }],
+                                { reveal: [n.id] });
+        }
         return this.runWrite("set_dotted", [n.empId, m ? m.empId : false], { reveal: [n.id] });
     }
 
     doUnassign(id) {
         const n = this.nodeOf(id);
+        if (this.inPlan) { return this.planAdd([{ kind: "unassign", employee_id: n.empId }], { reveal: [n.id] }); }
         return this.runWrite("unassign", [n.empId], { reveal: [n.id] });
     }
 
     doSwap(id) {
         const n = this.nodeOf(id);
+        if (this.inPlan) { return this.planAdd([{ kind: "swap", employee_id: n.empId }], { reveal: [n.id] }); }
         return this.runWrite("swap", [n.empId], { reveal: [n.id] });
     }
 
     doAddRole(mgrId, title, reason) {
         const m = this.nodeOf(mgrId);
+        if (this.inPlan) {
+            return this.planAdd([{ kind: "new_role", to_manager_id: m.empId, title, reason: reason || false }],
+                                { open: m.id });
+        }
         return this.runWrite("add_open_role", [m.empId, title, reason || false], { open: m.id });
     }
 
     doFill(roleId, empId) {
         const r = this.nodeOf(roleId);
         const p = this.nodeOf(empId);
+        if (this.inPlan) {
+            return this.planAdd([{ kind: "fill_role", job_id: r.jobId || r.id, employee_id: p.empId }],
+                                { reveal: [p.id] });
+        }
         return this.runWrite("fill_role", [r.jobId, p.empId], { reveal: [p.id] });
     }
 
     doCloseRole(roleId) {
         const r = this.nodeOf(roleId);
+        if (this.inPlan) {
+            if (r.virtual) { return this.removeVirtual(r); }
+            return this.planAdd([{ kind: "close_role", job_id: r.jobId }], {});
+        }
         return this.runWrite("close_role", [r.jobId], {});
     }
 
@@ -307,6 +359,8 @@ class OcEdit {
         this.action.doAction({
             type: "ir.actions.client", tag: "pb_onboard_wizard", name: _t("Add employee"),
             params: { prefill: {
+                // P3: only "Fill this role" lowers the role's to-hire count on save
+                fill_job_id: role ? role.jobId : false,
                 parent_id: m ? m.empId : false,
                 parent_name: m ? m.name : "",
                 department_id: (role ? role.dept_id : m && m.dept_id) || false,
@@ -415,7 +469,7 @@ class OcEdit {
         const el = e.target.closest && e.target.closest(".pboc-node");
         if (!el || e.target.closest("button") || !this.nodesRef.el || !this.nodesRef.el.contains(el)) { return false; }
         const n = this.nodeOf(el.dataset.id);
-        if (!n || n.isRole) { return false; }
+        if (!n || n.isRole || n.future) { return false; }
         this._press = { x: e.clientX, y: e.clientY, id: n.id };
         return true;
     }
@@ -535,7 +589,8 @@ class OcEdit {
         const el = this.qaRef && this.qaRef.el;
         if (!el) { return; }
         const p = id && this.lay && this.lay.pos.get(id);
-        if (!p || this._drag || !this.canvasView) {
+        const pn = id ? this.nodeOf(id) : null;
+        if (!p || this._drag || !this.canvasView || (pn && pn.future)) {
             this._show(el, false);
             this._pillId = null;
             return;
@@ -566,8 +621,13 @@ class OcEdit {
     /** One entry point for every editing action (pill, menu, panel, keys). */
     act(k, id) {
         const n = this.nodeOf(id);
-        if (!n) { return; }
+        if (!n || n.future) { return; }
         this.state.ctx = null;
+        if (n.virtual && ["fill", "changemgr"].includes(k)) {
+            this.notif.add(_t("That role is new in this plan. Take it out of the list of changes instead, or fill it once the plan is live."),
+                           { type: "info" });
+            return;
+        }
         switch (k) {
             case "open": this.select(n.id); break;
             case "addmember": if (this.mayWrite && !n.isRole) { this.openDialog({ kind: "addmember", id: n.id }); } break;
@@ -580,6 +640,7 @@ class OcEdit {
             case "toggle": this.toggle(n); break;
             case "focusteam": this.focusTeam(n.id); break;
             case "record": this.openRecord(n); break;
+            case "rmvirtual": this.removeVirtual(n); break;
         }
     }
 
@@ -603,6 +664,8 @@ class OcEdit {
     onContextMenu(ev) {
         const el = ev.target.closest(".pboc-node");
         if (!el) { return; }
+        const cn = this.nodeOf(el.dataset.id);
+        if (cn && cn.future) { ev.preventDefault(); return; }
         ev.preventDefault();
         this.openCtx(el.dataset.id, ev.clientX, ev.clientY);
     }
@@ -630,6 +693,14 @@ class OcEdit {
         const team = directCount(this.idx, n) > 0;
         const folded = this.collapsed.has(n.id) || isUnloaded(this.idx, n);
         const rows = [{ k: "open", ic: "eye", label: _t("Open side panel") }];
+        if (n.isRole && n.virtual) {
+            if (this.inPlan) {
+                rows.push({ hr: true, k: "hr0" });
+                rows.push({ k: "rmvirtual", ic: "trash", label: _t("Take this role out of the plan"),
+                            sub: _t("It was only planned — nothing is lost"), danger: true });
+            }
+            return rows;
+        }
         if (n.isRole) {
             if (w) {
                 rows.push({ k: "fill", ic: "userCheck", label: _t("Fill this role"),
