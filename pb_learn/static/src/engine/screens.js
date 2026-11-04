@@ -2359,7 +2359,7 @@ export const SCREENS = {
                 <div class="lrn-panel" data-coach="wf-leave-queue">
                     <div class="lrn-zhead" data-coach="wf-timeoff">
                         <h3>${ic("calendar")}${esc(tx(B("Time Off", "Nghỉ phép")))}</h3><span class="lrn-push"></span>
-                        <button class="lrn-btn sm ghost">${ic("user-plus")}${esc(tx(B("Apply on behalf", "Đăng ký thay")))}</button>
+                        <button class="lrn-btn sm ghost">${ic("user-plus")}${esc(tx(B("Apply for", "Đăng ký thay")))}</button>
                     </div>
                     <span class="lrn-sub2">${esc(tx(B("Approval queue", "Hàng chờ phê duyệt")))}</span>
                     <!-- FILTER wave 7 (2026-10-31): the queue sits on the

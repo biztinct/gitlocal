@@ -52,7 +52,7 @@ msgstr "Thao tác không thành công."
 #. module: pb_timeoff
 #. odoo-javascript
 #: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
-msgid "Apply on behalf"
+msgid "Apply for"
 msgstr "Đăng ký thay"
 
 #. module: pb_timeoff
@@ -800,3 +800,15 @@ msgstr "trên"
 #: model:ir.model.fields,field_description:pb_timeoff.field_pb_timeoff_carry_log__company_id
 msgid "Company"
 msgstr "Công ty"
+
+#. module: pb_timeoff
+#. odoo-javascript
+#: code:addons/pb_timeoff/static/src/xml/pb_timeoff.xml:0
+msgid "Choose the employee first"
+msgstr "Chọn nhân viên trước"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "This leave type is for employees in another country."
+msgstr "Loại nghỉ phép này dành cho nhân viên ở quốc gia khác."

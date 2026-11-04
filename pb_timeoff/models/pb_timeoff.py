@@ -99,6 +99,22 @@ class PbTimeoff(models.AbstractModel):
             'department': emp.department_id.name if emp.department_id else '',
         }
 
+    def _type_country(self, lt):
+        """The country a leave type is for ('' = every country). The policy's
+        employment country wins: the stock Country follows the company, so a
+        company paying in several countries has every type tagged with its
+        head-office country."""
+        return (lt.pb_policy_country_id or lt.country_id).code or ''
+
+    def _emp_country(self, emp):
+        """The country an employee works in, for the leave types offered:
+        their absence policy, else their payroll country, else the company's."""
+        if emp.pb_leave_policy_id.country_id:
+            return emp.pb_leave_policy_id.country_id.code
+        if 'payroll_country' in emp._fields and emp.payroll_country:
+            return emp.payroll_country
+        return emp.company_id.country_id.code or ''
+
     def _leave_dates(self, leave):
         df = leave.request_date_from or (leave.date_from.date() if leave.date_from else None)
         dt = leave.request_date_to or (leave.date_to.date() if leave.date_to else df)
@@ -338,12 +354,14 @@ class PbTimeoff(models.AbstractModel):
         return out
 
     def _apply_types(self):
-        """Leave types offered in apply-on-behalf, company-scoped."""
+        """Leave types offered in apply-for, company-scoped. Each carries its
+        country; the drawer offers only the picked employee's."""
         co_ids = self._co_ids()
         types = self.env['hr.leave.type'].search(
             ['|', ('company_id', '=', False), ('company_id', 'in', co_ids)],
             order='name')
-        return [self._type_chip(t) for t in types]
+        return [dict(self._type_chip(t), country=self._type_country(t))
+                for t in types]
 
     # ------------------------------------------------------------- the filter panel
     # FILTER wave 7 (2026-10-31). The queue used to be every waiting request
@@ -536,6 +554,10 @@ class PbTimeoff(models.AbstractModel):
             raise UserError(_("Select a leave type."))
         if not (date_from and date_to):
             raise UserError(_("Pick a start and end date."))
+        lt = self.env['hr.leave.type'].browse(int(type_id)).exists()
+        type_country = self._type_country(lt) if lt else ''
+        if type_country and type_country != self._emp_country(emp.sudo()):
+            raise UserError(_("This leave type is for employees in another country."))
         leave = self.env['hr.leave'].create({
             'employee_id': emp.id,
             'holiday_status_id': int(type_id),
@@ -556,7 +578,7 @@ class PbTimeoff(models.AbstractModel):
 
     @api.model
     def search_employees(self, query, limit=8):
-        """Typeahead for apply-on-behalf, company-scoped (read → sudo)."""
+        """Typeahead for apply-for, company-scoped (read → sudo)."""
         self._require_officer()
         query = (query or '').strip()
         if not query:
@@ -566,4 +588,4 @@ class PbTimeoff(models.AbstractModel):
             ('company_id', 'in', self._co_ids()),
             ('name', 'ilike', query),
         ], order='name', limit=int(limit))
-        return [self._emp_card(e) for e in emps]
+        return [dict(self._emp_card(e), country=self._emp_country(e)) for e in emps]

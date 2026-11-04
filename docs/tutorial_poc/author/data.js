@@ -3252,7 +3252,7 @@ const STATIONS = {
           mistakes: [
             B("Ignoring the near-the-limit mark on overtime. Vietnam caps monthly and yearly overtime; the mark is the warning.",
               "Bỏ qua dấu gần giới hạn trên tăng ca. Việt Nam giới hạn tăng ca theo tháng và theo năm; dấu đó là lời cảnh báo."),
-            B("Filing leave for someone without telling them. Apply on behalf is for when they cannot, and it is recorded.",
+            B("Filing leave for someone without telling them. Apply for is meant for when they cannot, and it is recorded.",
               "Đăng ký nghỉ thay một người mà không báo họ. Đăng ký thay dành cho lúc họ không tự làm được, và việc đó được ghi lại."),
           ],
         },
@@ -6710,16 +6710,16 @@ const LESSONS = {
       },
       {
         screen: "wftime", anchor: "wf-timeoff",
-        /* source: pb_timeoff/static/src/xml/pb_timeoff.xml:34 (Apply on behalf) + pb_timeoff.xml:235 (File leave) */
-        kicker: B("On someone's behalf", "Đăng ký thay"),
-        title: B("Apply on behalf, when they cannot", "Đăng ký thay, khi họ không tự làm được"),
-        look: B("The Apply on behalf button at the top of Time Off.",
+        /* source: pb_timeoff/static/src/xml/pb_timeoff.xml:34 (Apply for) + pb_timeoff.xml:235 (File leave) */
+        kicker: B("For someone else", "Đăng ký thay"),
+        title: B("Apply for someone, when they cannot", "Đăng ký thay, khi họ không tự làm được"),
+        look: B("The Apply for button at the top of Time Off.",
                 "Nút Đăng ký thay ở phía trên tab Nghỉ phép."),
         means: B("It files leave for somebody who cannot do it themselves, such as a person off sick with no phone.",
                  "Nó nộp đơn nghỉ cho người không tự làm được, như một người đang ốm và không có điện thoại."),
         affects: B("The request is filed by you and waits in the Approval queue like any other.",
                    "Đơn được ghi là do bạn nộp và chờ trong Hàng chờ phê duyệt như mọi đơn khác."),
-        press: B("Apply on behalf, choose the employee, leave type and dates, then File leave.",
+        press: B("Press Apply for, choose the employee, leave type and dates, then File leave.",
                  "Đăng ký thay, chọn nhân viên, loại nghỉ phép và ngày, rồi bấm Gửi đơn nghỉ."),
       },
       {
@@ -9682,7 +9682,7 @@ const SCREEN_CTX = {
   wftimeoff: {
     name: B("Time Off", "Nghỉ phép"),
     places: ["pb_workforce:timeoff"],
-    blurb: B("Time Off: leave waiting for a decision, and who is out today. Apply on behalf files leave for someone who cannot.",
+    blurb: B("Time Off: leave waiting for a decision, and who is out today. Apply for files leave for someone who cannot.",
              "Nghỉ phép: đơn nghỉ đang chờ quyết định, và ai nghỉ hôm nay. Đăng ký thay nộp đơn cho người không tự làm được."),
     next: B("Decide the oldest request first; the pay run reads approved leave.",
             "Hãy quyết định đơn cũ nhất trước; đợt lương đọc các ngày nghỉ đã duyệt."),
@@ -14848,7 +14848,7 @@ const SCENARIOS = [
       },
       {
         key: "leave", anchor: "wf-leave-queue", nav: "wftimeoff", screen: "wftimeoff", act: "observe",
-        /* source: pb_timeoff/static/src/xml/pb_timeoff.xml:58 (Approval queue) + pb_timeoff.xml:34 (Apply on behalf) */
+        /* source: pb_timeoff/static/src/xml/pb_timeoff.xml:58 (Approval queue) + pb_timeoff.xml:34 (Apply for) */
         say: {
           kicker: B("Workforce › Time Off", "Lực lượng lao động › Nghỉ phép"),
           title: B("The approval queue", "Hàng chờ phê duyệt"),
@@ -14858,7 +14858,7 @@ const SCENARIOS = [
                    "Đơn nghỉ chờ quyết định, theo thứ tự ngày, mỗi đơn kèm loại nghỉ phép và số ngày."),
           affects: B("Once approved, the days count as leave when the pay run reads that month.",
                      "Khi được duyệt, các ngày đó được tính là nghỉ phép khi đợt lương đọc tháng đó."),
-          tip: B("Apply on behalf, at the top, files leave for someone who cannot.",
+          tip: B("Apply for, at the top, files leave for someone who cannot.",
                  "Đăng ký thay, ở phía trên, nộp đơn nghỉ cho người không tự làm được."),
         },
       },

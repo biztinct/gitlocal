@@ -285,7 +285,7 @@ export class PbTimeoff extends Component {
     }
 
     openApply() {
-        this.state.apply = { employee_id: "", employee_name: "", type_id: "", date_from: "", date_to: "", note: "" };
+        this.state.apply = { employee_id: "", employee_name: "", employee_country: "", type_id: "", date_from: "", date_to: "", note: "" };
         this.state.empQuery = "";
         this.state.empResults = [];
         this.state.applyOpen = true;
@@ -296,6 +296,7 @@ export class PbTimeoff extends Component {
         const q = ev.target.value;
         this.state.empQuery = q;
         this.state.apply.employee_id = "";       // clears until a pick
+        this.state.apply.type_id = "";           // the types follow the employee
         if (this._empTimer) { clearTimeout(this._empTimer); }
         this._empTimer = setTimeout(async () => {
             if (!q.trim()) { this.state.empResults = []; return; }
@@ -309,8 +310,18 @@ export class PbTimeoff extends Component {
     pickEmployee(emp) {
         this.state.apply.employee_id = emp.id;
         this.state.apply.employee_name = emp.name;
+        this.state.apply.employee_country = emp.country || "";
+        this.state.apply.type_id = "";
         this.state.empQuery = emp.name;
         this.state.empResults = [];
+    }
+    /** Only the leave types of the picked employee's country, plus the
+     *  types that name no country. Nothing until an employee is picked. */
+    get applyTypes() {
+        const a = this.state.apply;
+        if (!a.employee_id) { return []; }
+        return (this.d.leave_types || []).filter(
+            (t) => !t.country || t.country === a.employee_country);
     }
     get canApply() {
         const a = this.state.apply;

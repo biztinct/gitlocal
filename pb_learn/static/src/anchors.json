@@ -1724,7 +1724,7 @@
     "wf-timeoff": {
       "screen": "wftimeoff",
       "file": "pb_timeoff/static/src/xml/pb_timeoff.xml",
-      "desc": "Time Off head: month and Apply on behalf."
+      "desc": "Time Off head: month and Apply for."
     },
     "wf-outtoday": {
       "screen": "wftimeoff",

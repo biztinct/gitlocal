@@ -19428,7 +19428,7 @@
           "screen": "wftimeoff",
           "timeout": 0,
           "tip": {
-            "en": "Apply on behalf, at the top, files leave for someone who cannot.",
+            "en": "Apply for, at the top, files leave for someone who cannot.",
             "vi": "Đăng ký thay, ở phía trên, nộp đơn nghỉ cho người không tự làm được."
           },
           "title": {
@@ -22568,7 +22568,7 @@
     {
       "action_tags": "pb_timeoff",
       "blurb": {
-        "en": "Time Off: leave waiting for a decision, and who is out today. Apply on behalf files leave for someone who cannot.",
+        "en": "Time Off: leave waiting for a decision, and who is out today. Apply for files leave for someone who cannot.",
         "vi": "Nghỉ phép: đơn nghỉ đang chờ quyết định, và ai nghỉ hôm nay. Đăng ký thay nộp đơn cho người không tự làm được."
       },
       "hub": null,
@@ -40252,12 +40252,12 @@
               "body": "",
               "consequence": "",
               "kicker": {
-                "en": "On someone's behalf",
+                "en": "For someone else",
                 "vi": "Đăng ký thay"
               },
               "lines": [],
               "look": {
-                "en": "The Apply on behalf button at the top of Time Off.",
+                "en": "The Apply for button at the top of Time Off.",
                 "vi": "Nút Đăng ký thay ở phía trên tab Nghỉ phép."
               },
               "means": {
@@ -40269,13 +40269,13 @@
               "moment_to": "",
               "moment_which": "",
               "press": {
-                "en": "Apply on behalf, choose the employee, leave type and dates, then File leave.",
+                "en": "Press Apply for, choose the employee, leave type and dates, then File leave.",
                 "vi": "Đăng ký thay, chọn nhân viên, loại nghỉ phép và ngày, rồi bấm Gửi đơn nghỉ."
               },
               "screen": "wftime",
               "tip": "",
               "title": {
-                "en": "Apply on behalf, when they cannot",
+                "en": "Apply for someone, when they cannot",
                 "vi": "Đăng ký thay, khi họ không tự làm được"
               },
               "visual": "none"
@@ -40365,7 +40365,7 @@
             "vi": "Bỏ qua dấu gần giới hạn trên tăng ca. Việt Nam giới hạn tăng ca theo tháng và theo năm; dấu đó là lời cảnh báo."
           },
           {
-            "en": "Filing leave for someone without telling them. Apply on behalf is for when they cannot, and it is recorded.",
+            "en": "Filing leave for someone without telling them. Apply for is meant for when they cannot, and it is recorded.",
             "vi": "Đăng ký nghỉ thay một người mà không báo họ. Đăng ký thay dành cho lúc họ không tự làm được, và việc đó được ghi lại."
           }
         ],

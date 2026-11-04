@@ -161,6 +161,32 @@ class TestTimeoff(TransactionCase):
         after = self.Leave.search_count([('employee_id', '=', self.emp.id)])
         self.assertEqual(before, after)
 
+    def test_04b_apply_types_follow_country(self):
+        """Apply-for offers only the employee's country's types: each type and
+        each employee carries a country, and a type of another country is
+        refused on the server too."""
+        sg = self.env.ref('base.sg')
+        vn = self.env.ref('base.vn')
+        sg_type = self.env['hr.leave.type'].create({
+            'name': 'K SG Only', 'requires_allocation': False,
+            'leave_validation_type': 'hr', 'company_id': self.company.id,
+            'pb_policy_country_id': sg.id})
+        emp_vn = self.env['hr.employee'].create({
+            'name': 'Leave Emp VN', 'company_id': self.company.id,
+            'resource_calendar_id': self.cal.id if self.cal else False})
+        if 'payroll_country' in emp_vn._fields:
+            emp_vn.payroll_country = 'VN'
+        else:
+            self.company.country_id = vn
+        board = self.TO.get_board(self.mon.strftime('%Y-%m'))
+        chips = {t['id']: t for t in board['leave_types']}
+        self.assertEqual(chips[sg_type.id]['country'], 'SG')
+        found = {e['id']: e for e in self.TO.search_employees('Leave Emp VN')}
+        self.assertEqual(found[emp_vn.id]['country'], 'VN')
+        day = (self.mon + timedelta(days=21)).isoformat()
+        with self.assertRaises(UserError):
+            self.TO.apply_on_behalf(emp_vn.id, sg_type.id, day, day)
+
     # ------------------------------------------------------------- §6.5 balance
     def test_05_balance_math(self):
         alloc = self.Alloc.create({

@@ -31,7 +31,7 @@
               <button class="mbtn" t-on-click="nextMonth"><span t-out="ic('chevronR',16)"/></button>
             </div>
             <button class="pbto-btn primary" t-on-click="openApply">
-              <span t-out="ic('plus',16)"/><span>Apply on behalf</span>
+              <span t-out="ic('plus',16)"/><span>Apply for</span>
             </button>
           </div>
         </div>
@@ -249,7 +249,7 @@
       <!-- ============================ apply drawer ======================= -->
       <div t-if="state.applyOpen" class="pbto-scrim" t-on-click="closeApply">
         <div class="pbto-modal wide" t-on-click="(ev) => ev.stopPropagation()">
-          <div class="m-h">Apply on behalf</div>
+          <div class="m-h">Apply for</div>
           <div class="m-b">
             <label class="fld emp-pick">
               <span>Employee</span>
@@ -263,9 +263,10 @@
             </label>
             <label class="fld">
               <span>Leave type</span>
-              <select t-on-change="(ev) => this.onApplyField('type_id', ev)">
-                <option value="">Choose…</option>
-                <option t-foreach="d.leave_types or []" t-as="lvt" t-key="lvt.id" t-att-value="lvt.id" t-esc="lvt.name"/>
+              <select t-att-disabled="!state.apply.employee_id" t-on-change="(ev) => this.onApplyField('type_id', ev)">
+                <option t-if="state.apply.employee_id" value="" t-att-selected="!state.apply.type_id">Choose…</option>
+                <option t-else="" value="" selected="selected">Choose the employee first</option>
+                <option t-foreach="applyTypes" t-as="lvt" t-key="lvt.id" t-att-value="lvt.id" t-esc="lvt.name"/>
               </select>
             </label>
             <div class="fld-row">
