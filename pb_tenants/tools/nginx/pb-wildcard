@@ -98,5 +98,8 @@ server {
 server {
   listen 80;
   server_name *.payobook.com;
-  return 301 https://$host$request_uri;
+  # CLOCK D12: /iclock/ for attendance machines on a plain connection (the
+  # company switch decides); everything else redirects to HTTPS.
+  include /etc/nginx/snippets/pb-clock-plain.conf;
+  location / { return 301 https://$host$request_uri; }
 }

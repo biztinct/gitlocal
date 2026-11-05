@@ -59,6 +59,13 @@ certbot certonly --nginx --non-interactive --agree-tos \
     --keep-until-expiring \
     --deploy-hook "systemctl reload nginx"
 
+# The plain-connection snippet the port-80 block includes (CLOCK D12). It is
+# installed once on the box; refuse to write a block that includes a missing
+# file, for the same reason as the certificate check below.
+if [[ ! -s /etc/nginx/snippets/pb-clock-plain.conf ]]; then
+    echo "missing /etc/nginx/snippets/pb-clock-plain.conf" >&2; exit 1
+fi
+
 # Refuse to write a block referencing a certificate that is not there: nginx
 # would fail to start, taking every other tenant down with it.
 if [[ ! -s "${LIVE}/fullchain.pem" ]]; then
@@ -134,7 +141,12 @@ server {
 server {
     listen 80;
     server_name ${HOSTNAME_ARG};
-    return 301 https://\$host\$request_uri;
+    # CLOCK D12: attendance machines that cannot make a secure connection reach
+    # /iclock/ here (the company switch decides); everything else redirects.
+    # The redirect is a location, not a server-level return, so the include
+    # above it can be chosen first.
+    include /etc/nginx/snippets/pb-clock-plain.conf;
+    location / { return 301 https://\$host\$request_uri; }
 }
 EOF
 
