@@ -18,7 +18,7 @@ Three complaints, all confirmed live:
 | Phase | What it delivers | Handover |
 |---|---|---|
 | P1 | Speed (open ≤ 10 s, previews stream in), blank = 0 / No for the 11 columns, final-tax-month reminder | `PDR_P1.md` |
-| P2 | Y / N everywhere a user sees (worksheet, pickers, pay data file, contract panel already done), Tax allowance mode words | `PDR_P2.md` (written after the P1 report) |
+| P2 | Y / N everywhere a user sees (worksheet, pickers, pay data file, contract panel already done), Tax allowance mode words — LIVE 2026-11-05 | `PDR_P2.md`, `PDR_P2_REPORT.md` |
 
 ## Owner rulings 2026-11-05 (asked once — do NOT re-ask)
 
@@ -223,3 +223,37 @@ Three complaints, all confirmed live:
   7 people already have a contract end (or approved last day) inside
   Oct 2026, so the reminder shows on the live October worksheet; no December
   copy is needed to see it.
+* **G14 — the worksheet payload is opt-in light (P2).** The browser sends
+  `context={'pr_compact': True}` on every call that returns `workspace()`
+  (open, save_cells, review, submit). Light cells carry only truthy flags,
+  `value`, `tone`, a cell-specific `reason` and a trimmed `edit`; name, owner,
+  rule id and words live on the **column**. Python callers and tests get the
+  full shape. Any new JS call that returns a worksheet must pass the same
+  context, and any new per-cell field must be added to `_compact_cell`.
+* **G15 — only the rows in view are drawn.** The grid DOM holds ~25 of 113
+  rows. Code that looks a cell up by `[data-cell=…]` must bring its row into
+  the window first (`revealCell`). Row height is measured from the first drawn
+  row (62.5 px today), so a row taller than the others would drift the
+  spacers — keep row content on fixed lines.
+* **G16 — a selected cell shows `state.value`, not the cell.** After a paste or
+  any refresh, `accept()` must reset `state.value` from the server when nothing
+  is pending (found in the browser: a pasted "No" still read "Yes").
+* **G17 — rize Indonesia contracts have no HR Responsible.** All 103 contracts
+  of preparation #19 lack it, so the full contract form refuses every save
+  ("Complete the required fields: HR Responsible"). Owner data item; test
+  contract-form edits on a copy after filling it.
+* **G18 — a save reference is 8–100 characters.** `save_cells` refuses a
+  shorter `mutation`; test references like `'p2-t2-1'` fail with "Save up to
+  500 cells at a time with a unique save reference."
+* **G19 — words that name 0 switch on P1's "usual answer".** `_application_usual_no`
+  fires for any numeric contract component with usual value 0 whose words name
+  0. Adding words to such a rule (7116 / 7096 Tax allowance mode) turns a
+  missing line from red into "usual answer". Check `default_value` before
+  adding words to a contract component.
+* **G20 — `value_label_for('')` used to read "No"** (`float('' or 0)`); a blank
+  now reads `''`. Display code must still treat `None` / `''` as blank before
+  asking for a word (`value_to_text` does).
+* **G21 — a monthly file round trip is not "zero changes" on rize.** The file
+  pre-fills Paid days / Period days suggestions the month has not saved yet,
+  so re-uploading an untouched download proposes 226 changes there. Judge a
+  round trip by the columns you changed.
