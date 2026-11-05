@@ -740,6 +740,30 @@ class TestTheDoors(TransactionCase):
         self.assertEqual(sidebar_door.HIRING_ITEM, 'pb_hiring.item_hiring')
         self.assertEqual(sidebar_door.HIRING_HUB, 'pb_hiring.action_pb_hiring_hub')
 
+    def test_the_switch_makes_the_entry_follow_the_board(self):
+        """`pb_hiring.menu_follows_board` (rize, 2026-11-05): an HR officer the
+        board does not admit loses the entry; somebody it admits keeps it.
+        Off, the entry's own groups decide as before."""
+        if 'pb.sidebar.item' not in self.env:
+            self.skipTest('no left menu on this database')
+        from odoo.tests.common import new_test_user
+        item = self.env.ref('pb_hiring.item_hiring')
+        officer = new_test_user(self.env, login='menu_follows_officer',
+                                groups='base.group_user,hr.group_hr_user')
+        recruiter = new_test_user(self.env, login='menu_follows_recruiter',
+                                  groups='base.group_user,pb_hiring.group_hiring_user')
+        if self.env['pb.hiring'].with_user(officer).can_open():
+            self.skipTest('the board admits a plain HR officer here')
+        self.assertTrue(self.env['pb.hiring'].with_user(recruiter).can_open())
+        Item = self.env['pb.sidebar.item']
+        params = self.env['ir.config_parameter'].sudo()
+        self.assertEqual(Item.visibility_for(officer)['items'][item.id], 'on')
+        params.set_param('pb_hiring.menu_follows_board', '1')
+        self.assertEqual(Item.visibility_for(officer)['items'][item.id], 'hidden')
+        self.assertEqual(Item.visibility_for(recruiter)['items'][item.id], 'on')
+        params.set_param('pb_hiring.menu_follows_board', '0')
+        self.assertEqual(Item.visibility_for(officer)['items'][item.id], 'on')
+
     def test_this_module_ships_no_menu_and_no_rail_item(self):
         """Its doors are the hub lens, the Settings card and the palette.
 

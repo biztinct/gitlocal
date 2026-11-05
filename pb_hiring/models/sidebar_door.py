@@ -17,6 +17,13 @@ One question, asked of the same method the hub's tab asks — the menu and the
 tab cannot disagree about who gets in. Inside the hub every other lens still
 asks its own question, so a talent lead sees the Hiring tab and nothing else.
 
+THE OTHER WAY ROUND, PER COMPANY (2026-11-05, owner, rize). The entry's own
+gate is `hr.group_hr_user`, so an HR officer the board does NOT admit still
+gets a Hiring entry that opens onto nothing but the Access tab. With the
+switch `pb_hiring.menu_follows_board` on, the board's answer is the whole
+answer: no admission, no entry. Off by default — payobook.com's trial
+sign-ups hold the HR officer group and the owner keeps Hiring on their menu.
+
 ORDER. This override must sit OUTSIDE `biz_access` (whose role lane answers
 without calling `super()` when an entry carries roles, which Hiring does),
 hence `biz_access` in the manifest's depends. A company feature switch still
@@ -30,6 +37,9 @@ _logger = logging.getLogger(__name__)
 
 # NAV P2: Hiring has its own left-menu entry (it was a tab of Lifecycle).
 HIRING_ITEM = 'pb_hiring.item_hiring'
+# ir.config_parameter: "1" hides the Hiring entry from whoever the board
+# does not admit, even when the entry's groups would show it.
+MENU_FOLLOWS_BOARD = 'pb_hiring.menu_follows_board'
 
 
 class PbSidebarItem(models.Model):
@@ -37,16 +47,24 @@ class PbSidebarItem(models.Model):
 
     def _state_for(self, item, is_admin, user_groups):
         visible, locked = super()._state_for(item, is_admin, user_groups)
-        if visible:
-            return visible, locked
         door = self.env.ref(HIRING_ITEM, raise_if_not_found=False)
-        if not door or item.id != door.id or not self._pb_hiring_admits():
+        if not door or item.id != door.id:
+            return visible, locked
+        if visible:
+            if self._pb_hiring_menu_follows_board() and not self._pb_hiring_admits():
+                return False, False
+            return visible, locked
+        if not self._pb_hiring_admits():
             return visible, locked
         if 'pb.tenancy' in self.env and item.feature_key:
             on, mode, _text = self.env['pb.tenancy'].feature_state(item.feature_key)
             if not on:
                 return (True, True) if mode == 'lock' else (False, False)
         return True, False
+
+    def _pb_hiring_menu_follows_board(self):
+        value = self.env['ir.config_parameter'].sudo().get_param(MENU_FOLLOWS_BOARD)
+        return (value or '').strip().lower() in ('1', 'true', 'yes')
 
     def _pb_hiring_admits(self):
         """Would the Hiring board open for the person this menu is drawn for?
