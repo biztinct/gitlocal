@@ -210,6 +210,18 @@ class HrPayrollImportLine(models.Model):
                     errors.append(_("Row %d: Missing required field '%s' (%s)") % (
                         self.sequence, rule.name, rule.code
                     ))
+            # PDR P2 W2 — a worded column ("0=No;1=Yes") takes Y / N / the
+            # words / the number; anything else is said here, plainly.
+            for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input' and r.value_labels):
+                if not rule.value_label_options():
+                    continue
+                value = self._get_value_for_rule(raw_data, rule)
+                if value is None or (isinstance(value, str) and not value.strip()):
+                    continue
+                try:
+                    rule.value_from_text(value)
+                except ValueError as error:
+                    errors.append(_("Row %(row)d: %(problem)s") % {'row': self.sequence, 'problem': error})
 
         if errors:
             self.error_message = "\n".join(errors)

@@ -65,4 +65,40 @@
         </field>
     </record>
 
+    <!--
+      PDR P2 W3b — a component whose scheme rule has words ("0=No;1=Yes",
+      "0=None;1=Insurance tax;2=All tax") shows and edits the WORD here, the
+      way the contract panel does. `amount` still stores the number; picking
+      "No" keeps a line holding 0 (never deletes it). A component without
+      words keeps the number column exactly as before.
+    -->
+    <record id="view_hr_contract_form_component_words" model="ir.ui.view">
+        <field name="name">hr.contract.form.component.words</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="view_hr_contract_form_typed_components"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='value_type']"
+                   position="after">
+                <field name="pb_value_words" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='advantage_lower_bound']"
+                   position="attributes">
+                <attribute name="invisible">value_type == 'text' or pb_value_words</attribute>
+            </xpath>
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='advantage_upper_bound']"
+                   position="attributes">
+                <attribute name="invisible">value_type == 'text' or pb_value_words</attribute>
+            </xpath>
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='amount']"
+                   position="attributes">
+                <attribute name="invisible">value_type == 'text' or pb_value_words</attribute>
+            </xpath>
+            <xpath expr="//field[@name='advantages_ids']/list/field[@name='amount']"
+                   position="after">
+                <field name="pb_amount_word" widget="pb_value_word" width="140px"
+                       invisible="not pb_value_words"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Excel Formula Payroll Calculator',
-    'version': '19.0.1.164.0',
+    'version': '19.0.1.165.0',
     # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
     'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',
@@ -145,6 +145,9 @@ License: LGPL-3
             'pb_hr_payroll_formula/static/src/xml/source_field_autocomplete.xml',
             'pb_hr_payroll_formula/static/src/js/application_source_field.js',
             'pb_hr_payroll_formula/static/src/xml/application_source_field.xml',
+            # PDR P2 W3b — contract component answers as words
+            'pb_hr_payroll_formula/static/src/js/value_word_field.js',
+            'pb_hr_payroll_formula/static/src/xml/value_word_field.xml',
 
             # NOTE: Custom Excel grid widget JS disabled until proper implementation
             # The standard Odoo tree view is used instead for formula configuration

@@ -15570,3 +15570,63 @@ msgstr "Đã kiểm tra, không thay đổi"
 #: code:addons/pb_hr_payroll_formula/models/contract_fill_in.py:0
 msgid "You cannot confirm the answers on a contract. Ask an administrator for the right to change contracts."
 msgstr "Bạn không thể xác nhận các câu trả lời trên hợp đồng. Hãy đề nghị quản trị viên cấp quyền sửa hợp đồng."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_preparation.py:0
+msgid "No line on the contract, so this is No (the usual answer)."
+msgstr "Không có dòng trên hợp đồng, nên giá trị là Không (câu trả lời thông thường)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_preparation.py:0
+msgid "Final tax month for this person (%(when)s). Set %(name)s to Yes and fill in the year-to-date figures."
+msgstr "Tháng tính thuế cuối của người này (%(when)s). Đặt %(name)s thành Có và điền các số liệu lũy kế từ đầu năm."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_preparation.py:0
+msgid "December"
+msgstr "Tháng 12"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_preparation.py:0
+msgid "last month of work"
+msgstr "tháng làm việc cuối cùng"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/contract_fill_in.py:0
+msgid "%s needs Y or N."
+msgstr "%s cần Y hoặc N."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/contract_fill_in.py:0
+msgid "%(name)s needs one of: %(words)s."
+msgstr "%(name)s cần một trong các giá trị: %(words)s."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/contract_fill_in.py:0
+msgid "This value"
+msgstr "Giá trị này"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
+msgid "Row %(row)d: %(problem)s"
+msgstr "Dòng %(row)d: %(problem)s"
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/value_word_field.js:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage__pb_amount_word
+msgid "Answer"
+msgstr "Câu trả lời"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__value_labels_hint
+msgid "What the words mean"
+msgstr "Ý nghĩa của các từ"

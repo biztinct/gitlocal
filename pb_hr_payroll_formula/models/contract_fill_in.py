@@ -28,11 +28,13 @@ TWO TRIGGERS (ledger D5): `hr.contract.create` here, and `pb_scheme_map`'s
 Neither ever overwrites a line.
 """
 
+import json
 import logging
+import math
 import re
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -83,6 +85,62 @@ def parse_value_labels(text):
     return out
 
 
+def _yes_no(options):
+    """True when the words are exactly No for 0 and Yes for 1 (any case)."""
+    return (len(options) == 2
+            and {(o['value'], o['label'].strip().casefold()) for o in options}
+            == {(0.0, 'no'), (1.0, 'yes')})
+
+
+def _finite(raw):
+    """A number from a number or a plain numeric string, else None."""
+    if isinstance(raw, bool):
+        return None
+    if isinstance(raw, (int, float)):
+        number = float(raw)
+    else:
+        try:
+            number = float(str(raw).strip())
+        except (TypeError, ValueError):
+            return None
+    return number if math.isfinite(number) else None
+
+
+def value_from_words(options, raw, name=''):
+    """PDR P2 W2 — the ONE place a typed word becomes the stored number.
+
+    `options` are a rule's parsed words. Accepts, any case and trimmed:
+    Y / N / Yes / No when the words are a 0 / 1 pair, any word of the rule,
+    or the number itself. Anything else raises ValueError with a plain
+    sentence ("Final tax period needs Y or N."). Never returns a silent 0
+    for a word it does not know. A blank is the caller's business (blank
+    keeps its own meaning everywhere) and raises too.
+    """
+    pair = {o['value'] for o in options} == {0.0, 1.0}
+    if isinstance(raw, bool) and pair:
+        return 1.0 if raw else 0.0
+    number = _finite(raw)
+    if number is not None:
+        return number
+    text = str(raw if raw is not None else '').strip().casefold()
+    if text:
+        for option in options:
+            if option['label'].strip().casefold() == text:
+                return option['value']
+        if pair:
+            yes = {'y', 'yes', 'true'}
+            no = {'n', 'no', 'false'}
+            if text in yes:
+                return 1.0
+            if text in no:
+                return 0.0
+    who = name or _('This value')
+    if _yes_no(options) or (pair and not text):
+        raise ValueError(_('%s needs Y or N.') % who)
+    raise ValueError(_('%(name)s needs one of: %(words)s.') % {
+        'name': who, 'words': ', '.join(o['label'] for o in options)})
+
+
 # =========================================================================
 # Words for each value (ledger D4) — display only, the engine keeps numbers
 # =========================================================================
@@ -92,8 +150,41 @@ class HrFormulaRuleValueLabels(models.Model):
     value_labels = fields.Char(
         string='Words for each value',
         help='Optional. How a value reads on screen, e.g. "0=No;1=Yes" or '
-             '"0=None;1=Insurance-premium tax only;2=All tax (net salary)". '
-             'The pay data file and formulas keep using the numbers.')
+             '"0=None;1=Insurance tax;2=All tax". Screens and the pay data '
+             'file show the words (Y / N for Yes / No); formulas keep using '
+             'the numbers, and the file still accepts them.')
+    # PDR P2 W3 — one plain line that explains the words, shown under the
+    # choice on the pay data worksheet and the contract panel.
+    value_labels_hint = fields.Char(
+        string='What the words mean',
+        help='Optional. One short line shown under the choice, e.g. "All tax '
+             '= the company pays all the employee\'s tax (net salary)."')
+
+    def value_label_is_yes_no(self):
+        """Exactly No for 0 and Yes for 1 — written as Y / N in the file."""
+        self.ensure_one()
+        return _yes_no(self.value_label_options())
+
+    def value_to_text(self, amount, short=False):
+        """PDR P2 — how a stored number is shown: the word, `Y` / `N` when
+        `short` and the words are Yes / No, the number when no word matches
+        (a value is never hidden), and `''` for a blank."""
+        self.ensure_one()
+        if amount is None or amount == '' or amount is False:
+            return ''
+        word = self.value_label_for(amount)
+        if not word:
+            return amount
+        if short and self.value_label_is_yes_no():
+            return 'Y' if word.strip().casefold() == 'yes' else 'N'
+        return word
+
+    def value_from_text(self, raw, name=None):
+        """PDR P2 W2 — a typed or uploaded word as the stored number (see
+        `value_from_words`). Raises ValueError with a plain sentence."""
+        self.ensure_one()
+        return value_from_words(self.value_label_options(), raw,
+                                name or self.name or self.code)
 
     def value_label_options(self):
         """The parsed words for ONE rule; `[]` when there are none or the text
@@ -104,6 +195,8 @@ class HrFormulaRuleValueLabels(models.Model):
     def value_label_for(self, amount):
         """The words for one value, or `''`."""
         self.ensure_one()
+        if isinstance(amount, str) and not amount.strip():
+            return ''
         try:
             number = float(amount or 0.0)
         except (TypeError, ValueError):
@@ -125,6 +218,35 @@ class HrFormulaRuleValueLabels(models.Model):
         if self.value_kind == 'boolean':
             return 'toggle'
         return ''
+
+    def value_word_choices(self):
+        """The words as a screen offers them: Yes first for a 0 / 1 pair (as
+        the contract panel does), file order otherwise."""
+        self.ensure_one()
+        options = self.value_label_options()
+        if self.value_label_control() == 'toggle':
+            options = sorted(options, key=lambda o: -o['value'])
+        return options
+
+    @api.model
+    def _pb_component_rules(self, codes, company=None):
+        """`{code: rule}` for contract component codes — the same join and
+        the same preference as the contract panel (`pb_contracts`
+        `_cd_rule_by_code`): the live scheme of the contract's own company
+        first, id order only breaks a tie."""
+        codes = [c for c in (codes or []) if c]
+        out = {}
+        if not codes:
+            return out
+
+        def preference(rule):
+            config = rule.config_id
+            same = bool(company and config and config.company_id.id == company.id)
+            return (0 if same else 1, 0 if config and config.state == 'active' else 1, rule.id)
+
+        for rule in sorted(self.sudo().search([('code', 'in', codes)], order='id'), key=preference):
+            out.setdefault(rule.code, rule)
+        return out
 
 
 class HrFormulaConfigUsualAnswers(models.Model):
@@ -223,6 +345,82 @@ class HrContractAdvantageFillIn(models.Model):
                     'pb_checked_at': fields.Datetime.now(),
                 })
         return res
+
+
+# =========================================================================
+# PDR P2 W3b — the full contract form's component list shows the words
+# =========================================================================
+class HrContractAdvantageWords(models.Model):
+    _inherit = 'hr.contract.advantage'
+
+    # JSON list of {value, label}; '' when the component's rule has no words.
+    pb_value_words = fields.Char(compute='_compute_pb_value_words')
+    pb_amount_word = fields.Char(
+        string='Answer', compute='_compute_pb_amount_word',
+        inverse='_inverse_pb_amount_word', readonly=False,
+        help='The answer in words. The contract keeps the number behind it.')
+
+    def _pb_word_rules(self):
+        """`{line id or NewId: rule with words}` for these lines."""
+        out = {}
+        Rule = self.env['hr.formula.rule']
+        by_company = {}
+        for line in self:
+            code = (line.advantage_template_id.code or '').strip()
+            if code:
+                company = line.contract_id.company_id or self.env.company
+                by_company.setdefault(company, set()).add(code)
+        rules = {}
+        for company, codes in by_company.items():
+            for code, rule in Rule._pb_component_rules(list(codes), company).items():
+                rules[(company.id, code)] = rule
+        for line in self:
+            company = line.contract_id.company_id or self.env.company
+            rule = rules.get((company.id, (line.advantage_template_id.code or '').strip()))
+            if rule and (line.value_type or 'amount') != 'text' and rule.value_label_options():
+                out[line.id] = rule
+        return out
+
+    @api.depends('advantage_template_id', 'contract_id.company_id')
+    def _compute_pb_value_words(self):
+        rules = self._pb_word_rules()
+        for line in self:
+            rule = rules.get(line.id)
+            line.pb_value_words = json.dumps(rule.value_word_choices()) if rule else ''
+
+    @api.depends('amount', 'advantage_template_id', 'contract_id.company_id')
+    def _compute_pb_amount_word(self):
+        rules = self._pb_word_rules()
+        for line in self:
+            rule = rules.get(line.id)
+            if not rule:
+                line.pb_amount_word = False
+                continue
+            shown = rule.value_to_text(line.amount or 0.0)
+            # An unmatched number shows as itself, never hidden.
+            line.pb_amount_word = shown if isinstance(shown, str) else ('%g' % shown)
+
+    def _pb_words_to_amount(self):
+        rules = self._pb_word_rules()
+        for line in self:
+            rule = rules.get(line.id)
+            if not rule or line.pb_amount_word in (False, None, ''):
+                continue
+            try:
+                amount = rule.value_from_text(line.pb_amount_word,
+                                              line.advantage_template_id.name or rule.name)
+            except ValueError as error:
+                raise ValidationError(str(error)) from None
+            if abs((line.amount or 0.0) - amount) > 1e-9:
+                # "No" keeps today's meaning: a line holding 0, never deleted.
+                line.amount = amount
+
+    def _inverse_pb_amount_word(self):
+        self._pb_words_to_amount()
+
+    @api.onchange('pb_amount_word')
+    def _onchange_pb_amount_word(self):
+        self._pb_words_to_amount()
 
 
 # =========================================================================

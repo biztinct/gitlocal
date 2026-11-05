@@ -4377,6 +4377,15 @@ class HrPayrollImportBatch(models.Model):
                 numeric_value = coerce_numeric_string(stripped)
                 if numeric_value is not None:
                     return value_kind_classifier.apply_kind(kind, numeric_value)
+                if rule.value_label_options():
+                    # PDR P2 W2 — the ONE place an attached file's word
+                    # becomes a number: "Y" / "No" / "All tax" → 1 / 0 / 2.
+                    # An unknown word stops this row with a plain sentence;
+                    # it never reaches a formula as a silent 0.
+                    try:
+                        return value_kind_classifier.apply_kind(kind, rule.value_from_text(stripped))
+                    except ValueError as error:
+                        raise UserError(str(error)) from None
                 return stripped
             return value
 
@@ -5222,6 +5231,13 @@ class HrPayrollImportBatch(models.Model):
             numeric_value = self._coerce_numeric_string(stripped)
             if numeric_value is not None:
                 return numeric_value
+            if rule.value_label_options():
+                # PDR P2 — the same word reading as the pay-run import
+                # (`normalize_input_value`); an unknown word stays as typed.
+                try:
+                    return rule.value_from_text(stripped)
+                except ValueError:
+                    return stripped
             return stripped
         return value
 

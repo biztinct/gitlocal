@@ -10,7 +10,7 @@ What it does, on scheme 7121 "Rize Indonesia Payroll — focused payroll" only:
     IDBPJSTKCOVERE  usual answer 1   words 0=No;1=Yes
     IDBPJSHEALCOVE  usual answer 1   words 0=No;1=Yes
     IDERREIMBUBPJS  usual answer 0   words 0=No;1=Yes
-    IDTAXALLOWMODE  usual answer 1   words 0=None;1=Insurance-premium tax only;2=All tax (net salary)
+    IDTAXALLOWMODE  usual answer 1   words 0=None;1=Insurance tax;2=All tax  (PDR P2 R3)
 
 Idempotent (writes a field only when it differs). Touches the four RULES and
 nothing else: it proves no contract component line changed by comparing the
@@ -29,8 +29,8 @@ SPEC = {
     'IDERREIMBUBPJS': {'default_value': 0.0, 'value_labels': YES_NO},
     'IDTAXALLOWMODE': {
         'default_value': 1.0,
-        'value_labels': '0=None;1=Insurance-premium tax only;'
-                        '2=All tax (net salary)'},
+        # PDR P2 R3 (2026-11-05): short words + a hint line on the rule.
+        'value_labels': '0=None;1=Insurance tax;2=All tax'},
 }
 
 

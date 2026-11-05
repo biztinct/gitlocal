@@ -185,3 +185,4 @@ from . import test_fillin_p1
 
 # IMPORT-GENDER — a Gender / Marital Status cell never fails the row.
 from . import test_import_gender_marital
+from . import test_pdr_p2_words
