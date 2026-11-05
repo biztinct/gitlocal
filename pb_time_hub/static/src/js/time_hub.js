@@ -29,7 +29,18 @@ import { TimelineLens } from "./timeline_lens";
 
 const MODEL = "pb.time.hub";
 const LENS_KEY = "pbth.lens.v1";
-const LENSES = ["timeline", "grid", "exceptions", "import"];
+// The four lenses this module mounts itself. Other modules add lenses through
+// the "pb_time_hub.lenses" registry (CLOCK-1): each entry is
+// { key, label, icon, Component, props?, sequence } and is shown AFTER these,
+// in sequence order. A registered lens is mounted with embedded=true and the
+// same host doors as the built-ins (onPerson, onChanged, onOpenLens) plus
+// `seed`, the props another lens handed over when it opened this one.
+const BUILTIN_LENSES = ["timeline", "grid", "exceptions", "import"];
+export const lensRegistry = registry.category("pb_time_hub.lenses");
+
+// a stable empty seed, so a registered lens without one never re-renders on
+// every hub tick (see the STABLE prop references note in setup)
+const EMPTY_SEED = Object.freeze({});
 
 export class PbTimeHub extends Component {
     static template = "pb_time_hub.PbTimeHub";
@@ -67,6 +78,11 @@ export class PbTimeHub extends Component {
         const arrival = this._arrival();
 
         this.state = useState({
+            // props handed to a registered lens when another lens opened it
+            // (e.g. the Import lens's "Assign now" → Time clocks on the
+            // unknown numbers); keyed by lens, a nonce remounts the lens
+            lensSeed: {},
+            lensNonce: 0,
             lens: arrival.lens || this._restoreLens(),
             // The Today board hands a person over so the Exceptions queue lands
             // FILTERED; the drawer would sit on top of the very queue the
@@ -95,6 +111,7 @@ export class PbTimeHub extends Component {
             onEscalate: (id) => this.escalate(id),
             onFileCorrection: () => this.fileCorrection(),
             onOpenProfile: () => this.openProfile(),
+            onOpenLens: (key, seed) => this.openLens(key, seed),
         };
 
         // Ribbon follows the context week/department, like every lens.
@@ -121,7 +138,57 @@ export class PbTimeHub extends Component {
             { key: "grid", label: _t("Week Grid"), icon: "table" },
             { key: "exceptions", label: _t("Exceptions"), icon: "alert" },
             { key: "import", label: _t("Import"), icon: "upload" },
+            ...this.extraLenses.map((l) => ({ key: l.key, label: l.label, icon: l.icon })),
         ];
+    }
+
+    /** Lenses other modules registered, in sequence order, never shadowing a
+     *  built-in key. */
+    get extraLenses() {
+        return lensRegistry.getAll()
+            .filter((l) => l && l.key && l.Component && !BUILTIN_LENSES.includes(l.key))
+            .sort((a, b) => (a.sequence || 100) - (b.sequence || 100));
+    }
+
+    get lensKeys() {
+        return [...BUILTIN_LENSES, ...this.extraLenses.map((l) => l.key)];
+    }
+
+    /** The registered lens showing now, or null when a built-in is. */
+    get activeExtra() {
+        return this.extraLenses.find((l) => l.key === this.state.lens) || null;
+    }
+
+    /** A registered lens's own static props (stable identity). */
+    get activeExtraProps() {
+        const l = this.activeExtra;
+        return (l && l.props) || EMPTY_SEED;
+    }
+
+    lensSeedFor(key) {
+        return this.state.lensSeed[key] || EMPTY_SEED;
+    }
+
+    /** One lens opens another, handing it props (a click handler only). */
+    openLens(key, seed) {
+        if (!this.lensKeys.includes(key)) { return; }
+        if (key === "exceptions") {
+            // the Exceptions lens already has its own hand-off: a correction
+            // id to open, with a nonce that remounts it (see fileCorrection)
+            if (seed && seed.correction_id) {
+                this.state.seed = { correction_id: seed.correction_id };
+                this.state.excNonce += 1;
+            }
+            this.setLens(key);
+            return;
+        }
+        this.state.lensSeed = { ...this.state.lensSeed, [key]: seed || {} };
+        this.state.lensNonce += 1;
+        if (this.state.lens === key) {
+            // already showing: the nonce in its t-key remounts it with the seed
+            return;
+        }
+        this.setLens(key);
     }
 
     lensCount(key) {
@@ -142,14 +209,14 @@ export class PbTimeHub extends Component {
      */
     _arrival() {
         const ctx = (this.props.action && this.props.action.context) || {};
-        const lens = LENSES.includes(ctx.pb_lens) ? ctx.pb_lens : null;
+        const lens = this.lensKeys.includes(ctx.pb_lens) ? ctx.pb_lens : null;
         return { lens, hideDrawer: ctx.pb_focus === "queue" && !!lens };
     }
 
     _restoreLens() {
         try {
             const v = window.localStorage.getItem(LENS_KEY);
-            if (LENSES.includes(v)) { return v; }
+            if (this.lensKeys.includes(v)) { return v; }
         } catch { /* private mode */ }
         // Default to the grid: it is the surface the owner named as the pain
         // point ("time entry in a table format"), so the hub opens on it.
@@ -157,7 +224,7 @@ export class PbTimeHub extends Component {
     }
 
     setLens(key) {
-        if (!LENSES.includes(key) || this.state.lens === key) { return; }
+        if (!this.lensKeys.includes(key) || this.state.lens === key) { return; }
         this.state.lens = key;
         try { window.localStorage.setItem(LENS_KEY, key); } catch { /* private mode */ }
     }

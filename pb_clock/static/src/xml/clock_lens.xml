@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_clock.ClockLens">
+    <div class="pbim pbck" t-att-class="{ 'pbck--embedded': props.embedded }">
+
+      <!-- ============================ loading / error ================= -->
+      <div class="pbck-load" t-if="state.loading and !state.data">
+        <span t-out="ic('loader', 22)"/><span>Reading the punches…</span>
+      </div>
+
+      <div class="pbck-empty pbck-card" t-elif="state.failed and !state.data">
+        <span class="i" t-out="ic('alert', 26)"/>
+        <div class="t">The time clocks could not be read</div>
+        <div class="s">Nothing was changed. Try again in a moment.</div>
+        <button class="pbck-btn ghost" t-on-click="() => this.load()">Try again</button>
+      </div>
+
+      <t t-elif="state.data">
+        <t t-set="d" t-value="state.data"/>
+
+        <!-- ============================ hero ========================== -->
+        <div class="pbck-hero" t-attf-class="is-{{ hero.tone }}" aria-live="polite">
+          <span class="pbck-pulse" t-attf-class="is-{{ hero.tone }}" aria-hidden="true"><i/></span>
+          <div class="pbck-hero__txt">
+            <div class="pbck-hero__line" t-esc="hero.text"/>
+            <div class="pbck-hero__sub" t-if="waitingText">
+              <span class="spin" t-out="ic('loader', 13)"/><span t-esc="waitingText"/>
+            </div>
+          </div>
+          <div class="pbck-hero__act">
+            <button class="pbck-btn ghost" t-if="hero.tone !== 'empty'" t-att-disabled="state.busy"
+                    t-on-click="repairWeek" title="Rebuild this week's days from its punches">
+              <span t-out="ic('refresh', 14)"/><span>Re-pair this week</span>
+            </button>
+            <button class="pbck-btn primary" t-if="hero.tone !== 'empty'" t-on-click="openUpload">
+              <span t-out="ic('upload', 14)"/><span>Upload punches</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- empty state: no machine, no punch yet -->
+        <div class="pbck-card pbck-start" t-if="hero.tone === 'empty'">
+          <span class="i" t-out="ic('scan', 34)"/>
+          <div class="t">Bring in the first punches</div>
+          <div class="s">Upload a file from the attendance machine or its program — Excel, CSV, the machine’s attlog.dat or the daily sheet.</div>
+          <button class="pbck-btn primary" t-on-click="openUpload">
+            <span t-out="ic('upload', 15)"/><span>Upload a punch file</span>
+          </button>
+          <div class="pbck-next">
+            <span t-out="ic('info', 13)"/>
+            <span>What happens next: each number on the machine is matched to a person, and their punches become work days in the Week Grid — first punch in, last punch out.</span>
+          </div>
+        </div>
+
+        <t t-else="">
+          <!-- ======================= unknown numbers ===================== -->
+          <section class="pbck-card pbck-sec" t-att-class="{ 'is-zero': !unknown.total, 'is-act': unknown.total }">
+            <header class="pbck-sec__h">
+              <span class="pbck-sec__ic" t-out="ic('userX', 16)"/>
+              <h3>Numbers that match nobody</h3>
+              <span class="pbck-n" t-if="unknown.total" t-esc="unknown.total"/>
+              <span class="grow"/>
+              <t t-if="unknown.total">
+                <button class="pbck-btn ghost tiny" t-att-disabled="state.busy"
+                        t-on-click="autoMatch" title="Match numbers that equal a person's badge ID or ID number">
+                  <span t-out="ic('wand', 13)"/><span>Match by employee codes</span>
+                </button>
+                <button class="pbck-btn primary tiny" t-if="suggestedCount"
+                        t-att-disabled="state.busy" t-on-click="assignAllSuggested">
+                  <span t-out="ic('checkCheck', 13)"/>
+                  <span>Assign all suggested (<t t-esc="suggestedCount"/>)</span>
+                </button>
+              </t>
+            </header>
+            <div class="pbck-zero" t-if="!unknown.total">
+              <span t-out="ic('checkCircle', 14)"/><span>Every number matches a person.</span>
+            </div>
+            <t t-else="">
+              <div class="pbck-hint">Their punches are kept and paired the moment you match the number to a person. <kbd>↑</kbd><kbd>↓</kbd> to move, <kbd>Enter</kbd> to assign, <kbd>Esc</kbd> to close.</div>
+              <div class="pbck-tbl pbck-unk" tabindex="0" t-ref="unknown" t-on-keydown="onUnknownKey"
+                   role="grid" aria-label="Numbers that match nobody">
+                <div class="pbck-tr pbck-th" role="row">
+                  <span>Number</span><span>First seen</span><span>Last seen</span>
+                  <span class="r">Punches</span><span>Suggested</span><span/>
+                </div>
+                <div t-foreach="unknown.rows" t-as="r" t-key="r.code" role="row"
+                     t-attf-class="pbck-tr {{ r_index === state.sel ? 'is-sel' : '' }} {{ r.focus ? 'is-focus' : '' }}"
+                     t-on-click="() => { this.state.sel = r_index; }">
+                  <span class="code"><b t-esc="r.code"/><i t-if="r.this_week" class="wk">this week</i></span>
+                  <span class="muted" t-esc="seenLabel(r.first_seen)"/>
+                  <span class="muted" t-esc="seenLabel(r.last_seen)"/>
+                  <span class="r">
+                    <button class="pbck-link" t-on-click.stop="() => this.showCode(r.code)"
+                            t-att-title="'Show the punches of ' + r.code" t-esc="fmtN(r.punches)"/>
+                  </span>
+                  <span>
+                    <button class="pbck-sugg" t-if="r.suggestion" t-att-disabled="state.busy"
+                            t-on-click.stop="() => this.assignSuggested(r)"
+                            t-att-title="'Give ' + r.code + ' to ' + r.suggestion.name">
+                      <span t-out="ic('userCheck', 13)"/><span t-esc="r.suggestion.name"/>
+                    </button>
+                    <span class="muted" t-else="">—</span>
+                  </span>
+                  <span class="act">
+                    <t t-if="state.assign and state.assign.code === r.code">
+                      <span class="pbck-ta">
+                        <input type="text" class="pbck-ta__in" placeholder="Type a name or a badge ID"
+                               t-att-value="state.assign.query" t-on-input="onAssignInput"
+                               t-on-keydown="onAssignKey" t-on-click.stop="() => {}"
+                               aria-label="Find the person"/>
+                        <span class="pbck-ta__list" t-if="state.assign.matches.length">
+                          <button t-foreach="state.assign.matches" t-as="m" t-key="m.id"
+                                  t-attf-class="pbck-ta__opt {{ m_index === state.assign.ix ? 'is-on' : '' }}"
+                                  t-on-click.stop="() => this.assign(r.code, m.id)">
+                            <img t-att-src="m.avatar" alt=""/>
+                            <span class="n"><t t-esc="m.name"/><i t-if="!m.active"> · has left</i></span>
+                            <span class="s"><t t-esc="m.dept"/><t t-if="m.badge"> · badge <t t-esc="m.badge"/></t></span>
+                          </button>
+                        </span>
+                        <span class="pbck-ta__none" t-elif="state.assign.query and !state.assign.searching">No one by that name or number</span>
+                        <button class="pbck-x" t-on-click.stop="closeAssign" title="Close" t-out="ic('x', 13)"/>
+                      </span>
+                    </t>
+                    <button class="pbck-btn ghost tiny" t-else="" t-on-click.stop="() => this.openAssign(r)">Assign</button>
+                  </span>
+                </div>
+              </div>
+            </t>
+          </section>
+
+          <!-- ======================= punches on hold ===================== -->
+          <section class="pbck-card pbck-sec" t-att-class="{ 'is-zero': !held.total, 'is-act': held.total }">
+            <header class="pbck-sec__h">
+              <span class="pbck-sec__ic" t-out="ic('pause', 16)"/>
+              <h3>Punches on hold</h3>
+              <span class="pbck-n" t-if="held.total" t-esc="held.total"/>
+            </header>
+            <div class="pbck-zero" t-if="!held.total">
+              <span t-out="ic('checkCircle', 14)"/><span>Nothing on hold — every counted punch is in a work day.</span>
+            </div>
+            <div class="pbck-tbl pbck-held" t-else="">
+              <div class="pbck-tr pbck-th"><span>Person</span><span>Day</span><span>Why</span><span/></div>
+              <div class="pbck-tr" t-foreach="held.rows" t-as="h" t-key="h_index">
+                <button class="pbck-who" t-on-click="() => this.openPerson(h.employee_id)" t-esc="h.name"/>
+                <span t-esc="h.day_label"/>
+                <span class="why" t-esc="h.note"/>
+                <span class="act">
+                  <button class="pbck-btn ghost tiny" t-att-disabled="state.busy"
+                          t-on-click="() => this.fixDay(h)">
+                    <span t-out="ic('pencil', 12)"/><span>Fix this day</span>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </section>
+        </t>
+
+        <!-- ============================ machines ====================== -->
+        <section class="pbck-sec pbck-machines" t-if="devices.length">
+          <header class="pbck-sec__h plain">
+            <span class="pbck-sec__ic" t-out="ic('scan', 16)"/><h3>Machines</h3>
+          </header>
+          <div class="pbck-devs">
+            <div t-foreach="devices" t-as="dv" t-key="dv.id" role="button" tabindex="0"
+                 t-attf-class="pbck-dev {{ state.filters.device_id === dv.id ? 'is-on' : '' }} {{ dv.punches_today ? 'is-live' : '' }}"
+                 t-on-click="() => this.toggleDevice(dv)"
+                 t-on-keydown="(ev) => { if (ev.key === 'Enter') { this.toggleDevice(dv); } }"
+                 t-att-title="state.filters.device_id === dv.id ? 'Show every machine' : 'Show only this machine'">
+              <div class="pbck-dev__top">
+                <span class="pbck-dev__ic" t-out="ic(dv.kind === 'upload' ? 'upload' : 'scan', 15)"/>
+                <span class="pbck-dev__name" t-esc="deviceName(dv)"/>
+                <span class="pbck-chip tz" t-if="dv.tz" t-esc="dv.tz"/>
+              </div>
+              <div class="pbck-dev__loc" t-if="dv.location" t-esc="dv.location"/>
+              <div class="pbck-dev__row">
+                <span><b t-esc="fmtN(dv.punches_today)"/> today</span>
+                <span class="muted">last <t t-esc="deviceLast(dv)"/></span>
+              </div>
+              <label class="pbck-switch" t-if="d.can_manage and dv.kind === 'terminal'"
+                     t-on-click.stop="() => {}" title="A machine that is not allowed will not be listened to once machines can send punches">
+                <input type="checkbox" t-att-checked="dv.allowed" t-on-change="(ev) => this.toggleAllowed(dv, ev)"/>
+                <span class="tr"><i/></span><span>Allowed</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ recent ======================== -->
+        <section class="pbck-card pbck-sec" t-if="hero.tone !== 'empty'">
+          <header class="pbck-sec__h">
+            <span class="pbck-sec__ic" t-out="ic('list', 16)"/>
+            <h3>Recent punches</h3>
+            <span class="pbck-n quiet" t-esc="fmtN(recent.total)"/>
+            <span class="grow"/>
+            <span class="pbck-chips">
+              <button t-foreach="periodChips" t-as="c" t-key="c.key"
+                      t-attf-class="pbck-fchip {{ state.filters.period === c.key ? 'on' : '' }}"
+                      t-on-click="() => this.setPeriod(c.key)" t-esc="c.label"/>
+            </span>
+          </header>
+          <div class="pbck-filters">
+            <button t-foreach="stateChips" t-as="c" t-key="c.key"
+                    t-attf-class="pbck-fchip {{ state.filters.state === c.key ? 'on' : '' }}"
+                    t-on-click="() => this.setStateFilter(c.key)" t-esc="c.label"/>
+            <span class="pbck-fchip on removable" t-if="state.filters.device_id">
+              <t t-esc="deviceFilterName"/>
+              <button t-on-click="() => this.toggleDevice({ id: state.filters.device_id })" t-out="ic('x', 11)" title="Remove"/>
+            </span>
+            <span class="pbck-fchip on removable" t-if="state.filters.code">
+              Number <t t-esc="state.filters.code"/>
+              <button t-on-click="() => this.showCode(state.filters.code)" t-out="ic('x', 11)" title="Remove"/>
+            </span>
+            <button class="pbck-link" t-if="filtered" t-on-click="clearFilters">Clear filters</button>
+          </div>
+          <div class="pbck-zero" t-if="!recent.rows.length">
+            <span t-out="ic('list', 14)"/>
+            <span t-if="filtered">No punch fits these filters.</span>
+            <span t-else="">No punch this week yet.</span>
+          </div>
+          <div class="pbck-feed" t-else="">
+            <div t-foreach="recent.rows" t-as="p" t-key="p.id"
+                 t-attf-class="pbck-punch {{ state.newIds[p.id] ? 'is-new' : '' }}">
+              <span class="t"><b t-esc="p.time"/><i t-esc="p.seconds"/></span>
+              <span class="dd" t-esc="p.day"/>
+              <span class="who">
+                <button class="pbck-who" t-if="p.employee_id" t-on-click="() => this.openPerson(p.employee_id)" t-esc="p.name"/>
+                <span class="code" t-else="">Number <b t-esc="p.code"/></span>
+              </span>
+              <span class="dev muted" t-esc="p.device"/>
+              <span t-attf-class="pbck-chip k-{{ p.kind }} t-{{ p.tone }}" t-att-title="p.note or ''"
+                    t-esc="KIND_LABEL[p.kind] or p.kind"/>
+            </div>
+            <div class="pbck-more" t-if="recent.more">
+              <button class="pbck-btn ghost tiny" t-att-disabled="state.moreLoading" t-on-click="loadMore">
+                <span t-if="state.moreLoading" t-out="ic('loader', 12)"/>
+                <span>Show <t t-esc="Math.min(200, recent.total - recent.rows.length)"/> more</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ settings ====================== -->
+        <section class="pbck-card pbck-sec pbck-settings" t-if="d.can_manage and state.settings">
+          <header class="pbck-sec__h">
+            <span class="pbck-sec__ic" t-out="ic('settings', 16)"/><h3>How punches become days</h3>
+          </header>
+          <div class="pbck-set">
+            <label class="pbck-set__row">
+              <span class="l">Longest possible work day</span>
+              <span class="c"><input type="number" min="8" max="36" step="0.5"
+                     t-att-value="state.settings.max_span_h" t-on-input="(ev) => this.onSetting('max_span_h', ev)"/> hours</span>
+              <span class="h">Every punch within this many hours of a day’s first punch belongs to that day, so night shifts stay one day.</span>
+            </label>
+            <label class="pbck-set__row">
+              <span class="l">Taps closer than this count once</span>
+              <span class="c"><input type="number" min="0" max="30" step="1"
+                     t-att-value="state.settings.double_tap_min" t-on-input="(ev) => this.onSetting('double_tap_min', ev)"/> minutes</span>
+              <span class="h">Someone who taps twice in a row is counted once.</span>
+            </label>
+            <label class="pbck-set__row">
+              <span class="l">Trust the In / Out keys</span>
+              <span class="c"><input type="checkbox" t-att-checked="state.settings.trust_direction"
+                     t-on-change="(ev) => this.onSetting('trust_direction', ev)"/></span>
+              <span class="h">Leave off when nobody presses them: the first punch of a day is then the start and the last is the end.</span>
+            </label>
+          </div>
+          <div class="pbck-set__bar">
+            <button class="pbck-btn primary" t-att-disabled="!settingsDirty or state.busy" t-on-click="saveSettings">
+              <span t-out="ic('save', 14)"/><span>Save</span>
+            </button>
+          </div>
+        </section>
+      </t>
+    </div>
+  </t>
+
+</templates>

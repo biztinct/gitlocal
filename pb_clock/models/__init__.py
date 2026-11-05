@@ -5,3 +5,5 @@ from . import hr_attendance
 from . import clock_device
 from . import clock_punch
 from . import clock_pairing
+from . import clock_lens
+from . import time_hub

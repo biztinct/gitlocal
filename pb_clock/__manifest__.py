@@ -56,6 +56,13 @@ approval, and the pay run.
         'data/ir_cron.xml',
         'views/hr_employee_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'pb_clock/static/src/scss/clock_lens.scss',
+            'pb_clock/static/src/js/clock_lens.js',
+            'pb_clock/static/src/xml/clock_lens.xml',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -25,8 +25,13 @@ component, one facade and two mount points per surface, never a fork.
 
 Department, week and person come from the shared `wf_context` (W4); the hub
 ships no private pickers. pbim indigo tokens, Lucide icons, no gradients.
+
+1.4.0 (CLOCK-1): a lens registry. Other modules add lenses after the four
+built-ins through the `pb_time_hub.lenses` JS registry, and their tab badge
+through `pb.time.hub._extra_lens_counts`. The Time clocks module adds "Time
+clocks". The person drawer reads the person's local day, like the Week Grid.
 """,
-    'version': '19.0.1.3.2',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -64,8 +64,20 @@
 
         <!-- Import — the same component, opened on its import stepper -->
         <div class="pbth-lensbody" t-elif="state.lens === 'import'">
-          <PbAttendanceFlow t-key="'lens-imp'" embedded="true" initialView="'import'"
-                            onPerson="_h.onPerson"/>
+          <PbAttendanceFlow t-key="'lens-imp-' + state.lensNonce" embedded="true" initialView="'import'"
+                            seed="lensSeedFor('import')"
+                            onPerson="_h.onPerson" onChanged="_h.onChanged"
+                            onOpenLens="_h.onOpenLens"/>
+        </div>
+
+        <!-- a lens another module registered (CLOCK-1: Time clocks) -->
+        <div class="pbth-lensbody" t-elif="activeExtra">
+          <t t-component="activeExtra.Component"
+             t-key="'lens-x-' + activeExtra.key + '-' + state.lensNonce"
+             t-props="activeExtraProps"
+             embedded="true" seed="lensSeedFor(activeExtra.key)"
+             onPerson="_h.onPerson" onChanged="_h.onChanged"
+             onOpenLens="_h.onOpenLens"/>
         </div>
       </div>
 

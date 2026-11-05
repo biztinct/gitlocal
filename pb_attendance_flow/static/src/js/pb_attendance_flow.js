@@ -110,7 +110,9 @@ export class PbAttendanceFlow extends Component {
             refuseOpen: false,
             refuseNote: "",
             composer: null,             // correction detail
-            imp: this._blankImport(),
+            // a host may open the importer on a kind of file (CLOCK-1: the
+            // Time clocks lens opens it on "Time-clock punches")
+            imp: this._blankImport((this.props.seed && this.props.seed.import_mode) || "days"),
             // the kinds of file the importer takes (CLOCK-1: days | punches);
             // the switch shows only when there is more than one
             modes: [],

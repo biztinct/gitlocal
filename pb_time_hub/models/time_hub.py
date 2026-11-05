@@ -31,10 +31,13 @@ timesheet and a payslip disagree. Days are keyed by the employee-LOCAL day, agai
 matching the Week-Grid lens exactly.
 """
 
+import logging
 from datetime import date, timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
+
+_logger = logging.getLogger(__name__)
 
 # Officer-and-up. `group_hr_attendance_user` ("Officer: Manage all attendances")
 # and `group_hr_attendance_manager` both IMPLY `group_hr_attendance_officer`, so
@@ -163,6 +166,21 @@ class PbTimeHub(models.AbstractModel):
             text = _("Nothing needs review this week.")
             tone = 'green'
 
+        lens_counts = {'exceptions': total}
+        # CLOCK-1: lenses other modules register add their own badge here.
+        # A failing hook costs its badge, never the ribbon.
+        try:
+            extra = self._extra_lens_counts({
+                'week_start': df, 'week_end': dt,
+                'department_id': department_id, 'employee_id': employee_id,
+            }) or {}
+            for key, n in extra.items():
+                if key not in lens_counts:
+                    lens_counts[key] = n
+        except Exception:  # noqa: BLE001
+            _logger.warning("Time hub: a lens badge could not be counted",
+                            exc_info=True)
+
         return {
             'week_start': df.isoformat(),
             'week_end': dt.isoformat(),
@@ -171,8 +189,15 @@ class PbTimeHub(models.AbstractModel):
             'truncated': truncated,
             'ribbon': {'tone': tone, 'text': text},
             # per-lens badge counts; a lens absent from this dict shows no badge
-            'lens_counts': {'exceptions': total},
+            'lens_counts': lens_counts,
         }
+
+    @api.model
+    def _extra_lens_counts(self, ctx):
+        """{lens_key: badge count} for lenses registered by other modules.
+        `ctx` = {week_start, week_end (dates), department_id, employee_id}.
+        Extend with `_inherit` and merge into super()'s answer. A READ."""
+        return {}
 
     # ========================================================== timeline
     @api.model
