@@ -21,3 +21,8 @@ class ResCompany(models.Model):
         help='Use the In and Out keys people press on the machine. Leave off '
              'when nobody presses them: the first punch of a day is then the '
              'start and the last punch is the end.')
+    pb_clock_allow_plain = fields.Boolean(
+        string='Allow a plain connection', default=False,
+        help='Lets an older machine send over a plain web connection when it '
+             'cannot make a secure one. Only the number, the time and the '
+             'machine’s serial travel.')

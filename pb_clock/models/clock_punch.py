@@ -46,6 +46,7 @@ STATES = [
     ('held', 'On hold'),
     ('ignored_duplicate_tap', 'Double tap'),
     ('ignored_outlier', 'Ignored'),
+    ('ignored_before_start', 'Before the start date'),
 ]
 
 # the only fields anyone may write after create (ledger rule 7)
