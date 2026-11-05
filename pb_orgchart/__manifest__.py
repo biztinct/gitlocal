@@ -37,11 +37,15 @@ WHAT THIS MODULE ADDS
     view for a colleague who can see the chart; print as you see it.
   * QUICK SEARCH: Org chart, Who reports to me?, Plan org chart changes and
     Suggest a chart are in the ⌘K search.
+  * THE PAY DATA FILE KEEPS MANAGERS UP TO DATE: when a scheme maps its
+    Reporting Manager column to Manager, every import sets each person's
+    manager from the file, and lists the rows whose name it could not match
+    on the import's last step and on the batch page.
 
 Only HR users can change the chart; everyone else sees it read-only. Every
 change is recorded on the employee record.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -56,6 +60,9 @@ change is recorded on the employee record.
         'pb_people_advanced',     # P3: the new-starter form lowers a role's to-hire count
         'biz_approval_chain',     # P3: the plan's status ladder and its guard
         'biz_approval_workflow',  # P3: the route a plan is approved on (orgplan)
+        'pb_hr_payroll_formula',  # MANAGERCOL: the import batch the manager step hooks
+        'pb_import_wizard',       # MANAGERCOL: the manager line on the import's last step
+        'pb_import_batch',        # MANAGERCOL: the manager line on the batch page
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -77,6 +84,8 @@ change is recorded on the employee record.
             'pb_orgchart/static/src/js/orgchart_lens.js',
             'pb_orgchart/static/src/js/orgchart_palette.js',
             'pb_orgchart/static/src/xml/orgchart.xml',
+            'pb_orgchart/static/src/scss/import_manager.scss',
+            'pb_orgchart/static/src/xml/import_manager.xml',
         ],
     },
     'post_init_hook': 'post_init_hook',

@@ -3643,3 +3643,177 @@ msgstr "thay đổi theo kế hoạch, chưa áp dụng"
 #: code:addons/pb_orgchart/static/src/js/orgchart_palette.js:0
 msgid "People"
 msgstr "Con người"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: the change could not be saved."
+msgstr "Chưa đặt quản lý: không lưu được thay đổi."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager cell is empty — the current manager is kept."
+msgstr "Ô quản lý để trống — giữ nguyên quản lý hiện tại."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: “%(v)s” is this person."
+msgstr "Chưa đặt quản lý: “%(v)s” chính là người này."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: %(m)s works for %(c)s — a manager must be in the same company."
+msgstr "Chưa đặt quản lý: %(m)s làm việc cho %(c)s — quản lý phải cùng công ty."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: %(m)s is inside %(p)s's own team."
+msgstr "Chưa đặt quản lý: %(m)s nằm trong nhóm của chính %(p)s."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: “%(v)s” fits %(m)s, but the manager email in the file is %(e)s."
+msgstr "Chưa đặt quản lý: “%(v)s” khớp với %(m)s, nhưng email quản lý trong tệp là %(e)s."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: “%(v)s” fits %(n)s people, and %(g)s of them has left."
+msgstr "Chưa đặt quản lý: “%(v)s” khớp với %(n)s người, và %(g)s người trong số đó đã nghỉ việc."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: “%(v)s” fits %(n)s people."
+msgstr "Chưa đặt quản lý: “%(v)s” khớp với %(n)s người."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: %(m)s has left."
+msgstr "Chưa đặt quản lý: %(m)s đã nghỉ việc."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: the code “%(v)s” fits %(n)s people."
+msgstr "Chưa đặt quản lý: mã “%(v)s” khớp với %(n)s người."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Manager not set: nobody is called “%(v)s”."
+msgstr "Chưa đặt quản lý: không có ai tên “%(v)s”."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "Managers from the file"
+msgstr "Quản lý theo tệp dữ liệu"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "This file has a “%(h)s” column, but this scheme does not read it, so no manager was changed. Map the column to Manager to keep managers up to date."
+msgstr "Tệp này có cột “%(h)s”, nhưng phương án lương này không đọc cột đó, nên không quản lý nào được thay đổi. Hãy ánh xạ cột này vào Quản lý để quản lý luôn được cập nhật."
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "updated"
+msgstr "đã cập nhật"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "already up to date"
+msgstr "đã đúng sẵn"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "not matched"
+msgstr "không khớp"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "left blank"
+msgstr "để trống"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "See the row"
+msgstr "Xem dòng này"
+
+#. module: pb_orgchart
+#. odoo-python
+#: code:addons/pb_orgchart/models/import_manager.py:0
+msgid "See the %(n)s rows"
+msgstr "Xem %(n)s dòng"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_line__pb_manager_state
+msgid "Manager from the file"
+msgstr "Quản lý theo tệp"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,help:pb_orgchart.field_hr_payroll_import_line__pb_manager_state
+msgid "What the import did with this row's manager column."
+msgstr "Lần nhập đã làm gì với cột quản lý của dòng này."
+
+#. module: pb_orgchart
+#: model:ir.model.fields.selection,name:pb_orgchart.selection__hr_payroll_import_line__pb_manager_state__set
+msgid "Updated"
+msgstr "Đã cập nhật"
+
+#. module: pb_orgchart
+#: model:ir.model.fields.selection,name:pb_orgchart.selection__hr_payroll_import_line__pb_manager_state__same
+msgid "Already up to date"
+msgstr "Đã đúng sẵn"
+
+#. module: pb_orgchart
+#: model:ir.model.fields.selection,name:pb_orgchart.selection__hr_payroll_import_line__pb_manager_state__unmatched
+msgid "Not matched"
+msgstr "Không khớp"
+
+#. module: pb_orgchart
+#: model:ir.model.fields.selection,name:pb_orgchart.selection__hr_payroll_import_line__pb_manager_state__blank
+msgid "Left blank"
+msgstr "Để trống"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_line__pb_manager_note
+msgid "Manager note"
+msgstr "Ghi chú về quản lý"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,help:pb_orgchart.field_hr_payroll_import_line__pb_manager_note
+msgid "Why the manager in this row was not set, in plain words."
+msgstr "Vì sao quản lý ở dòng này chưa được đặt, nói ngắn gọn."
+
+#. module: pb_orgchart
+#: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_batch__pb_manager_set_count
+msgid "Managers updated"
+msgstr "Số quản lý đã cập nhật"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_batch__pb_manager_same_count
+msgid "Managers already up to date"
+msgstr "Số quản lý đã đúng sẵn"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_batch__pb_manager_unmatched_count
+msgid "Managers not matched"
+msgstr "Số quản lý không khớp"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_batch__pb_manager_blank_count
+msgid "Manager cells left blank"
+msgstr "Số ô quản lý để trống"

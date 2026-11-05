@@ -116,7 +116,21 @@ IDENTITY_HEADERS = (
     'chứng minh nhân dân', 'ho chieu', 'hộ chiếu',
 )
 
-PROFILE_HEADERS = (
+# MANAGERCOL (2026-11-05) — the headings that name a person's MANAGER. A real
+# client file writes "Reporting Manager" (Rize Vietnam, India) or "Master
+# Reporting Manager" (Rize Indonesia, Singapore). They are profile columns, and
+# `is_manager_header` below is how the import tells a manager column from its
+# neighbours: "Reporting manager Mail ID" is the manager's EMAIL and "Hiring
+# Manager" is somebody else entirely — neither may ever be read as the manager.
+MANAGER_HEADERS = (
+    'manager', 'line manager', 'reports to', 'supervisor',
+    'reporting manager', 'master reporting manager', 'reporting manager name',
+    'direct manager',
+    # Vietnamese, Indonesian
+    'người quản lý', 'quản lý trực tiếp', 'atasan langsung',
+)
+
+PROFILE_HEADERS = MANAGER_HEADERS + (
     'phone', 'phone no', 'phone number', 'mobile', 'mobile no', 'mobile number',
     'telephone', 'contact number', 'contact no',
     'email', 'email address', 'work email', 'personal email', 'private email',
@@ -127,8 +141,7 @@ PROFILE_HEADERS = (
     'job title', 'job position', 'position', 'designation', 'job grade', 'grade',
     'employee status', 'employment status', 'staff status', 'status',
     'work location', 'location', 'work place', 'workplace', 'site',
-    'cost center', 'cost centre', 'manager', 'line manager', 'reports to',
-    'supervisor', 'tax code', 'tax id', 'tax number',
+    'cost center', 'cost centre', 'tax code', 'tax id', 'tax number',
     'social insurance no', 'social insurance number', 'social insurance code',
     # Vietnamese
     'so dien thoai', 'số điện thoại', 'dien thoai', 'điện thoại',
@@ -220,6 +233,34 @@ def strip_accents(text):
 
 def _index_key(value):
     return strip_accents(normalize_header(value))
+
+
+_MANAGER_KEYS = frozenset(_index_key(h) for h in MANAGER_HEADERS)
+
+
+def is_manager_header(header):
+    """True when a column heading names the person's manager.
+
+    Exact on the normalised, accent-free heading — never fuzzy: "Reporting
+    manager Mail ID" is one edit-distance family away from "Reporting manager
+    name" and is the manager's EMAIL, and "Hiring Manager" is a different
+    person. A multi-sheet row key ("Consolidated|Reporting Manager") is judged
+    by its heading part."""
+    text = str(header or '')
+    if '|' in text:
+        text = text.rsplit('|', 1)[1]
+    return _index_key(text) in _MANAGER_KEYS
+
+
+def is_manager_email_header(header):
+    """True for the column that carries the manager's email address
+    ("Reporting manager Mail ID", "Master Reporting Manager mail ID")."""
+    text = str(header or '')
+    if '|' in text:
+        text = text.rsplit('|', 1)[1]
+    words = set(_index_key(text).split())
+    return 'manager' in words and bool(words & {'mail', 'email'}) \
+        and 'hiring' not in words
 
 
 # --------------------------------------------------------------------------
