@@ -2948,3 +2948,33 @@ msgstr "· mã thẻ"
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "· has left"
 msgstr "· đã nghỉ việc"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "noticed %s"
+msgstr "đã thấy lúc %s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "noticed yesterday %s"
+msgstr "đã thấy hôm qua lúc %s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Its punches arrive by file"
+msgstr "Lượt chấm của máy được gửi bằng tệp"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Its punches arrive by file · 1 person on the machine"
+msgstr "Lượt chấm của máy được gửi bằng tệp · 1 người trên máy"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Its punches arrive by file · %s people on the machine"
+msgstr "Lượt chấm của máy được gửi bằng tệp · %s người trên máy"

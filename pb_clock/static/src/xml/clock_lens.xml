@@ -371,6 +371,9 @@
                 <span><b t-esc="fmtN(dv.punches_today)"/> today</span>
                 <span class="muted">last <t t-esc="deviceLast(dv)"/></span>
               </div>
+              <div class="pbck-dev__line is-grey" t-if="fileLine(dv)">
+                <span t-out="ic('upload', 12)"/><span t-esc="fileLine(dv)"/>
+              </div>
               <div class="pbck-bf" t-if="dv.backfill">
                 <div class="pbck-bf__bar"><i t-att-style="backfillStyle(dv.backfill.pct)"/></div>
                 <div class="pbck-bf__say"><span class="spin" t-out="ic('loader', 12)"/><span t-esc="backfillLine(dv)"/></div>

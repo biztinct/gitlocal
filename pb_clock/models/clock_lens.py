@@ -329,6 +329,7 @@ class PbClockLens(models.AbstractModel):
                 'allowed': d.allowed, 'last_punch_at': self._dt(d.last_punch_at),
                 'punches_today': today, 'punches_total': total,
                 'state': d.state, 'listening': d.kind == 'terminal' and d._listening(),
+                'users_count': d.users_count or 0,
             }
             row['backfill'] = self._backfill(d, total)
             if row['listening']:

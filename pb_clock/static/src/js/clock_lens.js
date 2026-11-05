@@ -276,16 +276,16 @@ export class ClockLens extends Component {
         const n = (this.attention.muted || []).length;
         return n === 1 ? _t("1 muted for a week") : _t("%s muted for a week", n);
     }
-    /** "since 14:02" / "since yesterday 14:02" / "since Tue 04 Nov" */
+    /** when the watcher first noticed it: "noticed 14:02" / "noticed yesterday 14:02" */
     sinceLabel(it) {
         void this.state.tick;
         const d = fromUtc(it.since);
         if (!d) { return ""; }
         const today = new Date();
         const yest = new Date(); yest.setDate(today.getDate() - 1);
-        if (d.toDateString() === today.toDateString()) { return _t("since %s", hhmm(d)); }
-        if (d.toDateString() === yest.toDateString()) { return _t("since yesterday %s", hhmm(d)); }
-        return _t("since %s", d.toLocaleDateString([], { weekday: "short", day: "2-digit", month: "short" }));
+        if (d.toDateString() === today.toDateString()) { return _t("noticed %s", hhmm(d)); }
+        if (d.toDateString() === yest.toDateString()) { return _t("noticed yesterday %s", hhmm(d)); }
+        return _t("noticed %s", d.toLocaleDateString([], { weekday: "short", day: "2-digit", month: "short" }));
     }
     doorLabel(it) {
         const b = it.door && it.door.block;
@@ -476,6 +476,14 @@ export class ClockLens extends Component {
         return null;
     }
     tipMenu() { return _t("More for this machine"); }
+    /** a machine let in whose punches come by file (no live connection) */
+    fileLine(dv) {
+        if (dv.kind !== "terminal" || dv.listening) { return ""; }
+        const n = dv.users_count || 0;
+        if (!n) { return _t("Its punches arrive by file"); }
+        return n === 1 ? _t("Its punches arrive by file · 1 person on the machine")
+                       : _t("Its punches arrive by file · %s people on the machine", this.fmtN(n));
+    }
     /** CLOCK-3 §6: "Receiving history: 42,300 punches so far · 18,900 waiting
      *  to pair · about 25 minutes left". */
     backfillLine(dv) {
