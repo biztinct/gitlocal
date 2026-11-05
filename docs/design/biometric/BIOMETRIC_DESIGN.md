@@ -344,7 +344,7 @@ PC's own time zone setting for conversion.
 | Phase | Scope | Value on its own |
 |---|---|---|
 | CLOCK-1 | `pb_clock` cloud: ledger, employee clock code + mapping screen, pairing engine → `hr.attendance`, `'device'` source, **local-day fix for grid/packet**, file upload of raw punches (Excel/CSV/attlog.dat) | Client can upload exports and get paid hours immediately |
-| CLOCK-2 | The client's route, decided by the questionnaire: **either** shared ADMS receiver (serial→tenant registry, `OK: n` acks, serial allow-list) **or** intake API + pairing code + Bridge v1 (service, queue, heartbeat, installer) with the client's actual recipe + generic SQL | Automatic sync for this client |
+| CLOCK-2 | **DECIDED 2026-11-05: the shared ADMS receiver** (serial→tenant registry, `OK: n` acks, serial allow-list, time-sync in the handshake, HTTPS first with a per-tenant plain-HTTP fallback host if the owner allows it — §12.4). Plus a one-off **Mitaco `.mdb` import** (Access, via the file-upload path with an `mdb-export`/`pyodbc`-free reader: `access-parser` or an Excel export from Mitaco) for history from the period start. The Bridge moves to CLOCK-5. | Automatic sync for Sudima, no PC dependency |
 | CLOCK-3 | Health screen + cockpit card + alerts + late-punch-after-approval exceptions + nightly re-check | Trustworthy for payroll |
 | CLOCK-4 | More recipes: eTimeTrackLite/att2000/BioTime/Wise Eye/CrossChex, ZK direct, Hikvision ISAPI, local ADMS receiver, auto-detect | Sell to the next client without custom work |
 | CLOCK-5 (optional) | Whichever of ADMS receiver / Bridge was not built in CLOCK-2; remote re-sync by date range from the web screen; late/early minutes into payslip inputs | Covers every client shape; lateness deductions |
@@ -373,15 +373,18 @@ installer/service code base — Fable reviews its token handling directly.
 13. Wrong / revoked token → uniform 401, nothing written.
 14. No "Odoo" string anywhere in installer, tray app, screens, emails.
 
-## 8. Open facts (closed by the client questionnaire)
+## 8. Open facts — CLOSED 2026-11-05 by the first client (see §12)
 
-Terminal brand/model/firmware and whether it has a cloud-server (ADMS) menu;
-the PC software name/version; its DB engine and location; whether it clears
-logs from the terminal after download; whether the PC runs 24×7; internet
-and proxy; Windows version/RAM/bitness; admin rights; card number = employee
-code?; shifts incl. night shifts; break punching; IN/OUT keys used; number of
-sites/terminals/employees; time zone(s); pay-period cut-off; history start
-date; IT and vendor contacts.
+The questionnaire came back from Sudima Panels VN on 2026-11-04. Every
+item below is answered in §12; the route for CLOCK-2 is decided (ADMS).
+
+Originally open: terminal brand/model/firmware and whether it has a
+cloud-server (ADMS) menu; the PC software name/version; its DB engine and
+location; whether it clears logs from the terminal after download; whether
+the PC runs 24×7; internet and proxy; Windows version/RAM/bitness; admin
+rights; card number = employee code?; shifts incl. night shifts; break
+punching; IN/OUT keys used; number of sites/terminals/employees; time
+zone(s); pay-period cut-off; history start date; IT and vendor contacts.
 
 ## 9. Non-goals
 
@@ -407,3 +410,122 @@ zkteco-poller (github paKymoK), HRMS eSSL integration doc (github
 sunilsoni101290/HRMS), zk-protocol (github adrobinoga), pyzk, HTTP PUSH SDK
 2.0.1, Suprema support articles, ipcamtalk ISAPI threads, Odoo BioTime doc.
 Unverified items are marked in §4.3 and must be checked on a real install.
+
+## 12. Client A — Sudima Panels VN (questionnaire returned 2026-11-04)
+
+Source files (NOT in the repo — personal data; kept in `SUDIMA/`, excluded via
+`.git/info/exclude`): `Attendance_Machine_Questions_EN_VI (SUDIMA).docx`
+(50 answers + 8 embedded screenshots), `Attendance machine (SUDIMA).xlsx`
+(14 photos: fronts + device-info screens). Owner summary (plain English):
+https://claude.ai/artifact/J1d7CppsQNDLSYDhX4Vrg6
+
+### 12.1 Terminals — all ZKTeco OEM (MAC OUI `00:17:61`), ZK firmware menus
+
+| Site | Model | Serial (last 4; full list in the client file) | Board | Algo | Note |
+|---|---|---|---|---|---|
+| Factory 1 #1 | 4000TID-C | …0149 | ZMM200_TFT | Finger VX10.0 | MCU 23 |
+| Factory 1 #2 | FA110 | …0652 | ZMM510_TFT | Finger VX10.0 / Face VX3.5 | face+finger |
+| Factory 2 | 4000TID-C | …0362 | ZMM200_TFT | Finger VX10.0 | |
+| Factory 3 | 4000TID-C | …0251 (blurry) | ZMM200_TFT | Finger VX10.0 | re-photograph |
+| Factory 4 #1 | FA110 | …0546 | ZMM510_TFT | Finger VX10.0 / Face VX3.5 | |
+| Factory 4 #2 | FA110 | …0727 | ZMM510_TFT | Finger VX10.0 / Face VX3.5 | |
+| New office | 4000TID-C | …0254 | **ZMM100_TFT** | **Finger VX9.0** | oldest; ADMS menu unconfirmed |
+
+Client wrote "five"; photos show seven. Factory 1 label photos are swapped
+relative to their captions; table above is reconciled by the front photos.
+
+The returned **Comm › Cloud Server** screenshot ("Cài đặt máy chủ đám mây":
+server type, enable domain name OFF, server address `0.0.0.0`, port `8081`,
+proxy OFF, **HTTPS ON**) is the standard ZK PUSH (iclock/ADMS) config page →
+P1 route is available at least on the ZMM510/ZMM200 units. Address empty =
+nobody receives their pushes today. Device clock photo: 2026-11-04 09:46:33,
+24 h, `YYYY-MM-DD`; front photos show FA110s at 08:52 and 4000TID-Cs at 08:54
+taken within minutes — clocks agree. Rare power cuts; built-in battery.
+
+### 12.2 PC + software
+
+- **Mitaco 5 v2** (MitaPro). Data: `D:\MAY CHAM CONG\Data\MITADATA.mdb`
+  (Access/Jet). Manual **Download once a day**; **does not clear** the
+  terminal after download (terminal history intact; ~100k log capacity ≈
+  60 days at 800 staff × 2 punches). Supplier **Khang Việt Cường**
+  installed it, no longer supports, charges per change.
+- PC (hostname in the client file): Windows 11 **Home** 25H2 build
+  26200.9711, x64, i5-11400, 16 GB, 88/477 GB used. **On Mon–Sat 07:30–16:30,
+  Sun 07:30–13:30 only; shared by all staff; Trend Micro.** "Five computers"
+  have the program (unclear whether one DB or five — follow-up asked).
+- Mitaco's daily sheet (pasted into the answers) shows `Mã NV | Ngày | Lần 1 |
+  Lần 2` = first/last punch per calendar day. Night-shift employee 227
+  (CA DEM): 26/10 `19:18 —`, 27/10 `7:36 19:15` → Mitaco splits a night shift
+  across two calendar days. Confirms §3.3's work-day window is required.
+
+### 12.3 Workforce + rules (feed §3.3 / §3.4 parameters)
+
+- 600–800 punching employees, growing. **Terminal user id = Payobook employee
+  code**, one id on every terminal, never reused. New starters enrolled same
+  day by each workshop's HR. Contractors punch too (few) → `unmatched`, never
+  paid. Non-punchers (boss's driver, hardware packaging, rental truck) use a
+  signed confirmation → unchanged, outside pb_clock.
+- Shifts: day 07:30→16:30/18:30/19:30/20:30/22:00/**04:00+1**; night
+  16:30→01:30+1, 16:30→04:30+1, 19:30→04:30+1, 19:30→07:30+1. Night shifts
+  cross midnight → work-day window must tolerate a 20.5 h span (07:30→04:00).
+  Pairing default for Sudima: work-day starts 05:00 local; first punch in,
+  last punch out; duplicate-tap window 2 min.
+- Lunch 11:30–12:30 or 11:45–12:45 **unpaid**; staff "go out the gate during
+  break" (whether they tap is a follow-up). Normal day = 2 punches. Break
+  deduction is a rule, not punch-driven.
+- No rounding. OT = after shift end. Late → loses attendance bonus (needs
+  late-minutes per day → CLOCK-5 scope confirmed useful). Forgotten punch →
+  signed confirmation; approver = General Manager.
+- Pay period = calendar month; attendance final on the 1st; history from
+  period start; **avoid start/end of month** for setup; screen share after
+  15:00. Approvals for cloud/software: "will check with Sashi" (IT).
+- Time zone: all sites Vietnam (UTC+7) — §3.3 local-day fix is mandatory.
+
+### 12.4 Route decision for CLOCK-2 and the engineering consequences
+
+**ADMS receiver (P1) is the route.** Reasons: all terminals are ZK-firmware
+with the Cloud Server page; PC is off nights/Sundays and shared; supplier is
+hostile to change; Mitaco keeps polling over TCP 4370 in parallel (PUSH and
+SDK pulls coexist on ZK firmware), so there is no cut-over risk.
+
+Consequences for the handovers:
+
+1. **Serial allow-list** seeded with the 7 serials above; unknown `SN` →
+   `OK` with no persistence? **No** — refuse (HTTP 403) and log; a silent OK
+   would let a stranger's terminal believe it delivered.
+2. **Handshake** (`GET /iclock/cdata?SN=…&options=all`) must return
+   `ServerTZ`/time so terminals sync their clock from us (§9 non-goal
+   "no time sync in v1" is **relaxed** for ADMS: it is free in the protocol
+   and removes the clock-drift risk).
+3. **HTTPS first, HTTP fallback host** (owner decision pending): ZK TLS
+   stacks on 2015–2019 firmware may not negotiate modern chains. Design:
+   `clock.<tenant>.payobook.com` (TLS) and `clock-plain.<tenant>…` (port 80)
+   both route to the same controller; the plain host is enabled per tenant
+   by a flag and carries only `SN`, user id, timestamp, verify type.
+4. **Handle both record layouts**: ZMM100/ZMM200 send the legacy
+   `ATTLOG` tab-separated `PIN\tTIME\tSTATUS\tVERIFY[\tWORKCODE…]`; ZMM510
+   the same, sometimes with extra columns. Parse by position, tolerate
+   extras. `OPERLOG`, `USERINFO`, `BIODATA`, face templates → acknowledge and
+   drop (never store biometrics).
+5. **Backfill**: after first registration send `DATA QUERY ATTLOG
+   StartTime=<period start> EndTime=<now>` (firmware-dependent; if ignored,
+   fall back to the Mitaco `.mdb` import). Keep `dedup_key =
+   sha1(SN|PIN|TIME)` so backfill + live overlap is harmless.
+6. **Mitaco `.mdb` reader** for history and for the New-office fallback:
+   first inspect the schema live (table names unknown; Zoho-style
+   `Attendance(employeeID,eventTime,…)` not guaranteed). Read-only copy of
+   the file (`copy` then open the copy; Jet locks are per-process) — if the
+   schema is awkward, accept Mitaco's **Excel export** through the CLOCK-1
+   upload instead (it already has first/last punch per day; mark rows as
+   `source=mitaco_export`, trust lower than raw punches).
+7. **Tenant**: Sudima needs its own tenant/hostname before setup day;
+   changing it later = re-typing 7 terminals.
+8. Health (CLOCK-3) terminal-level: last-seen per SN, punch-time vs
+   receive-time skew > 5 min → alert; silent terminal > 6 h on a working
+   day → alert.
+
+### 12.5 Follow-ups sent to the client (2026-11-05)
+
+Confirm 7 terminals; Comm-menu photos for every 4000TID-C (esp. New office
+ZMM100); clear Factory 3 label; menu admin password owner; "five computers"
+= one DB or five; break tapping; second night break; Sashi call.
