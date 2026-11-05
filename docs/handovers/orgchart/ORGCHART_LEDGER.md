@@ -515,7 +515,7 @@ the closeout as an owner question, not into a phase.
   and processes it at once sees a partial file and trusted rize Vietnam's
   emails (the screen-check guard refused the 2 resulting writes). Real
   imports load all rows before processing; scripts must too.
-* G43 (MANAGERCOL, pre-existing, NOT fixed): **`_coerce_mapped_value`'s
+* G43 (MANAGERCOL, pre-existing; FIXED 2026-11-05 by IMPORT-GENDER, see IMPORT_GENDER_FIX_REPORT.md — `_description_selection`, not `field.selection(record)`): **`_coerce_mapped_value`'s
   selection branch calls `field.selection(record.env)`**; on Odoo 19
   `hr.employee.marital` / `sex` are related to the version and their selection
   is `lambda model: …`, so any Marital status / Gender cell raises
@@ -574,3 +574,16 @@ the closeout as an owner question, not into a phase.
   so deployers see it and wait; a deployer must check for an open START of
   ANY kind (DATA included), not only deploy STARTs, and for running
   `odoo-bin shell` processes (`ps -eo pid,etime,args | grep "odoo-bin shel[l]"`).
+* G53 (IMPORT-GENDER): **every 2026-10 Rize import was "use once"**
+  (`one_time = true`), which skips the employee writeback — so a writeback
+  crash shows up only on an UPDATING import. To prove a writeback fix on a
+  copy, replay the file into a new batch with `one_time = false`. And run
+  any `odoo-bin shell` job detached (`systemd-run`, output to a file): an ssh
+  drop breaks a foreground shell's stdout mid-run.
+* G54 (IMPORT-GENDER): **never stage a shared module from HEAD without
+  checking for other sessions' WIP commits in it** (`git log <your
+  commit>..HEAD -- <module>`). On 2026-11-05 HEAD carried PDR P1's unproven
+  `f253c2942` in `pb_hr_payroll_formula`; the deploy was staged from
+  `git archive 503279518 -- pb_hr_payroll_formula`, and the staged tree was
+  diffed against the live one to prove it was live + this fix only.
+
