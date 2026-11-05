@@ -23,4 +23,32 @@
         <field name="interval_type">minutes</field>
         <field name="active" eval="True"/>
     </record>
+
+    <!-- CLOCK-3 THE WATCHER: every 15 minutes, one company at a time, raises,
+         refreshes and resolves pb.clock.alert rows and sends the two emails
+         (the 08:00 summary, the immediate "a machine stopped" note). Same
+         `in env` guard as the pairing job (GR25). Template database: OFF,
+         its id appended to pb_tenants.template_active_crons (ledger G3). -->
+    <record id="cron_watch_clocks" model="ir.cron">
+        <field name="name">Time clocks: watch machines and days</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.clock.alert']._cron_watch() if 'pb.clock.alert' in env else None</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- CLOCK-3 §5 THE NIGHTLY RE-CHECK: one job for every company; it does
+         the work for a company only inside that company's night (02:30–06:00
+         local) and once a day, so every 15 minutes costs a clock read. -->
+    <record id="cron_recheck_clocks" model="ir.cron">
+        <field name="name">Time clocks: nightly re-check</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.clock.recheck']._cron_recheck() if 'pb.clock.recheck' in env else None</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
 </odoo>

@@ -7,3 +7,5 @@ access_pb_clock_device_manager,pb.clock.device manager,model_pb_clock_device,hr_
 access_pb_clock_device_system,pb.clock.device system,model_pb_clock_device,base.group_system,1,1,1,1
 access_pb_clock_command_officer,pb.clock.command officer,model_pb_clock_command,hr_attendance.group_hr_attendance_officer,1,0,0,0
 access_pb_clock_command_system,pb.clock.command system,model_pb_clock_command,base.group_system,1,1,1,1
+access_pb_clock_alert_officer,pb.clock.alert officer,model_pb_clock_alert,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_clock_alert_system,pb.clock.alert system,model_pb_clock_alert,base.group_system,1,1,1,1

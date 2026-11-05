@@ -22,6 +22,7 @@ _OFFICER = 'hr_attendance.group_hr_attendance_officer'
 _MANAGER = 'hr_attendance.group_hr_attendance_manager'
 _RECENT_PAGE = 200
 _QUIET_AFTER = timedelta(hours=2)
+_BACKFILL_MIN = 200     # waiting punches on one machine before "Receiving history" shows
 
 STATE_CHIP = {
     'new': ('waiting', 'slate'),
@@ -135,6 +136,7 @@ class PbClockLens(models.AbstractModel):
                 [('company_id', 'in', self._company_ids()),
                  ('state', 'in', ('new', 'matched'))]), 0),
             'settings': self._safe(self._settings, {}),
+            'recheck': self._safe(self._recheck, {'at': '', 'fixed': 0}),
             'focus_codes': [str(c) for c in (codes or [])][:50],
             'pending': pending,
             'zones': list(pytz.common_timezones) if pending else [],
@@ -142,7 +144,73 @@ class PbClockLens(models.AbstractModel):
             'missing_checkout': self._safe(lambda: self._missing_checkout(),
                                            {'rows': [], 'total': 0}),
             'address': self._safe(self._address, {}),
+            # CLOCK-3: the Attention strip at the very top
+            'attention': self._safe(lambda: self._attention(now, devices),
+                                    {'items': [], 'muted': [], 'count': 0}),
         }
+
+    @api.model
+    def _attention(self, now, devices=None):
+        """Open alerts as strip rows + the muted ones (a manager can bring
+        them back). A READ — the 15-minute watcher writes the alerts."""
+        Alert = self.env['pb.clock.alert']
+        cids = self._company_ids()
+        items = Alert._items(cids, now)
+        muted = Alert.sudo().search([('company_id', 'in', cids), ('state', '=', 'muted')],
+                                    order='muted_until', limit=50)
+        muted = muted.with_context(lang=self.env.lang)
+        backfill = []
+        for dv in (devices if devices is not None else self._devices(now)):
+            bf = dv.get('backfill')
+            if bf:
+                backfill.append({'device_id': dv['id'], 'name': dv['name'], 'pct': bf['pct']})
+        return {
+            'items': items,
+            'backfill': backfill,
+            'count': len(items),
+            'muted': [{'id': a.id, 'text': a._sentence(now),
+                       'until': self._dt(a.muted_until)} for a in muted],
+            'checked_at': self._dt(max(Alert.sudo().search(
+                [('company_id', 'in', cids)], order='last_seen_at desc',
+                limit=1).mapped('last_seen_at') or [False])),
+        }
+
+    @api.model
+    def _rewatch(self):
+        """After a write that can clear an alert (Allow, Ignore, assign…),
+        look again at once rather than in up to 15 minutes. Never mails."""
+        try:
+            with self.env.cr.savepoint():
+                self.env['pb.clock.alert'].sudo()._watch(
+                    company_ids=self._company_ids(), mail=False)
+        except Exception:  # noqa: BLE001 — the write itself already succeeded
+            _logger.warning("Time clocks: re-checking alerts failed", exc_info=True)
+
+    @api.model
+    def mute_alerts(self, alert_ids):
+        """Mute for a week (manager)."""
+        if not self._is_manager():
+            return {'error': _("Only attendance managers can mute an alert.")}
+        rows = self.env['pb.clock.alert'].sudo().browse(
+            [int(i) for i in (alert_ids or [])]).exists().filtered(
+            lambda a: a.company_id.id in self._company_ids())
+        if not rows:
+            return {'error': _("That alert has already cleared. Refresh and look again.")}
+        done = rows._mute()
+        return {'ok': True, 'message': (
+            _("Muted for a week. It comes back after that if it still needs attention.")
+            if done else _("That alert has already cleared."))}
+
+    @api.model
+    def unmute_alerts(self, alert_ids):
+        if not self._is_manager():
+            return {'error': _("Only attendance managers can bring an alert back.")}
+        rows = self.env['pb.clock.alert'].sudo().browse(
+            [int(i) for i in (alert_ids or [])]).exists().filtered(
+            lambda a: a.company_id.id in self._company_ids())
+        rows._unmute()
+        self._rewatch()
+        return {'ok': True, 'message': _("Back on the list.")}
 
     @api.model
     def _settings(self):
@@ -150,7 +218,15 @@ class PbClockLens(models.AbstractModel):
         return {'max_span_h': c.pb_clock_max_span_h,
                 'double_tap_min': c.pb_clock_double_tap_min,
                 'trust_direction': c.pb_clock_trust_direction,
-                'allow_plain': c.pb_clock_allow_plain}
+                'allow_plain': c.pb_clock_allow_plain,
+                'alert_mail': c.pb_clock_alert_mail}
+
+    @api.model
+    def _recheck(self):
+        """CLOCK-3 §5: "Last full re-check: today 02:31 · 0 days changed"."""
+        c = self.env.company
+        return {'at': self._dt(c.pb_clock_last_recheck_at),
+                'fixed': c.pb_clock_last_recheck_fixed or 0}
 
     @api.model
     def _address(self):
@@ -254,6 +330,7 @@ class PbClockLens(models.AbstractModel):
                 'punches_today': today, 'punches_total': total,
                 'state': d.state, 'listening': d.kind == 'terminal' and d._listening(),
             }
+            row['backfill'] = self._backfill(d, total)
             if row['listening']:
                 last_cmd = self.env['pb.clock.command'].sudo().search(
                     [('device_id', '=', d.id), ('kind', '!=', 'set_time')],
@@ -283,6 +360,24 @@ class PbClockLens(models.AbstractModel):
             out.append(row)
         out.sort(key=lambda r: (r['kind'] == 'upload', r['name'].lower()))
         return out
+
+    @api.model
+    def _backfill(self, device, received):
+        """CLOCK-3 §6: "Receiving history: 42 300 punches so far · 18 900
+        waiting to pair · about 25 minutes left". False unless a real backlog
+        waits on this machine (a live push pairs in seconds and never shows)."""
+        waiting = self.env['pb.clock.punch'].sudo().search_count(
+            [('device_id', '=', device.id), ('state', 'in', ('new', 'matched'))])
+        if waiting < _BACKFILL_MIN:
+            return False
+        expected = max(device.attlog_count or 0, received or 0, 1)
+        done = max((received or 0) - waiting, 0)
+        rate = self.env['pb.clock.pairing']._rate_per_min()
+        minutes = int(round(waiting / rate)) if rate else None
+        return {'received': received or 0, 'waiting': waiting,
+                'expected': expected if device.attlog_count else 0,
+                'pct': int(min(99, done * 100 // expected)),
+                'minutes_left': max(1, minutes) if minutes is not None else None}
 
     @api.model
     def _working_today(self, local_today):
@@ -513,6 +608,7 @@ class PbClockLens(models.AbstractModel):
                 if current != code:
                     emp.write({'pb_clock_code': code})
                 n = self._repair_code_backlog(self._company_ids(), code, emp)
+            self._rewatch()
         except ValidationError as exc:
             return {'error': str(exc.args[0] if exc.args else exc)}
         except Exception as exc:  # noqa: BLE001
@@ -606,6 +702,7 @@ class PbClockLens(models.AbstractModel):
                 held += res['held']
             except Exception:  # noqa: BLE001
                 _logger.warning("Time clocks: re-pair %s failed", eid, exc_info=True)
+        self._rewatch()
         if not days and not held:
             msg = _("Nothing changed — the week already matches its punches.")
         else:
@@ -619,7 +716,7 @@ class PbClockLens(models.AbstractModel):
 
     @api.model
     def save_settings(self, max_span_h, double_tap_min, trust_direction,
-                      allow_plain=None):
+                      allow_plain=None, alert_mail=None):
         if not self._is_manager():
             return {'error': _("Only attendance managers can change these settings.")}
         try:
@@ -635,6 +732,8 @@ class PbClockLens(models.AbstractModel):
                 'pb_clock_trust_direction': bool(trust_direction)}
         if allow_plain is not None:
             vals['pb_clock_allow_plain'] = bool(allow_plain)
+        if alert_mail is not None:
+            vals['pb_clock_alert_mail'] = bool(alert_mail)
         self.env.company.sudo().write(vals)
         return {'ok': True, 'settings': self._settings(),
                 'message': _("Saved. Re-pair this week to apply it to punches "
@@ -737,6 +836,7 @@ class PbClockLens(models.AbstractModel):
         except Exception as exc:  # noqa: BLE001
             _logger.warning("Time clocks: allow failed", exc_info=True)
             return {'error': _("The machine could not be let in: %s") % exc}
+        self._rewatch()
         return {'ok': True, 'device_id': target.id, 'message': _(
             "%(name)s is connected. Its punches from %(day)s on will arrive in "
             "the next minute or two.", name=name,
@@ -748,6 +848,7 @@ class PbClockLens(models.AbstractModel):
         if err:
             return err
         device.write({'state': 'blocked'})
+        self._rewatch()
         return {'ok': True, 'message': _(
             "%s will be ignored. It can be let in again under Ignored machines.")
             % (device.serial or device.name)}
@@ -758,6 +859,7 @@ class PbClockLens(models.AbstractModel):
         if err:
             return err
         device.write({'state': 'pending', 'allowed_at': False})
+        self._rewatch()
         return {'ok': True, 'message': _(
             "%s is asking to connect again. Press Allow when you are ready.")
             % (device.serial or device.name)}

@@ -26,3 +26,24 @@ class ResCompany(models.Model):
         help='Lets an older machine send over a plain web connection when it '
              'cannot make a secure one. Only the number, the time and the '
              'machine’s serial travel.')
+
+    pb_clock_alert_mail = fields.Boolean(
+        string='Email the attendance managers', default=True,
+        help='A summary at 08:00 when something needs attention, and a note '
+             'when a machine stops calling in on a working day.')
+
+    # ---- CLOCK-3: the watcher's own memory (never edited by a person)
+    pb_clock_backlog_since = fields.Datetime(
+        string='Pairing behind since', readonly=True, copy=False,
+        help='When more than 20,000 punches first waited to be paired. Cleared '
+             'when fewer than 1,000 wait.')
+    pb_clock_digest_sent_on = fields.Date(
+        string='Time clock summary sent on', readonly=True, copy=False)
+    pb_clock_last_recheck_at = fields.Datetime(
+        string='Last full re-check', readonly=True, copy=False,
+        help='When the nightly re-check last rebuilt the last 35 days of '
+             'time-clock days from their punches.')
+    pb_clock_last_recheck_fixed = fields.Integer(
+        string='Days the last re-check changed', readonly=True, copy=False)
+    pb_clock_recheck_on = fields.Date(
+        string='Re-checked on (local day)', readonly=True, copy=False)

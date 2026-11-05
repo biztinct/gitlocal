@@ -6,3 +6,6 @@ from . import test_iclock
 from . import test_commands
 from . import test_d11
 from . import test_iclock_http
+from . import test_alerts
+from . import test_recheck
+from . import test_backfill

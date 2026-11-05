@@ -31,7 +31,9 @@ NEVER INLINE (rule 12). Intake paths only add ledger rows and `_trigger()` the
 cron; this is the only code that turns a punch into attendance.
 """
 
+import json
 import logging
+import time
 from datetime import datetime, timedelta
 
 from odoo import _, api, fields, models
@@ -44,6 +46,7 @@ _OLDEST = datetime(2015, 1, 1)
 # the states the day-builder recomputes (outliers and unmatched stay out)
 _ACTIVE = ('matched', 'paired', 'middle', 'held', 'ignored_duplicate_tap')
 _OFFICER_GROUP = 'hr_attendance.group_hr_attendance_officer'
+_RUNS_PARAM = 'pb_clock.pair_runs'
 
 
 def _AUTO_CLOSED_NOTE():
@@ -66,8 +69,14 @@ class PbClockPairing(models.AbstractModel):
     # ------------------------------------------------------------ entry points
     @api.model
     def _cron_run(self):
-        """The scheduled job body. Runs one bounded batch; if the batch was
-        full, asks to run again right away rather than waiting five minutes."""
+        """The scheduled job body. Runs one bounded batch, then (CLOCK-3 §6)
+        asks to run again right away while punches still wait — so a 100 000
+        line history finishes in minutes, not 20 runs × 5 minutes. It only
+        re-triggers on `new` punches (each run turns every one it reads into
+        something else), never on a `matched` leftover a failing person would
+        keep there: the job cannot spin."""
+        started = time.monotonic()
+        t0 = fields.Datetime.now()
         res = self.sudo().run()
         if 'pb.clock.command' in self.env:
             try:
@@ -75,11 +84,52 @@ class PbClockPairing(models.AbstractModel):
                     self.env['pb.clock.command'].sudo()._sweep()
             except Exception:  # noqa: BLE001 — the sweep never stops pairing
                 _logger.warning("pb_clock: command sweep failed", exc_info=True)
-        if res.get('more'):
+        n = res.get('read', 0)
+        if n:
+            self._remember_run(t0, time.monotonic() - started, n)
+        left = res.get('more') or bool(self.env['pb.clock.punch'].sudo().search_count(
+            [('state', '=', 'new')], limit=1))
+        if left:
             cron = self.env.ref('pb_clock.cron_pair_punches', raise_if_not_found=False)
             if cron:
                 cron.sudo()._trigger()
+        res['retriggered'] = bool(left)
         return res
+
+    # ------------------------------------------------------------ throughput (CLOCK-3 §6)
+    @api.model
+    def _remember_run(self, started_at, secs, n):
+        """Keep the last 5 runs that did something: [start, seconds, punches]."""
+        ICP = self.env['ir.config_parameter'].sudo()
+        try:
+            runs = json.loads(ICP.get_param(_RUNS_PARAM) or '[]')
+        except ValueError:
+            runs = []
+        runs = (runs + [[fields.Datetime.to_string(started_at), round(secs, 2), int(n)]])[-5:]
+        ICP.set_param(_RUNS_PARAM, json.dumps(runs))
+
+    @api.model
+    def _rate_per_min(self):
+        """Punches paired per minute over the last 5 runs, gaps between runs
+        included (a re-triggered run waits for the scheduler). None when
+        nothing was measured."""
+        try:
+            runs = json.loads(self.env['ir.config_parameter'].sudo().get_param(
+                _RUNS_PARAM) or '[]')
+        except ValueError:
+            return None
+        if not runs:
+            return None
+        total = sum(int(r[2]) for r in runs)
+        if len(runs) >= 2:
+            first = fields.Datetime.to_datetime(runs[0][0])
+            last = fields.Datetime.to_datetime(runs[-1][0])
+            span = (last - first).total_seconds() + float(runs[-1][1])
+        else:
+            span = float(runs[0][1])
+        if span <= 0 or not total:
+            return None
+        return total / span * 60.0
 
     @api.model
     def _trigger_soon(self):
@@ -109,6 +159,7 @@ class PbClockPairing(models.AbstractModel):
             dom.append(('company_id', 'in', list(company_ids)))
         new = Punch.search(dom, order='punch_utc, id', limit=limit)
         summary['more'] = len(new) >= limit
+        summary['read'] = len(new)
 
         # 1. outliers
         outliers = new.filtered(

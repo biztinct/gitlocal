@@ -49,12 +49,15 @@ approval, and the pay run.
         'pb_import_kit',
         'pb_wf_kit',
         'pb_sidebar',
+        'pb_hub',          # CLOCK-3: hub_place (Learn knows it is on Time clocks)
     ],
     'data': [
         'security/ir.model.access.csv',
         'security/pb_clock_security.xml',
         'data/ir_cron.xml',
+        'data/mail_template_data.xml',
         'views/hr_employee_views.xml',
+        'views/clock_actions.xml',
     ],
     'assets': {
         'web.assets_backend': [
