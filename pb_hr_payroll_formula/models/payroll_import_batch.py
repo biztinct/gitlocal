@@ -2083,7 +2083,25 @@ class HrPayrollImportBatch(models.Model):
             return parsed if isinstance(parsed, datetime) else None
 
         if field_type == 'selection':
-            selection = field.selection(record.env) if callable(field.selection) else field.selection
+            # IMPORT-GENDER — ASK THE FIELD, DO NOT CALL ITS SELECTION BY HAND.
+            #
+            # `field.selection` takes three shapes: a list, a method NAME (a
+            # str), or a callable that expects a MODEL. This branch used to call
+            # it with `record.env`, which only ever worked by luck. On Odoo 19
+            # every `hr.employee` field that lives on the version (`sex`,
+            # `marital`, …) is a related field, and a related selection is
+            # `lambda model: …` — handed an Environment it raised "'Environment'
+            # object has no attribute 'env'" and failed the WHOLE row, payslip
+            # included, for any file with a Gender or Marital Status value
+            # (latent since SC-5 resolved this to the Python field, 2026-08-31).
+            # A method-name selection (`hr.version.marital` itself) was a str,
+            # so it was walked one character at a time and refused everything.
+            # `_description_selection` handles all three shapes; it is what
+            # `_mapped_record_value` already uses for the read-back.
+            if hasattr(field, '_description_selection'):
+                selection = field._description_selection(record.env)
+            else:
+                selection = field.selection if isinstance(field.selection, (list, tuple)) else []
             allowed = []
             for entry in (selection or []):
                 if isinstance(entry, (list, tuple)):
@@ -2116,7 +2134,29 @@ class HrPayrollImportBatch(models.Model):
             for key in allowed:
                 if str(key).strip().lower() == probe:
                     return key
-            return labels.get(probe)
+            if probe in labels:
+                return labels[probe]
+            # IMPORT-GENDER — the labels above are in the importing user's
+            # language. A pay data file is written in the CLIENT's words, which
+            # need not be the same language: a Vietnamese file may say "Nữ"
+            # while the person importing it works in English. Accept the label
+            # in any language this database has switched on — still an exact
+            # (case/space-insensitive) label, never a guess.
+            if hasattr(field, '_description_selection') and record is not None:
+                current = record.env.lang or 'en_US'
+                for code, _name in self.env['res.lang'].get_installed():
+                    if code == current:
+                        continue
+                    try:
+                        other = field._description_selection(
+                            record.with_context(lang=code).env)
+                    except Exception:      # noqa: BLE001 — a label is a nicety
+                        continue
+                    for entry in other or []:
+                        if isinstance(entry, (list, tuple)) and len(entry) >= 2 \
+                                and str(entry[1]).strip().lower() == probe:
+                            return entry[0]
+            return None
 
         return str(value)
 
