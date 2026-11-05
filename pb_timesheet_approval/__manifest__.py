@@ -26,8 +26,12 @@ WHAT IT NEVER DOES
   It does not decide overtime. Ceilings, bonus hours and the overtime rules are
   exactly what they were; the packet records what those rules decided and asks
   for one sign-off on the week as a whole.
+
+1.1.0 (CLOCK-1): the week holds the person's LOCAL days, the same days the
+weekly grid shows. No data changes. A week already sent in or approved keeps
+the snapshot it was signed off on, so history does not move.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

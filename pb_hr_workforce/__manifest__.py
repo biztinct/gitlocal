@@ -1,7 +1,7 @@
 {
     'name': 'Workforce Management',
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.4.22.0',
+    'version': '19.0.4.23.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -14,6 +14,11 @@ Workforce Management — Deputy & Rippling-Style HR Tools
 * **Timecards** — Visual Gantt-style timeline showing attendance bars on hour-axis grid
 * **Overtime Requests** — Configurable OT rules with approval workflow
 * **Workforce Dashboard** — KPI cards and Chart.js analytics
+
+4.23.0 (CLOCK-1): a day is the person's LOCAL day. The weekly grid now places
+a punch on the calendar day of its check-in in the person's own time zone (in
+Vietnam a 06:30 start used to show on the previous day). No data changes: rows
+the grid made were always created on the local day; only the reading moved.
     """,
     'author': 'Payobook',
     'website': 'https://payobook.com',

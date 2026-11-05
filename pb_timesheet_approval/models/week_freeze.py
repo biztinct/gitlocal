@@ -111,26 +111,35 @@ class HrAttendance(models.Model):
     _inherit = 'hr.attendance'
 
     def _pb_week_pairs(self, extra_check_in=None):
+        """[(employee_id, local_day)] — CLOCK-1: the employee-LOCAL day, the
+        same day the grid cell and the packet show (ledger rule 11)."""
         pairs = []
+        cache = {}
         for attendance in self:
             employee = attendance.employee_id
             if not employee:
                 continue
             if attendance.check_in:
-                pairs.append((employee.id, attendance.check_in.date()))
+                pairs.append((employee.id,
+                              attendance._pb_local_day(cache)))
             if extra_check_in:
-                pairs.append((employee.id, extra_check_in.date()))
+                pairs.append((employee.id, self._pb_local_day_of(
+                    employee, extra_check_in, cache)))
         return pairs
 
     @api.model_create_multi
     def create(self, vals_list):
         if not self._pb_freeze_bypass():
             pairs = []
+            cache = {}
+            Emp = self.env['hr.employee'].sudo()
             for vals in vals_list:
                 employee_id = vals.get('employee_id')
                 check_in = self._pb_as_datetime(vals.get('check_in'))
                 if employee_id and check_in:
-                    pairs.append((int(employee_id), check_in.date()))
+                    employee = Emp.browse(int(employee_id))
+                    pairs.append((int(employee_id), self._pb_local_day_of(
+                        employee, check_in, cache)))
             self.env['pb.timesheet.freeze'].check_open(pairs, _("Adding a punch"))
         return super().create(vals_list)
 

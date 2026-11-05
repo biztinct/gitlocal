@@ -315,7 +315,11 @@ class HrAttendanceCorrection(models.Model):
                 if att.employee_id != rec.employee_id:
                     raise ValidationError(_(
                         "The target punch belongs to a different employee."))
-                if att.check_in and rec.date and att.check_in.date() != rec.date:
+                # CLOCK-1: the correction's day is the employee-LOCAL day (the
+                # exception feed raises it on that day); a VN 06:30 punch sits
+                # on the previous UTC date and used to be refused here.
+                if (att.check_in and rec.date
+                        and att._pb_local_day() != rec.date):
                     raise ValidationError(_(
                         "The target punch is not on the correction's day."))
             if (rec.new_check_in and rec.new_check_out

@@ -39,7 +39,7 @@ deliberately a second dimension beside grace, not a re-use of it — grace decid
 who was late, tolerance decides what payroll may see unreviewed.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

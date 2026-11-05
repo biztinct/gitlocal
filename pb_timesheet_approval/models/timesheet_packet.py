@@ -26,7 +26,7 @@ itself in the middle of its own apply.
 import hashlib
 import json
 import logging
-from datetime import datetime, time, timedelta
+from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
@@ -211,21 +211,25 @@ class PbTimesheetPacket(models.Model):
         return packet
 
     def _week_bounds(self):
-        """[start, end] as datetimes, in the grid's own convention.
+        """(start_utc, end_utc): the SEARCH window for this week's punches.
 
-        The weekly grid keys a punch by `check_in.date()` — the stored (UTC)
-        day — and the packet has to agree with the grid cell for cell, or a
-        person would be asked to approve a week that does not look like the one
-        they are reading. `pb.wf.lock` keys by the employee-LOCAL day instead;
-        the two answers differ only for punches within the timezone offset of
-        midnight, and the lock keeps its own convention because a closed day is
-        a statement about the factory's calendar rather than about this grid.
+        The grid and the packet now both key a punch by the employee-LOCAL day
+        (CLOCK-1, ledger rule 11), like the `pb.wf.lock` day lock and the
+        exception feed — so a VN 06:30 check-in (23:30 UTC the day before)
+        belongs to the day the person worked, on the grid and in the packet
+        alike, cell for cell. This window is the exact UTC span of the seven
+        local days; `_scan_week` still buckets by `_pb_local_day()` and drops
+        anything whose local day falls outside the week.
+
+        History does not move: a week sent in or approved under the old UTC
+        keying keeps its frozen snapshot (`_refresh_snapshot` skips
+        pending/approved packets).
         """
         self.ensure_one()
         start = self.week_start
         end = start + timedelta(days=6)
-        return (datetime.combine(start, time.min),
-                datetime.combine(end, time.max))
+        return self.env['hr.attendance']._pb_week_window_utc(
+            self.employee_id, start, end)
 
     def _refresh_snapshot(self):
         """Re-read the seven days. Refused once the week is frozen."""
@@ -262,9 +266,14 @@ class PbTimesheetPacket(models.Model):
         Grid = self.env['hr.attendance.weekentry']
 
         by_day = {}
+        tz_cache = {}
+        week_last = self.week_start + timedelta(days=6)
         for att in attendances:
-            by_day.setdefault(att.check_in.date(), Att.browse())
-            by_day[att.check_in.date()] |= att
+            day = att._pb_local_day(tz_cache)
+            if not day or day < self.week_start or day > week_last:
+                continue
+            by_day.setdefault(day, Att.browse())
+            by_day[day] |= att
         req_by_day = {}
         for req in requests:
             req_by_day.setdefault(req.date, {})[req.overtime_type] = req
@@ -841,16 +850,26 @@ class PbTimesheetPacket(models.Model):
         state_of = {(p.employee_id.id, p.week_start): p.state for p in rows}
         # Which (person, week) actually has hours — one query over the punches
         # rather than a packet per person per week that nobody ever built.
+        # CLOCK-1: the week of a punch is the week of its employee-LOCAL day,
+        # the same answer `_scan_week` gives.
+        Att = self.env['hr.attendance']
+        Emp = self.env['hr.employee'].sudo()
+        employees = Emp.browse(employee_ids)
+        last_day = weeks[-1] + timedelta(days=6)
+        lo_dt, hi_dt = Att._pb_week_window_utc(employees, weeks[0], last_day)
         self.env.cr.execute("""
-            SELECT employee_id, MIN(check_in)::date, COUNT(*)
+            SELECT employee_id, check_in
             FROM hr_attendance
             WHERE employee_id IN %s AND check_in >= %s AND check_in <= %s
-            GROUP BY employee_id, check_in::date
-        """, (tuple(employee_ids),
-              datetime.combine(weeks[0], time.min),
-              datetime.combine(weeks[-1] + timedelta(days=6), time.max)))
+        """, (tuple(employee_ids), lo_dt, hi_dt))
         worked = set()
-        for employee_id, day, _count in self.env.cr.fetchall():
+        tz_cache = {}
+        emp_by_id = {e.id: e for e in employees}
+        for employee_id, check_in in self.env.cr.fetchall():
+            day = Att._pb_local_day_of(emp_by_id.get(employee_id), check_in,
+                                       tz_cache)
+            if not day or day < weeks[0] or day > last_day:
+                continue
             worked.add((employee_id, self._monday(day)))
         out = []
         for key in sorted(worked):

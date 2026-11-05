@@ -193,20 +193,29 @@ class AttendanceWeekEntry(models.TransientModel):
             })
 
         # --- batch read: attendances for the week (1 query) ---
-        ws_dt = datetime.combine(week_start, time.min)
-        we_dt = datetime.combine(week_end, time.max)
+        # CLOCK-1: a cell is the EMPLOYEE-LOCAL day (ledger rule 11) — the
+        # search window is widened to every zone in the grid and each punch is
+        # bucketed by its local day; punches whose local day falls outside the
+        # week are dropped. Before, a VN 06:30 check-in (23:30 UTC the day
+        # before) showed in the previous day's cell.
+        Att = self.env['hr.attendance']
+        ws_dt, we_dt = Att._pb_week_window_utc(emps, week_start, week_end)
         # sudo: reads must live in the same permission world as the sudo write
         # path — the officer record rules are own-only, so a plain officer
         # would otherwise see blank/locked cells and zeroed ceilings for every
         # other employee (review F2). Access is gated by _require_officer and
         # employees are company-scoped in _employees().
-        atts = self.env['hr.attendance'].sudo().search([
+        atts = Att.sudo().search([
             ('employee_id', 'in', emps.ids),
             ('check_in', '>=', ws_dt), ('check_in', '<=', we_dt),
         ])
         att_by_cell = {}  # (emp_id, iso) -> list of atts
+        tz_cache = {}
         for a in atts:
-            key = (a.employee_id.id, a.check_in.date().isoformat())
+            day = a._pb_local_day(tz_cache)
+            if not day or day < week_start or day > week_end:
+                continue
+            key = (a.employee_id.id, day.isoformat())
             att_by_cell.setdefault(key, self.env['hr.attendance'])
             att_by_cell[key] |= a
 
@@ -465,16 +474,24 @@ class AttendanceWeekEntry(models.TransientModel):
 
         # batch reads (sudo — access already gated + scoped above; su gives an
         # accurate multi-record / stale view regardless of row-level rules)
+        # CLOCK-1: keyed by the employee-LOCAL day, exactly like the read in
+        # get_week_entries, so the stale token and the `multi` check see the
+        # same rows the cell showed.
         Att = self.env['hr.attendance'].sudo()
+        lo_dt, hi_dt = Att._pb_week_window_utc(allowed, d_min, d_max)
         atts = Att.search([
             ('employee_id', 'in', emp_ids),
-            ('check_in', '>=', datetime.combine(d_min, time.min)),
-            ('check_in', '<=', datetime.combine(d_max, time.max)),
+            ('check_in', '>=', lo_dt),
+            ('check_in', '<=', hi_dt),
         ])
         att_map = {}
+        tz_cache = {}
         for a in atts:
-            att_map.setdefault((a.employee_id.id, a.check_in.date()), Att.browse())
-            att_map[(a.employee_id.id, a.check_in.date())] |= a
+            day = a._pb_local_day(tz_cache)
+            if not day or day < d_min or day > d_max:
+                continue
+            att_map.setdefault((a.employee_id.id, day), Att.browse())
+            att_map[(a.employee_id.id, day)] |= a
 
         shifts = self.env['hr.shift.planning'].sudo().search([
             ('employee_id', 'in', emp_ids),

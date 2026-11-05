@@ -27,11 +27,11 @@ For one employee-week, per day:
 ``worked_hours`` subtracts the calendar lunch break while the grid round-trips
 a lossless span, so an 8 h entry can read back as 7.0 actual. Showing both
 side by side is the POINT of the drawer — it is where an officer sees why a
-timesheet and a payslip disagree. Days are keyed by ``check_in.date()``, again
+timesheet and a payslip disagree. Days are keyed by the employee-LOCAL day, again
 matching the Week-Grid lens exactly.
 """
 
-from datetime import date, datetime, time, timedelta
+from datetime import date, timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
@@ -297,17 +297,23 @@ class PbTimeHub(models.AbstractModel):
             sched_by_day[iso] = sched_by_day.get(iso, 0.0) + (s.planned_hours or 0.0)
             planned_by_day.setdefault(iso, []).append(s)
 
-        # --- worked: one query. Keyed by check_in.date() — IDENTICAL to the
-        # Week-Grid lens (attendance_weekentry.get_week_entries), so `entered`
-        # here is literally the cell the officer edits over there.
-        atts = self.env['hr.attendance'].sudo().search([
+        # --- worked: one query. Keyed by the employee-LOCAL day — IDENTICAL to
+        # the Week-Grid lens (attendance_weekentry.get_week_entries, CLOCK-1),
+        # so `entered` here is literally the cell the officer edits over there.
+        Att = self.env['hr.attendance']
+        lo_dt, hi_dt = Att._pb_week_window_utc(emp, df, dt)
+        atts = Att.sudo().search([
             ('employee_id', '=', emp.id),
-            ('check_in', '>=', datetime.combine(df, time.min)),
-            ('check_in', '<=', datetime.combine(dt, time.max)),
+            ('check_in', '>=', lo_dt),
+            ('check_in', '<=', hi_dt),
         ])
         att_by_day = {}
+        tz_cache = {}
         for a in atts:
-            att_by_day.setdefault(a.check_in.date().isoformat(), []).append(a)
+            day = a._pb_local_day(tz_cache)
+            if not day or day < df or day > dt:
+                continue
+            att_by_day.setdefault(day.isoformat(), []).append(a)
 
         trip_days = self._trip_days(emp, df, dt)
         holidays = WeekEntry._holidays(df, dt)
