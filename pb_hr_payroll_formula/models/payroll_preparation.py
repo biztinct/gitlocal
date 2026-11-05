@@ -153,10 +153,23 @@ class PayrollPreparation(models.Model):
         future = editable and stored and rule.id in cards and card.get('ttype') != 'selection'
         return bool(editable), bool(future)
 
-    def _raw(self, signed=False):
+    def _raw(self, signed=False, employees=None):
+        """Source rows before saved corrections. ``employees`` narrows the rows
+        (PDR S3 previews) and defaults to everyone in the preparation.
+
+        PDR S1 — inside one memoised call the same read is answered once: a
+        save reads the sources, stores the correction, then rebuilds the
+        worksheet from the very same source rows. Every caller gets its own
+        deep copy, because corrections are applied to the rows in place."""
+        employees = self.employee_ids if employees is None else employees
+        review = json.loads(self.review_json) if signed else {}
+        key = ('preparation_raw', self.id, bool(signed), tuple(employees.ids),
+               _stamp(review.get('certification') or {}) if signed else '')
+        return deepcopy(self.config_id._application_memoize(key, lambda: self._raw_compute(signed, employees, review)))
+
+    def _raw_compute(self, signed, employees, review):
         if signed:
-            review = json.loads(self.review_json)
-            return self.config_id.application_preflight(self.employee_ids.ids, self.date_from, self.date_to,
+            return self.config_id.application_preflight(employees.ids, self.date_from, self.date_to,
                                                        review.get('certification') or {})
         # Provisional source values are useful before the manager signs coverage.
         # This private read does not certify anything and never feeds a payslip.
@@ -166,7 +179,7 @@ class PayrollPreparation(models.Model):
         cert = {'channels': {k: True for k in ('leave', 'overtime', 'adjustments', 'timesheets')},
                 'employee_ids': sorted(self.employee_ids.ids), 'preview_only': True}
         rows = [self.config_id._application_employee_inputs(e, self.date_from, self.date_to, cert)
-                for e in self.employee_ids]
+                for e in employees]
         blockers = [dict(b, employee_id=r['employee_id'], employee=r['name']) for r in rows for b in r['blockers']]
         return {'employees': rows, 'blockers': blockers, 'ok': not blockers}
 
@@ -222,8 +235,8 @@ class PayrollPreparation(models.Model):
                             'key':cell['key'],'status':'resolved','evidence':evidence}
         return self.config_id._application_refresh_input_requirements(row)
 
-    def _resolved(self, signed=False):
-        preview = self._raw(signed)
+    def _resolved(self, signed=False, employees=None):
+        preview = self._raw(signed, employees)
         edits = json.loads(self.edits_json)
         for row in preview['employees']:
             self._apply_row(row, edits)
@@ -236,9 +249,98 @@ class PayrollPreparation(models.Model):
         return _stamp({'settings': self.config_id._application_settings_stamp(),
                        'people': preview['employees'], 'edits': json.loads(self.edits_json)})
 
+    def _result_rules(self):
+        return self.config_id.rule_ids.filtered(lambda r: r.column_type == 'formula' and
+                    (r.appears_on_payslip or r.column_role == 'payroll' and r.net_role != 'info'))
+
+    def _mark_cells(self, row, by_code, cards, edits):
+        """Worksheet flags of one person's input cells (editable, optional, issue, tone)."""
+        row['cells'] = {}
+        for cell in row['inputs']:
+            rule = by_code.get(cell['code'])
+            if not rule:
+                continue
+            editable, future = self._capabilities(rule, cell, cards)
+            optional = (self._optional(rule) or self._settlement_zero(rule) or cell.get('not_applicable')) and cell['status'] in ('missing', 'zero_confirmed')
+            edit = edits.get('%s:%s' % (row['employee_id'], rule.code))
+            issue = cell['status'] == 'conflict' or (cell['status'] == 'missing' and cell['required'] and not optional)
+            cell.update(editable=editable, future=future, optional=bool(optional), issue=bool(issue),
+                settlement_zero=bool(optional and self._settlement_zero(rule)),
+                tone='amber' if cell['status'] == 'conflict' else 'red' if issue else 'edited' if edit else 'normal',
+                edit=edit or False, rule_id=rule.id)
+            row['cells'][cell['code']] = cell
+        return row
+
+    def _preview_inputs(self, row, by_code):
+        """The values a calculation preview runs on: optional blanks count as 0 / ''."""
+        preview_values = dict(row['values'])
+        for code, cell in row['cells'].items():
+            if cell['optional']:
+                preview_values[code] = '' if by_code[code].value_kind == 'text' else 0
+        return preview_values
+
+    def _calculate(self, preview_values):
+        """One person's read-only calculation preview, or ``None`` on a formula error.
+
+        The payslip evaluator refreshes stored dependency diagnostics. A
+        worksheet preview must never write rules or invalidate its own signed
+        source fingerprint. Reuse the read-only evaluator."""
+        probe = self.env['hr.formula.sample.data'].new({'config_id': self.config_id.id})
+        errors = {}
+        calculated = probe._evaluate_rules_with_dependencies(preview_values, readonly=True, errors=errors)
+        return None if errors else calculated
+
+    # ------------------------------------------------------------------
+    # PDR D3 — final tax month reminder (never a blocker, never an issue)
+    # ------------------------------------------------------------------
+    def _final_tax_month(self, row):
+        """'december', 'leaving' or '' for one person in this period."""
+        if self.date_to.month == 12:
+            return 'december'
+        contract = self.env['hr.contract'].sudo().browse(row.get('contract_id') or []).exists()
+        if contract.date_end and self.date_from <= contract.date_end <= self.date_to:
+            return 'leaving'
+        last_day = next((c.get('value') for c in row['inputs'] if c.get('key') == 'exit.approved_lwd'
+                         and c.get('status') in ('resolved', 'zero_confirmed') and c.get('value')), None)
+        if last_day is None:
+            employee = self.env['hr.employee'].sudo().browse(row['employee_id'])
+            if 'departure_date' in employee._fields:
+                last_day = employee.departure_date
+        last_day = fields.Date.to_date(last_day) if last_day else None
+        if last_day and self.date_from <= last_day <= self.date_to:
+            return 'leaving'
+        return ''
+
+    def _mark_reminders(self, row, flagged):
+        """Calm reminder on blank / 0 flagged cells in the person's final tax month."""
+        row['reminders'] = []
+        if not flagged:
+            return row
+        why = self._final_tax_month(row)
+        if not why:
+            return row
+        when = _('December') if why == 'december' else _('last month of work')
+        for code, rule in flagged.items():
+            cell = row['cells'].get(code)
+            if not cell or cell['issue'] or cell.get('value') not in (None, '', 0, 0.0):
+                continue
+            cell.update(remind=True, tone='remind' if cell['tone'] == 'normal' else cell['tone'],
+                reason=_('Final tax month for this person (%(when)s). Set %(name)s to Yes (1) and fill in '
+                         'the year-to-date figures.', when=when, name=rule.name))
+            row['reminders'].append(code)
+        return row
+
     def workspace(self):
         self._access()
+        with self.config_id._application_memo():
+            return self._workspace()
+
+    def _workspace(self):
         preview = self._resolved(signed=self.state in ('reviewed', 'sealed'))
+        # PDR S1 — the signed rows above ARE _resolved(True) when reviewed:
+        # fingerprint them before the worksheet flags are written into them.
+        ready = bool(self.state == 'reviewed' and preview['ok']
+                     and self.reviewed_hash == self._fingerprint(preview))
         rules = self._rules()
         cards = self._cards()
         edits = json.loads(self.edits_json)
@@ -248,44 +350,21 @@ class PayrollPreparation(models.Model):
             columns.append({'id': rule.id, 'code': rule.code, 'name': rule.name, 'kind': rule.value_kind,
                 'group': 'adjustments' if key.startswith('period.input.') else 'time' if key.startswith('period.') else 'records',
                 'optional': bool(self._optional(rule) or self._settlement_zero(rule)), 'future': rule.id in cards})
-        results = self.config_id.rule_ids.filtered(lambda r: r.column_type == 'formula' and
-                    (r.appears_on_payslip or r.column_role == 'payroll' and r.net_role != 'info'))
+        results = self._result_rules()
         for rule in results:
             columns.append({'id':rule.id,'code':rule.code,'name':rule.name,'kind':rule.value_kind,
                             'group':'results','optional':False,'future':False,'formula':rule.excel_formula or ''})
         by_code = {r.code: r for r in rules}
+        flagged = {r.code: r for r in rules if r.application_final_period_flag}
         for row in preview['employees']:
-            row['cells'] = {}
-            for cell in row['inputs']:
-                rule = by_code.get(cell['code'])
-                if not rule:
-                    continue
-                editable, future = self._capabilities(rule, cell, cards)
-                optional = (self._optional(rule) or self._settlement_zero(rule) or cell.get('not_applicable')) and cell['status'] in ('missing', 'zero_confirmed')
-                edit = edits.get('%s:%s' % (row['employee_id'], rule.code))
-                issue = cell['status'] == 'conflict' or (cell['status'] == 'missing' and cell['required'] and not optional)
-                cell.update(editable=editable, future=future, optional=bool(optional), issue=bool(issue),
-                    settlement_zero=bool(optional and self._settlement_zero(rule)),
-                    tone='amber' if cell['status'] == 'conflict' else 'red' if issue else 'edited' if edit else 'normal',
-                    edit=edit or False, rule_id=rule.id)
-                row['cells'][cell['code']] = cell
-            preview_values = dict(row['values'])
-            for code, cell in row['cells'].items():
-                if cell['optional']:
-                    preview_values[code] = '' if by_code[code].value_kind == 'text' else 0
-            calculated = {}
-            if results and not any(c['issue'] for c in row['cells'].values()):
-                # The payslip evaluator refreshes stored dependency diagnostics.
-                # A worksheet preview must never write rules or invalidate its
-                # own signed source fingerprint. Reuse the read-only evaluator.
-                probe = self.env['hr.formula.sample.data'].new({'config_id': self.config_id.id})
-                errors = {}
-                calculated = probe._evaluate_rules_with_dependencies(preview_values, readonly=True, errors=errors)
-                if errors:
-                    calculated = {}
+            self._mark_cells(row, by_code, cards, edits)
+            self._mark_reminders(row, flagged)
+            # PDR S3 — previews are worked out afterwards by preview_rows().
+            blocked = any(c['issue'] for c in row['cells'].values())
             for rule in results:
                 row['cells'][rule.code] = {'code':rule.code,'label':rule.name,'rule_id':rule.id,
-                    'value':calculated.get(rule.code),'status':'preview','editable':False,'future':False,
+                    'value':None,'status':'preview','preview':'blocked' if blocked else 'pending',
+                    'editable':False,'future':False,
                     'optional':False,'issue':False,'tone':'normal','edit':False,'source_owner':'Payroll calculation',
                     'reason':'Preview only. Final payroll is computed after the signed period review.'}
             # Global period review is one checklist, never repeated for each person.
@@ -297,20 +376,62 @@ class PayrollPreparation(models.Model):
         for row in preview['employees']:
             cells = {code: {k: v for k, v in cell.items() if k not in ('evidence', 'source_ids')}
                      for code, cell in row['cells'].items()}
-            people.append({'employee_id': row['employee_id'], 'name': row['name'], 'cells': cells, 'issues': row['issues']})
+            people.append({'employee_id': row['employee_id'], 'name': row['name'], 'cells': cells,
+                           'issues': row['issues'], 'reminders': row['reminders']})
         return {'id': self.id, 'revision': self.revision, 'state': self.state, 'name': self.config_id.name,
                 'period': [str(self.date_from), str(self.date_to)], 'currency': self.config_id.currency_id.name,
                 'columns': columns, 'people': people, 'global_issues': global_issues,
                 'issues': issue_count, 'affected': sum(any(c['issue'] for c in p['cells'].values()) for p in preview['employees']),
                 'changes': len(edits), 'optional': sum(c['optional'] for p in preview['employees'] for c in p['cells'].values()),
                 'settlement_zeros': sum(c.get('settlement_zero', False) for p in preview['employees'] for c in p['cells'].values()),
-                'ready': self.state == 'reviewed' and preview['ok'] and self.reviewed_hash == self._fingerprint(self._resolved(True)),
+                'reminders': sum(len(p['reminders']) for p in people),
+                'reminder_columns': [r.name for r in flagged.values()],
+                'ready': ready,
                 'review': json.loads(self.review_json), 'saved_at': str(self.write_date),
                 'timesheets': self.config_id.payroll_basis == 'timesheet',
                 'history': [{'kind': e.kind, 'at': str(e.create_date), 'user': e.user_id.name,
                              'revision': e.revision, 'data': json.loads(e.payload_json)} for e in self.event_ids.sorted('id', reverse=True)[:30]]}
 
+    def preview_rows(self, revision, employee_ids):
+        """PDR S3 — calculation previews for up to 25 people of this worksheet.
+
+        Computed exactly as the worksheet used to compute them inline: from
+        the corrected source rows, optional blanks as 0 / '', never for a row
+        that still needs attention. Read-only; a stale revision is refused."""
+        self._access()
+        if not isinstance(employee_ids, list) or not employee_ids or len(employee_ids) > 25 \
+                or any(type(e) is not int for e in employee_ids):
+            raise ValidationError(_('Ask for the previews of up to 25 people at a time.'))
+        if revision != self.revision:
+            raise UserError(_('This worksheet changed. Reload it to see the latest previews.'))
+        people = self.employee_ids.filtered(lambda e: e.id in set(employee_ids))
+        if len(people) != len(set(employee_ids)):
+            raise AccessError(_('Previews are only available for the people in this worksheet.'))
+        with self.config_id._application_memo():
+            preview = self._resolved(signed=self.state in ('reviewed', 'sealed'), employees=people)
+            rules = self._rules()
+            by_code = {r.code: r for r in rules}
+            results = self._result_rules()
+            cards = self._cards()
+            edits = json.loads(self.edits_json)
+            answer = {}
+            for row in preview['employees']:
+                self._mark_cells(row, by_code, cards, edits)
+                if any(c['issue'] for c in row['cells'].values()):
+                    answer[row['employee_id']] = {'values': {}, 'error': False, 'blocked': True}
+                    continue
+                calculated = self._calculate(self._preview_inputs(row, by_code)) if results else {}
+                answer[row['employee_id']] = {
+                    'values': {rule.code: (calculated or {}).get(rule.code) for rule in results},
+                    'error': calculated is None, 'blocked': False}
+            return answer
+
     def save_cells(self, revision, mutation, changes):
+        # PDR D4 — one memo for the whole call (nested workspace() shares it).
+        with self.config_id._application_memo():
+            return self._save_cells(revision, mutation, changes)
+
+    def _save_cells(self, revision, mutation, changes):
         self._access(edit=True)
         if not isinstance(mutation, str) or not 8 <= len(mutation) <= 100 or not isinstance(changes, list) or len(changes) > 500:
             raise ValidationError(_('Save up to 500 cells at a time with a unique save reference.'))
@@ -436,6 +557,11 @@ class PayrollPreparation(models.Model):
         return self.workspace()
 
     def review(self, revision, channels, reason):
+        # PDR D4 — one memo for the whole call (nested workspace() shares it).
+        with self.config_id._application_memo():
+            return self._review(revision, channels, reason)
+
+    def _review(self, revision, channels, reason):
         self._lock(revision)
         required = ['leave', 'overtime', 'adjustments'] + (['timesheets'] if self.config_id.payroll_basis == 'timesheet' else [])
         if not isinstance(channels, dict) or any(channels.get(k) is not True for k in required) or not (reason or '').strip():
@@ -468,6 +594,11 @@ class PayrollPreparation(models.Model):
         return self.workspace()
 
     def _assert_scope(self, config, ids, start, end):
+        # PDR D4 — one memo for the whole call (nested workspace() shares it).
+        with self.config_id._application_memo():
+            return self._assert_scope_memo(config, ids, start, end)
+
+    def _assert_scope_memo(self, config, ids, start, end):
         self._access(edit=True)
         if (config != self.config_id or sorted(ids) != sorted(self.employee_ids.ids)
                 or fields.Date.to_date(start) != self.date_from or fields.Date.to_date(end) != self.date_to):

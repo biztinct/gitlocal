@@ -3,6 +3,10 @@ import { Component, useState, onWillStart, useRef, onWillUnmount } from '@odoo/o
 import { Dialog } from '@web/core/dialog/dialog';
 import { useService } from '@web/core/utils/hooks';
 import { ConfirmationDialog } from '@web/core/confirmation_dialog/confirmation_dialog';
+import { ic } from '@pb_import_kit/js/import_icons';
+
+// PDR S3 — previews are worked out after the grid renders, 20 people a call.
+const PREVIEW_BATCH = 20;
 
 export class PayrollReviewDialog extends Component {
     static template = 'pb_payrun_wizard.PayrollReviewDialog';
@@ -13,17 +17,23 @@ export class PayrollReviewDialog extends Component {
         this.grid = useRef('grid'); this.alive = true;
         this.state = useState({data:null, loading:true, saving:false, error:'', query:'', componentQuery:'', filter:'all', group:'all',
             selected:null, detail:null, value:'', reason:'', scope:'run', review:false, history:false, maximized:false,
-            channels:{leave:false,overtime:false,adjustments:false,timesheets:false,settlements:false}, note:'', pending:false});
+            channels:{leave:false,overtime:false,adjustments:false,timesheets:false,settlements:false}, note:'', pending:false,
+            previews:{done:0,total:0}});
+        // Built once: a new markup() per render re-inserts the SVG every redraw.
+        this.icons = {remind: ic('calendarClock', 13), remindLarge: ic('calendarClock', 16), working: ic('loader', 12)};
+        this.previewCache = new Map(); this.previewToken = 0;
         onWillStart(()=>this.load());
-        onWillUnmount(()=>{this.alive=false;});
+        onWillUnmount(()=>{this.alive=false;this.previewToken++;});
     }
     async load() {
         this.state.loading=true;
-        try { this.accept(await this.orm.call('pb.payrun.wizard','open_payroll_review',[this.props.payload])); }
+        try { this.previewCache.clear(); this.accept(await this.orm.call('pb.payrun.wizard','open_payroll_review',[this.props.payload])); }
         catch(e) { this.state.error=e.data?.message||e.message; }
         finally {this.state.loading=false;}
     }
-    accept(data) {
+    accept(data, changedIds=[]) {
+        for(const id of changedIds) this.previewCache.delete(id);
+        this.applyCachedPreviews(data);
         this.state.data=data;
         if(data.review?.certification) this.state.channels={...this.state.channels,...data.review.certification.channels};
         if(data.review?.settlement_no_activity) this.state.channels.settlements=true;
@@ -33,7 +43,58 @@ export class PayrollReviewDialog extends Component {
             const cell=p?.cells[this.state.selected.code];
             if(cell) this.state.selected={...cell,employee_id:p.employee_id,person:p.name};
         }
+        this.fetchPreviews();
     }
+    // ---- PDR S3: calculation previews stream in after the grid ----
+    resultColumns(data=this.state.data) {return (data?.columns||[]).filter(c=>c.group==='results');}
+    isBlocked(person) {return Object.values(person.cells).some(c=>c.preview==='blocked');}
+    fillPreview(person, preview, columns) {
+        for(const col of columns) {
+            const cell=person.cells[col.code]; if(!cell||cell.preview!=='pending')continue;
+            cell.value=preview.values?.[col.code] ?? null; cell.preview='done';
+        }
+        if(this.state.selected?.employee_id===person.employee_id && person.cells[this.state.selected.code]?.preview==='done')
+            this.state.selected={...person.cells[this.state.selected.code],employee_id:person.employee_id,person:person.name};
+    }
+    applyCachedPreviews(data) {
+        const columns=this.resultColumns(data);
+        for(const person of data.people||[]) {
+            const cached=this.previewCache.get(person.employee_id);
+            if(!cached)continue;
+            if(this.isBlocked(person)||cached.blocked){this.previewCache.delete(person.employee_id);continue;}
+            this.fillPreview(person,cached,columns);
+        }
+    }
+    async fetchPreviews() {
+        const token=++this.previewToken, data=this.state.data;
+        if(!data)return;
+        const {id,revision}=data, columns=this.resultColumns(data);
+        const wanted=data.people.filter(p=>Object.values(p.cells).some(c=>c.preview==='pending')).map(p=>p.employee_id);
+        this.state.previews={done:0,total:wanted.length};
+        for(let i=0;i<wanted.length;i+=PREVIEW_BATCH) {
+            const batch=wanted.slice(i,i+PREVIEW_BATCH);
+            let answer;
+            try { answer=await this.orm.silent.call('hr.payroll.preparation','preview_rows',[[id],revision,batch]); }
+            catch { answer=null; }   // a changed worksheet answers with its own refresh
+            if(!this.alive||token!==this.previewToken||this.state.data?.revision!==revision)return;
+            if(!answer)break;
+            for(const [key,preview] of Object.entries(answer)) {
+                const employeeId=Number(key);
+                this.previewCache.set(employeeId,preview);
+                const person=this.state.data.people.find(p=>p.employee_id===employeeId);
+                if(person&&!preview.blocked)this.fillPreview(person,preview,columns);
+            }
+            this.state.previews.done=Math.min(wanted.length,i+batch.length);
+        }
+        if(token===this.previewToken)this.state.previews={done:0,total:0};
+    }
+    get previewText() {const p=this.state.previews;return p.total?`Working out previews · ${p.done} of ${p.total}`:'';}
+    get finalMonthPeople() {return (this.state.data?.people||[]).filter(p=>p.reminders?.length).length;}
+    get reminderText() {
+        const n=this.finalMonthPeople, names=(this.state.data?.reminder_columns||[]).join(', ')||'the final tax period';
+        return `${n} ${n===1?'person is':'people are'} in their final tax month — check ${names} and the year-to-date figures.`;
+    }
+    showFinalMonth() {if(this.state.pending)return;this.state.query='';this.state.filter='final';}
     searchText(value) {return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLocaleLowerCase();}
     get groupedColumns() {return (this.state.data?.columns||[]).filter(c=>this.state.group==='all'||c.group===this.state.group);}
     get columns() {
@@ -51,13 +112,14 @@ export class PayrollReviewDialog extends Component {
     get people() {
         const q=this.searchText(this.state.query);
         return (this.state.data?.people||[]).filter(p=>(!q||this.searchText(p.name).includes(q))&&
-            (this.state.filter==='all'||Object.values(p.cells).some(c=>this.state.filter==='issues'?c.issue:c.edit)));
+            (this.state.filter==='all'||(this.state.filter==='final'?p.reminders?.length:
+             Object.values(p.cells).some(c=>this.state.filter==='issues'?c.issue:c.edit))));
     }
     get selected() {return this.state.selected;}
     get pendingFuture() { return (this.state.data?.people||[]).flatMap(p=>Object.values(p.cells)).filter(c=>c.edit?.scope==='future'&&!c.edit?.proposal_id).length; }
     get canReview() {return this.state.data&&!this.state.data.issues&&!this.state.data.global_issues.length&&!this.pendingFuture&&!this.state.saving&&!this.state.pending;}
     display(cell) { return cell?.optional?'':cell?.value===null||cell?.value===undefined?'':String(cell.value); }
-    status(cell) {return cell?.status==='preview'?'Calculation preview':cell?.issue?(cell.tone==='red'?'! Needs a value':'! Review source'):cell?.edit?'Edited for this run':cell?.not_applicable?'Not used for this employee':cell?.optional?'Optional · left blank':cell?.editable?'From records':'Read only';}
+    status(cell) {return cell?.status==='preview'?(cell.preview==='pending'?'Working out…':'Calculation preview'):cell?.issue?(cell.tone==='red'?'! Needs a value':'! Review source'):cell?.remind?'Final tax month':cell?.edit?'Edited for this run':cell?.not_applicable?'Not used for this employee':cell?.optional?'Optional · left blank':cell?.usual_answer?'Usual answer · no contract line':cell?.editable?'From records':'Read only';}
     async select(person,col) {
         const cell=person.cells[col.code]; if(!cell)return;
         if(this.selected?.employee_id===person.employee_id && this.selected?.code===col.code)return;
@@ -95,11 +157,11 @@ export class PayrollReviewDialog extends Component {
         }));
     }
     changed() {this.state.pending=true;}
-    async transact(method,args=[]) {
+    async transact(method,args=[],changedIds=[]) {
         this.state.saving=true; this.state.error='';
         try {
             const data=await this.orm.call('hr.payroll.preparation',method,[[this.state.data.id],this.state.data.revision,...args]);
-            if(this.alive)this.accept(data);
+            if(this.alive)this.accept(data,changedIds);
             return data;
         } catch(e){if(this.alive)this.state.error=e.data?.message||e.message;return null;}
         finally{if(this.alive)this.state.saving=false;}
@@ -113,13 +175,13 @@ export class PayrollReviewDialog extends Component {
         const cell=this.selected;
         if(this.blankIgnored(cell,this.state.value)){this.state.pending=false;this.state.value=this.display(cell);this.state.error='';return;}
         const data=await this.transact('save_cells',[crypto.randomUUID(),[{employee_id:cell.employee_id,code:cell.code,
-            value:this.state.value,reason:this.state.reason,scope:this.state.scope}]]);
+            value:this.state.value,reason:this.state.reason,scope:this.state.scope}]],[cell.employee_id]);
         if(data){this.state.pending=false;this.state.value=this.display(this.selected);}
     }
     async restore() {
         if(this.state.pending) {this.state.pending=false;this.state.value=this.display(this.selected);this.state.error='';return;}
         const c=this.selected;
-        await this.transact('save_cells',[crypto.randomUUID(),[{employee_id:c.employee_id,code:c.code,restore:true}]]);
+        await this.transact('save_cells',[crypto.randomUUID(),[{employee_id:c.employee_id,code:c.code,restore:true}]],[c.employee_id]);
         this.state.value=this.display(this.selected);
     }
     async paste(person,col,ev) {
@@ -137,7 +199,7 @@ export class PayrollReviewDialog extends Component {
                 changes.push({employee_id:p.employee_id,code:c.code,value,scope:'run',reason:this.state.reason});
             }
         }
-        if(changes.length)await this.transact('save_cells',[crypto.randomUUID(),changes]);
+        if(changes.length)await this.transact('save_cells',[crypto.randomUUID(),changes],[...new Set(changes.map(c=>c.employee_id))]);
     }
     nextIssue() {
         if(this.state.pending){this.state.error='Save or restore the current correction first.';return;}

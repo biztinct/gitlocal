@@ -155,6 +155,12 @@ class HrPayslipFormula(models.Model):
         """
         Compute payslip using formula engine instead of standard salary rules.
         """
+        # PDR D4 — one request memo for the whole batch (scheme-level answers
+        # are shared between payslips; a rule write empties it).
+        with self.formula_config_id._application_memo():
+            return self._pb_compute_sheet_with_formulas()
+
+    def _pb_compute_sheet_with_formulas(self):
         for payslip in self:
             if not payslip.formula_config_id:
                 # Try to find appropriate config
@@ -242,6 +248,14 @@ class HrPayslipFormula(models.Model):
         # Diagnostic writes would invalidate earlier employees in a batch and
         # make an unchanged run fail approval on the next request.
         readonly = hasattr(self, '_application_mode') and self._application_mode()
+        if readonly:
+            # PDR S2 — the same loop over compiled formulas (exact results and
+            # log lines; see formula_program). No writes, as before.
+            from . import formula_program
+            config = rules.config_id
+            steps = (config._pb_formula_steps(rules) if len(config) == 1
+                     else formula_program.build_steps(rules))
+            return formula_program.run_payslip(steps, input_values)
         if not readonly:
             rules._compute_dependencies()
         try:

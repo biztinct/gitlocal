@@ -621,6 +621,15 @@ class HrFormulaSampleData(models.Model):
         if not rules:
             return input_values.copy()
 
+        if readonly:
+            # PDR S2 — the same loop over compiled formulas (exact results,
+            # errors and passes; see formula_program). No writes, as before.
+            from . import formula_program
+            steps = self.config_id._pb_formula_steps(rules)
+            _logger.info("Computing formulas for %d rules with %d input values",
+                         len(steps), len(input_values))
+            return formula_program.run_sample(steps, input_values, errors)
+
         # Refresh dependency metadata to include recent parsing changes.
         if not readonly:
             rules._compute_dependencies()

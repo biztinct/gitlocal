@@ -3,6 +3,7 @@
 This is opt-in. Merely installing it never changes a scheme or a completed run.
 Operational records are read, never approved, repaired or created by payroll.
 """
+import contextlib
 import hashlib
 import json
 import math
@@ -20,6 +21,30 @@ _SEAL = object()
 _SEAL_KEY = 'pb_application_payroll_seal'
 _CHANNELS = frozenset(('leave', 'overtime', 'timesheets', 'adjustments'))
 _READY = ('resolved', 'zero_confirmed')
+_NUMERIC_KINDS = ('money', 'quantity', 'integer', 'rate')
+# PDR D4 — one public call's scheme-level answers live in the cursor's cache
+# (cleared when the cursor closes) under this key, and are removed again by
+# the context manager that installed them. Never a module-level cache.
+_MEMO = 'pb_hr_payroll_formula.app_memo'
+# PDR D2 — the words a contract flag carries when it has no line.
+USUAL_ANSWER_REASON = 'No line on the contract, so this is No (the usual answer).'
+
+
+def application_memo(env, config_id):
+    """The live memo dict of one scheme, or None outside a memoised call."""
+    return env.cr.cache.get((_MEMO, config_id))
+
+
+def drop_application_memo(env, config_ids):
+    """Forget memoised scheme answers after a scheme or rule write.
+
+    The dict stays installed (its owner removes it on exit); only its
+    content goes, so a write inside one call can never serve stale answers.
+    """
+    for config_id in set(config_ids):
+        memo = env.cr.cache.get((_MEMO, config_id))
+        if memo:
+            memo.clear()
 
 
 def _optional_record_input(rule):
@@ -50,12 +75,18 @@ def _date(value):
     return fields.Date.to_date(value)
 
 
-def _application_branches(formula, known, depth=0):
+def _application_branches(formula, known, depth=0, refs=None):
     """Prune only IF branches selected by verified input/literal comparisons.
 
     Unknown predicates retain both branches. No formula or user code is
     executed here; quoted commas/parentheses and nested IFs are preserved.
     Return the controlling input codes as dependencies even after pruning.
+
+    PDR S1 — ``refs``, when given, collects every reference that appears as
+    the left side of an ``IF(ref = literal …)`` / ``IF(ref <> literal …)``
+    predicate, in both the spelling looked up and its row-less spelling.
+    Called with an empty ``known`` it visits every predicate, so the set is
+    exactly the references whose values can change this function's answer.
     """
     if depth > 60:
         return formula, set()
@@ -104,6 +135,8 @@ def _application_branches(formula, known, depth=0):
         if predicate:
             ref, op, literal = predicate.groups()
             ref = ref.replace('$', '').upper()
+            if refs is not None:
+                refs.update((ref, re.sub(r'\d+$', '', ref)))
             source = known.get(ref)
             if source is None:
                 source = known.get(re.sub(r'\d+$', '', ref))
@@ -119,12 +152,12 @@ def _application_branches(formula, known, depth=0):
                     selected = parts[1 if (equal if op == '=' else not equal) else 2]
                     used.add(code)
         if selected is not None:
-            rewritten, controls = _application_branches(selected, known, depth+1)
+            rewritten, controls = _application_branches(selected, known, depth+1, refs)
             out.append('(' + rewritten + ')'); used.update(controls)
         else:
             branches = []
             for part in parts:
-                rewritten, controls = _application_branches(part, known, depth+1)
+                rewritten, controls = _application_branches(part, known, depth+1, refs)
                 branches.append(rewritten); used.update(controls)
             out.append('IF(' + ','.join(branches) + ')')
         index = cursor + 1
@@ -146,6 +179,11 @@ class ApplicationFormulaConfig(models.Model):
         default='calendar', required=True, tracking=True)
     fixed_standard_days = fields.Float(string='Fixed standard days', digits=(16, 4), tracking=True)
 
+    def write(self, vals):
+        result = super().write(vals)
+        drop_application_memo(self.env, self.ids)   # PDR D4
+        return result
+
     @api.constrains('standard_day_basis', 'fixed_standard_days', 'application_data_enabled',
                     'application_effective_from')
     def _check_application_basis(self):
@@ -154,6 +192,96 @@ class ApplicationFormulaConfig(models.Model):
                 raise ValidationError(_('Set the effective date before enabling application payroll.'))
             if config.standard_day_basis == 'fixed' and config.fixed_standard_days <= 0:
                 raise ValidationError(_('Fixed standard days must be greater than zero.'))
+
+    # ------------------------------------------------------------------
+    # PDR D4 — request memo, one public call long
+    # ------------------------------------------------------------------
+    @contextlib.contextmanager
+    def _application_memo(self):
+        """Share scheme-level answers across the people of ONE public call.
+
+        Installs an empty dict per scheme in ``env.cr.cache`` when none is
+        there, and removes on exit only the dicts it installed, so nested
+        calls share the outer one and nothing outlives the outermost call.
+        Rule / scheme writes empty it (``drop_application_memo``).
+        """
+        cache = self.env.cr.cache
+        mine = []
+        for config_id in set(self.ids):
+            key = (_MEMO, config_id)
+            if key not in cache:
+                cache[key] = {}
+                mine.append(key)
+        try:
+            yield
+        finally:
+            for key in mine:
+                cache.pop(key, None)
+
+    def _application_memoize(self, key, compute):
+        """``compute()`` once per memo for this scheme; plain call outside one.
+
+        Keys carry the user and superuser flag of the environment, because a
+        recordset-derived answer may depend on what that environment sees.
+        """
+        memo = application_memo(self.env, self.id) if len(self) == 1 else None
+        if memo is None:
+            return compute()
+        key = (self.env.uid, self.env.su) + tuple(key)
+        try:
+            return memo[key]
+        except KeyError:
+            value = memo[key] = compute()
+            return value
+        except TypeError:       # an unhashable key: never guess, compute
+            return compute()
+
+    def _pb_formula_steps(self, rules):
+        """PDR S2 — the compiled evaluation program for ``rules``, once per memo."""
+        from . import formula_program
+        if len(self) != 1:
+            return formula_program.build_steps(rules)
+        return self._application_memoize(('formula_steps', tuple(rules.ids)),
+                                         lambda: formula_program.build_steps(rules))
+
+    def _application_input_rules(self):
+        ids = self._application_memoize(('input_rule_ids',), lambda: tuple(
+            self.rule_ids.filtered(lambda r: r.column_type == 'input').ids))
+        return self.env['hr.formula.rule'].browse(ids)
+
+    def _application_by_reference(self):
+        """Reference (code or column letter, upper case) -> rule id."""
+        def build():
+            by_reference = {}
+            for rule in self.rule_ids:
+                by_reference[rule.code.upper()] = rule.id
+                by_reference[(rule.column_letter or '').upper()] = rule.id
+            return by_reference
+        return self._application_memoize(('by_reference',), build)
+
+    def _application_predicate_refs(self):
+        """Every reference that controls an IF branch in this scheme."""
+        def build():
+            refs = set()
+            for rule in self.rule_ids:
+                if rule.column_type == 'formula' and rule.excel_formula:
+                    _application_branches(rule.excel_formula, {}, refs=refs)
+            return frozenset(refs)
+        return self._application_memoize(('predicate_refs',), build)
+
+    def _application_usual_no(self, rule):
+        """PDR D2 — a contract flag whose usual answer is "No".
+
+        Numeric contract component, usual value 0 and words that name 0
+        (e.g. ``0=No;1=Yes``). A missing contract line then means 0, exactly
+        as the contract panel treats it (FILLIN D2). Flags whose usual answer
+        is not 0 (BPJS covered = 1) stay missing: a missing line is real.
+        """
+        if not (rule.is_contract_component and rule.value_kind in _NUMERIC_KINDS
+                and not (rule.default_value or 0)):
+            return False
+        from .contract_fill_in import parse_value_labels   # import order: see models/__init__
+        return any(abs(option['value']) < 1e-9 for option in parse_value_labels(rule.value_labels or ''))
 
     def _application_source_catalogue(self):
         """Extension seam: domain modules add typed sources, not arbitrary eval."""
@@ -194,6 +322,11 @@ class ApplicationFormulaConfig(models.Model):
 
     def _application_settings_stamp(self):
         self.ensure_one()
+        # PDR S1 — once per memo (any rule / scheme write empties the memo).
+        return self._application_memoize(('settings_stamp',), self._application_settings_stamp_compute)
+
+    def _application_settings_stamp_compute(self):
+        self.ensure_one()
         return _stamp({
             'scheme': self.id, 'company': self.company_id.id,
             'enabled': self.application_data_enabled,
@@ -223,14 +356,25 @@ class ApplicationFormulaConfig(models.Model):
         tz = pytz.timezone(calendar.tz or 'UTC')
         bounds = lambda d: (tz.localize(datetime.combine(d, time.min)),
                             tz.localize(datetime.combine(d + timedelta(days=1), time.min)))
+        # PDR S1 — a resource-less get_work_hours_count depends only on the
+        # calendar (its attendances, its tz and company-wide leaves: resource
+        # False), so two people on one calendar share each day's answer.
+        hours_memo = self._application_memoize(('work_hours',), dict)
+
+        def work_hours(low, high, compute_leaves):
+            # tzinfo is in the key: aware datetimes compare by instant only.
+            key = (calendar.id, low, high, str(low.tzinfo), str(high.tzinfo), compute_leaves)
+            if key not in hours_memo:
+                hours_memo[key] = calendar.get_work_hours_count(low, high, compute_leaves=compute_leaves)
+            return hours_memo[key]
         first, last = bounds(start)[0], bounds(end)[1]
         utc_start = first.astimezone(pytz.utc).replace(tzinfo=None)
         utc_end = last.astimezone(pytz.utc).replace(tzinfo=None)
         days, cursor = {}, start
         while cursor <= end:
             low, high = bounds(cursor)
-            hours = calendar.get_work_hours_count(low, high, compute_leaves=False)
-            nonholiday = calendar.get_work_hours_count(low, high, compute_leaves=True)
+            hours = work_hours(low, high, False)
+            nonholiday = work_hours(low, high, True)
             eligible = contract.date_start <= cursor and (not contract.date_end or cursor <= contract.date_end)
             days[cursor] = {'hours': hours, 'holiday': max(0., hours - nonholiday),
                             'eligible': eligible, 'paid': 0., 'partial': 0., 'loss': 0.,
@@ -276,7 +420,7 @@ class ApplicationFormulaConfig(models.Model):
                 if left >= right:
                     continue
                 # Public holidays already have their own paid credit; never debit leave twice.
-                hours = calendar.get_work_hours_count(left, right, compute_leaves=True)
+                hours = work_hours(left, right, True)
                 data['leave_hours'] += hours
                 data['loss'] += hours / data['hours'] * (1. - fraction)
                 if fraction == 1:
@@ -453,17 +597,27 @@ class ApplicationFormulaConfig(models.Model):
     def _application_dependency_usage(self, cells):
         # Walk only the dependency closure of pay-affecting formulas. A
         # profile/display formula must not make its HR metadata a pay blocker.
-        by_reference = {}
-        for rule in self.rule_ids:
-            by_reference[rule.code.upper()] = rule
-            by_reference[(rule.column_letter or '').upper()] = rule
+        by_reference = self._application_by_reference()
+        codes = self._application_memoize(('rule_codes',), lambda: {r.id: r.code for r in self.rule_ids})
+        known = {}
+        for ref, rule_id in by_reference.items():
+            code = codes[rule_id]
+            cell = cells.get(code, {})
+            if ref and cell.get('status') in _READY and cell.get('value') is not None:
+                known[ref] = (code.upper(), cell['value'])
+        # PDR S1 — only the values of references that control an IF branch
+        # can change the walk, so they are the exact memo key.
+        controlling = self._application_predicate_refs()
+        key = ('dependency_usage',) + tuple(sorted((ref, known[ref]) for ref in controlling if ref in known))
+        dependencies, inactive = self._application_memoize(key, lambda: self._application_dependency_walk(known))
+        return set(dependencies), set(inactive)
+
+    def _application_dependency_walk(self, known):
+        by_reference = {ref: self.env['hr.formula.rule'].browse(rule_id)
+                        for ref, rule_id in self._application_by_reference().items()}
         pending = list(self.rule_ids.filtered(lambda r: r.column_type == 'formula'
                        and r.column_role == 'payroll' and r.net_role != 'info'))
-        known = {}
-        for ref, rule in by_reference.items():
-            cell = cells.get(rule.code, {})
-            if ref and cell.get('status') in _READY and cell.get('value') is not None:
-                known[ref] = (rule.code.upper(), cell['value'])
+        probe_memo = self._application_memoize(('branch_dependencies',), dict)
         visited, dependencies, inactive_candidates = set(), set(), set()
         while pending:
             formula = pending.pop()
@@ -473,9 +627,12 @@ class ApplicationFormulaConfig(models.Model):
             branch, controls = _application_branches(formula.excel_formula or '', known)
             dependencies.update(controls)
             if branch != formula.excel_formula:
-                probe = self.env['hr.formula.rule'].new({'config_id': self.id, 'name': formula.name,
-                    'code': formula.code, 'column_type': 'formula', 'excel_formula': branch})
-                refs = probe.formula_dependencies or ''
+                probe_key = (formula.id, branch)
+                if probe_key not in probe_memo:
+                    probe = self.env['hr.formula.rule'].new({'config_id': self.id, 'name': formula.name,
+                        'code': formula.code, 'column_type': 'formula', 'excel_formula': branch})
+                    probe_memo[probe_key] = probe.formula_dependencies or ''
+                refs = probe_memo[probe_key]
                 inactive_candidates.update(set((formula.formula_dependencies or '').split(',')) - set(refs.split(',')))
             else:
                 refs = formula.formula_dependencies or ''
@@ -503,7 +660,7 @@ class ApplicationFormulaConfig(models.Model):
         cells = {c['code']: c for c in row['inputs']}
         dependencies, inactive = self._application_dependency_usage(cells)
         row['blockers'] = [b for b in row['blockers'] if b['code'] not in cells]
-        for rule in self.rule_ids.filtered(lambda r: r.column_type == 'input'):
+        for rule in self._application_input_rules():
             cell = cells[rule.code]
             optional_record = _optional_record_input(rule)
             required = not optional_record and bool(rule.application_source_required or
@@ -560,18 +717,22 @@ class ApplicationFormulaConfig(models.Model):
         facts.update(self.with_context(pb_application_run_id=run_id, application_run_id=run_id,
                     pb_application_payslip_id=slip_id, application_payslip_id=slip_id)
                     ._application_domain_values(employee, contract, start, end))
-        catalogue = self._application_source_catalogue()
+        # PDR S1 — scheme-level answers, once per memo (read-only below).
+        catalogue = self._application_memoize(('catalogue',), self._application_source_catalogue)
         zero_keys = set((certification or {}).get('zero_keys') or [])
         inputs = []
-        dependencies, _inactive = self._application_dependency_usage({
-            r.code: {'status': 'resolved', 'value': 1} for r in self.rule_ids
-            if r.application_source_key == 'application.mode'})
-        # Overtime is a payable event even if the scheme has never had a column
-        # for its category. An informational mapping does not constitute pay.
-        paid_source_keys = set(self.rule_ids.filtered(
-            lambda r: r.code.upper() in dependencies or
-            (r.column_type == 'input' and r.column_role == 'payroll' and r.net_role != 'info')
-        ).mapped('application_source_key'))
+
+        def paid_keys():
+            dependencies, _inactive = self._application_dependency_usage({
+                r.code: {'status': 'resolved', 'value': 1} for r in self.rule_ids
+                if r.application_source_key == 'application.mode'})
+            # Overtime is a payable event even if the scheme has never had a column
+            # for its category. An informational mapping does not constitute pay.
+            return frozenset(self.rule_ids.filtered(
+                lambda r: r.code.upper() in dependencies or
+                (r.column_type == 'input' and r.column_role == 'payroll' and r.net_role != 'info')
+            ).mapped('application_source_key'))
+        paid_source_keys = self._application_memoize(('paid_source_keys',), paid_keys)
         for key, fact in facts.items():
             if not (key.startswith('period.ot.') or key == 'period.approved_bonus_hours'):
                 continue
@@ -579,7 +740,7 @@ class ApplicationFormulaConfig(models.Model):
                 blockers.append({'code': '', 'key': key, 'reason': fact.get('reason') or 'Overtime needs review.'})
             elif (fact.get('value') or 0) > 0 and key not in paid_source_keys:
                 blockers.append({'code': '', 'key': key, 'reason': 'Approved overtime has no pay-affecting mapping. Configure its payment component before running payroll.'})
-        for rule in self.rule_ids.filtered(lambda r: r.column_type == 'input'):
+        for rule in self._application_input_rules():
             key = (rule.application_source_key or '').strip()
             if key:
                 # An explicit provider is authoritative even when it cannot
@@ -598,9 +759,18 @@ class ApplicationFormulaConfig(models.Model):
             else:
                 source = provenance.get(rule.code) or {}
                 sourced = source.get('src') in ('employee_field', 'contract_component', 'period') and source.get('via') != 'contract_default'
-                fact = _fact(values.get(rule.code) if sourced else None, 'resolved' if sourced else 'missing',
-                    '' if sourced else 'No mapped application value; defaults and old spreadsheets are not coverage.',
-                    sources=[['legacy_record', source]], provenance=source)
+                if not sourced and self._application_usual_no(rule):
+                    # PDR D2 (FILLIN D2 made visible): no contract line = No.
+                    # Never creates a line; a stored line still wins above.
+                    fact = _fact(0, 'resolved', USUAL_ANSWER_REASON,
+                                 sources=[['usual_answer', rule.id]], usual_answer=True)
+                    fact['usual_answer'] = True
+                    provenance[rule.code] = {'src': 'contract_component', 'via': 'usual_answer',
+                                             'status': 'resolved'}
+                else:
+                    fact = _fact(values.get(rule.code) if sourced else None, 'resolved' if sourced else 'missing',
+                        '' if sourced else 'No mapped application value; defaults and old spreadsheets are not coverage.',
+                        sources=[['legacy_record', source]], provenance=source)
             fact.setdefault('reason', '')
             fact.setdefault('source_ids', [])
             fact.setdefault('evidence', {})
@@ -648,6 +818,10 @@ class ApplicationFormulaConfig(models.Model):
         employees = self.env['hr.employee'].browse(list(set(int(v) for v in employee_ids))).exists()
         if not employees or any(e.company_id != self.company_id for e in employees):
             raise AccessError(_('Choose employees from this payroll company.'))
+        with self._application_memo():
+            return self._application_preflight_rows(employees, start, end, certifications)
+
+    def _application_preflight_rows(self, employees, start, end, certifications):
         rows = [self._application_employee_inputs(e, start, end, certifications or {}) for e in employees]
         blockers = [dict(b, employee_id=r['employee_id'], employee=r['name']) for r in rows for b in r['blockers']]
         all_inputs = [v for r in rows for v in r['inputs']]
@@ -668,6 +842,30 @@ class ApplicationFormulaRule(models.Model):
     application_source_key = fields.Char(string='Application source key', index=True)
     application_source_required = fields.Boolean(string='Require application source', default=False)
     application_source_note = fields.Text(string='Application mapping review note')
+    # PDR D3 — data only in P1 (no Formula Studio control yet).
+    application_final_period_flag = fields.Boolean(
+        string='Final tax month reminder', default=False,
+        help='In a person\'s final tax month (December, or the month they leave), a blank or 0 in this '
+             'column gets a calm reminder on the pay data worksheet. It never blocks the pay run.')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        drop_application_memo(self.env, records.config_id.ids)
+        return records
+
+    def write(self, vals):
+        # PDR D4 — a rule write inside a memoised call must not leave stale answers.
+        configs = self.config_id.ids
+        result = super().write(vals)
+        drop_application_memo(self.env, configs + self.config_id.ids)
+        return result
+
+    def unlink(self):
+        configs = self.config_id.ids
+        result = super().unlink()
+        drop_application_memo(self.env, configs)
+        return result
 
     @api.constrains('application_source_key', 'column_type')
     def _check_application_source(self):
@@ -853,6 +1051,11 @@ class ApplicationPayrollPayslip(models.Model):
         return row['values'], sources
 
     def _application_assert_current(self):
+        # PDR D4 — one memo across the run's payslips (read-only checks).
+        with self.formula_config_id._application_memo():
+            return self._application_assert_current_memo()
+
+    def _application_assert_current_memo(self):
         for slip in self.filtered(lambda s: s._application_mode()):
             slip._application_check_scope(slip.formula_config_id)
             snapshot = slip.application_snapshot_id

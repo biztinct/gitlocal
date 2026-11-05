@@ -408,6 +408,19 @@ class PayrollPeriodInputConfig(models.Model):
         self.ensure_one()
         run_id = self.env.context.get('pb_application_run_id') or self.env.context.get('application_run_id')
         slip_id = self.env.context.get('pb_application_payslip_id') or self.env.context.get('application_payslip_id')
+        Input = self.env['hr.payroll.period.input']
+
+        def period_rows():
+            # PDR S1 — one search for the whole period instead of one per
+            # component per person; grouped in the search's own order.
+            grouped = {}
+            for row in Input.search([
+                    ('company_id', '=', self.company_id.id), ('config_id', '=', self.id),
+                    ('date_from', '=', date_from), ('date_to', '=', date_to),
+                    ('state', 'in', ['draft', 'approved'])]):
+                grouped.setdefault((row.employee_id.id, row.component_id.id), []).append(row.id)
+            return grouped
+        grouped = self._application_memoize(('period_inputs', str(date_from), str(date_to)), period_rows)
         for rule in self.rule_ids.filtered(lambda r: (r.application_source_key or '').startswith('period.input.')):
             key = rule.application_source_key
             fact = {'value': None, 'status': 'missing', 'source_ids': [], 'evidence': {}}
@@ -415,11 +428,7 @@ class PayrollPeriodInputConfig(models.Model):
             if key != 'period.input.' + rule.code:
                 fact.update(status='conflict', reason='Period input source must name this exact component.')
                 continue
-            rows = self.env['hr.payroll.period.input'].search([
-                ('company_id', '=', self.company_id.id), ('config_id', '=', self.id),
-                ('employee_id', '=', employee.id), ('component_id', '=', rule.id),
-                ('date_from', '=', date_from), ('date_to', '=', date_to), ('state', 'in', ['draft', 'approved']),
-            ])
+            rows = Input.browse(grouped.get((employee.id, rule.id), []))
             if rows.filtered(lambda row: row.state == 'draft'):
                 fact.update(status='conflict', reason='A monthly adjustment is awaiting approval; it cannot be certified as no activity.')
                 continue

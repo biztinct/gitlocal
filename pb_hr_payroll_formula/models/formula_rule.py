@@ -2339,10 +2339,13 @@ class HrFormulaRule(models.Model):
                     self.excel_formula_converted = python_code
 
                 # Enhanced logging for debugging IFERROR and other formula issues
-                _logger.debug(f"=== Formula Evaluation for {self.code} ===")
-                _logger.debug(f"  Excel formula: {self.excel_formula}")
-                _logger.debug(f"  Python code: {python_code}")
-                _logger.debug(f"  Column map: {column_map}")
+                # (PDR S2: formatted only when DEBUG is on — the column map alone
+                # is a 400-entry string built for every formula otherwise).
+                if _logger.isEnabledFor(logging.DEBUG):
+                    _logger.debug(f"=== Formula Evaluation for {self.code} ===")
+                    _logger.debug(f"  Excel formula: {self.excel_formula}")
+                    _logger.debug(f"  Python code: {python_code}")
+                    _logger.debug(f"  Column map: {column_map}")
             except Exception as e:
                 error_msg = f"Error converting formula: {str(e)}\nExcel formula: {excel_formula}"
                 _logger.error(f"Error converting formula for {self.code}: {e}")
@@ -2382,15 +2385,18 @@ class HrFormulaRule(models.Model):
                     'any': any,
                 }
 
-                # Log available values for debugging
-                _logger.debug(f"  Available values: {list(safe_context['values'].keys())}")
+                # Log available values for debugging (PDR S2: DEBUG only — this
+                # was a substring scan of every value for every formula).
+                debug = _logger.isEnabledFor(logging.DEBUG)
+                if debug:
+                    _logger.debug(f"  Available values: {list(safe_context['values'].keys())}")
 
-                # Log specific values referenced in this formula
-                for ref_code in values.keys():
-                    if ref_code in python_code or f"'{ref_code}'" in python_code:
-                        _logger.debug(f"  {ref_code} = {safe_context['values'].get(ref_code, 'NOT FOUND')}")
+                    # Log specific values referenced in this formula
+                    for ref_code in values.keys():
+                        if ref_code in python_code or f"'{ref_code}'" in python_code:
+                            _logger.debug(f"  {ref_code} = {safe_context['values'].get(ref_code, 'NOT FOUND')}")
 
-                if '"' in (excel_formula or '') or "raw_values" in python_code:
+                if debug and ('"' in (excel_formula or '') or "raw_values" in python_code):
                     try:
                         ref_codes = re.findall(r"(?:values|raw_values)\.get\('([^']+)'", python_code)
                         ref_values = {
@@ -2421,7 +2427,8 @@ class HrFormulaRule(models.Model):
                 eval_globals = dict(safe_context)
                 eval_globals["__builtins__"] = {}
                 result = eval(python_code, eval_globals)
-                _logger.debug(f"  Result: {result}")
+                if debug:
+                    _logger.debug(f"  Result: {result}")
 
                 # Clear any previous errors on successful evaluation
                 if write_diagnostics and self.has_evaluation_error:

@@ -51,3 +51,22 @@
  .pr-cell input,.pr-cell-value{border-radius:0;box-sizing:border-box;}
 }
 .modal-dialog.modal-fullscreen:has(> .pr-review-dialog) .pr-review-dialog{max-height:100dvh!important;}
+
+// PDR P1 — previews stream in, final tax month reminders, calm info tone.
+// Info blue from the locked palette (#2563EB); single tones, no gradients.
+.pr-review {
+ .pr-previewing{display:inline-flex;align-items:center;gap:6px;color:#64748b;font-size:12px;
+  svg{animation:pr-spin 1s linear infinite;flex:none;}}
+ .pr-remind{background:#eff6ff!important;small{color:#1d4ed8;}}
+ .pr-cell small svg{vertical-align:-2px;margin-right:4px;}
+ .pr-remind-line{display:flex;align-items:center;gap:10px;padding:10px 26px;background:#f5f9ff;border-bottom:1px solid #dbe7fd;color:#1e3a8a;font-size:12px;
+  .pr-remind-icon{display:inline-flex;color:#2563eb;}.pr-link{padding:0;font-weight:600;color:#2563eb;}}
+ .pr-inspector .pr-remind-note{display:flex;gap:8px;align-items:flex-start;border-left:3px solid #2563eb;padding-left:10px;color:#1e3a8a;
+  .pr-remind-icon{display:inline-flex;color:#2563eb;margin-top:2px;}}
+ .pr-dot.pr-remind{background:#eff6ff;border-color:#bfdbfe;}
+ .pr-cell .pr-cell-value.pr-cell-pending{display:flex;justify-content:flex-end;align-items:center;}
+ .pr-pending-bar{display:block;height:10px;width:64px;border-radius:5px;background:#e9ebf3;animation:pr-pulse 1.2s ease-in-out infinite;}
+}
+@keyframes pr-spin{to{transform:rotate(360deg);}}
+@keyframes pr-pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
+@media (prefers-reduced-motion: reduce){.pr-review .pr-previewing svg,.pr-review .pr-pending-bar{animation:none;}}
