@@ -64,6 +64,16 @@
 .pbme.pbmt {
     max-width: 1040px; margin-left: auto; margin-right: auto;
 
+    // the home card's button words (`--pri`, `--out`) live under .pbme-home
+    // in pb_me_portal; these pages use the same words
+    .pbme-btn--pri {
+        background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff;
+        &:hover { background: var(--pbim-primary-hover); border-color: var(--pbim-primary-hover); color: #fff; }
+    }
+    .pbme-btn--out {
+        color: var(--pbim-primary); border-color: var(--pbim-primary-light);
+        &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+    }
     .pbmt-btn-n {
         margin-left: 4px; min-width: 20px; padding: 1px 7px; border-radius: 999px;
         background: rgba(255, 255, 255, .25); font-size: 11.5px; font-weight: 800;
