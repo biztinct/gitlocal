@@ -421,7 +421,7 @@
           <div class="pp-hero">
             <div class="pp-big"><b t-esc="fmtN(pv.punches)"/><span>punches</span></div>
             <div class="pp-big"><b t-esc="fmtN(pv.people)"/><span>people</span></div>
-            <div class="pp-big"><b t-esc="fmtN(pv.days)"/><span t-esc="pv.days === 1 ? 'day' : 'days'"/></div>
+            <div class="pp-big"><b t-esc="fmtN(pv.days)"/><span t-esc="pv.days === 1 ? tr.day : tr.days"/></div>
             <div class="pp-spark" t-if="sparkBars.length" aria-hidden="true">
               <svg width="128" height="46" viewBox="0 0 128 46">
                 <rect t-foreach="sparkBars" t-as="b" t-key="b.date"
@@ -447,7 +447,7 @@
           <div class="pp-unknown" t-if="pv.unknown_count">
             <div class="pp-unknown__h">
               <span t-out="kic('userX', 15)"/>
-              <span><b t-esc="pv.unknown_count"/> <t t-esc="pv.unknown_count === 1 ? 'number matches' : 'numbers match'"/> nobody yet</span>
+              <span t-esc="unknownHeadline(pv.unknown_count)"/>
             </div>
             <div class="pp-chips">
               <span t-foreach="pv.unknown" t-as="u" t-key="u.code" class="pp-chip">
@@ -470,7 +470,7 @@
           </div>
           <div class="pp-trunc" t-if="pv.truncated">
             <span t-out="kic('alert', 14)"/>
-            <span>Only the first <t t-esc="fmtN(pv.max_rows)"/> rows were read. Split the file to add the rest.</span>
+            <span t-esc="truncLabel(pv.max_rows)"/>
           </div>
           <div class="pbaf-actbar">
             <button class="pbaf-btn ghost" t-if="pv.format === 'table'" t-on-click="backToMap">
@@ -482,7 +482,7 @@
             <button class="pbaf-btn primary" t-att-disabled="!pv.new or state.busy"
                     t-on-click="commitImport">
               <span t-out="kic(state.busy ? 'loader' : 'download',15)"/>
-              <span t-if="pv.new">Add <t t-esc="fmtN(pv.new)"/> <t t-esc="pv.new === 1 ? 'punch' : 'punches'"/></span>
+              <span t-if="pv.new" t-esc="addLabel(pv.new)"/>
               <span t-else="">Nothing new to add</span>
             </button>
           </div>
@@ -523,11 +523,11 @@
         <div t-elif="state.imp.step === 'done' and isPunches and state.imp.result" class="pbaf-done pbaf-pp-done">
           <t t-set="rs" t-value="state.imp.result"/>
           <span class="i" t-out="kic(rs.created ? 'checkCircle' : 'info', 40)"/>
-          <div class="t" t-if="rs.created"><t t-esc="fmtN(rs.created)"/> <t t-esc="rs.created === 1 ? 'punch' : 'punches'"/> added</div>
+          <div class="t" t-if="rs.created" t-esc="addedLabel(rs.created)"/>
           <div class="t" t-else="">Nothing new — every punch was already on record</div>
           <div class="s" t-esc="rs.message"/>
           <div class="s" t-if="rs.new_devices and rs.new_devices.length">
-            New <t t-esc="rs.new_devices.length === 1 ? 'machine' : 'machines'"/> added: <t t-esc="rs.new_devices.join(', ')"/>
+            <t t-esc="newMachinesLabel(rs.new_devices)"/>
           </div>
           <div class="pp-unknown center" t-if="rs.unknown_count">
             <div class="pp-chips">

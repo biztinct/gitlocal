@@ -1702,3 +1702,401 @@ msgstr "mục"
 #: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
 msgid "of"
 msgstr "trên"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "%s numbers match nobody yet"
+msgstr "%s mã chưa khớp với ai"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "%s punches added"
+msgstr "Đã thêm %s lượt chấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "1 number matches nobody yet"
+msgstr "1 mã chưa khớp với ai"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "1 punch added"
+msgstr "Đã thêm 1 lượt chấm"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "A missing punch"
+msgstr "Một lượt chấm bị thiếu"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "A punch to remove"
+msgstr "Một lượt chấm cần xóa"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "A time to move"
+msgstr "Một thời điểm cần dời"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Add %s punches"
+msgstr "Thêm %s lượt chấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Add 1 punch"
+msgstr "Thêm 1 lượt chấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Add another file"
+msgstr "Thêm tệp khác"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_attendance_flow
+#: model:ir.model.fields,field_description:pb_attendance_flow.field_hr_attendance_correction__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được đề nghị quyết định"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Assign now"
+msgstr "Gán ngay"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "Attendance days"
+msgstr "Ngày công"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Attendance program daily sheet"
+msgstr "Bảng công ngày của phần mềm chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Back to columns"
+msgstr "Quay lại chọn cột"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "CSV or Excel · columns: Employee · Date · Check-in · Check-out"
+msgstr "CSV hoặc Excel · các cột: Nhân viên · Ngày · Giờ vào · Giờ ra"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Check"
+msgstr "Kiểm tra"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Check the file"
+msgstr "Kiểm tra tệp"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Check-out (optional)"
+msgstr "Giờ ra (không bắt buộc)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Choose another file"
+msgstr "Chọn tệp khác"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Columns"
+msgstr "Cột"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Date (when the time is separate)"
+msgstr "Ngày (khi giờ ở cột riêng)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Date and time"
+msgstr "Ngày và giờ"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Drop an attendance file"
+msgstr "Thả tệp chấm công vào đây"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Every number matches a person."
+msgstr "Mọi mã đều khớp với một người."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid ""
+"Excel, CSV, the machine’s own log file (attlog.dat) or the attendance "
+"program’s daily sheet"
+msgstr "Excel, CSV, tệp nhật ký của máy (attlog.dat) hoặc bảng công ngày của phần mềm chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "In / Out (optional)"
+msgstr "Vào / Ra (không bắt buộc)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Machine (optional)"
+msgstr "Máy chấm công (không bắt buộc)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Machine log file"
+msgstr "Tệp nhật ký của máy"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "Minutes"
+msgstr "Phút"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "New check-in"
+msgstr "Giờ vào mới"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "New check-out"
+msgstr "Giờ ra mới"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "New machine added: %s"
+msgstr "Đã thêm máy chấm công mới: %s"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "New machines added: %s"
+msgstr "Đã thêm các máy chấm công mới: %s"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Nothing new to add"
+msgstr "Không có gì mới để thêm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Nothing new — every punch was already on record"
+msgstr "Không có gì mới — mọi lượt chấm đã có sẵn"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Number on the machine"
+msgstr "Mã trên máy chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "One row per person per day, with a check-in and a check-out"
+msgstr "Mỗi người mỗi ngày một dòng, có giờ vào và giờ ra"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid ""
+"One tap per row: the number on the machine and when it was pressed. The "
+"machine’s attlog.dat and the program’s daily sheet are recognised on their "
+"own."
+msgstr "Mỗi dòng một lượt chấm: mã trên máy và thời điểm chấm. Tệp attlog.dat của máy và bảng công ngày của phần mềm được tự nhận dạng."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Only the first %s rows were read. Split the file to add the rest."
+msgstr "Chỉ đọc %s dòng đầu tiên. Hãy chia nhỏ tệp để thêm phần còn lại."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Open Time clocks"
+msgstr "Mở Máy chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "Raised by the system itself"
+msgstr "Do hệ thống tự đưa ra"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "Rows that could not be read"
+msgstr "Các dòng không đọc được"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Table of punches"
+msgstr "Bảng lượt chấm công"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid ""
+"Tell us which column holds what. Give either one date-and-time column, or a "
+"date column and a time column."
+msgstr "Cho biết mỗi cột chứa gì. Chọn một cột ngày giờ, hoặc một cột ngày và một cột giờ."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "The fix"
+msgstr "Nội dung sửa"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid ""
+"Their punches are kept. After the import, press Assign now and match each "
+"number to a person — their days are paired straight away."
+msgstr "Lượt chấm của các mã này vẫn được giữ. Sau khi nhập, bấm Gán ngay và khớp từng mã với một người — các ngày của họ được ghép ngay."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/wizards/attendance_import.py:0
+msgid "This kind of file cannot be imported here."
+msgstr "Không thể nhập loại tệp này ở đây."
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Time (when the date is separate)"
+msgstr "Giờ (khi ngày ở cột riêng)"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "Upload"
+msgstr "Tải lên"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid ""
+"What happens next: you see what the file holds before anything is added. "
+"Punches then pair into days on their own — first punch in, last punch out."
+msgstr "Tiếp theo: bạn xem trước nội dung tệp trước khi thêm. Sau đó các lượt chấm tự ghép thành ngày công — lượt đầu là giờ vào, lượt cuối là giờ ra."
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "What kind of fix"
+msgstr "Loại điều chỉnh"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "already on record"
+msgstr "đã có sẵn"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "day"
+msgstr "ngày"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/js/pb_attendance_flow.js:0
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "last 7 days in the file"
+msgstr "7 ngày cuối trong tệp"
+
+#. module: pb_attendance_flow
+#. odoo-python
+#: code:addons/pb_attendance_flow/models/attendance_correction_approval.py:0
+msgid "minutes"
+msgstr "phút"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "new"
+msgstr "mới"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "punches"
+msgstr "lượt chấm"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "repeated in the file"
+msgstr "lặp lại trong tệp"
+
+#. module: pb_attendance_flow
+#. odoo-javascript
+#: code:addons/pb_attendance_flow/static/src/xml/pb_attendance_flow.xml:0
+msgid "rows not readable"
+msgstr "dòng không đọc được"

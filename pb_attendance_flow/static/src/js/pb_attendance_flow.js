@@ -537,6 +537,22 @@ export class PbAttendanceFlow extends Component {
         }));
     }
     fmtN(n) { return (Number(n) || 0).toLocaleString(); }
+    // plural phrases live here, not in the template: a word inside a template
+    // expression is never translated
+    get tr() { return { day: _t("day"), days: _t("days") }; }
+    unknownHeadline(n) {
+        return n === 1 ? _t("1 number matches nobody yet")
+                       : _t("%s numbers match nobody yet", this.fmtN(n));
+    }
+    addLabel(n) { return n === 1 ? _t("Add 1 punch") : _t("Add %s punches", this.fmtN(n)); }
+    addedLabel(n) { return n === 1 ? _t("1 punch added") : _t("%s punches added", this.fmtN(n)); }
+    newMachinesLabel(list) {
+        return list.length === 1 ? _t("New machine added: %s", list[0])
+                                 : _t("New machines added: %s", list.join(", "));
+    }
+    truncLabel(n) {
+        return _t("Only the first %s rows were read. Split the file to add the rest.", this.fmtN(n));
+    }
     /** "Assign now": the hub opens its Time clocks lens on these numbers. */
     get canOpenClocks() { return !!this.props.onOpenLens; }
     openClocks(codes) {

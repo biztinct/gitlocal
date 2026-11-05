@@ -418,6 +418,17 @@ export class ClockLens extends Component {
         if (this.props.onChanged) { this.props.onChanged(); }
     }
     fmtN(n) { return (Number(n) || 0).toLocaleString(); }
+    // words in a template expression are never translated: they live here
+    tipShowCode(code) { return _t("Show the punches of %s", code); }
+    tipGive(r) { return _t("Give %(code)s to %(name)s", { code: r.code, name: r.suggestion.name }); }
+    tipDevice(dv) {
+        return this.state.filters.device_id === dv.id ? _t("Show every machine") : _t("Show only this machine");
+    }
+    get moreLabel() {
+        const r = this.recent;
+        return _t("Show %s more", this.fmtN(Math.min(200, r.total - r.rows.length)));
+    }
+    get assignAllLabel() { return _t("Assign all suggested (%s)", this.suggestedCount); }
     seenLabel(utc) {
         const d = fromUtc(utc);
         return d ? d.toLocaleDateString([], { day: "2-digit", month: "short" }) + " " + hhmm(d) : "";
