@@ -225,3 +225,14 @@ msgstr "Ghi dữ liệu vào hệ thống"
 msgid "See the request"
 msgstr "Xem yêu cầu"
 
+#. module: pb_import_batch
+#. odoo-javascript
+#: code:addons/pb_import_batch/static/src/xml/batch_cockpit.xml:0
+msgid "The values in this file fed one pay run and were then forgotten — except each person's manager, when the file has a manager column."
+msgstr "Các giá trị trong tệp này chỉ dùng cho một đợt lương rồi được bỏ qua — trừ người quản lý của từng người, khi tệp có cột người quản lý."
+
+#. module: pb_import_batch
+#. odoo-javascript
+#: code:addons/pb_import_batch/static/src/xml/batch_cockpit.xml:0
+msgid "This run only — nothing saved but managers"
+msgstr "Chỉ đợt này — chỉ lưu người quản lý"

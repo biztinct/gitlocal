@@ -3757,8 +3757,8 @@
     },
     {
       "definition": {
-        "en": "Use the file's values once, for this run, and change nothing in Payobook. The other answer, Update Payobook, saves them onto people's records from now on.",
-        "vi": "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook. Câu trả lời còn lại, Cập nhật Payobook, lưu chúng vào hồ sơ từ nay về sau."
+        "en": "Use the file's values once, for this run, and change nothing in Payobook except each person's manager, when the file has one. The other answer, Update Payobook, saves them onto people's records from now on.",
+        "vi": "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook trừ người quản lý của từng người, khi tệp có cột đó. Câu trả lời còn lại, Cập nhật Payobook, lưu chúng vào hồ sơ từ nay về sau."
       },
       "key": "thisRunOnly",
       "match": {
@@ -10267,8 +10267,8 @@
       "blocks": [
         {
           "body": {
-            "en": "<b>Update Payobook</b> saves the file's values onto employee and contract records and uses them from now on. <b>This run only</b> uses them once, for this run, and changes nothing in Payobook — the batch then says \"This run only — no records were updated\".",
-            "vi": "<b>Cập nhật Payobook</b> lưu các giá trị trong tệp vào hồ sơ nhân viên và hợp đồng, và dùng chúng từ nay về sau. <b>Chỉ đợt này</b> dùng chúng một lần, cho đợt này, và không thay đổi gì trong Payobook — đợt nhập khi đó ghi \"Chỉ đợt này — không hồ sơ nào được cập nhật\"."
+            "en": "<b>Update Payobook</b> saves the file's values onto employee and contract records and uses them from now on. <b>This run only</b> uses them once, for this run, and changes nothing in Payobook except managers from the file. The batch then says \"This run only — nothing saved but managers\".",
+            "vi": "<b>Cập nhật Payobook</b> lưu các giá trị trong tệp vào hồ sơ nhân viên và hợp đồng, và dùng chúng từ nay về sau. <b>Chỉ đợt này</b> dùng chúng một lần, cho đợt này, và không thay đổi gì trong Payobook ngoài người quản lý từ tệp. Đợt nhập khi đó ghi \"Chỉ đợt này — chỉ lưu người quản lý\"."
           },
           "capability": "any",
           "kind": "p",
@@ -13616,8 +13616,8 @@
         {
           "act": "observe",
           "affects": {
-            "en": "This run only changes nothing in Payobook.",
-            "vi": "Chỉ đợt này không thay đổi gì trong Payobook."
+            "en": "This run only changes nothing in Payobook except managers from the file.",
+            "vi": "Chỉ đợt này không thay đổi gì trong Payobook ngoài người quản lý từ tệp."
           },
           "anchor": "pw-paymode",
           "body": "",
@@ -31069,8 +31069,8 @@
             },
             {
               "affects": {
-                "en": "This run only changes nothing in Payobook: right for a one-off bonus or a correction.",
-                "vi": "Chỉ đợt này không thay đổi gì trong Payobook: hợp với một khoản thưởng một lần hoặc một lần sửa."
+                "en": "This run only changes nothing in Payobook except managers from the file: right for a one-off bonus or a correction.",
+                "vi": "Chỉ đợt này không thay đổi gì trong Payobook ngoài người quản lý từ tệp: hợp với một khoản thưởng một lần hoặc một lần sửa."
               },
               "anchor": "pw-paymode",
               "body": "",
@@ -41581,5 +41581,5 @@
       }
     }
   ],
-  "version": "5b68333b3c33"
+  "version": "3d1d50127d36"
 }

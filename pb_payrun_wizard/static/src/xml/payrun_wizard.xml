@@ -302,7 +302,7 @@
                                         <span class="pw-mode-ic"><t t-out="ic('shield',18)"/></span>
                                         <span class="pw-mode-tx">
                                             <b>This run only</b>
-                                            <span>Used just this once. Nothing in Payobook changes — good for a one-off bonus or a correction.</span>
+                                            <span>Used just this once — good for a one-off bonus or a correction. Nothing in Payobook changes except each person's manager, when the file has a manager column.</span>
                                         </span>
                                         <span class="pw-mode-dot"><t t-if="state.sheet.mode === 'once'"><t t-out="ic('check',13)"/></t></span>
                                     </div>
@@ -316,7 +316,7 @@
                                      one-time, the panel says so before anything
                                      is computed. -->
                                 <span class="pw-lockchip" t-if="sheetOnce and state.sheet.file_name">
-                                    <t t-out="ic('shield',13)"/> Payobook stays exactly as it is
+                                    <t t-out="ic('shield',13)"/> Payobook stays as it is, except managers
                                 </span>
                             </h4>
                             <t t-if="state.sheet.checking">
@@ -421,7 +421,7 @@
                                     <t t-esc="state.summary.sheet.filename"/> fed
                                     <b><t t-esc="state.summary.sheet.fed_components.length"/></b> component(s)
                                     across <t t-esc="state.summary.sheet.rows"/> row(s) —
-                                    <b>used once; nothing was saved to any employee, contract or bank record.</b>
+                                    <b>used once; nothing was saved to any employee, contract or bank record, except each person's manager when the file has a manager column.</b>
                                 </p>
                                 <p class="pw-oncebox-sub" t-if="state.summary.sheet.unmatched_count">
                                     <b><t t-esc="state.summary.sheet.unmatched_count"/></b> row(s) were for people

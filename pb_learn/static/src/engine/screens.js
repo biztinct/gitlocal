@@ -1168,8 +1168,8 @@ export const SCREENS = {
                                 "Các giá trị được lưu vào hồ sơ nhân viên và hợp đồng, và được dùng từ nay về sau.")))}</span></button>
                         <button class="lrn-choice" aria-pressed="false"><b>${esc(tx(B("This run only", "Chỉ đợt này")))}</b>
                             <span class="lrn-sub2">${esc(tx(B(
-                                "Used just this once. Nothing in Payobook changes — good for a one-off bonus or a correction.",
-                                "Chỉ dùng một lần này. Không có gì trong Payobook thay đổi — hợp với một khoản thưởng một lần hoặc một lần sửa.")))}</span></button>
+                                "Used just this once — good for a one-off bonus or a correction. Nothing in Payobook changes except each person's manager, when the file has a manager column.",
+                                "Chỉ dùng một lần này — hợp với một khoản thưởng một lần hoặc một lần sửa. Không có gì trong Payobook thay đổi, trừ người quản lý của từng người khi tệp có cột người quản lý.")))}</span></button>
                     </div>
                     <div class="lrn-strip">
                         <button class="lrn-btn ghost" data-coach="pw-skipsheet">${esc(tx(B("Run without a spreadsheet", "Chạy không cần bảng tính")))}</button>

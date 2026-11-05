@@ -1492,8 +1492,8 @@ const GLOSSARY = {
   thisRunOnly: {
     term: B("This run only", "Chỉ đợt này"),
     aliases: { en: ["this run only"], vi: ["chỉ đợt này"] },
-    def: B("Use the file's values once, for this run, and change nothing in Payobook. The other answer, Update Payobook, saves them onto people's records from now on.",
-           "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook. Câu trả lời còn lại, Cập nhật Payobook, lưu chúng vào hồ sơ từ nay về sau."),
+    def: B("Use the file's values once, for this run, and change nothing in Payobook except each person's manager, when the file has one. The other answer, Update Payobook, saves them onto people's records from now on.",
+           "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook trừ người quản lý của từng người, khi tệp có cột đó. Câu trả lời còn lại, Cập nhật Payobook, lưu chúng vào hồ sơ từ nay về sau."),
   },
   hub: {
     term: B("Rail", "Thanh bên"),
@@ -3468,8 +3468,8 @@ const LESSONS = {
                 "Các giá trị này dùng để làm gì?, với Cập nhật Payobook và Chỉ đợt này."),
         means: B("Update Payobook saves the file's values to employee and contract records from now on. This run only uses them once.",
                  "Cập nhật Payobook lưu các giá trị của tệp vào hồ sơ nhân viên và hợp đồng từ nay về sau. Chỉ đợt này dùng chúng một lần."),
-        affects: B("This run only changes nothing in Payobook: right for a one-off bonus or a correction.",
-                   "Chỉ đợt này không thay đổi gì trong Payobook: hợp với một khoản thưởng một lần hoặc một lần sửa."),
+        affects: B("This run only changes nothing in Payobook except managers from the file: right for a one-off bonus or a correction.",
+                   "Chỉ đợt này không thay đổi gì trong Payobook ngoài người quản lý từ tệp: hợp với một khoản thưởng một lần hoặc một lần sửa."),
         press: B("This run only, or Update Payobook, then continue with the file.",
                  "Chỉ đợt này, hoặc Cập nhật Payobook, rồi tiếp tục với tệp."),
         tip: B("No file this month? A scheme that reads a connected system brings it up to date before it computes.",
@@ -11577,8 +11577,8 @@ const QA = [
             "chi dot nay", "chỉ đợt này", "cap nhat payobook"],
     showMe: ["pw-paymode"],
     blocks: [
-      { k: "p", v: B("<b>Update Payobook</b> saves the file's values onto employee and contract records and uses them from now on. <b>This run only</b> uses them once, for this run, and changes nothing in Payobook — the batch then says \"This run only — no records were updated\".",
-                     "<b>Cập nhật Payobook</b> lưu các giá trị trong tệp vào hồ sơ nhân viên và hợp đồng, và dùng chúng từ nay về sau. <b>Chỉ đợt này</b> dùng chúng một lần, cho đợt này, và không thay đổi gì trong Payobook — đợt nhập khi đó ghi \"Chỉ đợt này — không hồ sơ nào được cập nhật\".") },
+      { k: "p", v: B("<b>Update Payobook</b> saves the file's values onto employee and contract records and uses them from now on. <b>This run only</b> uses them once, for this run, and changes nothing in Payobook except managers from the file. The batch then says \"This run only — nothing saved but managers\".",
+                     "<b>Cập nhật Payobook</b> lưu các giá trị trong tệp vào hồ sơ nhân viên và hợp đồng, và dùng chúng từ nay về sau. <b>Chỉ đợt này</b> dùng chúng một lần, cho đợt này, và không thay đổi gì trong Payobook ngoài người quản lý từ tệp. Đợt nhập khi đó ghi \"Chỉ đợt này — chỉ lưu người quản lý\".") },
       { k: "ok", v: B("A one-off bonus or a correction: This run only. A new allowance everyone keeps getting: Update Payobook.",
                       "Một khoản thưởng một lần hoặc một lần sửa: Chỉ đợt này. Một khoản phụ cấp mới mà mọi người sẽ tiếp tục nhận: Cập nhật Payobook.") },
       { k: "src", v: B("The Pay data step of Payroll › Run, and the import batch.",
@@ -12829,7 +12829,7 @@ const SCENARIOS = [
           look: B("What should these values do?", "Các giá trị này dùng để làm gì?"),
           means: B("Update Payobook saves the file's values onto people's records from now on. This run only uses them once.",
                    "Cập nhật Payobook lưu các giá trị của tệp vào hồ sơ từ nay về sau. Chỉ đợt này dùng chúng một lần."),
-          affects: B("This run only changes nothing in Payobook.", "Chỉ đợt này không thay đổi gì trong Payobook."),
+          affects: B("This run only changes nothing in Payobook except managers from the file.", "Chỉ đợt này không thay đổi gì trong Payobook ngoài người quản lý từ tệp."),
         },
       },
       {

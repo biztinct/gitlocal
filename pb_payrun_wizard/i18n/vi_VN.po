@@ -763,3 +763,21 @@ msgstr "Đợt bổ sung của tháng này đã tồn tại."
 #: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
 msgid "Would you like to clear it and run this top-up again? The month’s regular run, and anything belonging to another payroll scheme, are not touched."
 msgstr "Bạn có muốn xóa đợt này và chạy lại đợt bổ sung không? Kỳ lương thường kỳ của tháng và mọi thứ thuộc phương án lương khác đều không bị ảnh hưởng."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Used just this once — good for a one-off bonus or a correction. Nothing in Payobook changes except each person's manager, when the file has a manager column."
+msgstr "Chỉ dùng một lần này — hợp với một khoản thưởng một lần hoặc một lần sửa. Không có gì trong Payobook thay đổi, trừ người quản lý của từng người khi tệp có cột người quản lý."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Payobook stays as it is, except managers"
+msgstr "Payobook giữ nguyên, trừ người quản lý"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "used once; nothing was saved to any employee, contract or bank record, except each person's manager when the file has a manager column."
+msgstr "đã dùng một lần; không lưu gì vào hồ sơ nhân viên, hợp đồng hay tài khoản ngân hàng, trừ người quản lý của từng người khi tệp có cột người quản lý."

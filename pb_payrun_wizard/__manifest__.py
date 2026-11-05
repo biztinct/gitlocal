@@ -7,7 +7,7 @@
     # loose payslips. Regular runs behave exactly as before.
     # 1.41.0: PRS P3 follow-up (R9) — a Regular run ignores top-ups the
     # same way: its guard and Clean and Run see Regular runs only.
-    'version': '19.0.1.41.0',
+    'version': '19.0.1.41.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
