@@ -13,9 +13,21 @@ from odoo.exceptions import UserError
 
 from .templates import LIMIT, plain, salary_inputs
 from odoo.addons.pb_hr_payroll_formula.models.pay_period import default_standard_work_days
+from odoo.addons.pb_hr_payroll_formula.models.contract_fill_in import value_from_words
 
 NUMBERS = ('money', 'decimal', 'integer', 'quantity', 'rate')
 REQUIRED_TIME = re.compile(r'paid.?days|working.?days|standard.*days|period.?days|days.?worked|ngày công', re.I)
+
+
+def _word(labels, value):
+    """The word for a number in a worded column, or '' (the number shows)."""
+    if value is None or value == '' or isinstance(value, bool):
+        return ''
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return ''
+    return next((o['label'] for o in labels if abs(o['value'] - number) < 1e-9), '')
 
 
 class PayrollInputReview(models.AbstractModel):
@@ -28,6 +40,7 @@ class PayrollInputReview(models.AbstractModel):
         by_id = {c['id']: c for c in catalog}
         result = []
         salary_keys = {'rule:%s' % r.id for r in salary_inputs(cfg)}
+        words = self._word_rules(cfg, cards)
         for lane in ('time', 'adjustments', 'records', 'available'):
             for fid in layout[lane]:
                 if not fid.startswith('rule:'):
@@ -40,6 +53,11 @@ class PayrollInputReview(models.AbstractModel):
                     c['kind'] = 'date' if ttype in ('date', 'datetime') else 'boolean' if ttype == 'boolean' else 'text'
                 c['required'] = bool(c.get('required') or c['id'] in salary_keys or (not c.get('readonly') and REQUIRED_TIME.search(c['label'])))
                 c['positive'] = bool(not c.get('readonly') and REQUIRED_TIME.search(c['label']) and re.search(r'standard|period|working', c['label'], re.I))
+                rule = self._column_rule(words, c)
+                if rule is not None and c['kind'] in NUMBERS:
+                    # PDR P2 W2 — the column reads and accepts its words.
+                    c['labels'] = rule.value_word_choices()
+                    c['yes_no'] = rule.value_label_is_yes_no()
                 result.append(c)
         return result
 
@@ -128,16 +146,24 @@ class PayrollInputReview(models.AbstractModel):
             for c in catalog:
                 if c['id'] in values:
                     try:
-                        values[c['id']]['value'] = self._input_value(values[c['id']]['value'], c['kind'])
+                        values[c['id']]['value'] = self._input_value(values[c['id']]['value'], c['kind'],
+                                                                     c.get('labels'), c['label'])
                     except (ValueError, TypeError, AttributeError):
                         pass
         return previous_period, result
 
-    def _input_value(self, value, kind):
+    def _input_value(self, value, kind, labels=None, label=''):
         if value is None or value == '':
             return None
         if isinstance(value, str) and value.lstrip().startswith(('=', '@')):
             raise ValueError(_('Enter a value, not a formula.'))
+        if labels and kind in NUMBERS:
+            # PDR P2 W2 — Y / N / Yes / No / a word / the number, for a
+            # worded column only. An unknown word is an issue, never a 0.
+            number = value_from_words(labels, value, label)
+            if kind == 'integer' and not float(number).is_integer():
+                raise ValueError(_('Enter a whole number.'))
+            return number
         if kind in NUMBERS:
             try:
                 return self._numeric(value, kind)
@@ -174,13 +200,17 @@ class PayrollInputReview(models.AbstractModel):
                     # Inline blanks follow the workbook's keep-current rule.
                     # The grid and materialized payroll must agree after save.
                     raw = cell['current'] if cell['source'] == 'edited' and cell['value'] in (None, '') else cell['value']
-                    value = self._input_value(raw, c['kind'])
+                    value = self._input_value(raw, c['kind'], c.get('labels'), c['label'])
                     if c.get('positive') and value is not None and value <= 0:
                         raise ValueError(_('Enter a number greater than zero.'))
                     cell['value'] = value
                 except (ValueError, TypeError, AttributeError) as err:
                     cell['issue'] = str(err) or _('Enter a valid value.')
-                    issues.append('%s · %s: %s' % (row['name'], c['label'], cell['issue']))
+                    if c.get('labels'):
+                        # "Ana: Final tax period needs Y or N." — the sentence names the column.
+                        issues.append('%s: %s' % (row['name'], cell['issue']))
+                    else:
+                        issues.append('%s · %s: %s' % (row['name'], c['label'], cell['issue']))
                 cell['missing'] = bool(c['required'] and (cell['value'] is None or cell['value'] == ''))
                 stats['missing'] += int(cell['missing'])
                 cell['changed'] = cell['has_prior'] and plain(cell['value']) != cell['prior']
@@ -194,9 +224,14 @@ class PayrollInputReview(models.AbstractModel):
                 # calendar-month comparison shown to the payroll reviewer.
                 if cell['source'] in ('excel', 'edited') and not cell['issue'] and (
                         cell['value'] != cell['current'] or (c.get('readonly') and not cell['was_override'])):
-                    changes.append({'key': '%s:%s' % (row['emp_id'], c['id']), 'emp_id': row['emp_id'],
+                    change = {'key': '%s:%s' % (row['emp_id'], c['id']), 'emp_id': row['emp_id'],
                         'emp_name': row['name'], 'field_id': c['id'], 'field_label': c['label'],
-                        'tab': c['tab'], 'old': cell['stored'], 'value': cell['value']})
+                        'tab': c['tab'], 'old': cell['stored'], 'value': cell['value']}
+                    if c.get('labels'):
+                        # PDR P2 W4 — the change list reads "No → Yes", not "0 → 1".
+                        change.update(old_label=_word(c['labels'], cell['stored']),
+                                      new_label=_word(c['labels'], cell['value']))
+                    changes.append(change)
             stats['people_changed'] += int(moved)
         data.update(changes=changes, issues=issues, stats=stats,
                     allow_record_updates=any(c.get('record_editable') for c in data['grid']['columns']))
@@ -227,6 +262,7 @@ class PayrollInputReview(models.AbstractModel):
                 raise UserError(_('These workbook fields were removed or their saved-record source changed: %s. Download the current template and copy your entries into it.') % ', '.join(incompatible[:10]))
         people = self._roster(cfg, period)
         catalog = self._review_catalog(cfg)
+        by_catalog = {c['id']: c for c in catalog}
         resolved = self._resolved_month(cfg, period, people, catalog)
         previous_period, previous = self._previous_inputs(cfg, period, people, catalog)
         by_row = {v['row']: (int(k), v) for k, v in snapshot['employees'].items()}
@@ -297,6 +333,12 @@ class PayrollInputReview(models.AbstractModel):
                     if value is None or value == '':
                         continue
                     if c.get('readonly') and not c.get('record_editable'):
+                        worded = by_catalog.get(c['id'], {}).get('labels')
+                        if worded:
+                            try:
+                                value = value_from_words(worded, value, c['label'])
+                            except ValueError:
+                                pass    # still differs: the warning below says so
                         if plain(value) != resolved[eid][c['id']]['value']:
                             warnings.append(_('%s · %s: saved records refreshed; workbook context was ignored.') % (people.browse(eid).name, c['label']))
                         continue

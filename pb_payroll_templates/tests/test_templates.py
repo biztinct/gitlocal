@@ -1158,3 +1158,100 @@ class TestPayrollTemplates(TransactionCase):
             wb = self.export()
         ws = wb['Time']
         self.assertIsNone(ws.cell(2, [c.value for c in ws[1]].index(self.paid.name) + 1).value)
+
+    # ------------------------------------------------------------------
+    # PDR P2 W2 — Y / N and words in the pay data file (T3–T6)
+    # ------------------------------------------------------------------
+    def worded(self):
+        final = self.rule('Final tax period', 'WBFINAL', 'integer')
+        final.value_labels = '0=No;1=Yes'
+        mode = self.rule('Tax allowance mode', 'WBTAXMODE', 'integer')
+        mode.value_labels = '0=None;1=Insurance tax;2=All tax'
+        return final, mode
+
+    def at(self, wb, sheet, label):
+        ws = wb[sheet]
+        return ws.cell(2, [c.value for c in ws[1]].index(label) + 1)
+
+    def test_pdr_p2_t3_download_writes_y_n_and_words_with_lists(self):
+        final, mode = self.worded()
+        wb = self.export()
+        # blank stays blank
+        self.assertIsNone(self.at(wb, 'Monthly adjustments', 'Final tax period').value)
+        self.set_value(wb, 'Monthly adjustments', 'Final tax period', 'Y')
+        self.set_value(wb, 'Monthly adjustments', 'Tax allowance mode', 'All tax')
+        review = self.review(wb)
+        self.assertFalse(review['issues'])
+        self.assertEqual(self.cell(review, final)['value'], 1)
+        self.assertEqual(self.cell(review, mode)['value'], 2)
+        self.apply(review)
+        saved = self.api._current(self.cfg, '2026-10', self.emp)[self.emp.id]
+        self.assertEqual((saved['rule:%s' % final.id], saved['rule:%s' % mode.id]), (1, 2))
+        wb = self.export()
+        self.assertEqual(self.at(wb, 'Monthly adjustments', 'Final tax period').value, 'Y')
+        self.assertEqual(self.at(wb, 'Monthly adjustments', 'Tax allowance mode').value, 'All tax')
+        lists = {dv.formula1: str(dv.sqref) for dv in wb['Monthly adjustments'].data_validations.dataValidation}
+        self.assertIn('"Y,N"', lists)
+        self.assertIn('"None,Insurance tax,All tax"', lists)
+        col = self.at(wb, 'Monthly adjustments', 'Final tax period').column_letter
+        self.assertTrue(lists['"Y,N"'].startswith(col + '2:'))
+        note = wb['Monthly adjustments'].cell(1, self.at(wb, 'Monthly adjustments', 'Final tax period').column).comment.text
+        self.assertTrue(note.startswith('field: rule:%s\n' % final.id))
+        self.assertIn('Y or N', note)
+        # T6 — the downloaded file goes back in with zero changes
+        review = self.review(wb)
+        self.assertFalse(review['issues'])
+        self.assertEqual(review['changes'], [])
+        # the change list reads words
+        self.set_value(wb, 'Monthly adjustments', 'Final tax period', 'n')
+        change = next(c for c in self.review(wb)['changes'] if c['field_id'] == 'rule:%s' % final.id)
+        self.assertEqual((change['old'], change['value'], change['old_label'], change['new_label']), (1, 0, 'Yes', 'No'))
+
+    def test_pdr_p2_t4_upload_accepts_every_spelling_and_names_the_rest(self):
+        final, mode = self.worded()
+        for raw, expected in (('Y', 1), ('n', 0), ('YES', 1), ('no', 0), (1, 1), (0, 0), (' y ', 1), ('1', 1)):
+            with self.subTest(raw=raw):
+                wb = self.export()
+                self.set_value(wb, 'Monthly adjustments', 'Final tax period', raw)
+                review = self.review(wb)
+                self.assertFalse(review['issues'])
+                self.assertEqual(self.cell(review, final)['value'], expected)
+        for raw in ('All tax', 'all tax'):
+            wb = self.export()
+            self.set_value(wb, 'Monthly adjustments', 'Tax allowance mode', raw)
+            self.assertEqual(self.cell(self.review(wb), mode)['value'], 2)
+        wb = self.export()
+        self.set_value(wb, 'Monthly adjustments', 'Final tax period', 'maybe')
+        self.set_value(wb, 'Monthly adjustments', 'Tax allowance mode', 'Y')
+        issues = self.review(wb)['issues']
+        self.assertIn('Workbook One: Final tax period needs Y or N.', issues)
+        self.assertIn('Workbook One: Tax allowance mode needs one of: None, Insurance tax, All tax.', issues)
+
+    def test_pdr_p2_t5_rule_without_words_still_refuses_y(self):
+        self.worded()
+        wb = self.export()
+        self.set_value(wb, 'Monthly adjustments', 'Monthly bonus', 'Y')
+        review = self.review(wb)
+        self.assertIn('Workbook One · Monthly bonus: Enter a valid number.', review['issues'])
+        self.assertEqual(self.cell(review, self.bonus)['issue'], 'Enter a valid number.')
+
+    def test_pdr_p2_records_file_writes_y_n_for_a_worded_component(self):
+        flag = self.rule('BPJS TK covered', 'WBBPJS', 'integer')
+        flag.write({'is_contract_component': True, 'value_labels': '0=No;1=Yes'})
+        template = self.env['hr.contract.advantage.template'].create({
+            'name': flag.name, 'code': flag.code, 'value_type': 'amount'})
+        line = self.env['hr.contract.advantage'].create({
+            'contract_id': self.contract.id, 'advantage_template_id': template.id, 'amount': 1})
+        wb = self.export('records')
+        self.assertEqual(self.at(wb, 'Employee records', 'BPJS TK covered').value, 'Y')
+        self.assertEqual(self.review(wb, 'records')['changes'], [])
+        self.set_value(wb, 'Employee records', 'BPJS TK covered', 'N')
+        review = self.review(wb, 'records')
+        self.assertFalse(review['issues'])
+        self.assertEqual([c['value'] for c in review['changes']], [0.0])
+        self.apply(review)
+        self.assertEqual(line.amount, 0.0)
+        self.assertTrue(line.exists())
+        # the monthly file's read-only snapshot shows the word too
+        wb = self.export('template')
+        self.assertEqual(self.at(wb, 'Employee records', 'BPJS TK covered').value, 'N')

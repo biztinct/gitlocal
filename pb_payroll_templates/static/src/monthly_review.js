@@ -9,9 +9,25 @@ const numeric = k => ['money','decimal','integer','quantity','rate'].includes(k)
 export function columnLetter(index) {
     let result='';for(let n=index+1;n;n=Math.floor((n-1)/26))result=String.fromCharCode(65+(n-1)%26)+result;return result;
 }
-export function reviewValue(raw, kind) {
+// PDR P2 — a worded column ("0=No;1=Yes") shows its words and reads them back.
+export function wordFor(col, v) {
+    if(v===null||v===undefined||v===''||!col?.labels?.length)return null;
+    const n=Number(v), hit=Number.isFinite(n)?col.labels.find(o=>Math.abs(o.value-n)<1e-9):null;
+    return hit?hit.label:null;
+}
+function fromWords(raw, col) {
+    const t=String(raw).trim().toLowerCase(), hit=col.labels.find(o=>o.label.trim().toLowerCase()===t);
+    if(hit)return {value:hit.value,error:''};
+    if(/^-?\d+(\.\d+)?$/.test(t))return {value:Number(t),error:''};
+    const pair=col.labels.length===2&&col.labels.every(o=>o.value===0||o.value===1);
+    if(pair&&['y','yes','true'].includes(t))return {value:1,error:''};
+    if(pair&&['n','no','false'].includes(t))return {value:0,error:''};
+    return {value:raw,error:col.yes_no?`${col.label} needs Y or N.`:`${col.label} needs one of: ${col.labels.map(o=>o.label).join(', ')}.`};
+}
+export function reviewValue(raw, kind, col=null) {
     if(raw===null||raw===undefined||raw==='')return {value:null,error:''};
     if(String(raw).trim().startsWith('=')||String(raw).trim().startsWith('@'))return {value:raw,error:'Enter a value, not a formula.'};
+    if(col?.labels?.length&&numeric(kind))return fromWords(raw,col);
     if(numeric(kind)){
         const n=Number(raw);return Number.isFinite(n)&&(kind!=='integer'||Number.isInteger(n))?{value:n,error:''}:{value:raw,error:kind==='integer'?'Enter a whole number.':'Enter a valid number.'};
     }
@@ -54,18 +70,18 @@ export class MonthlyInputReview extends Component {
     get canConfirm(){return !this.state.busy&&!this.stats.issues&&!this.stats.missing&&!this.data.structural_issues.length;}
     get active(){if(!this.state.active)return null;const {eid,fid}=this.state.active;return {row:this.data.grid.rows.find(r=>r.emp_id===eid),column:this.data.grid.columns.find(c=>c.id===fid)};}
     get activeCell(){const a=this.active;return a?.row.cells[a.column.id];}
-    format(v){return v===null||v===undefined||v===''?'Not available':typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:4}):typeof v==='boolean'?(v?'Yes':'No'):String(v);}
-    inputValue(v){return v===null||v===undefined?'':typeof v==='boolean'?(v?'Yes':'No'):String(v);}
+    format(v,c=null){const w=wordFor(c,v);if(w)return w;return v===null||v===undefined||v===''?'Not available':typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:4}):typeof v==='boolean'?(v?'Yes':'No'):String(v);}
+    inputValue(v,c=null){const w=wordFor(c,v);if(w)return w;return v===null||v===undefined?'':typeof v==='boolean'?(v?'Yes':'No'):String(v);}
     period(v){const [y,m]=v.split('-');return new Date(Number(y),Number(m)-1,1).toLocaleDateString(undefined,{month:'long',year:'numeric'});}
     sourceLabel(cell){return {excel:'Excel',system:'System',edited:'Edited',default:'Default'}[cell.source]||'System';}
     baselineLabel(cell){return {finalized_payroll:'Finalized payroll',computed_payroll:'Computed payroll · not finalized',saved_inputs:'Saved monthly inputs',reviewed_inputs:'Reviewed monthly inputs'}[cell.baseline_kind]||'No previous-month value';}
     letter(i){return columnLetter(i+2);}
-    unit(c){return {money:this.data.currency||'Amount',quantity:'Quantity',integer:'Whole number',decimal:'Number',rate:'%',date:'YYYY-MM-DD',boolean:'Yes / No',text:'Text',identifier:'Reference'}[c.kind]||'';}
+    unit(c){if(c.labels?.length)return c.yes_no?'Y or N':c.labels.map(o=>o.label).join(' · ');return {money:this.data.currency||'Amount',quantity:'Quantity',integer:'Whole number',decimal:'Number',rate:'%',date:'YYYY-MM-DD',boolean:'Yes / No',text:'Text',identifier:'Reference'}[c.kind]||'';}
     cellClass(cell){return `pt-grid-cell source-${cell.source}${cell.changed?' is-changed':''}${cell.issue||cell.missing?' has-issue':''}${!this.cellMatches(cell)?' is-muted':''}`;}
-    cellTitle(c,cell){return `${c.label}\n${this.sourceLabel(cell)} · ${cell.detail}\n${cell.has_prior?this.period(this.data.previous_period)+': '+this.format(cell.prior):'No previous-month value'}${cell.issue?'\n'+cell.issue:''}`;}
+    cellTitle(c,cell){return `${c.label}\n${this.sourceLabel(cell)} · ${cell.detail}\n${cell.has_prior?this.period(this.data.previous_period)+': '+this.format(cell.prior,c):'No previous-month value'}${cell.issue?'\n'+cell.issue:''}`;}
     focus(row,c){this.state.active={eid:row.emp_id,fid:c.id};}
     edit(row,c,raw){
-        const cell=row.cells[c.id],parsed=reviewValue(raw,c.kind);
+        const cell=row.cells[c.id],parsed=reviewValue(raw,c.kind,c);
         Object.assign(cell,{value:parsed.value,source:'edited',detail:'Edited in review · this month only',issue:parsed.error,missing:c.required&&parsed.value===null});
         if(c.positive&&parsed.value!==null&&Number(parsed.value)<=0)cell.issue='Enter a number greater than zero.';
         cell.changed=cell.has_prior&&cell.value!==cell.prior;

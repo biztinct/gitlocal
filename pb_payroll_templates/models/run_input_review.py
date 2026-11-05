@@ -99,8 +99,12 @@ class RunInputReview(models.AbstractModel):
                     'destination': card['label'] if card else '',
                     'mapping': sorted(destinations)}
                 value = plain(used.get(rule.code, supplied))
+                # PDR P2 W4 — a worded rule reads its word ("Yes", "All tax").
+                word = rule.value_to_text(value) if rule.value_label_options() and value is not None else ''
+                word = word if isinstance(word, str) else ''
                 cell = {'value': value, 'supplied': plain(supplied), 'old': None, 'old_label': '',
-                    'new_label': str(value) if value is not None else '', 'changed': False,
+                    'value_label': word,
+                    'new_label': word or (str(value) if value is not None else ''), 'changed': False,
                     'decision': 'excel' if not destinations else 'same', 'reason': '',
                     'contract_id': contract.id or False, 'context_only': rule.code not in used}
                 cell['ignored'] = plain(batch._normalize_rule_input_value(rule, supplied)) != value

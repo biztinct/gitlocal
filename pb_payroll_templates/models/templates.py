@@ -25,6 +25,7 @@ except Exception:  # pragma: no cover — biz_debrand absent on this build
     def product_label(env, default='Payobook'):
         return default
 from odoo.addons.pb_hr_payroll_formula.models.pay_period import default_standard_work_days
+from odoo.addons.pb_hr_payroll_formula.models.contract_fill_in import value_from_words
 
 LIMIT = 10000
 TABS = {'time': 'Time', 'adjustments': 'Monthly adjustments'}
@@ -360,6 +361,33 @@ class PayrollTemplates(models.AbstractModel):
                            'reason': _('Saved employee / contract context')})
         return result
 
+    def _word_rules(self, cfg, cards=None):
+        """PDR P2 W2 — `{column or saved-field id: rule}` for every input of
+        this scheme whose numbers have words ("0=No;1=Yes"). A rule without
+        words is not here, so its column keeps numbers exactly as before."""
+        rules = {r.id: r for r in cfg.rule_ids.filtered(
+            lambda r: r.column_type == 'input' and r.value_label_options())}
+        out = {'rule:%s' % rid: rule for rid, rule in rules.items()}
+        for fid, card in (cards if cards is not None else self._cards(cfg)).items():
+            component = card.get('component') or {}
+            if component.get('id') in rules:
+                out.setdefault(fid, rules[component['id']])
+        return out
+
+    @staticmethod
+    def _column_rule(words, column):
+        return words.get(column.get('id')) or words.get(column.get('record_id') or '')
+
+    @staticmethod
+    def _from_words(rule, value, label):
+        """A cell from the file as the stored number. Only a worded rule
+        reads words; Y never silently becomes 0 — an unknown word raises."""
+        if rule is None or value is None or value == '':
+            return value
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return value
+        return value_from_words(rule.value_label_options(), value, label or rule.name)
+
     def _layout(self, cfg, catalog):
         row = self.env['pb.payroll.template.layout'].sudo().search([
             ('config_id', '=', cfg.id), ('company_id', '=', self.env.company.id)], limit=1)
@@ -548,6 +576,7 @@ class PayrollTemplates(models.AbstractModel):
         if any(not c for c in codes) or len(set(codes)) != len(codes):
             raise UserError(_('Every employee needs a unique value for %s before downloading. Update missing or duplicate values in the mapped employee field.') % identity_columns[0]['label'])
         cards = self._cards(cfg)
+        words = self._word_rules(cfg, cards)
         records = self._record_values(cfg, people, cards, period)
         catalog = self._catalog(cfg)
         layout = self._layout(cfg, catalog)
@@ -590,6 +619,7 @@ class PayrollTemplates(models.AbstractModel):
         from openpyxl.styles import Font, PatternFill, Protection, Alignment
         from openpyxl.comments import Comment
         from openpyxl.utils import get_column_letter
+        from openpyxl.worksheet.datavalidation import DataValidation
         wb = openpyxl.Workbook()
         wb.remove(wb.active)
         record_colors = {'employee': ('325F96', 'EAF2FF'), 'contract': ('2F7257', 'EAF7EF'),
@@ -618,7 +648,8 @@ class PayrollTemplates(models.AbstractModel):
                              for part in str(label).split('\n')) for label in headers), default=1)
             ws.row_dimensions[1].height = max(32, lines * 15 + 8)
             for ci, c in enumerate(cols, len(identity) + 1):
-                ws.cell(1, ci).comment = Comment('field: %s\nBlank = keep current value; 0 = update. %s' % (c['id'], 'Locked reference. Changes on this sheet are ignored during monthly upload.' if master_snapshot else 'May be submitted for a reviewed master-record update.' if c.get('record_editable') else ('Read-only context.' if c.get('readonly') else '')), 'Payobook')
+                rule = self._column_rule(words, c)
+                ws.cell(1, ci).comment = Comment('field: %s\n%s %s' % (c['id'], self._word_note(rule) if rule else 'Blank = keep current value; 0 = update.', 'Locked reference. Changes on this sheet are ignored during monthly upload.' if master_snapshot else 'May be submitted for a reviewed master-record update.' if c.get('record_editable') else ('Read-only context.' if c.get('readonly') else '')), 'Payobook')
                 if master_snapshot:
                     color = record_colors.get(c.get('record_group'), ('5A4BB0', 'F0EEF8'))[0]
                     ws.cell(1, ci).fill = PatternFill('solid', fgColor=color)
@@ -636,6 +667,11 @@ class PayrollTemplates(models.AbstractModel):
                     if mode == 'monthly' and value is None and not c.get('readonly') and not source_keys.get(c['id']) and re.search(r'standard.*days|standard working days', c['label'], re.I):
                         start, end = self._period(period)
                         value = default_standard_work_days(start, end)
+                    rule = self._column_rule(words, c)
+                    if rule is not None:
+                        # PDR P2 W2 — Y / N (or the word) in the file; the
+                        # snapshot above keeps the number.
+                        value = rule.value_to_text(value, short=True)
                     vals.append(value)
                 ws.append([person['identity_values'][c['kind']] for c in identity_columns] + vals + [person['row']])
                 for ci, cell in enumerate(ws[ws.max_row], 1):
@@ -652,6 +688,8 @@ class PayrollTemplates(models.AbstractModel):
                         cell.fill = PatternFill('solid', fgColor=record_colors.get(c.get('record_group'), ('5A4BB0', 'F0EEF8'))[1])
                     elif editable:
                         cell.fill = PatternFill('solid', fgColor='FFF7DD')
+            if not master_snapshot:
+                self._word_lists(ws, cols, words, len(identity), DataValidation, get_column_letter)
             ws.column_dimensions[get_column_letter(len(headers))].hidden = True
             ws.freeze_panes = 'C2'
             ws.auto_filter.ref = 'A1:%s%s' % (get_column_letter(len(headers) - 1), max(1, ws.max_row))
@@ -685,6 +723,38 @@ class PayrollTemplates(models.AbstractModel):
         label = product_label(self.env)
         filename = '%s_%s_monthly_template.xlsx' % (label, cfg.country_code) if reusable else '%s_%s_%s_%s.xlsx' % (label, cfg.country_code, mode, period)
         return {'ok': True, 'filename': filename, 'file_b64': base64.b64encode(out.getvalue()).decode(), 'rows': len(people)}
+
+    @staticmethod
+    def _word_list(rule):
+        """What a worded column offers in the file: Y / N, or the words."""
+        if rule.value_label_is_yes_no():
+            return ['Y', 'N']
+        return [o['label'] for o in rule.value_word_choices()]
+
+    def _word_note(self, rule):
+        if rule.value_label_is_yes_no():
+            return 'Y or N (Yes / No; 1 / 0 also work). Blank = keep current value.'
+        return 'One of: %s (or its number). Blank = keep current value.' % ', '.join(self._word_list(rule))
+
+    def _word_lists(self, ws, cols, words, offset, DataValidation, get_column_letter):
+        """An Excel drop-down on every worded column. A warning, not a stop:
+        "yes", "1" or "0" are still read correctly on upload."""
+        last = max(ws.max_row, 2) + 200
+        for ci, c in enumerate(cols, offset + 1):
+            rule = self._column_rule(words, c)
+            if rule is None or (c.get('readonly') and not c.get('record_editable')):
+                continue
+            choices = self._word_list(rule)
+            formula = '"%s"' % ','.join(choices)
+            if any(',' in w or '"' in w for w in choices) or len(formula) > 255:
+                continue    # Excel cannot list these words; the note still says them
+            check = DataValidation(type='list', formula1=formula, allow_blank=True,
+                                   showDropDown=False, errorStyle='warning', showErrorMessage=True,
+                                   errorTitle=rule.name or rule.code,
+                                   error=self._word_note(rule))
+            letter = get_column_letter(ci)
+            check.add('%s2:%s%s' % (letter, letter, last))
+            ws.add_data_validation(check)
 
     def _read(self, file_b64):
         try:
@@ -738,6 +808,7 @@ class PayrollTemplates(models.AbstractModel):
         allowed = set(people.ids)
         by_row = {v['row']: (int(k), v) for k, v in snapshot['employees'].items()}
         cards = self._cards(cfg)
+        words = self._word_rules(cfg, cards)
         records = self._record_values(cfg, people, cards, period)
         monthly = self._current(cfg, period, people)
         changes, issues, blanks, unchanged = [], [], 0, 0
@@ -808,6 +879,14 @@ class PayrollTemplates(models.AbstractModel):
                     if c.get('readonly') and mode == 'monthly':
                         previous = old['records'].get(c.get('record_id'))
                         current = records[eid].get(c.get('record_id'))
+                    rule = self._column_rule(words, c)
+                    if rule is not None:
+                        # PDR P2 W2 — Y / N / Yes / No / a word / the number.
+                        try:
+                            value = self._from_words(rule, value, c['label'])
+                        except ValueError as error:
+                            issues.append('%s: %s' % (at, error))
+                            continue
                     if c.get('readonly'):
                         # Record context can be text even when a legacy payroll
                         # column still has its default numeric value kind.
