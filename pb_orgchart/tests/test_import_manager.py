@@ -408,3 +408,110 @@ class TestImportManager(TransactionCase):
         newbie = self.env['hr.employee'].create({'name': 'Nina Newcomer', 'company_id': self.co.id})
         self.process([(self.tia, {'Reporting Manager': 'Nina Newcomer'})], batch=b)
         self.assertEqual(self.tia.parent_id, newbie)
+
+    # ------------------------------------------------------------ part 3
+    def _one_time_world(self):
+        """A "use once" batch on the test scheme, with Gender, Marital Status
+        and Department wired to the employee the generic way — the columns a
+        use-once file must keep leaving alone — and no manager mapping (the
+        rize shape: the column is read by its heading)."""
+        for key in ('runonly', 'loads'):
+            self.env['biz.approval.seed'].sudo().set_no_approval_needed(self.co, key)
+        self.mapping.unlink()
+        Rule = self.env['hr.formula.rule']
+        Emp = self.env['hr.employee']
+        gender_field = 'sex' if 'sex' in Emp._fields else 'gender'
+        wires = {}
+        for i, (head, field) in enumerate((('Gender', gender_field),
+                                           ('Marital Status', 'marital'),
+                                           ('Department', 'department_id')), start=10):
+            if field not in Emp._fields:
+                continue
+            rule = Rule.create({'config_id': self.cfg.id, 'name': head,
+                                'code': 'MCOT%s' % i, 'column_type': 'input', 'sequence': i})
+            self._map(rule, field)
+            wires[head] = field
+        ctype = self.env['hr.contract.type'].search([], limit=1) or \
+            self.env['hr.contract.type'].create({'name': 'MC Type'})
+        for emp in (self.sam, self.tia):
+            self.env['hr.contract'].create({
+                'name': 'MC %s' % emp.name, 'employee_id': emp.id, 'wage': 1000.0,
+                'state': 'open', 'date_start': '2026-01-01', 'type_id': ctype.id,
+                'resource_calendar_id': (emp.resource_calendar_id.id
+                                         or self.co.resource_calendar_id.id),
+            })
+        return wires
+
+    def _process_one_time(self, rows):
+        b = self.env['hr.payroll.import.batch'].create({
+            'name': 'MC use once', 'source_type': 'excel', 'formula_config_id': self.cfg.id,
+            'company_id': self.co.id, 'one_time': True, 'create_payslips': False,
+            'payroll_period': 'custom', 'date_from': '2026-03-01', 'date_to': '2026-03-31'})
+        Line = self.env['hr.payroll.import.line']
+        lines = [Line.create({'batch_id': b.id, 'sequence': i, 'employee_id': e.id,
+                              'employee_name': e.name, 'raw_data_json': json.dumps(raw),
+                              'state': 'validated'})
+                 for i, (e, raw) in enumerate(rows, start=1)]
+        b.state = 'validated'
+        b.action_process()
+        self.env.flush_all()
+        self.env.invalidate_all()
+        return b, lines
+
+    def test_14_use_once_sets_the_manager_and_nothing_else(self):
+        """Owner ruling 2026-11-05 (part 3): a "use once" file still updates
+        managers; every other employee column stays untouched."""
+        wires = self._one_time_world()
+        Emp = self.env['hr.employee']
+        watched = [f for f in ('sex', 'gender', 'marital', 'department_id', 'job_title',
+                               'work_email', 'coach_id', 'leave_manager_id')
+                   if f in Emp._fields]
+        self._map(self.r_email, 'work_email')
+        before = {f: self.sam[f] for f in watched}
+        b, (line,) = self._process_one_time([(self.sam, {
+            'Reporting Manager': 'Cara Coach', 'Gender': 'Female',
+            'Marital Status': 'Married', 'Department': 'MC Brand New Dept',
+            'Work email': 'changed@mc.test'})])
+        self.assertEqual(line.state, 'processed', line.error_message)
+        self.assertEqual(self.sam.parent_id, self.coachy, "the manager follows the file")
+        self.assertEqual(line.pb_manager_state, 'set')
+        self.assertEqual(len(self.tracking(self.sam)), 1)
+        for f in watched:
+            self.assertEqual(self.sam[f], before[f], "use once leaves %s alone" % f)
+        self.assertFalse(self.env['hr.department'].search([('name', '=', 'MC Brand New Dept')]),
+                         "use once creates no record")
+        self.assertTrue(wires, "the fixture wired at least one other column")
+        self.assertEqual(b.pb_manager_set_count, 1)
+        self.assertTrue(b._pb_manager_summary()['show'])
+
+    def test_15_use_once_without_a_manager_column_changes_nothing(self):
+        self._one_time_world()
+        self.sam.parent_id = self.boss.id
+        self.env.flush_all()
+        Emp = self.env['hr.employee']
+        watched = [f for f in ('parent_id', 'sex', 'gender', 'marital', 'department_id',
+                               'coach_id') if f in Emp._fields]
+        before = {f: self.sam[f] for f in watched}
+        history = len(self.tracking(self.sam))
+        b, (line,) = self._process_one_time([(self.sam, {
+            MAIL_COL: 'dhruv@mc.test', 'Hiring Manager': 'Cara Coach',
+            'Gender': 'Female', 'Marital Status': 'Married'})])
+        self.assertEqual(line.state, 'processed', line.error_message)
+        for f in watched:
+            self.assertEqual(self.sam[f], before[f], "%s unchanged" % f)
+        self.assertEqual(len(self.tracking(self.sam)), history, "no history row")
+        self.assertFalse(line.pb_manager_state)
+        self.assertFalse(b._pb_manager_summary()['show'])
+
+    def test_16_use_once_failed_row_changes_no_manager(self):
+        """A row the use-once run could not process (no contract) sets no manager."""
+        self._one_time_world()
+        _b, (l1, l2) = self._process_one_time([
+            (self.uma, {'Reporting Manager': 'Cara Coach'}),     # Uma has no contract
+            (self.tia, {'Reporting Manager': 'Dhruv Boss'}),
+        ])
+        self.assertEqual(l1.state, 'error')
+        self.assertFalse(self.uma.parent_id)
+        self.assertFalse(l1.pb_manager_state)
+        self.assertEqual(self.tia.parent_id, self.boss)
+        self.assertEqual(l2.pb_manager_state, 'set')

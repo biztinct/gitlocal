@@ -51,6 +51,15 @@ How it works
   and try/except, and a failure is a note on the row.
 * **Unchanged → no write**, so a re-import writes no history at all.
 
+* **A "use once" file updates managers too** (owner ruling 2026-11-05,
+  MANAGERCOL part 3). A one-time batch skips the employee writeback entirely
+  (RECORDS R1, `payroll_import_batch.py` ONE_TIME branch) and still does: no
+  other employee field, bank account, contract or new record. Only this step
+  runs, AFTER the processing loop, for every row that was processed
+  (`_pb_manager_one_time_pass`, from `action_process`) — so a row that failed
+  changes no manager, exactly as on an updating import, where the step runs
+  inside the row's own savepoint.
+
 What the importer sees: every row the step looked at carries
 `pb_manager_state` and, when it was not set, a one-sentence
 `pb_manager_note`; `_pb_manager_summary()` turns them into the line
@@ -186,6 +195,37 @@ class HrPayrollImportBatch(models.Model):
         res = super()._update_employee_from_raw_data(employee, raw_data, line=line)
         self._pb_manager_step(employee, raw_data, line)
         return res
+
+    def action_process(self):
+        """MANAGERCOL part 3 — a "use once" file still sets managers.
+
+        This override sits OUTSIDE the approval gate (pb_orgchart loads after
+        pb_hr_payroll_formula), and the gate's apply step calls
+        `action_process` again, so the pass runs whenever the processing body
+        really ran: the batch is then 'done'. A press that only asked for
+        approval leaves the batch where it was and the pass does nothing. Rows
+        already looked at are skipped, so the nested call (approval applied
+        in the same breath) does not count them twice."""
+        for batch in self:
+            if batch.one_time and batch.state in ('validated', 'matched'):
+                stale = batch.import_line_ids.filtered('pb_manager_state')
+                if stale:
+                    stale.write({'pb_manager_state': False, 'pb_manager_note': False})
+        res = super().action_process()
+        for batch in self:
+            if batch.one_time and batch.state == 'done':
+                batch._pb_manager_one_time_pass()
+        return res
+
+    def _pb_manager_one_time_pass(self):
+        """The manager step, and nothing else, for each processed row of a
+        one-time file, in file order (an earlier row's manager can be found by
+        a later one exactly as in the loop)."""
+        self.ensure_one()
+        lines = self.import_line_ids.filtered(
+            lambda l: l.state == 'processed' and l.employee_id and not l.pb_manager_state)
+        for line in lines.sorted(lambda l: (l.sequence, l.id)):
+            self._pb_manager_step(line.employee_id, line.get_raw_data(), line)
 
     def _pb_manager_step(self, employee, raw_data, line):
         """Run `_sync_employee_manager` so that nothing it does can fail the row."""

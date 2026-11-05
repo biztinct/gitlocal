@@ -38,14 +38,14 @@ WHAT THIS MODULE ADDS
   * QUICK SEARCH: Org chart, Who reports to me?, Plan org chart changes and
     Suggest a chart are in the ⌘K search.
   * THE PAY DATA FILE KEEPS MANAGERS UP TO DATE: whenever the file has a
-    Reporting Manager column, every import sets each person's manager from
-    it, and lists the rows whose name it could not match on the import's
+    Reporting Manager column, every import (a "this run only" file too)
+    sets each person's manager from it, and lists the rows whose name it could not match on the import's
     last step and on the batch page.
 
 Only HR users can change the chart; everyone else sees it read-only. Every
 change is recorded on the employee record.
 """,
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
