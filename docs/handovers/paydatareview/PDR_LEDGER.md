@@ -257,3 +257,25 @@ Three complaints, all confirmed live:
   pre-fills Paid days / Period days suggestions the month has not saved yet,
   so re-uploading an untouched download proposes 226 changes there. Judge a
   round trip by the columns you changed.
+* **G22 — `pb_contracts` now inherits the full contract form (P3).** Before P3
+  it only inherited the history form; the form-level home is
+  `pb_contracts/views/hr_contract_form_views.xml`
+  (`hr_contract_view_form_pb_hr_responsible_optional`). HR Responsible is
+  optional there on every database (owner ruling 2026-11-05); G17 no longer
+  blocks contract-form tests on rize.
+* **G23 — a fifth tenant, `sudima`, exists since 2026-11-05 13:21 UTC** (cloned
+  from payobook_template by another session). It is not in the four-database
+  deploy set, so a `-u` there is not automatic: after any deploy its files are
+  new but its `latest_version` is old (views/data not loaded). Ask before
+  adding it to `DBS`.
+* **G24 — a pay package line keeps no component code.** The only trace is the
+  note the build writes ("… (CODE)."). Counting lines by origin = parse the
+  note, then find the rule with the panel's preference.
+* **G25 — a fresh DB copy can get a live connection.** The main service holds a
+  session on a new copy within minutes (dbfilter `^%d$`); `dropdb` refuses —
+  use `dropdb --force`.
+* **G26 — F2 trusts the rule's value type.** A count marked `money` with no words
+  (payobook `NPT` = number of dependants) still becomes an earning line. Fix the
+  rule, not the package code.
+* **G27 — clearing an HTML field in the form stores `<div …><br></div>`, not
+  NULL.** Add-then-clear browser checks leave that behind; harmless on screen.
