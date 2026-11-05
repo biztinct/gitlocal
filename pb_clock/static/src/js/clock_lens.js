@@ -229,6 +229,12 @@ export class ClockLens extends Component {
         }
     }
 
+    selectRow(i) { this.state.sel = i; }
+    noop() {}
+    onDeviceKey(ev, dv) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); this.toggleDevice(dv); }
+    }
+
     openAssign(row) {
         this.state.sel = this.unknown.rows.indexOf(row);
         this.state.assign = { code: row.code, query: "", matches: [], ix: 0, searching: false };

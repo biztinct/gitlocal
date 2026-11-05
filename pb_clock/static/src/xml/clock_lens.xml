@@ -86,7 +86,7 @@
                 </div>
                 <div t-foreach="unknown.rows" t-as="r" t-key="r.code" role="row"
                      t-attf-class="pbck-tr {{ r_index === state.sel ? 'is-sel' : '' }} {{ r.focus ? 'is-focus' : '' }}"
-                     t-on-click="() => { this.state.sel = r_index; }">
+                     t-on-click="() => this.selectRow(r_index)">
                   <span class="code"><b t-esc="r.code"/><i t-if="r.this_week" class="wk">this week</i></span>
                   <span class="muted" t-esc="seenLabel(r.first_seen)"/>
                   <span class="muted" t-esc="seenLabel(r.last_seen)"/>
@@ -107,7 +107,7 @@
                       <span class="pbck-ta">
                         <input type="text" class="pbck-ta__in" placeholder="Type a name or a badge ID"
                                t-att-value="state.assign.query" t-on-input="onAssignInput"
-                               t-on-keydown="onAssignKey" t-on-click.stop="() => {}"
+                               t-on-keydown="onAssignKey" t-on-click.stop="noop"
                                aria-label="Find the person"/>
                         <span class="pbck-ta__list" t-if="state.assign.matches.length">
                           <button t-foreach="state.assign.matches" t-as="m" t-key="m.id"
@@ -165,7 +165,7 @@
             <div t-foreach="devices" t-as="dv" t-key="dv.id" role="button" tabindex="0"
                  t-attf-class="pbck-dev {{ state.filters.device_id === dv.id ? 'is-on' : '' }} {{ dv.punches_today ? 'is-live' : '' }}"
                  t-on-click="() => this.toggleDevice(dv)"
-                 t-on-keydown="(ev) => { if (ev.key === 'Enter') { this.toggleDevice(dv); } }"
+                 t-on-keydown="(ev) => this.onDeviceKey(ev, dv)"
                  t-att-title="tipDevice(dv)">
               <div class="pbck-dev__top">
                 <span class="pbck-dev__ic" t-out="ic(dv.kind === 'upload' ? 'upload' : 'scan', 15)"/>
@@ -178,7 +178,7 @@
                 <span class="muted">last <t t-esc="deviceLast(dv)"/></span>
               </div>
               <label class="pbck-switch" t-if="d.can_manage and dv.kind === 'terminal'"
-                     t-on-click.stop="() => {}" title="A machine that is not allowed will not be listened to once machines can send punches">
+                     t-on-click.stop="noop" title="A machine that is not allowed will not be listened to once machines can send punches">
                 <input type="checkbox" t-att-checked="dv.allowed" t-on-change="(ev) => this.toggleAllowed(dv, ev)"/>
                 <span class="tr"><i/></span><span>Allowed</span>
               </label>
