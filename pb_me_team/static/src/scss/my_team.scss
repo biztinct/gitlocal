@@ -281,6 +281,24 @@
         color: var(--pbim-rose); border-color: var(--pbim-rose-soft);
         &:hover { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
     }
+    // hours worked: this week and this month, a marker where they should be by now
+    .pbmt-person-h { font-size: 12px; color: var(--pbim-primary-strong); font-weight: 600; }
+    .pbmt-key.is-mark { width: 2px; height: 12px; border-radius: 0; background: var(--pbim-ink); }
+    .pbmt-hrs-head, .pbmt-hrs .pbmt-row { display: grid; grid-template-columns: minmax(160px, 1.1fr) 1fr 1fr; gap: 18px; align-items: center; }
+    .pbmt-hrs-head { padding: 0 0 4px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-muted); }
+    .pbmt-hrs-who { display: flex; align-items: center; gap: 10px; min-width: 0; b { font-size: 13.5px; color: var(--pbim-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } }
+    .pbmt-hrs-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pbmt-hrs-n { font-size: 12.5px; color: var(--pbim-muted); b { font-size: 14px; color: var(--pbim-ink); font-variant-numeric: tabular-nums; } }
+    .pbmt-hrs-ot { color: var(--pbim-amber); font-weight: 600; }
+    .pbmt-hrs-bar {
+        position: relative; display: block; height: 8px; border-radius: 999px; background: var(--pbim-bg);
+        i { display: block; height: 100%; border-radius: 999px; background: var(--pbim-primary); }
+        em { position: absolute; top: -3px; width: 2px; height: 14px; margin-left: -1px; background: var(--pbim-ink); border-radius: 1px; }
+    }
+    .pbmt-hrs-s { font-size: 12px; color: var(--pbim-muted); }
+    .pbmt-hrs-cell.is-short { .pbmt-hrs-bar i { background: var(--pbim-amber); } .pbmt-hrs-s { color: var(--pbim-amber); font-weight: 700; } }
+    .pbmt-hrs-cell.is-over { .pbmt-hrs-bar i { background: var(--pbim-rose); } .pbmt-hrs-s { color: var(--pbim-rose); font-weight: 700; } }
+
     // step 3 — joiners, gaps, overtime, balances, the chart, I'm away, more
     .pbmt-progress { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 150px; }
     .pbmt-progress-bar, .pbmt-meter {
@@ -342,6 +360,8 @@
         .pbmt-ap-amt { display: none; }
         .pbmt-actions .pbme-btn { flex: 1 1 auto; }
         .pbmt-row { flex-wrap: wrap; .pbme-btn { margin-left: 48px; } }
+        .pbmt-hrs-head { display: none; }
+        .pbmt-hrs .pbmt-row { grid-template-columns: 1fr 1fr; .pbmt-hrs-who { grid-column: 1 / -1; } }
         .pbmt-progress, .pbmt-bal { margin-left: 48px; align-items: flex-start; justify-content: flex-start; }
     }
 }

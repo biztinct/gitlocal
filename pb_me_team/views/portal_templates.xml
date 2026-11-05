@@ -120,6 +120,7 @@
               <span class="pbmt-person-body">
                 <b class="pbmt-person-n" t-out="r['name']"/>
                 <span t-if="r['job']" class="pbmt-person-j" t-out="r['job']"/>
+                <span t-if="r.get('hours_today')" class="pbmt-person-h"><t t-out="'{:g}'.format(r['hours_today'])"/> h worked today</span>
               </span>
               <t t-call="pb_me_team.pbmt_status"/>
             </li>
@@ -253,6 +254,35 @@
               <span class="pbmt-chip pbmt-chip--rose"><t t-if="len(r['days']) == 1">1 day</t><t t-else=""><t t-out="len(r['days'])"/> days</t></span>
             </li>
           </ul>
+        </section>
+
+        <!-- Hours worked -->
+        <section t-if="hours and hours['rows']" class="pbmt-sec" id="hours" aria-labelledby="pbmt-hrs-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-hrs-h">Hours worked</h2>
+            <p class="pbmt-legend"><span class="pbmt-key is-away"/>Worked, from clock-ins <span class="pbmt-key is-mark"/>Where they should be by now</p>
+          </div>
+          <div class="pbmt-hrs-head" aria-hidden="true"><span/><span>This week</span><span><t t-out="hours['month']" t-options="{'widget': 'date', 'format': 'MMMM'}"/></span></div>
+          <ul class="pbmt-list pbmt-hrs">
+            <li t-foreach="hours['rows']" t-as="r" class="pbmt-row">
+              <span class="pbmt-hrs-who">
+                <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+                <b t-out="r['name']"/>
+              </span>
+              <t t-foreach="['week', 'month']" t-as="k">
+                <t t-set="h" t-value="r[k]"/>
+                <span t-att-class="'pbmt-hrs-cell is-%s' % h['state']">
+                  <span class="pbmt-hrs-n"><b t-out="'{:g}'.format(h['worked'])"/> of <t t-out="'{:g}'.format(h['planned'])"/> h<span t-if="k == 'month' and r['ot']" class="pbmt-hrs-ot"> · <t t-out="'{:g}'.format(r['ot'])"/> h overtime</span></span>
+                  <span class="pbmt-hrs-bar"><i t-att-style="'width: %s%%' % h['share']"/><em t-if="h['planned']" t-att-style="'left: %s%%' % h['mark']"/></span>
+                  <span t-if="h['state'] == 'short'" class="pbmt-hrs-s"><t t-out="'{:g}'.format(round(h['so_far'] - h['worked'], 1))"/> h behind</span>
+                  <span t-elif="h['state'] == 'over'" class="pbmt-hrs-s"><t t-out="'{:g}'.format(round(h['worked'] - h['so_far'], 1))"/> h ahead</span>
+                  <span t-else="" class="pbmt-hrs-s">On track</span>
+                  <span class="visually-hidden"><t t-if="k == 'week'">This week</t><t t-else="">This month</t></span>
+                </span>
+              </t>
+            </li>
+          </ul>
+          <p class="pbmt-sec-note">Planned hours follow each person's working hours, with leave and public holidays taken out.</p>
         </section>
 
         <!-- Overtime -->

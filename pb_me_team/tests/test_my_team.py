@@ -151,6 +151,29 @@ class TestMyTeamFacts(TransactionCase):
         names = [r['id'] for r in self.Team.joiners(self.boss_emp)]
         self.assertIn(self.b.id, names)
 
+    def test_mt10_hours_from_clock_ins(self):
+        from odoo import fields as F
+        now = F.Datetime.now().replace(microsecond=0)
+        self.env['hr.attendance'].sudo().create({
+            'employee_id': self.a.id, 'check_in': now - timedelta(hours=3),
+            'check_out': now - timedelta(hours=1)})
+        self.env['hr.attendance'].sudo().create({
+            'employee_id': self.b.id, 'check_in': now - timedelta(minutes=90)})
+        out = self.Team.hours(self.boss_emp)
+        self.assertIsNotNone(out)
+        rows = {r['id']: r for r in out['rows']}
+        self.assertGreater(rows[self.a.id]['week']['worked'], 0)
+        self.assertAlmostEqual(rows[self.b.id]['week']['worked'], 1.5, delta=0.1)
+        self.assertGreaterEqual(rows[self.a.id]['month']['worked'],
+                                rows[self.a.id]['week']['worked'] - 0.01
+                                if now.day >= 7 else 0)
+        for r in out['rows']:
+            for k in ('week', 'month'):
+                self.assertIn(r[k]['state'], ('ok', 'short', 'over'))
+                self.assertLessEqual(r[k]['share'], 100)
+        today = {r['id']: r for r in self.Team.today(self.boss_emp)['rows']}
+        self.assertAlmostEqual(today[self.b.id]['hours_today'], 1.5, delta=0.1)
+
     def test_mt5b_yearly_dates(self):
         nxt = self.env['pb.me.team']._next_yearly
         self.assertEqual(nxt(date(1990, 2, 28), date(2026, 3, 1)),

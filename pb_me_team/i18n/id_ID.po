@@ -125,6 +125,15 @@ msgstr ""
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span class=\"pbmt-key is-away\"/>Worked, from clock-ins <span class=\"pbmt-"
+"key is-mark\"/>Where they should be by now"
+msgstr ""
+"<span class=\"pbmt-key is-away\"/>Sudah bekerja, dari absen <span "
+"class=\"pbmt-key is-mark\"/>Target sampai saat ini"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "<span class=\"pbmt-label\">First day away</span>"
 msgstr "<span class=\"pbmt-label\">Hari pertama tidak masuk</span>"
 
@@ -161,6 +170,11 @@ msgstr "<span class=\"pbmt-node-j\">Atasan Anda</span>"
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "<span class=\"visually-hidden\">Person</span>"
 msgstr "<span class=\"visually-hidden\">Orang</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span/><span>This week</span>"
+msgstr "<span/><span>Minggu ini</span>"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
@@ -367,6 +381,11 @@ msgstr "Alihkan persetujuan saya"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Hours worked"
+msgstr "Jam kerja"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "I'm away"
 msgstr "Saya tidak masuk"
 
@@ -526,6 +545,11 @@ msgstr "Cuti"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "On track"
+msgstr "Sesuai target"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
 msgid "Open approvals"
 msgstr "Buka persetujuan"
@@ -563,6 +587,15 @@ msgid ""
 msgstr ""
 "Alihkan persetujuan ke rekan kerja selama Anda tidak masuk. Permintaan baru "
 "akan ke mereka. Permintaan yang sudah menunggu tetap pada Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"Planned hours follow each person's working hours, with leave and public "
+"holidays taken out."
+msgstr ""
+"Jam rencana mengikuti jam kerja masing-masing orang, tanpa cuti dan hari "
+"libur nasional."
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
@@ -675,6 +708,11 @@ msgstr ""
 " masuk, dan apa yang akan datang."
 
 #. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "This month"
+msgstr "Bulan ini"
+
+#. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
 msgid ""
 "This page is for managers. When someone's record names you as their manager,"
@@ -682,6 +720,11 @@ msgid ""
 msgstr ""
 "Halaman ini untuk atasan. Saat data seseorang mencantumkan Anda sebagai "
 "atasannya, mereka tampil di sini."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "This week"
+msgstr "Minggu ini"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
@@ -866,6 +909,11 @@ msgstr "jam"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h ahead"
+msgstr "jam lebih"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "h approved"
 msgstr "jam disetujui"
 
@@ -873,6 +921,21 @@ msgstr "jam disetujui"
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "h asked"
 msgstr "jam diajukan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h behind"
+msgstr "jam kurang"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h overtime"
+msgstr "jam lembur"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h worked today"
+msgstr "jam bekerja hari ini"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team

@@ -61,6 +61,7 @@ class PbMeTeamPortal(PbMePortal):
             'chart': safe(lambda: Team.chart(emp), None),
             'overtime': safe(lambda: Team.overtime(emp), None),
             'gaps': safe(lambda: Team.gaps(emp), None),
+            'hours': safe(lambda: Team.hours(emp), None),
             'balances': safe(lambda: Team.balances(emp), []),
             'joiners': safe(lambda: Team.joiners(emp), []),
             'handover': safe(lambda: Team.handover(emp), None),

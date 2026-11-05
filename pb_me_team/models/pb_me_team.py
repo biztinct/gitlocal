@@ -342,6 +342,11 @@ class PbMeTeam(models.AbstractModel):
                 last = atts[-1]
                 row['since'] = first.strftime('%H:%M')
                 first_h = first.hour + first.minute / 60.0
+                now_utc = (now or fields.Datetime.now())
+                row['hours_today'] = round(sum(
+                    (a.worked_hours or 0.0) if a.check_out else max(
+                        0.0, (now_utc - a.check_in).total_seconds() / 3600.0)
+                    for a in atts), 1)
                 if not last.check_out:
                     late = (start is not None
                             and first_h > start + LATE_GRACE_MIN / 60.0)
@@ -546,6 +551,88 @@ class PbMeTeam(models.AbstractModel):
             out.sort(key=lambda r: -r['total'])
             return {'cap': cap, 'month': first, 'rows': out}
         return self._optional('hr.overtime.request', read)
+
+    # ========================================================= hours worked
+    @api.model
+    def _aware(self, naive_utc):
+        return pytz.utc.localize(naive_utc)
+
+    @api.model
+    def _planned_hours(self, members, start, end):
+        """{employee id: planned hours} between two naive-UTC datetimes, on
+        each person's own working hours, leave and public holidays taken out."""
+        if not members or end <= start:
+            return {m.id: 0.0 for m in members}
+        data = members._get_work_days_data_batch(self._aware(start),
+                                                 self._aware(end))
+        return {m.id: float((data.get(m.id) or {}).get('hours') or 0.0)
+                for m in members}
+
+    @api.model
+    def hours(self, emp, now=None):
+        """Hours worked from clock-ins against hours planned, this week and
+        this month, per person; plus this month's approved overtime. None when
+        the company does not clock in."""
+        team = self.team(emp)
+        if not team or not self._optional(
+                'hr.attendance', lambda M: self._clock_in_use(emp, team)):
+            return None
+        now_utc = (now or fields.Datetime.now()).replace(microsecond=0)
+        today = self._local_now(emp, now).date()
+        monday = today - timedelta(days=today.weekday())
+        first = today.replace(day=1)
+        nxt_month = (first + timedelta(days=32)).replace(day=1)
+        periods = {
+            'week': (self._utc_range(emp, monday)[0],
+                     self._utc_range(emp, monday + timedelta(days=6))[1]),
+            'month': (self._utc_range(emp, first)[0],
+                      self._utc_range(emp, nxt_month)[0]),
+        }
+        worked = {key: {} for key in periods}
+        lo = min(p[0] for p in periods.values())
+        for att in self.env['hr.attendance'].sudo().search(
+                [('employee_id', 'in', team.ids), ('check_in', '>=', lo),
+                 ('check_in', '<', now_utc)]):
+            if att.check_out:
+                h = att.worked_hours or 0.0
+            else:
+                h = max(0.0, (now_utc - att.check_in).total_seconds() / 3600.0)
+            for key, (start, end) in periods.items():
+                if start <= att.check_in < end:
+                    worked[key][att.employee_id.id] = \
+                        worked[key].get(att.employee_id.id, 0.0) + h
+        ot = {}
+        if 'hr.overtime.request' in self.env:
+            for row in self.env['hr.overtime.request'].sudo().search([
+                    ('employee_id', 'in', team.ids), ('state', '=', 'approved'),
+                    ('date', '>=', first), ('date', '<', nxt_month)]):
+                ot[row.employee_id.id] = ot.get(row.employee_id.id, 0.0) + (
+                    row.approved_hours or row.planned_hours or 0.0)
+        out = {'rows': [], 'week_start': monday, 'month': first}
+        cols = {}
+        for key, (start, end) in periods.items():
+            cols[key] = (self._planned_hours(team, start, end),
+                         self._planned_hours(team, start, min(end, now_utc)))
+        for member in team:
+            row = dict(self._person(member), ot=round(ot.get(member.id, 0.0), 1))
+            for key in periods:
+                full = cols[key][0].get(member.id, 0.0)
+                so_far = cols[key][1].get(member.id, 0.0)
+                done = worked[key].get(member.id, 0.0)
+                slack = 2.0 if key == 'week' else 4.0
+                row[key] = {
+                    'worked': round(done, 1), 'planned': round(full, 1),
+                    'so_far': round(so_far, 1),
+                    'share': min(100, round(100 * done / full)) if full else 0,
+                    'mark': min(100, round(100 * so_far / full)) if full else 0,
+                    'state': ('over' if full and done > so_far + slack
+                              else 'short' if so_far and done < so_far - slack
+                              else 'ok'),
+                }
+            out['rows'].append(row)
+        rank = {'short': 0, 'over': 1, 'ok': 2}
+        out['rows'].sort(key=lambda r: (rank[r['week']['state']], r['name']))
+        return out
 
     # ===================================================== missing clock-ins
     @api.model

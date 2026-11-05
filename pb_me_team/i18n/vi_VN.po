@@ -125,6 +125,15 @@ msgstr ""
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span class=\"pbmt-key is-away\"/>Worked, from clock-ins <span class=\"pbmt-"
+"key is-mark\"/>Where they should be by now"
+msgstr ""
+"<span class=\"pbmt-key is-away\"/>Đã làm, theo chấm công <span class=\"pbmt-"
+"key is-mark\"/>Mức cần đạt đến lúc này"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "<span class=\"pbmt-label\">First day away</span>"
 msgstr "<span class=\"pbmt-label\">Ngày vắng đầu tiên</span>"
 
@@ -161,6 +170,11 @@ msgstr "<span class=\"pbmt-node-j\">Quản lý của bạn</span>"
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "<span class=\"visually-hidden\">Person</span>"
 msgstr "<span class=\"visually-hidden\">Người</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span/><span>This week</span>"
+msgstr "<span/><span>Tuần này</span>"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
@@ -366,6 +380,11 @@ msgstr "Giao lại phê duyệt của tôi"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Hours worked"
+msgstr "Giờ làm việc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "I'm away"
 msgstr "Tôi vắng mặt"
 
@@ -524,6 +543,11 @@ msgstr "Nghỉ phép"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "On track"
+msgstr "Đúng tiến độ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
 msgid "Open approvals"
 msgstr "Mở phê duyệt"
@@ -561,6 +585,15 @@ msgid ""
 msgstr ""
 "Giao phê duyệt cho đồng nghiệp khi bạn vắng mặt. Yêu cầu mới sẽ chuyển đến "
 "họ. Yêu cầu đang chờ vẫn ở lại với bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"Planned hours follow each person's working hours, with leave and public "
+"holidays taken out."
+msgstr ""
+"Giờ kế hoạch theo lịch làm việc của từng người, đã trừ ngày nghỉ phép và "
+"ngày lễ."
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
@@ -672,6 +705,11 @@ msgstr ""
 "sắp diễn ra."
 
 #. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
 msgid ""
 "This page is for managers. When someone's record names you as their manager,"
@@ -679,6 +717,11 @@ msgid ""
 msgstr ""
 "Trang này dành cho quản lý. Khi hồ sơ của ai đó ghi bạn là quản lý, họ sẽ "
 "hiện ở đây."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "This week"
+msgstr "Tuần này"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
@@ -864,6 +907,11 @@ msgstr "giờ"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h ahead"
+msgstr "giờ vượt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "h approved"
 msgstr "giờ đã duyệt"
 
@@ -871,6 +919,21 @@ msgstr "giờ đã duyệt"
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
 msgid "h asked"
 msgstr "giờ đã xin"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h behind"
+msgstr "giờ thiếu"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h overtime"
+msgstr "giờ làm thêm"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h worked today"
+msgstr "giờ đã làm hôm nay"
 
 #. module: pb_me_team
 #: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team

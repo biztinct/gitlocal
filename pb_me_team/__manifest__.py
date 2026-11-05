@@ -14,7 +14,8 @@ who has a decision waiting on them:
     approvals waiting) and "Needs you" rows for approvals and trial periods
     ending.
   * `/my/team` — today (in / late / on leave / no clock-in yet), who is away
-    over the next four weeks with busy days flagged, trial periods ending,
+    over the next four weeks with busy days flagged, hours worked from
+    clock-ins against hours planned (this week and this month), trial periods ending,
     contracts ending, birthdays and work anniversaries.
   * `/my/team/approvals` — waiting for you / waiting on others / decided, and
     one request with its facts, the route, the trail and Approve / Send back /
@@ -24,7 +25,7 @@ who has a decision waiting on them:
 Approvals are the approvals inbox's (`pb.approval.inbox`), read and decided
 as the signed-in person: nothing here grants a right.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Hidden/Tools',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
