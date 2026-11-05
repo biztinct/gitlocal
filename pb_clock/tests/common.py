@@ -65,3 +65,48 @@ class ClockCase(TransactionCase):
 
     def hours(self, att):
         return round((att.check_out - att.check_in).total_seconds() / 3600.0, 2)
+
+
+class AdmsCase(ClockCase):
+    """CLOCK-2: a machine that pushes. `self.call(route, …)` drives the
+    receiver's protocol door (`pb.clock.adms.handle`) exactly as the HTTP
+    controller does, without HTTP; `test_iclock_http.py` drives the real
+    route with the emulator."""
+
+    META = {'ip': '203.0.113.7', 'proto': 'https'}
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.Adms = cls.env['pb.clock.adms']
+        cls.Device = cls.env['pb.clock.device'].sudo().with_context(active_test=False)
+        cls.Command = cls.env['pb.clock.command'].sudo()
+        cls.Lens = cls.env['pb.clock.lens'].with_company(cls.company)
+
+    def setUp(self):
+        super().setUp()
+        from odoo.addons.pb_clock.models import clock_adms
+        clock_adms._TABLE_LOGGED.clear()
+        clock_adms._RATE.clear()
+
+    def allowed(self, sn='TSTA0001', history_from=None, **extra):
+        from odoo import fields
+        vals = {'name': 'Gate ' + sn, 'serial': sn, 'kind': 'terminal',
+                'company_id': self.company.id, 'tz': 'Asia/Ho_Chi_Minh',
+                'state': 'allowed', 'allowed_at': fields.Datetime.now(),
+                'first_seen_at': fields.Datetime.now(), 'attlog_stamp': '0',
+                'history_from': history_from}
+        vals.update(extra)
+        return self.Device.create(vals)
+
+    def call(self, route, method='GET', body='', meta=None, sn='TSTA0001', **params):
+        if sn is not None:
+            params.setdefault('SN', sn)
+        return self.Adms.handle(route, method, params, body, meta or dict(self.META))
+
+    @staticmethod
+    def att(pin, local, status='0', verify='1', extra=('0', '0')):
+        return '\t'.join([pin, local, status, verify] + list(extra))
+
+    def ledger(self, device):
+        return self.Punch.sudo().search([('device_id', '=', device.id)], order='punch_utc, id')

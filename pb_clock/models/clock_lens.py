@@ -116,6 +116,7 @@ class PbClockLens(models.AbstractModel):
         filters = filters or {}
         now = fields.Datetime.now()
         devices = self._safe(lambda: self._devices(now), [])
+        pending = self._safe(lambda: self._pending(), [])
         return {
             'week_start': df.isoformat(),
             'week_end': dt.isoformat(),
@@ -134,6 +135,12 @@ class PbClockLens(models.AbstractModel):
                  ('state', 'in', ('new', 'matched'))]), 0),
             'settings': self._safe(self._settings, {}),
             'focus_codes': [str(c) for c in (codes or [])][:50],
+            'pending': pending,
+            'zones': list(pytz.common_timezones) if pending else [],
+            'blocked': self._safe(lambda: self._blocked(), []),
+            'missing_checkout': self._safe(lambda: self._missing_checkout(),
+                                           {'rows': [], 'total': 0}),
+            'address': self._safe(self._address, {}),
         }
 
     @api.model
@@ -141,7 +148,88 @@ class PbClockLens(models.AbstractModel):
         c = self.env.company
         return {'max_span_h': c.pb_clock_max_span_h,
                 'double_tap_min': c.pb_clock_double_tap_min,
-                'trust_direction': c.pb_clock_trust_direction}
+                'trust_direction': c.pb_clock_trust_direction,
+                'allow_plain': c.pb_clock_allow_plain}
+
+    @api.model
+    def _address(self):
+        """What HR types into the machine: this workspace's own address."""
+        host = ''
+        try:
+            from odoo.http import request
+            if request and request.httprequest:
+                host = (request.httprequest.host or '').split(':')[0]
+        except Exception:  # noqa: BLE001
+            host = ''
+        if not host:
+            base = self.env['ir.config_parameter'].sudo().get_param('web.base.url') or ''
+            host = base.split('://')[-1].split('/')[0].split(':')[0]
+        return {'host': host, 'port': 443, 'plain_port': 80,
+                'plain_on': bool(self.env.company.pb_clock_allow_plain)}
+
+    @api.model
+    def _pending(self):
+        """Machines asking to connect — the whole database (a database is one
+        tenant; the manager places the machine in a company on Allow)."""
+        Device = self.env['pb.clock.device'].sudo().with_context(active_test=False)
+        rows = Device.search([('state', '=', 'pending'), ('kind', '=', 'terminal')],
+                             order='first_seen_at desc, id desc', limit=50)
+        return [{
+            'id': d.id, 'serial': d.serial or '', 'ip': d.ip or '',
+            'firmware': d.firmware or (('push %s' % d.pushver) if d.pushver else ''),
+            'first_seen_at': self._dt(d.first_seen_at or d.create_date),
+            'last_seen_at': self._dt(d.last_seen_at),
+            'name': d.name if d.name and d.name != d.serial else '',
+            'location': d.location or '',
+            'tz': d.tz or self.env.company.resource_calendar_id.tz or 'UTC',
+            'history_from': fields.Date.to_string(d._default_history_from()),
+            'known': bool(self.env['pb.clock.punch'].sudo().search_count(
+                [('device_id', '=', d.id)], limit=1)),
+        } for d in rows]
+
+    @api.model
+    def _blocked(self):
+        Device = self.env['pb.clock.device'].sudo().with_context(active_test=False)
+        rows = Device.search([('state', '=', 'blocked'), ('kind', '=', 'terminal'),
+                              '|', ('company_id', 'in', self._company_ids()),
+                              ('allowed_at', '=', False)],
+                             order='last_seen_at desc, id desc', limit=50)
+        return [{'id': d.id, 'serial': d.serial or '', 'name': d.name or '',
+                 'last_seen_at': self._dt(d.last_seen_at)} for d in rows]
+
+    @api.model
+    def _missing_checkout(self):
+        """D11: days the time clock closed at their own check-in."""
+        Att = self.env['hr.attendance'].sudo()
+        rows = Att.search([('pb_clock_auto_closed', '=', True),
+                           ('employee_id.company_id', 'in', self._company_ids())],
+                          order='check_in desc', limit=200)
+        total = Att.search_count([('pb_clock_auto_closed', '=', True),
+                                  ('employee_id.company_id', 'in', self._company_ids())])
+        Corr = self.env['hr.attendance.correction'].sudo() \
+            if 'hr.attendance.correction' in self.env else None
+        out = []
+        cache = {}
+        for a in rows:
+            try:
+                day = a._pb_local_day(cache)
+                emp = a.employee_id
+                tz = pytz.timezone(emp._get_tz() or 'UTC')
+                local_in = pytz.UTC.localize(a.check_in).astimezone(tz)
+                filed = bool(Corr and Corr.search_count([
+                    ('employee_id', '=', emp.id), ('date', '=', day),
+                    ('state', '!=', 'refused')], limit=1))
+                out.append({
+                    'id': a.id, 'employee_id': emp.id, 'name': emp.name,
+                    'day': fields.Date.to_string(day),
+                    'day_label': day.strftime('%a %d %b'),
+                    'check_in': local_in.strftime('%H:%M'),
+                    'filed': filed,
+                    'note': _("Check-out missing; closed so later days can be paired."),
+                })
+            except Exception as exc:  # noqa: BLE001
+                _logger.debug("Time clocks lens: missing check-out %s: %s", a.id, exc)
+        return {'rows': out, 'total': total}
 
     @api.model
     def _devices(self, now):
@@ -156,12 +244,42 @@ class PbClockLens(models.AbstractModel):
             total = Punch.search_count([('device_id', '=', d.id)])
             if d.kind == 'upload' and not total:
                 continue        # the pseudo device shows once it holds a punch
-            out.append({
+            if d.kind == 'terminal' and d.state in ('pending', 'blocked'):
+                continue        # the strip / the ignored list show these
+            row = {
                 'id': d.id, 'name': d.name, 'location': d.location or '',
                 'kind': d.kind, 'serial': d.serial or '', 'tz': d.tz or '',
                 'allowed': d.allowed, 'last_punch_at': self._dt(d.last_punch_at),
                 'punches_today': today, 'punches_total': total,
-            })
+                'state': d.state, 'listening': d.kind == 'terminal' and d._listening(),
+            }
+            if row['listening']:
+                last_cmd = self.env['pb.clock.command'].sudo().search(
+                    [('device_id', '=', d.id), ('kind', '!=', 'set_time')],
+                    order='id desc', limit=1)
+                row.update({
+                    'last_seen_at': self._dt(d.last_seen_at),
+                    'ip': d.ip or '', 'lan_ip': d.lan_ip or '',
+                    'firmware': d.firmware or '',
+                    'plain': bool(d.plain_connection),
+                    'skew_s': d.clock_skew_s or 0,
+                    'skew_n': len(d._skew_list()),
+                    'corrected_at': self._dt(d.clock_corrected_at),
+                    'corrected_by_s': d.clock_corrected_by_s or 0,
+                    'history_from': fields.Date.to_string(d.history_from) if d.history_from else '',
+                    'before_start': Punch.search_count([
+                        ('device_id', '=', d.id), ('state', '=', 'ignored_before_start')]),
+                    'users_count': d.users_count or 0,
+                    'attlog_count': d.attlog_count or 0,
+                    'command': ({
+                        'id': last_cmd.id, 'kind': last_cmd.kind, 'state': last_cmd.state,
+                        'queued_at': self._dt(last_cmd.queued_at),
+                        'done_at': self._dt(last_cmd.done_at),
+                        'since': fields.Date.to_string(last_cmd.since) if last_cmd.since else '',
+                        'note': last_cmd.note or '',
+                    } if last_cmd else False),
+                })
+            out.append(row)
         out.sort(key=lambda r: (r['kind'] == 'upload', r['name'].lower()))
         return out
 
@@ -498,7 +616,8 @@ class PbClockLens(models.AbstractModel):
                 'message': msg}
 
     @api.model
-    def save_settings(self, max_span_h, double_tap_min, trust_direction):
+    def save_settings(self, max_span_h, double_tap_min, trust_direction,
+                      allow_plain=None):
         if not self._is_manager():
             return {'error': _("Only attendance managers can change these settings.")}
         try:
@@ -510,9 +629,11 @@ class PbClockLens(models.AbstractModel):
             return {'error': _("The longest work day must be between 8 and 36 hours.")}
         if not 0 <= tap <= 30:
             return {'error': _("The double-tap window must be between 0 and 30 minutes.")}
-        self.env.company.sudo().write({
-            'pb_clock_max_span_h': span, 'pb_clock_double_tap_min': tap,
-            'pb_clock_trust_direction': bool(trust_direction)})
+        vals = {'pb_clock_max_span_h': span, 'pb_clock_double_tap_min': tap,
+                'pb_clock_trust_direction': bool(trust_direction)}
+        if allow_plain is not None:
+            vals['pb_clock_allow_plain'] = bool(allow_plain)
+        self.env.company.sudo().write(vals)
         return {'ok': True, 'settings': self._settings(),
                 'message': _("Saved. Re-pair this week to apply it to punches "
                              "already paired.")}
@@ -542,3 +663,128 @@ class PbClockLens(models.AbstractModel):
         if clean:
             device.write(clean)
         return {'ok': True, 'message': _("Machine saved.")}
+
+    # ------------------------------------------------------------ machines (CLOCK-2)
+    @api.model
+    def _manager_device(self, device_id, states=None):
+        """(device, None) or (None, {'error'}) — manager gate + scope."""
+        if not self._is_manager():
+            return None, {'error': _("Only attendance managers can let a machine in "
+                                     "or change one.")}
+        device = self.env['pb.clock.device'].sudo().with_context(active_test=False) \
+            .browse(int(device_id or 0)).exists()
+        if not device or device.kind != 'terminal':
+            return None, {'error': _("That machine is not known here.")}
+        if device.allowed_at and device.state != 'pending' \
+                and device.company_id.id not in self._company_ids():
+            return None, {'error': _("That machine is not in this company.")}
+        if states and device.state not in states:
+            return None, {'error': _("That machine has changed in the meantime. "
+                                     "Refresh and try again.")}
+        return device, None
+
+    @api.model
+    def allow_device(self, device_id, vals):
+        """Let a machine in (D10): name, location, time zone, pair-from day.
+        It starts from punch stamp 0 — it then sends everything it holds, and
+        what is older than the pair-from day is kept but never paired."""
+        device, err = self._manager_device(device_id, states=('pending',))
+        if err:
+            return err
+        vals = vals or {}
+        name = str(vals.get('name') or '').strip()
+        if not name:
+            return {'error': _("Give the machine a name people will recognise, "
+                               "like the place it hangs.")}
+        tz = vals.get('tz') or device.tz or 'UTC'
+        if tz not in pytz.all_timezones_set:
+            return {'error': _("That time zone is not known.")}
+        try:
+            history_from = fields.Date.to_date(vals.get('history_from')) \
+                or device._default_history_from()
+        except Exception:  # noqa: BLE001
+            return {'error': _("Use a date for the first day to pair.")}
+        company = self.env.company
+        now = fields.Datetime.now()
+        target = device
+        other = self.env['pb.clock.device'].sudo().with_context(active_test=False).search([
+            ('company_id', '=', company.id), ('serial', '=', device.serial),
+            ('kind', '=', 'terminal'), ('id', '!=', device.id)], limit=1)
+        try:
+            with self.env.cr.savepoint():
+                if other:
+                    # an upload already knew this serial: keep that machine (its
+                    # punches stay on it) and drop the empty pending row
+                    if not self.env['pb.clock.punch'].sudo().search_count(
+                            [('device_id', '=', device.id)], limit=1):
+                        info = {k: device[k] for k in ('ip', 'firmware', 'pushver',
+                                                       'first_seen_at', 'last_seen_at',
+                                                       'last_proto')}
+                        device.unlink()
+                        other.write(info)
+                        target = other
+                target.write({
+                    'name': name,
+                    'location': str(vals.get('location') or '').strip() or False,
+                    'tz': tz, 'history_from': history_from,
+                    'company_id': company.id, 'state': 'allowed',
+                    'allowed_at': now, 'active': True,
+                    'attlog_stamp': '0', 'operlog_stamp': '0',
+                    'skew_samples': '[]', 'clock_skew_s': 0,
+                })
+        except Exception as exc:  # noqa: BLE001
+            _logger.warning("Time clocks: allow failed", exc_info=True)
+            return {'error': _("The machine could not be let in: %s") % exc}
+        return {'ok': True, 'device_id': target.id, 'message': _(
+            "%(name)s is connected. Its punches from %(day)s on will arrive in "
+            "the next minute or two.", name=name,
+            day=history_from.strftime('%d %b %Y'))}
+
+    @api.model
+    def ignore_device(self, device_id):
+        device, err = self._manager_device(device_id, states=('pending', 'allowed'))
+        if err:
+            return err
+        device.write({'state': 'blocked'})
+        return {'ok': True, 'message': _(
+            "%s will be ignored. It can be let in again under Ignored machines.")
+            % (device.serial or device.name)}
+
+    @api.model
+    def unblock_device(self, device_id):
+        device, err = self._manager_device(device_id, states=('blocked',))
+        if err:
+            return err
+        device.write({'state': 'pending', 'allowed_at': False})
+        return {'ok': True, 'message': _(
+            "%s is asking to connect again. Press Allow when you are ready.")
+            % (device.serial or device.name)}
+
+    @api.model
+    def resend_since(self, device_id, since):
+        """Queue "send me your punches since …" (CLOCK-2 §3.5)."""
+        device, err = self._manager_device(device_id, states=('allowed',))
+        if err:
+            return err
+        if not device._listening():
+            return {'error': _("This machine has not connected yet.")}
+        try:
+            day = fields.Date.to_date(since)
+        except Exception:  # noqa: BLE001
+            day = None
+        if not day:
+            return {'error': _("Pick the first day to send again.")}
+        today = device._local_now().date()
+        if day > today:
+            return {'error': _("Pick a day that has already happened.")}
+        Command = self.env['pb.clock.command'].sudo()
+        busy = Command.search_count([('device_id', '=', device.id),
+                                     ('kind', '=', 'resend'),
+                                     ('state', 'in', ('queued', 'sent'))], limit=1)
+        if busy:
+            return {'error': _("A resend is already on its way to this machine.")}
+        Command._queue_resend(device, day)
+        return {'ok': True, 'message': _(
+            "Asked %(name)s to send its punches since %(day)s again. Punches "
+            "already here are kept once.", name=device.name,
+            day=day.strftime('%d %b %Y'))}

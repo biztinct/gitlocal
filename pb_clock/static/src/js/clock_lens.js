@@ -75,7 +75,13 @@ export class ClockLens extends Component {
             newIds: {},                 // punch ids that just arrived (slide-in)
             tick: 0,                    // re-renders the "3 min ago" phrases
             moreLoading: false,
+            allow: null,                // the Allow sheet {id, name, location, tz, history_from}
+            menu: false,                // machine card whose menu is open
+            resend: null,               // {id, since}
+            showBlocked: false,
+            arrived: {},                // pending ids that just appeared (hero moment)
         });
+        this._seenPending = null;
         this._seen = null;
         this._timer = null;
 
@@ -92,6 +98,7 @@ export class ClockLens extends Component {
             clearInterval(this._poll);
             clearTimeout(this._timer);
             clearTimeout(this._fade);
+            clearTimeout(this._arrFade);
         });
     }
 
@@ -111,6 +118,7 @@ export class ClockLens extends Component {
                 filters: this.state.filters,
             });
             this._markNew(data, silent);
+            this._markArrived(data);
             this.state.data = data;
             if (!this.state.settings && data.settings) {
                 this.state.settings = { ...data.settings };
@@ -140,6 +148,22 @@ export class ClockLens extends Component {
         if (Object.keys(fresh).length) {
             clearTimeout(this._fade);
             this._fade = setTimeout(() => { this.state.newIds = {}; }, 4000);
+        }
+    }
+
+    /** A machine that starts asking to connect while the lens is open
+     *  arrives with a ripple (setup day: HR turns round, it is there). */
+    _markArrived(data) {
+        const ids = (data.pending || []).map((p) => p.id);
+        const fresh = {};
+        if (this._seenPending) {
+            for (const id of ids) { if (!this._seenPending.has(id)) { fresh[id] = true; } }
+        }
+        this._seenPending = new Set(ids);
+        if (Object.keys(fresh).length) {
+            this.state.arrived = fresh;
+            clearTimeout(this._arrFade);
+            this._arrFade = setTimeout(() => { this.state.arrived = {}; }, 6000);
         }
     }
 
@@ -207,15 +231,149 @@ export class ClockLens extends Component {
     // ------------------------------------------------------------ machines
     get devices() { return (this.state.data && this.state.data.devices) || []; }
     deviceName(d) { return d.kind === "upload" ? _t("Files you upload") : d.name; }
+    hasMachines() {
+        return this.devices.length || this.pending.length || this.blocked.length;
+    }
     deviceLast(d) { return d.last_punch_at ? this.ago(d.last_punch_at) : _t("no punch yet"); }
     toggleDevice(d) {
         this.state.filters.device_id = this.state.filters.device_id === d.id ? false : d.id;
         this.load();
     }
-    async toggleAllowed(d, ev) {
-        ev.stopPropagation();
-        await this._write("set_device", [d.id, { allowed: !d.allowed }]);
+    get terminals() { return this.devices.filter((d) => d.kind === "terminal"); }
+
+    // ------------------------------------------------------------ machines asking to connect
+    get pending() { return (this.state.data && this.state.data.pending) || []; }
+    get blocked() { return (this.state.data && this.state.data.blocked) || []; }
+    get address() { return (this.state.data && this.state.data.address) || {}; }
+    get pendingTitle() {
+        const n = this.pending.length;
+        if (!n) { return _t("No machine is asking to connect"); }
+        return n === 1 ? _t("1 machine is asking to connect")
+                       : _t("%s machines are asking to connect", n);
     }
+    get addressLine() {
+        const a = this.address;
+        if (!a.host) { return ""; }
+        return _t("Address to type into the machine: %(host)s · port %(port)s · secure (HTTPS) on",
+            { host: a.host, port: a.port || 443 });
+    }
+    get blockedLabel() {
+        const n = this.blocked.length;
+        return n === 1 ? _t("1 ignored machine") : _t("%s ignored machines", n);
+    }
+    pendingSeen(p) { return _t("first heard %s", this.ago(p.first_seen_at)); }
+    openAllow(p) {
+        if (!this.state.data.can_manage) { return; }
+        this.state.allow = {
+            id: p.id, serial: p.serial, name: p.name || "", location: p.location || "",
+            tz: p.tz || "UTC", history_from: p.history_from || "",
+        };
+        setTimeout(() => {
+            const el = document.querySelector(".pbck-allow input[name='name']");
+            if (el) { el.focus(); }
+        }, 40);
+    }
+    closeAllow() { this.state.allow = null; }
+    onAllowField(key, ev) { if (this.state.allow) { this.state.allow[key] = ev.target.value; } }
+    onAllowKey(ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); this.closeAllow(); }
+        if (ev.key === "Enter" && ev.target.tagName !== "SELECT") { ev.preventDefault(); this.submitAllow(); }
+    }
+    get allowSentence() {
+        const a = this.state.allow;
+        if (!a || !a.history_from) { return ""; }
+        return _t("The machine sends everything it still holds. Punches from before %s are kept on record but never become work days.",
+            this.fmtDate(a.history_from));
+    }
+    async submitAllow() {
+        const a = this.state.allow;
+        if (!a) { return; }
+        const res = await this._write("allow_device", [a.id, {
+            name: a.name, location: a.location, tz: a.tz, history_from: a.history_from,
+        }]);
+        if (res) { this.state.allow = null; }
+    }
+    async ignorePending(p) { await this._write("ignore_device", [p.id]); }
+    async unblock(b) { await this._write("unblock_device", [b.id]); }
+    toggleBlocked() { this.state.showBlocked = !this.state.showBlocked; }
+    get zones() { return (this.state.data && this.state.data.zones) || []; }
+
+    // ------------------------------------------------------------ machine card
+    toggleMenu(dv) {
+        this.state.menu = this.state.menu === dv.id ? false : dv.id;
+        this.state.resend = null;
+    }
+    closeMenu() { this.state.menu = false; this.state.resend = null; }
+    startResend(dv) {
+        const d = new Date(); d.setDate(1);
+        const iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-01";
+        this.state.resend = { id: dv.id, since: dv.history_from && dv.history_from > iso ? dv.history_from : iso };
+    }
+    onResendDate(ev) { if (this.state.resend) { this.state.resend.since = ev.target.value; } }
+    async sendResend() {
+        const r = this.state.resend;
+        if (!r) { return; }
+        const res = await this._write("resend_since", [r.id, r.since]);
+        if (res) { this.closeMenu(); }
+    }
+    async ignoreDevice(dv) {
+        const res = await this._write("ignore_device", [dv.id]);
+        if (res) { this.closeMenu(); }
+    }
+    /** "Connected · heard 20 s ago" / "Silent since 14:02". */
+    linkLine(dv) {
+        void this.state.tick;
+        const d = fromUtc(dv.last_seen_at);
+        if (!d) { return { tone: "grey", text: _t("Waiting for the first call") }; }
+        const secs = Math.round((Date.now() - d.getTime()) / 1000);
+        if (secs < 180) { return { tone: "on", text: _t("Connected · heard %s", this.ago(dv.last_seen_at)) }; }
+        return { tone: "grey", text: _t("Silent since %s", this.ago(dv.last_seen_at)) };
+    }
+    clockLine(dv) {
+        const mins = (s) => Math.max(1, Math.round(Math.abs(s) / 60));
+        const corrected = fromUtc(dv.corrected_at);
+        if (corrected && Date.now() - corrected.getTime() < 86400000) {
+            const by = dv.corrected_by_s || 0;
+            const was = by > 0 ? _t("was %s min fast", mins(by)) : _t("was %s min slow", mins(by));
+            return { tone: "ok", text: _t("Clock corrected %(ago)s, %(was)s", { ago: this.ago(dv.corrected_at), was }) };
+        }
+        if (dv.skew_n >= 3 && Math.abs(dv.skew_s) > 60) {
+            return { tone: "warn", text: dv.skew_s > 0
+                ? _t("Clock %s min fast · correcting", mins(dv.skew_s))
+                : _t("Clock %s min slow · correcting", mins(dv.skew_s)) };
+        }
+        if (dv.skew_n) { return { tone: "ok", text: _t("Clock on time") }; }
+        return null;
+    }
+    historyLine(dv) {
+        if (!dv.history_from) { return ""; }
+        if (!dv.before_start) { return _t("Pairing from %s", this.fmtDate(dv.history_from)); }
+        return dv.before_start === 1
+            ? _t("Pairing from %s · 1 older punch kept, not paired", this.fmtDate(dv.history_from))
+            : _t("Pairing from %(day)s · %(n)s older punches kept, not paired",
+                 { day: this.fmtDate(dv.history_from), n: this.fmtN(dv.before_start) });
+    }
+    commandLine(dv) {
+        const c = dv.command;
+        if (!c) { return null; }
+        const since = c.since ? this.fmtDate(c.since) : "";
+        if (c.kind === "resend") {
+            if (c.state === "queued") { return { tone: "busy", text: _t("Resend since %s · waiting for the machine", since) }; }
+            if (c.state === "sent") { return { tone: "busy", text: _t("Resend since %s · the machine is sending", since) }; }
+            if (c.state === "done") { return { tone: "ok", text: _t("Resend since %(day)s done %(ago)s", { day: since, ago: this.ago(c.done_at) }) }; }
+            return { tone: "warn", text: _t("Resend since %(day)s did not work: %(why)s", { day: since, why: c.note }) };
+        }
+        if (c.kind === "check") {
+            if (c.state === "done") { return { tone: "ok", text: _t("Sending everything again · asked %s", this.ago(c.done_at)) }; }
+            if (c.state === "failed") { return { tone: "warn", text: _t("The machine did not answer. Restart it and it will send its punches.") }; }
+            return { tone: "busy", text: _t("Asking the machine to send everything again…") };
+        }
+        return null;
+    }
+    tipMenu() { return _t("More for this machine"); }
+
+    // ------------------------------------------------------------ days missing a check-out
+    get missing() { return (this.state.data && this.state.data.missing_checkout) || { rows: [], total: 0 }; }
 
     // ------------------------------------------------------------ unknown
     get unknown() { return (this.state.data && this.state.data.unknown) || { rows: [], total: 0 }; }
@@ -379,19 +537,20 @@ export class ClockLens extends Component {
     // ------------------------------------------------------------ settings
     onSetting(key, ev) {
         const s = this.state.settings;
-        s[key] = key === "trust_direction" ? ev.target.checked : ev.target.value;
+        s[key] = (key === "trust_direction" || key === "allow_plain") ? ev.target.checked : ev.target.value;
     }
     get settingsDirty() {
         const a = this.state.settings, b = this.state.data && this.state.data.settings;
         if (!a || !b) { return false; }
         return Number(a.max_span_h) !== Number(b.max_span_h)
             || Number(a.double_tap_min) !== Number(b.double_tap_min)
-            || !!a.trust_direction !== !!b.trust_direction;
+            || !!a.trust_direction !== !!b.trust_direction
+            || !!a.allow_plain !== !!b.allow_plain;
     }
     async saveSettings() {
         const s = this.state.settings;
         const res = await this._write("save_settings",
-            [s.max_span_h, s.double_tap_min, s.trust_direction], { quiet: true });
+            [s.max_span_h, s.double_tap_min, s.trust_direction, !!s.allow_plain], { quiet: true });
         if (res) {
             this.state.settings = { ...res.settings };
             this.notif.add(res.message, {
@@ -431,6 +590,11 @@ export class ClockLens extends Component {
         if (this.props.onChanged) { this.props.onChanged(); }
     }
     fmtN(n) { return (Number(n) || 0).toLocaleString(); }
+    fmtDate(iso) {
+        if (!iso) { return ""; }
+        const d = new Date(iso + "T00:00:00");
+        return isNaN(d.getTime()) ? iso : d.toLocaleDateString([], { day: "2-digit", month: "short", year: "numeric" });
+    }
     // words in a template expression are never translated: they live here
     tipShowCode(code) { return _t("Show the punches of %s", code); }
     tipGive(r) { return _t("Give %(code)s to %(name)s", { code: r.code, name: r.suggestion.name }); }

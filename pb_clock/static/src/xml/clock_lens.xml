@@ -39,14 +39,96 @@
           </div>
         </div>
 
+        <!-- ======================= machines asking to connect ==========
+             THE HERO MOMENT OF SETUP DAY: HR types the address into the
+             machine, turns round, and it is already here asking to be let in. -->
+        <section class="pbck-card pbck-sec pbck-pending" aria-live="polite" t-if="pending.length">
+          <header class="pbck-sec__h">
+            <span class="pbck-radar" aria-hidden="true"><i/><span t-out="ic('plug', 15)"/></span>
+            <h3 t-esc="pendingTitle"/>
+            <span class="pbck-n indigo" t-esc="pending.length"/>
+            <span class="grow"/>
+            <span class="muted small" t-if="!state.data.can_manage">An attendance manager can let it in.</span>
+          </header>
+          <div class="pbck-asks">
+            <div t-foreach="pending" t-as="p" t-key="p.id"
+                 t-attf-class="pbck-askrow {{ state.arrived[p.id] ? 'is-new' : '' }} {{ state.allow and state.allow.id === p.id ? 'is-open' : '' }}">
+              <div class="pbck-askrow__main">
+                <span class="pbck-askrow__ic" t-out="ic('scan', 18)"/>
+                <div class="pbck-askrow__who">
+                  <div class="sn"><t t-esc="p.serial"/><span class="pbck-chip quiet" t-if="p.known">known from a file</span></div>
+                  <div class="meta">
+                    <span t-esc="pendingSeen(p)"/>
+                    <span t-if="p.ip">· <t t-esc="p.ip"/></span>
+                    <span t-if="p.firmware">· <t t-esc="p.firmware"/></span>
+                  </div>
+                </div>
+                <span class="grow"/>
+                <t t-if="state.data.can_manage and !(state.allow and state.allow.id === p.id)">
+                  <button class="pbck-btn ghost tiny" t-att-disabled="state.busy" t-on-click="() => this.ignorePending(p)">
+                    <span t-out="ic('ban', 12)"/><span>Ignore</span>
+                  </button>
+                  <button class="pbck-btn primary" t-att-disabled="state.busy" t-on-click="() => this.openAllow(p)">
+                    <span t-out="ic('shieldCheck', 14)"/><span>Allow</span>
+                  </button>
+                </t>
+              </div>
+              <!-- the Allow sheet: four fields and one sentence -->
+              <div class="pbck-allow" t-if="state.allow and state.allow.id === p.id" t-on-keydown="onAllowKey">
+                <div class="pbck-allow__grid">
+                  <label><span>Name</span>
+                    <input class="pbck-in" name="name" placeholder="Factory 2 gate" t-att-value="state.allow.name"
+                           t-on-input="(ev) => this.onAllowField('name', ev)"/></label>
+                  <label><span>Location</span>
+                    <input class="pbck-in" name="location" placeholder="Workshop, building or site" t-att-value="state.allow.location"
+                           t-on-input="(ev) => this.onAllowField('location', ev)"/></label>
+                  <label><span>Time zone</span>
+                    <input class="pbck-in" name="tz" list="pbck-zones" t-att-value="state.allow.tz"
+                           t-on-input="(ev) => this.onAllowField('tz', ev)"/></label>
+                  <label><span>Pair punches from</span>
+                    <input class="pbck-in" name="history_from" type="date" t-att-value="state.allow.history_from"
+                           t-on-input="(ev) => this.onAllowField('history_from', ev)"/></label>
+                </div>
+                <datalist id="pbck-zones">
+                  <option t-foreach="zones" t-as="z" t-key="z" t-att-value="z"/>
+                </datalist>
+                <div class="pbck-allow__say"><span t-out="ic('info', 13)"/><span t-esc="allowSentence"/></div>
+                <div class="pbck-allow__bar">
+                  <span class="muted small"><kbd>Enter</kbd> to let it in, <kbd>Esc</kbd> to close</span>
+                  <span class="grow"/>
+                  <button class="pbck-btn ghost" t-on-click="closeAllow">Cancel</button>
+                  <button class="pbck-btn primary" t-att-disabled="state.busy or !state.allow.name" t-on-click="submitAllow">
+                    <span t-out="ic('shieldCheck', 14)"/><span>Let it in</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- empty state: no machine, no punch yet -->
         <div class="pbck-card pbck-start" t-if="hero.tone === 'empty'">
           <span class="i" t-out="ic('scan', 34)"/>
           <div class="t">Bring in the first punches</div>
-          <div class="s">Upload a file from the attendance machine or its program — Excel, CSV, the machine’s attlog.dat or the daily sheet.</div>
-          <button class="pbck-btn primary" t-on-click="openUpload">
-            <span t-out="ic('upload', 15)"/><span>Upload a punch file</span>
-          </button>
+          <div class="pbck-doors">
+            <div class="pbck-door">
+              <span class="pbck-door__ic" t-out="ic('plug', 18)"/>
+              <div class="pbck-door__t">Connect a machine</div>
+              <div class="pbck-door__s">On the machine: Menu › Comm. › Cloud Server. Server type ADMS, the address below, port 443, HTTPS on. Save and restart the machine — it appears here within a minute, asking to connect.</div>
+              <div class="pbck-addr" t-if="address.host">
+                <span class="k">Address</span><b t-esc="address.host"/>
+                <span class="k">Port</span><b t-esc="address.port"/>
+              </div>
+            </div>
+            <div class="pbck-door">
+              <span class="pbck-door__ic" t-out="ic('upload', 18)"/>
+              <div class="pbck-door__t">Or upload a punch file</div>
+              <div class="pbck-door__s">Excel, CSV, the machine’s attlog.dat or the attendance program’s daily sheet.</div>
+              <button class="pbck-btn primary" t-on-click="openUpload">
+                <span t-out="ic('upload', 15)"/><span>Upload a punch file</span>
+              </button>
+            </div>
+          </div>
           <div class="pbck-next">
             <span t-out="ic('info', 13)"/>
             <span>What happens next: each number on the machine is matched to a person, and their punches become work days in the Week Grid — first punch in, last punch out.</span>
@@ -154,16 +236,52 @@
               </div>
             </div>
           </section>
+
+          <!-- ======================= days missing a check-out (D11) ====== -->
+          <section class="pbck-card pbck-sec" t-att-class="{ 'is-zero': !missing.total, 'is-act': missing.total }">
+            <header class="pbck-sec__h">
+              <span class="pbck-sec__ic" t-out="ic('logOut', 16)"/>
+              <h3>Days missing a check-out</h3>
+              <span class="pbck-n" t-if="missing.total" t-esc="missing.total"/>
+            </header>
+            <div class="pbck-zero" t-if="!missing.total">
+              <span t-out="ic('checkCircle', 14)"/><span>Every day has its check-out.</span>
+            </div>
+            <t t-else="">
+              <div class="pbck-hint">Someone punched in and then not again until a later day. That day was closed at its check-in (0 hours) so the later days could count. Fix it with a correction.</div>
+              <div class="pbck-tbl pbck-miss">
+                <div class="pbck-tr pbck-th"><span>Person</span><span>Day</span><span>Check-in</span><span/></div>
+                <div class="pbck-tr" t-foreach="missing.rows" t-as="m" t-key="m.id">
+                  <button class="pbck-who" t-on-click="() => this.openPerson(m.employee_id)" t-esc="m.name"/>
+                  <span t-esc="m.day_label"/>
+                  <span class="tnum" t-esc="m.check_in"/>
+                  <span class="act">
+                    <span class="pbck-chip t-indigo" t-if="m.filed">Correction filed</span>
+                    <button class="pbck-btn ghost tiny" t-else="" t-att-disabled="state.busy"
+                            t-on-click="() => this.fixDay(m)">
+                      <span t-out="ic('pencil', 12)"/><span>Fix this day</span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </t>
+          </section>
         </t>
 
         <!-- ============================ machines ====================== -->
-        <section class="pbck-sec pbck-machines" t-if="devices.length">
+        <section class="pbck-sec pbck-machines" t-if="hero.tone !== 'empty' or blocked.length or devices.length">
           <header class="pbck-sec__h plain">
             <span class="pbck-sec__ic" t-out="ic('scan', 16)"/><h3>Machines</h3>
           </header>
-          <div class="pbck-devs">
+          <!-- the strip, quiet when nobody is asking -->
+          <div class="pbck-ask is-quiet" t-if="!pending.length">
+            <span t-out="ic('plug', 14)"/>
+            <span>No machine is asking to connect.</span>
+            <span class="muted" t-if="addressLine" t-esc="addressLine"/>
+          </div>
+          <div class="pbck-devs" t-if="devices.length">
             <div t-foreach="devices" t-as="dv" t-key="dv.id" role="button" tabindex="0"
-                 t-attf-class="pbck-dev {{ state.filters.device_id === dv.id ? 'is-on' : '' }} {{ dv.punches_today ? 'is-live' : '' }}"
+                 t-attf-class="pbck-dev {{ state.filters.device_id === dv.id ? 'is-on' : '' }} {{ dv.punches_today ? 'is-live' : '' }} {{ state.menu === dv.id ? 'has-menu' : '' }}"
                  t-on-click="() => this.toggleDevice(dv)"
                  t-on-keydown="(ev) => this.onDeviceKey(ev, dv)"
                  t-att-title="tipDevice(dv)">
@@ -171,17 +289,79 @@
                 <span class="pbck-dev__ic" t-out="ic(dv.kind === 'upload' ? 'upload' : 'scan', 15)"/>
                 <span class="pbck-dev__name" t-esc="deviceName(dv)"/>
                 <span class="pbck-chip tz" t-if="dv.tz" t-esc="dv.tz"/>
+                <button class="pbck-x pbck-dev__more" t-if="d.can_manage and dv.listening"
+                        t-on-click.stop="() => this.toggleMenu(dv)" t-att-title="tipMenu()"
+                        t-out="ic('moreVertical', 14)"/>
               </div>
               <div class="pbck-dev__loc" t-if="dv.location" t-esc="dv.location"/>
               <div class="pbck-dev__row">
                 <span><b t-esc="fmtN(dv.punches_today)"/> today</span>
                 <span class="muted">last <t t-esc="deviceLast(dv)"/></span>
               </div>
-              <label class="pbck-switch" t-if="d.can_manage and dv.kind === 'terminal'"
-                     t-on-click.stop="noop" title="A machine that is not allowed will not be listened to once machines can send punches">
-                <input type="checkbox" t-att-checked="dv.allowed" t-on-change="(ev) => this.toggleAllowed(dv, ev)"/>
-                <span class="tr"><i/></span><span>Allowed</span>
-              </label>
+              <t t-if="dv.listening">
+                <t t-set="ln" t-value="linkLine(dv)"/>
+                <div t-attf-class="pbck-dev__line is-{{ ln.tone }}">
+                  <span class="dot"/><span t-esc="ln.text"/>
+                  <span class="pbck-chip quiet" t-if="dv.plain">plain connection</span>
+                </div>
+                <t t-set="cl" t-value="clockLine(dv)"/>
+                <div t-if="cl" t-attf-class="pbck-dev__line is-{{ cl.tone }}">
+                  <span t-out="ic('clock', 12)"/><span t-esc="cl.text"/>
+                </div>
+                <div class="pbck-dev__line is-grey" t-if="historyLine(dv)">
+                  <span t-out="ic('history', 12)"/><span t-esc="historyLine(dv)"/>
+                </div>
+                <t t-set="cm" t-value="commandLine(dv)"/>
+                <div t-if="cm" t-attf-class="pbck-dev__line is-{{ cm.tone }}">
+                  <span t-attf-class="{{ cm.tone === 'busy' ? 'spin' : '' }}" t-out="ic(cm.tone === 'busy' ? 'loader' : 'repeat', 12)"/>
+                  <span t-esc="cm.text"/>
+                </div>
+              </t>
+              <!-- the machine's menu (managers) -->
+              <div class="pbck-menu" t-if="state.menu === dv.id" t-on-click.stop="noop" t-on-keydown.stop="noop">
+                <t t-if="state.resend and state.resend.id === dv.id">
+                  <div class="pbck-menu__t">Resend punches since</div>
+                  <input type="date" class="pbck-in" t-att-value="state.resend.since" t-on-input="onResendDate"/>
+                  <div class="pbck-menu__s">The machine sends its punches from that day again. Punches already here are kept once.</div>
+                  <div class="pbck-menu__bar">
+                    <button class="pbck-btn ghost tiny" t-on-click="closeMenu">Cancel</button>
+                    <button class="pbck-btn primary tiny" t-att-disabled="state.busy or !state.resend.since" t-on-click="sendResend">
+                      <span t-out="ic('send', 12)"/><span>Send again</span>
+                    </button>
+                  </div>
+                </t>
+                <t t-else="">
+                  <button class="pbck-menu__opt" t-on-click="() => this.startResend(dv)">
+                    <span t-out="ic('repeat', 14)"/><span>Resend punches since…</span>
+                  </button>
+                  <button class="pbck-menu__opt danger" t-att-disabled="state.busy" t-on-click="() => this.ignoreDevice(dv)">
+                    <span t-out="ic('ban', 14)"/><span>Ignore this machine</span>
+                  </button>
+                  <div class="pbck-menu__meta">
+                    <span t-if="dv.serial">Serial <b t-esc="dv.serial"/></span>
+                    <span t-if="dv.firmware" t-esc="dv.firmware"/>
+                    <span t-if="dv.ip">Calls from <t t-esc="dv.ip"/></span>
+                    <span t-if="dv.users_count"><t t-esc="fmtN(dv.users_count)"/> people on the machine</span>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+          <!-- ignored machines, quiet -->
+          <div class="pbck-ignored" t-if="blocked.length">
+            <button class="pbck-link quiet" t-on-click="toggleBlocked">
+              <span t-out="ic(state.showBlocked ? 'chevronUp' : 'chevronDown', 12)"/>
+              <span t-esc="blockedLabel"/>
+            </button>
+            <div class="pbck-ignored__list" t-if="state.showBlocked">
+              <div class="pbck-ignored__row" t-foreach="blocked" t-as="b" t-key="b.id">
+                <span class="mono" t-esc="b.serial"/>
+                <span class="muted" t-if="b.name and b.name !== b.serial" t-esc="b.name"/>
+                <span class="muted" t-if="b.last_seen_at">last heard <t t-esc="ago(b.last_seen_at)"/></span>
+                <span class="grow"/>
+                <button class="pbck-btn ghost tiny" t-if="d.can_manage" t-att-disabled="state.busy"
+                        t-on-click="() => this.unblock(b)">Let it ask again</button>
+              </div>
             </div>
           </div>
         </section>
@@ -263,6 +443,12 @@
               <span class="c"><input type="checkbox" t-att-checked="state.settings.trust_direction"
                      t-on-change="(ev) => this.onSetting('trust_direction', ev)"/></span>
               <span class="h">Leave off when nobody presses them: the first punch of a day is then the start and the last is the end.</span>
+            </label>
+            <label class="pbck-set__row">
+              <span class="l">Allow a plain connection</span>
+              <span class="c"><input type="checkbox" t-att-checked="state.settings.allow_plain"
+                     t-on-change="(ev) => this.onSetting('allow_plain', ev)"/></span>
+              <span class="h">Lets an older machine send over a plain web connection when it cannot make a secure one. Only the number, the time and the machine’s serial travel.</span>
             </label>
           </div>
           <div class="pbck-set__bar">
