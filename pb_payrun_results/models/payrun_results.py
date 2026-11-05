@@ -76,6 +76,8 @@ class PayrunResults(models.AbstractModel):
                     'category': cat,
                     'color': cat_color[cat],
                     'number_format': r.number_format or 'currency',
+                    # PDR P2 W4 — a worded value ("0=No;1=Yes") reads its word.
+                    'labels': r.value_label_options() if hasattr(r, 'value_label_options') else [],
                 })
         return cols
 

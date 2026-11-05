@@ -158,6 +158,7 @@
           </t>
           <span class="pbc-was" t-if="compWas(row)">was <t t-esc="compWas(row)"/></span>
           <span class="pbc-comp-b" t-if="row.bounded and row.bounds_hint and !isCompDirty(compRowKey(row))" t-esc="row.bounds_hint"/>
+          <span class="pbc-comp-b pbc-comp-hint" t-if="row.value_hint and isEditing('comp', compRowKey(row))" t-esc="row.value_hint"/>
         </div>
         <button class="pbc-comp-x" t-if="canWrite and !row.virtual and !isRemoved(row.id)"
                 title="Remove this component from the contract"

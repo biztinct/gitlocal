@@ -946,8 +946,16 @@ class PbRecordsDesk(models.AbstractModel):
             if not line:
                 return {'v': None, 'label': ''}
             amount = line.amount or 0.0
-            return {'v': amount, 'label': self._num(amount)}
+            return {'v': amount, 'label': self._word_label(card, amount)}
         return {'v': None, 'label': ''}
+
+    @api.model
+    def _word_label(self, card, amount):
+        """PDR P2 W4 — a component whose rule has words reads them ("Yes",
+        "All tax"); everything else, and an unmatched number, reads the number."""
+        rule = card.get('_rule')
+        word = rule.value_label_for(amount) if rule is not None and hasattr(rule, 'value_label_for') else ''
+        return word or self._num(amount)
 
     @api.model
     def _num(self, value):
@@ -1027,13 +1035,21 @@ class PbRecordsDesk(models.AbstractModel):
                 return text, text, None
             if value in (None, ''):
                 return 0.0, '', None
+            rule = card.get('_rule')
             try:
                 amount = float(str(value).replace(',', '').strip())
             except (TypeError, ValueError):
+                if rule is not None and hasattr(rule, 'value_from_text') and rule.value_label_options():
+                    # PDR P2 — "Yes" / "N" / "All tax" for a worded component.
+                    try:
+                        amount = rule.value_from_text(value, card.get('label'))
+                    except ValueError as error:
+                        return None, '', str(error)
+                    return amount, self._word_label(card, amount), None
                 return None, '', _(
                     "'%(value)s' is not a number — type an amount like 1500000."
                 ) % {'value': value}
-            return amount, self._num(amount), None
+            return amount, self._word_label(card, amount), None
 
         if kind == 'b':
             text = '' if value is None else str(value).strip()

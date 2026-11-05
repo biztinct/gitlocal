@@ -245,6 +245,8 @@
     .pbc-comp-r { text-align: right; display: flex; flex-direction: column; gap: 2px; }
     .pbc-comp-v { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .pbc-comp-b { font-size: 11px; color: var(--mut); white-space: nowrap; }
+    // PDR P2 — the line that explains the words wraps; it can be a sentence.
+    .pbc-comp-b.pbc-comp-hint { white-space: normal; max-width: 260px; line-height: 1.45; text-align: right; }
     .pbc-comp-add { margin-top: 14px; }
 
     // =================================================================

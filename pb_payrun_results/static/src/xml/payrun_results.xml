@@ -82,7 +82,7 @@
             <tr class="pbr-totals">
               <th class="pbr-emp">TOTAL</th>
               <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
-                <td class="pbr-cell"><b t-esc="fmt(col, state.data.totals[col.code])"/></td>
+                <td class="pbr-cell"><b t-esc="col.labels?.length ? '—' : fmt(col, state.data.totals[col.code])"/></td>
               </t>
             </tr>
           </tfoot>

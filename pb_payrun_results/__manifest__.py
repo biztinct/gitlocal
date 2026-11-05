@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Pay Run Results Grid',
     'summary': 'Post-calculation results as an Excel-style grid, with variance and .xlsx export',
-    'version': '19.0.1.5.2',
+    'version': '19.0.1.5.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

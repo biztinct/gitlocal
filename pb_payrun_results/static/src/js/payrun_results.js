@@ -265,6 +265,11 @@ export class PbPayrunResults extends Component {
         if (v === null || v === undefined || v === "") return "—";
         const n = Number(v);
         if (isNaN(n)) return String(v);
+        if (col.labels && col.labels.length) {
+            // PDR P2 — the word for a worded value; an unmatched number shows as itself.
+            const hit = col.labels.find((o) => Math.abs(o.value - n) < 1e-9);
+            return hit ? hit.label : String(n);
+        }
         const cur = (this.state.data.run && this.state.data.run.currency) || "₫";
         if (col.number_format === "percentage") return (Math.round(n * 10000) / 100).toLocaleString("en-US") + "%";
         if (col.number_format === "integer") return Math.round(n).toLocaleString("en-US");

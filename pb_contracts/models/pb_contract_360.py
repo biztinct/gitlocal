@@ -846,6 +846,13 @@ class PbContracts(models.AbstractModel):
         return self._cd_money(number, symbol), 'money', []
 
     @api.model
+    def _cd_value_hint(self, rule, options):
+        """The rule's line explaining its words, only when it has words."""
+        if not options or rule is None:
+            return False
+        return getattr(rule, 'value_labels_hint', False) or False
+
+    @api.model
     def _cd_fill_tag(self, line):
         """The "Filled in by Payobook" tag for a stored line, or `{}`."""
         if 'pb_fill' not in line._fields or line.pb_fill != 'auto':
@@ -922,6 +929,8 @@ class PbContracts(models.AbstractModel):
         return {
             'edit_kind': edit_kind,
             'options': options,
+            # PDR P2 W3 — one plain line under the choice ("All tax = …").
+            'value_hint': self._cd_value_hint(rule, options),
             **tag,
             'id': line.id,
             'virtual': False,
@@ -981,6 +990,7 @@ class PbContracts(models.AbstractModel):
             'virtual': True,
             'edit_kind': edit_kind,
             'options': options,
+            'value_hint': self._cd_value_hint(rule, options),
             'fill': False, 'fill_checked': False, 'fill_tag': False,
             'code': code,
             'name': name or '—',
