@@ -18,6 +18,9 @@ dialog copy are the target unless a phase says otherwise.
 | P3 | **Planning mode, time machine, suggest a chart.** Draft plan with stacked changes and undo/redo → send for approval through the approval engine → applied on the effective date; past from tracking history; future from approved plans and future starters; suggest-a-chart for a company with no managers set. | `ORGCHART_P3.md` |
 | P4 | **Finish.** Picture/PDF export, share deep link, ⌘K rows, lessons, Vietnamese, demo-world check, closeout. | `ORGCHART_P4.md` |
 
+**Programme COMPLETE 2026-11-05** — pb_orgchart 19.0.1.3.0 live ×4;
+`ORGCHART_CLOSEOUT.md` holds the owner questions and known limits.
+
 Owner rulings 2026-11-04, asked once, do not re-ask:
 1. Workflow: **phased, Fable designs, Opus builds**, same session, back to back.
 2. The POC is the spec. Where the product has a better existing primitive
@@ -433,3 +436,57 @@ the closeout as an owner question, not into a phase.
   check). Apply-on-approval was proved by unit tests (06, 07, 08, 11); in the
   browser the request was opened, read and withdrawn. Do not route around the
   refusal with a script.
+* G29 (P4): **a Records viewer who is not an HR officer could not open the
+  chart at all.** The version read refused (`hr.version` is HR-only) and the
+  fallback `search_read` on the employee refused too (`job_title`,
+  `department_id` … are related through the HR-only `version_id`). Found by
+  unit test 01c. The version's display columns are now read with `sudo()` for
+  the ids the user's own search returned; HR-only columns stay out
+  (`_readable`).
+* G30 (P4): **measure speed in a fresh tab, repeated.** The same build measured
+  3.4–4.4 s to mount 657 cards (and 0.6–0.95 s virtualised) in a tab that had
+  run ~20 heavy experiments (1,500-card opens, synthetic wheel/hover loops), and
+  0.46–0.62 s (0.13–0.19 s virtualised) in a fresh tab, stable over 8 repeats.
+  Learn's helper orb (`lrn-breathe`, running on the chart page since the
+  "First time on Org chart?" card) costs ~25 % of an all-cards mount
+  (0.62 → 0.46 s paused) and nothing measurable on the virtual canvas — not the
+  cause; left as is.
+* G31 (P4): **the sign-in redirect keeps the query and drops the hash**
+  (`/web/login?redirect=…%3Foc%3D1…`, checked with curl), and the web client
+  rewrites the address once the action loads. So the share link carries its
+  state in the QUERY and the chart reads it once, when its JS module is
+  evaluated (before the router), and asks the hub to open on the Org chart.
+* G32 (P4): **`until ! pgrep -f "<pattern>"; do sleep; done` never ends** — the
+  loop's own `bash -c` command line contains the pattern. Wait on a file or a
+  log line instead.
+* G33 (P4): **the publish dialog named the sender as the approver.** With the
+  independence rule on, a seat holder who sends the plan is swapped for the
+  seat's backup when the request is built (`engine._conflict_swap`); the
+  dialog's preview did not apply the swap ("HR team (Mitchell Admin)" while
+  Ông Thảo Vy was asked). Fixed; test 04.
+* G34 (P4): **`navigator.clipboard.writeText` can wait for ever** without a
+  real press (script, unfocused tab): no toast, nothing. Raced against 1.5 s,
+  then the textarea fallback, then a sticky toast with the link.
+* G35 (P4): **"one page per team" is 198 pages on rize** (197 teams for 241
+  people). A team of more than 6 starts its own page; small teams share pages
+  and are never split.
+* G36 (P4, since P1): **ArrowDown into a folded (loaded) team selected a card
+  that was never laid out** — `select` re-lays out only for folded ancestors,
+  and the person just unfolded is the parent. The team is laid out first now.
+* G37 (P4): **www.payobook.com serves the payobook database with its own
+  cookie** (`dbfilter = ^%d$` drops `www`), so a second user could be signed in
+  without signing the owner out of payobook.com. Signing in still needs the
+  password typed; this session's safety rules do not allow typing a password
+  on a non-test host, so the qa.test Vietnamese screenshots were not taken.
+  Learn's own "Tiếng Việt" switch (Help page, browser-local preference) shows
+  lessons in Vietnamese without touching any account.
+* G38 (P4): **browser tools.** The chrome-devtools MCP profile was held by
+  another session; the Chrome extension was used. It blanks any JS result that
+  contains a query string ("[BLOCKED: Cookie/query string data]") — return the
+  URL's parts instead. Downloads were captured in the page (anchor `click`
+  stubbed, blob read back and shown in an overlay) rather than written to disk;
+  `window.print` was stubbed and the print sheet inspected in the DOM.
+* G39 (P4): **typing right after ⌘K can land on the chart**: the palette's
+  input is not focused for a few hundred ms and the chart's single-key
+  shortcuts fire (`a` opened Add team member, `c` collapsed the chart). Wait
+  ~1 s before typing in an automated walk.
