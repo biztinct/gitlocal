@@ -10,16 +10,17 @@ menu present, Mitaco 5 v2 on a shared Windows 11 PC that is off at night.
 | Phase | What it delivers | Handover |
 |---|---|---|
 | CLOCK-1 | **Punches become attendance.** New module `pb_clock`: punch ledger, employee clock code + unknown-number matching, the pairing engine → `hr.attendance` source `device`, the **local-day fix** in grid / packet / freeze, "Time-clock punches" upload mode (Excel / CSV / ZK `attlog.dat` / Mitaco daily sheet), a **Time clocks** lens in the Time hub. | `CLOCK_P1.md` |
-| CLOCK-2 | **Machines push to Payobook.** The ADMS (ZK PUSH / iclock) receiver, serial allow-list, time sync in the handshake, HTTPS + per-tenant plain-HTTP fallback host, backfill request, terminal health rows. | `CLOCK_P2.md` |
+| CLOCK-2 | **Machines push to Payobook.** The ADMS (ZK PUSH / iclock) receiver, pending-machine onboarding (D10), stamps + backfill, measured time sync + command channel (D13), plain connection on port 80 (D12), D11 pairing rule, emulator, setup-day runbook. | `CLOCK_P2.md` |
 | CLOCK-3 | **Trust.** Health card in Integrations + alerts (silent terminal, clock skew, zero punches by 11:00), late-punch-after-approval exceptions, nightly 35-day re-check, Vietnamese, lessons. | `CLOCK_P3.md` |
 | CLOCK-4/5 | More recipes / the Windows Bridge for clients whose machines cannot push; late-minutes into payslip inputs. | later |
 
 Owner rulings 2026-11-05, asked once, do not re-ask:
 1. Workflow: **phased, Fable designs, Opus builds**, same session, back to back.
 2. **Route for Sudima = ADMS push.** The Windows Bridge is demoted to CLOCK-5.
-3. **Plain-HTTP fallback host is allowed** for terminals whose firmware cannot
-   negotiate TLS; switched on per company, carries only serial + user id +
-   timestamp + verify type.
+3. **A plain (non-TLS) connection is allowed** for terminals whose firmware
+   cannot negotiate TLS; switched on per company, carries only serial + user
+   id + timestamp + verify type. Implemented as port 80 on the SAME tenant
+   host, path `/iclock/` only (D12) — no extra DNS name or certificate.
 4. **Sudima gets its own tenant `sudima.payobook.com`** before setup day (ops
    step through `pb_tenants`, not a phase deliverable).
 5. The owner talks to Sudima's IT (Sashi) and the supplier directly.
@@ -211,6 +212,28 @@ not wire there.
 - **D9 — Settings live on `res.company`** (`pb_clock_max_span_h`,
   `pb_clock_double_tap_min`, `pb_clock_trust_direction`) and are edited from a
   settings card in the lens (manager only); no native settings page.
+
+- **D10 — Machines announce themselves.** An unknown serial that calls in
+  becomes a `pending` machine (serial, IP, firmware, first seen) and gets
+  403 until a manager presses Allow in the lens; blocked serials stay 403
+  silently. Nothing but that one row is ever written for a non-allowed
+  serial; 50 pending rows per database at most. On Allow the device starts
+  from `ATTLOGStamp=0`, so it uploads everything it holds; punches before
+  the machine's `history_from` are kept as `ignored_before_start` and never
+  paired.
+- **D11 — A forgotten check-out never blocks later days.** When a new work
+  day's anchor arrives and the employee's earlier device day is still open,
+  that earlier row is closed at its own check-in (0 h), flagged
+  `pb_clock_auto_closed`, and listed under "Days missing a check-out" for a
+  correction. (Platform limit: one open attendance per person.)
+- **D12 — Plain connection = same host, port 80, `/iclock/` only**, gated
+  by `res.company.pb_clock_allow_plain` (default off) and by
+  `X-Forwarded-Proto`. nginx snippet `snippets/pb-clock-plain.conf`
+  included in every port-80 server and in the `pb-tenant-cert` template.
+- **D13 — Time sync is measured, not asked.** Skew = median of
+  `received_at − punch_utc` over the last 7 realtime pushes; over 60 s →
+  one `SET OPTIONS DateTime=` command per 6 h. The design's §9 "no time
+  sync in v1" is relaxed for ADMS only.
 
 ## 3. Gotchas hit (append as they come)
 
