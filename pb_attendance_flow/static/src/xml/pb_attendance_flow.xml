@@ -329,39 +329,69 @@
                   t-on-click="backFromImport" t-out="ic('back',18)"/>
           <div class="h">
             <h1 t-if="!props.embedded">Import attendance</h1>
-            <div class="sub">CSV or XLSX · columns: Employee · Date · Check-in · Check-out</div>
+            <div class="sub" t-if="isPunches">Excel, CSV, the machine’s own log file (attlog.dat) or the attendance program’s daily sheet</div>
+            <div class="sub" t-else="">CSV or Excel · columns: Employee · Date · Check-in · Check-out</div>
           </div>
+        </div>
+
+        <!-- what kind of file (CLOCK-1) — only when there is a choice -->
+        <div class="pbaf-modes" t-if="state.modes.length > 1 and state.imp.step === 'upload'"
+             role="radiogroup">
+          <button t-foreach="state.modes" t-as="m" t-key="m.key"
+                  type="button" role="radio"
+                  t-att-aria-checked="state.imp.mode === m.key"
+                  t-attf-class="pbaf-mode {{ state.imp.mode === m.key ? 'on' : '' }}"
+                  t-on-click="() => this.setImportMode(m.key)">
+            <span class="mi" t-out="kic(m.icon, 20)"/>
+            <span class="mt">
+              <span class="ml" t-esc="m.label"/>
+              <span class="ms" t-esc="m.sub"/>
+            </span>
+            <span class="mc" t-out="kic(state.imp.mode === m.key ? 'checkCircle' : 'circle', 16)"/>
+          </button>
         </div>
 
         <!-- step rail -->
         <div class="pbaf-steprail">
-          <div t-foreach="['upload','map','validate','done']" t-as="st" t-key="st"
-               t-attf-class="s {{ state.imp.step === st ? 'active' : '' }}">
-            <span class="d"/><span class="t" t-esc="st"/>
+          <div t-foreach="importSteps" t-as="st" t-key="st.key"
+               t-attf-class="s {{ state.imp.step === st.key ? 'active' : '' }}">
+            <span class="d"/><span class="t" t-esc="st.label"/>
           </div>
         </div>
 
         <!-- UPLOAD -->
         <div t-if="state.imp.step === 'upload'" class="pbaf-drop">
-          <span class="i" t-out="ic('upload',34)"/>
-          <div class="t">Drop a punch file</div>
-          <div class="s">Employee (badge or name), Date, Check-in, and optionally Check-out.</div>
+          <span class="i" t-out="kic(isPunches ? 'scan' : 'upload', 34)"/>
+          <t t-if="isPunches">
+            <div class="t">Drop a punch file</div>
+            <div class="s">One tap per row: the number on the machine and when it was pressed. The machine’s attlog.dat and the program’s daily sheet are recognised on their own.</div>
+          </t>
+          <t t-else="">
+            <div class="t">Drop an attendance file</div>
+            <div class="s">Employee (badge or name), Date, Check-in, and optionally Check-out.</div>
+          </t>
           <label class="pbaf-btn primary">
+            <span t-if="state.busy" t-out="kic('loader', 15)"/>
             <span>Choose file</span>
-            <input type="file" accept=".csv,.xlsx,.xlsm" t-on-change="onImportFile" style="display:none"/>
+            <input type="file" t-att-accept="importAccept" t-on-change="onImportFile" style="display:none"/>
           </label>
+          <div class="pbaf-next" t-if="isPunches">
+            <span t-out="kic('info', 13)"/>
+            <span>What happens next: you see what the file holds before anything is added. Punches then pair into days on their own — first punch in, last punch out.</span>
+          </div>
         </div>
 
         <!-- MAP -->
         <div t-elif="state.imp.step === 'map'" class="pbaf-mapwrap">
           <div class="pbaf-map">
-            <div class="mh"><t t-esc="state.imp.fileName"/> · <t t-esc="state.imp.total"/> rows</div>
-            <div class="maprow" t-foreach="['employee','date','check_in','check_out']" t-as="tg" t-key="tg">
-              <span class="tg" t-esc="tg"/>
-              <select t-on-change="(ev) => this.onMap(tg, ev)">
+            <div class="mh"><t t-esc="state.imp.fileName"/> · <t t-esc="fmtN(state.imp.total)"/> rows</div>
+            <div class="mhs" t-if="isPunches">Tell us which column holds what. Give either one date-and-time column, or a date column and a time column.</div>
+            <div class="maprow" t-foreach="importTargets" t-as="tg" t-key="tg.key">
+              <span class="tg" t-esc="tg.label"/>
+              <select t-on-change="(ev) => this.onMap(tg.key, ev)">
                 <option value="">— none —</option>
                 <option t-foreach="state.imp.columns" t-as="col" t-key="col_index"
-                        t-att-value="col" t-att-selected="state.imp.mapping[tg] === col"
+                        t-att-value="col" t-att-selected="state.imp.mapping[tg.key] === col"
                         t-esc="col"/>
               </select>
             </div>
@@ -379,12 +409,86 @@
           <div class="pbaf-actbar">
             <button class="pbaf-btn primary" t-att-disabled="!canValidate or state.busy"
                     t-on-click="validateImport">
-              <span t-out="ic('check',15)"/><span>Validate</span>
+              <span t-out="ic('check',15)"/><span>Check the file</span>
             </button>
           </div>
         </div>
 
-        <!-- VALIDATE -->
+        <!-- CHECK — punches: what the file holds (the hero moment) -->
+        <div t-elif="state.imp.step === 'validate' and isPunches and state.imp.preview"
+             class="pbaf-valwrap pbaf-pp">
+          <t t-set="pv" t-value="state.imp.preview"/>
+          <div class="pp-hero">
+            <div class="pp-big"><b t-esc="fmtN(pv.punches)"/><span>punches</span></div>
+            <div class="pp-big"><b t-esc="fmtN(pv.people)"/><span>people</span></div>
+            <div class="pp-big"><b t-esc="fmtN(pv.days)"/><span t-esc="pv.days === 1 ? 'day' : 'days'"/></div>
+            <div class="pp-spark" t-if="sparkBars.length" aria-hidden="true">
+              <svg width="128" height="46" viewBox="0 0 128 46">
+                <rect t-foreach="sparkBars" t-as="b" t-key="b.date"
+                      t-att-x="b.x" t-att-y="44 - b.h" width="12" t-att-height="b.h" rx="2"
+                      t-attf-class="{{ b.zero ? 'z' : '' }}">
+                  <title t-esc="b.label + ': ' + b.n"/>
+                </rect>
+              </svg>
+              <span class="pp-spark__cap">last 7 days in the file</span>
+            </div>
+          </div>
+          <div class="pp-meta">
+            <span t-esc="state.imp.fileName"/>
+            <span t-if="formatLabel(pv.format)"> · <t t-esc="formatLabel(pv.format)"/></span>
+            <span t-if="pv.date_from"> · <t t-esc="pv.date_from"/><t t-if="pv.date_to !== pv.date_from"> → <t t-esc="pv.date_to"/></t></span>
+          </div>
+          <div class="pp-facts">
+            <span t-attf-class="pp-fact {{ pv.new ? 'go' : '' }}"><b t-esc="fmtN(pv.new)"/> new</span>
+            <span t-attf-class="pp-fact {{ pv.on_record ? 'info' : '' }}"><b t-esc="fmtN(pv.on_record)"/> already on record</span>
+            <span t-attf-class="pp-fact {{ pv.repeats ? 'info' : '' }}"><b t-esc="fmtN(pv.repeats)"/> repeated in the file</span>
+            <span t-attf-class="pp-fact {{ pv.bad ? 'warn' : '' }}"><b t-esc="fmtN(pv.bad)"/> rows not readable</span>
+          </div>
+          <div class="pp-unknown" t-if="pv.unknown_count">
+            <div class="pp-unknown__h">
+              <span t-out="kic('userX', 15)"/>
+              <span><b t-esc="pv.unknown_count"/> <t t-esc="pv.unknown_count === 1 ? 'number matches' : 'numbers match'"/> nobody yet</span>
+            </div>
+            <div class="pp-chips">
+              <span t-foreach="pv.unknown" t-as="u" t-key="u.code" class="pp-chip">
+                <b t-esc="u.code"/><i t-esc="u.punches"/>
+              </span>
+              <span class="pp-chip more" t-if="pv.unknown_count > pv.unknown.length">+<t t-esc="pv.unknown_count - pv.unknown.length"/> more</span>
+            </div>
+            <div class="pp-unknown__s">Their punches are kept. After the import, press Assign now and match each number to a person — their days are paired straight away.</div>
+          </div>
+          <div class="pp-ok" t-elif="pv.punches">
+            <span t-out="kic('checkCircle', 15)"/><span>Every number matches a person.</span>
+          </div>
+          <div class="pp-bad" t-if="pv.bad_rows.length">
+            <div class="eh">Rows that could not be read</div>
+            <div t-foreach="pv.bad_rows" t-as="er" t-key="er_index" class="er">
+              <span class="ix">#<t t-esc="er.index"/></span>
+              <span class="emp" t-esc="er.employee"/>
+              <span class="rs" t-esc="er.reason"/>
+            </div>
+          </div>
+          <div class="pp-trunc" t-if="pv.truncated">
+            <span t-out="kic('alert', 14)"/>
+            <span>Only the first <t t-esc="fmtN(pv.max_rows)"/> rows were read. Split the file to add the rest.</span>
+          </div>
+          <div class="pbaf-actbar">
+            <button class="pbaf-btn ghost" t-if="pv.format === 'table'" t-on-click="backToMap">
+              <span t-out="ic('back',15)"/><span>Back to columns</span>
+            </button>
+            <button class="pbaf-btn ghost" t-else="" t-on-click="openImport">
+              <span t-out="ic('back',15)"/><span>Choose another file</span>
+            </button>
+            <button class="pbaf-btn primary" t-att-disabled="!pv.new or state.busy"
+                    t-on-click="commitImport">
+              <span t-out="kic(state.busy ? 'loader' : 'download',15)"/>
+              <span t-if="pv.new">Add <t t-esc="fmtN(pv.new)"/> <t t-esc="pv.new === 1 ? 'punch' : 'punches'"/></span>
+              <span t-else="">Nothing new to add</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- VALIDATE (attendance days) -->
         <div t-elif="state.imp.step === 'validate' and state.imp.validation" class="pbaf-valwrap">
           <div class="pbaf-valsum">
             <div class="s ok"><b t-esc="state.imp.validation.summary.valid"/><span>valid</span></div>
@@ -415,7 +519,48 @@
           </div>
         </div>
 
-        <!-- DONE -->
+        <!-- DONE — punches -->
+        <div t-elif="state.imp.step === 'done' and isPunches and state.imp.result" class="pbaf-done pbaf-pp-done">
+          <t t-set="rs" t-value="state.imp.result"/>
+          <span class="i" t-out="kic(rs.created ? 'checkCircle' : 'info', 40)"/>
+          <div class="t" t-if="rs.created"><t t-esc="fmtN(rs.created)"/> <t t-esc="rs.created === 1 ? 'punch' : 'punches'"/> added</div>
+          <div class="t" t-else="">Nothing new — every punch was already on record</div>
+          <div class="s" t-esc="rs.message"/>
+          <div class="s" t-if="rs.new_devices and rs.new_devices.length">
+            New <t t-esc="rs.new_devices.length === 1 ? 'machine' : 'machines'"/> added: <t t-esc="rs.new_devices.join(', ')"/>
+          </div>
+          <div class="pp-unknown center" t-if="rs.unknown_count">
+            <div class="pp-chips">
+              <span t-foreach="rs.unknown_codes" t-as="c" t-key="c" class="pp-chip"><b t-esc="c"/></span>
+              <span class="pp-chip more" t-if="rs.unknown_count > rs.unknown_codes.length">+<t t-esc="rs.unknown_count - rs.unknown_codes.length"/> more</span>
+            </div>
+          </div>
+          <div t-if="rs.errors.length" class="pbaf-errtable">
+            <div class="eh">Rows that could not be read</div>
+            <div t-foreach="rs.errors" t-as="er" t-key="er_index" class="er">
+              <span class="ix">#<t t-esc="er.index"/></span>
+              <span class="emp" t-esc="er.employee"/>
+              <span class="rs" t-esc="er.reason"/>
+            </div>
+          </div>
+          <div class="pbaf-actbar center">
+            <button class="pbaf-btn ghost" t-on-click="openImport">Add another file</button>
+            <button class="pbaf-btn primary" t-if="canOpenClocks and rs.unknown_count"
+                    t-on-click="() => this.openClocks(rs.unknown_codes)">
+              <span t-out="kic('userCheck', 15)"/><span>Assign now</span>
+            </button>
+            <button class="pbaf-btn primary" t-elif="canOpenClocks"
+                    t-on-click="() => this.openClocks([])">
+              <span t-out="kic('scan', 15)"/><span>Open Time clocks</span>
+            </button>
+            <button class="pbaf-btn primary" t-else="" t-on-click="backFromImport">
+              <t t-if="canLeaveImport">Back to control</t>
+              <t t-else="">Done</t>
+            </button>
+          </div>
+        </div>
+
+        <!-- DONE — attendance days -->
         <div t-elif="state.imp.step === 'done' and state.imp.result" class="pbaf-done">
           <span class="i" t-out="ic('checkCircle',40)"/>
           <div class="t"><t t-esc="state.imp.result.created"/> punches imported</div>

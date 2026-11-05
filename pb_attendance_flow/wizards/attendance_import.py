@@ -80,11 +80,14 @@ class PbAttendanceImportWizard(models.TransientModel):
             raise UserError(_("The uploaded file could not be decoded."))
 
     @api.model
-    def _read_rows(self, file_b64, filename):
+    def _read_rows(self, file_b64, filename, max_rows=None):
         # returns (cols, rows, truncated) — truncation is SURFACED, never
-        # silent (review G-L15; the old cap also kept 2001 rows, off by one)
+        # silent (review G-L15; the old cap also kept 2001 rows, off by one).
+        # `max_rows` lets another import mode raise the cap (CLOCK-1: punch
+        # files are one tiny ledger row per line).
         truncated = False
         """→ (columns:list[str], rows:list[dict]). XLSX via openpyxl, else CSV."""
+        cap = max_rows or _MAX_ROWS
         raw = self._decode(file_b64)
         is_xlsx = (filename or '').lower().endswith(('.xlsx', '.xlsm')) \
             or raw[:2] == b'PK'
@@ -105,7 +108,7 @@ class PbAttendanceImportWizard(models.TransientModel):
             for r in it:
                 if r is None or all(c is None for c in r):
                     continue
-                if len(rows) >= _MAX_ROWS:
+                if len(rows) >= cap:
                     truncated = True
                     break
                 rows.append({cols[i]: r[i] if i < len(r) else None
@@ -126,7 +129,7 @@ class PbAttendanceImportWizard(models.TransientModel):
         for r in all_rows[1:]:
             if not any((c or '').strip() for c in r):
                 continue
-            if len(rows) >= _MAX_ROWS:
+            if len(rows) >= cap:
                 truncated = True
                 break
             rows.append({cols[i]: (r[i] if i < len(r) else None)
@@ -204,11 +207,31 @@ class PbAttendanceImportWizard(models.TransientModel):
         s = str(token).strip()
         return by_code.get(s) or by_name.get(s.lower())
 
+    # ------------------------------------------------------------- modes
+    @api.model
+    def import_modes(self):
+        """The kinds of file this importer takes. Other modules add theirs
+        (CLOCK-1: pb_clock adds "Time-clock punches"); the Import lens shows a
+        mode switch only when there is more than one."""
+        self._require_officer()
+        return [{
+            'key': 'days',
+            'label': _("Attendance days"),
+            'sub': _("One row per person per day, with a check-in and a check-out"),
+            'icon': 'table',
+        }]
+
+    @api.model
+    def _check_mode(self, mode):
+        if (mode or 'days') != 'days':
+            raise UserError(_("This kind of file cannot be imported here."))
+
     # ------------------------------------------------------------- RPCs
     @api.model
-    def parse(self, file_b64, filename):
+    def parse(self, file_b64, filename, mode='days'):
         """Preview: columns, an auto-guessed mapping and a few sample rows."""
         self._require_officer()
+        self._check_mode(mode)
         cols, rows, truncated = self._read_rows(file_b64, filename)
         if not cols:
             raise UserError(_("The file has no header row."))
@@ -271,10 +294,11 @@ class PbAttendanceImportWizard(models.TransientModel):
         return prepared, truncated
 
     @api.model
-    def validate(self, file_b64, filename, mapping):
+    def validate(self, file_b64, filename, mapping, mode='days'):
         """Dry-run verdicts — NEVER writes. Flags unknown employee, malformed
         time, overlap with an existing punch, and young-worker cap breach."""
         self._require_officer()
+        self._check_mode(mode)
         prepared, truncated = self._prepare(file_b64, filename, mapping)
 
         # batch existing punches over the file's employee/date span (overlap)
@@ -320,10 +344,11 @@ class PbAttendanceImportWizard(models.TransientModel):
             'truncated': truncated, 'max_rows': _MAX_ROWS}}
 
     @api.model
-    def commit(self, file_b64, filename, mapping):
+    def commit(self, file_b64, filename, mapping, mode='days'):
         """Write the valid rows — each in its OWN savepoint, so a single bad row
         never poisons the batch. Overlapping / cap-breaching rows are skipped."""
         self._require_officer()
+        self._check_mode(mode)
         prepared, truncated = self._prepare(file_b64, filename, mapping)
         emp_ids = list({r['employee'].id for r in prepared if r['employee']})
         dates = [r['date'] for r in prepared if r['date']]

@@ -601,19 +601,27 @@ class PbAttendanceFlow(models.AbstractModel):
 
     # ------------------------------------------------------------- import
     @api.model
-    def import_parse(self, file_b64, filename):
+    def import_modes(self):
         self._require()
-        return self.env['pb.attendance.import.wizard'].parse(file_b64, filename)
+        return self.env['pb.attendance.import.wizard'].import_modes()
 
     @api.model
-    def import_validate(self, file_b64, filename, mapping):
+    def import_parse(self, file_b64, filename, mode='days'):
         self._require()
-        return self.env['pb.attendance.import.wizard'].validate(file_b64, filename, mapping)
+        return self.env['pb.attendance.import.wizard'].parse(
+            file_b64, filename, mode=mode)
 
     @api.model
-    def import_commit(self, file_b64, filename, mapping):
+    def import_validate(self, file_b64, filename, mapping, mode='days'):
         self._require()
-        return self.env['pb.attendance.import.wizard'].commit(file_b64, filename, mapping)
+        return self.env['pb.attendance.import.wizard'].validate(
+            file_b64, filename, mapping, mode=mode)
+
+    @api.model
+    def import_commit(self, file_b64, filename, mapping, mode='days'):
+        self._require()
+        return self.env['pb.attendance.import.wizard'].commit(
+            file_b64, filename, mapping, mode=mode)
 
     # ------------------------------------------------------------- helpers
     def _corr(self, correction_id):

@@ -56,6 +56,9 @@ export class PbAttendanceFlow extends Component {
         // host-supplied hook fired after a correction is filed/applied, so the
         // hub can refresh its ribbon without knowing anything about this state
         onChanged: { type: Function, optional: true },
+        // host-supplied lens door (CLOCK-1): after a punch import, "Assign
+        // now" asks the hub to open its Time clocks lens on the unknown numbers
+        onOpenLens: { type: Function, optional: true },
         "*": true,
     };
     static defaultProps = { embedded: false, initialView: "board" };
@@ -108,6 +111,9 @@ export class PbAttendanceFlow extends Component {
             refuseNote: "",
             composer: null,             // correction detail
             imp: this._blankImport(),
+            // the kinds of file the importer takes (CLOCK-1: days | punches);
+            // the switch shows only when there is more than one
+            modes: [],
             // the corrections the filter panel produced, one page at a time
             corrections: [],
             corrTotal: 0,
@@ -115,6 +121,7 @@ export class PbAttendanceFlow extends Component {
             corrMore: false,
         });
         onWillStart(async () => {
+            if (this.state.view === "import") { await this.loadModes(); }
             await this.load();
             // The host remounts this lens (a keyed nonce) when it hands over a
             // seed. Consuming it here is safe ONLY because it is a pure READ:
@@ -128,16 +135,21 @@ export class PbAttendanceFlow extends Component {
         });
     }
 
-    _blankImport() {
+    _blankImport(mode = "days") {
         return {
+            mode,                       // days | punches (CLOCK-1)
             step: "upload",             // upload | map | validate | done
             fileName: "",
             fileB64: null,
             columns: [],
             sample: [],
             total: 0,
-            mapping: { employee: "", date: "", check_in: "", check_out: "" },
+            format: "",                 // punches: attlog | mitaco | table
+            mapping: mode === "punches"
+                ? { user_code: "", punch_at: "", punch_date: "", punch_time: "", direction: "", device: "" }
+                : { employee: "", date: "", check_in: "", check_out: "" },
             validation: null,
+            preview: null,              // punches: what the file holds
             result: null,
         };
     }
@@ -451,7 +463,83 @@ export class PbAttendanceFlow extends Component {
         return { approved: "ok", submitted: "info", refused: "bad", draft: "" }[s] || ""; }
 
     // ---------------------------------------------------------- import
-    openImport() { this.state.imp = this._blankImport(); this.state.view = "import"; }
+    openImport() {
+        this.state.imp = this._blankImport(this.state.imp.mode);
+        this.state.view = "import";
+        if (!this.state.modes.length) { this.loadModes(); }
+    }
+
+    /** The kinds of file the importer takes. A READ, safe on mount (W21). */
+    async loadModes() {
+        try {
+            this.state.modes = await this.orm.call(MODEL, "import_modes", []);
+        } catch {
+            this.state.modes = [];
+        }
+    }
+    get isPunches() { return this.state.imp.mode === "punches"; }
+    setImportMode(key) {
+        if (this.state.imp.mode === key || this.state.busy) { return; }
+        this.state.imp = this._blankImport(key);
+    }
+    get importSteps() {
+        return [
+            { key: "upload", label: _t("Upload") },
+            { key: "map", label: _t("Columns") },
+            { key: "validate", label: _t("Check") },
+            { key: "done", label: _t("Done") },
+        ];
+    }
+    /** The columns the officer maps, in plain words. */
+    get importTargets() {
+        if (this.isPunches) {
+            if (this.state.imp.format === "mitaco") {
+                return [
+                    { key: "user_code", label: _t("Number on the machine") },
+                    { key: "punch_date", label: _t("Date") },
+                ];
+            }
+            return [
+                { key: "user_code", label: _t("Number on the machine") },
+                { key: "punch_at", label: _t("Date and time") },
+                { key: "punch_date", label: _t("Date (when the time is separate)") },
+                { key: "punch_time", label: _t("Time (when the date is separate)") },
+                { key: "direction", label: _t("In / Out (optional)") },
+                { key: "device", label: _t("Machine (optional)") },
+            ];
+        }
+        return [
+            { key: "employee", label: _t("Employee") },
+            { key: "date", label: _t("Date") },
+            { key: "check_in", label: _t("Check-in") },
+            { key: "check_out", label: _t("Check-out (optional)") },
+        ];
+    }
+    get importAccept() {
+        return this.isPunches ? ".csv,.xlsx,.xlsm,.dat,.txt" : ".csv,.xlsx,.xlsm";
+    }
+    formatLabel(f) {
+        return { attlog: _t("Machine log file"),
+                 mitaco: _t("Attendance program daily sheet"),
+                 table: _t("Table of punches") }[f] || "";
+    }
+    /** The seven-day sparkline of punches per day, as bar geometry. */
+    get sparkBars() {
+        const p = this.state.imp.preview;
+        if (!p || !p.spark || !p.spark.length) { return []; }
+        const max = Math.max(1, p.spark_max || 0);
+        return p.spark.map((d, i) => ({
+            ...d, x: i * 18 + 2,
+            h: d.n ? Math.max(3, Math.round((d.n / max) * 40)) : 2,
+            zero: !d.n,
+        }));
+    }
+    fmtN(n) { return (Number(n) || 0).toLocaleString(); }
+    /** "Assign now": the hub opens its Time clocks lens on these numbers. */
+    get canOpenClocks() { return !!this.props.onOpenLens; }
+    openClocks(codes) {
+        if (this.props.onOpenLens) { this.props.onOpenLens("clocks", { codes: codes || [] }); }
+    }
 
     onImportFile(ev) {
         const file = ev.target.files && ev.target.files[0];
@@ -469,12 +557,20 @@ export class PbAttendanceFlow extends Component {
         const imp = this.state.imp;
         this.state.busy = true;
         try {
-            const r = await this.orm.call(MODEL, "import_parse", [imp.fileB64, imp.fileName]);
+            const r = await this.orm.call(MODEL, "import_parse", [imp.fileB64, imp.fileName, imp.mode]);
             imp.columns = r.columns;
             imp.sample = r.sample;
             imp.total = r.total;
             imp.mapping = r.mapping;
-            imp.step = "map";
+            imp.format = r.format || "";
+            // a punch file whose shape was recognised goes straight to the
+            // check — nothing for the officer to map (CLOCK-1)
+            if (this.isPunches && r.ready && r.preview) {
+                imp.preview = r.preview;
+                imp.step = "validate";
+            } else {
+                imp.step = "map";
+            }
             if (r.truncated) {
                 this.notif.add(
                     _t("The file has more rows than the %s-row limit — only the first %s were read. Split the file to import the rest.", r.max_rows, r.max_rows),
@@ -491,8 +587,13 @@ export class PbAttendanceFlow extends Component {
         const imp = this.state.imp;
         this.state.busy = true;
         try {
-            imp.validation = await this.orm.call(
-                MODEL, "import_validate", [imp.fileB64, imp.fileName, imp.mapping]);
+            const r = await this.orm.call(
+                MODEL, "import_validate", [imp.fileB64, imp.fileName, imp.mapping, imp.mode]);
+            if (this.isPunches) {
+                imp.preview = r.preview;
+            } else {
+                imp.validation = r;
+            }
             imp.step = "validate";
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
@@ -505,12 +606,17 @@ export class PbAttendanceFlow extends Component {
         this.state.busy = true;
         try {
             imp.result = await this.orm.call(
-                MODEL, "import_commit", [imp.fileB64, imp.fileName, imp.mapping]);
+                MODEL, "import_commit", [imp.fileB64, imp.fileName, imp.mapping, imp.mode]);
             imp.step = "done";
             this._changed();
-            this.notif.add(
-                _t("%s imported, %s skipped.", imp.result.created, imp.result.skipped),
-                { type: imp.result.skipped ? "warning" : "success" });
+            if (this.isPunches) {
+                this.notif.add(imp.result.message,
+                    { type: imp.result.unknown_count ? "warning" : "success" });
+            } else {
+                this.notif.add(
+                    _t("%s imported, %s skipped.", imp.result.created, imp.result.skipped),
+                    { type: imp.result.skipped ? "warning" : "success" });
+            }
             if (imp.result.truncated) {
                 this.notif.add(
                     _t("Only the first %s rows were imported — split the file for the rest.", imp.result.max_rows),
@@ -524,6 +630,10 @@ export class PbAttendanceFlow extends Component {
     }
     get canValidate() {
         const m = this.state.imp.mapping;
+        if (this.isPunches) {
+            if (this.state.imp.format === "mitaco") { return !!(m.user_code && m.punch_date); }
+            return !!(m.user_code && (m.punch_at || (m.punch_date && m.punch_time)));
+        }
         return !!(m.employee && m.date && m.check_in);
     }
     backToMap() { this.state.imp.step = "map"; }
@@ -531,7 +641,7 @@ export class PbAttendanceFlow extends Component {
         // In the hub's Import lens there is no board to go back TO — the lens
         // IS the importer — so "done" resets the stepper instead of navigating.
         if (!this.canLeaveImport) {
-            this.state.imp = this._blankImport();
+            this.state.imp = this._blankImport(this.state.imp.mode);
             return;
         }
         this.state.view = "board";

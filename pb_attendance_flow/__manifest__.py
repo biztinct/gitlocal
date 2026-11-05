@@ -37,9 +37,16 @@ Workforce P4 WP-1 adds the CLOSE TOLERANCE to the same pb.attendance.rule row
 ritual uses to separate a clean employee-day from one that needs a human. It is
 deliberately a second dimension beside grace, not a re-use of it — grace decides
 who was late, tolerance decides what payroll may see unreviewed.
+
+1.3.0 (CLOCK-1): the importer takes more than one kind of file. `mode` on the
+three import calls ('days' = the attendance-days import above, unchanged) and
+`import_modes()`, which other modules extend — the Time clocks module adds
+"Time-clock punches". The Import lens shows the choice as two cards when there
+is more than one. Corrections now judge "is this punch on the correction's
+day" by the person's local day, like the exception feed.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
