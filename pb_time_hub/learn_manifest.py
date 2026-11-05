@@ -11,11 +11,14 @@ checked by the truth gate. Every sentence in English and Vietnamese.
 _XML = 'pb_time_hub/static/src/xml/time_hub.xml'
 _JS = 'pb_time_hub/static/src/js/time_hub.js'
 _PY = 'pb_time_hub/models/time_hub.py'
+# CLOCK-3: the Time clocks lens (pb_clock) and the Import lens's mode cards
+_CLOCK_JS = 'pb_clock/static/src/js/clock_lens.js'
+_CLOCK_IMPORT = 'pb_clock/wizards/attendance_import.py'
 
 MANIFESTS = {
     'wftime': {
         'model': None,
-        'templates': [_XML, _JS],
+        'templates': [_XML, _JS, _CLOCK_JS, _CLOCK_IMPORT],
         'purpose': {
             'en': "See the hours worked for the week, as a timeline or a grid, "
                   "and clear the entries that need a look before the week closes.",
@@ -106,6 +109,48 @@ MANIFESTS = {
                           "preview first.",
                     'vi': "Ghi các giờ bạn xác nhận vào tuần. Hãy xem phần xem "
                           "trước trước tiên.",
+                },
+                'anchor': 'wf-time',
+            },
+            {
+                'key': 'time_clocks', 'derived': True,
+                'column': {'en': "Time clocks", 'vi': "Máy chấm công"},
+                'from': _CLOCK_JS + ':hero',
+                'how': {
+                    'en': "The attendance machines and the punches they send. Each "
+                          "punch is paired into a work day, first punch in and last "
+                          "punch out, and a note at the top says what needs a person.",
+                    'vi': "Các máy chấm công và lượt chấm chúng gửi về. Mỗi lượt chấm "
+                          "được ghép thành một ngày làm việc, lượt đầu là giờ vào và "
+                          "lượt cuối là giờ ra, và một ghi chú ở đầu trang cho biết "
+                          "việc gì cần người xử lý.",
+                },
+                'if_changed': {
+                    'en': "The days it pairs show in the Week Grid and go to payroll. "
+                          "A day from a machine is changed only with a correction.",
+                    'vi': "Các ngày được ghép hiện trong Lưới tuần và chuyển sang bảng "
+                          "lương. Một ngày từ máy chỉ được thay đổi bằng một đề nghị "
+                          "chỉnh sửa.",
+                },
+                'anchor': 'wf-clocks',
+            },
+            {
+                'key': 'import_modes', 'derived': True,
+                'column': {'en': "Time-clock punches", 'vi': "Lượt chấm từ máy chấm công"},
+                'from': _CLOCK_IMPORT + ':import_modes',
+                'how': {
+                    'en': "On Import, the second card: a punch file from a machine or "
+                          "its program. The punches are paired for you, exactly like "
+                          "the ones a machine sends.",
+                    'vi': "Ở tab Nhập, thẻ thứ hai: một tệp lượt chấm từ máy hoặc "
+                          "chương trình của máy. Lượt chấm được ghép giúp bạn, giống "
+                          "hệt lượt chấm máy gửi về.",
+                },
+                'if_changed': {
+                    'en': "Adds the punches to the time clocks; a punch already there "
+                          "is kept once.",
+                    'vi': "Thêm lượt chấm vào máy chấm công; một lượt chấm đã có chỉ "
+                          "được giữ một lần.",
                 },
                 'anchor': 'wf-time',
             },

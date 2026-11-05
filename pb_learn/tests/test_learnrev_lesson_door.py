@@ -31,6 +31,9 @@ NO_OWN_STATION = {
     'filing_flow': 'govreports',
     # no lesson yet: the drawer says so and opens the lesson map
     'wftimeoff': '', 'wfovertime': '',
+    # CLOCK-3: a lens inside Time — its step is in Time's lesson (L21) and it
+    # has its own walkthrough (sc_wfclocks), no lesson of its own yet
+    'wfclocks': '',
 }
 
 
@@ -65,7 +68,7 @@ class TestLearnrevLessonDoor(TransactionCase):
     def test_01_every_content_screen_has_its_own_station_or_is_listed(self):
         stations = {s['key'] for s in self.tree['stations']}
         content = [s['key'] for s in self.tree['screens'] if not s['key'].startswith('hub_')]
-        self.assertEqual(len(content), 54, 'the content screen count moved: review the list')
+        self.assertEqual(len(content), 56, 'the content screen count moved: review the list')
         missing = sorted(k for k in content if k not in stations)
         self.assertEqual(missing, sorted(NO_OWN_STATION))
 

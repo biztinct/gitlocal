@@ -412,6 +412,11 @@ def replica_region(src, screen_key):
 #: list is the decision, written down; a column missing for any other reason
 #: fails. (Generating the replicas from the screen definitions is P5.)
 REPLICA_ABSENT = {
+    'wftime': {
+        'Time-clock punches': "CLOCK-3: the practice copy draws Time's tabs; the "
+                              "Import lens's mode cards (where this card is) have "
+                              "no practice copy",
+    },
     'mapping': {
         '*': "the practice copy draws Mapping › Journey; the manifest describes "
              "Mapping › Connections (LEARNREV LR24) — Connections has no copy yet",

@@ -1869,6 +1869,7 @@
       "pb_pip/static/src/xml/pip_board.xml",
       "pb_probation/static/src/xml/probation_board.xml",
       "pb_time_hub/static/src/xml/time_hub.xml",
+      "pb_clock/static/src/xml/clock_lens.xml",
       "pb_timeoff/static/src/xml/pb_timeoff.xml",
       "pb_today/static/src/xml/pb_today.xml",
       "pb_young_worker/static/src/xml/pb_young_worker.xml",

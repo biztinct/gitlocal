@@ -190,6 +190,9 @@ SCREEN_ACTION_TAGS = {
     'peoplemore': 'pb_rnr_wall,pb_assignments,pb_assets,pb_hr_comm_calendar,pb_goals_home',
     'wftoday': 'pb_today',
     'wftime': 'pb_time_hub,pb_attendance_weekgrid',
+    # CLOCK-3: a lens INSIDE Time; grounded by its place (time/clocks). The tag
+    # is declared after wftime's, so the standalone hub still grounds on Time.
+    'wfclocks': 'pb_time_hub',
     'wftimeoff': 'pb_timeoff',
     'wfovertime': 'pb_ot_desk',
     'wfclose': 'pb_workforce',

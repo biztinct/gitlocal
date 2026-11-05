@@ -19688,8 +19688,8 @@
             "vi": "Lực lượng lao động › Chấm công"
           },
           "look": {
-            "en": "The Exceptions tab, beside Timeline, Week Grid and Import.",
-            "vi": "Tab Ngoại lệ, bên cạnh Dòng thời gian, Lưới tuần và Nhập."
+            "en": "The Exceptions tab, beside Timeline, Week Grid, Import and Time clocks.",
+            "vi": "Tab Ngoại lệ, bên cạnh Dòng thời gian, Lưới tuần, Nhập và Máy chấm công."
           },
           "means": {
             "en": "Counts the entries in the week that need a look: a missing punch in or out, a late start or an early departure.",
@@ -19706,8 +19706,8 @@
             "vi": "Tôi chỉ đọc. Lượt hướng dẫn này không duyệt gì."
           },
           "title": {
-            "en": "Timeline, Week Grid, Exceptions, Import",
-            "vi": "Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập"
+            "en": "Timeline, Week Grid, Exceptions, Import, Time clocks",
+            "vi": "Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập, Máy chấm công"
           },
           "value": ""
         },
@@ -19820,6 +19820,156 @@
       "tagline": {
         "en": "Exceptions to fix, leave to decide, overtime to approve inside its limits.",
         "vi": "Ngoại lệ cần xử lý, đơn nghỉ cần quyết định, tăng ca cần duyệt trong giới hạn."
+      }
+    },
+    {
+      "entry": {
+        "nav": "wftime",
+        "screen": ""
+      },
+      "icon": "clock",
+      "key": "sc_wfclocks",
+      "line": "workforce",
+      "modes": [
+        "watch"
+      ],
+      "name": {
+        "en": "A machine stops sending",
+        "vi": "Một máy ngừng gửi dữ liệu"
+      },
+      "phrases": [
+        "machine stopped",
+        "time clock",
+        "attendance machine",
+        "fingerprint machine",
+        "máy chấm công",
+        "máy ngừng gửi",
+        "máy vân tay",
+        "may cham cong",
+        "may ngung gui",
+        "may van tay",
+        "A machine stops sending",
+        "Một máy ngừng gửi dữ liệu"
+      ],
+      "retired": false,
+      "screens": [
+        "wfclocks",
+        "wftime"
+      ],
+      "steps": [
+        {
+          "act": "observe",
+          "affects": {
+            "en": "Read-only. The number drops as each problem is fixed.",
+            "vi": "Chỉ xem. Con số giảm khi từng vấn đề được xử lý."
+          },
+          "anchor": "wf-time",
+          "body": "",
+          "guard": false,
+          "key": "tab",
+          "kicker": {
+            "en": "Workforce › Time",
+            "vi": "Lực lượng lao động › Chấm công"
+          },
+          "look": {
+            "en": "The Time clocks tab, after Import. Its number counts the things that need attention.",
+            "vi": "Tab Máy chấm công, sau tab Nhập. Con số bên cạnh đếm những việc cần chú ý."
+          },
+          "means": {
+            "en": "The same count is added to the line above the tabs, as time-clock alerts.",
+            "vi": "Con số đó cũng được thêm vào dòng phía trên các tab, dưới dạng cảnh báo máy chấm công."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "wftime",
+          "screen": "",
+          "timeout": 0,
+          "tip": {
+            "en": "I only read. Nothing is changed by this walkthrough.",
+            "vi": "Tôi chỉ đọc. Lượt hướng dẫn này không thay đổi gì."
+          },
+          "title": {
+            "en": "The Time clocks tab",
+            "vi": "Tab Máy chấm công"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "Checked every 15 minutes; each line clears by itself once the problem is gone. A manager can mute a line for a week.",
+            "vi": "Được kiểm tra mỗi 15 phút; mỗi dòng tự biến mất khi vấn đề không còn. Quản lý có thể tắt một dòng trong một tuần."
+          },
+          "anchor": "wf-clocks-attn",
+          "body": "",
+          "field": "wfclocks.attention",
+          "guard": false,
+          "key": "note",
+          "kicker": {
+            "en": "Time clocks",
+            "vi": "Máy chấm công"
+          },
+          "look": {
+            "en": "The note at the top of Time clocks: Factory 2 has not called in since 14:02.",
+            "vi": "Ghi chú ở đầu tab Máy chấm công: Factory 2 has not called in since 14:02 (Xưởng 2 chưa liên lạc từ 14:02)."
+          },
+          "means": {
+            "en": "One plain sentence per problem, with the door that fixes it: a machine that has not called in, a clock that is off, a day missing a check-out.",
+            "vi": "Mỗi vấn đề một câu, kèm nút mở đúng chỗ cần sửa: một máy chưa liên lạc, đồng hồ máy bị lệch, một ngày thiếu giờ ra."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "The note at the top",
+            "vi": "Ghi chú ở đầu trang"
+          },
+          "value": ""
+        },
+        {
+          "act": "observe",
+          "affects": {
+            "en": "Nothing is lost: the machine keeps its punches and sends them as soon as it calls in again. The note clears by itself.",
+            "vi": "Không mất gì: máy giữ lại lượt chấm và gửi về ngay khi liên lạc lại. Ghi chú tự biến mất."
+          },
+          "anchor": "wf-clocks-machines",
+          "body": "",
+          "guard": false,
+          "key": "machine",
+          "kicker": {
+            "en": "Time clocks › Machines",
+            "vi": "Máy chấm công › Máy"
+          },
+          "look": {
+            "en": "The machine's card under Machines: Silent since 14:02.",
+            "vi": "Thẻ của máy trong mục Các máy: Im lặng từ 14:02."
+          },
+          "means": {
+            "en": "The machine has not called in. Check its power and its network cable or Wi-Fi, then restart it.",
+            "vi": "Máy chưa liên lạc. Hãy kiểm tra nguồn điện và cáp mạng hoặc Wi-Fi, rồi khởi động lại máy."
+          },
+          "modes": [
+            "watch"
+          ],
+          "nav": "",
+          "screen": "",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "What to check on the machine",
+            "vi": "Cần kiểm tra gì trên máy"
+          },
+          "value": ""
+        }
+      ],
+      "tagline": {
+        "en": "A time clock went quiet: where Payobook says so, and what to check on the machine.",
+        "vi": "Một máy chấm công im lặng: Payobook báo ở đâu, và cần kiểm tra gì trên máy."
       }
     },
     {
@@ -22887,8 +23037,8 @@
     {
       "action_tags": "pb_time_hub,pb_attendance_weekgrid",
       "blurb": {
-        "en": "Time, Time Off and Overtime: hours worked and their exceptions, leave waiting, and overtime to approve inside its limits.",
-        "vi": "Chấm công, Nghỉ phép và Tăng ca: giờ làm và các ngoại lệ, đơn nghỉ đang chờ, và tăng ca cần duyệt trong giới hạn."
+        "en": "Time, Time Off and Overtime: hours worked and their exceptions, punches from the time clocks, leave waiting, and overtime to approve inside its limits.",
+        "vi": "Chấm công, Nghỉ phép và Tăng ca: giờ làm và các ngoại lệ, lượt chấm từ máy chấm công, đơn nghỉ đang chờ, và tăng ca cần duyệt trong giới hạn."
       },
       "hub": null,
       "key": "wftime",
@@ -22927,6 +23077,41 @@
       ]
     },
     {
+      "action_tags": "pb_time_hub",
+      "blurb": {
+        "en": "Time clocks: the attendance machines and the punches they send. A short note at the top says when something needs a person.",
+        "vi": "Máy chấm công: các máy chấm công và lượt chấm chúng gửi về. Một ghi chú ngắn ở đầu trang cho biết khi có việc cần người xử lý."
+      },
+      "hub": null,
+      "key": "wfclocks",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Time clocks",
+        "vi": "Máy chấm công"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Read the note at the top first and open each door it offers. Then match any number that matches nobody, so its punches count.",
+        "vi": "Hãy đọc ghi chú ở đầu trang trước và mở từng mục nó gợi ý. Sau đó ghép những số chưa khớp với ai, để lượt chấm của họ được tính."
+      },
+      "open": "",
+      "places": [
+        "pb_workforce:time/clocks"
+      ],
+      "sequence": 500,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
       "action_tags": "pb_timeoff",
       "blurb": {
         "en": "Time Off: leave waiting for a decision, and who is out today. Apply for files leave for someone who cannot.",
@@ -22949,7 +23134,7 @@
       "places": [
         "pb_workforce:timeoff"
       ],
-      "sequence": 500,
+      "sequence": 510,
       "sidebar_key": "",
       "suggest": [
         {
@@ -22991,7 +23176,7 @@
       "places": [
         "pb_workforce:overtime"
       ],
-      "sequence": 510,
+      "sequence": 520,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23026,14 +23211,14 @@
       },
       "navs": [],
       "next_step": {
-        "en": "Fix what is wrong, approve as-is only what really happened, read the handoff, then Lock week & send to payroll.",
-        "vi": "Điều chỉnh những gì sai, chỉ duyệt nguyên trạng những gì thật sự đã xảy ra, đọc phần chuyển giao, rồi Khóa tuần và gửi vào bảng lương."
+        "en": "Fix what is wrong, approve as-is only what really happened, read the handoff, then Lock week & send to payroll. A time-clock day missing its check-out is fixed with a correction before you lock.",
+        "vi": "Điều chỉnh những gì sai, chỉ duyệt nguyên trạng những gì thật sự đã xảy ra, đọc phần chuyển giao, rồi Khóa tuần và gửi vào bảng lương. Một ngày từ máy chấm công thiếu giờ ra được sửa bằng một đề nghị chỉnh sửa trước khi khoá."
       },
       "open": "",
       "places": [
         "pb_workforce:close"
       ],
-      "sequence": 520,
+      "sequence": 530,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23073,7 +23258,7 @@
       },
       "open": "biz_access.action_pb_access_board",
       "places": [],
-      "sequence": 530,
+      "sequence": 540,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23113,7 +23298,7 @@
       },
       "open": "pb_govt_reports.action_pb_filing_flow",
       "places": [],
-      "sequence": 540,
+      "sequence": 550,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23157,7 +23342,7 @@
         "pb_compliance_hub:young",
         "pb_compliance_hub:audit"
       ],
-      "sequence": 550,
+      "sequence": 560,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23279,7 +23464,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 560,
+      "sequence": 570,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23462,7 +23647,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 570,
+      "sequence": 580,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23655,7 +23840,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 580,
+      "sequence": 590,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23774,7 +23959,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 590,
+      "sequence": 600,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23940,7 +24125,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 600,
+      "sequence": 610,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24022,7 +24207,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 610,
+      "sequence": 620,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24171,7 +24356,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 620,
+      "sequence": 630,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24273,7 +24458,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 630,
+      "sequence": 640,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24365,7 +24550,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 640,
+      "sequence": 650,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24544,7 +24729,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 650,
+      "sequence": 660,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24636,7 +24821,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 660,
+      "sequence": 670,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24912,7 +25097,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 670,
+      "sequence": 680,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25071,7 +25256,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 680,
+      "sequence": 690,
       "sidebar_key": "",
       "suggest": [
         {
@@ -40993,12 +41178,12 @@
               },
               "lines": [],
               "look": {
-                "en": "The four tabs Timeline, Week Grid, Exceptions and Import.",
-                "vi": "Bốn tab Dòng thời gian, Lưới tuần, Ngoại lệ và Nhập."
+                "en": "The five tabs Timeline, Week Grid, Exceptions, Import and Time clocks.",
+                "vi": "Năm tab Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập và Máy chấm công."
               },
               "means": {
-                "en": "Timeline and Week Grid show the hours. Exceptions lists what needs a look. Import brings in hours from a file.",
-                "vi": "Dòng thời gian và Lưới tuần cho thấy số giờ. Ngoại lệ liệt kê những gì cần xem. Nhập đưa giờ làm vào từ một tệp."
+                "en": "Timeline and Week Grid show the hours. Exceptions lists what needs a look. Import brings in hours from a file. Time clocks shows the attendance machines and their punches.",
+                "vi": "Dòng thời gian và Lưới tuần cho thấy số giờ. Ngoại lệ liệt kê những gì cần xem. Nhập đưa giờ làm vào từ một tệp. Máy chấm công cho thấy các máy chấm công và lượt chấm của chúng."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -41011,8 +41196,41 @@
               "screen": "wftime",
               "tip": "",
               "title": {
-                "en": "Four views of the hours worked",
-                "vi": "Bốn cách xem giờ làm việc"
+                "en": "Five views of the hours worked",
+                "vi": "Năm cách xem giờ làm việc"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Those work days are the hours the Week Grid shows and Close hands to payroll. A day from a machine is changed only with a correction.",
+                "vi": "Những ngày làm việc đó là số giờ Lưới tuần hiển thị và Chốt kỳ chuyển cho bảng lương. Một ngày từ máy chỉ được thay đổi bằng một đề nghị chỉnh sửa."
+              },
+              "anchor": "wf-time",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Time clocks",
+                "vi": "Máy chấm công"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Time clocks tab, after Import. At its top, a short note says what needs a person, or Nothing needs attention.",
+                "vi": "Tab Máy chấm công, sau tab Nhập. Ở đầu trang, một ghi chú ngắn cho biết việc gì cần người xử lý, hoặc Không có gì cần chú ý."
+              },
+              "means": {
+                "en": "Each punch a machine sends is paired into a work day: first punch in, last punch out. The note lists a machine that went quiet, a clock that is off or a day missing a check-out.",
+                "vi": "Mỗi lượt chấm máy gửi về được ghép thành một ngày làm việc: lượt đầu là giờ vào, lượt cuối là giờ ra. Ghi chú liệt kê một máy im lặng, đồng hồ máy bị lệch hoặc một ngày thiếu giờ ra."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "wftime",
+              "tip": "",
+              "title": {
+                "en": "Punches from the machines",
+                "vi": "Lượt chấm từ máy"
               },
               "visual": "none"
             },
@@ -41221,8 +41439,8 @@
           "vi": "Quyền cán bộ chấm công cho tab Chấm công. Duyệt nghỉ phép và tăng ca theo quyền riêng."
         },
         "what": {
-          "en": "Three Workforce tabs. Time shows hours and exceptions; Time Off holds the leave queue; Overtime holds the approval queue and its limits.",
-          "vi": "Ba tab của Lực lượng lao động. Chấm công cho thấy giờ và ngoại lệ; Nghỉ phép giữ hàng chờ nghỉ phép; Tăng ca giữ hàng chờ duyệt và các giới hạn."
+          "en": "Three Workforce tabs. Time shows hours, exceptions and the time clocks; Time Off holds the leave queue; Overtime holds the approval queue and its limits.",
+          "vi": "Ba tab của Lực lượng lao động. Chấm công cho thấy giờ, ngoại lệ và máy chấm công; Nghỉ phép giữ hàng chờ nghỉ phép; Tăng ca giữ hàng chờ duyệt và các giới hạn."
         },
         "when": {
           "en": "Through the week, so that closing the week is a check rather than a scramble.",
@@ -41581,5 +41799,5 @@
       }
     }
   ],
-  "version": "3d1d50127d36"
+  "version": "2f6c3cbf0aa9"
 }

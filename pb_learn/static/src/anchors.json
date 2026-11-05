@@ -1713,7 +1713,23 @@
     "wf-time": {
       "screen": "wftime",
       "file": "pb_time_hub/static/src/xml/time_hub.xml",
-      "desc": "Time's tabs: Timeline, Week Grid, Exceptions, Import."
+      "desc": "Time's tabs: Timeline, Week Grid, Exceptions, Import, Time clocks."
+    },
+    "wf-clocks": {
+      "screen": "wfclocks",
+      "file": "pb_clock/static/src/xml/clock_lens.xml",
+      "desc": "The Time clocks lens as a whole (CLOCK-3).",
+      "reserved": true
+    },
+    "wf-clocks-attn": {
+      "screen": "wfclocks",
+      "file": "pb_clock/static/src/xml/clock_lens.xml",
+      "desc": "The Attention strip at the top of Time clocks: one sentence per problem, grey at zero."
+    },
+    "wf-clocks-machines": {
+      "screen": "wfclocks",
+      "file": "pb_clock/static/src/xml/clock_lens.xml",
+      "desc": "The Machines block: one card per attendance machine."
     },
     "wf-exceptions": {
       "screen": "wftime",
@@ -2299,6 +2315,7 @@
       "pb_pip/static/src/xml/pip_board.xml",
       "pb_probation/static/src/xml/probation_board.xml",
       "pb_time_hub/static/src/xml/time_hub.xml",
+      "pb_clock/static/src/xml/clock_lens.xml",
       "pb_timeoff/static/src/xml/pb_timeoff.xml",
       "pb_today/static/src/xml/pb_today.xml",
       "pb_young_worker/static/src/xml/pb_young_worker.xml",

@@ -2084,7 +2084,8 @@ const PRACTICE = {
 
   /* ----------------------------------------------- Workforce › Time / Time Off / Overtime */
   wftime: {
-    tabs: [B("Timeline", "Dòng thời gian"), B("Week Grid", "Lưới tuần"), B("Exceptions", "Ngoại lệ"), B("Import", "Nhập")],
+    tabs: [B("Timeline", "Dòng thời gian"), B("Week Grid", "Lưới tuần"), B("Exceptions", "Ngoại lệ"), B("Import", "Nhập"),
+           B("Time clocks", "Máy chấm công")],
     exceptions: 4,
     leave: [{ name: EMP.mai.name, what: B("Annual leave · 12–14/08 · 3 days", "Nghỉ phép năm · 12–14/08 · 3 ngày") }],
     ot: [

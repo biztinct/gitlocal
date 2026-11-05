@@ -3274,8 +3274,8 @@ const STATIONS = {
         desc: B("Hours worked and their exceptions, leave waiting for a decision, and overtime to approve inside its limits.",
                 "Giờ làm việc và các ngoại lệ, đơn nghỉ phép chờ quyết định, và tăng ca cần duyệt trong giới hạn của nó."),
         outline: {
-          what: B("Three Workforce tabs. Time shows hours and exceptions; Time Off holds the leave queue; Overtime holds the approval queue and its limits.",
-                  "Ba tab của Lực lượng lao động. Chấm công cho thấy giờ và ngoại lệ; Nghỉ phép giữ hàng chờ nghỉ phép; Tăng ca giữ hàng chờ duyệt và các giới hạn."),
+          what: B("Three Workforce tabs. Time shows hours, exceptions and the time clocks; Time Off holds the leave queue; Overtime holds the approval queue and its limits.",
+                  "Ba tab của Lực lượng lao động. Chấm công cho thấy giờ, ngoại lệ và máy chấm công; Nghỉ phép giữ hàng chờ nghỉ phép; Tăng ca giữ hàng chờ duyệt và các giới hạn."),
           why: B("Every hour here reaches a payslip. A leave day approved late, or overtime past the legal limit, costs money and trust.",
                  "Mỗi giờ ở đây đều đi vào phiếu lương. Một ngày nghỉ duyệt muộn, hay tăng ca vượt giới hạn luật định, tốn cả tiền lẫn lòng tin."),
           when: B("Through the week, so that closing the week is a check rather than a scramble.",
@@ -6707,15 +6707,27 @@ const LESSONS = {
         screen: "wftime", anchor: "wf-time",
         /* source: pb_time_hub/static/src/js/time_hub.js:120 (Timeline, Week Grid, Exceptions, Import) + pb_time_hub/static/src/xml/time_hub.xml:21 */
         kicker: B("Time", "Chấm công"),
-        title: B("Four views of the hours worked", "Bốn cách xem giờ làm việc"),
-        look: B("The four tabs Timeline, Week Grid, Exceptions and Import.",
-                "Bốn tab Dòng thời gian, Lưới tuần, Ngoại lệ và Nhập."),
-        means: B("Timeline and Week Grid show the hours. Exceptions lists what needs a look. Import brings in hours from a file.",
-                 "Dòng thời gian và Lưới tuần cho thấy số giờ. Ngoại lệ liệt kê những gì cần xem. Nhập đưa giờ làm vào từ một tệp."),
+        title: B("Five views of the hours worked", "Năm cách xem giờ làm việc"),
+        look: B("The five tabs Timeline, Week Grid, Exceptions, Import and Time clocks.",
+                "Năm tab Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập và Máy chấm công."),
+        means: B("Timeline and Week Grid show the hours. Exceptions lists what needs a look. Import brings in hours from a file. Time clocks shows the attendance machines and their punches.",
+                 "Dòng thời gian và Lưới tuần cho thấy số giờ. Ngoại lệ liệt kê những gì cần xem. Nhập đưa giờ làm vào từ một tệp. Máy chấm công cho thấy các máy chấm công và lượt chấm của chúng."),
         affects: B("The hours kept here are what Close hands to payroll at the end of the week.",
                    "Số giờ lưu ở đây là những gì Chốt kỳ chuyển cho bảng lương vào cuối tuần."),
         press: B("Exceptions, to see what needs a look this week.",
                  "Ngoại lệ, để xem những gì cần xem trong tuần này."),
+      },
+      {
+        screen: "wftime", anchor: "wf-time",
+        /* source: pb_clock/static/src/js/clock_lens.js (Time clocks lens, registered after Import) + pb_clock/static/src/xml/clock_lens.xml (Nothing needs attention.) — CLOCK-3 */
+        kicker: B("Time clocks", "Máy chấm công"),
+        title: B("Punches from the machines", "Lượt chấm từ máy"),
+        look: B("The Time clocks tab, after Import. At its top, a short note says what needs a person, or Nothing needs attention.",
+                "Tab Máy chấm công, sau tab Nhập. Ở đầu trang, một ghi chú ngắn cho biết việc gì cần người xử lý, hoặc Không có gì cần chú ý."),
+        means: B("Each punch a machine sends is paired into a work day: first punch in, last punch out. The note lists a machine that went quiet, a clock that is off or a day missing a check-out.",
+                 "Mỗi lượt chấm máy gửi về được ghép thành một ngày làm việc: lượt đầu là giờ vào, lượt cuối là giờ ra. Ghi chú liệt kê một máy im lặng, đồng hồ máy bị lệch hoặc một ngày thiếu giờ ra."),
+        affects: B("Those work days are the hours the Week Grid shows and Close hands to payroll. A day from a machine is changed only with a correction.",
+                   "Những ngày làm việc đó là số giờ Lưới tuần hiển thị và Chốt kỳ chuyển cho bảng lương. Một ngày từ máy chỉ được thay đổi bằng một đề nghị chỉnh sửa."),
       },
       {
         screen: "wftime", anchor: "rep-wf-exc", field: "wftime.exceptions",
@@ -9884,11 +9896,23 @@ const SCREEN_CTX = {
   },
   wftime: {
     places: ["pb_workforce:time"],
-    blurb: B("Time, Time Off and Overtime: hours worked and their exceptions, leave waiting, and overtime to approve inside its limits.",
-             "Chấm công, Nghỉ phép và Tăng ca: giờ làm và các ngoại lệ, đơn nghỉ đang chờ, và tăng ca cần duyệt trong giới hạn."),
+    blurb: B("Time, Time Off and Overtime: hours worked and their exceptions, punches from the time clocks, leave waiting, and overtime to approve inside its limits.",
+             "Chấm công, Nghỉ phép và Tăng ca: giờ làm và các ngoại lệ, lượt chấm từ máy chấm công, đơn nghỉ đang chờ, và tăng ca cần duyệt trong giới hạn."),
     next: B("Clear exceptions through the week so Close is a check. Read any near-the-limit mark before you approve overtime.",
             "Hãy xử lý ngoại lệ trong suốt tuần để Chốt kỳ chỉ là bước kiểm tra. Đọc dấu gần giới hạn trước khi duyệt tăng ca."),
     chips: ["approveot", "whatnext"],
+  },
+  /* CLOCK-3: Time clocks is a lens INSIDE Time (inner tab `clocks`, published
+     by the lens with setPlaceSub). A place, not a station: the wftime lesson
+     carries its step and sc_wfclocks its walkthrough. */
+  wfclocks: {
+    name: B("Time clocks", "Máy chấm công"),
+    places: ["pb_workforce:time/clocks"],
+    blurb: B("Time clocks: the attendance machines and the punches they send. A short note at the top says when something needs a person.",
+             "Máy chấm công: các máy chấm công và lượt chấm chúng gửi về. Một ghi chú ngắn ở đầu trang cho biết khi có việc cần người xử lý."),
+    next: B("Read the note at the top first and open each door it offers. Then match any number that matches nobody, so its punches count.",
+            "Hãy đọc ghi chú ở đầu trang trước và mở từng mục nó gợi ý. Sau đó ghép những số chưa khớp với ai, để lượt chấm của họ được tính."),
+    chips: ["whatnext"],
   },
   /* Time Off and Overtime are tabs of their own; the wftime lesson and
      walkthrough cover all three, so these two are places, not stations. */
@@ -9914,8 +9938,8 @@ const SCREEN_CTX = {
     places: ["pb_workforce:close"],
     blurb: B("Close: the week's flags, what goes to payroll, and the lock that sends it.",
              "Chốt kỳ: các cờ cảnh báo của tuần, những gì chuyển sang bảng lương, và nút khoá để gửi đi."),
-    next: B("Fix what is wrong, approve as-is only what really happened, read the handoff, then Lock week & send to payroll.",
-            "Điều chỉnh những gì sai, chỉ duyệt nguyên trạng những gì thật sự đã xảy ra, đọc phần chuyển giao, rồi Khóa tuần và gửi vào bảng lương."),
+    next: B("Fix what is wrong, approve as-is only what really happened, read the handoff, then Lock week & send to payroll. A time-clock day missing its check-out is fixed with a correction before you lock.",
+            "Điều chỉnh những gì sai, chỉ duyệt nguyên trạng những gì thật sự đã xảy ra, đọc phần chuyển giao, rồi Khóa tuần và gửi vào bảng lương. Một ngày từ máy chấm công thiếu giờ ra được sửa bằng một đề nghị chỉnh sửa trước khi khoá."),
     chips: ["lockweek", "whatnext"],
   },
   access: {
@@ -15172,10 +15196,10 @@ const SCENARIOS = [
         key: "time", anchor: "wf-time", nav: "wftime", act: "observe",
         say: {
           kicker: B("Workforce › Time", "Lực lượng lao động › Chấm công"),
-          title: B("Timeline, Week Grid, Exceptions, Import", "Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập"),
+          title: B("Timeline, Week Grid, Exceptions, Import, Time clocks", "Dòng thời gian, Lưới tuần, Ngoại lệ, Nhập, Máy chấm công"),
           field: "wftime.exceptions",
-          look: B("The Exceptions tab, beside Timeline, Week Grid and Import.",
-                  "Tab Ngoại lệ, bên cạnh Dòng thời gian, Lưới tuần và Nhập."),
+          look: B("The Exceptions tab, beside Timeline, Week Grid, Import and Time clocks.",
+                  "Tab Ngoại lệ, bên cạnh Dòng thời gian, Lưới tuần, Nhập và Máy chấm công."),
           tip: B("I only read. Nothing is approved by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không duyệt gì."),
         },
       },
@@ -15220,6 +15244,64 @@ const SCENARIOS = [
                    "Giới hạn theo tháng và theo năm công ty bạn áp dụng."),
           affects: B("Hours past a ceiling are never lost. The card shows them as bonus hours before you approve.",
                      "Giờ vượt mức trần không bao giờ bị mất. Thẻ hiện chúng thành giờ thưởng trước khi bạn duyệt."),
+        },
+      },
+    ],
+  },
+
+  /* ----------------------------------------------------------- sc_wfclocks */
+  /* CLOCK-3 — "A machine stops sending". Watch only, three lines: the tab,
+     the note at the top (the Attention strip, a FIELD step of the wfclocks
+     manifest), and the machine's card with what to check. */
+  {
+    key: "sc_wfclocks",
+    icon: "clock",
+    line: "workforce",
+    modes: ["watch"],
+    screens: ["wfclocks", "wftime"],
+    name: B("A machine stops sending", "Một máy ngừng gửi dữ liệu"),
+    match: ["machine stopped", "time clock", "attendance machine", "fingerprint machine", "máy chấm công", "máy ngừng gửi", "máy vân tay", "may cham cong", "may ngung gui", "may van tay"],
+    tagline: B("A time clock went quiet: where Payobook says so, and what to check on the machine.",
+               "Một máy chấm công im lặng: Payobook báo ở đâu, và cần kiểm tra gì trên máy."),
+    entry: { nav: "wftime" },
+    steps: [
+      {
+        key: "tab", anchor: "wf-time", nav: "wftime", act: "observe",
+        /* source: pb_clock/static/src/js/clock_lens.js (lens registered after Import) */
+        say: {
+          kicker: B("Workforce › Time", "Lực lượng lao động › Chấm công"),
+          title: B("The Time clocks tab", "Tab Máy chấm công"),
+          look: B("The Time clocks tab, after Import. Its number counts the things that need attention.",
+                  "Tab Máy chấm công, sau tab Nhập. Con số bên cạnh đếm những việc cần chú ý."),
+          means: B("The same count is added to the line above the tabs, as time-clock alerts.",
+                   "Con số đó cũng được thêm vào dòng phía trên các tab, dưới dạng cảnh báo máy chấm công."),
+          affects: B("Read-only. The number drops as each problem is fixed.",
+                     "Chỉ xem. Con số giảm khi từng vấn đề được xử lý."),
+          tip: B("I only read. Nothing is changed by this walkthrough.", "Tôi chỉ đọc. Lượt hướng dẫn này không thay đổi gì."),
+        },
+      },
+      {
+        key: "note", anchor: "wf-clocks-attn", act: "observe",
+        say: {
+          kicker: B("Time clocks", "Máy chấm công"),
+          title: B("The note at the top", "Ghi chú ở đầu trang"),
+          field: "wfclocks.attention",
+          look: B("The note at the top of Time clocks: Factory 2 has not called in since 14:02.",
+                  "Ghi chú ở đầu tab Máy chấm công: Factory 2 has not called in since 14:02 (Xưởng 2 chưa liên lạc từ 14:02)."),
+        },
+      },
+      {
+        key: "machine", anchor: "wf-clocks-machines", act: "observe",
+        /* source: pb_clock/static/src/xml/clock_lens.xml (Machines, the card's Silent since line) */
+        say: {
+          kicker: B("Time clocks › Machines", "Máy chấm công › Máy"),
+          title: B("What to check on the machine", "Cần kiểm tra gì trên máy"),
+          look: B("The machine's card under Machines: Silent since 14:02.",
+                  "Thẻ của máy trong mục Các máy: Im lặng từ 14:02."),
+          means: B("The machine has not called in. Check its power and its network cable or Wi-Fi, then restart it.",
+                   "Máy chưa liên lạc. Hãy kiểm tra nguồn điện và cáp mạng hoặc Wi-Fi, rồi khởi động lại máy."),
+          affects: B("Nothing is lost: the machine keeps its punches and sends them as soon as it calls in again. The note clears by itself.",
+                     "Không mất gì: máy giữ lại lượt chấm và gửi về ngay khi liên lạc lại. Ghi chú tự biến mất."),
         },
       },
     ],
