@@ -2366,6 +2366,12 @@ $pbva-areas: (
     .pbva-kind-seg .pbva-tab:disabled { opacity: .45; cursor: not-allowed; }
     .pbva-kind-why { margin: 0; }
 
+}
+
+// The password door and the desk live on BOTH roots: the board
+// (.pbim.pbva) and the Access Studio that extends it (.pbim.pbva-access).
+.pbim.pbva,
+.pbim.pbva-access {
     // ------------------------------------------------ set a new password
     .pbva-pass-why { margin: 6px 0 0; text-align: right; }
     .pbva-pw-row {

@@ -498,6 +498,11 @@ export class PbAccessBoard extends Component {
             if (seq !== this.passportSeq) { return; }
             this.addSurfaceAccess(res, catalogue, access);
             this.state.passport = res;
+            if (this.canManage && !this.state.leavers) {
+                this.orm.call("pb.access", "leavers_setting", [])
+                    .then((r) => { this.state.leavers = r; })
+                    .catch(() => {});
+            }
             this.state.passportFailed = "";
         } catch (e) {
             if (seq !== this.passportSeq) { return; }

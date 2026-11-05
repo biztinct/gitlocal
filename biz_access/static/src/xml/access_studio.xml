@@ -170,7 +170,10 @@
   <t t-name="biz_access.StudioPeopleList">
     <aside class="pbva-plist pbva-studio-directory">
       <div class="pbva-plist-head"><div><b>People &amp; assignments</b><small>Choose a person to see their access and profiles.</small></div>
-        <button t-if="canManage &amp;&amp; !studioLocal" class="pbim-btn ghost pbim-btn-sm" t-on-click="openAddPerson"><t t-out="ic('plus',14)"/> Add a person</button>
+        <div t-if="canManage &amp;&amp; !studioLocal" class="pbva-plist-acts">
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="openWorkers" title="Logins for people with no email, signing in with their employee code"><t t-out="ic('users',14)"/> Logins for workers</button>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="openAddPerson"><t t-out="ic('plus',14)"/> Add a person</button>
+        </div>
       </div>
       <label class="pbva-field pbva-plist-search"><input class="pbva-in" type="search" placeholder="Search name or login" aria-label="Search people in Access Studio" t-att-value="state.studioSearch" t-on-input="studioSearch"/></label>
       <select class="pbva-in" aria-label="People filter" t-att-value="state.studioPeopleFilter" t-on-change="studioFilterPeople">
@@ -196,6 +199,13 @@
       <p t-if="studio.people_more" class="pbva-hint">Showing up to 200 people. Search by name or login to find someone else.</p>
       <p t-if="studioSelectedPerson &amp;&amp; !studioPeople.some(p => p.id === state.personId)" class="pbva-hint">The open passport is outside this list's filter. Your selection is kept.</p>
       <button t-if="!studioSelectedPerson" class="pbim-btn ghost" t-on-click="() => this.studioRequestExtra()">Request access</button>
+      <label t-if="canManage &amp;&amp; !studioLocal &amp;&amp; state.leavers" class="pbva-leavers">
+        <input type="checkbox" t-att-checked="state.leavers.on" t-on-change="toggleLeavers"/>
+        <span>
+          <b>Close leavers' logins</b>
+          <small>The day after the last day on their employee record. Opened again if that date is cleared.</small>
+        </span>
+      </label>
     </aside>
   </t>
   <t t-name="biz_access.StudioPersonAssignments">

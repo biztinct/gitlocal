@@ -29,6 +29,17 @@ _logger = logging.getLogger(__name__)
 #: Devices shown on the passport: enough to answer "where am I signed in?".
 DEVICE_CAP = 5
 
+#: How the device log spells things, and how people do.
+_NICE = {'macos': 'macOS', 'ios': 'iOS', 'iphone': 'iPhone', 'ipad': 'iPad',
+         'android': 'Android', 'windows': 'Windows', 'linux': 'Linux',
+         'chrome': 'Chrome', 'safari': 'Safari', 'firefox': 'Firefox',
+         'edge': 'Edge', 'opera': 'Opera'}
+
+
+def _nice(word):
+    word = (word or '').strip()
+    return _NICE.get(word.lower(), word.title())
+
 
 class PbAccessDesk(models.AbstractModel):
     _inherit = 'pb.access'
@@ -65,7 +76,7 @@ class PbAccessDesk(models.AbstractModel):
                 'id': d.id,
                 'kind': d.device_type or 'computer',
                 'what': ' · '.join(x for x in (
-                    (d.browser or '').title(), (d.platform or '').title()) if x),
+                    _nice(d.browser), _nice(d.platform)) if x),
                 'where': where,
                 'last': fields.Datetime.to_string(d.last_activity)
                 if d.last_activity else '',
