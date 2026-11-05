@@ -4,6 +4,7 @@ Only signed revisions feed payroll. Source resolution and final approval use the
 same overlay; pending operational approvals and paid-once checks remain upstream.
 """
 import json
+import marshal
 from copy import deepcopy
 from decimal import Decimal, InvalidOperation
 
@@ -14,6 +15,16 @@ from .application_payroll_source import _json, _stamp, _optional_record_input
 _TOKEN = object()
 _CTX = 'payroll_preparation_token'
 _NUMERIC = ('money', 'quantity', 'integer', 'rate')
+
+
+def _copy(value):
+    """A deep copy of plain source rows. marshal keeps every builtin type and
+    dict order and is far faster than deepcopy; anything else (a date, a
+    record) falls back to deepcopy."""
+    try:
+        return marshal.loads(marshal.dumps(value))
+    except ValueError:
+        return deepcopy(value)
 
 
 def _cell_stamp(cell):
@@ -165,7 +176,7 @@ class PayrollPreparation(models.Model):
         review = json.loads(self.review_json) if signed else {}
         key = ('preparation_raw', self.id, bool(signed), tuple(employees.ids),
                _stamp(review.get('certification') or {}) if signed else '')
-        return deepcopy(self.config_id._application_memoize(key, lambda: self._raw_compute(signed, employees, review)))
+        return _copy(self.config_id._application_memoize(key, lambda: self._raw_compute(signed, employees, review)))
 
     def _raw_compute(self, signed, employees, review):
         if signed:

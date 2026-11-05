@@ -12,6 +12,8 @@ import math
 from odoo import fields, models
 from odoo.exceptions import AccessError, MissingError
 
+from .application_payroll_source import checked_read, readable_field
+
 
 EMPLOYEE_FIELDS = (
     'barcode', 'birthday', 'country_id', 'date_of_joining', 'department_id',
@@ -88,10 +90,11 @@ def source_result(value=None, status='missing', records=None, **evidence):
 def scalar_value(record, field_name):
     """Typed display values matching the established native mapping resolver."""
     record = record.sudo(False)
-    record.check_access('read')
+    checked_read(record)
     # Attribute reads alone are not a field-level permission check. The field
     # catalogue filters group-protected fields for the real payroll actor.
-    if field_name not in record.fields_get([field_name]):
+    # (PDR S1: both answers are asked once per memoised call.)
+    if not readable_field(record, field_name):
         raise AccessError('This source field is restricted.')
     field = record._fields[field_name]
     value = record[field_name]
@@ -102,7 +105,7 @@ def scalar_value(record, field_name):
     if not value:
         return None
     if field.type == 'many2one':
-        value.sudo(False).check_access('read')
+        checked_read(value.sudo(False))
         return value.display_name
     if field.type == 'selection':
         return dict(field._description_selection(record.env)).get(value, value)
@@ -235,8 +238,8 @@ class HrFormulaConfigApplicationDomains(models.Model):
             for name in path[:-1]:
                 if not record or name not in record._fields:
                     return source_result(reason='related_record_missing', path='.'.join(path))
-                record.check_access('read')
-                if name not in record.fields_get([name]):
+                checked_read(record)
+                if not readable_field(record, name):
                     raise AccessError('This related source field is restricted.')
                 record = record[name]
             if not record or path[-1] not in record._fields:

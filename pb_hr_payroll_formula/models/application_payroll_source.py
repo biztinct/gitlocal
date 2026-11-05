@@ -30,6 +30,37 @@ _MEMO = 'pb_hr_payroll_formula.app_memo'
 USUAL_ANSWER_REASON = 'No line on the contract, so this is No (the usual answer).'
 
 
+_ACCESS_MEMO = ('pb_hr_payroll_formula.access_memo',)
+
+
+def checked_read(record):
+    """``record.check_access('read')``, answered once per memoised call.
+
+    Only a granted check is remembered (per user, superuser flag, companies,
+    model and ids); a refusal is asked again every time, so nothing is ever
+    granted that the ORM would refuse."""
+    memo = record.env.cr.cache.get(_ACCESS_MEMO)
+    if memo is None:
+        return record.check_access('read')
+    env = record.env
+    key = ('read', env.uid, env.su, tuple(env.companies.ids), record._name, tuple(record.ids))
+    if key not in memo:
+        record.check_access('read')
+        memo[key] = True
+
+
+def readable_field(record, field_name):
+    """``field_name in record.fields_get([field_name])``, once per memoised call."""
+    memo = record.env.cr.cache.get(_ACCESS_MEMO)
+    if memo is None:
+        return field_name in record.fields_get([field_name])
+    env = record.env
+    key = ('field', env.uid, env.su, tuple(env.companies.ids), record._name, field_name)
+    if key not in memo:
+        memo[key] = field_name in record.fields_get([field_name])
+    return memo[key]
+
+
 def application_memo(env, config_id):
     """The live memo dict of one scheme, or None outside a memoised call."""
     return env.cr.cache.get((_MEMO, config_id))
@@ -207,6 +238,9 @@ class ApplicationFormulaConfig(models.Model):
         """
         cache = self.env.cr.cache
         mine = []
+        if _ACCESS_MEMO not in cache:
+            cache[_ACCESS_MEMO] = {}
+            mine.append(_ACCESS_MEMO)
         for config_id in set(self.ids):
             key = (_MEMO, config_id)
             if key not in cache:
