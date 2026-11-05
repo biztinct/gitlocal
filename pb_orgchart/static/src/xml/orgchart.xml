@@ -557,7 +557,7 @@
       <!-- ============ P4: the PDF's print view (copied to a body-level sheet when printing) ============ -->
       <div t-if="state.printPdf" class="pboc-print-src" aria-hidden="true">
         <t t-foreach="printTeams" t-as="pt" t-key="pt.k">
-          <section class="pboc-pp">
+          <section t-att-class="'pboc-pp ' + (pt.rows.length > 6 ? 'own' : 'small')">
             <header>
               <i t-attf-style="background:{{pt.color}}"/>
               <div><small t-esc="printHead"/><h2 t-esc="pt.name"/><span><t t-esc="pt.sub"/> · <t t-esc="exportSubline"/></span></div>

@@ -683,8 +683,11 @@
         -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
     .pboc-print-host {
-        .pboc-pp { break-after: page; page-break-after: always; }
-        .pboc-pp:last-child { break-after: auto; page-break-after: auto; }
+        // a team of more than 6 starts its own page; small teams (rize has
+        // 197 teams for 241 people) share pages but are never split
+        .pboc-pp { break-inside: avoid; page-break-inside: avoid; margin-bottom: 22px; }
+        .pboc-pp.own { break-inside: auto; page-break-inside: auto; break-before: page; page-break-before: always; }
+        .pboc-pp.own:first-child { break-before: auto; page-break-before: auto; }
         header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #E4E5F1;
             i { width: 14px; height: 14px; border-radius: 4px; margin-top: 18px; flex: none; }
             small { color: #6F6B86; font-size: 9pt; font-weight: 600; letter-spacing: .02em; }

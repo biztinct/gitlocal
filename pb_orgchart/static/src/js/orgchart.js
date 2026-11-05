@@ -1450,7 +1450,10 @@ export class PbOrgChart extends Component {
             if (e.key === up && m) { t = m; }
             if (e.key === down) {
                 if (isUnloaded(this.idx, cur)) { this.toggle(cur); return; }
-                this.collapsed.delete(cur.id);
+                // P4: a folded team opens AND is laid out before the move —
+                // `select` re-lays out only for folded ancestors, and the
+                // person just unfolded is the parent, not an ancestor
+                if (this.collapsed.delete(cur.id)) { this.relayout(); }
                 const k = kidsOf(this.idx, cur.id)[0];
                 t = k ? k.id : null;
             }

@@ -383,7 +383,9 @@ class OcExport {
                 ctx.fillText(fit(ctx, (n.dept || "—") + " · " + (n.loc || ""), tw - 12), tx + 12, ay + 47);
                 // tags
                 let gx = c.x + 12;
-                const gy = ay + av + 8;
+                // the screen's tag row: under the three text lines (.top is
+                // 48 px tall) plus its 8 px margin
+                const gy = ay + 56;
                 ctx.font = `600 10.5px ${font}`;
                 for (const t of c.tags) {
                     const [bg, fg] = TAG_TONES[t.cls] || TAG_TONES[""];
@@ -508,7 +510,7 @@ class OcExport {
         }
         if (pages < 0) { return; }
         this.notif.add(pages === 1 ? _t("Print view made — 1 page. Choose Save as PDF in the print dialog to keep it.")
-                                   : _t("Print view made — %(n)s pages, one per team. Choose Save as PDF in the print dialog to keep it.", { n: pages }),
+                                   : _t("Print view made — %(n)s teams, each larger team on a page of its own. Choose Save as PDF in the print dialog to keep it.", { n: pages }),
                        { type: "info" });
     }
 
@@ -569,8 +571,13 @@ class OcExport {
         const url = this.shareUrl;
         let ok = false;
         try {
-            await navigator.clipboard.writeText(url);
-            ok = true;
+            // the clipboard can wait for ever without a press (a script, an
+            // unfocused tab): never more than 1.5 s, then the old way
+            ok = !!(await Promise.race([
+                navigator.clipboard.writeText(url).then(() => true),
+                new Promise((r) => setTimeout(() => r(false), 1500)),
+            ]));
+            if (!ok) { throw new Error("clipboard slow"); }
         } catch {
             try {
                 const ta = document.createElement("textarea");

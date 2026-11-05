@@ -3557,8 +3557,8 @@ msgstr "Thay đổi theo kế hoạch · chưa áp dụng"
 #. module: pb_orgchart
 #. odoo-javascript
 #: code:addons/pb_orgchart/static/src/js/orgchart_export.js:0
-msgid "Print view made — %(n)s pages, one per team. Choose Save as PDF in the print dialog to keep it."
-msgstr "Đã tạo bản in — %(n)s trang, mỗi đội một trang. Chọn Lưu dưới dạng PDF trong hộp thoại in để giữ lại."
+msgid "Print view made — %(n)s teams, each larger team on a page of its own. Choose Save as PDF in the print dialog to keep it."
+msgstr "Đã tạo bản in — %(n)s đội, mỗi đội lớn trên một trang riêng. Chọn Lưu dưới dạng PDF trong hộp thoại in để giữ lại."
 
 #. module: pb_orgchart
 #. odoo-javascript
