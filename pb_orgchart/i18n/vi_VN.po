@@ -3719,12 +3719,6 @@ msgstr "Quản lý theo tệp dữ liệu"
 #. module: pb_orgchart
 #. odoo-python
 #: code:addons/pb_orgchart/models/import_manager.py:0
-msgid "This file has a “%(h)s” column, but this scheme does not read it, so no manager was changed. Map the column to Manager to keep managers up to date."
-msgstr "Tệp này có cột “%(h)s”, nhưng phương án lương này không đọc cột đó, nên không quản lý nào được thay đổi. Hãy ánh xạ cột này vào Quản lý để quản lý luôn được cập nhật."
-
-#. module: pb_orgchart
-#. odoo-python
-#: code:addons/pb_orgchart/models/import_manager.py:0
 msgid "updated"
 msgstr "đã cập nhật"
 

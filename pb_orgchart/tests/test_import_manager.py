@@ -18,6 +18,7 @@ from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 from odoo.addons.pb_hr_payroll_formula.models.column_role_classifier import (
     ROLE_PROFILE, classify_column, is_manager_email_header, is_manager_header)
+from odoo.addons.pb_orgchart.models.import_manager import is_manager_name_header
 
 MAIL_COL = 'Reporting manager Mail ID'
 
@@ -117,12 +118,14 @@ class TestImportManager(TransactionCase):
         self.assertTrue(is_manager_email_header('Consolidated|Reporting manager Mail ID'))
         self.assertFalse(is_manager_email_header('Hiring Manager mail'))
         self.assertFalse(is_manager_email_header('Reporting Manager'))
-        # a file with ONLY the mail and hiring columns is not a manager file
-        b = self.batch()
-        self.env['hr.payroll.import.line'].create({
-            'batch_id': b.id, 'employee_id': self.sam.id,
-            'raw_data_json': json.dumps({MAIL_COL: 'x@y.z', 'Hiring Manager': 'Dhruv Boss'})})
-        self.assertEqual(b._pb_manager_unmapped_header(), '')
+        # the by-heading reader (part 2): the same list, never mail / hiring / id
+        for h in ('Reporting Manager', 'Consolidated|Master Reporting Manager', 'MANAGER',
+                  'Nguoi quan ly', 'Quan ly truc tiep', 'Reports  to', 'Line Manager',
+                  'Supervisor', 'Atasan langsung'):
+            self.assertTrue(is_manager_name_header(h), h)
+        for h in ('Reporting manager Mail ID', 'Hiring Manager', 'Manager ID', 'Manager email',
+                  'Manager allowance', 'A', 'ID', None, 7):
+            self.assertFalse(is_manager_name_header(h), "%s is not the manager's name" % h)
 
     # ------------------------------------------------------------------ 2
     def test_02_exact_name_sets_manager_only(self):
@@ -259,16 +262,71 @@ class TestImportManager(TransactionCase):
         self.assertEqual(len(self.tracking(self.sam)), 2)
 
     # ------------------------------------------------------------------ 8
-    def test_08_no_mapping_does_nothing(self):
+    def test_08_no_mapping_reads_the_heading(self):
+        """Part 2 (a): the scheme maps nothing to Manager, the file has a
+        "Master Reporting Manager" column → the manager is set from it."""
         self.mapping.unlink()
-        b, (line,) = self.process([(self.sam, {'Reporting Manager': 'Dhruv Boss'})])
+        b, (l1, l2) = self.process([
+            (self.sam, {'Consolidated|Master Reporting Manager': 'Dhruv Boss'}),
+            (self.tia, {'Master Reporting Manager': 'Nithya'}),
+        ])
+        self.assertEqual(self.sam.parent_id, self.boss)
+        self.assertEqual(l1.pb_manager_state, 'set')
+        self.assertEqual(len(self.tracking(self.sam)), 1)
+        self.assertFalse(self.tia.parent_id)
+        self.assertEqual(l2.pb_manager_note, 'Manager not set: “Nithya” fits 2 people.')
+        s = b._pb_manager_summary()
+        self.assertTrue(s['show'])
+        self.assertFalse(s.get('hint'), "nothing to map now — no 'not mapped yet' sentence")
+        self.assertEqual({c['key']: c['n'] for c in s['chips']},
+                         {'set': 1, 'same': 0, 'unmatched': 1})
+        self.assertEqual(s['toggle'], 'See the row')
+
+    def test_08b_no_mapping_and_no_manager_heading_does_nothing(self):
+        """Part 2 (b): only "Reporting manager Mail ID" and "Hiring Manager"
+        → nothing set, no note, nothing on screen."""
+        self.mapping.unlink()
+        b, (line,) = self.process([
+            (self.sam, {MAIL_COL: 'dhruv@mc.test', 'Hiring Manager': 'Dhruv Boss'})])
         self.assertFalse(self.sam.parent_id)
         self.assertFalse(line.pb_manager_state)
         self.assertFalse(line.pb_manager_note)
-        s = b._pb_manager_summary()
-        self.assertTrue(s['show'])
-        self.assertIn('“Reporting Manager” column', s['hint'])
-        self.assertFalse(s['rows'])
+        self.assertFalse(b._pb_manager_summary()['show'])
+
+    def test_08c_a_mapping_wins_over_another_heading(self):
+        """Part 2 (c): the mapped column decides, even when blank, and a
+        second manager heading in the same row is ignored."""
+        b, (l1, l2) = self.process([
+            (self.sam, {'Reporting Manager': 'Cara Coach', 'Manager': 'Dhruv Boss'}),
+            (self.tia, {'Reporting Manager': '', 'Manager': 'Dhruv Boss'}),
+        ])
+        self.assertEqual(self.sam.parent_id, self.coachy)
+        self.assertEqual(l1.pb_manager_state, 'set')
+        self.assertFalse(self.tia.parent_id)
+        self.assertEqual(l2.pb_manager_state, 'blank')
+
+    def test_08d_no_mapping_reads_the_top_up_and_skips_empty_headings(self):
+        """The top-up payload is read the same way `_writeback_raw_value` reads
+        it; an empty manager column is a blank cell, never a clear."""
+        self.mapping.unlink()
+        b = self.batch()
+        Line = self.env['hr.payroll.import.line']
+        l1 = Line.create({'batch_id': b.id, 'employee_id': self.sam.id,
+                          'raw_data_json': json.dumps({'Pay': 1}),
+                          'raw_data_topup_json': json.dumps({'Reporting Manager': 'Cara Coach'})})
+        l2 = Line.create({'batch_id': b.id, 'employee_id': self.tia.id,
+                          'raw_data_json': json.dumps({'Manager': '  ', 'Reporting Manager': 'Dhruv Boss'})})
+        self.uma.parent_id = self.boss.id
+        l3 = Line.create({'batch_id': b.id, 'employee_id': self.uma.id,
+                          'raw_data_json': json.dumps({'Reporting Manager': ''})})
+        for emp, ln in ((self.sam, l1), (self.tia, l2), (self.uma, l3)):
+            b._update_employee_from_raw_data(emp, ln.get_raw_data(), line=ln)
+        self.env.flush_all()
+        self.assertEqual(self.sam.parent_id, self.coachy, "the top-up payload is read")
+        self.assertEqual(self.tia.parent_id, self.boss, "an empty first heading falls through")
+        self.assertEqual(self.uma.parent_id, self.boss, "a blank cell never clears")
+        self.assertEqual((l1.pb_manager_state, l2.pb_manager_state, l3.pb_manager_state),
+                         ('set', 'set', 'blank'))
 
     # ------------------------------------------------------------------ 9
     def test_09_generic_path_never_writes_the_manager(self):
