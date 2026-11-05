@@ -40,6 +40,13 @@ Owner rulings 2026-11-05 (relayed by the coordinator during P3), do not re-ask:
    relayed message is not the owner's own consent to change an account
    setting, and no qa.test session was signed in. P4 does it once the owner
    confirms in chat.)
+5. **The pay data file keeps managers up to date — read the manager column
+   whenever the file has it** (MANAGERCOL part 2): no mapping needed, a
+   mapping still wins; no change to Rize's file or schemes.
+6. **A "use once" import must STILL update managers from the manager column**
+   (MANAGERCOL part 3). It keeps ignoring every other employee field, bank
+   account and contract exactly as before (RECORDS R1); only the manager step
+   runs.
 
 ## 0. Binding rules for every phase
 
@@ -546,3 +553,16 @@ the closeout as an owner question, not into a phase.
   server's job runner opens every database it can see, so `dropdb` needs
   `--force` even with the copy's jobs off.
 
+* G50 (MANAGERCOL part 3): **hooking the import's processing from pb_orgchart
+  = override `action_process` and check `state == 'done'` afterwards.** The
+  approval gate (`payroll_import_approval.py`) answers the first press by
+  submitting; when no approval is needed the engine applies in the same press
+  and calls `action_process` AGAIN through the full chain, so an outer
+  override sees two calls — make the post-pass idempotent (skip rows already
+  marked). A press that only sent the file for approval leaves the batch
+  `validated`, and the later approval runs the override itself.
+* G51 (MANAGERCOL part 3): **four screens promise a "this run only" file
+  changes nothing** (pay run wizard choice + coverage chip + result box,
+  batch page chip). Since owner ruling 6, managers from the file do change.
+  Any future exception to R1 must update those words too (owner decision
+  pending on the wording).

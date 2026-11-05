@@ -280,3 +280,102 @@ Page reloaded afterwards. Screenshot (real tenant, so not in the repo):
    Managers follow only files that carry the column.
 3. The Gender / Marital fix (IMPORT-GENDER) is a separate change by another
    builder; it did not affect this file.
+
+## Part 3 — a "use once" file still updates managers (2026-11-05)
+
+Owner ruling 2026-11-05 (recorded as ruling 6 in `ORGCHART_LEDGER.md`): a
+"use once" ("this run only") import must STILL update managers from the
+manager column; every other employee field, bank account and contract stays
+untouched exactly as before (RECORDS R1).
+
+### What shipped
+
+| Commit | What |
+|---|---|
+| `9e6c2baf3` | pb_orgchart **19.0.1.6.0**: `action_process` override + `_pb_manager_one_time_pass`, tests 14–16, manifest text |
+| (this commit) | this section, ledger ruling 6 and G50–G51 |
+
+* **Seam: after the processing loop, not inside it.** The ONE_TIME branch
+  (`payroll_import_batch.py:1627-1643`) lives in pb_hr_payroll_formula, which
+  the IMPORT-GENDER builder was changing at the same time; pb_orgchart instead
+  overrides `action_process`. Its override is the OUTERMOST (pb_orgchart loads
+  after the approval gate in `payroll_import_approval.py:74-105`), and the
+  gate's apply step (`_approval_apply`, `:302-307`) calls `action_process`
+  again, so the pass runs exactly when the body has run: the batch is `done`.
+  A press that only sent the file for approval does nothing; the approval
+  that later carries it out runs the pass.
+* **What it runs:** `_pb_manager_step` — the same step, savepoint, matching,
+  `_set_managers` write and notes as an updating import — for every row whose
+  state is `processed`, in file order. A row that failed (no contract, a
+  person not found) changes no manager, the same outcome as an updating
+  import, where a failed row's savepoint rolls the manager back with it.
+  Rows already looked at are skipped, so the gate's nested call (no approval
+  needed → applied in the same press) does not run the step twice; a batch
+  about to be processed has its old manager notes cleared first.
+* Nothing else in the one-time path is touched: no source stamp, no employee
+  field, no bank account, no contract, no new person or record.
+
+### Tests — 84 of 84 pass
+
+p0clone, scratch addons dir, ports 8193/8192; log `/tmp/mgrcol2_test/t3.log`:
+`0 failed, 0 error(s) of 84 tests`; jobs 33 → 33 (the one ERROR line is test
+10's deliberate failure).
+
+| # | Case | Test | Result |
+|---|---|---|---|
+| 1 | use-once row with a manager AND Gender / Marital Status / Department / Work email values, all of them wired to the employee → manager set (one history row), gender, marital, department, work email, job title, coach, time-off approver unchanged; no department created; summary shows | test_14 | PASS |
+| 2 | use-once row with no manager column (only the manager's email and "Hiring Manager") plus Gender / Marital → nothing changes, no history row, no note, nothing on screen | test_15 | PASS |
+| 3 | use-once: a row that fails (no contract) changes no manager; the next row's manager is set | test_16 | PASS |
+| — | all 81 earlier tests | — | PASS |
+
+### Proof on a throwaway copy of rize (copy dropped)
+
+`mgrcol3_test` from `pg_dump rize` (jobs off, logins off). Rize's September
+Vietnam file (batch 2072's file, read from rize's file store, G49) imported
+through the real import (`action_load_file` → `action_match_employees` →
+`action_process`) as a **use-once** import on the current Vietnam scheme
+7118, after clearing the managers of its 63 people. Script outside the repo
+(`/tmp/mgrcol2_test/replay3.py`, asserts the DB name); output `r3.out`.
+
+| | Result |
+|---|---|
+| Rows | 63 / 63 processed, 63 payslips, 0 employees created |
+| Managers line | **59 updated · 0 already up to date · 4 not matched** (Indra ×1, Nithya ×2, Shreya ×1 — the seed's Vietnam rows) |
+| Managers vs the seed | 59 of 59 equal, 0 differ |
+| History rows on the 63 people | 59 — every one of them the manager |
+| Coach / time-off / expense approver moved | 0 |
+| Any other value changed on the 63 people's employee, version (gender, marital, …) or contract rows | **none** (full row compare before/after, manager and write stamps excluded), bank accounts unchanged |
+
+### Deploy
+
+| When (UTC) | Commit | Module → version | EXIT ×4 | Jobs before/after | Evidence |
+|---|---|---|---|---|---|
+| 04:41:42–04:45:18 | 9e6c2baf3 | pb_orgchart → 19.0.1.6.0 (-u) | 0/0/0/0, errors 0 | 33/29/76/44 → same | `/tmp/mgrcol3-run-20261105044142`, backups `/odoo/backups/mgrcol3-run-20261105044142` |
+
+`filter_deploy.sh full`, staged from `git archive HEAD`; live tree equalled
+`7096f6af3` before; lock free and no other START open (no IMPORT-GENDER
+deploy had started); START/DONE in `/opt/deploy-notes.md`; tree hash equal
+after; sites 200; `ListAgents` not available. No ABM.
+
+### Browser check (rize, signed-in session)
+
+After the deploy the import wizard opens with no console errors, and
+pb_orgchart reads 19.0.1.6.0. The last step was shown for the latest
+"use once" Vietnam batch (2289) by loading its own summary into the open
+wizard (nothing sent, no button pressed): "Import complete · 60 rows
+processed", outcome cards, and — correctly — no manager line, because that
+file has no manager column. Page reloaded afterwards. Screenshot (real
+tenant, not in the repo):
+`outputs/rize-managers-2026-11-05/04_import_last_step_part3_rize.jpg`.
+
+### Open — for the owner
+
+1. **The "this run only" screens still promise nothing changes.** The pay run
+   wizard's choice says "Used just this once. Nothing in Payobook changes",
+   its coverage chip "Payobook stays exactly as it is", its result box
+   "nothing was saved to any employee, contract or bank record", and the
+   batch page chip "This run only — no records were updated". With this
+   ruling, managers from the file DO change. Rewording those (pay run wizard,
+   batch page, their Vietnamese and any lesson that quotes them) is outside
+   pb_orgchart and was not done — say if you want e.g. "Nothing in Payobook
+   changes except managers, when the file has a manager column."
