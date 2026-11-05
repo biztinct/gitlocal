@@ -11,7 +11,7 @@ menu present, Mitaco 5 v2 on a shared Windows 11 PC that is off at night.
 |---|---|---|
 | CLOCK-1 | **Punches become attendance.** New module `pb_clock`: punch ledger, employee clock code + unknown-number matching, the pairing engine → `hr.attendance` source `device`, the **local-day fix** in grid / packet / freeze, "Time-clock punches" upload mode (Excel / CSV / ZK `attlog.dat` / Mitaco daily sheet), a **Time clocks** lens in the Time hub. | `CLOCK_P1.md` |
 | CLOCK-2 | **Machines push to Payobook.** The ADMS (ZK PUSH / iclock) receiver, pending-machine onboarding (D10), stamps + backfill, measured time sync + command channel (D13), plain connection on port 80 (D12), D11 pairing rule, emulator, setup-day runbook. | `CLOCK_P2.md` |
-| CLOCK-3 | **Trust.** Health card in Integrations + alerts (silent terminal, clock skew, zero punches by 11:00), late-punch-after-approval exceptions, nightly 35-day re-check, Vietnamese, lessons. | `CLOCK_P3.md` |
+| CLOCK-3 | **Trust.** `pb.clock.alert` + 15-min watcher (silent, no punches, clock, pending, auto-closed, command failed, plain, held, backlog, re-check changed); shown in the lens Attention strip, Time hub ribbon, Integrations row + hints, Home inbox card, daily digest email to attendance managers; nightly 35-day re-check; backfill progress; lessons/tours/manifest; demo-world seed; closeout. | `CLOCK_P3.md` |
 | CLOCK-4/5 | More recipes / the Windows Bridge for clients whose machines cannot push; late-minutes into payslip inputs. | later |
 
 Owner rulings 2026-11-05, asked once, do not re-ask:
