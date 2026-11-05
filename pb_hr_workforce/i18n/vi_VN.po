@@ -613,8 +613,14 @@ msgstr "Mô tả"
 #. module: pb_hr_workforce
 #. odoo-python
 #: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
-msgid "Device/kiosk punch — edit on the attendance form."
-msgstr "Cú đấm thiết bị/kiosk - chỉnh sửa trên biểu mẫu chấm công."
+msgid "Punch from a time clock — change it with a correction."
+msgstr "Lượt chấm từ máy chấm công — hãy sửa bằng một yêu cầu điều chỉnh."
+
+#. module: pb_hr_workforce
+#. odoo-python
+#: code:addons/pb_hr_workforce/models/attendance_weekentry.py:0
+msgid "Entered outside the Week Grid — change it with a correction."
+msgstr "Được nhập ngoài Lưới tuần — hãy sửa bằng một yêu cầu điều chỉnh."
 
 #. module: pb_hr_workforce
 #: model:ir.model.fields,field_description:pb_hr_workforce.field_hr_attendance__display_name

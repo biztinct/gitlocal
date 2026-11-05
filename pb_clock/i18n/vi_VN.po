@@ -6,15 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 02:09+0000\n"
-"PO-Revision-Date: 2026-11-05 02:09+0000\n"
+"POT-Creation-Date: 2026-11-05 04:58+0000\n"
+"PO-Revision-Date: 2026-11-05 04:58+0000\n"
 "Last-Translator: \n"
-"Language-Team: Vietnamese\n"
-"Language: vi_VN\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: \n"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -28,7 +27,19 @@ msgstr "Đã khớp %(done)s · %(failed)s không khớp được"
 msgid ""
 "%(name)s already has clock number %(code)s. Change it on their employee "
 "record first."
-msgstr "%(name)s đã có mã chấm công %(code)s. Hãy đổi mã này trong hồ sơ nhân viên trước."
+msgstr ""
+"%(name)s đã có mã chấm công %(code)s. Hãy đổi mã này trong hồ sơ nhân viên "
+"trước."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid ""
+"%(name)s is connected. Its punches from %(day)s on will arrive in the next "
+"minute or two."
+msgstr ""
+"%(name)s đã kết nối. Lượt chấm từ %(day)s trở đi sẽ về trong một hai phút "
+"tới."
 
 #. module: pb_clock
 #. odoo-python
@@ -41,6 +52,24 @@ msgstr "%s đã có sẵn"
 #: code:addons/pb_clock/models/clock_lens.py:0
 msgid "%s days updated"
 msgstr "Đã cập nhật %s ngày"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "%s ignored machines"
+msgstr "%s máy đã bỏ qua"
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "%s is asking to connect again. Press Allow when you are ready."
+msgstr "%s lại đang xin kết nối. Nhấn Cho phép khi bạn sẵn sàng."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "%s machines are asking to connect"
+msgstr "%s máy đang xin kết nối"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -99,8 +128,26 @@ msgstr "%s lượt chấm công đang tạm giữ"
 #. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
+msgid "%s will be ignored. It can be let in again under Ignored machines."
+msgstr "%s sẽ bị bỏ qua. Có thể cho kết nối lại trong mục Máy đã bỏ qua."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
 msgid "1 day updated"
 msgstr "Đã cập nhật 1 ngày"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "1 ignored machine"
+msgstr "1 máy đã bỏ qua"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "1 machine is asking to connect"
+msgstr "1 máy đang xin kết nối"
 
 #. module: pb_clock
 #. odoo-python
@@ -151,6 +198,11 @@ msgid "1 punch on hold"
 msgstr "1 lượt chấm công đang tạm giữ"
 
 #. module: pb_clock
+#: model:ir.model.fields,help:pb_clock.field_pb_clock_device__fp_count
+msgid "A count the machine reports. No fingerprint ever leaves the machine."
+msgstr "Con số do máy báo. Không vân tay nào rời khỏi máy."
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
 msgid "A machine needs a name."
@@ -162,7 +214,9 @@ msgstr "Máy chấm công cần có tên."
 msgid ""
 "A machine that is not allowed will not be listened to once machines can send"
 " punches"
-msgstr "Máy không được cho phép sẽ không được nhận dữ liệu khi máy có thể tự gửi lượt chấm công"
+msgstr ""
+"Máy không được cho phép sẽ không được nhận dữ liệu khi máy có thể tự gửi "
+"lượt chấm công"
 
 #. module: pb_clock
 #. odoo-python
@@ -170,7 +224,9 @@ msgstr "Máy không được cho phép sẽ không được nhận dữ liệu k
 msgid ""
 "A punch is never edited — it is what the machine reported. To change a day, "
 "file an attendance correction."
-msgstr "Lượt chấm công không bao giờ được sửa — đó là dữ liệu máy ghi nhận. Để thay đổi một ngày, hãy tạo yêu cầu điều chỉnh chấm công."
+msgstr ""
+"Lượt chấm công không bao giờ được sửa — đó là dữ liệu máy ghi nhận. Để thay "
+"đổi một ngày, hãy tạo yêu cầu điều chỉnh chấm công."
 
 #. module: pb_clock
 #. odoo-python
@@ -185,9 +241,34 @@ msgid "A punch needs a number and a time."
 msgstr "Lượt chấm công cần có mã và thời gian."
 
 #. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "A resend is already on its way to this machine."
+msgstr "Một yêu cầu gửi lại đang trên đường tới máy này."
+
+#. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__active
 msgid "Active"
 msgstr "Đang hoạt động"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__lan_ip
+msgid "Address on the local network"
+msgstr "Địa chỉ trong mạng nội bộ"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid ""
+"Address to type into the machine: %(host)s · port %(port)s · secure (HTTPS) "
+"on"
+msgstr "Địa chỉ gõ vào máy: %(host)s · cổng %(port)s · bảo mật (HTTPS) bật"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -198,14 +279,83 @@ msgstr "Tất cả"
 #. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Allow"
+msgstr "Cho phép"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+#: model:ir.model.fields,field_description:pb_clock.field_res_company__pb_clock_allow_plain
+msgid "Allow a plain connection"
+msgstr "Cho phép kết nối thường"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__allowed
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_device__state__allowed
 msgid "Allowed"
 msgstr "Cho phép"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__allowed_at
+msgid "Allowed on"
+msgstr "Cho phép lúc"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "An attendance manager can let it in."
+msgstr "Quản lý chấm công có thể cho máy kết nối."
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__return_code
+msgid "Answer"
+msgstr "Phản hồi"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__done_at
+msgid "Answered"
+msgstr "Đã trả lời"
 
 #. module: pb_clock
 #: model:ir.model.fields,help:pb_clock.field_pb_clock_punch__punch_local
 msgid "As the machine read it, in its own time zone."
 msgstr "Theo giờ máy ghi nhận, ở múi giờ của máy."
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__queued_at
+msgid "Asked"
+msgstr "Đã yêu cầu"
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid ""
+"Asked %(name)s to send its punches since %(day)s again. Punches already here"
+" are kept once."
+msgstr ""
+"Đã yêu cầu %(name)s gửi lại lượt chấm từ %(day)s. Lượt chấm đã có chỉ được "
+"giữ một lần."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_command.py:0
+msgid ""
+"Asked the machine to send everything it holds again; repeats are kept once."
+msgstr ""
+"Đã yêu cầu máy gửi lại mọi thứ đang lưu; bản trùng chỉ được giữ một lần."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Asking the machine to send everything again…"
+msgstr "Đang yêu cầu máy gửi lại mọi thứ…"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_device__state__pending
+msgid "Asking to connect"
+msgstr "Đang xin kết nối"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -228,7 +378,7 @@ msgstr "Chấm công"
 #. module: pb_clock
 #: model:ir.model,name:pb_clock.model_pb_attendance_import_wizard
 msgid "Attendance Bulk Import"
-msgstr "Nhập chấm công hàng loạt"
+msgstr "Nhập số lượng lớn chấm công"
 
 #. module: pb_clock
 #: model:ir.model,name:pb_clock.model_pb_clock_device
@@ -236,9 +386,19 @@ msgid "Attendance machine"
 msgstr "Máy chấm công"
 
 #. module: pb_clock
+#: model:ir.model,name:pb_clock.model_pb_clock_adms
+msgid "Attendance machine receiver"
+msgstr "Bộ nhận dữ liệu máy chấm công"
+
+#. module: pb_clock
 #: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_punch__source__mitaco_export
 msgid "Attendance program daily sheet"
 msgstr "Bảng công ngày của phần mềm chấm công"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_punch__state__ignored_before_start
+msgid "Before the start date"
+msgstr "Trước ngày bắt đầu"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -254,18 +414,80 @@ msgid "Bring in the first punches"
 msgstr "Đưa những lượt chấm công đầu tiên vào"
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__ip
+msgid "Calls from"
+msgstr "Gọi từ"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Check-in"
+msgstr "Giờ vào"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_hr_attendance__pb_clock_auto_closed
+msgid "Check-out missing"
+msgstr "Thiếu giờ ra"
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+#: code:addons/pb_clock/models/clock_pairing.py:0
+msgid "Check-out missing; closed so later days can be paired."
+msgstr "Thiếu giờ ra; đã đóng để các ngày sau được ghép."
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/wizards/attendance_import.py:0
 msgid ""
 "Choose the column with the number on the machine, and either a date-and-time"
 " column or a date column and a time column."
-msgstr "Chọn cột chứa mã trên máy chấm công, và một cột ngày giờ hoặc một cột ngày cùng một cột giờ."
+msgstr ""
+"Chọn cột chứa mã trên máy chấm công, và một cột ngày giờ hoặc một cột ngày "
+"cùng một cột giờ."
 
 #. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Clear filters"
 msgstr "Xóa bộ lọc"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Clock %s min fast · correcting"
+msgstr "Đồng hồ nhanh %s phút · đang chỉnh"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Clock %s min slow · correcting"
+msgstr "Đồng hồ chậm %s phút · đang chỉnh"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__clock_corrected_at
+msgid "Clock corrected"
+msgstr "Đã chỉnh đồng hồ"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Clock corrected %(ago)s, %(was)s"
+msgstr "Đã chỉnh đồng hồ %(ago)s, %(was)s"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__skew_s
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__clock_skew_s
+msgid "Clock difference (seconds)"
+msgstr "Chênh lệch đồng hồ (giây)"
 
 #. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_hr_employee__pb_clock_code
@@ -278,7 +500,19 @@ msgstr "Mã chấm công"
 msgid ""
 "Clock number %(code)s already belongs to %(name)s. Each person needs their "
 "own number."
-msgstr "Mã chấm công %(code)s đã thuộc về %(name)s. Mỗi người cần một mã riêng."
+msgstr ""
+"Mã chấm công %(code)s đã thuộc về %(name)s. Mỗi người cần một mã riêng."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Clock on time"
+msgstr "Đồng hồ đúng giờ"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__skew_samples
+msgid "Clock samples"
+msgstr "Mẫu đo đồng hồ"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -293,15 +527,59 @@ msgid "Column %s"
 msgstr "Cột %s"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__command
+msgid "Command"
+msgstr "Lệnh"
+
+#. module: pb_clock
+#: model:ir.model,name:pb_clock.model_pb_clock_command
+msgid "Command to an attendance machine"
+msgstr "Lệnh gửi máy chấm công"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__command_ids
+msgid "Commands"
+msgstr "Lệnh"
+
+#. module: pb_clock
 #: model:ir.model,name:pb_clock.model_res_company
 msgid "Companies"
 msgstr "Công ty"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__company_id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__company_id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__company_id
 msgid "Company"
 msgstr "Công ty"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Connect a machine"
+msgstr "Kết nối một máy chấm công"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Connected · heard %s"
+msgstr "Đã kết nối · liên lạc %s"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__last_proto
+msgid "Connection"
+msgstr "Kết nối"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__clock_corrected_by_s
+msgid "Corrected by (seconds)"
+msgstr "Đã chỉnh (giây)"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Correction filed"
+msgstr "Đã gửi điều chỉnh"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -316,12 +594,14 @@ msgid "Counted once: a second tap within %s minutes."
 msgstr "Chỉ tính một lần: chấm lần hai trong vòng %s phút."
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__create_uid
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__create_uid
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__create_uid
 msgid "Created by"
 msgstr "Người tạo"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__create_date
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__create_date
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__create_date
 msgid "Created on"
@@ -332,6 +612,12 @@ msgstr "Ngày tạo"
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Day"
 msgstr "Ngày"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Days missing a check-out"
+msgstr "Ngày thiếu giờ ra"
 
 #. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__dedup_key
@@ -352,6 +638,8 @@ msgstr "Chiều vào/ra gốc"
 #: model:ir.model.fields,field_description:pb_clock.field_hr_attendance__display_name
 #: model:ir.model.fields,field_description:pb_clock.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:pb_clock.field_pb_attendance_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_adms__display_name
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__display_name
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__display_name
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_lens__display_name
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_pairing__display_name
@@ -360,6 +648,11 @@ msgstr "Chiều vào/ra gốc"
 #: model:ir.model.fields,field_description:pb_clock.field_res_company__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__state__done
+msgid "Done"
+msgstr "Xong"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -382,13 +675,19 @@ msgstr "Enter"
 #. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_hr_attendance__pb_entry_source
 msgid "Entry Source"
-msgstr "Nguồn dữ liệu"
+msgstr "Nguồn đầu vào"
 
 #. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Esc"
 msgstr "Esc"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Every day has its check-out."
+msgstr "Ngày nào cũng có giờ ra."
 
 #. module: pb_clock
 #. odoo-javascript
@@ -404,14 +703,18 @@ msgstr "Mọi mã đều khớp với một người."
 msgid ""
 "Every punch within this many hours of a day’s first punch belongs to that "
 "day, so night shifts stay one day."
-msgstr "Mọi lượt chấm trong khoảng số giờ này kể từ lượt chấm đầu tiên của ngày đều thuộc ngày đó, nên ca đêm vẫn là một ngày."
+msgstr ""
+"Mọi lượt chấm trong khoảng số giờ này kể từ lượt chấm đầu tiên của ngày đều "
+"thuộc ngày đó, nên ca đêm vẫn là một ngày."
 
 #. module: pb_clock
 #: model:ir.model.fields,help:pb_clock.field_res_company__pb_clock_max_span_h
 msgid ""
 "Every punch within this many hours of the first punch of a day belongs to "
 "that day, so a night shift stays one day."
-msgstr "Mọi lượt chấm trong khoảng số giờ này kể từ lượt chấm đầu tiên của ngày đều thuộc ngày đó, nên ca đêm vẫn là một ngày."
+msgstr ""
+"Mọi lượt chấm trong khoảng số giờ này kể từ lượt chấm đầu tiên của ngày đều "
+"thuộc ngày đó, nên ca đêm vẫn là một ngày."
 
 #. module: pb_clock
 #. odoo-python
@@ -419,7 +722,30 @@ msgstr "Mọi lượt chấm trong khoảng số giờ này kể từ lượt ch
 msgid ""
 "Excel files need a library the server does not have — please save the file "
 "as CSV and upload that."
-msgstr "Tệp Excel cần một thư viện mà máy chủ chưa có — vui lòng lưu tệp dạng CSV rồi tải lên."
+msgstr ""
+"Tệp Excel cần một thư viện mà máy chủ chưa có — vui lòng lưu tệp dạng CSV "
+"rồi tải lên."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid ""
+"Excel, CSV, the machine’s attlog.dat or the attendance program’s daily "
+"sheet."
+msgstr ""
+"Excel, CSV, tệp attlog.dat của máy hoặc bảng chấm công hằng ngày của chương "
+"trình chấm công."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Factory 2 gate"
+msgstr "Cổng Xưởng 2"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__state__failed
+msgid "Failed"
+msgstr "Không thành công"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -437,6 +763,21 @@ msgid "Find the person"
 msgstr "Tìm người"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__fp_count
+msgid "Fingerprints on the machine"
+msgstr "Vân tay trên máy"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__firmware
+msgid "Firmware"
+msgstr "Phần mềm máy"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__first_seen_at
+msgid "First heard from"
+msgstr "Liên lạc lần đầu"
+
+#. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "First seen"
@@ -449,10 +790,32 @@ msgid "Fix this day"
 msgstr "Sửa ngày này"
 
 #. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_adms.py:0
+msgid "From before this machine's start date: kept, not paired."
+msgstr "Trước ngày bắt đầu của máy này: được lưu, không ghép."
+
+#. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/js/clock_lens.js:0
 msgid "Give %(code)s to %(name)s"
 msgstr "Gán %(code)s cho %(name)s"
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid ""
+"Give the machine a name people will recognise, like the place it hangs."
+msgstr "Đặt cho máy một tên mọi người dễ nhận ra, ví dụ nơi máy được treo."
+
+#. module: pb_clock
+#: model:ir.model.fields,help:pb_clock.field_pb_clock_device__clock_skew_s
+msgid ""
+"How far the machine clock is ahead (+) or behind (-), measured from its live"
+" punches."
+msgstr ""
+"Đồng hồ của máy nhanh (+) hay chậm (-) bao nhiêu, đo từ các lượt chấm trực "
+"tiếp."
 
 #. module: pb_clock
 #. odoo-javascript
@@ -464,6 +827,8 @@ msgstr "Cách lượt chấm công thành ngày công"
 #: model:ir.model.fields,field_description:pb_clock.field_hr_attendance__id
 #: model:ir.model.fields,field_description:pb_clock.field_hr_employee__id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_attendance_import_wizard__id
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_adms__id
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_lens__id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_pairing__id
@@ -475,7 +840,20 @@ msgstr "ID"
 
 #. module: pb_clock
 #. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Ignore"
+msgstr "Bỏ qua"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Ignore this machine"
+msgstr "Bỏ qua máy này"
+
+#. module: pb_clock
+#. odoo-javascript
 #: code:addons/pb_clock/static/src/js/clock_lens.js:0
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_device__state__blocked
 #: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_punch__state__ignored_outlier
 msgid "Ignored"
 msgstr "Bỏ qua"
@@ -504,12 +882,14 @@ msgid "Kind"
 msgstr "Loại"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__write_uid
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__write_uid
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__write_uid
 msgid "Last Updated by"
 msgstr "Người cập nhật cuối"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__write_date
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__write_date
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__write_date
 msgid "Last Updated on"
@@ -543,9 +923,36 @@ msgstr "Thấy lần cuối"
 msgid ""
 "Leave off when nobody presses them: the first punch of a day is then the "
 "start and the last is the end."
-msgstr "Tắt khi không ai bấm phím: lượt chấm đầu tiên trong ngày là giờ vào, lượt cuối là giờ ra."
+msgstr ""
+"Tắt khi không ai bấm phím: lượt chấm đầu tiên trong ngày là giờ vào, lượt "
+"cuối là giờ ra."
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Let it ask again"
+msgstr "Cho máy xin lại"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Let it in"
+msgstr "Cho kết nối"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+#: model:ir.model.fields,help:pb_clock.field_res_company__pb_clock_allow_plain
+msgid ""
+"Lets an older machine send over a plain web connection when it cannot make a"
+" secure one. Only the number, the time and the machine’s serial travel."
+msgstr ""
+"Cho phép máy đời cũ gửi qua kết nối web thường khi không tạo được kết nối "
+"bảo mật. Chỉ có mã số, thời gian và số sê-ri của máy được gửi đi."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__location
 msgid "Location"
 msgstr "Vị trí"
@@ -558,6 +965,7 @@ msgid "Longest possible work day"
 msgstr "Ngày công dài nhất có thể"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__device_id
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__device_id
 #: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_device__kind__terminal
 msgid "Machine"
@@ -602,12 +1010,28 @@ msgstr "Đã khớp"
 msgid ""
 "Minutes. A second tap by the same person within this time is kept on record "
 "but counted once."
-msgstr "Phút. Lượt chấm thứ hai của cùng một người trong khoảng này vẫn được lưu nhưng chỉ tính một lần."
+msgstr ""
+"Phút. Lượt chấm thứ hai của cùng một người trong khoảng này vẫn được lưu "
+"nhưng chỉ tính một lần."
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "More for this machine"
+msgstr "Thêm cho máy này"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__name
 msgid "Name"
 msgstr "Tên"
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_command.py:0
+msgid "No answer."
+msgstr "Không có phản hồi."
 
 #. module: pb_clock
 #. odoo-python
@@ -622,12 +1046,26 @@ msgid "No machine connected. Upload a punch file to start."
 msgstr "Chưa kết nối máy chấm công. Hãy tải lên một tệp chấm công để bắt đầu."
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "No machine is asking to connect"
+msgstr "Không có máy nào đang xin kết nối"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "No machine is asking to connect."
+msgstr "Không có máy nào đang xin kết nối."
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
 msgid ""
 "No number equals a person's clock number, badge ID or ID number yet. Assign "
 "them one by one."
-msgstr "Chưa có mã nào trùng với mã chấm công, mã thẻ hoặc số CCCD của ai. Hãy gán từng mã."
+msgstr ""
+"Chưa có mã nào trùng với mã chấm công, mã thẻ hoặc số CCCD của ai. Hãy gán "
+"từng mã."
 
 #. module: pb_clock
 #. odoo-python
@@ -681,7 +1119,8 @@ msgstr "Chưa áp dụng: ngày này đã có dữ liệu nhập tay."
 #. odoo-python
 #: code:addons/pb_clock/models/clock_pairing.py:0
 msgid "Not applied: an earlier day has no check-out yet. Fix that day first."
-msgstr "Chưa áp dụng: một ngày trước đó chưa có giờ ra. Hãy sửa ngày đó trước."
+msgstr ""
+"Chưa áp dụng: một ngày trước đó chưa có giờ ra. Hãy sửa ngày đó trước."
 
 #. module: pb_clock
 #. odoo-python
@@ -701,6 +1140,7 @@ msgid "Not pressed"
 msgstr "Không bấm"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__note
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__note
 msgid "Note"
 msgstr "Ghi chú"
@@ -715,7 +1155,8 @@ msgstr "Không có thay đổi — tuần này đã khớp với các lượt ch
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Nothing on hold — every counted punch is in a work day."
-msgstr "Không có gì tạm giữ — mọi lượt chấm được tính đều nằm trong một ngày công."
+msgstr ""
+"Không có gì tạm giữ — mọi lượt chấm được tính đều nằm trong một ngày công."
 
 #. module: pb_clock
 #. odoo-javascript
@@ -771,6 +1212,18 @@ msgid "On hold"
 msgstr "Tạm giữ"
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid ""
+"On the machine: Menu › Comm. › Cloud Server. Server type ADMS, the address "
+"below, port 443, HTTPS on. Save and restart the machine — it appears here "
+"within a minute, asking to connect."
+msgstr ""
+"Trên máy: Menu › Comm. › Cài đặt máy chủ đám mây. Loại máy chủ ADMS, địa chỉ"
+" bên dưới, cổng 443, bật HTTPS. Lưu và khởi động lại máy — trong vòng một "
+"phút máy sẽ hiện ở đây, xin kết nối."
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
 msgid "Only attendance managers can change a machine."
@@ -785,6 +1238,12 @@ msgstr "Chỉ quản lý chấm công mới được thay đổi các thiết l�
 #. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
+msgid "Only attendance managers can let a machine in or change one."
+msgstr "Chỉ quản lý chấm công mới có thể cho máy kết nối hoặc thay đổi máy."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
 msgid "Only attendance officers can match numbers to people."
 msgstr "Chỉ cán bộ chấm công mới được khớp mã với nhân viên."
 
@@ -795,6 +1254,22 @@ msgid "Only attendance officers can re-pair punches."
 msgstr "Chỉ cán bộ chấm công mới được ghép lại lượt chấm công."
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__operlog_stamp
+msgid "Operation stamp"
+msgstr "Mốc nhật ký thao tác"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Or upload a punch file"
+msgstr "Hoặc tải lên tệp chấm công"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__kind__custom
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/js/clock_lens.js:0
 #: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_punch__direction__out
@@ -802,10 +1277,40 @@ msgid "Out"
 msgstr "Ra"
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__history_from
+msgid "Pair punches from"
+msgstr "Ghép lượt chấm từ ngày"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Pairing from %(day)s · %(n)s older punches kept, not paired"
+msgstr "Ghép từ %(day)s · %(n)s lượt chấm cũ được lưu, không ghép"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Pairing from %s"
+msgstr "Ghép từ %s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Pairing from %s · 1 older punch kept, not paired"
+msgstr "Ghép từ %s · 1 lượt chấm cũ được lưu, không ghép"
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_pairing.py:0
 msgid "Pairing punches is for attendance officers."
 msgstr "Ghép lượt chấm công dành cho cán bộ chấm công."
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__users_count
+msgid "People on the machine"
+msgstr "Số người trên máy"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -815,9 +1320,42 @@ msgid "Person"
 msgstr "Nhân viên"
 
 #. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "Pick a day that has already happened."
+msgstr "Hãy chọn một ngày đã qua."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "Pick the first day to send again."
+msgstr "Hãy chọn ngày đầu tiên cần gửi lại."
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_device__last_proto__http
+msgid "Plain"
+msgstr "Thường"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__plain_connection
+msgid "Plain connection"
+msgstr "Kết nối thường"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Port"
+msgstr "Cổng"
+
+#. module: pb_clock
 #: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_punch__source__upload
 msgid "Punch file"
 msgstr "Tệp chấm công"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__attlog_stamp
+msgid "Punch stamp"
+msgstr "Mốc lượt chấm"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -831,7 +1369,14 @@ msgstr "Lượt chấm"
 msgid ""
 "Punches cannot be deleted. Only a system administrator may remove them, for "
 "a data-protection request."
-msgstr "Không thể xóa lượt chấm công. Chỉ quản trị hệ thống mới được xóa, khi có yêu cầu bảo vệ dữ liệu."
+msgstr ""
+"Không thể xóa lượt chấm công. Chỉ quản trị hệ thống mới được xóa, khi có yêu"
+" cầu bảo vệ dữ liệu."
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__attlog_count
+msgid "Punches held by the machine"
+msgstr "Số lượt chấm máy đang lưu"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -840,9 +1385,23 @@ msgid "Punches on hold"
 msgstr "Lượt chấm công tạm giữ"
 
 #. module: pb_clock
+#: model:ir.model.fields,help:pb_clock.field_pb_clock_device__history_from
+msgid ""
+"Punches the machine holds from before this day are kept on record but never "
+"become work days."
+msgstr ""
+"Lượt chấm máy lưu từ trước ngày này được giữ lại nhưng không bao giờ thành "
+"ngày công."
+
+#. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__punches_today
 msgid "Punches today"
 msgstr "Lượt chấm hôm nay"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__pushver
+msgid "Push version"
+msgstr "Phiên bản gửi dữ liệu"
 
 #. module: pb_clock
 #. odoo-python
@@ -856,6 +1415,11 @@ msgstr "Lượt chấm gốc từ máy hoặc phần mềm của máy — hệ t
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Re-pair this week"
 msgstr "Ghép lại tuần này"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__kind__check
+msgid "Re-read settings"
+msgstr "Đọc lại cài đặt"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -881,10 +1445,61 @@ msgid "Recent punches"
 msgstr "Lượt chấm gần đây"
 
 #. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__registry_code
+msgid "Registration code"
+msgstr "Mã đăng ký"
+
+#. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Remove"
 msgstr "Bỏ"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__since
+msgid "Resend from"
+msgstr "Gửi lại từ ngày"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__kind__resend
+msgid "Resend punches"
+msgstr "Gửi lại lượt chấm"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Resend punches since"
+msgstr "Gửi lại lượt chấm từ ngày"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Resend punches since…"
+msgstr "Gửi lại lượt chấm từ ngày…"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Resend since %(day)s did not work: %(why)s"
+msgstr "Gửi lại từ %(day)s không thành công: %(why)s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Resend since %(day)s done %(ago)s"
+msgstr "Gửi lại từ %(day)s đã xong %(ago)s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Resend since %s · the machine is sending"
+msgstr "Gửi lại từ %s · máy đang gửi"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Resend since %s · waiting for the machine"
+msgstr "Gửi lại từ %s · đang chờ máy"
 
 #. module: pb_clock
 #: model_terms:ir.ui.view,arch_db:pb_clock.view_employee_form_pb_clock_code
@@ -904,16 +1519,56 @@ msgid "Saved. Re-pair this week to apply it to punches already paired."
 msgstr "Đã lưu. Hãy ghép lại tuần này để áp dụng cho các lượt chấm đã ghép."
 
 #. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_device__last_proto__https
+msgid "Secure"
+msgstr "Bảo mật"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Send again"
+msgstr "Gửi lại"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Sending everything again · asked %s"
+msgstr "Đang gửi lại mọi thứ · đã yêu cầu %s"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__state__sent
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__sent_at
+msgid "Sent to the machine"
+msgstr "Đã gửi tới máy"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Serial"
+msgstr "Số sê-ri"
+
+#. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__serial
 msgid "Serial number"
 msgstr "Số sê-ri"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__kind__set_time
+msgid "Set the clock"
+msgstr "Chỉnh đồng hồ"
 
 #. module: pb_clock
 #: model:ir.model.fields,help:pb_clock.field_hr_attendance__pb_entry_source
 msgid ""
 "Set when a record is created by the Weekly Entry grid; blank for "
 "device/kiosk/manual punches which the grid must never overwrite."
-msgstr "Được đặt khi bản ghi được tạo từ lưới nhập theo tuần; để trống với lượt chấm từ máy/kiosk/nhập tay mà lưới không bao giờ được ghi đè."
+msgstr ""
+"Đặt thời điểm một bản ghi được tạo bởi lưới Mục nhập hàng tuần; trống cho "
+"các cú đấm thiết bị/kiosk/thủ công mà lưới không bao giờ được ghi đè."
 
 #. module: pb_clock
 #. odoo-javascript
@@ -941,6 +1596,24 @@ msgstr "Xem lượt chấm của mã %s"
 
 #. module: pb_clock
 #. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Silent since %s"
+msgstr "Im lặng từ %s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid ""
+"Someone punched in and then not again until a later day. That day was closed"
+" at its check-in (0 hours) so the later days could count. Fix it with a "
+"correction."
+msgstr ""
+"Có người chấm vào rồi không chấm lại cho đến một ngày sau. Ngày đó được đóng"
+" tại giờ vào (0 giờ) để các ngày sau được tính. Hãy sửa bằng một yêu cầu "
+"điều chỉnh."
+
+#. module: pb_clock
+#. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Someone who taps twice in a row is counted once."
 msgstr "Ai chấm hai lần liên tiếp chỉ được tính một lần."
@@ -953,6 +1626,12 @@ msgstr "Nguồn"
 #. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__state
 msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__state
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__state
+msgid "Status"
 msgstr "Trạng thái"
 
 #. module: pb_clock
@@ -977,8 +1656,20 @@ msgstr "Chưa thực hiện được. Hãy thử lại sau giây lát."
 #. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
+msgid "That machine has changed in the meantime. Refresh and try again."
+msgstr "Máy này vừa thay đổi. Hãy tải lại và thử lần nữa."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
 msgid "That machine is not in this company."
 msgstr "Máy chấm công này không thuộc công ty này."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "That machine is not known here."
+msgstr "Máy này không có ở đây."
 
 #. module: pb_clock
 #. odoo-python
@@ -1023,10 +1714,52 @@ msgid "The file is empty."
 msgstr "Tệp trống."
 
 #. module: pb_clock
+#: model:ir.model.fields,help:pb_clock.field_pb_clock_device__ip
+msgid "The internet address the machine calls from."
+msgstr "Địa chỉ internet mà máy gọi tới từ đó."
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
 msgid "The longest work day must be between 8 and 36 hours."
 msgstr "Ngày công dài nhất phải từ 8 đến 36 giờ."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_command.py:0
+msgid "The machine answered %s."
+msgstr "Máy phản hồi %s."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "The machine could not be let in: %s"
+msgstr "Không thể cho máy kết nối: %s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "The machine did not answer. Restart it and it will send its punches."
+msgstr "Máy không phản hồi. Hãy khởi động lại máy, máy sẽ gửi lượt chấm."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid ""
+"The machine sends everything it still holds. Punches from before %s are kept"
+" on record but never become work days."
+msgstr ""
+"Máy sẽ gửi mọi thứ còn lưu. Lượt chấm trước %s được giữ lại nhưng không bao "
+"giờ thành ngày công."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid ""
+"The machine sends its punches from that day again. Punches already here are "
+"kept once."
+msgstr ""
+"Máy gửi lại lượt chấm từ ngày đó. Lượt chấm đã có chỉ được giữ một lần."
 
 #. module: pb_clock
 #. odoo-python
@@ -1039,7 +1772,19 @@ msgstr "Không gán được mã: %s"
 msgid ""
 "The number this person has on the attendance machine. Leave blank when it is"
 " the same as the employee code."
-msgstr "Mã của người này trên máy chấm công. Để trống nếu trùng với mã nhân viên."
+msgstr ""
+"Mã của người này trên máy chấm công. Để trống nếu trùng với mã nhân viên."
+
+#. module: pb_clock
+#: model:ir.model.fields,help:pb_clock.field_hr_attendance__pb_clock_auto_closed
+msgid ""
+"The time clock closed this day at its own check-in because the person "
+"punched again on a later day without a check-out here. Fix it with a "
+"correction."
+msgstr ""
+"Hệ thống chấm công đã đóng ngày này tại giờ vào vì người này chấm lại vào "
+"một ngày sau mà ngày này chưa có giờ ra. Hãy sửa bằng một yêu cầu điều "
+"chỉnh."
 
 #. module: pb_clock
 #. odoo-javascript
@@ -1059,13 +1804,21 @@ msgstr "Không giải mã được tệp đã tải lên."
 msgid ""
 "Their punches are kept and paired the moment you match the number to a "
 "person."
-msgstr "Lượt chấm của các mã này vẫn được giữ và sẽ được ghép ngay khi bạn khớp mã với một người."
+msgstr ""
+"Lượt chấm của các mã này vẫn được giữ và sẽ được ghép ngay khi bạn khớp mã "
+"với một người."
 
 #. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/wizards/attendance_import.py:0
 msgid "This Excel file could not be opened."
 msgstr "Không mở được tệp Excel này."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
+msgid "This machine has not connected yet."
+msgstr "Máy này chưa kết nối."
 
 #. module: pb_clock
 #: model:ir.model.constraint,message:pb_clock.constraint_pb_clock_punch_dedup_key_uniq
@@ -1091,7 +1844,7 @@ msgstr "Thời gian"
 #. module: pb_clock
 #: model:ir.model,name:pb_clock.model_pb_time_hub
 msgid "Time Hub Cockpit"
-msgstr "Trung tâm chấm công"
+msgstr "Buồng lái Time Hub"
 
 #. module: pb_clock
 #: model:ir.model.fields.selection,name:pb_clock.selection__hr_attendance__pb_entry_source__device
@@ -1142,6 +1895,8 @@ msgid "Time on the machine"
 msgstr "Giờ trên máy"
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_device__tz
 msgid "Time zone"
 msgstr "Múi giờ"
@@ -1172,6 +1927,12 @@ msgid "Try again"
 msgstr "Thử lại"
 
 #. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_command.py:0
+msgid "Trying another way: the machine will send everything again."
+msgstr "Đang thử cách khác: máy sẽ gửi lại mọi thứ."
+
+#. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "Type a name or a badge ID"
@@ -1196,7 +1957,9 @@ msgstr "Mã chưa rõ"
 msgid ""
 "Upload a file from the attendance machine or its program — Excel, CSV, the "
 "machine’s attlog.dat or the daily sheet."
-msgstr "Tải lên tệp từ máy chấm công hoặc phần mềm của máy — Excel, CSV, tệp attlog.dat của máy hoặc bảng công ngày."
+msgstr ""
+"Tải lên tệp từ máy chấm công hoặc phần mềm của máy — Excel, CSV, tệp "
+"attlog.dat của máy hoặc bảng công ngày."
 
 #. module: pb_clock
 #. odoo-javascript
@@ -1213,6 +1976,12 @@ msgstr "Tải lên lượt chấm"
 #. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/models/clock_lens.py:0
+msgid "Use a date for the first day to pair."
+msgstr "Hãy dùng một ngày cho ngày đầu tiên được ghép."
+
+#. module: pb_clock
+#. odoo-python
+#: code:addons/pb_clock/models/clock_lens.py:0
 msgid "Use numbers for the hours and the minutes."
 msgstr "Hãy dùng số cho giờ và phút."
 
@@ -1222,7 +1991,9 @@ msgid ""
 "Use the In and Out keys people press on the machine. Leave off when nobody "
 "presses them: the first punch of a day is then the start and the last punch "
 "is the end."
-msgstr "Dùng phím Vào và Ra mà mọi người bấm trên máy. Tắt khi không ai bấm: lượt chấm đầu tiên trong ngày là giờ vào và lượt cuối là giờ ra."
+msgstr ""
+"Dùng phím Vào và Ra mà mọi người bấm trên máy. Tắt khi không ai bấm: lượt "
+"chấm đầu tiên trong ngày là giờ vào và lượt cuối là giờ ra."
 
 #. module: pb_clock
 #: model:ir.model.fields,field_description:pb_clock.field_pb_clock_punch__verify_mode
@@ -1238,12 +2009,30 @@ msgstr "Đang chờ"
 
 #. module: pb_clock
 #. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Waiting for the first call"
+msgstr "Đang chờ máy gọi lần đầu"
+
+#. module: pb_clock
+#: model:ir.model.fields.selection,name:pb_clock.selection__pb_clock_command__state__queued
+msgid "Waiting for the machine"
+msgstr "Đang chờ máy"
+
+#. module: pb_clock
+#: model:ir.model.fields,field_description:pb_clock.field_pb_clock_command__kind
+msgid "What"
+msgstr "Loại lệnh"
+
+#. module: pb_clock
+#. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid ""
 "What happens next: each number on the machine is matched to a person, and "
 "their punches become work days in the Week Grid — first punch in, last punch"
 " out."
-msgstr "Tiếp theo: mỗi mã trên máy được khớp với một người, và lượt chấm của họ thành ngày công trong Lưới tuần — lượt đầu là giờ vào, lượt cuối là giờ ra."
+msgstr ""
+"Tiếp theo: mỗi mã trên máy được khớp với một người, và lượt chấm của họ "
+"thành ngày công trong Lưới tuần — lượt đầu là giờ vào, lượt cuối là giờ ra."
 
 #. module: pb_clock
 #. odoo-python
@@ -1268,10 +2057,22 @@ msgid "Work day"
 msgstr "Ngày công"
 
 #. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Workshop, building or site"
+msgstr "Xưởng, tòa nhà hoặc địa điểm"
+
+#. module: pb_clock
 #. odoo-python
 #: code:addons/pb_clock/wizards/attendance_import.py:0
 msgid "all already on record"
 msgstr "tất cả đã có sẵn"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "first heard %s"
+msgstr "liên lạc lần đầu %s"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -1288,8 +2089,20 @@ msgstr "vừa xong"
 #. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "known from a file"
+msgstr "đã biết từ một tệp"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "last"
 msgstr "lần cuối"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "last heard"
+msgstr "liên lạc lần cuối"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -1312,6 +2125,18 @@ msgstr "đang ghép trong nền"
 #. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "people on the machine"
+msgstr "người trên máy"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "plain connection"
+msgstr "kết nối thường"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "this week"
 msgstr "tuần này"
 
@@ -1324,8 +2149,20 @@ msgstr "để gán,"
 #. module: pb_clock
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "to close"
+msgstr "để đóng"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "to close."
 msgstr "để đóng."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "to let it in,"
+msgstr "để cho kết nối,"
 
 #. module: pb_clock
 #. odoo-javascript
@@ -1344,6 +2181,18 @@ msgstr "hôm nay"
 #: code:addons/pb_clock/static/src/js/clock_lens.js:0
 msgid "today %s"
 msgstr "hôm nay %s"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "was %s min fast"
+msgstr "trước đó nhanh %s phút"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "was %s min slow"
+msgstr "trước đó chậm %s phút"
 
 #. module: pb_clock
 #. odoo-javascript
