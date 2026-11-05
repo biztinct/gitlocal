@@ -157,54 +157,126 @@ the repo): `outputs/rize-managers-2026-11-05/01_batch_page_rize.jpg`,
    column each) and then a mapping (the tool can be pointed at them).
 3. Hourly row rewrite (G20) and the seed's undo table are untouched.
 
-## Part 2 — read by header (2026-11-05) — PAUSED HERE
+## Part 2 — read by header (2026-11-05) — DONE
 
-Owner ruling 2026-11-05: read the manager column whenever the file has it, even
-when the scheme maps nothing to Manager (rize's four focused schemes 7118–7121
-have no Reporting Manager column, G44). Paused on the owner's request before
-tests, proof or deploy.
+Owner ruling 2026-11-05: read the manager column whenever the file has it,
+even when the scheme maps nothing to Manager (rize's four focused schemes
+7118–7121 have no Reporting Manager column, G44). No change to Rize's file or
+schemes. (Paused once mid-way on the owner's request — WIP `c751b07a1` — and
+resumed the same day.)
 
-**Done (WIP commit, not deployed, pb_orgchart version NOT bumped yet):**
-`pb_orgchart/models/import_manager.py` only —
-* `is_manager_name_header(key)`: exact heading from the classifier's existing
-  `MANAGER_HEADERS` (already the single list beside `PROFILE_HEADERS`, so no
-  change to pb_hr_payroll_formula is needed) minus any heading with the words
-  mail / email / hiring / id.
+### What shipped
+
+| Commit | What |
+|---|---|
+| `c751b07a1` | WIP (PAUSED): the by-heading reader in `import_manager.py` |
+| `7096f6af3` | pb_orgchart **19.0.1.5.0**: tests 08/08b/08c/08d + test_01 rewritten, the "not mapped yet" sentence removed (code + vi_VN), manifest description |
+| (this commit) | this section, ledger G47–G49 |
+
+* **One list.** The headings are the classifier's existing `MANAGER_HEADERS`
+  (`column_role_classifier.py:125-131`, the tuple `PROFILE_HEADERS` is built
+  from), so the two cannot drift; it already holds every heading the ruling
+  names, and the accent-free forms match because both sides go through
+  `_index_key` (casefold, accents off, punctuation and spacing collapsed).
+  **No change to pb_hr_payroll_formula** — which kept this work clear of the
+  IMPORT-GENDER builder's files and deploy.
+* `is_manager_name_header(key)` (pb_orgchart): exact heading from that list,
+  "Sheet|Heading" judged by its heading part, and refused when the heading has
+  any of the WORDS mail / email / hiring / id.
 * `_pb_manager_cell(raw_data, mapping, line, primary_only)`: a mapping still
-  wins (same `_writeback_raw_value` read, no `employee=`, G41); without one,
-  scans the primary then the top-up payload (`_writeback_blobs`) by heading;
-  first such column with a value wins; columns present but empty → blank;
-  none → step says nothing.
-* `_sync_employee_manager`, `_pb_manager_resolve(…, mapping, …)` and
-  `_pb_manager_mail_trusted` use it (trust cache keyed `'heading'` when no
-  mapping). The "not mapped yet" hint and `_pb_manager_unmapped_header` are
-  removed; the summary now shows whenever rows were looked at.
-* `py_compile` OK. Nothing run on the server. No throwaway database made.
+  wins (unchanged read: `_writeback_raw_value`, never `employee=`, G41; a
+  blank mapped cell is "left blank", the other heading is NOT consulted).
+  Without one: the primary payload, then the top-up one (`_writeback_blobs`,
+  the same two payloads and lane switches `_writeback_raw_value` uses); the
+  first manager heading **with a value** wins; headings present but all empty
+  → "left blank" (the manager is kept); no heading → the step says nothing.
+* Same matching, same `_set_managers` write, same email tie-break (now also
+  judged per file without a mapping), same summary line and "See the n rows".
+  The "this scheme does not read it — map the column" sentence and
+  `_pb_manager_unmapped_header` are gone; the template's hint slot stays (it
+  renders nothing).
 
-**Not done:**
-1. Tests: `test_01` (last 5 lines call the removed `_pb_manager_unmapped_header`
-   — replace with case (b)) and `test_08` (asserts the old "no mapping → nothing,
-   hint shown") will FAIL as committed. Rewrite test_08 as case (a): unlink the
-   mapping, row `{'Master Reporting Manager': 'Dhruv Boss'}` → set; add (b) no
-   mapping + only `MAIL_COL` and `'Hiring Manager'` → state False, no note,
-   summary `show` False; (c) mapping present + `{'Reporting Manager': 'Cara
-   Coach', 'Manager': 'Dhruv Boss'}` → Cara, and mapped cell blank + 'Manager'
-   filled → 'blank'; (d) a top-up-only heading (`raw_data_topup_json`) is read.
-2. Remove the stale vi_VN.po msgid "This file has a “%(h)s” column, but this
-   scheme does not read it…" (`pb_orgchart/i18n/vi_VN.po:3719-3723`); update
-   the manifest description bullet ("when a scheme maps its Reporting Manager
-   column" → "when the file has a Reporting Manager column"); bump
-   pb_orgchart to 19.0.1.5.0.
-3. Run tests (SCHEMECTX §0.13 recipe, p0clone, ports 8193/8192, G45).
-4. Proof on a throwaway copy (G46): the latest REAL Vietnam file is batch 2072's
-   attachment 37676 (`Payobook-month-2026-09.xlsx`, keys
-   `Consolidated|Reporting Manager` / `…|Reporting manager Mail ID` /
-   `…|Hiring Manager`); import it against the focused VN scheme 7118 and expect
-   59 updated / 4 not matched (MANAGERCOL §3; Vietnam share of 204/6/4) for the
-   rows that reach the manager step. NOTE: batch 2289 (the "TEST VN" file on
-   7118) carries NO manager column at all — Rize's real monthly file must keep
-   the column for this to help. G43 rows may still fail if the
-   pb_hr_payroll_formula Gender/Marital fix is not live yet.
-5. Deploy `full` ×4 (wait for CLOCK-1 START 02:14 UTC and the formula fix to
-   have DONE lines and the lock free), browser check on rize, ledger gotcha,
-   final commit + push.
+### Tests — 81 of 81 pass
+
+p0clone, scratch addons dir first, SCHEMECTX §0.13 recipe on 8193/8192 (after
+the IMPORT-GENDER builder's own run on the same ports had finished — G48);
+log `/tmp/mgrcol2_test/t2.log`: `0 failed, 0 error(s) of 81 tests`; jobs on
+p0clone 33 → 33. The one ERROR line is test 10's deliberate failure.
+
+| # | Case | Test | Result |
+|---|---|---|---|
+| a | no mapping + "Master Reporting Manager" (plain and "Consolidated\|…") → manager set, one history row; summary shows, no hint | test_08 | PASS |
+| b | no mapping + only "Reporting manager Mail ID" and "Hiring Manager" → nothing set, no note, nothing on screen | test_08b | PASS |
+| c | mapping present + a "Manager" heading too → the mapping wins; mapped cell blank → "left blank", the other heading ignored | test_08c | PASS |
+| — | no mapping: the top-up payload is read; an empty first heading falls through to a filled one; a blank cell never clears | test_08d | PASS |
+| — | heading rules: VN/ID/EN headings with and without accents are the name; mail / hiring / "Manager ID" / column letters are not | test_01 | PASS |
+| d | every earlier MANAGERCOL test (02–07, 09–13) | — | PASS |
+
+Gates: PO parse gate on the box 640 rows, none empty (−1: the removed
+sentence). No SCSS change.
+
+### Proof on a throwaway copy of rize (copy dropped)
+
+`mgrcol2_test` from `pg_dump rize` (jobs off, logins off), G46 recipe. Rize's
+**September Vietnam file** (`Payobook-month-2026-09.xlsx`, batch 2072's file,
+copied from rize's file store because a copy has none — G49) imported through
+the real import (`action_load_file` → `action_match_employees` →
+`action_process`) as an **updating** import on the **current Vietnam scheme
+7118**, which has no manager mapping. Script kept out of the repo
+(`/tmp/mgrcol2_test/replay.py`, asserts the DB name); outputs `r1.out`,
+`r2.out` on the box.
+
+| Run | Rows processed | Managers line | History rows | Coach / approvers moved |
+|---|---|---|---|---|
+| 1 — managers as rize has them (seeded) | 63 / 63 | 0 updated · **59 already up to date** · 4 not matched | 0 | 0 |
+| 2 — the 63 people's managers cleared on the copy first | 63 / 63 | **59 updated** · 0 already up to date · **4 not matched** | 59 | 0 |
+
+59 of 59 end on exactly the seed's manager, 0 differ. The 4 not matched are
+the seed report's Vietnam problem rows: "Indra" fits 2 people, "Nithya" fits 2
+people (×2), "Shreya" fits 2 people and 1 has left. That is the Vietnam share
+of the seed's 204 / 6 / 4 (Vietnam: 59 clean, 4 problem, 0 blank).
+**The Gender / Marital bug did not block any row** on this file and scheme
+(all 63 processed with the fix not yet live) — every row reached the manager
+step.
+
+### Deploy
+
+| When (UTC) | Commit | Module → version | EXIT ×4 | Jobs before/after | Evidence |
+|---|---|---|---|---|---|
+| 04:15:26–04:19:10 | 7096f6af3 | pb_orgchart → 19.0.1.5.0 (-u) | 0/0/0/0, errors 0 | 33/29/76/44 → same | `/tmp/mgrcol2-run-20261105041526`, backups `/odoo/backups/mgrcol2-run-20261105041526` |
+
+`filter_deploy.sh full`, staged from `git archive HEAD`; live tree equalled
+`6e2ab1d6c` (the last deployed pb_orgchart) before; lock free; START/DONE in
+`/opt/deploy-notes.md`; tree hash equal after; sites 200; `ListAgents` not
+available in this session. No ABM. The ACCESS-GAPS looks deploy (START 04:16)
+queued on the lock behind this one and ran after it; the coordinator's "wait
+for it" message arrived after this deploy had already started.
+
+### Browser check (rize, signed-in session)
+
+The import wizard opens normally (no console errors on load). Its last step
+was shown for the existing September Vietnam batch by loading that batch's own
+summary into the open wizard — nothing sent to the server, no button pressed:
+"Import complete … 63 rows processed" with the outcome cards; the manager line
+is correctly absent (that batch was a "use once" import, so it has nothing to
+say). The same step with the replay's numbers placed in the page's memory
+shows "Managers from the file · 59 updated · 0 already up to date · 4 not
+matched · See the row", no "map the column" sentence. No console errors.
+Page reloaded afterwards. Screenshot (real tenant, so not in the repo):
+`outputs/rize-managers-2026-11-05/03_import_last_step_part2_rize.jpg`.
+
+### Open — for the owner
+
+1. **"Use once" imports never touch managers.** Every Rize import since
+   2026-10-19 (2072, 2260, 2284–2289) was run as **use once**, which by design
+   updates no employee record at all (RECORDS R1) — so the manager step does
+   not run either, mapping or not. This change makes managers follow the file
+   on an **updating** import. If Rize keeps importing "use once", managers
+   will not change from the file. Owner choice: import monthly files as
+   updating imports, or ask for "use once" to still update managers (a scope
+   change to R1).
+2. **Rize's August test file for the focused Vietnam scheme (batch 2289) has
+   no Reporting Manager column at all.** The real September client file does.
+   Managers follow only files that carry the column.
+3. The Gender / Marital fix (IMPORT-GENDER) is a separate change by another
+   builder; it did not affect this file.

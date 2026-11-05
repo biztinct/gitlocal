@@ -527,3 +527,22 @@ the closeout as an owner question, not into a phase.
 * G46 (MANAGERCOL): a throwaway copy of rize for evidence = `pg_dump rize` →
   `createdb mgrcol_test` → `pg_restore --no-owner --role=odoo`, then jobs and
   logins off, then `dropdb`. An underscore name is not a reachable host name.
+* G47 (MANAGERCOL part 2): **"use once" imports never reach the manager step.**
+  A one-time batch skips `_update_employee_from_raw_data` entirely (RECORDS
+  R1), and every rize import since 2026-10-19 was one-time. A replay meant to
+  show what an import does to employee records must set `one_time = False`
+  explicitly, and the owner must know managers follow only updating imports.
+* G48 (MANAGERCOL part 2): **test ports are shared between builders.** Another
+  builder's `-u pb_hr_payroll_formula --test-enable` on p0clone held 8193/8192;
+  a second `-u` on the same DB at the same time is unsafe anyway. Check
+  `ss -ltnp | grep 819` and wait for it — and never wait with
+  `pgrep -f <pattern>` inside an `ssh '…'` whose own command line contains the
+  pattern: it matches itself and never ends (and `pkill -f` kills your shell).
+* G49 (MANAGERCOL part 2): **a `pg_restore` copy has no file store.** Every
+  attachment (an import's uploaded file) reads as empty on the copy ("Please
+  upload a file first."). Read the bytes from
+  `/odoo/.local/share/Odoo/filestore/<source db>/<store_fname>` instead, and
+  remove `/odoo/.local/share/Odoo/filestore/<copy>` after `dropdb`. The live
+  server's job runner opens every database it can see, so `dropdb` needs
+  `--force` even with the copy's jobs off.
+
