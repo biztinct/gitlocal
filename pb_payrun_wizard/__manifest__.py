@@ -9,7 +9,7 @@
     # same way: its guard and Clean and Run see Regular runs only.
     # 1.42.0: PDR P1 — Review pay data opens fast; calculation previews
     # stream in afterwards, and a final tax month reminder shows calmly.
-    'version': '19.0.1.42.0',
+    'version': '19.0.1.43.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

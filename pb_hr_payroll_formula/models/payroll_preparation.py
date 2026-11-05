@@ -10,7 +10,7 @@ from decimal import Decimal, InvalidOperation
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
-from .application_payroll_source import _json, _stamp, _optional_record_input
+from .application_payroll_source import _json, _stamp, _optional_record_input, USUAL_ANSWER_REASON
 
 _TOKEN = object()
 _CTX = 'payroll_preparation_token'
@@ -275,6 +275,10 @@ class PayrollPreparation(models.Model):
             optional = (self._optional(rule) or self._settlement_zero(rule) or cell.get('not_applicable')) and cell['status'] in ('missing', 'zero_confirmed')
             edit = edits.get('%s:%s' % (row['employee_id'], rule.code))
             issue = cell['status'] == 'conflict' or (cell['status'] == 'missing' and cell['required'] and not optional)
+            if cell.get('usual_answer') and cell.get('reason') == USUAL_ANSWER_REASON:
+                # Shown in the reader's language; the stored fact (and every
+                # fingerprint taken before this) keeps the English sentence.
+                cell['reason'] = _('No line on the contract, so this is No (the usual answer).')
             cell.update(editable=editable, future=future, optional=bool(optional), issue=bool(issue),
                 settlement_zero=bool(optional and self._settlement_zero(rule)),
                 tone='amber' if cell['status'] == 'conflict' else 'red' if issue else 'edited' if edit else 'normal',
@@ -336,7 +340,7 @@ class PayrollPreparation(models.Model):
             if not cell or cell['issue'] or cell.get('value') not in (None, '', 0, 0.0):
                 continue
             cell.update(remind=True, tone='remind' if cell['tone'] == 'normal' else cell['tone'],
-                reason=_('Final tax month for this person (%(when)s). Set %(name)s to Yes (1) and fill in '
+                reason=_('Final tax month for this person (%(when)s). Set %(name)s to Yes and fill in '
                          'the year-to-date figures.', when=when, name=rule.name))
             row['reminders'].append(code)
         return row
@@ -360,11 +364,13 @@ class PayrollPreparation(models.Model):
             key = rule.application_source_key or ''
             columns.append({'id': rule.id, 'code': rule.code, 'name': rule.name, 'kind': rule.value_kind,
                 'group': 'adjustments' if key.startswith('period.input.') else 'time' if key.startswith('period.') else 'records',
-                'optional': bool(self._optional(rule) or self._settlement_zero(rule)), 'future': rule.id in cards})
+                'optional': bool(self._optional(rule) or self._settlement_zero(rule)), 'future': rule.id in cards,
+                **self._column_words(rule)})
         results = self._result_rules()
         for rule in results:
             columns.append({'id':rule.id,'code':rule.code,'name':rule.name,'kind':rule.value_kind,
-                            'group':'results','optional':False,'future':False,'formula':rule.excel_formula or ''})
+                            'group':'results','optional':False,'future':False,'formula':rule.excel_formula or '',
+                            'source_owner': 'Payroll calculation', **self._column_words(rule)})
         by_code = {r.code: r for r in rules}
         flagged = {r.code: r for r in rules if r.application_final_period_flag}
         for row in preview['employees']:
@@ -383,12 +389,30 @@ class PayrollPreparation(models.Model):
         global_issues = list({b['reason']: b for b in preview['blockers'] if not b['code'] and
                              b.get('key') not in ('leave', 'overtime', 'adjustments', 'timesheets')}.values())
         issue_count = sum(c['issue'] for p in preview['employees'] for c in p['cells'].values())
+        compact = bool(self.env.context.get('pr_compact'))
+        owners = {}
         people = []
         for row in preview['employees']:
-            cells = {code: {k: v for k, v in cell.items() if k not in ('evidence', 'source_ids')}
-                     for code, cell in row['cells'].items()}
+            if compact:
+                for code, cell in row['cells'].items():
+                    owners.setdefault(code, cell.get('source_owner') or '')
+                cells = {code: self._compact_cell(cell) for code, cell in row['cells'].items()}
+            else:
+                cells = {code: {k: v for k, v in cell.items() if k not in ('evidence', 'source_ids')}
+                         for code, cell in row['cells'].items()}
             people.append({'employee_id': row['employee_id'], 'name': row['name'], 'cells': cells,
                            'issues': row['issues'], 'reminders': row['reminders']})
+        if compact:
+            for column in columns:
+                column.setdefault('source_owner', owners.get(column['code'], ''))
+        review = json.loads(self.review_json)
+        if compact:
+            # The worksheet reads the checklist, the note and one flag; the
+            # signed cell lists stay on the server.
+            review = {k: review[k] for k in ('certification', 'reason', 'settlement_no_activity') if k in review}
+            if review.get('certification'):
+                review['certification'] = {k: review['certification'][k] for k in ('channels', 'zero_keys')
+                                           if k in review['certification']}
         return {'id': self.id, 'revision': self.revision, 'state': self.state, 'name': self.config_id.name,
                 'period': [str(self.date_from), str(self.date_to)], 'currency': self.config_id.currency_id.name,
                 'columns': columns, 'people': people, 'global_issues': global_issues,
@@ -398,10 +422,60 @@ class PayrollPreparation(models.Model):
                 'reminders': sum(len(p['reminders']) for p in people),
                 'reminder_columns': [r.name for r in flagged.values()],
                 'ready': ready,
-                'review': json.loads(self.review_json), 'saved_at': str(self.write_date),
+                'review': review, 'saved_at': str(self.write_date),
                 'timesheets': self.config_id.payroll_basis == 'timesheet',
                 'history': [{'kind': e.kind, 'at': str(e.create_date), 'user': e.user_id.name,
-                             'revision': e.revision, 'data': json.loads(e.payload_json)} for e in self.event_ids.sorted('id', reverse=True)[:30]]}
+                             'revision': e.revision, 'data': self._history_data(e.payload_json, compact)}
+                            for e in self.event_ids.sorted('id', reverse=True)[:30]]}
+
+    # ------------------------------------------------------------------
+    # PDR P2 — words on the worksheet, and a lighter worksheet payload
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _column_words(rule):
+        """`labels` / `control` / `hint` of one column: the rule's own words
+        (Yes first for a 0 / 1 pair). No words → empty, the column shows
+        numbers exactly as before."""
+        labels = rule.value_word_choices() if hasattr(rule, 'value_word_choices') else []
+        return {'labels': labels, 'control': rule.value_label_control() if labels else '',
+                'hint': (getattr(rule, 'value_labels_hint', '') or '') if labels else ''}
+
+    #: what the grid draws or the side panel reads from a cell; everything
+    #: the same for a whole column (name, owner, rule) travels on the column.
+    _CELL_FLAGS = ('issue', 'optional', 'editable', 'future', 'remind', 'usual_answer', 'not_applicable')
+
+    def _compact_cell(self, cell):
+        if cell.get('status') == 'preview':
+            return {'status': 'preview', 'preview': cell.get('preview')}
+        out = {k: True for k in self._CELL_FLAGS if cell.get(k)}
+        if cell.get('value') is not None:
+            out['value'] = cell['value']
+        if cell.get('tone') and cell['tone'] != 'normal':
+            out['tone'] = cell['tone']
+        if cell.get('status') == 'conflict':
+            out['status'] = 'conflict'
+        if cell.get('reason') and (out.get('issue') or out.get('remind') or out.get('usual_answer')
+                                   or out.get('not_applicable') or out.get('status')):
+            out['reason'] = cell['reason']
+        edit = cell.get('edit')
+        if edit:
+            out['edit'] = {k: edit.get(k) for k in ('value', 'original', 'reason', 'scope', 'proposal_id')
+                           if edit.get(k) not in (None, '', False)}
+        return out
+
+    @staticmethod
+    def _history_data(payload_json, compact):
+        data = json.loads(payload_json)
+        if not compact:
+            return data
+        if not isinstance(data, dict) or not isinstance(data.get('changes'), list):
+            return {}   # the history list only reads cell changes
+        def side(value, keys):
+            return {k: value.get(k) for k in keys if k in value} if isinstance(value, dict) else value
+        return {'changes': [{'employee_id': c.get('employee_id'), 'code': c.get('code'),
+                             'before': side(c.get('before'), ('value', 'original')),
+                             'after': side(c.get('after'), ('value', 'original', 'reason'))}
+                            for c in data['changes'] if isinstance(c, dict)]}
 
     def preview_rows(self, revision, employee_ids):
         """PDR S3 — calculation previews for up to 25 people of this worksheet.
@@ -497,8 +571,17 @@ class PayrollPreparation(models.Model):
                     raise ValidationError(_('Enter a text value of up to 1,000 characters.'))
                 number = None
             else:
+                raw = change.get('value')
+                if isinstance(raw, str) and raw.strip() and rule.value_label_options():
+                    # PDR P2 — "Yes" / "y" / "All tax" typed or pasted into a
+                    # worded cell is stored as its number (1 / 0 / 2).
+                    try:
+                        raw = rule.value_from_text(raw)
+                    except ValueError as error:
+                        raise ValidationError(str(error)) from None
+                    raw = int(raw) if float(raw).is_integer() else raw
                 try:
-                    number = Decimal(str(change.get('value')))
+                    number = Decimal(str(raw))
                     if not number.is_finite() or abs(number) > Decimal('1e15') or rule.value_kind == 'integer' and number != number.to_integral_value():
                         raise InvalidOperation
                 except (InvalidOperation, ValueError):

@@ -848,3 +848,87 @@ class TestPayrollPreparation(TestApplicationPayrollSource):
             self.assertIn([self.employee.id, code], reviewed['review']['zero_cells'])
         self.assertTrue(set(flags.mapped('application_source_key')) <= set(reviewed['review']['certification']['zero_keys']))
         draft._assert_scope(self.config, self.employee.ids, self.start, self.end)
+
+    # ------------------------------------------------------------------
+    # PDR P2 — words on the worksheet (T1, T2), lighter payload, reminder
+    # ------------------------------------------------------------------
+
+    def _flag_with_echo(self):
+        flag = self._period_flag(value_labels_hint='Yes in the last month of the tax year.')
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Flag echo', 'code': 'PDRECHO',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'appears_on_payslip': True, 'excel_formula': '=PDRFINAL*10+5'})
+        return flag
+
+    def test_p2_t1_worded_column_carries_labels_control_and_hint(self):
+        flag = self._flag_with_echo()
+        mode = self._period_flag('PDRMODE', name='Tax allowance mode', value_labels='0=None;1=Insurance tax;2=All tax',
+                                 value_labels_hint='All tax = the company pays all the tax.')
+        draft = self._draft()
+        ws = draft.with_context(pr_compact=True).workspace()
+        col = next(c for c in ws['columns'] if c['code'] == flag.code)
+        self.assertEqual(col['labels'], [{'value': 1.0, 'label': 'Yes'}, {'value': 0.0, 'label': 'No'}])
+        self.assertEqual(col['control'], 'toggle')
+        self.assertEqual(col['hint'], 'Yes in the last month of the tax year.')
+        mode_col = next(c for c in ws['columns'] if c['code'] == mode.code)
+        self.assertEqual(mode_col['control'], 'select')
+        self.assertEqual([o['label'] for o in mode_col['labels']], ['None', 'Insurance tax', 'All tax'])
+        plain = next(c for c in ws['columns'] if c['code'] == self.bonus.code)
+        self.assertEqual((plain['labels'], plain['control'], plain['hint']), ([], '', ''))
+        # value 1 is stored as the number; the word is the column's to give
+        ws = draft.with_context(pr_compact=True).save_cells(
+            draft.revision, 'p2-t1-yes', [dict(self._change('1'), code=flag.code)])
+        cell = self._cell(ws, flag.code)
+        self.assertEqual(cell['value'], 1)
+        hit = [o['label'] for o in col['labels'] if o['value'] == cell['value']]
+        self.assertEqual(hit, ['Yes'])
+        # an unmatched number keeps its number (the grid shows "7")
+        ws = draft.with_context(pr_compact=True).save_cells(
+            draft.revision, 'p2-t1-seven', [dict(self._change('7'), code=flag.code)])
+        self.assertEqual(self._cell(ws, flag.code)['value'], 7)
+        self.assertFalse([o for o in col['labels'] if o['value'] == 7])
+
+    def test_p2_t1b_compact_cells_leave_column_facts_on_the_column(self):
+        self._flag_with_echo()
+        draft = self._draft()
+        full = draft.workspace()
+        compact = draft.with_context(pr_compact=True).workspace()
+        for code, cell in compact['people'][0]['cells'].items():
+            self.assertFalse({'label', 'source_owner', 'rule_id', 'key', 'unit', 'provenance', 'code'} & set(cell), code)
+        bonus = self.bonus.code
+        self.assertEqual(compact['people'][0]['cells'][bonus].get('value'), full['people'][0]['cells'][bonus]['value'])
+        self.assertEqual(bool(compact['people'][0]['cells'][bonus].get('issue')), full['people'][0]['cells'][bonus]['issue'])
+        col = next(c for c in compact['columns'] if c['code'] == bonus)
+        self.assertEqual(col['source_owner'], full['people'][0]['cells'][bonus]['source_owner'])
+        self.assertLess(len(json.dumps(compact)), len(json.dumps(full)))
+
+    def test_p2_t2_toggle_save_stores_the_number_and_previews_the_same(self):
+        flag = self._flag_with_echo()
+        previews = {}
+        for spelling in ('1', 'Yes', 'y'):
+            draft = self._draft()
+            if json.loads(draft.edits_json):
+                draft.save_cells(draft.revision, 'p2-t2-restore-%s' % spelling,
+                                 [{'employee_id': self.employee.id, 'code': flag.code, 'restore': True}])
+            draft.save_cells(draft.revision, 'p2-t2-save-%s' % spelling,
+                             [dict(self._change(spelling), code=flag.code)])
+            edit = json.loads(draft.edits_json)['%s:%s' % (self.employee.id, flag.code)]
+            self.assertEqual(edit['value'], 1, spelling)
+            self.assertIsInstance(edit['value'], int)
+            previews[spelling] = draft.preview_rows(draft.revision, [self.employee.id])[self.employee.id]['values']
+        self.assertEqual(previews['1']['PDRECHO'], 15)
+        self.assertEqual(previews['1'], previews['Yes'])
+        self.assertEqual(previews['1'], previews['y'])
+        draft = self._draft()
+        with self.assertRaisesRegex(ValidationError, 'Final tax period needs Y or N'):
+            draft.save_cells(draft.revision, 'p2-t2-maybe', [dict(self._change('maybe'), code=flag.code)])
+
+    def test_p2_reminder_no_longer_says_one_in_brackets(self):
+        flag = self._period_flag(application_final_period_flag=True)
+        draft = self.env['hr.payroll.preparation']._open(
+            self.config, self.employee.ids, '2026-12-01', '2026-12-31')
+        cell = self._cell(draft.workspace(), flag.code)
+        self.assertTrue(cell.get('remind'))
+        self.assertIn('to Yes and fill in', cell['reason'])
+        self.assertNotIn('(1)', cell['reason'])

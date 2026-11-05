@@ -781,3 +781,154 @@ msgstr "Payobook giữ nguyên, trừ người quản lý"
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "used once; nothing was saved to any employee, contract or bank record, except each person's manager when the file has a manager column."
 msgstr "đã dùng một lần; không lưu gì vào hồ sơ nhân viên, hợp đồng hay tài khoản ngân hàng, trừ người quản lý của từng người khi tệp có cột người quản lý."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Working out previews · %(done)s of %(total)s"
+msgstr "Đang tính bản xem trước · %(done)s trên %(total)s"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "the final tax period"
+msgstr "kỳ tính thuế cuối"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "1 person is in their final tax month — check %(names)s and the year-to-date figures."
+msgstr "1 người đang ở tháng tính thuế cuối — hãy kiểm tra %(names)s và các số liệu lũy kế từ đầu năm."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "%(count)s people are in their final tax month — check %(names)s and the year-to-date figures."
+msgstr "%(count)s người đang ở tháng tính thuế cuối — hãy kiểm tra %(names)s và các số liệu lũy kế từ đầu năm."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Working out…"
+msgstr "Đang tính…"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Calculation preview"
+msgstr "Bản xem trước tính toán"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "! Needs a value"
+msgstr "! Cần nhập giá trị"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "! Review source"
+msgstr "! Kiểm tra nguồn"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Final tax month"
+msgstr "Tháng tính thuế cuối"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Edited for this run"
+msgstr "Đã sửa cho kỳ này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Not used for this employee"
+msgstr "Không dùng cho nhân viên này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Optional · left blank"
+msgstr "Không bắt buộc · để trống"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Usual answer · no contract line"
+msgstr "Câu trả lời thông thường · không có dòng trên hợp đồng"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "From records"
+msgstr "Từ hồ sơ"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "Read only"
+msgstr "Chỉ xem"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "%(name)s needs Y or N."
+msgstr "%(name)s cần Y hoặc N."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "%(name)s needs one of: %(words)s."
+msgstr "%(name)s cần một trong các giá trị: %(words)s."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payroll_review.js:0
+msgid "%(person)s · %(error)s Nothing was saved."
+msgstr "%(person)s · %(error)s Chưa có gì được lưu."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Show them"
+msgstr "Xem danh sách"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Value for this run"
+msgstr "Giá trị cho kỳ này"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Choose…"
+msgstr "Chọn…"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Saved value:"
+msgstr "Giá trị đã lưu:"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Optional: leave blank to keep saved records unchanged. Pick an answer when you want to record one, using the scope below."
+msgstr "Không bắt buộc: để trống để giữ nguyên hồ sơ đã lưu. Chọn một câu trả lời khi bạn muốn ghi lại, với phạm vi bên dưới."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Tab moves between cells. Enter finishes entry. Edits save when you leave a cell. Yes / No cells accept Y or N. Add a reason before pasting a rectangular range."
+msgstr "Tab để chuyển ô. Enter để hoàn tất. Thay đổi được lưu khi rời ô. Ô Có / Không nhận Y hoặc N. Thêm lý do trước khi dán một vùng ô."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payroll_review.xml:0
+msgid "Final tax month reminder"
+msgstr "Nhắc tháng tính thuế cuối"

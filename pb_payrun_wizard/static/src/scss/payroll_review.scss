@@ -70,3 +70,25 @@
 @keyframes pr-spin{to{transform:rotate(360deg);}}
 @keyframes pr-pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
 @media (prefers-reduced-motion: reduce){.pr-review .pr-previewing svg,.pr-review .pr-pending-bar{animation:none;}}
+// PDR P2 — rows drawn as they come into view (fixed row height), and the
+// Yes / No toggle and word choice in the side panel. Locked palette only.
+.pr-review {
+ .pr-grid tbody tr.pr-row{height:60px;}
+ .pr-grid tbody tr.pr-row > th,.pr-grid tbody tr.pr-row > td{height:60px;box-sizing:border-box;vertical-align:top;}
+ .pr-grid tbody .pr-person{padding:11px 15px;overflow:hidden;
+  b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
+ .pr-grid tr.pr-spacer td{padding:0;border:0;min-width:0;width:auto;background:transparent;}
+ .pr-cell small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+ .pr-worded input,.pr-worded .pr-cell-value{font-weight:600;}
+ .pr-choice{margin:12px 0;}
+ .pr-choice-label{display:block;font-size:11px;font-weight:600;margin-bottom:6px;}
+ .pr-toggle{display:inline-flex;padding:3px;gap:3px;border:1px solid var(--pr-border);border-radius:10px;background:#f4f3fa;
+  button{min-width:76px;border:0;border-radius:7px;background:transparent;padding:8px 16px;font-weight:600;color:#5d5775;}
+  button:hover:not(:disabled){color:var(--pr-purple);}
+  button:focus-visible{outline:2px solid var(--pr-purple);outline-offset:1px;}
+  .pr-toggle-on{background:white;color:var(--pr-purple);box-shadow:0 1px 2px rgba(36,33,63,.12),inset 0 0 0 1px #d9d5ed;}}
+ .pr-choice select{display:block;width:100%;border:1px solid var(--pr-border);border-radius:7px;padding:9px;background:white;}
+ .pr-choice-now{margin:8px 0 0;font-size:11px;color:#a46d17;}
+ .pr-choice-hint{margin:8px 0 0!important;font-size:11px!important;line-height:1.5;color:#5d5775!important;}
+}
