@@ -1,0 +1,20 @@
+# Vietnamese translation for pb_payroll_templates.
+# Started 2026-11-05 (MANAGERCOL part 4) with the one sentence that changed;
+# the rest of this module's screens are not translated yet.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: vi_VN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payroll_templates
+#. odoo-javascript
+#: code:addons/pb_payroll_templates/static/src/run_input_review.xml:0
+msgid "This month’s inputs. Saved records stay unchanged, except managers from the file."
+msgstr "Dữ liệu đầu vào tháng này. Hồ sơ đã lưu giữ nguyên, trừ người quản lý từ tệp."

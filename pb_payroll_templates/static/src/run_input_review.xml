@@ -5,7 +5,7 @@
             <div class="pir" t-att-aria-busy="state.busy ? 'true' : 'false'">
                 <div class="pir-hero">
                     <span class="pir-eyebrow">PAYROLL INPUT REVIEW</span>
-                    <h2 t-if="sheet?.monthly_template">This month’s inputs. Saved records stay unchanged.</h2>
+                    <h2 t-if="sheet?.monthly_template">This month’s inputs. Saved records stay unchanged, except managers from the file.</h2>
                     <h2 t-else="">This month’s changes. Next month’s starting point.</h2>
                     <p t-if="state.data"><b t-esc="state.data.name"/><t t-if="!sheet?.monthly_template"> · Review the values used and choose which mapped changes to keep for future payrolls.</t></p>
                 </div>
