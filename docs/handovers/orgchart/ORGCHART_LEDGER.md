@@ -490,3 +490,40 @@ the closeout as an owner question, not into a phase.
   input is not focused for a few hundred ms and the chart's single-key
   shortcuts fire (`a` opened Add team member, `c` collapsed the chart). Wait
   ~1 s before typing in an automated walk.
+* G40 (MANAGERCOL): **the import's generic many2one writeback CREATES an
+  employee it cannot find** (`m2o_creates_missing(hr.employee)` is true): a
+  manager cell "Board" mapped the generic way would mint an employee called
+  Board. Filter the `parent_id` mapping out BEFORE `super()._get_mapping_updates`,
+  and return `{}` yourself when nothing is left — `super()` reads
+  `mappings or self._get_model_mappings(…)` and would fetch them all again.
+* G41 (MANAGERCOL): **`_writeback_raw_value(…, employee=…)` can let the
+  record win.** With a declared Excel source and the mapped field itself
+  holding a value, the walk's record tier answers first and the writeback says
+  "no value" (J10's self-assign rule). rize Indonesia/Singapore: every person
+  who already had a manager read as blank, so a CHANGED manager in the file
+  would have been ignored. A "file wins" step reads without `employee=` and
+  judges "already up to date" itself.
+* G42 (MANAGERCOL): **a per-file judgement needs every row loaded first.** The
+  email-trust test reads all the batch's lines; a script that creates a line
+  and processes it at once sees a partial file and trusted rize Vietnam's
+  emails (the screen-check guard refused the 2 resulting writes). Real
+  imports load all rows before processing; scripts must too.
+* G43 (MANAGERCOL, pre-existing, NOT fixed): **`_coerce_mapped_value`'s
+  selection branch calls `field.selection(record.env)`**; on Odoo 19
+  `hr.employee.marital` / `sex` are related to the version and their selection
+  is `lambda model: …`, so any Marital status / Gender cell raises
+  "'Environment' object has no attribute 'env'" and fails the WHOLE row.
+  rize, latest files replayed on a copy: focused Vietnam 60/60, focused India
+  27/27 rows. Fix = `field.selection(record)`; needs its own change + test.
+* G44 (MANAGERCOL): **rize's active schemes have no Reporting Manager column.**
+  The four "focused payroll" schemes (7118–7121, since 2026-10-21) were
+  trimmed to pay columns; the column lives only on the archived master-data
+  schemes 4760/7096/6382/7095, where the mappings 4078–4081 now are. Monthly
+  imports on the focused schemes keep managers only once the column is added
+  back (owner decision).
+* G45 (MANAGERCOL): test port 8199 was briefly held by something else ("Port
+  8199 is in use", the run exits at once with EXIT=1 and an empty log). Use
+  another pair (8193/8192) rather than hunting the holder.
+* G46 (MANAGERCOL): a throwaway copy of rize for evidence = `pg_dump rize` →
+  `createdb mgrcol_test` → `pg_restore --no-owner --role=odoo`, then jobs and
+  logins off, then `dropdb`. An underscore name is not a reachable host name.
