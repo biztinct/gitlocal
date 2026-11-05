@@ -190,3 +190,36 @@ Three complaints, all confirmed live:
   cell resolves changes its stamp, so a saved correction on that cell turns
   into "The source changed…". Open Indonesia preps #18 and #19 have no saved
   corrections (revision 1), so nothing breaks today.
+* **G7 — the worksheet no longer computes previews (P1 S3).** `workspace()`
+  returns result cells with `value: None` and `preview: 'pending'|'blocked'`;
+  the numbers come from `hr.payroll.preparation.preview_rows(revision, ids)`
+  (≤ 25 people, owner only, stale revision refused). Any test or tool that
+  read result values out of `workspace()` must call `preview_rows` instead
+  (4 existing tests were migrated in P1).
+* **G8 — request memo.** `config._application_memo()` (D4) is the ONLY cache.
+  It lives in `env.cr.cache[('pb_hr_payroll_formula.app_memo', config_id)]`
+  plus `('pb_hr_payroll_formula.access_memo',)`, is removed by the context
+  manager that installed it, and is emptied by any `hr.formula.rule`
+  create/write/unlink or `hr.formula.config` write. Something new that is
+  scheme-level and read per person: put it behind `_application_memoize`.
+  Something that depends on a person's records: never memoise across people.
+* **G9 — timing on the shared 2-core box is noisy.** The same served open on
+  the throwaway copy measured 13.1 s and 22.3 s an hour apart (another
+  session's deploy running). The profiler inflates the new code ~4.7× (G2 was
+  3.4× on the old code). Judge by the live werkzeug line, quiet box.
+* **G10 — a served harness on a copy:** `odoo-bin … -d <copy> --db-filter=^<copy>$
+  --http-port=8195 --workers=0`, started with `setsid -f` from a root script
+  (a `nohup … &` inside `ssh '…'` dies with the ssh session). Stop it by the
+  PID that `ss -ltnp` shows on the port — `pkill -f "http-port=8195"` inside
+  `ssh '…'` kills your own shell (exit 255; same family as orgchart G48).
+* **G11 — a copy goes stale against the live tree.** pdr_test (copied 04:48)
+  could not load the live addons at 07:15 because CLOCK-2 had added
+  `res.company.pb_clock_*` columns since. `-u <that module>` on the copy first.
+* **G12 — `/etc/odoo-server.conf` sets a logfile.** A test run without
+  `--logfile=…` writes its results into `/var/log/odoo/odoo-server.log`,
+  not your redirect; and a scratch dir the `odoo` user writes into must be
+  `chmod a+w`.
+* **G13 — real final-tax-month people exist in October.** On rize prep #19,
+  7 people already have a contract end (or approved last day) inside
+  Oct 2026, so the reminder shows on the live October worksheet; no December
+  copy is needed to see it.
