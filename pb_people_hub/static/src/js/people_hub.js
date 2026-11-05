@@ -211,6 +211,7 @@ registry.category("actions").add("pb_people_hub", PbPeopleHub);
 registry.category(HUB_LENS_GATES).add("pb_people_hub", () => [
     { key: "employees", groups: EMPLOYEE_GATE },
     ...registry.category(PEOPLE_LENSES).getAll(),
+    { key: "insights", groups: EMPLOYEE_GATE },
     { key: "plan", groups: [...new Set([...PLAN_GATE, ...heroGroups()])],
       feature: "people_plan" },
 ]);

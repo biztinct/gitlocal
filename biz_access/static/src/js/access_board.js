@@ -72,6 +72,7 @@ import { _t } from "@web/core/l10n/translation";
 import { deserializeDateTime, formatDateTime } from "@web/core/l10n/dates";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { HubBackChip, hubBack } from "@pb_hub/js/hub_nav";
+import { featureForAction, featureGate } from "@pb_hub/js/hub_features";
 import { PbMiniRail, railIcon } from "@biz_access/js/mini_rail";
 
 /**
@@ -491,13 +492,36 @@ export class PbAccessBoard extends Component {
         }
     }
 
+    /**
+     * The screens to list under the menu entries: the ⌘K rows, filtered the
+     * way ⌘K filters them for everybody on this database (hub_palette_service:
+     * `isPresent`, `featureOf`), minus the rows that are only another name for
+     * a screen another row lists (`sameAs` — Import Data is the Inputs tab) and
+     * the rows that are not screens at all (`door: false`).
+     */
     surfaceCatalogue() {
-        const entries = registry.category("pb_hub_palette").getAll();
+        const actions = registry.category("actions");
+        const listed = [];
+        for (const [index, entry] of registry.category("pb_hub_palette").getAll().entries()) {
+            const label = String(entry.label || "").trim();
+            if (!label || entry.door === false || typeof entry.onRun === "function") {
+                continue;
+            }
+            const action = entry.action || {};
+            if (action.tag ? !actions.contains(action.tag)
+                : entry.requires && !actions.contains(entry.requires)) {
+                continue;               // its module is not installed here
+            }
+            // A part of the product this company has not got: gone when the
+            // platform said hide, listed as off when it said lock.
+            const feature = featureGate(this.env, entry.feature || featureForAction(action));
+            if (feature.shown) { listed.push({ index, entry, label, feature }); }
+        }
+        const ids = new Set(listed.map(({ entry }) => entry.id));
         const seen = new Set();
         const out = [];
-        for (const [index, entry] of entries.entries()) {
-            const label = String(entry.label || "").trim();
-            if (!label) { continue; }
+        for (const { index, entry, label, feature } of listed) {
+            if (entry.sameAs && ids.has(entry.sameAs)) { continue; }
             const identity = `${entry.id || index}\u0000${label}`;
             if (seen.has(identity)) { continue; }
             seen.add(identity);
@@ -511,6 +535,7 @@ export class PbAccessBoard extends Component {
                 probe: entry.probe && entry.probe.model && entry.probe.method
                     ? { model: entry.probe.model, method: entry.probe.method }
                     : undefined,
+                locked: feature.locked,
             });
         }
         return out;
@@ -528,13 +553,13 @@ export class PbAccessBoard extends Component {
             if (existing) {
                 // A hub and the global palette may register the same door.
                 // It is accessible if either legitimate route is accessible.
-                if (result.allowed) { existing.state = "on"; }
+                if (result.allowed && !row.locked) { existing.state = "on"; }
             } else {
                 siblings.set(row.label, {
                     id: `surface:${row.key}`,
                     label: row.label,
                     icon: row.icon,
-                    state: result.allowed ? "on" : "off",
+                    state: result.allowed && !row.locked ? "on" : "off",
                     newly_lit: false,
                 });
             }

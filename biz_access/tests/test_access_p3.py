@@ -581,6 +581,85 @@ class TestTheSpectacles(PassportCase):
         self.assertFalse(answer['missing']['allowed'])
         self.assertEqual(answer['open']['parent'], self.open_item.name)
 
+    def _probe(self, func, key='probed', groups=None):
+        """`surface_access` for one row whose tab asks `res.partner.<func>`."""
+        return {'key': key, 'groups': groups or [],
+                'action': {'tag': self.open_item.action_tag},
+                'probe': {'model': 'res.partner', 'method': func}}
+
+    def test_a_tabs_own_question_is_asked_as_the_person(self):
+        holder = self._user('Probeholder', self.above)
+        bare = self._user('Probebare')
+        partner_cls = type(self.env['res.partner'])
+        with patch.object(partner_cls, 'can_open_probe_test',
+                          lambda recs: recs.env.uid == holder.id, create=True):
+            row = self._probe('can_open_probe_test')
+            self.assertTrue(self.mgr_access.surface_access(
+                [row], holder.id)['probed']['allowed'])
+            self.assertFalse(self.mgr_access.surface_access(
+                [row], bare.id)['probed']['allowed'])
+
+    def test_the_question_waits_for_the_groups(self):
+        """Groups first, then the question — the order the hub rail uses."""
+        holder = self._user('Probegroups', self.above)
+        other_name = 'probe_other_%s' % self.other.id
+        self.env['ir.model.data'].create({
+            'module': 'biz_access', 'name': other_name,
+            'model': 'res.groups', 'res_id': self.other.id,
+        })
+        asked = []
+        partner_cls = type(self.env['res.partner'])
+        with patch.object(partner_cls, 'can_open_probe_test',
+                          lambda recs: asked.append(recs.env.uid) or True,
+                          create=True):
+            answer = self.mgr_access.surface_access([self._probe(
+                'can_open_probe_test',
+                groups=['biz_access.%s' % other_name])], holder.id)
+        self.assertFalse(answer['probed']['allowed'])
+        self.assertFalse(asked)
+
+    def test_only_a_can_question_is_ever_asked(self):
+        holder = self._user('Probename', self.above)
+        partner_cls = type(self.env['res.partner'])
+        with patch.object(partner_cls, 'open_probe_test', lambda recs: True,
+                          create=True):
+            answer = self.mgr_access.surface_access(
+                [self._probe('open_probe_test'),
+                 self._probe('can_x; drop', key='odd'),
+                 dict(self._probe('can_x'), probe={'model': 'no.such.model',
+                                                   'method': 'can_x'},
+                      key='nomodel')], holder.id)
+        self.assertFalse(answer['probed']['allowed'])
+        self.assertFalse(answer['odd']['allowed'])
+        self.assertFalse(answer['nomodel']['allowed'])
+
+    def test_a_question_that_fails_is_a_no(self):
+        holder = self._user('Probefails', self.above)
+
+        def boom(recs):
+            raise ValueError('cannot say')
+        partner_cls = type(self.env['res.partner'])
+        with patch.object(partner_cls, 'can_open_probe_test', boom, create=True):
+            answer = self.mgr_access.surface_access(
+                [self._probe('can_open_probe_test')], holder.id)
+        self.assertFalse(answer['probed']['allowed'])
+
+    def test_a_question_leaves_nothing_behind(self):
+        """Whoever asks, the question runs as somebody else — so anything it
+        writes is rolled back, even when it answers yes."""
+        holder = self._user('Probewrites', self.above)
+        partner = self.env['res.partner'].create({'name': 'Before'})
+
+        def writes(recs):
+            recs.browse(partner.id).sudo().write({'name': 'After'})
+            return True
+        partner_cls = type(self.env['res.partner'])
+        with patch.object(partner_cls, 'can_open_probe_test', writes, create=True):
+            answer = self.mgr_access.surface_access(
+                [self._probe('can_open_probe_test')], holder.id)
+        self.assertTrue(answer['probed']['allowed'])
+        self.assertEqual(partner.name, 'Before')
+
     def test_looking_at_nobody_in_particular_is_looking_at_me(self):
         res = self.mgr_access.as_user()
         self.assertTrue(res['is_me'])

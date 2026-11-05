@@ -50,6 +50,9 @@ _NARROWER = {
     # Home › Announce › the calendar's celebrations panel: the calendar is the
     # announcement team's (comm_palette.js, COMM_GATE).
     'comm_celebrations',
+    # People › Org chart › planning mode and "suggest a chart": changing the
+    # chart is HR's, reading it is everybody's who sees Employees.
+    'orgchart_plan', 'orgchart_suggest',
 }
 
 # pb_hub deep links whose screen is ALSO a hub tab: row id -> (hub tag, tab).
@@ -69,20 +72,13 @@ _DEEP_LINK_CONSTS = {
     'contracts': ('pb_people_hub', 'static/src/js/people_hub.js', 'CONTRACT_GATE'),
 }
 
-# Tabs with no ⌘K row today, so the Access home does not list them under
-# their menu entry. Adding a tab means adding a row — or a line here, said out
-# loud. (hub tag, tab)
-_NO_ROW = {
-    ('pb_people_hub', 'insights'), ('pb_people_hub', 'access'),
-    ('pb_pay_hub', 'insights'), ('pb_pay_hub', 'access'),
-    ('pb_insights_hub', 'reports'),
-    ('pb_home_hub', 'team'),
-    ('pb_hiring_hub', 'roles'), ('pb_hiring_hub', 'interviews'),
-    ('pb_hiring_hub', 'jobboards'), ('pb_hiring_hub', 'setup'),
-    # Access (biz_access/access_studio.js registers it into three hubs from a
-    # loop the resolver does not follow; listed so the gap is said once).
-    ('pb_hiring_hub', 'access'),
-}
+# Tabs with no ⌘K row, so the Access home does not list them under their menu
+# entry. Adding a tab means adding a row — or a line here, said out loud.
+# (hub tag, tab). Empty since 2026-11-05. The Access tab of People, Payroll
+# and Hiring is registered with its row in one loop (biz_access
+# access_studio.js) that the resolver does not follow, so it is in neither
+# list — `test_the_access_tabs_bring_their_rows` reads that loop instead.
+_NO_ROW = set()
 
 _HUB_GATES_CAT = 'pb_hub_lens_gates'
 # Gate functions read a registry at call time; the resolver answers them the
@@ -667,6 +663,39 @@ class TestPaletteRowsFollowTheirTabs(TransactionCase):
                            % (rid, _gate(row.get('groups')), _gate(cards[tag])))
         self.assertFalse(bad, 'rows drifted from their Settings card:\n  '
                               + '\n  '.join(bad))
+
+    def test_every_other_name_points_at_a_row_that_opens_a_tab(self):
+        """`sameAs` makes the Access home drop a row in favour of another; one
+        naming a row that does not exist, or that is itself a second name,
+        would drop a screen from the list altogether."""
+        bad = []
+        for rid, row in sorted(self.rows.items()):
+            target = row.get('sameAs')
+            if not target:
+                continue
+            other = self.rows.get(target)
+            if other is None:
+                bad.append('%s names %s, which is not a row' % (rid, target))
+            elif other.get('sameAs'):
+                bad.append('%s names %s, which is itself another name' % (rid, target))
+            elif not (other.get('action') or {}).get('lens'):
+                bad.append('%s names %s, which opens no tab' % (rid, target))
+        self.assertFalse(bad, 'other names gone wrong:\n  ' + '\n  '.join(bad))
+
+    def test_the_access_tabs_bring_their_rows(self):
+        path = os.path.join(get_module_path('biz_access') or '',
+                            'static/src/js/access_studio.js')
+        if not os.path.isfile(path):
+            return
+        with open(path, encoding='utf-8') as fh:
+            src = fh.read()
+        loop = src[src.index("for (const [category, workspace"):]
+        loop = loop[:loop.index('\n}\n')]
+        self.assertIn("registry.category(category).add('access_studio'", loop)
+        self.assertIn("registry.category('pb_hub_palette').add(", loop)
+        self.assertIn("lens: 'access'", loop)
+        self.assertEqual(loop.count("groups: ['base.group_user']"), 2,
+                         'the Access tab and its row must carry one gate')
 
     def test_every_tab_has_a_row_or_says_why_not(self):
         """The Access home lists a tab only through a row; Workforce's Insights

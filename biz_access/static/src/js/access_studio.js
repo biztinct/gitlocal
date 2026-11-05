@@ -432,10 +432,10 @@ patch(PbAccessBoard.prototype, {
 });
 
 // The local hubs share the same catalogue, focused on their own workspace.
-for (const [category, workspace, title, focus, hub] of [
-    ['pb_hiring_hub_lens', 'hiring', 'Hiring access', 'hiring.recruitment', {label:'Hiring', xmlid:'pb_hiring.action_pb_hiring_hub'}],
-    ['pb_people_hub_lens', 'people', 'People access', 'people.records', {label:'People', xmlid:'pb_people_hub.action_pb_people_hub'}],
-    ['pb_payhub_lens', 'payroll', 'Payroll access', 'payroll.operations', {label:'Payroll', xmlid:'pb_payhub.action_pb_pay_hub'}],
+for (const [category, workspace, title, focus, hub, tag, where] of [
+    ['pb_hiring_hub_lens', 'hiring', 'Hiring access', 'hiring.recruitment', {label:'Hiring', xmlid:'pb_hiring.action_pb_hiring_hub'}, 'pb_hiring_hub', _t('Hiring')],
+    ['pb_people_hub_lens', 'people', 'People access', 'people.records', {label:'People', xmlid:'pb_people_hub.action_pb_people_hub'}, 'pb_people_hub', _t('People')],
+    ['pb_payhub_lens', 'payroll', 'Payroll access', 'payroll.operations', {label:'Payroll', xmlid:'pb_payhub.action_pb_pay_hub'}, 'pb_pay_hub', _t('Payroll')],
 ]) {
     // RAIL FIT 2026-11-02 (owner): the rail word is ACCESS, the full name is
     // the tooltip, and it is pinned to the foot of the rail with the other
@@ -445,4 +445,12 @@ for (const [category, workspace, title, focus, hub] of [
         title: _t('Access & delegation'), pinned: true, Component: PbAccessBoard,
         groups: ['base.group_user'], props: { embedded: true, workspace, focus, hub },
     });
+    // Its ⌘K row, registered with the tab so the two cannot drift: the Access
+    // home lists the screens inside each menu entry from these rows.
+    registry.category('pb_hub_palette').add(`access_${workspace}_tab`, {
+        id: `access_${workspace}_tab`, label: _t('Access'), sublabel: where,
+        icon: 'shield', groups: ['base.group_user'], requires: tag,
+        action: { xmlid: hub.xmlid, lens: 'access' },
+        keywords: ['access & delegation', 'who can do what'],
+    }, { sequence: 1490 });
 }

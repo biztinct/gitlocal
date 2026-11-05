@@ -31,6 +31,7 @@
  */
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
+import { PAY_INSIGHTS_GATE } from "@pb_payhub/js/pay_hub";
 
 const palette = registry.category("pb_hub_palette");
 
@@ -85,3 +86,11 @@ const ENTRIES = [
 ENTRIES.forEach((entry, i) => {
     palette.add(entry.id, { groups: GATE, ...entry }, { sequence: 1000 + (i + 1) * 10 });
 });
+
+// The Insights tab has its own, narrower gate (pay_hub.js), so it is not one
+// of the eight above.
+palette.add("payhub_insights", {
+    id: "payhub_insights", label: _t("Insights"), sublabel: SUB, icon: "barChart",
+    groups: PAY_INSIGHTS_GATE, requires: HUB_TAG,
+    action: { tag: HUB_TAG, lens: "insights" },
+}, { sequence: 1095 });

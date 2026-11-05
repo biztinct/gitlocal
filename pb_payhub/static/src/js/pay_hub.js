@@ -72,7 +72,7 @@ const STAGE_LENS = { 1: "run", 2: "runs", 3: "payslips", 4: "deliver", 5: "runs"
 export const PAY_LENSES = "pb_payhub_lens";
 
 /** Payroll › Insights. Shared by the tab below and its gate registration. */
-const PAY_INSIGHTS_GATE = [
+export const PAY_INSIGHTS_GATE = [
     "pb_hr_payroll_base.group_payroll_base_manager",
     "pb_hr_payroll_base.group_payroll_analytics_user",
     "pb_hr_payroll_base.group_payroll_super_admin",

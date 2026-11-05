@@ -51,9 +51,16 @@ const LENSES = [
     // inbox rather than the pay-run board and every internal user is a decider
     // of something. It is still read from the lens rather than restated, so the
     // row and the lens can never drift into "sees it, cannot use it".
+    // The tab is called Inbox (NAV P2); pb_hub's "approvals" row carries that
+    // name, so the Access home lists the tab once, as Inbox.
     { id: "homehub_approvals", label: _t("Approvals"), icon: "inbox",
-      groups: APPROVAL_GATE, requires: HUB_TAG,
+      groups: APPROVAL_GATE, requires: HUB_TAG, sameAs: "approvals",
       action: { xmlid: HUB_XMLID, lens: "approvals" } },
+    // Offered only to somebody with a direct report — the tab's own question
+    // (team_lens.js), so the Access home can list it.
+    { id: "homehub_team", label: _t("Team"), icon: "users",
+      probe: { model: "pb.home.team", method: "can_open" }, requires: HUB_TAG,
+      action: { xmlid: HUB_XMLID, lens: "team" }, keywords: ["my team"] },
 ];
 
 LENSES.forEach((entry, i) => {

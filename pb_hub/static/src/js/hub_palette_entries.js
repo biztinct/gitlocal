@@ -21,6 +21,12 @@
  *       keywords: ["pay run", …],            // optional; old or other words
  *                                            // the matcher also searches
  *                                            // (NAV P2, R10). Lower case.
+ *       sameAs:  "<row id>",                 // optional: this row is another
+ *                                            // door to the screen that row
+ *                                            // opens (an old deep link onto a
+ *                                            // hub tab). ⌘K keeps both; the
+ *                                            // Access home lists the screen
+ *                                            // once, under that row.
  *   }, { sequence });
  *
  * Two rules the seeds obey, both of them scar tissue:
@@ -169,31 +175,32 @@ const ENTRIES = [
 
     // ------------------------------------------------------------- pay run
     { id: "payrun_wizard", label: _t("Run Payroll"), sublabel: _t("Payroll"), icon: "zap",
-      action: { tag: "pb_payrun_wizard" }, groups: OPS },
+      action: { tag: "pb_payrun_wizard" }, groups: OPS, sameAs: "payhub_run" },
     { id: "payruns", label: _t("Pay Runs"), sublabel: _t("Payroll"), icon: "calendar",
       action: { xmlid: "pb_payruns.action_pb_payruns_kanban" },
-      requires: "pb_payruns" },
+      requires: "pb_payruns", sameAs: "payhub_runs" },
     { id: "payslips", label: _t("Payslips"), sublabel: _t("Payroll"), icon: "receipt",
-      action: { tag: "pb_payslip_review" } },
+      action: { tag: "pb_payslip_review" }, sameAs: "payhub_payslips" },
     { id: "results", label: _t("Results Grid"), sublabel: _t("Payroll"), icon: "table",
-      action: { tag: "pb_payrun_results" } },
+      action: { tag: "pb_payrun_results" }, sameAs: "payhub_results" },
     { id: "import", label: _t("Import Data"), sublabel: _t("Payroll"), icon: "download",
       action: { tag: "pb_import" }, keywords: ["inputs", "pay run", "nhập"],
-      groups: [OFFICER, MANAGER, INTEGRATION, SUPER] },
+      groups: [OFFICER, MANAGER, INTEGRATION, SUPER], sameAs: "payhub_import" },
     { id: "pay_delivery", label: _t("Pay & Deliver"), sublabel: _t("Payroll"), icon: "send",
       action: { tag: "pb_pay_delivery" }, keywords: ["pay out", "pay run", "chi trả"],
       groups: [PAYROLL_MGR, "account.group_account_invoice",
-               "account.group_account_user"] },
+               "account.group_account_user"], sameAs: "payhub_deliver" },
     { id: "fullfinal", label: _t("Full & Final"), sublabel: _t("Payroll"), icon: "file",
-      action: { tag: "pb_fullfinal" } },
+      action: { tag: "pb_fullfinal" }, sameAs: "payhub_settle" },
     { id: "proration", label: _t("Proration Audit"), sublabel: _t("Payroll"),
-      icon: "percent", action: { tag: "pb_proration" } },
+      icon: "percent", action: { tag: "pb_proration" }, sameAs: "payhub_adjust" },
     { id: "retro", label: _t("Retro Adjustments"), sublabel: _t("Payroll"), icon: "rotate",
-      action: { tag: "pb_retro" } },
+      action: { tag: "pb_retro" }, sameAs: "payhub_adjust" },
 
     // -------------------------------------------------------------- people
     { id: "employees", label: _t("Employees"), sublabel: _t("People"), icon: "users",
-      action: { tag: "pb_people" }, groups: PEOPLE_EMPLOYEES },
+      action: { tag: "pb_people" }, groups: PEOPLE_EMPLOYEES,
+      sameAs: "peoplehub_employees" },
     { id: "contracts", label: _t("Contracts"), sublabel: _t("People"), icon: "file",
       action: { tag: "pb_contracts" }, groups: PEOPLE_CONTRACTS },
 
@@ -245,21 +252,25 @@ const ENTRIES = [
 
     // ------------------------------------------------------------- insight
     { id: "insights", label: _t("Insights"), sublabel: _t("Analytics"), icon: "trendingUp",
-      action: { tag: "pb_insights" }, groups: ANALYTICS },
+      action: { tag: "pb_insights" }, groups: ANALYTICS, sameAs: "inshub_pulse" },
     { id: "explorer", label: _t("Explorer"), sublabel: _t("Analytics"), icon: "compass",
-      action: { tag: "pb_explorer_cockpit" }, groups: ANALYTICS },
+      action: { tag: "pb_explorer_cockpit" }, groups: ANALYTICS,
+      sameAs: "inshub_explorer" },
     { id: "workforce_insights", label: _t("Workforce Analytics"),
       sublabel: _t("Analytics"), icon: "users",
-      action: { tag: "pb_workforce_insights" }, groups: ANALYTICS },
+      action: { tag: "pb_workforce_insights" }, groups: ANALYTICS,
+      sameAs: "inshub_workforce" },
 
     // ---------------------------------------------------------- compliance
     { id: "govt_reports", label: _t("Government Reports"), sublabel: _t("Compliance"),
-      icon: "fileText", action: { tag: "pb_govt_reports" }, groups: CMP_FILINGS },
+      icon: "fileText", action: { tag: "pb_govt_reports" }, groups: CMP_FILINGS,
+      sameAs: "cmphub_filings" },
     { id: "bank_ocr", label: _t("Bank Verification"), sublabel: _t("Compliance"),
-      icon: "scan", action: { tag: "pb_bank_ocr" }, groups: CMP_BANK },
+      icon: "scan", action: { tag: "pb_bank_ocr" }, groups: CMP_BANK,
+      sameAs: "cmphub_bank" },
     { id: "young_worker", label: _t("Young Workers"), sublabel: _t("Compliance"),
       icon: "shield", action: { tag: "pb_young_worker" }, groups: CMP_YOUNG,
-      keywords: ["safeguards", "lao động chưa thành niên"] },
+      keywords: ["safeguards", "lao động chưa thành niên"], sameAs: "cmphub_young" },
 
     // --------------------------------------------------------------- setup
     { id: "formula_studio", label: _t("Formula Engine"), sublabel: _t("Setup"),
@@ -288,7 +299,8 @@ const ENTRIES = [
 
     // --------------------------------------------------------------- admin
     { id: "audit", label: _t("Audit Trail"), sublabel: _t("Admin"), icon: "scrollText",
-      group: G_ADMIN, action: { tag: "pb_audit" }, groups: CMP_AUDIT },
+      group: G_ADMIN, action: { tag: "pb_audit" }, groups: CMP_AUDIT,
+      sameAs: "cmphub_audit" },
     { id: "tenants", label: _t("Tenants"), sublabel: _t("Admin"), icon: "building",
       group: G_ADMIN, action: { tag: "pb_tenants" }, groups: [SYSTEM] },
 ];

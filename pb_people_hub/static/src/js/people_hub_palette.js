@@ -52,6 +52,9 @@ const LENSES = [
     { id: "peoplehub_contracts", label: _t("Contracts"), icon: "file",
       groups: CONTRACT_GATE, requires: "pb_contracts",
       action: { xmlid: "pb_people_hub.action_pb_people_contracts" } },
+    { id: "peoplehub_insights", label: _t("Insights"), icon: "barChart",
+      groups: EMPLOYEE_GATE, requires: HUB_TAG,
+      action: { xmlid: HUB_XMLID, lens: "insights" } },
     // The Plan tab is offered to PLAN_GATE AND whoever the registered
     // planning product is offered to (`planGate()` in people_hub.js). That
     // product registers after this file loads, so the union is read when the

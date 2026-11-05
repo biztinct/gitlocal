@@ -229,6 +229,54 @@ palette.add("hiring_offers", {
     keywords: ["offer letters", "joining", "lời mời", "nhận việc"],
 }, { sequence: 3502 });
 
+/* The hub's other tabs, gated exactly as hiring_hub.js gates them — the Access
+ * home lists the screens inside Hiring from these rows. */
+palette.add("hiring_roles", {
+    id: "hiring_roles",
+    label: _t("Roles"),
+    sublabel: _t("Hiring"),
+    icon: "briefcase",
+    groups: HIRING_HUB_GATE,
+    probe: PROBE,
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "roles" },
+    keywords: ["open roles", "vacancies"],
+}, { sequence: 3503 });
+
+palette.add("hiring_interviews_tab", {
+    id: "hiring_interviews_tab",
+    label: _t("Interviews"),
+    sublabel: _t("Hiring"),
+    icon: "calendarClock",
+    groups: HIRING_HUB_GATE,
+    probe: PROBE,
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "interviews" },
+}, { sequence: 3504 });
+
+palette.add("hiring_jobboards", {
+    id: "hiring_jobboards",
+    label: _t("Job boards"),
+    sublabel: _t("Hiring"),
+    icon: "globe",
+    groups: HIRING_HUB_GATE,
+    probe: { model: "pb.hiring", method: "can_open_job_boards" },
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "jobboards" },
+    keywords: ["advertise", "job ads"],
+}, { sequence: 3505 });
+
+palette.add("hiring_setup_tab", {
+    id: "hiring_setup_tab",
+    label: _t("Set-up"),
+    sublabel: _t("Hiring"),
+    icon: "sliders",
+    groups: HIRING_SETUP_GATE,
+    probe: PROBE,
+    requires: "pb_hiring_hub",
+    action: { xmlid: HUB_XMLID, lens: "setup" },
+}, { sequence: 3506 });
+
 palette.add("hiring_requests", {
     id: "hiring_requests",
     label: _t("Hiring requests"),
