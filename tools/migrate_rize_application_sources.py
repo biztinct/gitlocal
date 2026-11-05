@@ -300,6 +300,9 @@ for spec in plan['schemes']:
             rehome_native(cfg,rule,row['native_target'],people)
         values = dict(application_source_key=key,application_source_note=row['note'],
                       application_zero_allowed=row['zero_allowed'], **owner_values)
+        # PDR P1 (R1/D3): Final tax period carries the final-tax-month reminder.
+        if 'application_final_period_flag' in rule._fields:
+            values['application_final_period_flag'] = bool(row.get('final_period_flag'))
         if row['remove_contract_flag']:
             values.update(is_contract_component=False,is_text_component=False)
         write_changed(rule, values)
