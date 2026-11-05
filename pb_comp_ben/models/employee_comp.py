@@ -179,6 +179,10 @@ class PbEmployeeComp(models.Model):
         can judge it, counts towards nothing until they do, and the package
         cannot be made current while any line is still unchecked.
 
+        PDR P3 F2: a component whose scheme rule says its value is an ANSWER
+        (words such as Yes / No, or a value type other than money) never
+        becomes a line — "BPJS TK covered = 1" is not pay of 1.
+
         Amounts a component holds as TEXT (COLROLES typed values — a job grade,
         a cost centre) are skipped outright: a package that prints "Grade: 0" is
         a package nobody trusts again.
@@ -254,6 +258,7 @@ class PbEmployeeComp(models.Model):
         # this phase must not do — but it is labelled, so a reader can see it
         # came from somewhere the scheme does not read.
         scope_codes = self._sc_scope_codes(contract.employee_id)
+        answers = self._pdr_answer_codes(contract)
         for adv in contract.advantages_ids:
             template = adv.advantage_template_id
             # A text-typed component is a label, not money (COLROLES).
@@ -264,6 +269,10 @@ class PbEmployeeComp(models.Model):
                 continue
             code = adv.advantage_template_code or (
                 template.code if template else '')
+            # PDR P3 F2 — a yes/no or worded answer (BPJS TK covered = 1, Tax
+            # allowance mode = 2) or a count / rate / code is not pay.
+            if code and code in answers:
+                continue
             outside = bool(scope_codes is not None and code
                            and code not in scope_codes)
             vals.append({
@@ -284,6 +293,40 @@ class PbEmployeeComp(models.Model):
             })
             seq += 10
         return vals
+
+    # ------------------------------------- PDR P3 F2: answers are not pay
+    def _pdr_answer_codes(self, contract):
+        """The component codes on `contract` whose scheme rule says the value
+        is an ANSWER, not money: the rule has words (`value_labels`, e.g.
+        "0=No;1=Yes") or a `value_kind` other than `money`.
+
+        The rule is found exactly as the contract panel finds it
+        (`hr.formula.rule._pb_component_rules`: the live scheme of the
+        contract's own company first). A code with no rule is not in the set,
+        so it keeps today's behaviour (an earning line). Pure read.
+        """
+        Rule = self.env.get('hr.formula.rule')
+        if Rule is None or not hasattr(Rule, '_pb_component_rules'):
+            return set()
+        codes = [adv.advantage_template_code
+                 or adv.advantage_template_id.code
+                 for adv in contract.advantages_ids]
+        codes = [c for c in codes if c]
+        if not codes:
+            return set()
+        try:
+            rules = Rule._pb_component_rules(
+                codes, company=contract.company_id)
+        except Exception:       # noqa: BLE001 — a pay package must still build
+            _logger.warning('Pay package: the component rules could not be '
+                            'read for contract %s', contract.id, exc_info=True)
+            return set()
+        out = set()
+        for code, rule in rules.items():
+            kind = rule.value_kind or 'money'
+            if kind != 'money' or rule.value_label_options():
+                out.add(code)
+        return out
 
     # ------------------------------------------- SCHEMECTX P2: whose is this
     def _sc_scope_codes(self, employee):
