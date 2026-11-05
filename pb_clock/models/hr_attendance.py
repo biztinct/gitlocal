@@ -23,3 +23,9 @@ class HrAttendance(models.Model):
         pairing wrote."""
         self.ensure_one()
         return not self.pb_entry_source or self.pb_entry_source == 'device'
+
+    pb_clock_auto_closed = fields.Boolean(
+        string='Check-out missing', readonly=True, copy=False, index=True,
+        help='The time clock closed this day at its own check-in because the '
+             'person punched again on a later day without a check-out here. '
+             'Fix it with a correction.')

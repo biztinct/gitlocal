@@ -46,6 +46,10 @@ _ACTIVE = ('matched', 'paired', 'middle', 'held', 'ignored_duplicate_tap')
 _OFFICER_GROUP = 'hr_attendance.group_hr_attendance_officer'
 
 
+def _AUTO_CLOSED_NOTE():
+    return _("Check-out missing; closed so later days can be paired.")
+
+
 class PbClockPairing(models.AbstractModel):
     _name = 'pb.clock.pairing'
     _description = 'Time clock pairing engine'
@@ -65,6 +69,12 @@ class PbClockPairing(models.AbstractModel):
         """The scheduled job body. Runs one bounded batch; if the batch was
         full, asks to run again right away rather than waiting five minutes."""
         res = self.sudo().run()
+        if 'pb.clock.command' in self.env:
+            try:
+                with self.env.cr.savepoint():
+                    self.env['pb.clock.command'].sudo()._sweep()
+            except Exception:  # noqa: BLE001 — the sweep never stops pairing
+                _logger.warning("pb_clock: command sweep failed", exc_info=True)
         if res.get('more'):
             cron = self.env.ref('pb_clock.cron_pair_punches', raise_if_not_found=False)
             if cron:
@@ -259,13 +269,18 @@ class PbClockPairing(models.AbstractModel):
         cache = {}
         desired = []
         day_of = {}
-        for group in days:
+        for i, group in enumerate(days):
             ci_p, co_p = self._ends(group, trust)
+            # D11: a day with no check-out that is followed by a later day is
+            # closed at its own check-in (0 h) so the later day can be paired
+            # (one open attendance per person is a platform limit)
+            auto = co_p is None and i < len(days) - 1
             d = {
                 'date': Att._pb_local_day_of(emp, group[0].punch_utc, cache),
                 'punches': group,
                 'ci': ci_p.punch_utc,
-                'co': co_p.punch_utc if co_p else False,
+                'co': co_p.punch_utc if co_p else (ci_p.punch_utc if auto else False),
+                'auto': auto,
                 'ends': {ci_p.id} | ({co_p.id} if co_p else set()),
                 'row': Att.browse(),
             }
@@ -308,6 +323,9 @@ class PbClockPairing(models.AbstractModel):
             except Exception as exc:  # noqa: BLE001
                 _logger.info("pb_clock: kept device row %s: %s", row.id, exc)
 
+        if desired:
+            self._close_earlier_open_day(emp, desired[0], rows, cache)
+
         for d in desired:
             reason = guard.get(d['date'])
             if not reason:
@@ -326,6 +344,33 @@ class PbClockPairing(models.AbstractModel):
                 'work_day': d['date'] if d else False,
                 'note': _("Counted once: a second tap within %s minutes.")
                 % (company.pb_clock_double_tap_min or 0)})
+
+    @api.model
+    def _close_earlier_open_day(self, emp, first, rows, cache):
+        """D11 for a day built by an EARLIER run: the person's latest open
+        time-clock day before this recompute is closed at its own check-in and
+        flagged, so the new day can be written. Only a `device` row, only on an
+        earlier local day, never on a day a person decided about (closed,
+        under approval, corrected) — those stay as they are and the new day is
+        held with the reason, as before."""
+        Att = self.env['hr.attendance'].sudo()
+        stale = Att.search([('employee_id', '=', emp.id), ('check_out', '=', False),
+                            ('check_in', '<', first['ci'])],
+                           order='check_in desc', limit=1)
+        if not stale or stale.id in rows.ids or stale.pb_entry_source != 'device':
+            return False
+        day = stale._pb_local_day(cache)
+        if not day or day >= first['date'] or self._guards(emp, {day}).get(day):
+            return False
+        try:
+            with self.env.cr.savepoint():
+                stale.write({'check_out': stale.check_in, 'pb_clock_auto_closed': True})
+        except Exception as exc:  # noqa: BLE001 — the new day is then held
+            _logger.info("pb_clock: could not close open day %s: %s", stale.id, exc)
+            return False
+        for p in self.env['pb.clock.punch'].search([('attendance_id', '=', stale.id)]):
+            self._apply(p, {'note': _AUTO_CLOSED_NOTE()})
+        return True
 
     @api.model
     def _ends(self, group, trust):
@@ -377,7 +422,7 @@ class PbClockPairing(models.AbstractModel):
     def _manual_overlap(self, emp, d, span):
         """A reason if a row a PERSON made overlaps this day's hours."""
         ci = d['ci']
-        co = d['co'] or (ci + timedelta(minutes=1))
+        co = d['co'] if d['co'] and d['co'] > ci else (ci + timedelta(minutes=1))
         dom = [('employee_id', '=', emp.id),
                ('check_in', '<', co),
                '|', ('pb_entry_source', '!=', 'device'),
@@ -394,7 +439,8 @@ class PbClockPairing(models.AbstractModel):
     def _write_day(self, emp, d, summary):
         """Create / update the day's device row. A plain reason on refusal."""
         Att = self.env['hr.attendance'].sudo()
-        vals = {'check_in': d['ci'], 'check_out': d['co'] or False}
+        vals = {'check_in': d['ci'], 'check_out': d['co'] or False,
+                'pb_clock_auto_closed': bool(d.get('auto'))}
         try:
             with self.env.cr.savepoint():
                 row = d['row']
@@ -425,11 +471,12 @@ class PbClockPairing(models.AbstractModel):
     @api.model
     def _mark(self, d):
         row = d['row']
+        note = _AUTO_CLOSED_NOTE() if d.get('auto') else False
         for p in d['punches']:
             self._apply(p, {
                 'state': 'paired' if p.id in d['ends'] else 'middle',
                 'attendance_id': row.id if row else False,
-                'work_day': d['date'], 'note': False})
+                'work_day': d['date'], 'note': note})
 
     @api.model
     def _hold(self, d, reason, summary):

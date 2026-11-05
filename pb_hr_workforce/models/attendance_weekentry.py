@@ -264,7 +264,13 @@ class AttendanceWeekEntry(models.TransientModel):
                     } for a in cell_atts]
                 elif n == 1 and cell_atts.pb_entry_source != 'grid':
                     reg_editable = False
-                    lock_reason = _('Device/kiosk punch — edit on the attendance form.')
+                    # blank = a kiosk / device punch, 'device' = the time
+                    # clock pairing (pb_clock); either way a correction is the
+                    # one road to change it (CLOCK-2)
+                    if (cell_atts.pb_entry_source or 'device') == 'device':
+                        lock_reason = _('Punch from a time clock — change it with a correction.')
+                    else:
+                        lock_reason = _('Entered outside the Week Grid — change it with a correction.')
 
                 token = self._att_token(cell_atts)
 
