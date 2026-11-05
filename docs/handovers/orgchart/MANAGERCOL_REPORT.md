@@ -156,3 +156,55 @@ the repo): `outputs/rize-managers-2026-11-05/01_batch_page_rize.jpg`,
    the four focused schemes need the Reporting Manager column back (one
    column each) and then a mapping (the tool can be pointed at them).
 3. Hourly row rewrite (G20) and the seed's undo table are untouched.
+
+## Part 2 — read by header (2026-11-05) — PAUSED HERE
+
+Owner ruling 2026-11-05: read the manager column whenever the file has it, even
+when the scheme maps nothing to Manager (rize's four focused schemes 7118–7121
+have no Reporting Manager column, G44). Paused on the owner's request before
+tests, proof or deploy.
+
+**Done (WIP commit, not deployed, pb_orgchart version NOT bumped yet):**
+`pb_orgchart/models/import_manager.py` only —
+* `is_manager_name_header(key)`: exact heading from the classifier's existing
+  `MANAGER_HEADERS` (already the single list beside `PROFILE_HEADERS`, so no
+  change to pb_hr_payroll_formula is needed) minus any heading with the words
+  mail / email / hiring / id.
+* `_pb_manager_cell(raw_data, mapping, line, primary_only)`: a mapping still
+  wins (same `_writeback_raw_value` read, no `employee=`, G41); without one,
+  scans the primary then the top-up payload (`_writeback_blobs`) by heading;
+  first such column with a value wins; columns present but empty → blank;
+  none → step says nothing.
+* `_sync_employee_manager`, `_pb_manager_resolve(…, mapping, …)` and
+  `_pb_manager_mail_trusted` use it (trust cache keyed `'heading'` when no
+  mapping). The "not mapped yet" hint and `_pb_manager_unmapped_header` are
+  removed; the summary now shows whenever rows were looked at.
+* `py_compile` OK. Nothing run on the server. No throwaway database made.
+
+**Not done:**
+1. Tests: `test_01` (last 5 lines call the removed `_pb_manager_unmapped_header`
+   — replace with case (b)) and `test_08` (asserts the old "no mapping → nothing,
+   hint shown") will FAIL as committed. Rewrite test_08 as case (a): unlink the
+   mapping, row `{'Master Reporting Manager': 'Dhruv Boss'}` → set; add (b) no
+   mapping + only `MAIL_COL` and `'Hiring Manager'` → state False, no note,
+   summary `show` False; (c) mapping present + `{'Reporting Manager': 'Cara
+   Coach', 'Manager': 'Dhruv Boss'}` → Cara, and mapped cell blank + 'Manager'
+   filled → 'blank'; (d) a top-up-only heading (`raw_data_topup_json`) is read.
+2. Remove the stale vi_VN.po msgid "This file has a “%(h)s” column, but this
+   scheme does not read it…" (`pb_orgchart/i18n/vi_VN.po:3719-3723`); update
+   the manifest description bullet ("when a scheme maps its Reporting Manager
+   column" → "when the file has a Reporting Manager column"); bump
+   pb_orgchart to 19.0.1.5.0.
+3. Run tests (SCHEMECTX §0.13 recipe, p0clone, ports 8193/8192, G45).
+4. Proof on a throwaway copy (G46): the latest REAL Vietnam file is batch 2072's
+   attachment 37676 (`Payobook-month-2026-09.xlsx`, keys
+   `Consolidated|Reporting Manager` / `…|Reporting manager Mail ID` /
+   `…|Hiring Manager`); import it against the focused VN scheme 7118 and expect
+   59 updated / 4 not matched (MANAGERCOL §3; Vietnam share of 204/6/4) for the
+   rows that reach the manager step. NOTE: batch 2289 (the "TEST VN" file on
+   7118) carries NO manager column at all — Rize's real monthly file must keep
+   the column for this to help. G43 rows may still fail if the
+   pb_hr_payroll_formula Gender/Marital fix is not live yet.
+5. Deploy `full` ×4 (wait for CLOCK-1 START 02:14 UTC and the formula fix to
+   have DONE lines and the lock free), browser check on rize, ledger gotcha,
+   final commit + push.

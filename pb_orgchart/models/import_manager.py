@@ -9,10 +9,17 @@ the name resolves cleanly and lists the rows it could not match
 
 How it works
 ------------
-* **The mapping is the contract.** The column is read only when the batch's
-  scheme maps it to `hr.employee.parent_id` (`hr.payslip.import.mapping`,
-  destination "field"). No mapping → this step does nothing at all; no
-  heading is guessed at write time.
+* **Which column.** When the batch's scheme maps a column to
+  `hr.employee.parent_id` (`hr.payslip.import.mapping`, destination "field"),
+  that mapping wins and its cell is read through `_writeback_raw_value`.
+  Otherwise (owner ruling 2026-11-05, MANAGERCOL part 2: "read the column
+  whenever the file has it") the row's own data is searched BY HEADING: the
+  first key whose heading is one of the classifier's `MANAGER_HEADERS` (the
+  one list, kept beside `PROFILE_HEADERS` so the two cannot drift), and whose
+  heading has none of the words mail / email / hiring / id — in the primary
+  payload, then the top-up one (`_writeback_blobs`, the two payloads
+  `_writeback_raw_value` reads). A file with no such column → this step does
+  nothing at all and says nothing.
 * **A dedicated step, not the generic one.** The generic writeback resolves a
   many2one with `=ilike … limit=1` (the FIRST of two "Nithya"s), is not
   accent-insensitive ("Ho Huu Du" ≠ "Hồ Hữu Dư"), CREATES a record it cannot
@@ -59,12 +66,28 @@ import unicodedata
 from odoo import api, fields, models
 
 from odoo.addons.pb_hr_payroll_formula.models.column_role_classifier import (
-    is_manager_email_header, is_manager_header)
+    _index_key, is_manager_email_header, is_manager_header)
 
 _logger = logging.getLogger(__name__)
 
 MANAGER_FIELD = 'parent_id'
 _NON_WORD = re.compile(r'[^a-z0-9]+')
+# A heading carrying any of these WORDS is never the manager's name, even if a
+# future entry in MANAGER_HEADERS would otherwise let it through: the
+# manager's email ("Reporting manager Mail ID"), a different person ("Hiring
+# Manager"), a code column ("Manager ID").
+_NOT_MANAGER_WORDS = frozenset(('mail', 'email', 'hiring', 'id'))
+
+
+def is_manager_name_header(key):
+    """True when a raw-data key (plain or "Sheet|Heading") is the manager's
+    NAME column: an exact heading from the classifier's MANAGER_HEADERS
+    (casefold, accents off, punctuation and spacing collapsed) with none of
+    the excluded words. Never fuzzy."""
+    if not isinstance(key, str) or not is_manager_header(key):
+        return False
+    heading = key.rsplit('|', 1)[-1]
+    return not (set(_index_key(heading).split()) & _NOT_MANAGER_WORDS)
 
 
 def norm_name(text):
@@ -188,30 +211,21 @@ class HrPayrollImportBatch(models.Model):
     # ================================================================ step
     def _sync_employee_manager(self, employee, raw_data, line=None):
         """Set `employee`'s manager from this row. Returns `(state, note)`:
-        state False (no mapping — nothing to say), 'set', 'same', 'blank' or
-        'unmatched' with a plain sentence."""
+        state False (the file carries no manager column — nothing to say),
+        'set', 'same', 'blank' or 'unmatched' with a plain sentence."""
         self.ensure_one()
         _ = self.env._
-        mapping = self._pb_manager_mapping()
-        if not mapping:
-            return False, False
         if not employee.active:
             # Someone who has left is off the chart; the seed skipped them too.
             return False, False
-        # The FILE's cell, never the record's: handed the employee, the shared
-        # reader may let the mapped record field (`parent_id` itself) win the
-        # walk and answer "no value" — rize Indonesia/Singapore did, for every
-        # person who already had a manager — so a CHANGED manager in the file
-        # would be ignored. "Already up to date" is judged below instead.
-        # `line` stays, so a top-up payload is still read (J10).
-        value, has_value = self._writeback_raw_value(
-            raw_data, mapping.component_id, mapping=mapping, line=line,
-            allow_column_letter=False)
-        text = ' '.join(str(value).split()) if has_value and value is not None else ''
+        mapping = self._pb_manager_mapping()
+        found, text = self._pb_manager_cell(raw_data, mapping, line=line)
+        if not found:
+            return False, False
         if not text or not norm_name(text):
             return 'blank', _("Manager cell is empty — the current manager is kept.")
 
-        mgr, note = self._pb_manager_resolve(text, raw_data, employee, line=line)
+        mgr, note = self._pb_manager_resolve(text, raw_data, employee, mapping, line=line)
         if not mgr:
             return 'unmatched', note
         if mgr.id == employee.id:
@@ -233,6 +247,55 @@ class HrPayrollImportBatch(models.Model):
         # history names them.
         Org._set_managers({employee.id: mgr.id})
         return 'set', False
+
+    # ============================================================== reading
+    def _pb_manager_cell(self, raw_data, mapping, line=None, primary_only=False):
+        """`(found, text)` — the row's manager cell, whitespace collapsed.
+
+        * A mapping → its cell, always `found` (a missing column is a blank
+          cell, as before). The FILE's cell, never the record's: handed the
+          employee, the shared reader may let the mapped record field
+          (`parent_id` itself) win the walk and answer "no value" — rize
+          Indonesia/Singapore did, for every person who already had a manager
+          (G41) — so `employee=` is never passed; "already up to date" is
+          judged by the caller. `line` stays, so a top-up payload is read (J10).
+        * No mapping → by heading (`is_manager_name_header`): the primary
+          payload, then the top-up one; the first such column with a value
+          wins; such columns but all empty → `(True, '')`; none → `(False, '')`.
+
+        `primary_only` reads the row's own payload only — the per-file email
+        judgement, which has always looked at the primary payload alone."""
+        if mapping:
+            if primary_only:
+                value, has = self._get_rule_raw_value(
+                    raw_data, mapping.component_id, allow_column_letter=False)
+            else:
+                value, has = self._writeback_raw_value(
+                    raw_data, mapping.component_id, mapping=mapping, line=line,
+                    allow_column_letter=False)
+            text = ' '.join(str(value).split()) if has and value is not None else ''
+            return True, text
+        if primary_only:
+            blobs = [raw_data or {}]
+        else:
+            both = self._writeback_blobs(raw_data, line=line)
+            primary = 'feed' if self.source_type == 'api_data_store' else 'excel'
+            blobs = [both.get(primary) or {}] + [
+                b or {} for k, b in both.items() if k != primary]
+        found = False
+        for blob in blobs:
+            if not isinstance(blob, dict):
+                continue
+            for key, value in blob.items():
+                if not is_manager_name_header(key):
+                    continue
+                found = True
+                if value is None:
+                    continue
+                text = ' '.join(str(value).split())
+                if text:
+                    return True, text
+        return found, ''
 
     # ============================================================ matching
     def _pb_manager_companies(self):
@@ -283,7 +346,7 @@ class HrPayrollImportBatch(models.Model):
         """Can this FILE's manager-email column settle a tie? Not when one
         address sits beside two names that cannot be one person (Rize
         Vietnam: du.ho@ beside five names). Judged once per batch."""
-        key = ('pb_orgchart.manager_mail_trust', self.id, mapping.id)
+        key = ('pb_orgchart.manager_mail_trust', self.id, mapping.id if mapping else 'heading')
         cache = self.env.cr.cache
         if key in cache:
             return cache[key]
@@ -294,9 +357,8 @@ class HrPayrollImportBatch(models.Model):
             mail = self._pb_manager_mail(raw)
             if not mail:
                 continue
-            value, has = self._get_rule_raw_value(
-                raw, mapping.component_id, allow_column_letter=False)
-            n = norm_name(value) if has else ''
+            _found, value = self._pb_manager_cell(raw, mapping, primary_only=True)
+            n = norm_name(value)
             if not n:
                 continue
             names = seen.setdefault(mail, set())
@@ -336,11 +398,10 @@ class HrPayrollImportBatch(models.Model):
                         [p for p in hit if not p['active']], how)
         return [], [], ''
 
-    def _pb_manager_resolve(self, text, raw_data, employee, line=None):
+    def _pb_manager_resolve(self, text, raw_data, employee, mapping, line=None):
         """(hr.employee or None, note) for one manager cell."""
         _ = self.env._
         Emp = self.env['hr.employee']
-        mapping = self._pb_manager_mapping()
         index = self._pb_manager_index()
         mail = self._pb_manager_mail(raw_data)
         trusted = bool(mail) and self._pb_manager_mail_trusted(mapping)
@@ -387,19 +448,6 @@ class HrPayrollImportBatch(models.Model):
         self.ensure_one()
         _ = self.env._
         out = {'show': False}
-        mapping = self._pb_manager_mapping()
-        if not mapping:
-            header = self._pb_manager_unmapped_header()
-            if header:
-                out.update({
-                    'show': True, 'title': _("Managers from the file"), 'chips': [],
-                    'rows': [], 'tone': '',
-                    'hint': _(
-                        "This file has a “%(h)s” column, but this scheme does not read it, "
-                        "so no manager was changed. Map the column to Manager to keep "
-                        "managers up to date.", h=header),
-                })
-            return out
         lines = self.import_line_ids
         looked = lines.filtered('pb_manager_state')
         if not looked:
@@ -431,17 +479,6 @@ class HrPayrollImportBatch(models.Model):
                        else _("See the %(n)s rows", n=len(rows))) if rows else '',
         })
         return out
-
-    def _pb_manager_unmapped_header(self):
-        """A manager heading this file carries while the scheme reads none —
-        so the importer is told rather than left to wonder. First row only."""
-        line = self.import_line_ids[:1]
-        if not line:
-            return ''
-        for k in line.get_raw_data():
-            if isinstance(k, str) and is_manager_header(k):
-                return k.rsplit('|', 1)[-1].strip()
-        return ''
 
 
 class PbImportWizard(models.AbstractModel):
