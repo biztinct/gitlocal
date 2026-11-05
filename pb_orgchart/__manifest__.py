@@ -45,7 +45,7 @@ WHAT THIS MODULE ADDS
 Only HR users can change the chart; everyone else sees it read-only. Every
 change is recorded on the employee record.
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

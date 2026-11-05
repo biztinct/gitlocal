@@ -133,6 +133,15 @@ class HrPayrollImportLine(models.Model):
 class HrPayrollImportBatch(models.Model):
     _inherit = 'hr.payroll.import.batch'
 
+    # MANAGERCOL part 4 — the switch's own help promised nothing is saved;
+    # since part 3 a manager from the file is. Redefined here (attributes
+    # only) so the formula engine's module is not touched.
+    one_time = fields.Boolean(
+        help="The file feeds this pay run only. Nothing is saved to employee, "
+             "contract or bank records, and no new employees or contracts are "
+             "created — except each person's manager, when the file has a "
+             "manager column.")
+
     pb_manager_set_count = fields.Integer(
         string='Managers updated', compute='_compute_pb_manager_counts')
     pb_manager_same_count = fields.Integer(
@@ -226,6 +235,27 @@ class HrPayrollImportBatch(models.Model):
             lambda l: l.state == 'processed' and l.employee_id and not l.pb_manager_state)
         for line in lines.sorted(lambda l: (l.sequence, l.id)):
             self._pb_manager_step(line.employee_id, line.get_raw_data(), line)
+        self._pb_manager_one_time_log()
+
+    #: The processing log line the formula engine writes for a one-time run
+    #: (`payroll_import_batch.py`, end of `action_process`). Part 4: once a
+    #: manager was set it is no longer true on its own, so it is completed here
+    #: rather than in the engine (another builder's module, deployed apart).
+    _ONE_TIME_LOG = " — one-time — no record was updated"
+
+    def _pb_manager_one_time_log(self):
+        """Make the batch's processing log honest when managers changed."""
+        self.ensure_one()
+        n = len(self.import_line_ids.filtered(lambda l: l.pb_manager_state == 'set'))
+        log = self.processing_log or ''
+        i = log.rfind(self._ONE_TIME_LOG)
+        if not n or i < 0:
+            return
+        tail = log[i + len(self._ONE_TIME_LOG):]
+        if tail.startswith(' except'):
+            return
+        self.processing_log = '%s%s except %d manager(s) from the file%s' % (
+            log[:i], self._ONE_TIME_LOG, n, tail)
 
     def _pb_manager_step(self, employee, raw_data, line):
         """Run `_sync_employee_manager` so that nothing it does can fail the row."""

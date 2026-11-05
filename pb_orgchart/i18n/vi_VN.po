@@ -3811,3 +3811,8 @@ msgstr "Số quản lý không khớp"
 #: model:ir.model.fields,field_description:pb_orgchart.field_hr_payroll_import_batch__pb_manager_blank_count
 msgid "Manager cells left blank"
 msgstr "Số ô quản lý để trống"
+
+#. module: pb_orgchart
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__one_time
+msgid "The file feeds this pay run only. Nothing is saved to employee, contract or bank records, and no new employees or contracts are created — except each person's manager, when the file has a manager column."
+msgstr "Tệp chỉ dùng cho đợt lương này. Không lưu gì vào hồ sơ nhân viên, hợp đồng hay tài khoản ngân hàng, và không tạo nhân viên hay hợp đồng mới — trừ người quản lý của từng người, khi tệp có cột người quản lý."

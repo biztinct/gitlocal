@@ -483,6 +483,11 @@ class TestImportManager(TransactionCase):
         self.assertTrue(wires, "the fixture wired at least one other column")
         self.assertEqual(b.pb_manager_set_count, 1)
         self.assertTrue(b._pb_manager_summary()['show'])
+        # Part 4 — the words tell the truth: the log line and the switch's help
+        self.assertIn('— one-time — no record was updated except 1 manager(s) from the file',
+                      b.processing_log)
+        self.assertIn("except each person's manager",
+                      b._fields['one_time'].help)
 
     def test_15_use_once_without_a_manager_column_changes_nothing(self):
         self._one_time_world()
@@ -502,6 +507,7 @@ class TestImportManager(TransactionCase):
         self.assertEqual(len(self.tracking(self.sam)), history, "no history row")
         self.assertFalse(line.pb_manager_state)
         self.assertFalse(b._pb_manager_summary()['show'])
+        self.assertNotIn('except', b.processing_log or '', "nothing changed, nothing to except")
 
     def test_16_use_once_failed_row_changes_no_manager(self):
         """A row the use-once run could not process (no contract) sets no manager."""
