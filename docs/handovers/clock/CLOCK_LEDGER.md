@@ -217,3 +217,9 @@ not wire there.
 | # | Date | Gotcha | Rule |
 |---|---|---|---|
 | G1 | 2026-11-05 | zsh expands `--include=*.py` as a glob ("no matches found"); quote it. | `--include='*.py'` in every grep on this box. |
+| G2 | 2026-11-05 | SSH alias `Payobook19` resolves to 54.206.36.246 and refuses; the live box is `Payobook19v2` (3.104.113.197). | Use `Payobook19v2`. |
+| G3 | 2026-11-05 | `filter_deploy.sh full` restores the PRE-deploy set of active crons, so a cron a new module installs comes out OFF everywhere. | After the deploy switch it on by hand per DB (off on payobook_template, id appended to `pb_tenants.template_active_crons` — it holds ids, not xmlids). |
+| G4 | 2026-11-05 | OWL rejects statements inside inline handlers: `t-on-keydown="(ev) => { if (...) {...} }"` → "Failed to compile template … Unexpected token '{'" — only when the lens first renders, after a deploy. | Handlers that need `if` are methods. `t-on-click.stop` needs a method too, not `() => {}`. |
+| G5 | 2026-11-05 | A word inside a template expression (`t-esc="n === 1 ? 'punch' : 'punches'"`, `t-att-title="'Show ' + x"`) is never extracted for translation. | Plural phrases and built tooltips live in JS getters with `_t()`. |
+| G6 | 2026-11-05 | `odoo-bin --i18n-export` is gone on this build; it is `odoo-bin i18n export -c … -d … -l vi_VN -o file.po module`. Its output carries all three PO markers per entry; its header says the brand name — replace it before committing. | Generate PO files from the export, fill msgstr. |
+| G7 | 2026-11-05 | Installing a NEW module on p0clone from a scratch addons dir leaves the live server's p0clone with an installed module it cannot load (views/cron referencing it) until deploy. | Iterate on a throwaway copy (`pg_dump p0clone | pg_restore` → `clk1test`, crons off); drop it after. |
