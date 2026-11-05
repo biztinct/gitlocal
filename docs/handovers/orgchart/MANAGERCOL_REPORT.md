@@ -418,8 +418,8 @@ no such step text.
 | 8 | Learn glossary "This run only" (data.js → learn_content.json) | Use the file's values once, for this run, and change nothing in Payobook. … | … and change nothing in Payobook except each person's manager, when the file has one. … | inline bilingual |
 | 9 | Learn lesson "what it affects" (two lessons) | This run only changes nothing in Payobook[: right for a one-off bonus or a correction]. | This run only changes nothing in Payobook except managers from the file[: …]. | inline bilingual |
 | 10 | Learn lesson prose (Update vs This run only) | … uses them once, for this run, and changes nothing in Payobook — the batch then says "This run only — no records were updated". | … and changes nothing in Payobook except managers from the file. The batch then says "This run only — nothing saved but managers". | inline bilingual |
-| 11 | Native batch form, "Use these values once" field help (`pb_hr_payroll_formula`) | The file feeds this pay run only. Nothing is saved to employee, contract or bank records, and no new employees or contracts are created. | PENDING — see below | |
-| 12 | Native batch form, processing log line (`pb_hr_payroll_formula`) | … — one-time — no record was updated | PENDING — see below | (log is English-only) |
+| 11 | Native batch form, "Use these values once" field help (field of `pb_hr_payroll_formula`, help redefined in **pb_orgchart**) | The file feeds this pay run only. Nothing is saved to employee, contract or bank records, and no new employees or contracts are created. | … and no new employees or contracts are created — except each person's manager, when the file has a manager column. | pb_orgchart vi_VN.po, `model:ir.model.fields,help:` entry |
+| 12 | Native batch form, processing log line (written by `pb_hr_payroll_formula`, completed by **pb_orgchart** after the manager pass) | Processing complete. … — one-time — no record was updated | … — one-time — no record was updated except 59 manager(s) from the file (only when at least one manager was set; unchanged otherwise) | log is English-only, like every other log line |
 
 Vietnamese entries carry all three markers (`#. module:`, `#. odoo-javascript`,
 `#: code:addons/<module>/<path>:0`); none of these modules ships a `.pot`. The
@@ -437,7 +437,14 @@ pre-existing failure as before the change (`c1-cockpit-anchors`, missing
 | Commit | What | Deploy |
 |---|---|---|
 | `a922ef13f` | #1–#5, #7–#10 — pb_payrun_wizard 19.0.1.41.1, pb_import_batch 19.0.2.2.2, pb_learn files | `full` 04:59:57–05:06:31 UTC, EXIT=0 ×4, errors 0, crons 33/29/76/44 unchanged, tree hash OK, sites 200; run dir `/tmp/mgrcol4-run-20261105045957` |
-| `07c365468` | #6 — pb_payroll_templates 19.0.1.6.2 | waiting (deploy hold, below) |
+| `07c365468` | #6 — pb_payroll_templates 19.0.1.6.2 | with the next row |
+| `c24de6666` | #11, #12 — pb_orgchart 19.0.1.7.0 (help redefined on the field, log line completed after the manager pass; tests 14/15 assert both; 84/84 on p0clone) | with the row above: `full` 08:14:12–08:16:39 UTC, EXIT=0 ×4, errors 0, crons 33/29/76/44 unchanged, tree hash OK, sites 200; run dir `/tmp/mgrcol6-run-20261105081412`, backups `/odoo/backups/mgrcol6-run-20261105081412` |
+
+**Why #11 and #12 live in pb_orgchart, not the engine.** HEAD of
+pb_hr_payroll_formula carries another builder's unproven work-in-progress
+(`f253c2942`, not live) and the IMPORT-GENDER fix had to ship from its own
+tree; redefining the field's help (attributes only) and completing the log
+line from the module that owns the manager pass keeps the engine untouched.
 
 **Deploy hold.** At ~05:10 the coordinator held every deploy: the
 IMPORT-GENDER builder's replay on its own throwaway copy had been killed three
@@ -446,7 +453,7 @@ included — G52). This work's own 04:59 deploy stopped the server at 05:01:48,
 before that builder's 05:03 relaunch, but it may have been one of the earlier
 interruptions. #6 and the two pb_hr_payroll_formula lines (#11, #12) wait for
 "IMPORT-GENDER proof | DATA DONE" and that builder's own deploy DONE; nothing
-was committed into pb_hr_payroll_formula before then.
+was committed into pb_hr_payroll_formula at all (see above).
 
 ### Browser check (signed-in sessions; texts placed in each open screen's memory, nothing sent, no button pressed, page reloaded after)
 
@@ -471,3 +478,26 @@ these values do?" choice (#1) is currently replaced by pb_payroll_templates'
 file a use-once batch — so with part 3, every pay run file with a manager
 column now updates managers. #1 is still corrected for any database without
 that module.
+
+### Second deploy and its checks (08:14–08:17 UTC)
+
+Taken in turn after CLOCK-2, HIRING-MENU, IMPORT-GENDER, MYTEAM and the PDR P1
+test run (a NOTE was posted and the deploy waited ~25 minutes for that run's
+TEST DONE rather than kill it, G52); the PDR P1 deploy then took the lock at
+08:03, so the first launch saw "LOCK HELD", wrote nothing and was re-launched
+at 08:14 once the lock was free. Live trees equalled `9e6c2baf3`
+(pb_orgchart) and the pre-change pb_payroll_templates before; equal to the
+staged HEAD after. **pb_hr_payroll_formula was not touched by any part of
+this work.**
+
+| Database | Check | Seen |
+|---|---|---|
+| payobook, rize | "Use these values once" help (database + `fields_get`, English and Vietnamese) | "… — except each person's manager, when the file has a manager column." / "… — trừ người quản lý của từng người, khi tệp có cột người quản lý." |
+| payobook | Vietnamese terms served for pb_payroll_templates | #6 with its Vietnamese |
+| payobook | Pay run screen opens, Coverage chip | "Payobook stays as it is, except managers"; no console errors |
+| rize | Import's last step (batch 2289) / batch page chip | renders, "60 rows processed" / "This run only — nothing saved but managers"; no console errors |
+
+The input-review heading (#6) appears only inside the "Input changes" dialog
+of a monthly-template run; it was checked through the served translation and
+the deployed template, not by opening such a run.
+
