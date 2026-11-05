@@ -91,6 +91,7 @@ export class ClockLens extends Component {
         onWillUnmount(() => {
             clearInterval(this._poll);
             clearTimeout(this._timer);
+            clearTimeout(this._fade);
         });
     }
 
@@ -109,7 +110,7 @@ export class ClockLens extends Component {
                 codes: this.seedCodes,
                 filters: this.state.filters,
             });
-            this._markNew(data);
+            this._markNew(data, silent);
             this.state.data = data;
             if (!this.state.settings && data.settings) {
                 this.state.settings = { ...data.settings };
@@ -126,14 +127,20 @@ export class ClockLens extends Component {
     }
 
     /** Punches that were not on screen before this refresh slide in. */
-    _markNew(data) {
+    _markNew(data, silent) {
         const ids = (data.recent && data.recent.rows || []).map((r) => r.id);
         const fresh = {};
-        if (this._seen) {
+        // only the 30-second refresh brings punches that "just arrived"; a
+        // week / filter change is a new list, not new punches
+        if (silent && this._seen) {
             for (const id of ids) { if (!this._seen.has(id)) { fresh[id] = true; } }
         }
-        this._seen = new Set([...(this._seen || []), ...ids]);
+        this._seen = new Set([...(silent && this._seen ? this._seen : []), ...ids]);
         this.state.newIds = fresh;
+        if (Object.keys(fresh).length) {
+            clearTimeout(this._fade);
+            this._fade = setTimeout(() => { this.state.newIds = {}; }, 4000);
+        }
     }
 
     async loadMore() {
