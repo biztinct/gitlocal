@@ -33,6 +33,10 @@ class TestClockSeed(TransactionCase):
                                       'tz': 'Asia/Ho_Chi_Minh'})
         cls.people[5].pb_clock_code = '777'          # a number already given stays
         cls.tz = timezone('Asia/Ho_Chi_Minh')
+        # someone with an old forgotten check-out (an OPEN row from August):
+        # the seed must not start a day for them that would still be open
+        cls.old_open = cls.env['hr.attendance'].sudo().create({
+            'employee_id': cls.people[9].id, 'check_in': datetime(2026, 8, 18, 1, 0)})
         # a person-day that already has hours (typed in the grid): never touched
         cls.busy = cls.env['hr.attendance'].sudo().create({
             'employee_id': cls.people[4].id, 'pb_entry_source': 'grid',
@@ -109,6 +113,10 @@ class TestClockSeed(TransactionCase):
         self.assertEqual(self.busy.write_date, busy_stamp)
         self.assertFalse(days.filtered(lambda a: a.employee_id == self.people[4]
                                        and a.check_in.date() == datetime(2026, 11, 16).date()))
+        # the old open row is untouched and stays the only open one
+        self.assertFalse(self.old_open.check_out)
+        self.assertEqual(Att.search_count([('employee_id', '=', self.people[9].id),
+                                           ('check_out', '=', False)]), 1)
         # nothing in the future
         self.assertFalse(Punch.search_count([('device_id', '=', device.id),
                                              ('punch_utc', '>', NOW)]))

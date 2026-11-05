@@ -151,6 +151,12 @@ class PbDemoGenerator(models.TransientModel):
             company.sudo().pb_clock_alert_mail = False
         first = monday - timedelta(days=7)
         busy = self._busy_days(cohort, tz, first - timedelta(days=1), today)
+        # people who already have an OPEN attendance anywhere (a forgotten
+        # check-out elsewhere in the demo world): the platform keeps one open
+        # day per person, so a day still running now would only wait on hold
+        open_ids = set(self.env['hr.attendance'].sudo().search(
+            [('employee_id', 'in', cohort.ids), ('check_out', '=', False)]
+        ).mapped('employee_id').ids)
         people = list(codes.items())
         night_emp = people[0][0] if people else None
         double_emp = people[1][0] if len(people) > 1 else None
@@ -182,6 +188,9 @@ class PbDemoGenerator(models.TransientModel):
                 k = _h(emp.id, d)
                 if emp == night_emp:
                     # nights Mon–Fri: 19:1x → 07:3x next morning (one day)
+                    ends = datetime.combine(d + timedelta(days=1), time(7, 28 + k % 7))
+                    if emp.id in open_ids and ends > local_now:
+                        continue      # it would still be running: one open day only
                     if weekday < 5 and (emp.id, d + timedelta(days=1)) not in busy:
                         add(code, datetime.combine(d, time(19, 10 + k % 9)))
                         add(code, datetime.combine(d + timedelta(days=1),
@@ -198,6 +207,9 @@ class PbDemoGenerator(models.TransientModel):
                     end_h, end_m = end_h + 1, end_m - 60
                 if weekday == 5:
                     end_h, end_m = (17, 5) if afternoon else (11, 30 + k % 20)
+                if emp.id in open_ids and (datetime.combine(d, time(end_h, end_m)) > local_now
+                                           or (emp == forgot_emp and d == forgot_day)):
+                    continue          # a day left open would only wait on hold
                 t_in = datetime.combine(d, start)
                 add(code, t_in)
                 if emp == double_emp and d == today - timedelta(days=1):

@@ -5,7 +5,7 @@
     # run and a top-up never clears the division's regular run.
     # 1.13.2: PRS P3 follow-up (R9) — the demo clear step sees only runs of
     # the kind being made.
-    'version': '19.0.1.14.0',
+    'version': '19.0.1.14.1',
     'category': 'Human Resources/Payroll',
     'summary': 'World-class, regenerable demo world: multilingual component library, '
                'division schemes, thousands of realistic employees and months of payroll history.',
