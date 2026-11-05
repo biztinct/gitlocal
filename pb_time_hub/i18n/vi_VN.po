@@ -199,3 +199,15 @@ msgstr "Lưới tuần"
 #: code:addons/pb_time_hub/static/src/js/timeline_lens.js:106
 msgid "now"
 msgstr "bây giờ"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Open time clocks →"
+msgstr "Mở máy chấm công →"
+
+#. module: pb_time_hub
+#. odoo-javascript
+#: code:addons/pb_time_hub/static/src/js/time_hub.js:0
+msgid "Review exceptions →"
+msgstr "Xem ngoại lệ →"

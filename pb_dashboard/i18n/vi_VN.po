@@ -1605,3 +1605,15 @@ msgstr "đang chờ bạn"
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "walk the months"
 msgstr "đi qua các tháng"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "time-clock alert"
+msgstr "cảnh báo máy chấm công"
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "time-clock alerts"
+msgstr "cảnh báo máy chấm công"

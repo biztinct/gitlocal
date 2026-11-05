@@ -2473,3 +2473,69 @@ msgstr "quy tắc"
 #: code:addons/pb_integrations/static/src/js/integrations.js:0
 msgid "stored records"
 msgstr "bản ghi đã lưu"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "%(machines)s · last punch %(ago)s"
+msgstr "%(machines)s · lượt chấm cuối %(ago)s"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "%s h ago"
+msgstr "%s giờ trước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "%s machines"
+msgstr "%s máy"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "%s machines are asking to connect"
+msgstr "%s máy đang xin kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "%s min ago"
+msgstr "%s phút trước"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "1 machine"
+msgstr "1 máy"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "1 machine is asking to connect"
+msgstr "1 máy đang xin kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/xml/integrations.xml:0
+msgid "Every machine is calling in"
+msgstr "Mọi máy đều đang liên lạc"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "No machine connected yet"
+msgstr "Chưa có máy nào kết nối"
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "That screen is not installed on this database."
+msgstr "Màn hình đó chưa được cài trên cơ sở dữ liệu này."
+
+#. module: pb_integrations
+#. odoo-javascript
+#: code:addons/pb_integrations/static/src/js/integrations.js:0
+msgid "just now"
+msgstr "vừa xong"
