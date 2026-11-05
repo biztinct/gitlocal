@@ -530,6 +530,11 @@ class PbOrgChartProject(models.AbstractModel):
                 people, _issue = engine._resolve_step_people(
                     step, ctx, plan.company_id, plan.effective_date or fields.Date.context_today(self),
                     record=plan)
+                # P4 (G33): the same swap the engine makes when the request is
+                # built — a seat holder who is the sender is replaced by the
+                # seat's backup — so the dialog names who will really be asked
+                if hasattr(engine, '_conflict_swap'):
+                    people, _notes = engine._conflict_swap(people, ctx, d.get('safeguards') or {})
                 steps.append({'title': step.get('title') or '', 'names': [p['name'] for p in people]})
             if steps:
                 out['steps'] = steps

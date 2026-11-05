@@ -129,3 +129,41 @@ class TestOrgChartP4(TransactionCase):
         self.assertEqual(self.oc().chain_of(self.ceo.id), [])
         self.assertEqual(self.oc().chain_of('nope'), [])
         self.assertEqual(self.oc().chain_of(999999999), [])
+
+    # ------------------------------------------------------------------ G33
+    def test_04_publish_dialog_names_the_backup_when_the_sender_holds_the_seat(self):
+        """The planner holds the HR team seat and the independence rule is on:
+        the request goes to the seat's backup, and the dialog must say so."""
+        from datetime import timedelta
+        from odoo import fields
+        role = self.env['biz.approval.role'].sudo().search([('key', '=', 'lifecycle')], limit=1)
+        if not role:
+            self.skipTest("no HR lifecycle responsibility on this database")
+        backup = new_test_user(self.env, login='oc4_backup', name='Bach Backup',
+                               groups='base.group_user,hr.group_hr_manager',
+                               company_id=self.co.id, company_ids=[self.co.id])
+        Resp = self.env['biz.approval.responsibility'].sudo().with_context(active_test=False)
+        held = Resp.search([('company_id', '=', self.co.id), ('role_id', '=', role.id), ('scope_key', '=', '')])
+        vals = {'user_id': self.hr.id, 'backup_user_id': backup.id}
+        if held:
+            held.write(vals)
+        else:
+            Resp.create(dict(vals, company_id=self.co.id, role_id=role.id, scope_key='',
+                             scope_label=self.co.name, date_from=fields.Date.today() - timedelta(days=1)))
+        if not self.env['pb.orgchart.plan']._approval_seed_default(self.co):
+            self.skipTest("no route could be laid for the test company")
+        p = self.oc().plan_open()
+        res = self.oc().plan_add_change(p['plan_id'], {
+            'kind': 'move', 'employee_id': self.s[0].id, 'to_manager_id': self.h2.id})
+        self.assertFalse(res.get('error'), res)
+        line = (res.get('approver') or {}).get('line') or ''
+        plan = self.env['pb.orgchart.plan'].browse(p['plan_id']).sudo()
+        engine = self.env['biz.approval.engine'].sudo()
+        ctx = plan._approval_context()
+        _b, version, _t, _e = engine._resolve_binding(plan.company_id, plan._approval_process(),
+                                                      ctx.get('scope_keys'), ctx.get('kind_key'))
+        from odoo.addons.biz_approval_workflow.models import definition as D
+        if not (version and (D.normalise(version.definition).get('safeguards') or {}).get('independent')):
+            self.skipTest("the laid route has the independence rule off")
+        self.assertIn('Bach Backup', line, "the backup is named, not the sender")
+        self.assertNotIn('Hana HR', line)
