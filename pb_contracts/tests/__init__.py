@@ -4,3 +4,4 @@ from . import test_schemectx_p3_currency
 from . import test_cd2_fills_from
 from . import test_cd3_edit_paths
 from . import test_cd4_approval
+from . import test_pdr_p3_hr_responsible

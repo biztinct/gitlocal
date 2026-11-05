@@ -2,7 +2,7 @@
 {
     'name': 'Payobook Contracts Cockpit',
     'summary': 'Bespoke contracts landing + detail cockpit (light-teal People identity)',
-    'version': '19.0.1.12.2',
+    'version': '19.0.1.13.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -21,6 +21,7 @@
         'security/contract_approval_rules.xml',
         'views/pb_contracts_action.xml',
         'views/contract_history_views.xml',
+        'views/hr_contract_form_views.xml',
     ],
     'assets': {
         # House order: scss, then js, then xml — and a leaf JS before the file
