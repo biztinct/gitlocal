@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- THE PAIRING JOB (CLOCK ledger rule 12). Every intake path only adds
+         ledger rows and then `_trigger()`s this job, so a punch file is paired
+         within seconds; the 5-minute interval is the safety net and the pace
+         for machines that push.
+
+         model_id names hr.attendance, NOT a pb_clock model (Decision Room
+         GR25): a worker that is still running yesterday's code builds the
+         server action's eval context with env[model] BEFORE our line runs, and
+         a model only this module defines would throw KeyError there. The code
+         line asks `in env` instead, which cannot throw.
+
+         Not noupdate: plumbing, not a setting anyone tunes. The template
+         database keeps it OFF (pb_tenants.template_active_crons lists it so a
+         new tenant gets it ON). -->
+    <record id="cron_pair_punches" model="ir.cron">
+        <field name="name">Time clocks: pair punches</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.clock.pairing']._cron_run() if 'pb.clock.pairing' in env else None</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

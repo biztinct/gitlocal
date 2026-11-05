@@ -53,6 +53,7 @@ approval, and the pay run.
     'data': [
         'security/ir.model.access.csv',
         'security/pb_clock_security.xml',
+        'data/ir_cron.xml',
         'views/hr_employee_views.xml',
     ],
     'installable': True,
