@@ -205,6 +205,18 @@ export class ClockLens extends Component {
     get hero() {
         const h = (this.state.data && this.state.data.hero) || { state: "empty" };
         if (h.state === "empty") {
+            const n = this.pending.length;
+            if (n) {
+                return { tone: "ask", text: n === 1
+                    ? _t("A machine is asking to connect. Press Allow to let it in.")
+                    : _t("%s machines are asking to connect. Press Allow to let them in.", n) };
+            }
+            const on = this.listening;
+            if (on.length) {
+                return { tone: "wait", text: on.length === 1
+                    ? _t("%s is connected. Waiting for the first punch.", on[0].name)
+                    : _t("%s machines are connected. Waiting for the first punch.", on.length) };
+            }
             return { tone: "empty", text: _t("No machine connected. Upload a punch file to start.") };
         }
         const people = h.people_today === 1
@@ -240,6 +252,10 @@ export class ClockLens extends Component {
         this.load();
     }
     get terminals() { return this.devices.filter((d) => d.kind === "terminal"); }
+    get listening() { return this.devices.filter((d) => d.listening); }
+    /** the "bring in the first punches" card: nothing in, no machine let in */
+    get showStart() { return this.hero.tone === "empty"; }
+    get heroActions() { return ["live", "quiet"].includes(this.hero.tone); }
 
     // ------------------------------------------------------------ machines asking to connect
     get pending() { return (this.state.data && this.state.data.pending) || []; }

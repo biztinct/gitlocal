@@ -1215,13 +1215,13 @@ msgstr "Tạm giữ"
 #. odoo-javascript
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid ""
-"On the machine: Menu › Comm. › Cloud Server. Server type ADMS, the address "
-"below, port 443, HTTPS on. Save and restart the machine — it appears here "
-"within a minute, asking to connect."
+"On the machine: Menu › Comm. › Cloud Server. Server type ADMS, Enable domain"
+" name ON, the address below, port 443, HTTPS on. Save and restart the "
+"machine — it appears here within a minute, asking to connect."
 msgstr ""
-"Trên máy: Menu › Comm. › Cài đặt máy chủ đám mây. Loại máy chủ ADMS, địa chỉ"
-" bên dưới, cổng 443, bật HTTPS. Lưu và khởi động lại máy — trong vòng một "
-"phút máy sẽ hiện ở đây, xin kết nối."
+"Trên máy: Menu › Comm. › Cài đặt máy chủ đám mây. Loại máy chủ ADMS, Bật tên"
+" miền BẬT, địa chỉ bên dưới, cổng 443, bật HTTPS. Lưu và khởi động lại máy —"
+" trong vòng một phút máy sẽ hiện ở đây, xin kết nối."
 
 #. module: pb_clock
 #. odoo-python
@@ -2211,3 +2211,27 @@ msgstr "· mã thẻ"
 #: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
 msgid "· has left"
 msgstr "· đã nghỉ việc"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "A machine is asking to connect. Press Allow to let it in."
+msgstr "Có một máy đang xin kết nối. Nhấn Cho phép để cho máy kết nối."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "%s machines are asking to connect. Press Allow to let them in."
+msgstr "%s máy đang xin kết nối. Nhấn Cho phép để cho các máy kết nối."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "%s is connected. Waiting for the first punch."
+msgstr "%s đã kết nối. Đang chờ lượt chấm đầu tiên."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "%s machines are connected. Waiting for the first punch."
+msgstr "%s máy đã kết nối. Đang chờ lượt chấm đầu tiên."

@@ -29,11 +29,11 @@
             </div>
           </div>
           <div class="pbck-hero__act">
-            <button class="pbck-btn ghost" t-if="hero.tone !== 'empty'" t-att-disabled="state.busy"
+            <button class="pbck-btn ghost" t-if="heroActions" t-att-disabled="state.busy"
                     t-on-click="repairWeek" title="Rebuild this week's days from its punches">
               <span t-out="ic('refresh', 14)"/><span>Re-pair this week</span>
             </button>
-            <button class="pbck-btn primary" t-if="hero.tone !== 'empty'" t-on-click="openUpload">
+            <button class="pbck-btn primary" t-if="heroActions" t-on-click="openUpload">
               <span t-out="ic('upload', 14)"/><span>Upload punches</span>
             </button>
           </div>
@@ -107,14 +107,14 @@
         </section>
 
         <!-- empty state: no machine, no punch yet -->
-        <div class="pbck-card pbck-start" t-if="hero.tone === 'empty'">
+        <div class="pbck-card pbck-start" t-if="showStart">
           <span class="i" t-out="ic('scan', 34)"/>
           <div class="t">Bring in the first punches</div>
           <div class="pbck-doors">
             <div class="pbck-door">
               <span class="pbck-door__ic" t-out="ic('plug', 18)"/>
               <div class="pbck-door__t">Connect a machine</div>
-              <div class="pbck-door__s">On the machine: Menu › Comm. › Cloud Server. Server type ADMS, the address below, port 443, HTTPS on. Save and restart the machine — it appears here within a minute, asking to connect.</div>
+              <div class="pbck-door__s">On the machine: Menu › Comm. › Cloud Server. Server type ADMS, Enable domain name ON, the address below, port 443, HTTPS on. Save and restart the machine — it appears here within a minute, asking to connect.</div>
               <div class="pbck-addr" t-if="address.host">
                 <span class="k">Address</span><b t-esc="address.host"/>
                 <span class="k">Port</span><b t-esc="address.port"/>
@@ -135,7 +135,7 @@
           </div>
         </div>
 
-        <t t-else="">
+        <t t-if="!showStart">
           <!-- ======================= unknown numbers ===================== -->
           <section class="pbck-card pbck-sec" t-att-class="{ 'is-zero': !unknown.total, 'is-act': unknown.total }">
             <header class="pbck-sec__h">
@@ -269,7 +269,7 @@
         </t>
 
         <!-- ============================ machines ====================== -->
-        <section class="pbck-sec pbck-machines" t-if="hero.tone !== 'empty' or blocked.length or devices.length">
+        <section class="pbck-sec pbck-machines" t-if="!showStart or blocked.length or devices.length">
           <header class="pbck-sec__h plain">
             <span class="pbck-sec__ic" t-out="ic('scan', 16)"/><h3>Machines</h3>
           </header>
@@ -288,12 +288,14 @@
               <div class="pbck-dev__top">
                 <span class="pbck-dev__ic" t-out="ic(dv.kind === 'upload' ? 'upload' : 'scan', 15)"/>
                 <span class="pbck-dev__name" t-esc="deviceName(dv)"/>
-                <span class="pbck-chip tz" t-if="dv.tz" t-esc="dv.tz"/>
                 <button class="pbck-x pbck-dev__more" t-if="d.can_manage and dv.listening"
                         t-on-click.stop="() => this.toggleMenu(dv)" t-att-title="tipMenu()"
                         t-out="ic('moreVertical', 14)"/>
               </div>
-              <div class="pbck-dev__loc" t-if="dv.location" t-esc="dv.location"/>
+              <div class="pbck-dev__loc">
+                <span t-if="dv.location" t-esc="dv.location"/>
+                <span class="pbck-chip tz" t-if="dv.tz" t-esc="dv.tz"/>
+              </div>
               <div class="pbck-dev__row">
                 <span><b t-esc="fmtN(dv.punches_today)"/> today</span>
                 <span class="muted">last <t t-esc="deviceLast(dv)"/></span>
@@ -367,7 +369,7 @@
         </section>
 
         <!-- ============================ recent ======================== -->
-        <section class="pbck-card pbck-sec" t-if="hero.tone !== 'empty'">
+        <section class="pbck-card pbck-sec" t-if="!showStart">
           <header class="pbck-sec__h">
             <span class="pbck-sec__ic" t-out="ic('list', 16)"/>
             <h3>Recent punches</h3>
