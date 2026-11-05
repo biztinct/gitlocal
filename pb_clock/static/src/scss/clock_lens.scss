@@ -341,7 +341,7 @@
         &.is-ok { color: var(--pbim-green, #2E7D4F); }
         &.is-warn { color: var(--pbim-amber, #D97706); }
         &.is-busy { color: var(--pbim-primary, #5A4BB0); .spin svg { animation: pbck-spin 1s linear infinite; } } }
-    .pbck-menu { position: absolute; top: 40px; right: 8px; z-index: 30; width: 260px; cursor: default;
+    .pbck-menu { position: absolute; top: 40px; left: 8px; right: auto; z-index: 30; width: 260px; cursor: default;
         background: var(--pbim-surface, #ffffff); border: 1px solid var(--pbim-line, #E2E8F0);
         border-radius: var(--pbim-r-sm, 10px); box-shadow: var(--pbim-sh-lg, 0 18px 44px rgba(40, 50, 90, .12));
         padding: 6px; display: flex; flex-direction: column; gap: 2px; animation: pbck-rise .14s ease-out;
