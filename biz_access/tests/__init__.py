@@ -8,3 +8,4 @@ from . import test_access_request
 from . import test_role_assignments
 from . import test_account_type
 from . import test_access_studio
+from . import test_pdr_attribute_hook

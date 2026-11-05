@@ -16,6 +16,9 @@ from .studio_models import STUDIO
 
 REVEAL = object()
 CREATING = object()
+# PDR S4 — RESOURCES is a static, module-level catalogue (never mutated at
+# runtime), so the union of its field names is fixed at import.
+_CATALOGUE_FIELD_NAMES = frozenset(name for spec in RESOURCES.values() for name in spec['fields'])
 
 
 class StudioPolicyService(models.AbstractModel):
@@ -247,6 +250,10 @@ class StudioResourceGuard(models.AbstractModel):
     def __getattribute__(self, name):
         # Only the small, explicit resource/field catalogue takes this path.
         # Other models and non-field attributes use the unchanged ORM.
+        # PDR S4 — this hook runs on EVERY attribute of EVERY record, so a
+        # name no catalogue field carries leaves on one set lookup.
+        if name not in _CATALOGUE_FIELD_NAMES:
+            return super().__getattribute__(name)
         if not name.startswith('_') and name not in ('env', 'ids', 'id'):
             model = object.__getattribute__(self, '_name')
             if model in RESOURCES and name in RESOURCES[model]['fields']:
