@@ -201,6 +201,6 @@ chấm công**. Lượt chấm đã có trên Payobook chỉ được giữ mộ
 ---
 
 Screens from the validation workspace (one per state):
-`shots/p2-01-empty-with-address.png`, `shots/p2-02-asking-to-connect.png`,
-`shots/p2-03-allow-sheet.png`, `shots/p2-04-machine-card.png`,
-`shots/p2-05-resend.png`, `shots/p2-06-clock-corrected.png`.
+`shots/p2-01-empty-with-address.jpg`, `shots/p2-02-asking-to-connect.jpg`,
+`shots/p2-03-allow-sheet.jpg`, `shots/p2-04-machine-card.jpg`,
+`shots/p2-05a-resend-menu.jpg`, `shots/p2-06-clock-corrected-resend-done.jpg`.
