@@ -250,9 +250,23 @@ export class PbTimeHub extends Component {
 
     get ribbon() {
         const s = this.state.summary;
-        if (!s || !s.ribbon || !s.open_exceptions) { return null; }
+        if (!s || !s.ribbon || !(s.open_exceptions || s.ribbon.extra)) { return null; }
         return s.ribbon;
     }
+
+    /** CLOCK-3: with only time-clock alerts open, the ribbon's door opens
+     *  the Time clocks lens instead of Exceptions. */
+    get ribbonLens() {
+        const r = this.ribbon;
+        const lens = r && r.lens;
+        return lens && this.lensKeys.includes(lens) ? lens : "exceptions";
+    }
+
+    get ribbonActionLabel() {
+        return this.ribbonLens === "exceptions" ? _t("Review exceptions →") : _t("Open time clocks →");
+    }
+
+    openRibbonLens() { this.setLens(this.ribbonLens); }
 
     // ------------------------------------------------------- person door
     /** The ONE way to open the drawer: pin the person on the shared context. */

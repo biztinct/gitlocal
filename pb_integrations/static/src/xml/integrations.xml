@@ -36,6 +36,34 @@
           </t>
         </div>
 
+        <!-- ==== the attendance machines (CLOCK-3) ====
+             One quiet row: grey when every machine is fine, a rose badge when
+             one is silent or its clock is off, and a chip per thing to fix.
+             The row and every chip open Workforce › Time › Time clocks. -->
+        <div t-if="state.timeClocks" class="itg-clocks">
+          <t t-set="tc" t-value="state.timeClocks"/>
+          <div class="ppl-card itg-clocks__card" role="button" tabindex="0"
+               t-att-class="'is-' + tc.status" t-on-click="openTimeClocks"
+               t-on-keydown="onTimeClocksKey">
+            <div class="ppl-av"><t t-out="ic('scan',20)"/></div>
+            <div class="ppl-id">
+              <div class="nm" t-esc="tc.name"/>
+              <div class="jb" t-esc="timeClocksLine"/>
+            </div>
+            <div class="itg-clocks__hints">
+              <span t-foreach="tc.hints" t-as="h" t-key="h.kind" class="itg-clocks__hint">
+                <span class="d"/><t t-esc="h.label"/>
+              </span>
+              <span t-if="!tc.hints.length and tc.status === 'connected'" class="itg-clocks__ok">
+                <t t-out="ic('checkCircle',13)"/> Every machine is calling in
+              </span>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ tc.status_cls }}"><span class="d"/><t t-esc="tc.status_label"/></span>
+            </div>
+          </div>
+        </div>
+
         <!-- ==== the two views ====
              Connectors is what you manage; Data is what they produced. The
              three raw-list tiles that used to sit at the bottom of this page

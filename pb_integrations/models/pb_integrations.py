@@ -180,7 +180,18 @@ class PbIntegrations(models.AbstractModel):
             # with an empty catalogue. The client hides the phrase rather than
             # printing a number it was never given.
             'feeds_known': has_feeds,
+            # CLOCK-3 §4.3: the attendance machines are a source too. pb_clock
+            # is not a dependency: absent → no row.
+            'time_clocks': self._time_clocks_card(),
         }
+
+    @api.model
+    def _time_clocks_card(self):
+        """The "Time clocks" row, when the time-clock module is installed and
+        the reader is an attendance officer; None otherwise."""
+        if 'pb.clock.alert' not in self.env:
+            return None
+        return self._safe(lambda: self.env['pb.clock.alert']._integrations_card(), None)
 
     @api.model
     def _connector_row(self, c, now, has_feeds, feed_summary=None):

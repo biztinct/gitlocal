@@ -14,6 +14,13 @@
  * with the hub's doors (onPerson, onChanged, onOpenLens) and a `seed`
  * ({codes}) when the Import lens's "Assign now" opened it.
  *
+ * CLOCK-3 HERO MOMENT — THE ATTENTION STRIP. Right under the live sentence,
+ * a note that reads like a colleague's: grey and calm at zero ("Nothing needs
+ * attention."), otherwise one plain sentence per problem ("Factory 2 has not
+ * called in since 14:02.") with the door that fixes it and, for a manager,
+ * Mute for a week. ↑/↓ to move, Enter opens the door. The 15-minute watcher
+ * (pb.clock.alert) writes the rows; the lens only reads them.
+ *
  * Facade: pb.clock.lens (officer-gated, company-scoped; get_lens is a READ,
  * every write answers {error} in plain words). Polls every 30 s while open —
  * no bus — and new punches slide in at the top of the list.
@@ -23,6 +30,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
+import { setPlaceSub } from "@pb_hub/js/hub_place";
 
 const MODEL = "pb.clock.lens";
 const POLL_MS = 30000;
@@ -63,6 +71,7 @@ export class ClockLens extends Component {
         this.ic = ic;
         this.KIND_LABEL = KIND_LABEL;
         this.unknownRef = useRef("unknown");
+        this.rootRef = useRef("root");
         this.state = useState({
             loading: true,
             failed: false,
@@ -80,6 +89,9 @@ export class ClockLens extends Component {
             resend: null,               // {id, since}
             showBlocked: false,
             arrived: {},                // pending ids that just appeared (hero moment)
+            attnSel: 0,                 // keyboard row in the Attention strip
+            showMuted: false,
+            flash: "",                  // the block / machine a door just opened
         });
         this._seenPending = null;
         this._seen = null;
@@ -89,16 +101,21 @@ export class ClockLens extends Component {
         onWillUnmount(off);
         onWillStart(() => this.load());
         onMounted(() => {
+            // CLOCK-3: tell Learn's helper this is Time › Time clocks (the
+            // inner tab of the Time lens of Mission Control)
+            if (this.props.embedded) { setPlaceSub("pb_workforce", "time", "clocks"); }
             this._poll = setInterval(() => {
                 this.state.tick += 1;
                 if (!document.hidden) { this.load({ silent: true }); }
             }, POLL_MS);
         });
         onWillUnmount(() => {
+            if (this.props.embedded) { setPlaceSub("pb_workforce", "time", ""); }
             clearInterval(this._poll);
             clearTimeout(this._timer);
             clearTimeout(this._fade);
             clearTimeout(this._arrFade);
+            clearTimeout(this._flashT);
         });
     }
 
@@ -239,6 +256,78 @@ export class ClockLens extends Component {
     openUpload() {
         if (this.props.onOpenLens) { this.props.onOpenLens("import", { import_mode: "punches" }); }
     }
+
+    // ------------------------------------------------------------ attention (CLOCK-3)
+    get attention() {
+        return (this.state.data && this.state.data.attention) || { items: [], muted: [], count: 0 };
+    }
+    get attnItems() { return this.attention.items || []; }
+    /** the strip shows once something is connected or something needs a person */
+    get showAttention() { return !this.showStart || this.attnItems.length; }
+    get attnTitle() {
+        const n = this.attnItems.length;
+        return n === 1 ? _t("1 thing needs attention") : _t("%s things need attention", n);
+    }
+    get attnChecked() {
+        const at = this.attention.checked_at;
+        return at ? _t("Checked %s", this.ago(at)) : "";
+    }
+    get mutedLabel() {
+        const n = (this.attention.muted || []).length;
+        return n === 1 ? _t("1 muted for a week") : _t("%s muted for a week", n);
+    }
+    /** "since 14:02" / "since yesterday 14:02" / "since Tue 04 Nov" */
+    sinceLabel(it) {
+        void this.state.tick;
+        const d = fromUtc(it.since);
+        if (!d) { return ""; }
+        const today = new Date();
+        const yest = new Date(); yest.setDate(today.getDate() - 1);
+        if (d.toDateString() === today.toDateString()) { return _t("since %s", hhmm(d)); }
+        if (d.toDateString() === yest.toDateString()) { return _t("since yesterday %s", hhmm(d)); }
+        return _t("since %s", d.toLocaleDateString([], { weekday: "short", day: "2-digit", month: "short" }));
+    }
+    doorLabel(it) {
+        const b = it.door && it.door.block;
+        if (b === "machine") { return _t("Show the machine"); }
+        if (b === "pending") { return _t("Show it"); }
+        if (b === "held") { return _t("Show punches on hold"); }
+        if (b === "missing") { return _t("Show the days"); }
+        if (b === "settings") { return _t("Show the re-check"); }
+        return _t("Show the machines");
+    }
+    tipMute() { return _t("Mute for a week"); }
+    selectAttn(i) { this.state.attnSel = i; }
+    attnDelay(i) { return `animation-delay: ${Math.min(i, 6) * 40}ms`; }
+    onAttnKey(ev) {
+        const n = this.attnItems.length;
+        if (!n) { return; }
+        if (ev.key === "ArrowDown") { this.state.attnSel = Math.min(n - 1, this.state.attnSel + 1); ev.preventDefault(); }
+        else if (ev.key === "ArrowUp") { this.state.attnSel = Math.max(0, this.state.attnSel - 1); ev.preventDefault(); }
+        else if (ev.key === "Enter") { const it = this.attnItems[this.state.attnSel]; if (it) { this.openDoor(it); } ev.preventDefault(); }
+    }
+    /** Scroll to the block the alert is about and light it for a moment. */
+    openDoor(it) {
+        const door = it.door || {};
+        const root = this.rootRef.el;
+        if (!root) { return; }
+        let sel = `[data-block="${door.block}"]`;
+        let flash = door.block;
+        if (door.block === "machine" && door.device_id) {
+            sel = `[data-device="${door.device_id}"]`;
+            flash = "dev-" + door.device_id;
+        }
+        const el = root.querySelector(sel) || root.querySelector('[data-block="machines"]');
+        if (!el) { return; }
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        this.state.flash = flash;
+        clearTimeout(this._flashT);
+        this._flashT = setTimeout(() => { this.state.flash = ""; }, 2200);
+    }
+    isFlash(key) { return this.state.flash === key; }
+    async muteItem(it) { await this._write("mute_alerts", [it.ids]); }
+    async unmute(m) { await this._write("unmute_alerts", [[m.id]]); }
+    toggleMuted() { this.state.showMuted = !this.state.showMuted; }
 
     // ------------------------------------------------------------ machines
     get devices() { return (this.state.data && this.state.data.devices) || []; }
@@ -387,6 +476,21 @@ export class ClockLens extends Component {
         return null;
     }
     tipMenu() { return _t("More for this machine"); }
+    /** CLOCK-3 §6: "Receiving history: 42,300 punches so far · 18,900 waiting
+     *  to pair · about 25 minutes left". */
+    backfillLine(dv) {
+        const b = dv.backfill;
+        if (!b) { return ""; }
+        const left = b.minutes_left === null || b.minutes_left === undefined ? ""
+            : (b.minutes_left <= 1 ? _t("about a minute left")
+               : b.minutes_left < 90 ? _t("about %s minutes left", b.minutes_left)
+               : _t("about %s hours left", Math.round(b.minutes_left / 60)));
+        const head = _t("Receiving history: %(got)s punches so far · %(wait)s waiting to pair",
+            { got: this.fmtN(b.received), wait: this.fmtN(b.waiting) });
+        return left ? head + " · " + left : head;
+    }
+    backfillStyle(pct) { return `width: ${Math.max(3, Math.min(100, pct || 0))}%`; }
+    backfillSay(b) { return _t("%(name)s is sending its history — %(pct)s", { name: b.name, pct: b.pct + "%" }); }
 
     // ------------------------------------------------------------ days missing a check-out
     get missing() { return (this.state.data && this.state.data.missing_checkout) || { rows: [], total: 0 }; }
@@ -553,7 +657,7 @@ export class ClockLens extends Component {
     // ------------------------------------------------------------ settings
     onSetting(key, ev) {
         const s = this.state.settings;
-        s[key] = (key === "trust_direction" || key === "allow_plain") ? ev.target.checked : ev.target.value;
+        s[key] = (key === "trust_direction" || key === "allow_plain" || key === "alert_mail") ? ev.target.checked : ev.target.value;
     }
     get settingsDirty() {
         const a = this.state.settings, b = this.state.data && this.state.data.settings;
@@ -561,7 +665,8 @@ export class ClockLens extends Component {
         return Number(a.max_span_h) !== Number(b.max_span_h)
             || Number(a.double_tap_min) !== Number(b.double_tap_min)
             || !!a.trust_direction !== !!b.trust_direction
-            || !!a.allow_plain !== !!b.allow_plain;
+            || !!a.allow_plain !== !!b.allow_plain
+            || !!a.alert_mail !== !!b.alert_mail;
     }
     async saveSettings() {
         const s = this.state.settings;
@@ -571,7 +676,7 @@ export class ClockLens extends Component {
             || Number(s.double_tap_min) !== Number(b.double_tap_min)
             || !!s.trust_direction !== !!b.trust_direction;
         const res = await this._write("save_settings",
-            [s.max_span_h, s.double_tap_min, s.trust_direction, !!s.allow_plain], { quiet: true });
+            [s.max_span_h, s.double_tap_min, s.trust_direction, !!s.allow_plain, !!s.alert_mail], { quiet: true });
         if (res) {
             this.state.settings = { ...res.settings };
             if (pairing) {
@@ -579,14 +684,36 @@ export class ClockLens extends Component {
                     type: "success",
                     buttons: [{ name: _t("Re-pair this week"), primary: true, onClick: () => this.repairWeek() }],
                 });
-            } else {
+            } else if (!!s.allow_plain !== !!b.allow_plain) {
                 this.notif.add(s.allow_plain
                     ? _t("Saved. Older machines may now send over a plain connection.")
                     : _t("Saved. Machines must use a secure connection."), { type: "success" });
+            } else {
+                this.notif.add(s.alert_mail
+                    ? _t("Saved. Attendance managers get the 08:00 summary and a note when a machine stops.")
+                    : _t("Saved. No time-clock emails are sent; the alerts stay on this screen."), { type: "success" });
             }
         }
     }
     async repairWeek() { await this._write("repair_week", [this.wf.weekStart]); }
+
+    /** "Last full re-check: today 02:31 · 0 days changed" (CLOCK-3 §5). */
+    get recheckLine() {
+        const r = (this.state.data && this.state.data.recheck) || {};
+        if (!r.at) { return _t("The first full re-check runs tonight at 02:30."); }
+        const d = fromUtc(r.at);
+        const today = new Date();
+        const yest = new Date(); yest.setDate(today.getDate() - 1);
+        let when = d.toLocaleDateString([], { day: "2-digit", month: "short" }) + " " + hhmm(d);
+        if (d.toDateString() === today.toDateString()) { when = _t("today %s", hhmm(d)); }
+        else if (d.toDateString() === yest.toDateString()) { when = _t("yesterday %s", hhmm(d)); }
+        const changed = r.fixed === 1 ? _t("1 day changed") : _t("%s days changed", r.fixed || 0);
+        return _t("Last full re-check: %(when)s · %(changed)s", { when, changed });
+    }
+    get recheckTone() {
+        const r = (this.state.data && this.state.data.recheck) || {};
+        return r.fixed ? "warn" : "grey";
+    }
 
     // ------------------------------------------------------------ helpers
     /** One write RPC → toast in plain words → refresh. {error} never throws. */

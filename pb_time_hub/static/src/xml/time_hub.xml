@@ -33,8 +33,8 @@
         <!-- exception ribbon (mockup A zone 4): what needs review, above the
              content, and gone entirely when there is nothing to review -->
         <WfRibbon t-if="ribbon" tone="ribbon.tone" text="ribbon.text"
-                  actionLabel="'Review exceptions →'"
-                  onAction="() => this.setLens('exceptions')"/>
+                  actionLabel="ribbonActionLabel"
+                  onAction="() => this.openRibbonLens()"/>
       </div>
 
       <!-- ============================ lenses ============================= -->

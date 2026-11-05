@@ -181,16 +181,46 @@ class PbTimeHub(models.AbstractModel):
             _logger.warning("Time hub: a lens badge could not be counted",
                             exc_info=True)
 
+        # CLOCK-3: other modules add to the ribbon sentence (time-clock alerts).
+        # `{key, n, text, lens}`; a failing hook costs its phrase, never the
+        # ribbon. With no exception open the ribbon carries the extra phrases
+        # alone and its button opens the lens of the first one.
+        ribbon = {'tone': tone, 'text': text, 'extra': 0, 'lens': 'exceptions'}
+        try:
+            extra = [e for e in (self._extra_ribbon({
+                'week_start': df, 'week_end': dt,
+                'department_id': department_id, 'employee_id': employee_id,
+            }) or []) if e.get('n') and e.get('text')]
+        except Exception:  # noqa: BLE001
+            _logger.warning("Time hub: a ribbon phrase could not be built",
+                            exc_info=True)
+            extra = []
+        if extra:
+            phrase = ' · '.join(e['text'] for e in extra)
+            ribbon['extra'] = sum(int(e['n']) for e in extra)
+            if total:
+                ribbon['text'] = '%s · %s' % (text, phrase)
+            else:
+                ribbon.update({'text': phrase, 'tone': 'amber',
+                               'lens': extra[0].get('lens') or 'exceptions'})
+
         return {
             'week_start': df.isoformat(),
             'week_end': dt.isoformat(),
             'open_exceptions': total,
             'by_kind': by_kind,
             'truncated': truncated,
-            'ribbon': {'tone': tone, 'text': text},
+            'ribbon': ribbon,
             # per-lens badge counts; a lens absent from this dict shows no badge
             'lens_counts': lens_counts,
         }
+
+    @api.model
+    def _extra_ribbon(self, ctx):
+        """[{key, n, text, lens}] phrases other modules add to the ribbon
+        (CLOCK-3: "2 time-clock alerts"). Same `ctx` as `_extra_lens_counts`.
+        Extend with `_inherit` and append to super()'s answer. A READ."""
+        return []
 
     @api.model
     def _extra_lens_counts(self, ctx):

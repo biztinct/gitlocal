@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_clock.ClockLens">
-    <div class="pbim pbck" t-att-class="{ 'pbck--embedded': props.embedded }">
+    <div class="pbim pbck" t-att-class="{ 'pbck--embedded': props.embedded }" t-ref="root" data-coach="wf-clocks">
 
       <!-- ============================ loading / error ================= -->
       <div class="pbck-load" t-if="state.loading and !state.data">
@@ -39,10 +39,78 @@
           </div>
         </div>
 
+        <!-- ======================= attention (CLOCK-3) ================
+             THE HERO MOMENT OF EVERY OTHER DAY: a colleague's note. Grey and
+             calm at zero; one plain sentence per problem, its door, and Mute
+             for a week. ↑/↓ moves, Enter opens the door. -->
+        <section t-if="showAttention" class="pbck-attn" data-block="attention" data-coach="wf-clocks-attn" aria-live="polite"
+                 t-att-class="{ 'is-zero': !attnItems.length, 'is-act': attnItems.length }">
+          <t t-if="!attnItems.length">
+            <div class="pbck-attn__calm">
+              <span class="pbck-attn__kicker">Attention</span>
+              <span class="pbck-attn__ic" t-out="ic('checkCircle', 15)"/>
+              <span class="pbck-attn__say">Nothing needs attention.</span>
+              <span class="muted small" t-if="attnChecked" t-esc="attnChecked"/>
+              <span class="grow"/>
+              <button class="pbck-link quiet small" t-if="attention.muted.length" t-on-click="toggleMuted" t-esc="mutedLabel"/>
+            </div>
+          </t>
+          <t t-else="">
+            <header class="pbck-attn__h">
+              <span class="pbck-attn__kicker">Attention</span>
+              <span class="pbck-attn__bell" t-out="ic('bell', 15)"/>
+              <h3 t-esc="attnTitle"/>
+              <span class="grow"/>
+              <span class="muted small pbck-attn__keys"><kbd>↑</kbd><kbd>↓</kbd> <kbd>Enter</kbd> opens</span>
+            </header>
+            <div class="pbck-attn__list" tabindex="0" role="listbox" aria-label="Things that need attention"
+                 t-on-keydown="onAttnKey">
+              <div t-foreach="attnItems" t-as="it" t-key="it.key" role="option"
+                   t-att-aria-selected="it_index === state.attnSel"
+                   t-attf-class="pbck-attn__row is-{{ it.tone }} {{ it_index === state.attnSel ? 'is-sel' : '' }}"
+                   t-att-style="attnDelay(it_index)"
+                   t-on-click="() => this.selectAttn(it_index)">
+                <span class="pbck-attn__ric" t-out="ic(it.icon, 15)"/>
+                <span class="pbck-attn__txt" t-esc="it.text"/>
+                <span class="pbck-attn__since" t-esc="sinceLabel(it)"/>
+                <span class="pbck-attn__act">
+                  <button class="pbck-btn ghost tiny" t-on-click.stop="() => this.openDoor(it)">
+                    <span t-out="ic('arrowRight', 12)"/><span t-esc="doorLabel(it)"/>
+                  </button>
+                  <button class="pbck-x" t-if="d.can_manage" t-att-disabled="state.busy"
+                          t-att-title="tipMute()" t-on-click.stop="() => this.muteItem(it)"
+                          t-out="ic('eyeOff', 13)"/>
+                </span>
+              </div>
+            </div>
+            <div class="pbck-attn__foot" t-if="attention.muted.length or attnChecked">
+              <span class="muted small" t-if="attnChecked" t-esc="attnChecked"/>
+              <span class="grow"/>
+              <button class="pbck-link quiet small" t-if="attention.muted.length" t-on-click="toggleMuted" t-esc="mutedLabel"/>
+            </div>
+          </t>
+          <div class="pbck-attn__bfs" t-if="attention.backfill and attention.backfill.length">
+            <div class="pbck-attn__bf" t-foreach="attention.backfill" t-as="b" t-key="b.device_id">
+              <span class="spin" t-out="ic('loader', 12)"/>
+              <span t-esc="backfillSay(b)"/>
+              <span class="pbck-bf__bar sm"><i t-att-style="backfillStyle(b.pct)"/></span>
+            </div>
+          </div>
+          <div class="pbck-attn__muted" t-if="state.showMuted and attention.muted.length">
+            <div class="pbck-attn__mrow" t-foreach="attention.muted" t-as="m" t-key="m.id">
+              <span t-out="ic('eyeOff', 12)"/>
+              <span class="grow" t-esc="m.text"/>
+              <button class="pbck-btn ghost tiny" t-if="d.can_manage" t-att-disabled="state.busy"
+                      t-on-click="() => this.unmute(m)">Bring back</button>
+            </div>
+          </div>
+        </section>
+
         <!-- ======================= machines asking to connect ==========
              THE HERO MOMENT OF SETUP DAY: HR types the address into the
              machine, turns round, and it is already here asking to be let in. -->
-        <section class="pbck-card pbck-sec pbck-pending" aria-live="polite" t-if="pending.length">
+        <section class="pbck-card pbck-sec pbck-pending" aria-live="polite" t-if="pending.length"
+                 data-block="pending" t-att-class="{ 'is-flash': isFlash('pending') }">
           <header class="pbck-sec__h">
             <span class="pbck-radar" aria-hidden="true"><i/><span t-out="ic('plug', 15)"/></span>
             <h3 t-esc="pendingTitle"/>
@@ -212,7 +280,8 @@
           </section>
 
           <!-- ======================= punches on hold ===================== -->
-          <section class="pbck-card pbck-sec" t-att-class="{ 'is-zero': !held.total, 'is-act': held.total }">
+          <section class="pbck-card pbck-sec" data-block="held"
+                   t-att-class="{ 'is-zero': !held.total, 'is-act': held.total, 'is-flash': isFlash('held') }">
             <header class="pbck-sec__h">
               <span class="pbck-sec__ic" t-out="ic('pause', 16)"/>
               <h3>Punches on hold</h3>
@@ -238,7 +307,8 @@
           </section>
 
           <!-- ======================= days missing a check-out (D11) ====== -->
-          <section class="pbck-card pbck-sec" t-att-class="{ 'is-zero': !missing.total, 'is-act': missing.total }">
+          <section class="pbck-card pbck-sec" data-block="missing"
+                   t-att-class="{ 'is-zero': !missing.total, 'is-act': missing.total, 'is-flash': isFlash('missing') }">
             <header class="pbck-sec__h">
               <span class="pbck-sec__ic" t-out="ic('logOut', 16)"/>
               <h3>Days missing a check-out</h3>
@@ -269,7 +339,8 @@
         </t>
 
         <!-- ============================ machines ====================== -->
-        <section class="pbck-sec pbck-machines" t-if="!showStart or blocked.length or devices.length">
+        <section class="pbck-sec pbck-machines" t-if="!showStart or blocked.length or devices.length"
+                 data-block="machines" data-coach="wf-clocks-machines">
           <header class="pbck-sec__h plain">
             <span class="pbck-sec__ic" t-out="ic('scan', 16)"/><h3>Machines</h3>
           </header>
@@ -280,8 +351,8 @@
             <span class="muted" t-if="addressLine" t-esc="addressLine"/>
           </div>
           <div class="pbck-devs" t-if="devices.length">
-            <div t-foreach="devices" t-as="dv" t-key="dv.id" role="button" tabindex="0"
-                 t-attf-class="pbck-dev {{ state.filters.device_id === dv.id ? 'is-on' : '' }} {{ dv.punches_today ? 'is-live' : '' }} {{ state.menu === dv.id ? 'has-menu' : '' }}"
+            <div t-foreach="devices" t-as="dv" t-key="dv.id" role="button" tabindex="0" t-att-data-device="dv.id"
+                 t-attf-class="pbck-dev {{ state.filters.device_id === dv.id ? 'is-on' : '' }} {{ dv.punches_today ? 'is-live' : '' }} {{ state.menu === dv.id ? 'has-menu' : '' }} {{ isFlash('dev-' + dv.id) ? 'is-flash' : '' }}"
                  t-on-click="() => this.toggleDevice(dv)"
                  t-on-keydown="(ev) => this.onDeviceKey(ev, dv)"
                  t-att-title="tipDevice(dv)">
@@ -299,6 +370,10 @@
               <div class="pbck-dev__row">
                 <span><b t-esc="fmtN(dv.punches_today)"/> today</span>
                 <span class="muted">last <t t-esc="deviceLast(dv)"/></span>
+              </div>
+              <div class="pbck-bf" t-if="dv.backfill">
+                <div class="pbck-bf__bar"><i t-att-style="backfillStyle(dv.backfill.pct)"/></div>
+                <div class="pbck-bf__say"><span class="spin" t-out="ic('loader', 12)"/><span t-esc="backfillLine(dv)"/></div>
               </div>
               <t t-if="dv.listening">
                 <t t-set="ln" t-value="linkLine(dv)"/>
@@ -423,7 +498,8 @@
         </section>
 
         <!-- ============================ settings ====================== -->
-        <section class="pbck-card pbck-sec pbck-settings" t-if="d.can_manage and state.settings">
+        <section class="pbck-card pbck-sec pbck-settings" t-if="d.can_manage and state.settings"
+                 data-block="settings" t-att-class="{ 'is-flash': isFlash('settings') }">
           <header class="pbck-sec__h">
             <span class="pbck-sec__ic" t-out="ic('settings', 16)"/><h3>How punches become days</h3>
           </header>
@@ -452,8 +528,18 @@
                      t-on-change="(ev) => this.onSetting('allow_plain', ev)"/></span>
               <span class="h">Lets an older machine send over a plain web connection when it cannot make a secure one. Only the number, the time and the machine’s serial travel.</span>
             </label>
+            <label class="pbck-set__row">
+              <span class="l">Email the attendance managers</span>
+              <span class="c"><input type="checkbox" t-att-checked="state.settings.alert_mail"
+                     t-on-change="(ev) => this.onSetting('alert_mail', ev)"/></span>
+              <span class="h">A summary at 08:00 when something needs attention, and a note when a machine stops calling in on a working day. Never to employees.</span>
+            </label>
           </div>
           <div class="pbck-set__bar">
+            <span t-attf-class="pbck-recheck is-{{ recheckTone }}">
+              <span t-out="ic('history', 13)"/><span t-esc="recheckLine"/>
+            </span>
+            <span class="grow"/>
             <button class="pbck-btn primary" t-att-disabled="!settingsDirty or state.busy" t-on-click="saveSettings">
               <span t-out="ic('save', 14)"/><span>Save</span>
             </button>

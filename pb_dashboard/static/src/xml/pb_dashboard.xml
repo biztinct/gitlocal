@@ -111,7 +111,7 @@
                 <div class="pbd-glance" role="region" aria-label="What needs you today" data-coach="dash-needs">
                     <span class="pbd-gl-cap"><t t-out="ic('bell', 13)"/>Needs you</span>
                     <t t-if="needs.length">
-                        <button t-foreach="needs" t-as="nd" t-key="nd.key" type="button" class="pbd-gl" t-att-class="'is-' + nd.tone" t-on-click="() => nd.go()"><span class="pbd-gl-d"/><span class="pbd-gl-n" t-esc="nd.n"/><span t-esc="nd.text"/></button>
+                        <button t-foreach="needs" t-as="nd" t-key="nd.key" type="button" class="pbd-gl" t-att-class="'is-' + nd.tone" t-att-title="nd.title" t-on-click="() => nd.go()"><span class="pbd-gl-d"/><span class="pbd-gl-n" t-esc="nd.n"/><span t-esc="nd.text"/></button>
                     </t>
                     <span t-else="" class="pbd-gl-quiet"><t t-esc="quietLine.lead"/><t t-if="quietLine.next"> · <t t-esc="quietLine.next"/></t></span>
                     <button t-if="approvalsTail" type="button" class="pbd-gl-all" t-on-click="() => this.openApprovals()"><span t-esc="approvalsTail.text"/><t t-out="ic('arrowRight', 14)"/></button>

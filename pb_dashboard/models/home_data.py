@@ -41,7 +41,10 @@ _logger = logging.getLogger(__name__)
 
 #: The order the "Needs you" chips are drawn in.
 NEEDS_ORDER = ('runs_to_approve', 'leave_to_approve', 'other_to_approve',
-               'settlements_to_check', 'renewals_to_start', 'writeups_overdue')
+               'settlements_to_check', 'renewals_to_start', 'writeups_overdue',
+               # CLOCK-3 §4.4: things the time clocks need a person for
+               # (pb_clock; absent module → always 0, chip hidden)
+               'clock_alerts')
 
 #: payload key -> stored roll-up on hr.payslip.run (pb_payruns).
 MONEY_FIELDS = (('net', 'pb_total_net'), ('gross', 'pb_total_gross'),
@@ -715,8 +718,17 @@ class PbDashboardHome(models.AbstractModel):
         ends = safe(lambda: self._home_contract_ends(st), None)
         counts['renewals_to_start'] = (ends or {}).get('renewals') or 0
         counts['writeups_overdue'] = self._home_writeups(st, safe, optional) or 0
-        needs = [{'key': key, 'n': int(counts[key])}
-                 for key in NEEDS_ORDER if counts[key] > 0]
+        clock = optional('pb.clock.alert',
+                         lambda: env['pb.clock.alert']._home_need(), None) or {}
+        counts['clock_alerts'] = int(clock.get('n') or 0)
+        needs = []
+        for key in NEEDS_ORDER:
+            if counts[key] > 0:
+                item = {'key': key, 'n': int(counts[key])}
+                if key == 'clock_alerts' and clock.get('text'):
+                    # the top sentence, shown when the chip is pointed at
+                    item['text'] = clock['text']
+                needs.append(item)
         return needs, approvals_total
 
     # ================================================================ months

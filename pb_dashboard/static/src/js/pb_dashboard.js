@@ -138,6 +138,9 @@ const DOORS = {
     holidays: { xmlid: "pb_mission.action_pb_workforce", lens: "holidays",
                 lensKey: "pb_shell_lens" },
     calendar: { xmlid: "pb_comp_ben.action_pb_payroll_calendar" },
+    // CLOCK-3: Workforce › Time › Time clocks. pb_clock's own client action
+    // carries the deep-link context (pb_shell_lens time, pb_lens clocks).
+    clocks: { xmlid: "pb_clock.action_pb_clock_lens" },
 };
 
 /* =============================================================================
@@ -178,6 +181,11 @@ const NEEDS = {
         // Late, not merely waiting: the one rose chip (H-R5).
         rose: true,
         door: "hiring",
+    },
+    clock_alerts: {
+        one: () => _t("time-clock alert"),
+        many: () => _t("time-clock alerts"),
+        door: "clocks",
     },
 };
 
@@ -985,6 +993,8 @@ export class PbDashboard extends Component {
                 key: it.key,
                 n: int(it.n),
                 text: it.n === 1 ? w.one() : w.many(),
+                // the server's own sentence for the first thing (time clocks)
+                title: it.text || "",
                 tone: w.rose ? "rose" : "amber",
                 go: () => {
                     if (w.door === "run") {

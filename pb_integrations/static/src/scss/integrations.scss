@@ -228,3 +228,24 @@ body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbim-page.itg-board {
     padding-bottom: 0;
     > .pbim-wrap { padding-bottom: 168px; }
 }
+
+// ---------------------------------------------------------------- CLOCK-3
+// The attendance machines' row: one card above the two views. Grey at rest;
+// amber chips only for a thing to fix; the badge carries the state.
+.pbim.itg-board .itg-clocks { margin-bottom: 14px; }
+.pbim.itg-board .itg-clocks__card {
+    cursor: pointer; display: flex; align-items: center; gap: 14px;
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+    &:hover { transform: translateY(-1px); }
+    &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; }
+    &.is-error { border-color: var(--pbim-amber, #D97706); }
+}
+.pbim.itg-board .itg-clocks__hints { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.pbim.itg-board .itg-clocks__hint {
+    display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px;
+    font-size: 12px; font-weight: 600;
+    background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706);
+    .d { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+}
+.pbim.itg-board .itg-clocks__ok { display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+    color: var(--pbim-muted, #64748B); }

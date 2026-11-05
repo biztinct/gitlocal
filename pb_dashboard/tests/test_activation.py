@@ -54,6 +54,8 @@ HOME_MODELS = {
     'pb.hiring.interview', 'pb.hiring.offer', 'pb.hiring.referral',
     'hr.applicant', 'learn.runtime', 'learn.content', 'pb.holidays',
     'hr.formula.config', 'hr.formula.test.result',
+    # CLOCK-3: the time-clock chip (pb_clock, soft)
+    'pb.clock.alert',
 }
 
 # Every foreign model the Home payloads read.

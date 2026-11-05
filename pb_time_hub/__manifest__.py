@@ -31,7 +31,7 @@ built-ins through the `pb_time_hub.lenses` JS registry, and their tab badge
 through `pb.time.hub._extra_lens_counts`. The Time clocks module adds "Time
 clocks". The person drawer reads the person's local day, like the Week Grid.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -38,7 +38,8 @@ MONTH_KEYS = ('key', 'year_mark', 'people', 'net', 'gross', 'ded', 'er',
 TIMING_KEYS = ('period', 'needs_you', 'months', 'runs', 'people', 'hiring',
                'learn', 'schemes', 'total')
 NEEDS_ORDER = ('runs_to_approve', 'leave_to_approve', 'other_to_approve',
-               'settlements_to_check', 'renewals_to_start', 'writeups_overdue')
+               'settlements_to_check', 'renewals_to_start', 'writeups_overdue',
+               'clock_alerts')
 
 
 def one_person_route(case):
@@ -256,7 +257,8 @@ class TestHomeData(TransactionCase):
         for key in TIMING_KEYS:
             self.assertIsInstance(self.data['timing_ms'][key], int)
         for item in self.data['needs_you']:
-            self.assertEqual(set(item), {'key', 'n'})
+            # CLOCK-3: the time-clock chip also carries its top sentence
+            self.assertTrue({'key', 'n'} <= set(item) <= {'key', 'n', 'text'}, item)
             self.assertGreater(item['n'], 0)
         order = [i['key'] for i in self.data['needs_you']]
         self.assertEqual(order, [k for k in NEEDS_ORDER if k in order])

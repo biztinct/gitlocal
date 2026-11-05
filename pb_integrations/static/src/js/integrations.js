@@ -67,7 +67,7 @@ export class PbIntegrations extends Component {
             ? ctx.pb_ledger : "";
 
         this.state = useState({
-            loaded: false, kpis: {}, connectors: [], types: [], total: 0,
+            loaded: false, kpis: {}, connectors: [], types: [], total: 0, timeClocks: null,
             // the connector cards: one page at a time for the panel's state
             crows: [], ctotal: 0, clistLoaded: false, cloadingMore: false,
 
@@ -144,6 +144,45 @@ export class PbIntegrations extends Component {
             // `!== false` at every read site (see `feedsKnown`), so an older
             // server that never sends the key still shows its feed counts.
             feeds_known: d.feeds_known,
+            // CLOCK-3: the attendance machines' row (absent without pb_clock
+            // or for a reader who is not an attendance officer)
+            timeClocks: d.time_clocks || null,
+        });
+    }
+
+    /** "2 machines · last punch 3 min ago" — the Time clocks row's line. */
+    get timeClocksLine() {
+        const t = this.state.timeClocks;
+        if (!t) { return ""; }
+        if (!t.machines) {
+            return t.pending
+                ? (t.pending === 1 ? _t("1 machine is asking to connect") : _t("%s machines are asking to connect", t.pending))
+                : _t("No machine connected yet");
+        }
+        const machines = t.machines === 1 ? _t("1 machine") : _t("%s machines", t.machines);
+        const ago = this._ago(t.last_punch_at);
+        return ago ? _t("%(machines)s · last punch %(ago)s", { machines, ago }) : machines;
+    }
+
+    _ago(utc) {
+        if (!utc) { return ""; }
+        const d = new Date(utc.replace(" ", "T") + "Z");
+        if (isNaN(d.getTime())) { return ""; }
+        const mins = Math.round((Date.now() - d.getTime()) / 60000);
+        if (mins < 1) { return _t("just now"); }
+        if (mins < 60) { return _t("%s min ago", mins); }
+        if (mins < 24 * 60) { return _t("%s h ago", Math.round(mins / 60)); }
+        return d.toLocaleDateString([], { day: "2-digit", month: "short" });
+    }
+
+    onTimeClocksKey(ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); this.openTimeClocks(); }
+    }
+
+    /** The one door to Workforce › Time › Time clocks (pb_clock). */
+    openTimeClocks() {
+        Promise.resolve(this.action.doAction("pb_clock.action_pb_clock_lens")).catch(() => {
+            this.notif.add(_t("That screen is not installed on this database."), { type: "warning" });
         });
     }
 
