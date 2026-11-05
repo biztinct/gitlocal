@@ -328,6 +328,22 @@ class TestImportManager(TransactionCase):
         # nothing looked at yet → nothing shown
         self.assertFalse(self.batch()._pb_manager_summary()['show'])
 
+    def test_13_the_file_wins_over_the_record_with_a_declared_source(self):
+        """rize Indonesia/Singapore declare the column as an Excel source; the
+        shared reader then let the record's own manager win the walk and
+        answer "no value", so a changed manager in the file was ignored."""
+        self.r_mgr.set_source_binding('excel', 'Reporting Manager')
+        self.sam.parent_id = self.boss.id
+        self.tia.parent_id = self.boss.id
+        b, (l1, l2) = self.process([
+            (self.sam, {'Reporting Manager': 'Cara Coach'}),
+            (self.tia, {'Reporting Manager': 'Dhruv Boss'}),
+        ])
+        self.assertEqual(self.sam.parent_id, self.coachy, "the file wins")
+        self.assertEqual(l1.pb_manager_state, 'set')
+        self.assertEqual(self.tia.parent_id, self.boss)
+        self.assertEqual(l2.pb_manager_state, 'same')
+
     def test_12_new_starter_created_earlier_in_the_file_can_be_a_manager(self):
         b = self.batch()
         self.process([(self.sam, {'Reporting Manager': 'Dhruv Boss'})], batch=b)

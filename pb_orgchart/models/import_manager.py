@@ -198,9 +198,15 @@ class HrPayrollImportBatch(models.Model):
         if not employee.active:
             # Someone who has left is off the chart; the seed skipped them too.
             return False, False
+        # The FILE's cell, never the record's: handed the employee, the shared
+        # reader may let the mapped record field (`parent_id` itself) win the
+        # walk and answer "no value" — rize Indonesia/Singapore did, for every
+        # person who already had a manager — so a CHANGED manager in the file
+        # would be ignored. "Already up to date" is judged below instead.
+        # `line` stays, so a top-up payload is still read (J10).
         value, has_value = self._writeback_raw_value(
             raw_data, mapping.component_id, mapping=mapping, line=line,
-            employee=employee, allow_column_letter=False)
+            allow_column_letter=False)
         text = ' '.join(str(value).split()) if has_value and value is not None else ''
         if not text or not norm_name(text):
             return 'blank', _("Manager cell is empty — the current manager is kept.")
