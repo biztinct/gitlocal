@@ -12,6 +12,9 @@ from . import pb_access_request
 from . import pb_access_approval
 from . import account_type
 from . import account_password
+from . import account_desk
+from . import account_workers
+from . import ir_http
 from . import studio_models
 from . import studio_service
 from . import studio_policy

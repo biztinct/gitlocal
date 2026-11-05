@@ -24,4 +24,17 @@
         <field name="active" eval="True"/>
     </record>
 
+    <!-- Leavers: close the login the day after the employee's departure date,
+         open it again if that date is cleared (account_workers.py, point 3).
+         Off by switch `biz_access.close_leavers` = '0'. -->
+    <record id="cron_access_close_leavers" model="ir.cron">
+        <field name="name">Access: close the logins of people who have left</field>
+        <field name="model_id" ref="model_pb_access"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.access'].cron_close_leavers()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
 </odoo>

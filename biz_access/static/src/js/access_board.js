@@ -179,6 +179,15 @@ export class PbAccessBoard extends Component {
             // set a new password: { id, name, password, show }
             settingPassword: null,
             settingPasswordBusy: false,
+            // the desk (sign-in card): confirm / change sign-in / zones
+            deskAsk: null,             // { id, name, kind, title, line, press, icon }
+            deskBusy: false,
+            signIn: null,              // { id, name, login, alsoEmail }
+            zones: null,
+            // logins for workers: { search, data, picked, result }
+            workers: null,
+            workersBusy: false,
+            leavers: null,             // { on }
 
             // the screens lens
             screens: null,             // the menu with its gates, or null
@@ -438,6 +447,11 @@ export class PbAccessBoard extends Component {
                 "pb.access", "people", [this.state.peopleSearch || ""]);
             if (seq !== this.peopleSeq) { return; }
             this.state.peopleList = rows;
+            if (this.canManage && !this.state.leavers) {
+                this.orm.call("pb.access", "leavers_setting", [])
+                    .then((r) => { this.state.leavers = r; })
+                    .catch(() => {});
+            }
             // LAND ON SOMEBODY, ONCE. An empty right-hand pane beside a list of
             // names is a screen asking a question it could have answered
             // itself. But only on the FIRST read: a search that swapped the
@@ -640,6 +654,7 @@ export class PbAccessBoard extends Component {
         if (!head || !head.password || !head.password.allowed) { return; }
         this.state.settingPassword = {
             id: head.id, name: head.name, password: "", show: false,
+            mustChange: true,
         };
     }
 
@@ -733,7 +748,7 @@ export class PbAccessBoard extends Component {
         this.state.settingPasswordBusy = true;
         try {
             const res = await this.orm.call("pb.access", "set_user_password", [
-                sp.id, sp.password,
+                sp.id, sp.password, sp.mustChange,
             ]);
             this.state.settingPassword = null;
             this.notif.add(res.message, { type: "success", sticky: true });
@@ -744,6 +759,268 @@ export class PbAccessBoard extends Component {
         } finally {
             this.state.settingPasswordBusy = false;
         }
+    }
+
+    onMustChange(ev) {
+        if (this.state.settingPassword) {
+            this.state.settingPassword.mustChange = ev.target.checked;
+        }
+    }
+
+    // ------------------------------------------------------------ the desk
+    lastLoginLine(desk) {
+        return desk.last_login
+            ? _t("Last signed in %s", this.agoLine(desk.last_login))
+            : _t("Has never signed in");
+    }
+
+    get deviceFallback() { return _t("A browser"); }
+
+    /** "3 min ago", "today 09:14", "12 Oct" — server times are UTC strings. */
+    agoLine(utc) {
+        if (!utc) { return ""; }
+        const t = new Date(utc.replace(" ", "T") + "Z");
+        const mins = Math.round((Date.now() - t.getTime()) / 60000);
+        if (mins < 1) { return _t("just now"); }
+        if (mins < 60) { return _t("%s min ago", mins); }
+        const hm = t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        if (new Date().toDateString() === t.toDateString()) { return _t("today %s", hm); }
+        return t.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    deskConfirm(head, kind) {
+        const who = this.callName(head.name);
+        const asks = {
+            two_step: {
+                icon: "shield", press: _t("Turn it off"),
+                title: _t("Turn off two-step sign-in for %s?", who),
+                line: _t("For a lost or replaced phone. They sign in with their password only, and can set two-step up again from their profile."),
+            },
+            sign_out: {
+                icon: "logOut", press: _t("Sign out everywhere"),
+                title: _t("Sign %s out everywhere?", who),
+                line: _t("For a lost laptop or phone. Their password does not change; they sign in again on the devices they still have."),
+            },
+            invite: {
+                icon: "mail", press: _t("Send the email"),
+                title: _t("Email %s a set-password link?", who),
+                line: _t("The link lets them choose a new password. It only arrives if this company's outgoing email is set up."),
+            },
+        };
+        this.state.deskAsk = { id: head.id, name: head.name, kind, ...asks[kind] };
+    }
+
+    closeDeskAsk() {
+        if (!this.state.deskBusy) { this.state.deskAsk = null; }
+    }
+
+    async runDeskAsk() {
+        const da = this.state.deskAsk;
+        if (!da || this.state.deskBusy) { return; }
+        const method = { two_step: "turn_off_two_step", sign_out: "sign_out_everywhere",
+                         invite: "send_invitation" }[da.kind];
+        await this._deskCall(method, [da.id], () => { this.state.deskAsk = null; });
+    }
+
+    async _deskCall(method, args, onDone) {
+        this.state.deskBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", method, args);
+            if (onDone) { onDone(); }
+            this.notif.add(res.message, { type: res.ok === false ? "warning" : "success" });
+            if (this.state.personId) { await this.loadPassport(this.state.personId); }
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+        } finally {
+            this.state.deskBusy = false;
+        }
+    }
+
+    openSignIn(head) {
+        this.state.signIn = { id: head.id, name: head.name, login: head.login || "",
+                              alsoEmail: true };
+    }
+
+    closeSignIn() {
+        if (!this.state.deskBusy) { this.state.signIn = null; }
+    }
+
+    signInTitle(si) { return _t("Change how %s signs in", this.callName(si.name)); }
+
+    onSignInInput(ev) { if (this.state.signIn) { this.state.signIn.login = ev.target.value; } }
+
+    onSignInAlsoEmail(ev) {
+        if (this.state.signIn) { this.state.signIn.alsoEmail = ev.target.checked; }
+    }
+
+    onSignInKey(ev) {
+        if (ev.key === "Enter") { this.saveSignIn(); }
+        if (ev.key === "Escape") { this.closeSignIn(); }
+    }
+
+    async saveSignIn() {
+        const si = this.state.signIn;
+        if (!si || !si.login.trim() || this.state.deskBusy) { return; }
+        await this._deskCall("change_sign_in", [si.id, si.login.trim(), si.alsoEmail],
+                             () => { this.state.signIn = null; });
+        await this.loadPeople();
+    }
+
+    async loadZones() {
+        if (this.state.zones) { return; }
+        try {
+            this.state.zones = await this.orm.call("pb.access", "time_zones", []);
+        } catch { /* the select keeps the current value */ }
+    }
+
+    async savePreference(head, field, value) {
+        if (!value) { return; }
+        const args = field === "lang" ? [head.id, value, false] : [head.id, false, value];
+        await this._deskCall("set_preferences", args);
+    }
+
+    // -------------------------------------------------- leavers switch
+    async toggleLeavers(ev) {
+        const on = ev.target.checked;
+        try {
+            const res = await this.orm.call("pb.access", "set_leavers_setting", [on]);
+            this.state.leavers = { on: res.on };
+            this.notif.add(res.message, { type: "success" });
+        } catch (e) {
+            ev.target.checked = !on;
+            this.notif.add(this._msg(e, _t("The setting could not be saved.")), { type: "danger" });
+        }
+    }
+
+    // ----------------------------------------------- logins for workers
+    async openWorkers() {
+        this.state.workers = { search: "", data: null, picked: {}, result: null };
+        await this.loadWorkers();
+    }
+
+    closeWorkers() {
+        if (this.state.workersBusy) { return; }
+        const hadResult = this.state.workers && this.state.workers.result;
+        // the first passwords leave memory with the dialog
+        this.state.workers = null;
+        if (hadResult) { this.loadPeople(); }
+    }
+
+    async loadWorkers() {
+        const wk = this.state.workers;
+        if (!wk) { return; }
+        const seq = (this.workersSeq = (this.workersSeq || 0) + 1);
+        try {
+            const data = await this.orm.call("pb.access", "worker_candidates", [wk.search || ""]);
+            if (seq !== this.workersSeq || !this.state.workers) { return; }
+            this.state.workers.data = data;
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The employees could not be read.")), { type: "danger" });
+        }
+    }
+
+    onWorkersSearch(ev) {
+        if (!this.state.workers) { return; }
+        this.state.workers.search = ev.target.value;
+        clearTimeout(this._workersT);
+        this._workersT = setTimeout(() => this.loadWorkers(), 250);
+    }
+
+    get workersEligible() {
+        const wk = this.state.workers;
+        return ((wk && wk.data && wk.data.rows) || []).filter((r) => !r.why);
+    }
+
+    get workersPickedIds() {
+        const wk = this.state.workers;
+        return this.workersEligible.filter((r) => wk.picked[r.id]).map((r) => r.id);
+    }
+
+    get workersAllOn() {
+        const el = this.workersEligible;
+        return el.length > 0 && el.every((r) => this.state.workers.picked[r.id]);
+    }
+
+    pickWorker(id, on) { this.state.workers.picked[id] = on; }
+
+    toggleWorkersAll(ev) {
+        for (const r of this.workersEligible) { this.state.workers.picked[r.id] = ev.target.checked; }
+    }
+
+    get workersCountLine() {
+        const n = this.workersPickedIds.length;
+        const of = this.workersEligible.length;
+        return _t("%(n)s of %(of)s chosen", { n, of });
+    }
+
+    get workersCapLine() {
+        const d = this.state.workers.data;
+        return _t("Showing %(shown)s of %(total)s. Search to find the rest.",
+                  { shown: d.shown, total: d.total });
+    }
+
+    get workersPressLine() {
+        const n = this.workersPickedIds.length;
+        return n === 1 ? _t("Make 1 login") : _t("Make %s logins", n);
+    }
+
+    async makeWorkerLogins() {
+        const ids = this.workersPickedIds;
+        if (!ids.length || this.state.workersBusy) { return; }
+        this.state.workersBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", "create_worker_logins", [ids]);
+            this.state.workers.result = res;
+            this.notif.add(res.message, { type: res.created.length ? "success" : "warning",
+                                          sticky: true });
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The logins could not be made.")), { type: "danger" });
+        } finally {
+            this.state.workersBusy = false;
+        }
+    }
+
+    /** One slip per person, English and Vietnamese, printed from a new window. */
+    printSlips() {
+        const res = this.state.workers && this.state.workers.result;
+        if (!res || !res.created.length) { return; }
+        const esc = (v) => String(v || "").replace(/[&<>"']/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+        const url = esc(res.url || window.location.origin);
+        const slips = res.created.map((c) => `
+          <section class="slip">
+            <h2>${esc(c.name)}</h2>
+            <p class="dept">${esc(c.department)}</p>
+            <table>
+              <tr><th>${esc(_t("Address"))}<small>Địa chỉ</small></th><td>${url}</td></tr>
+              <tr><th>${esc(_t("Sign in with"))}<small>Tên đăng nhập</small></th><td class="mono">${esc(c.login)}</td></tr>
+              <tr><th>${esc(_t("First password"))}<small>Mật khẩu lần đầu</small></th><td class="mono big">${esc(c.password)}</td></tr>
+            </table>
+            <p class="note">${esc(_t("You choose your own password the first time you sign in. Keep this slip private."))}<br/>
+            <i>Bạn sẽ tự đặt mật khẩu mới khi đăng nhập lần đầu. Vui lòng giữ phiếu này riêng tư.</i></p>
+          </section>`).join("");
+        const w = window.open("", "_blank");
+        if (!w) {
+            this.notif.add(_t("The browser blocked the new window. Allow pop-ups for this page and press Print again."),
+                           { type: "warning", sticky: true });
+            return;
+        }
+        w.document.write(`<!doctype html><html><head><meta charset="utf-8">
+          <title>${esc(_t("Sign-in slips"))}</title>
+          <style>
+            body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #1B1733; margin: 16px; }
+            .slip { border: 1px dashed #94A3B8; border-radius: 8px; padding: 14px 18px; margin: 0 0 14px;
+                    break-inside: avoid; page-break-inside: avoid; }
+            h2 { margin: 0; font-size: 17px; } .dept { margin: 2px 0 10px; color: #64748B; font-size: 12px; }
+            table { border-collapse: collapse; width: 100%; } th { text-align: left; width: 38%; padding: 4px 8px 4px 0;
+                    font-size: 12px; color: #475569; vertical-align: top; } th small { display: block; font-weight: 400; color: #94A3B8; }
+            td { padding: 4px 0; font-size: 14px; } .mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: .04em; }
+            .big { font-size: 18px; font-weight: 700; } .note { font-size: 11px; color: #475569; margin: 10px 0 0; }
+            @media print { body { margin: 0; } }
+          </style></head><body>${slips}</body></html>`);
+        w.document.close();
+        w.focus();
+        w.print();
     }
 
     // ----------------------------------------------------- Employee | Staff

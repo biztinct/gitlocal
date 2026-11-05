@@ -92,7 +92,7 @@ opinion whatsoever about what an application's roles should be.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.11.0',
+    'version': '19.0.1.12.0',
     'category': 'Administration',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -117,6 +117,7 @@ registry, flat fills, one accent. No emoji.
         'data/studio_data.xml',
         'data/mail_template_data.xml',
         'views/access_views.xml',
+        'views/first_password_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [

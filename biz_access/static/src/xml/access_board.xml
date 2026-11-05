@@ -431,10 +431,17 @@
                 <b>People with access</b>
                 <small>Choose someone to see what they can use.</small>
               </div>
-              <button t-if="canManage" class="pbim-btn primary pbim-btn-sm"
-                      t-on-click="openAddPerson">
-                <t t-out="ic('plus',14)"/> Add a person
-              </button>
+              <div class="pbva-plist-acts">
+                <button t-if="canManage" class="pbim-btn ghost pbim-btn-sm"
+                        t-on-click="openWorkers"
+                        title="Logins for people with no email, signing in with their employee code">
+                  <t t-out="ic('users',14)"/> Logins for workers
+                </button>
+                <button t-if="canManage" class="pbim-btn primary pbim-btn-sm"
+                        t-on-click="openAddPerson">
+                  <t t-out="ic('plus',14)"/> Add a person
+                </button>
+              </div>
             </div>
             <label class="pbva-field pbva-field--search pbva-plist-search">
               <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
@@ -485,6 +492,14 @@
                 </span>
               </button>
             </div>
+            <label t-if="canManage and state.leavers" class="pbva-leavers">
+              <input type="checkbox" t-att-checked="state.leavers.on"
+                     t-on-change="toggleLeavers"/>
+              <span>
+                <b>Close leavers' logins</b>
+                <small>The day after the last day on their employee record. Opened again if that date is cleared.</small>
+              </span>
+            </label>
           </aside>
 
           <!-- ========================== the passport ========================== -->
@@ -566,6 +581,68 @@
                 <p t-elif="ph.kind === 'employee'" class="pbva-hint pbva-kind-why">
                   Employee login: self-service pages only, no backend.
                 </p>
+              </div>
+
+              <!-- ============================ sign-in ============================
+                   The desk: what someone asks the administrator for. Shown to
+                   the access team only, never on your own passport. -->
+              <div t-if="ph.desk" class="pbva-desk">
+                <div class="pbva-desk-h">
+                  <span class="pbva-desk-t"><t t-out="ic('clock',14)"/> <t t-esc="lastLoginLine(ph.desk)"/></span>
+                  <span t-if="ph.desk.two_step" class="pbva-badge"><t t-out="ic('shield',12)"/> Two-step sign-in on</span>
+                </div>
+                <ul t-if="ph.desk.devices.length" class="pbva-devices">
+                  <li t-foreach="ph.desk.devices" t-as="dv" t-key="dv.id">
+                    <t t-out="ic(dv.kind === 'mobile' ? 'smartphone' : 'monitor',14)"/>
+                    <span class="pbva-dev-what" t-esc="dv.what or deviceFallback"/>
+                    <span class="pbva-dev-where" t-if="dv.where" t-esc="dv.where"/>
+                    <span class="pbva-dev-when" t-esc="agoLine(dv.last)"/>
+                  </li>
+                </ul>
+                <p t-else="" class="pbva-hint">Not signed in on any device right now.</p>
+                <div class="pbva-desk-acts">
+                  <button t-if="ph.desk.two_step" class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.deskBusy"
+                          t-on-click="() => this.deskConfirm(ph, 'two_step')">
+                    <t t-out="ic('shield',14)"/> Turn off two-step sign-in
+                  </button>
+                  <button class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.deskBusy or !ph.desk.devices.length"
+                          t-on-click="() => this.deskConfirm(ph, 'sign_out')">
+                    <t t-out="ic('logOut',14)"/> Sign out everywhere
+                  </button>
+                  <button class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.deskBusy"
+                          t-on-click="() => this.openSignIn(ph)">
+                    <t t-out="ic('pencil',14)"/> Change sign-in
+                  </button>
+                  <button t-if="ph.desk.email" class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.deskBusy"
+                          t-on-click="() => this.deskConfirm(ph, 'invite')">
+                    <t t-out="ic('mail',14)"/> Email a set-password link
+                  </button>
+                </div>
+                <div class="pbva-desk-prefs">
+                  <label class="pbva-lbl" t-att-for="'pbva-lang-' + ph.id">Language</label>
+                  <select class="pbva-in" t-att-id="'pbva-lang-' + ph.id"
+                          t-on-change="(ev) => this.savePreference(ph, 'lang', ev.target.value)">
+                    <option t-foreach="ph.desk.languages" t-as="lg" t-key="lg.code"
+                            t-att-value="lg.code" t-att-selected="lg.code === ph.desk.lang"
+                            t-esc="lg.name"/>
+                  </select>
+                  <label class="pbva-lbl" t-att-for="'pbva-tz-' + ph.id">Time zone</label>
+                  <select class="pbva-in" t-att-id="'pbva-tz-' + ph.id"
+                          t-on-focus="loadZones"
+                          t-on-change="(ev) => this.savePreference(ph, 'tz', ev.target.value)">
+                    <option t-if="!ph.desk.tz" value="" selected="selected">Not set</option>
+                    <option t-if="ph.desk.tz and !state.zones" t-att-value="ph.desk.tz"
+                            selected="selected" t-esc="ph.desk.tz"/>
+                    <t t-if="state.zones">
+                      <option t-foreach="state.zones" t-as="z" t-key="z"
+                              t-att-value="z" t-att-selected="z === ph.desk.tz" t-esc="z"/>
+                    </t>
+                  </select>
+                </div>
               </div>
 
               <div class="pbva-pass-cols">
@@ -1179,6 +1256,157 @@
         </div>
       </div>
 
+      <!-- ========================= the desk: confirm ========================= -->
+      <div t-if="state.deskAsk" class="pbim-modal-scrim" t-on-click="closeDeskAsk">
+        <t t-set="da" t-value="state.deskAsk"/>
+        <div class="pbim-modal pbva-modal" t-on-click.stop=""
+             role="dialog" aria-modal="true" t-att-aria-label="da.title">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic"><t t-out="ic(da.icon,17)"/></div>
+            <div class="pbva-modal-t">
+              <h3 t-esc="da.title"/>
+              <p t-esc="da.line"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDeskAsk"
+                    t-att-disabled="state.deskBusy" title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbva-modal-f">
+            <button class="pbim-btn ghost" t-on-click="closeDeskAsk"
+                    t-att-disabled="state.deskBusy">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="runDeskAsk"
+                    t-att-disabled="state.deskBusy">
+              <t t-out="ic(da.icon,15)"/> <t t-esc="da.press"/>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= change sign-in ========================= -->
+      <div t-if="state.signIn" class="pbim-modal-scrim" t-on-click="closeSignIn">
+        <t t-set="si" t-value="state.signIn"/>
+        <div class="pbim-modal pbva-modal" t-on-click.stop=""
+             role="dialog" aria-modal="true" aria-label="Change sign-in">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic"><t t-out="ic('pencil',17)"/></div>
+            <div class="pbva-modal-t">
+              <h3 t-esc="signInTitle(si)"/>
+              <p>An email address, or an employee code for someone with no email.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeSignIn"
+                    t-att-disabled="state.deskBusy" title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbva-modal-b">
+            <label class="pbva-lbl" for="pbva-new-login">New sign-in</label>
+            <input id="pbva-new-login" class="pbva-in" autofocus="autofocus"
+                   autocomplete="off" t-att-value="si.login"
+                   t-on-input="onSignInInput"
+                   t-on-keydown="onSignInKey"/>
+            <label t-if="si.login.includes('@')" class="pbva-check">
+              <input type="checkbox" t-att-checked="si.alsoEmail"
+                     t-on-change="onSignInAlsoEmail"/>
+              <span>Also use it as their email</span>
+            </label>
+            <p class="pbva-hint">Their password stays the same. They are signed out and sign in again with the new sign-in.</p>
+          </div>
+          <div class="pbva-modal-f">
+            <button class="pbim-btn ghost" t-on-click="closeSignIn"
+                    t-att-disabled="state.deskBusy">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="saveSignIn"
+                    t-att-disabled="state.deskBusy or !si.login.trim()">
+              <t t-out="ic('check',15)"/> Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================= logins for workers =======================
+           People with no email sign in with their employee code. The first
+           passwords are shown once, on slips to print and hand out. -->
+      <div t-if="state.workers" class="pbim-modal-scrim" t-on-click="closeWorkers">
+        <t t-set="wk" t-value="state.workers"/>
+        <div class="pbim-modal pbva-modal pbva-modal--wide" t-on-click.stop=""
+             role="dialog" aria-modal="true" aria-label="Logins for workers">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic"><t t-out="ic('users',17)"/></div>
+            <div class="pbva-modal-t">
+              <h3>Logins for workers</h3>
+              <p>For people with no email. They sign in with their employee code and open their payslips, leave and requests.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeWorkers"
+                    t-att-disabled="state.workersBusy" title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+
+          <div t-if="!wk.result" class="pbva-modal-b">
+            <label class="pbva-field pbva-field--search">
+              <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
+              <input class="pbva-in" type="search" t-att-value="wk.search"
+                     placeholder="Name, code or department"
+                     t-on-input="onWorkersSearch"/>
+            </label>
+            <div class="pbva-wk-bar">
+              <label class="pbva-check">
+                <input type="checkbox" t-att-checked="workersAllOn"
+                       t-att-disabled="!workersEligible.length"
+                       t-on-change="toggleWorkersAll"/>
+                <span t-esc="workersCountLine"/>
+              </label>
+              <small t-if="wk.data and wk.data.total > wk.data.shown" class="pbva-hint"
+                     t-esc="workersCapLine"/>
+            </div>
+            <div t-if="!wk.data" class="pbva-hint">Reading the employees…</div>
+            <p t-elif="!wk.data.rows.length" class="pbva-hint">Everyone already has a login.</p>
+            <ul t-else="" class="pbva-wk-list">
+              <li t-foreach="wk.data.rows" t-as="r" t-key="r.id"
+                  t-att-class="{ 'is-off': r.why }">
+                <label class="pbva-check">
+                  <input type="checkbox" t-att-disabled="!!r.why"
+                         t-att-checked="wk.picked[r.id]"
+                         t-on-change="(ev) => this.pickWorker(r.id, ev.target.checked)"/>
+                  <span class="pbva-wk-name" t-esc="r.name"/>
+                </label>
+                <span class="pbva-wk-dept" t-esc="r.department"/>
+                <code t-if="r.code" class="pbva-wk-code" t-esc="r.code"/>
+                <span t-if="r.why" class="pbva-wk-why" t-esc="r.why"/>
+              </li>
+            </ul>
+          </div>
+
+          <div t-else="" class="pbva-modal-b">
+            <div class="pbva-note pbva-note--shield">
+              <t t-out="ic('checkCircle',14)"/>
+              <span t-esc="wk.result.message"/>
+            </div>
+            <ul t-if="wk.result.skipped.length" class="pbva-wk-skipped">
+              <li t-foreach="wk.result.skipped" t-as="sk" t-key="sk_index">
+                <b t-esc="sk.name"/> <span t-esc="sk.why"/>
+              </li>
+            </ul>
+            <p class="pbva-hint">Each slip has the address, their sign-in and a first password. They choose their own the first time they sign in.</p>
+          </div>
+
+          <div class="pbva-modal-f">
+            <button class="pbim-btn ghost" t-on-click="closeWorkers"
+                    t-att-disabled="state.workersBusy">
+              <t t-if="wk.result">Done</t><t t-else="">Cancel</t>
+            </button>
+            <button t-if="!wk.result" class="pbim-btn primary" t-on-click="makeWorkerLogins"
+                    t-att-disabled="state.workersBusy or !workersPickedIds.length">
+              <t t-out="ic('userPlus',15)"/> <t t-esc="workersPressLine"/>
+            </button>
+            <button t-elif="wk.result.created.length" class="pbim-btn primary"
+                    t-on-click="printSlips">
+              <t t-out="ic('printer',15)"/> Print the slips
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- ========================= set a new password =========================
            The counter case: somebody forgot their password and is standing
            in front of the administrator. One field, a "make one for me"
@@ -1226,6 +1454,11 @@
             <button class="pbim-btn ghost pbva-pw-make" t-on-click="makePassword">
               <t t-out="ic('sparkles',14)"/> Make one for me
             </button>
+            <label class="pbva-check">
+              <input type="checkbox" t-att-checked="sp.mustChange"
+                     t-on-change="onMustChange"/>
+              <span>Ask them to choose their own when they next sign in</span>
+            </label>
             <div class="pbva-note pbva-note--shield">
               <t t-out="ic('shieldCheck',14)"/>
               <span>Tell them in person or by phone, not by email or chat. They are signed out on every other device, and can change it from their profile after they sign in.</span>

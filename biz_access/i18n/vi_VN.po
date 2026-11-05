@@ -3037,3 +3037,545 @@ msgstr "Hãy báo trực tiếp hoặc qua điện thoại, không gửi qua ema
 #: code:addons/biz_access/static/src/xml/access_board.xml:0
 msgid "Set password"
 msgstr "Đặt mật khẩu"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "Two-step sign-in is off for %s. They sign in with their password and can set it up again from their profile."
+msgstr "Đã tắt đăng nhập hai bước cho %s. Họ đăng nhập bằng mật khẩu và có thể bật lại trong hồ sơ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%s is signed out on 1 device. Their password is unchanged."
+msgstr "%s đã được đăng xuất trên 1 thiết bị. Mật khẩu không đổi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%(name)s now signs in with %(login)s. They have been signed out everywhere and sign in again with their usual password."
+msgstr "%(name)s giờ đăng nhập bằng %(login)s. Họ đã được đăng xuất khỏi mọi nơi và đăng nhập lại bằng mật khẩu cũ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "An email to set a password is on its way to %s."
+msgstr "Email đặt mật khẩu đang được gửi tới %s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "Saved. %s sees it the next time a page opens."
+msgstr "Đã lưu. %s sẽ thấy thay đổi khi mở trang tiếp theo."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%s does not use two-step sign-in."
+msgstr "%s không dùng đăng nhập hai bước."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%(name)s is signed out on %(n)s devices. Their password is unchanged."
+msgstr "%(name)s đã được đăng xuất trên %(n)s thiết bị. Mật khẩu không đổi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%s was not signed in anywhere."
+msgstr "%s không đăng nhập ở đâu cả."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "Enter the new sign-in."
+msgstr "Nhập tên đăng nhập mới."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "A sign-in has no spaces and at most 80 characters."
+msgstr "Tên đăng nhập không có khoảng trắng và tối đa 80 ký tự."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "That is not a valid email address."
+msgstr "Đây không phải địa chỉ email hợp lệ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%s already signs in with that."
+msgstr "%s đã đăng nhập bằng tên này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "Someone else already signs in with %s."
+msgstr "Đã có người khác đăng nhập bằng %s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "%s has no email address. Set a new password for them instead."
+msgstr "%s không có địa chỉ email. Hãy đặt mật khẩu mới cho họ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "Nothing changed."
+msgstr "Không có gì thay đổi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "The email to %s could not be sent. This company's outgoing email may not be set up. Set a new password for them instead."
+msgstr "Không gửi được email tới %s. Có thể công ty chưa cài đặt email gửi đi. Hãy đặt mật khẩu mới cho họ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "That language is not available here."
+msgstr "Ngôn ngữ này không có sẵn ở đây."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "That time zone is not known."
+msgstr "Không nhận ra múi giờ này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "%s has a new password. Tell them in person or by phone. They choose their own when they next sign in, and have been signed out everywhere else."
+msgstr "%s đã có mật khẩu mới. Hãy báo trực tiếp hoặc qua điện thoại. Họ sẽ tự đặt mật khẩu khi đăng nhập lần tới và đã được đăng xuất khỏi mọi nơi khác."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "%(n)s logins made, %(m)s skipped. Print the slips now: the passwords are not shown again."
+msgstr "Đã tạo %(n)s tài khoản, bỏ qua %(m)s. Hãy in phiếu ngay: mật khẩu sẽ không hiện lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Choose at least one person."
+msgstr "Hãy chọn ít nhất một người."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "%s logins made. Print the slips now: the passwords are not shown again."
+msgstr "Đã tạo %s tài khoản. Hãy in phiếu ngay: mật khẩu sẽ không hiện lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "No logins were made."
+msgstr "Chưa tạo tài khoản nào."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Leavers' logins now close on the day after their last day."
+msgstr "Tài khoản của người nghỉ việc giờ sẽ đóng vào ngày sau ngày làm việc cuối cùng."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Leavers' logins stay open until someone closes them."
+msgstr "Tài khoản của người nghỉ việc vẫn mở cho đến khi có người đóng."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "No employee code."
+msgstr "Chưa có mã nhân viên."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Already has a login."
+msgstr "Đã có tài khoản."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Someone already signs in with %s."
+msgstr "Đã có người đăng nhập bằng %s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Could not be created. Try this person on their own."
+msgstr "Không tạo được. Hãy thử riêng với người này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/first_password.py:0
+msgid "The two passwords are not the same."
+msgstr "Hai mật khẩu không giống nhau."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/first_password.py:0
+msgid "Use something other than your name or sign-in."
+msgstr "Hãy dùng mật khẩu khác với tên hoặc tên đăng nhập của bạn."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Last signed in %s"
+msgstr "Đăng nhập lần cuối %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Has never signed in"
+msgstr "Chưa từng đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "A browser"
+msgstr "Một trình duyệt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "just now"
+msgstr "vừa xong"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s min ago"
+msgstr "%s phút trước"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "today %s"
+msgstr "hôm nay %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Turn it off"
+msgstr "Tắt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Turn off two-step sign-in for %s?"
+msgstr "Tắt đăng nhập hai bước cho %s?"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "For a lost or replaced phone. They sign in with their password only, and can set two-step up again from their profile."
+msgstr "Dùng khi mất hoặc đổi điện thoại. Họ chỉ đăng nhập bằng mật khẩu và có thể bật lại hai bước trong hồ sơ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sign out everywhere"
+msgstr "Đăng xuất khỏi mọi nơi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sign %s out everywhere?"
+msgstr "Đăng xuất %s khỏi mọi nơi?"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "For a lost laptop or phone. Their password does not change; they sign in again on the devices they still have."
+msgstr "Dùng khi mất máy tính hoặc điện thoại. Mật khẩu không đổi; họ đăng nhập lại trên các thiết bị còn giữ."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Send the email"
+msgstr "Gửi email"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Email %s a set-password link?"
+msgstr "Gửi cho %s liên kết đặt mật khẩu?"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The link lets them choose a new password. It only arrives if this company's outgoing email is set up."
+msgstr "Liên kết giúp họ chọn mật khẩu mới. Chỉ đến được nếu công ty đã cài đặt email gửi đi."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Change how %s signs in"
+msgstr "Đổi cách %s đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The setting could not be saved."
+msgstr "Không lưu được cài đặt."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The employees could not be read."
+msgstr "Không đọc được danh sách nhân viên."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%(n)s of %(of)s chosen"
+msgstr "Đã chọn %(n)s / %(of)s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Showing %(shown)s of %(total)s. Search to find the rest."
+msgstr "Đang hiện %(shown)s / %(total)s. Hãy tìm để thấy những người còn lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make 1 login"
+msgstr "Tạo 1 tài khoản"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make %s logins"
+msgstr "Tạo %s tài khoản"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The logins could not be made."
+msgstr "Không tạo được tài khoản."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sign in with"
+msgstr "Đăng nhập bằng"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "First password"
+msgstr "Mật khẩu lần đầu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "You choose your own password the first time you sign in. Keep this slip private."
+msgstr "Bạn sẽ tự đặt mật khẩu khi đăng nhập lần đầu. Hãy giữ phiếu này riêng tư."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The browser blocked the new window. Allow pop-ups for this page and press Print again."
+msgstr "Trình duyệt đã chặn cửa sổ mới. Hãy cho phép cửa sổ bật lên cho trang này rồi bấm In lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Sign-in slips"
+msgstr "Phiếu đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Logins for people with no email, signing in with their employee code"
+msgstr "Tài khoản cho người không có email, đăng nhập bằng mã nhân viên"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Logins for workers"
+msgstr "Tài khoản cho công nhân"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Close leavers' logins"
+msgstr "Đóng tài khoản người nghỉ việc"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "The day after the last day on their employee record. Opened again if that date is cleared."
+msgstr "Vào ngày sau ngày cuối cùng ghi trên hồ sơ nhân viên. Mở lại nếu ngày đó được xoá."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Two-step sign-in on"
+msgstr "Đang bật đăng nhập hai bước"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Not signed in on any device right now."
+msgstr "Hiện không đăng nhập trên thiết bị nào."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Turn off two-step sign-in"
+msgstr "Tắt đăng nhập hai bước"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Change sign-in"
+msgstr "Đổi tên đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Email a set-password link"
+msgstr "Gửi liên kết đặt mật khẩu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Time zone"
+msgstr "Múi giờ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Ask them to choose their own when they next sign in"
+msgstr "Yêu cầu họ tự đặt mật khẩu khi đăng nhập lần tới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "An email address, or an employee code for someone with no email."
+msgstr "Một địa chỉ email, hoặc mã nhân viên cho người không có email."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New sign-in"
+msgstr "Tên đăng nhập mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Also use it as their email"
+msgstr "Dùng luôn làm email của họ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Their password stays the same. They are signed out and sign in again with the new sign-in."
+msgstr "Mật khẩu giữ nguyên. Họ sẽ bị đăng xuất và đăng nhập lại bằng tên mới."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "For people with no email. They sign in with their employee code and open their payslips, leave and requests."
+msgstr "Dành cho người không có email. Họ đăng nhập bằng mã nhân viên để xem phiếu lương, nghỉ phép và yêu cầu."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Name, code or department"
+msgstr "Tên, mã hoặc phòng ban"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Reading the employees…"
+msgstr "Đang đọc danh sách nhân viên…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Everyone already has a login."
+msgstr "Mọi người đều đã có tài khoản."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Each slip has the address, their sign-in and a first password. They choose their own the first time they sign in."
+msgstr "Mỗi phiếu có địa chỉ, tên đăng nhập và mật khẩu lần đầu. Họ tự đặt mật khẩu khi đăng nhập lần đầu."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Print the slips"
+msgstr "In phiếu"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.first_password_page
+msgid "Choose your own password"
+msgstr "Chọn mật khẩu của riêng bạn"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.first_password_page
+msgid "The same password again"
+msgstr "Nhập lại mật khẩu"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.first_password_page
+msgid "Save and continue"
+msgstr "Lưu và tiếp tục"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.first_password_page
+msgid "Sign out"
+msgstr "Đăng xuất"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/first_password.py:0
+msgid "Hello %s. The password you just used was given to you. Choose one only you know before you carry on."
+msgstr "Xin chào %s. Mật khẩu bạn vừa dùng là do người khác đặt. Hãy chọn một mật khẩu chỉ mình bạn biết trước khi tiếp tục."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/first_password.py:0
+msgid "You sign in with %s."
+msgstr "Bạn đăng nhập bằng %s."
