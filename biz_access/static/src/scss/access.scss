@@ -2365,4 +2365,35 @@ $pbva-areas: (
     .pbva-kind-seg .pbva-tab.is-on { cursor: default; }
     .pbva-kind-seg .pbva-tab:disabled { opacity: .45; cursor: not-allowed; }
     .pbva-kind-why { margin: 0; }
+
+    // ------------------------------------------------ set a new password
+    .pbva-pass-why { margin: 6px 0 0; text-align: right; }
+    .pbva-pw-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+    .pbva-in.pbva-pw-in {
+        flex: 1 1 auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: .04em;
+    }
+    .pbva-pw-btn { flex: 0 0 auto; padding: 0 10px; }
+    .pbva-pw-meter {
+        display: flex;
+        gap: 4px;
+        margin-top: 8px;
+
+        span {
+            flex: 1 1 0;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--pbim-line, #E6E8F0);
+            transition: background-color .2s ease;
+        }
+        &[data-level="1"] span:nth-child(-n+1) { background: #D97706; }
+        &[data-level="2"] span:nth-child(-n+2) { background: var(--pbim-primary, #5B4FCF); }
+        &[data-level="3"] span { background: #059669; }
+    }
+    .pbva-pw-make { margin: 10px 0 14px; }
 }

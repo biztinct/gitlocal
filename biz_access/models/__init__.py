@@ -11,6 +11,7 @@ from . import access_export
 from . import pb_access_request
 from . import pb_access_approval
 from . import account_type
+from . import account_password
 from . import studio_models
 from . import studio_service
 from . import studio_policy

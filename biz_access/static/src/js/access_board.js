@@ -176,6 +176,9 @@ export class PbAccessBoard extends Component {
             // Employee | Staff (TIERS T2): { id, name, to, roles_ending, reason }
             switching: null,
             switchingBusy: false,
+            // set a new password: { id, name, password, show }
+            settingPassword: null,
+            settingPasswordBusy: false,
 
             // the screens lens
             screens: null,             // the menu with its gates, or null
@@ -624,6 +627,122 @@ export class PbAccessBoard extends Component {
                 { type: "danger" });
         } finally {
             this.state.addingPersonBusy = false;
+        }
+    }
+
+    // ------------------------------------------------- set a new password
+    /**
+     * The server decides who may be re-keyed (`header.password`) and checks
+     * again on the write; this file only draws the answer. The password is
+     * sent once and never kept: closing the dialog drops it from state.
+     */
+    openSetPassword(head) {
+        if (!head || !head.password || !head.password.allowed) { return; }
+        this.state.settingPassword = {
+            id: head.id, name: head.name, password: "", show: false,
+        };
+    }
+
+    closeSetPassword() {
+        if (!this.state.settingPasswordBusy) { this.state.settingPassword = null; }
+    }
+
+    onSetPasswordInput(ev) {
+        if (this.state.settingPassword) {
+            this.state.settingPassword.password = ev.target.value;
+        }
+    }
+
+    onSetPasswordKey(ev) {
+        if (ev.key === "Enter") { this.confirmSetPassword(); }
+        if (ev.key === "Escape") { this.closeSetPassword(); }
+    }
+
+    toggleShowPassword() {
+        const sp = this.state.settingPassword;
+        if (sp) { sp.show = !sp.show; }
+    }
+
+    setPasswordTitle(sp) {
+        return _t("New password for %s", this.callName(sp.name));
+    }
+
+    showPasswordTitle(sp) {
+        return sp.show ? _t("Hide") : _t("Show");
+    }
+
+    /** Easy to read out over a counter: no 0/O, 1/l/I, three short groups. */
+    makePassword() {
+        const sp = this.state.settingPassword;
+        if (!sp) { return; }
+        const letters = "abcdefghjkmnpqrstuvwxyz";
+        const digits = "23456789";
+        const pick = (set, n) => {
+            const out = [];
+            const buf = new Uint32Array(n);
+            window.crypto.getRandomValues(buf);
+            for (const v of buf) { out.push(set[v % set.length]); }
+            return out.join("");
+        };
+        const word = pick(letters, 4);
+        sp.password = word[0].toUpperCase() + word.slice(1) + "-"
+            + pick(digits, 4) + "-" + pick(letters, 4);
+        sp.show = true;
+    }
+
+    async copyNewPassword() {
+        const sp = this.state.settingPassword;
+        if (!sp || !sp.password) { return; }
+        try {
+            await navigator.clipboard.writeText(sp.password);
+            this.notif.add(_t("Copied."), { type: "success" });
+        } catch {
+            this.notif.add(_t("Copying is blocked in this browser. Select the password and copy it by hand."),
+                           { type: "warning" });
+        }
+    }
+
+    passwordOk(pw) {
+        return (pw || "").trim().length >= 8;
+    }
+
+    passwordLevel(pw) {
+        const s = (pw || "").trim();
+        if (s.length < 8) { return s ? 1 : 0; }
+        const kinds = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/]
+            .filter((re) => re.test(s)).length;
+        return s.length >= 12 && kinds >= 3 ? 3 : 2;
+    }
+
+    passwordHint(pw) {
+        const s = (pw || "").trim();
+        if (!s) { return _t("At least 8 characters."); }
+        if (s.length < 8) {
+            return _t("%s more characters.", 8 - s.length);
+        }
+        return this.passwordLevel(s) === 3
+            ? _t("Strong.")
+            : _t("Long enough. Mixing letters, numbers and a symbol makes it stronger.");
+    }
+
+    async confirmSetPassword() {
+        const sp = this.state.settingPassword;
+        if (!sp || this.state.settingPasswordBusy || !this.passwordOk(sp.password)) {
+            return;
+        }
+        this.state.settingPasswordBusy = true;
+        try {
+            const res = await this.orm.call("pb.access", "set_user_password", [
+                sp.id, sp.password,
+            ]);
+            this.state.settingPassword = null;
+            this.notif.add(res.message, { type: "success", sticky: true });
+        } catch (e) {
+            this.notif.add(
+                this._msg(e, _t("The password could not be set.")),
+                { type: "danger" });
+        } finally {
+            this.state.settingPasswordBusy = false;
         }
     }
 

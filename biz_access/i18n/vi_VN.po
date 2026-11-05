@@ -2887,3 +2887,153 @@ msgstr "Bắt buộc"
 #: code:addons/biz_access/static/src/xml/access_board.xml:0
 msgid "Required. Explain why this role is changing."
 msgstr "Bắt buộc. Giải thích lý do thay đổi vai trò này."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "Only the people who manage access can set a password for someone else."
+msgstr "Chỉ người quản lý quyền truy cập mới có thể đặt mật khẩu cho người khác."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "This is your own login. Change your password from your profile; it asks for your current one first."
+msgstr "Đây là tài khoản của chính bạn. Hãy đổi mật khẩu trong hồ sơ của bạn; hệ thống sẽ hỏi mật khẩu hiện tại trước."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "That is not a person's login."
+msgstr "Đây không phải tài khoản của một người."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "%s's login is archived. Restore it before setting a password."
+msgstr "Tài khoản của %s đã được lưu trữ. Hãy khôi phục trước khi đặt mật khẩu."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "%s is a system administrator. Only another system administrator can set their password."
+msgstr "%s là quản trị viên hệ thống. Chỉ một quản trị viên hệ thống khác mới có thể đặt mật khẩu cho họ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "Use at least %s characters."
+msgstr "Dùng ít nhất %s ký tự."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "Use something other than their name or sign-in."
+msgstr "Hãy dùng mật khẩu khác với tên hoặc tên đăng nhập của họ."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_password.py:0
+msgid "%s has a new password. Tell them in person or by phone, and ask them to change it after they sign in. They have been signed out everywhere else."
+msgstr "%s đã có mật khẩu mới. Hãy báo trực tiếp hoặc qua điện thoại, và nhắc họ đổi mật khẩu sau khi đăng nhập. Họ đã được đăng xuất khỏi mọi thiết bị khác."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "New password for %s"
+msgstr "Mật khẩu mới cho %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Hide"
+msgstr "Ẩn"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Copied."
+msgstr "Đã sao chép."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Copying is blocked in this browser. Select the password and copy it by hand."
+msgstr "Trình duyệt này chặn sao chép. Hãy chọn mật khẩu và sao chép thủ công."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "At least 8 characters."
+msgstr "Ít nhất 8 ký tự."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s more characters."
+msgstr "Còn thiếu %s ký tự."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Strong."
+msgstr "Mạnh."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Long enough. Mixing letters, numbers and a symbol makes it stronger."
+msgstr "Đủ dài. Kết hợp chữ, số và ký hiệu sẽ mạnh hơn."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "The password could not be set."
+msgstr "Không đặt được mật khẩu."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Set a new password"
+msgstr "Đặt mật khẩu mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Their old password stops working straight away."
+msgstr "Mật khẩu cũ của họ sẽ hết hiệu lực ngay lập tức."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New password"
+msgstr "Mật khẩu mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Copy"
+msgstr "Sao chép"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Make one for me"
+msgstr "Tạo giúp tôi"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Tell them in person or by phone, not by email or chat. They are signed out on every other device, and can change it from their profile after they sign in."
+msgstr "Hãy báo trực tiếp hoặc qua điện thoại, không gửi qua email hay tin nhắn. Họ sẽ bị đăng xuất khỏi mọi thiết bị khác và có thể đổi mật khẩu trong hồ sơ sau khi đăng nhập."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Set password"
+msgstr "Đặt mật khẩu"

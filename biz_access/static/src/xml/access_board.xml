@@ -525,6 +525,13 @@
                           t-on-click="() => this.openPersonHistory(ph)">
                     <t t-out="ic('history',14)"/> Their history
                   </button>
+                  <button t-if="passport.can_manage and !ph.is_me and ph.password"
+                          class="pbim-btn ghost"
+                          t-att-disabled="!ph.password.allowed"
+                          t-att-title="ph.password.why or ''"
+                          t-on-click="() => this.openSetPassword(ph)">
+                    <t t-out="ic('key',14)"/> Set a new password
+                  </button>
                   <button t-if="passport.can_manage and ph.kind !== 'employee'"
                           class="pbim-btn primary"
                           t-on-click="() => this.openGiveRole(ph)">
@@ -532,6 +539,8 @@
                   </button>
                 </div>
               </div>
+              <p t-if="passport.can_manage and !ph.is_me and ph.password and !ph.password.allowed"
+                 class="pbva-hint pbva-pass-why" t-esc="ph.password.why"/>
 
               <!-- ======================= Employee | Staff =======================
                    TIERS T2. Which kind of login this person has: an employee
@@ -1165,6 +1174,69 @@
             <button data-biz-validate="true" class="pbim-btn primary" t-on-click="createPerson"
                     t-att-disabled="state.addingPersonBusy or (state.addingPerson.email.trim() and !state.addingPerson.email.includes('@'))">
               <t t-out="ic('userPlus',15)"/> Add person
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= set a new password =========================
+           The counter case: somebody forgot their password and is standing
+           in front of the administrator. One field, a "make one for me"
+           button, a copy button, and the sentence that says what happens. -->
+      <div t-if="state.settingPassword" class="pbim-modal-scrim"
+           t-on-click="closeSetPassword">
+        <t t-set="sp" t-value="state.settingPassword"/>
+        <div class="pbim-modal pbva-modal" t-on-click.stop=""
+             role="dialog" aria-modal="true"
+             t-att-aria-label="setPasswordTitle(sp)">
+          <div class="pbva-modal-h">
+            <div class="pbva-modal-ic"><t t-out="ic('key',17)"/></div>
+            <div class="pbva-modal-t">
+              <h3 t-esc="setPasswordTitle(sp)"/>
+              <p>Their old password stops working straight away.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeSetPassword"
+                    t-att-disabled="state.settingPasswordBusy" title="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+          <div class="pbva-modal-b">
+            <label class="pbva-lbl" for="pbva-new-password">New password</label>
+            <div class="pbva-pw-row">
+              <input id="pbva-new-password" class="pbva-in pbva-pw-in"
+                     autocomplete="new-password" autofocus="autofocus"
+                     t-att-type="sp.show ? 'text' : 'password'"
+                     t-att-value="sp.password"
+                     t-on-input="onSetPasswordInput"
+                     t-on-keydown="onSetPasswordKey"/>
+              <button class="pbim-btn ghost pbva-pw-btn" t-on-click="toggleShowPassword"
+                      t-att-title="showPasswordTitle(sp)"
+                      t-att-aria-label="showPasswordTitle(sp)">
+                <t t-out="ic(sp.show ? 'eyeOff' : 'eye',15)"/>
+              </button>
+              <button class="pbim-btn ghost pbva-pw-btn" t-on-click="copyNewPassword"
+                      t-att-disabled="!sp.password" title="Copy" aria-label="Copy">
+                <t t-out="ic('copy',15)"/>
+              </button>
+            </div>
+            <div class="pbva-pw-meter" t-att-data-level="passwordLevel(sp.password)">
+              <span/><span/><span/>
+            </div>
+            <p class="pbva-hint" t-esc="passwordHint(sp.password)"/>
+            <button class="pbim-btn ghost pbva-pw-make" t-on-click="makePassword">
+              <t t-out="ic('sparkles',14)"/> Make one for me
+            </button>
+            <div class="pbva-note pbva-note--shield">
+              <t t-out="ic('shieldCheck',14)"/>
+              <span>Tell them in person or by phone, not by email or chat. They are signed out on every other device, and can change it from their profile after they sign in.</span>
+            </div>
+          </div>
+          <div class="pbva-modal-f">
+            <button class="pbim-btn ghost" t-on-click="closeSetPassword"
+                    t-att-disabled="state.settingPasswordBusy">Cancel</button>
+            <button class="pbim-btn primary" t-on-click="confirmSetPassword"
+                    t-att-disabled="state.settingPasswordBusy or !passwordOk(sp.password)">
+              <t t-out="ic('key',15)"/> Set password
             </button>
           </div>
         </div>
