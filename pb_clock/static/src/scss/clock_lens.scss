@@ -167,7 +167,8 @@
     .pbck-ta__opt { display: grid; grid-template-columns: 26px 1fr; grid-template-rows: auto auto;
         column-gap: 8px; align-items: center; text-align: left; background: none; border: 0;
         border-radius: 8px; padding: 6px 8px; cursor: pointer; font: inherit;
-        img { grid-row: 1 / span 2; width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+        img { grid-row: 1 / span 2; width: 26px; height: 26px; border-radius: 50%; object-fit: cover;
+              background: var(--pbim-line-2, #F1F5F9); }
         .n { font-weight: 600; i { font-style: normal; color: var(--pbim-muted, #64748B); font-weight: 400; } }
         .s { color: var(--pbim-muted, #64748B); font-size: 11.5px; }
         &.is-on, &:hover { background: var(--pbim-soft, #EDEAF8); } }

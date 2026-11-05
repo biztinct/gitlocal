@@ -175,6 +175,9 @@ class TestIclock(AdmsCase):
         self.assertEqual(atts._pb_local_day(), date(2026, 10, 21))
         d = [x for x in self.Lens.get_lens('2026-10-19')['devices'] if x['id'] == dev.id][0]
         self.assertEqual(d['before_start'], 2)
+        lens = self.Lens.get_lens('2026-10-19', filters={'state': 'ignored'})
+        self.assertEqual({r['kind'] for r in lens['recent']['rows']}, {'before'},
+                         "kept-but-not-paired punches say so, and count as ignored")
 
     # =================================================================== 8
     def test_08_other_tables_dropped(self):

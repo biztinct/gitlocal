@@ -31,6 +31,7 @@ STATE_CHIP = {
     'held': ('held', 'amber'),
     'ignored_duplicate_tap': ('double', 'slate'),
     'ignored_outlier': ('ignored', 'slate'),
+    'ignored_before_start': ('before', 'slate'),
 }
 
 
@@ -401,7 +402,8 @@ class PbClockLens(models.AbstractModel):
         elif state == 'held':
             dom.append(('state', '=', 'held'))
         elif state == 'ignored':
-            dom.append(('state', 'in', ('ignored_duplicate_tap', 'ignored_outlier')))
+            dom.append(('state', 'in', ('ignored_duplicate_tap', 'ignored_outlier',
+                                        'ignored_before_start')))
         elif state == 'counted':
             dom.append(('state', 'in', ('paired', 'middle')))
         if filters.get('code'):

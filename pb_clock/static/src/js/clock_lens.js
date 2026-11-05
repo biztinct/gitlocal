@@ -31,7 +31,7 @@ const TYPEAHEAD_MS = 180;
 const KIND_LABEL = {
     in: _t("In"), out: _t("Out"), break: _t("Break tap"), double: _t("Double tap"),
     unknown: _t("Unknown"), held: _t("On hold"), ignored: _t("Ignored"),
-    waiting: _t("Waiting"),
+    waiting: _t("Waiting"), before: _t("Before start"),
 };
 
 /** naive-UTC "YYYY-MM-DD HH:MM:SS" → Date */
@@ -565,14 +565,25 @@ export class ClockLens extends Component {
     }
     async saveSettings() {
         const s = this.state.settings;
+        const b = (this.state.data && this.state.data.settings) || {};
+        // only the three pairing settings change how punches become days
+        const pairing = Number(s.max_span_h) !== Number(b.max_span_h)
+            || Number(s.double_tap_min) !== Number(b.double_tap_min)
+            || !!s.trust_direction !== !!b.trust_direction;
         const res = await this._write("save_settings",
             [s.max_span_h, s.double_tap_min, s.trust_direction, !!s.allow_plain], { quiet: true });
         if (res) {
             this.state.settings = { ...res.settings };
-            this.notif.add(res.message, {
-                type: "success",
-                buttons: [{ name: _t("Re-pair this week"), primary: true, onClick: () => this.repairWeek() }],
-            });
+            if (pairing) {
+                this.notif.add(res.message, {
+                    type: "success",
+                    buttons: [{ name: _t("Re-pair this week"), primary: true, onClick: () => this.repairWeek() }],
+                });
+            } else {
+                this.notif.add(s.allow_plain
+                    ? _t("Saved. Older machines may now send over a plain connection.")
+                    : _t("Saved. Machines must use a secure connection."), { type: "success" });
+            }
         }
     }
     async repairWeek() { await this._write("repair_week", [this.wf.weekStart]); }

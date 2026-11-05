@@ -2235,3 +2235,21 @@ msgstr "%s đã kết nối. Đang chờ lượt chấm đầu tiên."
 #: code:addons/pb_clock/static/src/js/clock_lens.js:0
 msgid "%s machines are connected. Waiting for the first punch."
 msgstr "%s máy đã kết nối. Đang chờ lượt chấm đầu tiên."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Before start"
+msgstr "Trước ngày bắt đầu"
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Saved. Older machines may now send over a plain connection."
+msgstr "Đã lưu. Máy đời cũ giờ có thể gửi qua kết nối thường."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/js/clock_lens.js:0
+msgid "Saved. Machines must use a secure connection."
+msgstr "Đã lưu. Máy chấm công phải dùng kết nối bảo mật."
