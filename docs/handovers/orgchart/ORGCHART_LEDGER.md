@@ -566,3 +566,11 @@ the closeout as an owner question, not into a phase.
   batch page chip). Since owner ruling 6, managers from the file do change.
   Any future exception to R1 must update those words too (owner decision
   pending on the wording).
+* G52 (MANAGERCOL part 4): **`filter_deploy.sh full` kills every `odoo-bin`
+  process on the box — `odoo-bin shell` jobs included.** Another builder's
+  replay on its own throwaway copy was killed three times by full deploys
+  (2026-11-05). Any long `odoo-bin shell` job (replay, seed, backfill) must
+  write its own START line in `/opt/deploy-notes.md` — and a DONE line after —
+  so deployers see it and wait; a deployer must check for an open START of
+  ANY kind (DATA included), not only deploy STARTs, and for running
+  `odoo-bin shell` processes (`ps -eo pid,etime,args | grep "odoo-bin shel[l]"`).

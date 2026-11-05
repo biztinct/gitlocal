@@ -379,3 +379,95 @@ tenant, not in the repo):
    batch page, their Vietnamese and any lesson that quotes them) is outside
    pb_orgchart and was not done — say if you want e.g. "Nothing in Payobook
    changes except managers, when the file has a manager column."
+
+## Part 4 — the "this run only" screens tell the truth (2026-11-05)
+
+Owner ruling 2026-11-05 (standing rule: plain, honest words on every screen):
+every place that promised a "this run only" / "use once" file changes
+nothing now says, in one sentence, that each person's manager still follows
+the file when it has a manager column. Both languages.
+
+### Search
+
+`grep -rniE` over pb_payruns, pb_payrun_wizard, pb_import_wizard,
+pb_import_batch, pb_import_kit, pb_hr_payroll_formula (views, wizards,
+models, i18n), pb_learn, pb_records — and, found on the way, pb_payroll_templates
+(its review dialog now sits on the pay run screen on all four databases) —
+for "Nothing in Payobook changes", "stays exactly as it is", "no records were
+updated", "nothing was saved", "this run only", "use once", "values once",
+"stay unchanged", "read-only context". 70 raw hits; the ones that are NOT a
+no-change promise and were left alone: labels ("This run only", "Use these
+values once", "Used once" filter, "Continue — this run only"), engineer
+comments/docstrings, the busy message "Computing … for this run only…",
+Records Desk's "nothing is saved until you apply" (a different feature), and
+Learn lines that only say "uses them once". **No hit in pb_import_wizard,
+pb_import_kit or pb_payruns** — the import wizard has no use-once option and
+no such step text.
+
+### Every place reworded
+
+| # | Where (screen) | Before | After | VI |
+|---|---|---|---|---|
+| 1 | Pay run screen, "This run only" choice (`pb_payrun_wizard` payrun_wizard.xml) | Used just this once. Nothing in Payobook changes — good for a one-off bonus or a correction. | Used just this once — good for a one-off bonus or a correction. Nothing in Payobook changes except each person's manager, when the file has a manager column. | new entry |
+| 2 | Pay run screen, Coverage chip | Payobook stays exactly as it is | Payobook stays as it is, except managers | new entry |
+| 3 | Pay run screen, result box after computing | used once; nothing was saved to any employee, contract or bank record. | used once; nothing was saved to any employee, contract or bank record, except each person's manager when the file has a manager column. | new entry |
+| 4 | Import batch page chip (`pb_import_batch` batch_cockpit.xml) | This run only — no records were updated | This run only — nothing saved but managers | new entry |
+| 5 | Same chip, tooltip | The values in this file fed one pay run and were then forgotten. | The values in this file fed one pay run and were then forgotten — except each person's manager, when the file has a manager column. | new entry |
+| 6 | Pay run "Input changes" review heading, monthly template (`pb_payroll_templates` run_input_review.xml) | This month's inputs. Saved records stay unchanged. | This month's inputs. Saved records stay unchanged, except managers from the file. | module's first vi_VN.po |
+| 7 | Learn practice replica of the choice (`pb_learn` engine/screens.js) | = #1 | = #1 | inline bilingual |
+| 8 | Learn glossary "This run only" (data.js → learn_content.json) | Use the file's values once, for this run, and change nothing in Payobook. … | … and change nothing in Payobook except each person's manager, when the file has one. … | inline bilingual |
+| 9 | Learn lesson "what it affects" (two lessons) | This run only changes nothing in Payobook[: right for a one-off bonus or a correction]. | This run only changes nothing in Payobook except managers from the file[: …]. | inline bilingual |
+| 10 | Learn lesson prose (Update vs This run only) | … uses them once, for this run, and changes nothing in Payobook — the batch then says "This run only — no records were updated". | … and changes nothing in Payobook except managers from the file. The batch then says "This run only — nothing saved but managers". | inline bilingual |
+| 11 | Native batch form, "Use these values once" field help (`pb_hr_payroll_formula`) | The file feeds this pay run only. Nothing is saved to employee, contract or bank records, and no new employees or contracts are created. | PENDING — see below | |
+| 12 | Native batch form, processing log line (`pb_hr_payroll_formula`) | … — one-time — no record was updated | PENDING — see below | (log is English-only) |
+
+Vietnamese entries carry all three markers (`#. module:`, `#. odoo-javascript`,
+`#: code:addons/<module>/<path>:0`); none of these modules ships a `.pot`. The
+exact msgids were taken from the server's own extractor
+(`babel_extract_qweb`), PO parse gate on the box: pb_payrun_wizard 124 rows,
+pb_import_batch 37, pb_payroll_templates 1 — none empty. Learn content was
+edited in the authoring source (`docs/tutorial_poc/author/data.js`) and
+regenerated (`gen_learn_data.py`, `--check` clean; one sentence was split to
+stay under the 28-word lint). `check_contract.py`: the same single
+pre-existing failure as before the change (`c1-cockpit-anchors`, missing
+`pe-filters`), nothing new.
+
+### Commits and deploys
+
+| Commit | What | Deploy |
+|---|---|---|
+| `a922ef13f` | #1–#5, #7–#10 — pb_payrun_wizard 19.0.1.41.1, pb_import_batch 19.0.2.2.2, pb_learn files | `full` 04:59:57–05:06:31 UTC, EXIT=0 ×4, errors 0, crons 33/29/76/44 unchanged, tree hash OK, sites 200; run dir `/tmp/mgrcol4-run-20261105045957` |
+| `07c365468` | #6 — pb_payroll_templates 19.0.1.6.2 | waiting (deploy hold, below) |
+
+**Deploy hold.** At ~05:10 the coordinator held every deploy: the
+IMPORT-GENDER builder's replay on its own throwaway copy had been killed three
+times by full deploys (the deploy script kills every `odoo-bin`, shells
+included — G52). This work's own 04:59 deploy stopped the server at 05:01:48,
+before that builder's 05:03 relaunch, but it may have been one of the earlier
+interruptions. #6 and the two pb_hr_payroll_formula lines (#11, #12) wait for
+"IMPORT-GENDER proof | DATA DONE" and that builder's own deploy DONE; nothing
+was committed into pb_hr_payroll_formula before then.
+
+### Browser check (signed-in sessions; texts placed in each open screen's memory, nothing sent, no button pressed, page reloaded after)
+
+| Database | Screen | Seen |
+|---|---|---|
+| payobook (demo) | Pay run · Pay data · Coverage chip | "Payobook stays as it is, except managers" |
+| payobook | Pay run · Compute result box | "… used once; nothing was saved to any employee, contract or bank record, except each person's manager when the file has a manager column." |
+| payobook | Import batch page, use-once batch 24 | chip "This run only — nothing saved but managers", tooltip as #5 |
+| payobook | Import's last step (batch 24) | renders, outcome cards, no manager line (the file has no manager column) |
+| payobook | Vietnamese terms served (`/web/webclient/translations`, no-store) | #1, #2, #4, #5 present with their Vietnamese |
+| rize | Pay run chip / result box | "Rize stays as it is, except managers" (the brand rewrite applies) / result box as above |
+| rize | Import batch page, batch 2289 | "This run only — nothing saved but managers" |
+| rize | Import's last step (batch 2072) | renders, "63 rows processed" |
+
+No console errors on any of them. Screenshots (not in the repo):
+`outputs/rize-managers-2026-11-05/05_payrun_chip_payobook.jpg`,
+`06_payrun_result_box_payobook.jpg`, `07_batch_page_chip_payobook.jpg`.
+
+Found on the way: on all four databases the pay run screen's "What should
+these values do?" choice (#1) is currently replaced by pb_payroll_templates'
+"Compute now. Choose what to keep afterwards" flow, which always makes the
+file a use-once batch — so with part 3, every pay run file with a manager
+column now updates managers. #1 is still corrected for any database without
+that module.
