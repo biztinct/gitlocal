@@ -1,0 +1,728 @@
+<title>Payobook Form Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+/* Layout: product shell (slim rail + screen) with Studio mode wrapping the live screen in a palette (left) and a properties panel (right). */
+:root{
+  --bg:#F4F5FB; --card:#FFFFFF; --ink:#1E1B2E; --muted:#64748B; --line:#E2E8F0; --line-2:#EEF0F6;
+  --brand:#5A4BB0; --brand-dk:#241F52; --brand-hover:#4A3D96; --brand-soft:#EDEAF8; --brand-light:#CBC2EE;
+  --teal:#0F7C6B; --teal-soft:#DDF5EF; --teal-fill:#9FE0D4; --teal-ink:#0E3A33;
+  --ok:#2E7D4F; --ok-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFF; --warn:#D97706; --warn-soft:#FDF1DE; --err:#DC2668; --err-soft:#FDE7EF; --money:#059669;
+  --studio:#5A4BB0; --studio-wash:rgba(90,75,176,.06); --shadow:0 1px 2px rgba(30,27,46,.06),0 8px 24px -12px rgba(30,27,46,.18);
+  --font:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:14px; --r-s:9px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#12111B; --card:#1B1927; --ink:#ECEAF6; --muted:#9BA0B8; --line:#2B2940; --line-2:#242236;
+  --brand:#A99EEA; --brand-dk:#D9D3F5; --brand-hover:#BDB3F2; --brand-soft:#26224A; --brand-light:#3B3470;
+  --teal:#7ED8C8; --teal-soft:#16312D; --teal-fill:#1E4A43; --teal-ink:#D9F5EF;
+  --ok:#5CC08A; --ok-soft:#163327; --info:#7FA4FF; --info-soft:#1A2440; --warn:#F0B050; --warn-soft:#3A2B12; --err:#F27AA0; --err-soft:#3E1A28; --money:#4FD39F;
+  --studio:#A99EEA; --studio-wash:rgba(169,158,234,.08); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#12111B; --card:#1B1927; --ink:#ECEAF6; --muted:#9BA0B8; --line:#2B2940; --line-2:#242236;
+  --brand:#A99EEA; --brand-dk:#D9D3F5; --brand-hover:#BDB3F2; --brand-soft:#26224A; --brand-light:#3B3470;
+  --teal:#7ED8C8; --teal-soft:#16312D; --teal-fill:#1E4A43; --teal-ink:#D9F5EF;
+  --ok:#5CC08A; --ok-soft:#163327; --info:#7FA4FF; --info-soft:#1A2440; --warn:#F0B050; --warn-soft:#3A2B12; --err:#F27AA0; --err-soft:#3E1A28; --money:#4FD39F;
+  --studio:#A99EEA; --studio-wash:rgba(169,158,234,.08); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--font);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+svg.lucide,[data-lucide]{width:16px;height:16px;flex:none;stroke-width:2}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* shell */
+.shell{display:grid;grid-template-columns:64px 1fr;min-height:100%}
+.rail{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;padding-block:14px}
+.rail .logo{width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:10px}
+.rail button{width:44px;height:44px;border-radius:12px;color:var(--muted);display:grid;place-items:center}
+.rail button[aria-current]{background:var(--brand);color:#fff}
+.rail button:hover:not([aria-current]){background:var(--brand-soft);color:var(--brand)}
+.rail svg,.rail [data-lucide]{width:20px;height:20px}
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:10px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:env(safe-area-inset-top,0px);z-index:5;flex-wrap:wrap}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
+.crumb{color:var(--muted);display:flex;align-items:center;gap:6px;font-weight:600}
+.crumb b{color:var(--ink)}
+.spacer{flex:1}
+.tabs{display:flex;gap:4px;background:var(--bg);padding:3px;border-radius:10px}
+.tabs button{padding:6px 12px;border-radius:8px;font-weight:700;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--brand);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:10px;font-weight:700;border:1px solid transparent;white-space:nowrap}
+.btn.primary{background:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-hover)}
+.btn.outline{border-color:var(--brand-light);color:var(--brand)}
+.btn.outline:hover{background:var(--brand-soft)}
+.btn.ghost{color:var(--muted)}
+.btn.ghost:hover{background:var(--brand-soft);color:var(--brand)}
+.btn.danger{color:var(--err)}
+.btn.danger:hover{background:var(--err-soft)}
+.btn.sm{padding:5px 9px;font-size:12.5px;border-radius:8px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.select{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:0 8px 0 10px;background:var(--card);color:var(--muted);font-weight:600}
+.select select{border:0;background:transparent;padding:7px 0;color:var(--ink);font-weight:700;appearance:auto}
+
+/* studio bar */
+.studiobar{display:none;align-items:center;gap:10px;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--brand-dk);color:#fff;flex-wrap:wrap}
+:root[data-theme="dark"] .studiobar{background:#2A2452}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .studiobar{background:#2A2452} }
+body.studio .studiobar{display:flex}
+.studiobar .tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:999px;font-weight:700;font-size:12.5px}
+.studiobar .scope{display:inline-flex;background:rgba(255,255,255,.12);border-radius:999px;padding:2px}
+.studiobar .scope button{padding:4px 12px;border-radius:999px;font-weight:700;font-size:12.5px;color:rgba(255,255,255,.8)}
+.studiobar .scope button[aria-pressed="true"]{background:#fff;color:var(--brand-dk)}
+.studiobar .btn.primary{background:#fff;color:#241F52}
+.studiobar .btn.primary:hover{background:#EDEAF8}
+.studiobar .btn.ghost{color:rgba(255,255,255,.85)}
+.studiobar .btn.ghost:hover{background:rgba(255,255,255,.12);color:#fff}
+.studiobar .changes{font-size:12.5px;color:rgba(255,255,255,.8)}
+
+/* workspace */
+.work{display:grid;grid-template-columns:1fr;gap:16px;padding-block:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));flex:1;align-items:start}
+body.studio .work{grid-template-columns:272px minmax(0,1fr) 316px}
+.panel{display:none;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);max-height:calc(100vh - 130px);overflow:auto}
+body.studio .panel{display:block}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:14px 16px 8px}
+.panel .sect{padding:0 12px 12px}
+.ptabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 12px}
+.ptabs button{padding:10px 8px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.ptabs button[aria-selected="true"]{color:var(--brand);border-color:var(--brand)}
+.pal{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pal .it{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:grab;font-weight:700;font-size:12.5px;user-select:none}
+.pal .it:hover{border-color:var(--brand-light);background:var(--brand-soft)}
+.pal .it:active{cursor:grabbing}
+.pal .it svg,.pal .it [data-lucide]{color:var(--brand)}
+.pal.one{grid-template-columns:1fr}
+.pal .it .sub{display:block;font-weight:600;color:var(--muted);font-size:11.5px}
+.pal .it.custom svg{color:var(--teal)}
+.hint{color:var(--muted);font-size:12.5px;padding:0 16px 14px;line-height:1.5}
+.hint b{color:var(--ink)}
+
+/* screen */
+.screen{min-width:0;position:relative}
+body.studio .screen{outline:2px dashed var(--brand-light);outline-offset:8px;border-radius:var(--r)}
+.hero{background:var(--teal-soft);border:1px solid var(--teal-fill);border-radius:var(--r);padding:18px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:16px;background:var(--card);color:var(--teal);display:grid;place-items:center;font-weight:800;font-size:18px;border:1px solid var(--teal-fill)}
+.hero h1{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.hero .sub{color:var(--muted);font-weight:600;margin-top:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--card);color:var(--teal);border:1px solid var(--teal-fill)}
+.chip.ok{color:var(--ok);background:var(--ok-soft);border-color:transparent}
+.chip.custom{color:var(--brand);background:var(--brand-soft);border-color:transparent}
+.hero .kpi{margin-left:auto;text-align:right}
+.hero .kpi .v{font-size:20px;font-weight:800;color:var(--money);font-variant-numeric:tabular-nums}
+.hero .kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0;position:relative}
+.card.wide{grid-column:1/-1}
+.card .hd{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line-2)}
+.card .hd .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.card .hd .ic.teal{background:var(--teal-soft);color:var(--teal)}
+.card .hd .ic.green{background:var(--ok-soft);color:var(--ok)}
+.card .hd .ic.blue{background:var(--info-soft);color:var(--info)}
+.card .hd .ic.amber{background:var(--warn-soft);color:var(--warn)}
+.card .hd h2{font-size:14px;font-weight:800;flex:1}
+.zone{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;display:none}
+body.studio .zone{display:inline-flex}
+.zone.open{color:var(--ok);background:var(--ok-soft)}
+.zone.locked{color:var(--muted);background:var(--bg)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;padding:10px 12px 12px}
+.card.wide .fields{grid-template-columns:repeat(3,minmax(0,1fr))}
+.f{display:flex;align-items:flex-start;gap:8px;padding:7px 8px;border-radius:9px;border:1px solid transparent;min-width:0;position:relative}
+.f .grip{color:var(--muted);opacity:0;width:14px;flex:none;margin-top:4px;cursor:grab}
+.f .lab{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.01em;display:flex;align-items:center;gap:5px;min-width:0}
+.f .lab .req{color:var(--err)}
+.f .val{font-weight:700;margin-top:1px;overflow-wrap:anywhere}
+.f .val.money{color:var(--money);font-variant-numeric:tabular-nums}
+.f .val.empty{color:var(--muted);font-weight:600}
+.f .body{min-width:0;flex:1}
+.f .mark{position:absolute;right:8px;top:8px;display:none;color:var(--muted)}
+.f .mark svg{width:13px;height:13px}
+.f.custom .lab::after{content:"custom";font-size:9.5px;padding:1px 5px;border-radius:999px;background:var(--brand-soft);color:var(--brand);letter-spacing:.04em;text-transform:uppercase}
+body.studio .f{border-color:var(--line-2);cursor:pointer;background:var(--card)}
+body.studio .f:hover{border-color:var(--brand-light)}
+body.studio .f .grip{opacity:1}
+body.studio .f .mark{display:block}
+body.studio .f.locked{background:var(--bg)}
+body.studio .f.locked .grip{opacity:.25;cursor:not-allowed}
+body.studio .f.sel{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+body.studio .f.hidden-for-role{opacity:.5}
+.f.dragging{opacity:.4}
+.f.over{border-color:var(--brand)!important;box-shadow:inset 3px 0 0 var(--brand)}
+.drop{display:none;margin:4px 12px 12px;border:2px dashed var(--brand-light);border-radius:10px;padding:10px;text-align:center;color:var(--muted);font-weight:700;font-size:12.5px}
+body.studio .card.open .drop{display:block}
+.card.open.over{outline:2px solid var(--brand);outline-offset:-2px}
+.card.open.over .drop{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+.lockednote{display:none;padding:10px 16px 14px;color:var(--muted);font-size:12.5px;line-height:1.5}
+body.studio .card.lockedzone .lockednote{display:block}
+body.studio .card.lockedzone{border-style:dashed}
+body.studio .card.lockedzone .painted{opacity:.55;pointer-events:none}
+.painted{padding:12px 16px}
+.pay{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.pay .t{background:var(--bg);border-radius:10px;padding:10px 12px}
+.pay .t .l{font-size:11.5px;color:var(--muted);font-weight:700}
+.pay .t .v{font-weight:800;font-variant-numeric:tabular-nums}
+.pay .t .v.money{color:var(--money)}
+.comp{margin-top:10px;border-top:1px solid var(--line-2)}
+.comp div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line-2);font-weight:600}
+.comp div span:last-child{font-variant-numeric:tabular-nums;font-weight:800}
+.tl{display:grid;gap:8px}
+.tl div{display:flex;gap:10px;align-items:center;font-weight:600;color:var(--muted)}
+.tl div b{color:var(--ink)}
+.tl .dot{width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.emptycard{padding:14px 16px;color:var(--muted);font-weight:600}
+
+/* properties */
+.prop{padding:12px 16px 16px;display:grid;gap:12px}
+.prop label{display:grid;gap:4px;font-size:12px;font-weight:700;color:var(--muted)}
+.prop input[type=text],.prop select,.prop textarea{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--card);width:100%;font-weight:600}
+.prop textarea{min-height:56px;resize:vertical}
+.prop .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line-2)}
+.prop .row .t{font-weight:700}
+.prop .row .d{font-size:12px;color:var(--muted);font-weight:600}
+.sw{position:relative;width:38px;height:22px;border-radius:999px;background:var(--line);flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw[aria-checked="true"]{background:var(--brand)}
+.sw[aria-checked="true"]::after{transform:translateX(16px)}
+.sw[disabled]{opacity:.4;cursor:not-allowed}
+.where{display:flex;gap:5px;flex-wrap:wrap}
+.where span{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--bg);color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.where span.on{background:var(--ok-soft);color:var(--ok)}
+.where span svg{width:12px;height:12px}
+.note{border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.note svg{flex:none;margin-top:2px}
+.note.lock{background:var(--bg);color:var(--muted)}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note.err{background:var(--err-soft);color:var(--err)}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.opts{display:grid;gap:4px}
+.opts div{display:flex;gap:6px}
+.opts input{flex:1}
+.empty-prop{padding:22px 18px;color:var(--muted);text-align:center;font-weight:600;line-height:1.5}
+.empty-prop svg{width:28px;height:28px;color:var(--brand-light);margin-bottom:6px}
+.confirm{display:grid;gap:8px}
+.confirm input{border:1px solid var(--err);border-radius:9px;padding:8px 10px;background:var(--card);width:100%;font-weight:700;letter-spacing:.06em}
+
+/* list */
+.listwrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.listtop{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.listtop h2{font-size:15px;font-weight:800}
+.listtop .count{color:var(--muted);font-weight:600}
+.search{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;color:var(--muted);font-weight:600;min-width:180px}
+.fchips{display:flex;gap:6px;flex-wrap:wrap}
+.fchips span{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bg);color:var(--muted)}
+.fchips span.on{background:var(--brand-soft);color:var(--brand)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;position:relative;background:var(--card)}
+th .thin{display:inline-flex;align-items:center;gap:5px}
+th .thin svg{width:12px;height:12px}
+th.custom .thin::after{content:"custom";font-size:9px;padding:1px 5px;border-radius:999px;background:var(--brand-soft);color:var(--brand);letter-spacing:.04em}
+body.studio th{cursor:grab;border-top:2px solid var(--brand-light)}
+body.studio th.lockedcol{border-top-color:var(--line)}
+body.studio th.over{border-left:3px solid var(--brand)}
+body.studio th.sel{background:var(--brand-soft);color:var(--brand)}
+td.money{color:var(--money);font-weight:800;font-variant-numeric:tabular-nums;text-align:right}
+th.right{text-align:right}
+td .st{padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--ok-soft);color:var(--ok)}
+td .st.draft{background:var(--warn-soft);color:var(--warn)}
+td .name{font-weight:800}
+td .sub{display:block;color:var(--muted);font-size:12px;font-weight:600}
+.cols{display:grid;gap:4px;padding:0 12px 12px}
+.cols .c{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line-2);border-radius:10px;font-weight:700;cursor:grab;background:var(--card)}
+.cols .c.off{color:var(--muted)}
+.cols .c .grip{color:var(--muted)}
+.cols .c .lab{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cols .c .lab small{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.cols .c .lock{color:var(--muted)}
+.cols .c.over{border-color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
+.cols .c .sw{width:32px;height:18px}
+.cols .c .sw::after{width:12px;height:12px;top:3px;left:3px}
+.cols .c .sw[aria-checked="true"]::after{transform:translateX(14px)}
+.wsel{display:inline-flex;gap:2px;background:var(--bg);border-radius:8px;padding:2px}
+.wsel button{padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:800;color:var(--muted)}
+.wsel button[aria-pressed="true"]{background:var(--card);color:var(--brand);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+/* library */
+.lib{display:grid;gap:14px}
+.libtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.libtop h2{font-size:18px;font-weight:800}
+.libtop p{margin:2px 0 0;color:var(--muted);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;gap:12px;align-items:center}
+.kpi .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.kpi .ic.g{background:var(--ok-soft);color:var(--ok)}
+.kpi .ic.b{background:var(--info-soft);color:var(--info)}
+.kpi .ic.a{background:var(--warn-soft);color:var(--warn)}
+.kpi .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:700}
+.rt{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--muted)}
+.rt i{width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block}
+.rt.c i{background:var(--brand)}
+.rt.r i{background:var(--warn)}
+.usage{display:flex;gap:4px}
+.usage span{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:var(--bg);color:var(--muted)}
+.usage span.on{background:var(--ok-soft);color:var(--ok)}
+.fill{display:inline-flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;font-weight:700}
+.fill i{display:inline-block;width:64px;height:6px;border-radius:999px;background:var(--line-2);overflow:hidden;position:relative}
+.fill i::after{content:"";position:absolute;inset:0;width:var(--p);background:var(--brand);border-radius:999px}
+
+/* legend / toast / modal */
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12.5px;font-weight:600;padding:14px 0 6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid var(--line)}
+.legend i.o{border:2px dashed var(--brand-light)}
+.legend i.l{background:var(--bg);border-style:dashed}
+.legend i.c{background:var(--brand-soft);border-color:transparent}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--brand-dk);color:#fff;padding:11px 16px;border-radius:12px;font-weight:700;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;transition:all .2s;z-index:20;max-width:calc(100vw - 32px);box-shadow:0 12px 30px -10px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast svg{color:#9FE0D4}
+.sheet{position:fixed;inset:0;background:rgba(30,27,46,.45);display:none;place-items:center;z-index:30;padding:16px}
+.sheet.show{display:grid}
+.sheet .box{background:var(--card);border-radius:16px;width:min(520px,100%);box-shadow:0 30px 60px -20px rgba(0,0,0,.5);overflow:hidden}
+.sheet .box .hd{padding:16px 20px 8px}
+.sheet .box h2{font-size:17px;font-weight:800}
+.sheet .box p{margin:4px 0 0;color:var(--muted);font-weight:600}
+.sheet .box .bd{padding:8px 20px 16px;display:grid;gap:8px}
+.sheet .box .ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--line-2);background:var(--bg)}
+.chg{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;background:var(--bg);font-weight:600}
+.chg svg{color:var(--brand)}
+.chg .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;width:62px;flex:none}
+
+/* footer */
+.foot{color:var(--muted);font-size:12.5px;padding:10px 0 24px;line-height:1.6;max-width:70ch}
+.foot b{color:var(--ink)}
+
+@media (max-width:1100px){ body.studio .work{grid-template-columns:1fr} .panel{position:static;max-height:none} .cards{grid-template-columns:1fr} .card.wide .fields{grid-template-columns:repeat(2,minmax(0,1fr))} .pay{grid-template-columns:repeat(2,minmax(0,1fr))} .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:640px){ .shell{grid-template-columns:1fr} .rail{display:none} .fields{grid-template-columns:1fr} .card.wide .fields{grid-template-columns:1fr} .hero .kpi{margin-left:0;text-align:left} .kpis{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<div class="shell">
+  <nav class="rail" aria-label="Payobook areas">
+    <div class="logo">P</div>
+    <button title="Home"><i data-lucide="house"></i></button>
+    <button title="Pay runs"><i data-lucide="banknote"></i></button>
+    <button title="Workforce" aria-current="page"><i data-lucide="users"></i></button>
+    <button title="Hiring"><i data-lucide="briefcase"></i></button>
+    <button title="Learn"><i data-lucide="graduation-cap"></i></button>
+    <button title="Access"><i data-lucide="shield"></i></button>
+    <span class="spacer"></span>
+    <button title="Settings"><i data-lucide="settings"></i></button>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb"><i data-lucide="users"></i> Workforce <i data-lucide="chevron-right"></i> <b id="crumbLeaf">Employee record</b></div>
+      <div class="tabs" role="tablist" aria-label="Screens">
+        <button role="tab" aria-selected="true" data-screen="form">Employee record</button>
+        <button role="tab" aria-selected="false" data-screen="list">Employees list</button>
+        <button role="tab" aria-selected="false" data-screen="lib">Field library</button>
+      </div>
+      <span class="spacer"></span>
+      <label class="select" id="viewAsWrap"><i data-lucide="eye"></i> View as <select id="viewAs"><option value="admin">Administrator</option><option value="hr">HR staff</option><option value="emp">Employee (self-service)</option></select></label>
+      <button class="btn outline" id="studioBtn" title="Open Form Studio"><i data-lucide="wand-sparkles"></i> Studio</button>
+    </div>
+
+    <div class="studiobar" id="studiobar">
+      <span class="tag"><i data-lucide="wand-sparkles"></i> Form Studio</span>
+      <span class="tag" id="studioTarget">Employee record</span>
+      <div class="scope" id="scopeWrap" role="group" aria-label="Who sees this layout">
+        <button aria-pressed="true" data-scope="everyone">For everyone</button>
+        <button aria-pressed="false" data-scope="me">Just me</button>
+      </div>
+      <span class="changes" id="changeCount">No changes yet</span>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="discardBtn"><i data-lucide="rotate-ccw"></i> Discard</button>
+      <button class="btn primary" id="publishBtn"><i data-lucide="upload"></i> Publish</button>
+      <button class="btn ghost" id="exitBtn" title="Exit Studio"><i data-lucide="x"></i></button>
+    </div>
+
+    <div class="work">
+      <!-- LEFT: palette -->
+      <aside class="panel" id="leftPanel" aria-label="Field palette">
+        <div id="palForm">
+          <div class="ptabs" role="tablist">
+            <button role="tab" aria-selected="true" data-pal="new">New field</button>
+            <button role="tab" aria-selected="false" data-pal="existing">Add existing</button>
+          </div>
+          <div id="palNew">
+            <h3>Drag a type onto a section</h3>
+            <div class="sect pal" id="palTypes"></div>
+            <p class="hint">A new field is created for <b>every employee</b> in this company the moment you publish. Its type cannot be changed afterwards.</p>
+          </div>
+          <div id="palExisting" hidden>
+            <h3>Fields not shown on this screen</h3>
+            <div class="sect pal one" id="palHidden"></div>
+            <p class="hint">Standard fields that were hidden, and custom fields that exist but are not placed here yet.</p>
+          </div>
+        </div>
+        <div id="palList" hidden>
+          <h3>Columns</h3>
+          <div class="cols" id="colList"></div>
+          <p class="hint">Drag to reorder. Switch a column on or off. Columns drawn by Payobook (status, pay) can be moved but not removed.</p>
+        </div>
+      </aside>
+
+      <!-- CENTER: the live screen -->
+      <section class="screen" id="screen"></section>
+
+      <!-- RIGHT: properties -->
+      <aside class="panel" id="rightPanel" aria-label="Field settings"><div id="props"></div></aside>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="check-circle-2"></i><span id="toastMsg"></span></div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="box">
+    <div class="hd"><h2 id="sheetTitle">Publish this layout?</h2><p id="sheetSub">Everyone in this company sees the new layout on their next page load.</p></div>
+    <div class="bd" id="sheetBody"></div>
+    <div class="ft"><button class="btn ghost" id="sheetCancel">Keep editing</button><button class="btn primary" id="sheetOk"><i data-lucide="upload"></i> Publish for everyone</button></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@0.452.0/dist/umd/lucide.min.js"></script>
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const icons=()=>{ try{ window.lucide&&lucide.createIcons(); }catch(e){} };
+
+/* ---------- data: field library (company-wide), per record type ---------- */
+const TYPES=[
+ {key:'char',label:'Text',icon:'type',sub:'short, one line'},
+ {key:'text',label:'Long text',icon:'align-left',sub:'notes'},
+ {key:'integer',label:'Whole number',icon:'hash',sub:'0, 1, 2…'},
+ {key:'float',label:'Decimal',icon:'percent',sub:'12.5'},
+ {key:'monetary',label:'Money',icon:'banknote',sub:'in company currency'},
+ {key:'boolean',label:'Yes / No',icon:'toggle-left',sub:'checkbox'},
+ {key:'date',label:'Date',icon:'calendar',sub:'day'},
+ {key:'selection',label:'Dropdown',icon:'list',sub:'pick one'},
+ {key:'many2one',label:'Link to a record',icon:'link',sub:'employee, dept…'},
+ {key:'binary',label:'File',icon:'paperclip',sub:'PDF, image'},
+];
+const T=k=>TYPES.find(t=>t.key===k)||TYPES[0];
+
+/* std = standard Payobook field; locked = drives pay / identity, cannot be hidden or moved out of its section */
+const F={
+ name:{label:'Full name',type:'char',std:true,locked:true,req:true,reason:'Prints on every payslip and bank file.',vis:'all'},
+ empid:{label:'Employee ID',type:'char',std:true,locked:true,reason:'Key for imports, exports and the connected systems.',vis:'all'},
+ dob:{label:'Date of birth',type:'date',std:true,vis:'hr'},
+ nationality:{label:'Nationality',type:'many2one',std:true,vis:'hr'},
+ pemail:{label:'Personal email',type:'char',std:true,vis:'hr'},
+ phone:{label:'Phone',type:'char',std:true,vis:'all'},
+ address:{label:'Home address',type:'text',std:true,vis:'hr'},
+ job:{label:'Job title',type:'char',std:true,vis:'all'},
+ dept:{label:'Department',type:'many2one',std:true,vis:'all'},
+ manager:{label:'Manager',type:'many2one',std:true,vis:'all'},
+ location:{label:'Work location',type:'many2one',std:true,vis:'all'},
+ start:{label:'Start date',type:'date',std:true,locked:true,req:true,reason:'Pro-rates the first pay run and seniority.',vis:'all'},
+ taxid:{label:'Tax ID',type:'char',std:true,locked:true,reason:'Required on statutory returns.',vis:'hr'},
+ ssn:{label:'Social insurance no.',type:'char',std:true,locked:true,reason:'Required on statutory returns.',vis:'hr'},
+ bank:{label:'Bank account',type:'char',std:true,locked:true,reason:'The bank file reads this field.',vis:'hr'},
+ marital:{label:'Marital status',type:'selection',std:true,vis:'hr'},
+ emergency:{label:'Emergency contact',type:'char',std:true,vis:'hr'},
+ passport:{label:'Passport number',type:'char',std:true,vis:'hr'},
+ visa:{label:'Visa expiry',type:'date',std:true,vis:'hr'},
+ birthplace:{label:'Place of birth',type:'char',std:true,vis:'hr'},
+ /* custom (x_) fields already created by this company */
+ x_dependants:{label:'Dependants',type:'integer',custom:true,help:'Children or parents claimed for tax relief.',vis:'hr',formula:true,list:true,req:false,filled:[312,348]},
+ x_uniform:{label:'Uniform size',type:'selection',custom:true,options:['XS','S','M','L','XL'],vis:'all',filled:[290,348]},
+ x_probation:{label:'Probation review',type:'date',custom:true,help:'Date the manager must file the review.',vis:'hr',list:true,filled:[61,348]},
+ x_parking:{label:'Parking allowance',type:'monetary',custom:true,vis:'hr',formula:true,filled:[44,348]},
+};
+const VAL={name:'Lan Nguyen Thi',empid:'PB-0142',dob:'14 Mar 1991',nationality:'Vietnamese',pemail:'lan.nt@example.com',phone:'+84 90 123 4567',address:'12 Nguyen Hue, District 1, Ho Chi Minh City',job:'Payroll analyst',dept:'Finance',manager:'Minh Tran',location:'Ho Chi Minh City office',start:'3 Feb 2022',taxid:'8401234567',ssn:'7912345678',bank:'Vietcombank ••• 4471',marital:'Married',emergency:'Hoa Nguyen, +84 91 222 3344',passport:'C1234567',visa:'',birthplace:'Da Nang',x_dependants:'2',x_uniform:'M',x_probation:'',x_parking:'₫ 600,000'};
+const VIS_RANK={all:0,hr:1,admin:2}, ROLE_RANK={emp:0,hr:1,admin:2};
+
+/* layout of the Employee record: ordered sections */
+const defaultLayout=()=>[
+ {id:'personal',title:'Personal',icon:'user',tone:'teal',kind:'open',fields:['name','dob','nationality','pemail','phone','address']},
+ {id:'job',title:'Job',icon:'briefcase',tone:'blue',kind:'open',fields:['job','dept','manager','location','start','empid']},
+ {id:'pay',title:'Pay',icon:'banknote',tone:'green',kind:'locked',note:'Drawn by Payobook from the contract and the pay scheme. Pay figures cannot take extra fields here. Add money fields to a section above and tick "Use in pay formulas" instead.'},
+ {id:'statutory',title:'Statutory',icon:'landmark',tone:'amber',kind:'open',fields:['taxid','ssn','bank']},
+ {id:'custom',title:'Company details',icon:'sparkles',tone:'brand',kind:'open',fields:['x_dependants','x_uniform','x_probation']},
+ {id:'history',title:'History',icon:'history',tone:'brand',kind:'locked',wide:true,note:'A timeline built from contract changes and pay runs. It has no fields to place.'},
+];
+const defaultCols=()=>[
+ {key:'name',on:true,pin:true,w:'l'},{key:'empid',on:true,w:'s'},{key:'dept',on:true,w:'m'},{key:'job',on:true,w:'m'},
+ {key:'status',on:true,drawn:true,w:'s'},{key:'start',on:true,w:'s'},{key:'wage',on:true,drawn:true,w:'m'},
+ {key:'manager',on:false,w:'m'},{key:'location',on:false,w:'m'},{key:'x_dependants',on:false,w:'s'},{key:'x_probation',on:false,w:'s'},{key:'x_uniform',on:false,w:'s'},{key:'x_parking',on:false,w:'m'},
+];
+const DRAWN={status:{label:'Contract status',why:'A status chip drawn by Payobook.'},wage:{label:'Monthly wage',why:'Money column read from the contract.'}};
+const ROWS=[
+ ['Lan Nguyen Thi','PB-0142','Finance','Payroll analyst','Running','3 Feb 2022','₫ 28,500,000','Minh Tran','HCMC office','2','','M','₫ 600,000'],
+ ['Duc Pham Van','PB-0097','Operations','Warehouse lead','Running','12 Aug 2020','₫ 21,200,000','Hoa Le','Binh Duong plant','3','','L','₫ 0'],
+ ['Mai Tran Thi','PB-0188','Sales','Account executive','Probation','1 Oct 2026','₫ 18,000,000','Minh Tran','HCMC office','0','30 Dec 2026','S','₫ 0'],
+ ['Quang Le Minh','PB-0031','Engineering','Senior engineer','Running','5 Jan 2019','₫ 46,000,000','An Vo','Remote','1','','L','₫ 600,000'],
+ ['Thao Vu Thi','PB-0176','People','HR generalist','Running','18 Mar 2026','₫ 19,500,000','Hoa Le','HCMC office','0','','M','₫ 0'],
+ ['Binh Hoang Van','PB-0190','Operations','Forklift operator','Probation','20 Oct 2026','₫ 12,800,000','Duc Pham','Binh Duong plant','2','18 Jan 2027','XL','₫ 0'],
+];
+const ROWKEY=['name','empid','dept','job','status','start','wage','manager','location','x_dependants','x_probation','x_uniform','x_parking'];
+
+/* ---------- state ---------- */
+let S={screen:'form',studio:false,scope:'everyone',role:'admin',layout:defaultLayout(),cols:defaultCols(),sel:null,selCol:null,changes:[],pal:'new',snapshot:null};
+const LS='pb_formstudio_poc_v1';
+try{ const saved=JSON.parse(localStorage.getItem(LS)||'null'); if(saved&&saved.layout&&saved.cols){ S.layout=saved.layout; S.cols=saved.cols; if(saved.fields){ Object.assign(F,saved.fields); } } }catch(e){}
+const persist=()=>{ try{ const cf={}; Object.keys(F).forEach(k=>{ if(F[k].custom) cf[k]=F[k]; }); localStorage.setItem(LS,JSON.stringify({layout:S.layout,cols:S.cols,fields:cf})); }catch(e){} };
+const placed=()=>S.layout.flatMap(s=>s.fields||[]);
+const change=(kind,what)=>{ S.changes.push({kind,what}); renderBar(); };
+const visible=k=>{ const f=F[k]; if(!f) return false; return VIS_RANK[f.vis||'all']<=ROLE_RANK[S.role]; };
+
+/* ---------- toast ---------- */
+let tt; const toast=m=>{ $('#toastMsg').textContent=m; $('#toast').classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>$('#toast').classList.remove('show'),3200); };
+
+/* ---------- top-level render ---------- */
+function render(){
+  document.body.classList.toggle('studio',S.studio);
+  $$('.tabs [role=tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.screen===S.screen)));
+  $('#crumbLeaf').textContent={form:'Employee record',list:'Employees',lib:'Field library'}[S.screen];
+  $('#studioTarget').textContent={form:'Employee record',list:'Employees list',lib:'Field library'}[S.screen];
+  $('#studioBtn').hidden=(S.screen==='lib');
+  $('#viewAsWrap').hidden=(S.screen==='lib');
+  $('#palForm').hidden=S.screen!=='form'; $('#palList').hidden=S.screen!=='list';
+  $('#scopeWrap').hidden=S.screen!=='list';
+  if(S.screen==='form') renderForm(); else if(S.screen==='list') renderList(); else renderLib();
+  renderPalette(); renderProps(); renderBar(); icons();
+}
+function renderBar(){ const n=S.changes.length; $('#changeCount').textContent=n?`${n} change${n>1?'s':''} not yet published`:'No changes yet'; $('#publishBtn').disabled=!n; $('#discardBtn').disabled=!n; }
+
+/* ---------- employee record ---------- */
+function fieldHTML(k){
+  const f=F[k]; if(!f) return ''; const t=T(f.type); const v=VAL[k]||'';
+  const hiddenForRole=!visible(k);
+  if(hiddenForRole && !S.studio) return '';
+  const val=v?`<div class="val ${f.type==='monetary'?'money':''}">${v}</div>`:`<div class="val empty">—</div>`;
+  const mark=f.locked?`<span class="mark" title="${f.reason||'Locked'}"><i data-lucide="lock"></i></span>`:(f.vis==='hr'||f.vis==='admin'?`<span class="mark" title="Hidden from employees"><i data-lucide="eye-off"></i></span>`:'');
+  return `<div class="f ${f.custom?'custom':''} ${f.locked?'locked':''} ${S.sel===k?'sel':''} ${hiddenForRole?'hidden-for-role':''}" data-k="${k}" draggable="${S.studio&&!f.locked}" tabindex="${S.studio?0:-1}" role="${S.studio?'button':''}">
+    <span class="grip"><i data-lucide="grip-vertical"></i></span>
+    <div class="body"><div class="lab"><i data-lucide="${t.icon}"></i>${f.label}${f.req?'<span class="req">*</span>':''}</div>${val}</div>${mark}</div>`;
+}
+function renderForm(){
+  const sections=S.layout.map(s=>{
+    const tone=s.tone==='brand'?'':s.tone;
+    const hd=`<div class="hd"><span class="ic ${tone}"><i data-lucide="${s.icon}"></i></span><h2>${s.title}</h2>${s.kind==='open'?'<span class="zone open"><i data-lucide="unlock"></i> Open section</span>':'<span class="zone locked"><i data-lucide="lock"></i> Drawn by Payobook</span>'}</div>`;
+    if(s.kind==='locked'){
+      const body=s.id==='pay'?`<div class="painted"><div class="pay"><div class="t"><div class="l">Monthly wage</div><div class="v money">₫ 28,500,000</div></div><div class="t"><div class="l">Pay scheme</div><div class="v">VN Standard 2026</div></div><div class="t"><div class="l">Frequency</div><div class="v">Monthly</div></div><div class="t"><div class="l">Last net pay</div><div class="v money">₫ 24,112,300</div></div></div><div class="comp"><div><span>Basic salary</span><span>₫ 28,500,000</span></div><div><span>Lunch allowance</span><span>₫ 730,000</span></div><div><span>Parking allowance <em style="color:var(--brand);font-style:normal;font-size:11px">· from custom field</em></span><span>₫ 600,000</span></div><div><span>Social insurance (employee)</span><span>−₫ 2,280,000</span></div></div></div>`
+        :`<div class="painted tl"><div><span class="dot"></span><b>Oct 2026</b> Pay run posted · net ₫ 24,112,300</div><div><span class="dot"></span><b>1 Jul 2026</b> Wage changed ₫ 26,000,000 → ₫ 28,500,000</div><div><span class="dot"></span><b>3 Feb 2022</b> Contract started</div></div>`;
+      return `<div class="card lockedzone ${s.wide?'wide':''}" data-sid="${s.id}">${hd}${body}<div class="lockednote"><i data-lucide="info" style="vertical-align:-3px"></i> ${s.note}</div></div>`;
+    }
+    const fields=(s.fields||[]).map(fieldHTML).join('');
+    const empty=!(s.fields||[]).length&&!S.studio?`<div class="emptycard">Nothing here yet.</div>`:'';
+    return `<div class="card open ${s.wide?'wide':''}" data-sid="${s.id}">${hd}<div class="fields">${fields}</div>${empty}<div class="drop"><i data-lucide="plus" style="vertical-align:-3px"></i> Drop a field here</div></div>`;
+  }).join('');
+  const customChips=(S.layout.find(s=>s.id==='custom')?.fields||[]).filter(k=>F[k]&&F[k].custom&&VAL[k]&&visible(k)).slice(0,2).map(k=>`<span class="chip custom">${F[k].label}: ${VAL[k]}</span>`).join('');
+  $('#screen').innerHTML=`
+   <div class="hero"><div class="avatar">LN</div><div><h1>Lan Nguyen Thi</h1><div class="sub">Payroll analyst · Finance · PB-0142</div><div class="chips"><span class="chip ok"><i data-lucide="check"></i> Running</span><span class="chip"><i data-lucide="calendar"></i> Since Feb 2022</span>${customChips}</div></div><div class="kpi"><div class="v">₫ 28,500,000</div><div class="l">Monthly wage</div></div></div>
+   <div class="cards">${sections}</div>
+   <div class="legend"><span><i class="o"></i> Open section: fields can be added, moved, hidden</span><span><i class="l"></i> Drawn by Payobook: no fields can be placed</span><span><i class="c"></i> Custom field</span><span><i data-lucide="lock" style="width:13px;height:13px"></i> Locked field: drives pay or identity</span></div>
+   <p class="foot">${S.studio?'<b>You are in Studio.</b> Drag a type from the left onto an open section, click a field to change its label, who can see it, or whether pay formulas may use it. Nothing changes for anyone until you press Publish.':'This is how the record looks to <b>'+({admin:'an administrator',hr:'HR staff',emp:'the employee'})[S.role]+'</b>. Administrators see a Studio button top-right; staff and employees never do.'}</p>`;
+  wireForm();
+}
+function wireForm(){
+  if(!S.studio) return;
+  $$('.f',$('#screen')).forEach(el=>{
+    el.addEventListener('click',()=>{ S.sel=el.dataset.k; S.selCol=null; renderForm(); renderProps(); icons(); });
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+    el.addEventListener('dragstart',e=>{ if(F[el.dataset.k].locked){ e.preventDefault(); return; } e.dataTransfer.setData('text/plain','move:'+el.dataset.k); el.classList.add('dragging'); });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    el.addEventListener('dragover',e=>{ e.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave',()=>el.classList.remove('over'));
+    el.addEventListener('drop',e=>{ e.preventDefault(); e.stopPropagation(); el.classList.remove('over'); dropInto(el.closest('.card').dataset.sid,e.dataTransfer.getData('text/plain'),el.dataset.k); });
+  });
+  $$('.card.open',$('#screen')).forEach(c=>{
+    c.addEventListener('dragover',e=>{ e.preventDefault(); c.classList.add('over'); });
+    c.addEventListener('dragleave',e=>{ if(!c.contains(e.relatedTarget)) c.classList.remove('over'); });
+    c.addEventListener('drop',e=>{ e.preventDefault(); c.classList.remove('over'); dropInto(c.dataset.sid,e.dataTransfer.getData('text/plain'),null); });
+  });
+}
+function dropInto(sid,data,beforeKey){
+  const sec=S.layout.find(s=>s.id===sid); if(!sec||sec.kind!=='open'||!data) return;
+  const [op,arg]=data.split(':');
+  let key;
+  if(op==='new'){ key=createField(arg); }
+  else if(op==='existing'){ key=arg; }
+  else if(op==='move'){ key=arg; if(F[key].locked) return; S.layout.forEach(s=>{ if(s.fields) s.fields=s.fields.filter(k=>k!==key); }); }
+  if(!key) return;
+  const idx=beforeKey?sec.fields.indexOf(beforeKey):-1;
+  if(idx>=0) sec.fields.splice(idx,0,key); else sec.fields.push(key);
+  if(op==='new') change('Added',`${F[key].label} (${T(F[key].type).label}) in ${sec.title}`);
+  else if(op==='existing') change('Shown',`${F[key].label} in ${sec.title}`);
+  else change('Moved',`${F[key].label} to ${sec.title}`);
+  S.sel=key; persist(); render();
+}
+let seq=1;
+function createField(type){
+  const t=T(type); let key='x_new_'+(seq++); while(F[key]) key='x_new_'+(seq++);
+  F[key]={label:'New '+t.label.toLowerCase(),type,custom:true,vis:'hr',help:'',options:type==='selection'?['Option A','Option B']:undefined,filled:[0,348],fresh:true};
+  VAL[key]='';
+  return key;
+}
+
+/* ---------- palette ---------- */
+function renderPalette(){
+  if(S.screen==='form'){
+    $$('#palForm .ptabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.pal===S.pal)));
+    $('#palNew').hidden=S.pal!=='new'; $('#palExisting').hidden=S.pal!=='existing';
+    $('#palTypes').innerHTML=TYPES.map(t=>`<div class="it" draggable="true" data-drag="new:${t.key}" title="${t.sub}"><i data-lucide="${t.icon}"></i><span>${t.label}<span class="sub">${t.sub}</span></span></div>`).join('');
+    const p=placed(); const hidden=Object.keys(F).filter(k=>!p.includes(k));
+    $('#palHidden').innerHTML=hidden.length?hidden.map(k=>`<div class="it ${F[k].custom?'custom':''}" draggable="true" data-drag="existing:${k}"><i data-lucide="${T(F[k].type).icon}"></i><span>${F[k].label}<span class="sub">${F[k].custom?'Custom field':'Standard field'} · ${T(F[k].type).label}</span></span></div>`).join(''):`<p class="hint" style="padding:6px 4px">Every field is already on the screen.</p>`;
+    $$('#leftPanel .it').forEach(el=>el.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',el.dataset.drag)));
+  } else if(S.screen==='list'){
+    $('#colList').innerHTML=S.cols.map((c,i)=>{ const lab=DRAWN[c.key]?DRAWN[c.key].label:F[c.key].label; const custom=F[c.key]&&F[c.key].custom;
+      return `<div class="c ${c.on?'':'off'} ${S.selCol===c.key?'sel':''}" draggable="true" data-i="${i}" data-key="${c.key}"><span class="grip"><i data-lucide="grip-vertical"></i></span><span class="lab">${lab}<small>${c.pin?'Pinned first · ':''}${c.drawn?'Drawn by Payobook':(custom?'Custom field':'Standard field')}</small></span>${c.drawn||c.pin?`<i data-lucide="lock" class="lock"></i>`:''}<span class="sw" role="switch" aria-checked="${c.on}" ${c.drawn||c.pin?'disabled':''} data-toggle="${c.key}"></span></div>`; }).join('');
+    $$('#colList .c').forEach(el=>{
+      el.addEventListener('click',e=>{ if(e.target.closest('[data-toggle]')) return; S.selCol=el.dataset.key; S.sel=null; renderPalette(); renderProps(); icons(); });
+      el.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain','col:'+el.dataset.i));
+      el.addEventListener('dragover',e=>{ e.preventDefault(); el.classList.add('over'); });
+      el.addEventListener('dragleave',()=>el.classList.remove('over'));
+      el.addEventListener('drop',e=>{ e.preventDefault(); el.classList.remove('over'); moveCol(e.dataTransfer.getData('text/plain'),+el.dataset.i); });
+    });
+    $$('#colList [data-toggle]').forEach(sw=>sw.addEventListener('click',()=>{ if(sw.hasAttribute('disabled')) return; const c=S.cols.find(x=>x.key===sw.dataset.toggle); c.on=!c.on; change(c.on?'Column on':'Column off',DRAWN[c.key]?DRAWN[c.key].label:F[c.key].label); persist(); render(); }));
+  }
+}
+function moveCol(data,toIdx){ if(!data.startsWith('col:')) return; const from=+data.slice(4); if(from===toIdx) return; const [c]=S.cols.splice(from,1); if(toIdx===0&&S.cols[0]&&S.cols[0].pin&&!c.pin) toIdx=1; S.cols.splice(toIdx,0,c); change('Reordered',(DRAWN[c.key]?DRAWN[c.key].label:F[c.key].label)+' column'); persist(); render(); }
+
+/* ---------- properties panel ---------- */
+function renderProps(){
+  const box=$('#props');
+  if(S.screen==='list'){
+    const c=S.cols.find(x=>x.key===S.selCol);
+    if(!c){ box.innerHTML=`<div class="empty-prop"><i data-lucide="columns-3"></i><br>Select a column on the left or a heading in the table.</div>`; return; }
+    const lab=DRAWN[c.key]?DRAWN[c.key].label:F[c.key].label;
+    box.innerHTML=`<h3>Column</h3><div class="prop">
+      <div><div style="font-weight:800;font-size:15px">${lab}</div><div style="color:var(--muted);font-size:12.5px;font-weight:600">${c.drawn?DRAWN[c.key].why:(F[c.key].custom?'Custom field':'Standard field')+' · '+T(F[c.key].type).label}</div></div>
+      <label>Width<div class="wsel" data-w="${c.key}"><button aria-pressed="${c.w==='s'}" data-v="s">S</button><button aria-pressed="${c.w==='m'}" data-v="m">M</button><button aria-pressed="${c.w==='l'}" data-v="l">L</button></div></label>
+      <div class="row"><div><div class="t">Shown by default</div><div class="d">${c.pin?'The first column is always shown.':c.drawn?'Columns drawn by Payobook stay on.':'Users can still hide it for themselves.'}</div></div><span class="sw" role="switch" aria-checked="${c.on}" ${c.drawn||c.pin?'disabled':''} id="pOn"></span></div>
+      <div class="row"><div><div class="t">Default sort</div><div class="d">Sort the list by this column when it opens.</div></div><span class="sw" role="switch" aria-checked="${!!c.sort}" id="pSort"></span></div>
+      ${S.scope==='me'?`<div class="note ok"><i data-lucide="user"></i>"Just me" is on: these choices apply to your own view only. Switch to "For everyone" to change the company default.</div>`:`<div class="note lock"><i data-lucide="users"></i>"For everyone" is on: this becomes the company default. People who customised their own columns keep their choice.</div>`}
+    </div>`;
+    $$('#props .wsel button').forEach(b=>b.addEventListener('click',()=>{ c.w=b.dataset.v; change('Width',lab+' → '+b.dataset.v.toUpperCase()); persist(); render(); }));
+    $('#pOn').addEventListener('click',()=>{ if($('#pOn').hasAttribute('disabled')) return; c.on=!c.on; change(c.on?'Column on':'Column off',lab); persist(); render(); });
+    $('#pSort').addEventListener('click',()=>{ S.cols.forEach(x=>x.sort=false); c.sort=!c.sort; change('Default sort',lab); render(); });
+    return;
+  }
+  const k=S.sel, f=F[k];
+  if(!f){ box.innerHTML=`<div class="empty-prop"><i data-lucide="mouse-pointer-click"></i><br>Click a field on the record to change it, or drag a type from the left to add one.</div>`; return; }
+  const t=T(f.type);
+  const where=[['Record','on'],['List',f.list?'on':''],['Filters & export','on'],['Import','on'],['Pay formulas',f.formula?'on':''],['Self-service',f.vis==='all'?'on':'']];
+  const sec=S.layout.find(s=>(s.fields||[]).includes(k));
+  box.innerHTML=`<h3>${f.custom?'Custom field':'Standard field'}</h3><div class="prop">
+    ${f.locked?`<div class="note lock"><i data-lucide="lock"></i><div><b>Locked.</b> ${f.reason} You can rename its label and change its help text, but it cannot be hidden, moved out of its section, or deleted.</div></div>`:''}
+    ${f.fresh?`<div class="note warn"><i data-lucide="alert-triangle"></i>Pick the type carefully. Once published, a field's type cannot be changed; you would have to delete it and start again.</div>`:''}
+    <label>Label<input type="text" id="pLabel" value="${f.label.replace(/"/g,'&quot;')}"></label>
+    <label>Help text<textarea id="pHelp" placeholder="Shown when someone hovers the label">${f.help||''}</textarea></label>
+    <label>Type<select id="pType" ${f.fresh?'':'disabled'}>${TYPES.map(x=>`<option value="${x.key}" ${x.key===f.type?'selected':''}>${x.label}</option>`).join('')}</select></label>
+    ${f.type==='selection'&&f.custom?`<label>Options<div class="opts" id="pOpts">${(f.options||[]).map((o,i)=>`<div><input type="text" value="${o}" data-i="${i}"><button class="btn ghost sm" data-del="${i}" title="Remove"><i data-lucide="x"></i></button></div>`).join('')}</div><button class="btn outline sm" id="pAddOpt" style="justify-self:start"><i data-lucide="plus"></i> Add option</button></label>`:''}
+    <label>Who can see it<select id="pVis" ${f.locked?'disabled':''}><option value="all" ${f.vis==='all'?'selected':''}>Everyone, including the employee</option><option value="hr" ${f.vis==='hr'?'selected':''}>HR staff and administrators</option><option value="admin" ${f.vis==='admin'?'selected':''}>Administrators only</option></select></label>
+    <div class="row"><div><div class="t">Required</div><div class="d">Must be filled before the record saves.</div></div><span class="sw" role="switch" aria-checked="${!!f.req}" ${f.locked?'disabled':''} id="pReq"></span></div>
+    <div class="row"><div><div class="t">Show as a list column</div><div class="d">Available in the Employees list column picker.</div></div><span class="sw" role="switch" aria-checked="${!!f.list}" id="pList"></span></div>
+    <div class="row"><div><div class="t">Use in pay formulas</div><div class="d">${['integer','float','monetary','boolean','date','selection'].includes(f.type)?'Appears in Formula Studio as an input for pay rules.':'Only numbers, money, yes/no, dates and dropdowns can feed a formula.'}</div></div><span class="sw" role="switch" aria-checked="${!!f.formula}" ${['integer','float','monetary','boolean','date','selection'].includes(f.type)?'':'disabled'} id="pFormula"></span></div>
+    <label>Where it appears<div class="where">${where.map(([l,on])=>`<span class="${on}"><i data-lucide="${on?'check':'minus'}"></i>${l}</span>`).join('')}</div></label>
+    ${f.custom&&f.filled?`<div class="note lock"><i data-lucide="database"></i>Filled on <b>${f.filled[0]} of ${f.filled[1]}</b> employees.${f.formula?' Used by <b>1 pay rule</b> in VN Standard 2026.':''}</div>`:''}
+    <div class="row" style="border-top:1px solid var(--line);padding-top:12px;flex-wrap:wrap">
+      ${!f.locked?`<button class="btn outline sm" id="pHide"><i data-lucide="eye-off"></i> Hide from this screen</button>`:''}
+      ${f.custom?`<button class="btn danger sm" id="pDel"><i data-lucide="trash-2"></i> Delete field…</button>`:`<span class="d" style="font-size:12px;color:var(--muted)">Standard fields cannot be deleted${f.locked?'':', only hidden'}.</span>`}
+    </div>
+    <div id="pConfirm"></div>
+  </div>`;
+  $('#pLabel').addEventListener('change',e=>{ const old=f.label; f.label=e.target.value.trim()||old; change('Renamed',`${old} → ${f.label}`); persist(); render(); });
+  $('#pHelp').addEventListener('change',e=>{ f.help=e.target.value; change('Help text',f.label); persist(); });
+  $('#pType').addEventListener('change',e=>{ f.type=e.target.value; if(f.type==='selection'&&!f.options) f.options=['Option A','Option B']; if(!['integer','float','monetary','boolean','date','selection'].includes(f.type)) f.formula=false; render(); });
+  $('#pVis').addEventListener('change',e=>{ f.vis=e.target.value; change('Visibility',`${f.label} → ${e.target.selectedOptions[0].textContent}`); persist(); render(); });
+  const sw=(id,prop,label)=>{ const el=$(id); if(!el) return; el.addEventListener('click',()=>{ if(el.hasAttribute('disabled')) return; f[prop]=!f[prop]; change(label,`${f.label} → ${f[prop]?'on':'off'}`); if(prop==='list'){ const has=S.cols.find(c=>c.key===k); if(f.list&&!has) S.cols.push({key:k,on:false,w:'s'}); if(!f.list&&has&&!has.drawn) S.cols=S.cols.filter(c=>c.key!==k); } persist(); render(); }); };
+  sw('#pReq','req','Required'); sw('#pList','list','List column'); sw('#pFormula','formula','Pay formulas');
+  const hide=$('#pHide'); if(hide) hide.addEventListener('click',()=>{ S.layout.forEach(s=>{ if(s.fields) s.fields=s.fields.filter(x=>x!==k); }); change('Hidden',f.label); S.sel=null; persist(); render(); toast(`${f.label} hidden. Find it again under "Add existing".`); });
+  const addOpt=$('#pAddOpt'); if(addOpt) addOpt.addEventListener('click',()=>{ f.options.push('Option '+String.fromCharCode(65+f.options.length)); render(); });
+  $$('#pOpts input').forEach(i=>i.addEventListener('change',e=>{ f.options[+i.dataset.i]=e.target.value; change('Options',f.label); persist(); }));
+  $$('#pOpts [data-del]').forEach(b=>b.addEventListener('click',()=>{ f.options.splice(+b.dataset.del,1); change('Options',f.label); persist(); render(); }));
+  const del=$('#pDel'); if(del) del.addEventListener('click',()=>{
+    const n=f.filled?f.filled[0]:0; const inUse=f.formula;
+    $('#pConfirm').innerHTML=inUse?`<div class="note err"><i data-lucide="octagon-x"></i><div><b>Cannot delete.</b> A pay rule in VN Standard 2026 reads this field. Remove it from the rule in Formula Studio first.</div></div>`
+     :`<div class="confirm"><div class="note err"><i data-lucide="alert-triangle"></i><div><b>This deletes the field and its values on ${n} employee${n===1?'':'s'}.</b> Exports made before today keep the data; nothing else does. Type DELETE to continue.</div></div><input type="text" id="pDelType" placeholder="DELETE" autocomplete="off"><div style="display:flex;gap:8px"><button class="btn danger sm" id="pDelGo" disabled><i data-lucide="trash-2"></i> Delete ${f.label}</button><button class="btn ghost sm" id="pDelNo">Cancel</button></div></div>`;
+    icons();
+    const inp=$('#pDelType'); if(inp){ inp.addEventListener('input',()=>{ $('#pDelGo').disabled=inp.value.trim()!=='DELETE'; });
+      $('#pDelGo').addEventListener('click',()=>{ S.layout.forEach(s=>{ if(s.fields) s.fields=s.fields.filter(x=>x!==k); }); S.cols=S.cols.filter(c=>c.key!==k); change('Deleted',f.label); delete F[k]; S.sel=null; persist(); render(); toast('Field deleted. It disappears for everyone when you publish.'); });
+      $('#pDelNo').addEventListener('click',()=>{ $('#pConfirm').innerHTML=''; }); }
+  });
+}
+
+/* ---------- list ---------- */
+function renderList(){
+  const cols=S.cols.filter(c=>c.on&&(c.drawn||visible(c.key)));
+  const W={s:'90px',m:'150px',l:'220px'};
+  const th=cols.map((c,i)=>{ const lab=DRAWN[c.key]?DRAWN[c.key].label:F[c.key].label; const money=c.key==='wage'||(F[c.key]&&F[c.key].type==='monetary');
+    return `<th class="${c.drawn||c.pin?'lockedcol':''} ${F[c.key]&&F[c.key].custom?'custom':''} ${money?'right':''} ${S.selCol===c.key?'sel':''}" style="min-width:${W[c.w||'m']}" draggable="${S.studio}" data-key="${c.key}" data-i="${S.cols.indexOf(c)}"><span class="thin">${c.drawn||c.pin?'<i data-lucide="lock"></i>':''}${lab}${c.sort?'<i data-lucide="arrow-down"></i>':''}</span></th>`; }).join('');
+  const rows=ROWS.map(r=>`<tr>${cols.map(c=>{ const v=r[ROWKEY.indexOf(c.key)]||''; if(c.key==='name') return `<td><span class="name">${v}</span><span class="sub">${r[3]}</span></td>`; if(c.key==='status') return `<td><span class="st ${v==='Probation'?'draft':''}">${v}</span></td>`; if(c.key==='wage'||(F[c.key]&&F[c.key].type==='monetary')) return `<td class="money">${v||'—'}</td>`; return `<td>${v||'<span style=\"color:var(--muted)\">—</span>'}</td>`; }).join('')}</tr>`).join('');
+  const custOn=cols.filter(c=>F[c.key]&&F[c.key].custom).length;
+  $('#screen').innerHTML=`<div class="listwrap">
+    <div class="listtop"><h2>Employees</h2><span class="count">348 people</span><span class="spacer"></span><span class="search"><i data-lucide="search"></i> Search people</span><button class="btn outline sm" id="myCols" title="Choose your own columns"><i data-lucide="columns-3"></i> Columns</button></div>
+    <div class="listtop" style="padding-top:8px"><div class="fchips"><span class="on">All</span><span>Running</span><span>Probation</span><span>Leaving</span><span>Finance</span>${custOn?`<span class="on" style="background:var(--teal-soft);color:var(--teal)">${F[cols.find(c=>F[c.key]&&F[c.key].custom).key].label}: any</span>`:''}</div></div>
+    <div class="tbl"><table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div></div>
+    <div class="legend"><span><i data-lucide="lock" style="width:13px;height:13px"></i> Pinned or drawn by Payobook: always shown, can be moved</span><span><i class="c"></i> Custom field as a column</span></div>
+    <p class="foot">${S.studio?'<b>You are in Studio.</b> Drag headings to reorder, switch columns on and off on the left, and choose whether this is the default <b>for everyone</b> or <b>just you</b>. Custom fields appear here only when their "Show as a list column" switch is on.':'Anyone can press <b>Columns</b> to choose their own columns. Only an administrator in Studio can change the default for the company.'}</p>`;
+  if(S.studio){ $$('th',$('#screen')).forEach(h=>{ h.addEventListener('click',()=>{ S.selCol=h.dataset.key; renderPalette(); renderProps(); renderList(); icons(); }); h.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain','col:'+h.dataset.i)); h.addEventListener('dragover',e=>{ e.preventDefault(); h.classList.add('over'); }); h.addEventListener('dragleave',()=>h.classList.remove('over')); h.addEventListener('drop',e=>{ e.preventDefault(); h.classList.remove('over'); moveCol(e.dataTransfer.getData('text/plain'),+h.dataset.i); }); }); }
+  $('#myCols').addEventListener('click',()=>{ if(!S.studio){ S.studio=true; S.scope=S.role==='admin'?'everyone':'me'; S.snapshot=snap(); render(); toast(S.role==='admin'?'Studio opened. Choose "Just me" to change only your own view.':'Choose your columns. This changes only your own view.'); } });
+}
+
+/* ---------- field library ---------- */
+function renderLib(){
+  const customs=Object.keys(F).filter(k=>F[k].custom);
+  const rows=customs.map(k=>{ const f=F[k]; const onForm=placed().includes(k); const col=S.cols.find(c=>c.key===k); const p=f.filled?Math.round(100*f.filled[0]/f.filled[1]):0;
+    return `<tr><td><span class="name">${f.label}</span><span class="sub">${f.help||'No help text'}</span></td><td><span class="rt"><i></i>Employee</span></td><td>${T(f.type).label}${f.options?` <span class="sub">${f.options.join(' · ')}</span>`:''}</td><td><div class="usage"><span class="${onForm?'on':''}">Record</span><span class="${col&&col.on?'on':''}">List</span><span class="${f.formula?'on':''}">Formulas</span><span class="on">Export</span></div></td><td><span class="fill"><i style="--p:${p}%"></i>${f.filled?f.filled[0]:0} / 348</span></td><td>${({all:'Everyone',hr:'HR & admins',admin:'Admins'})[f.vis||'all']}</td><td><button class="btn ghost sm" data-edit="${k}"><i data-lucide="pencil"></i> Edit</button></td></tr>`; }).join('');
+  const contractRows=`<tr><td><span class="name">Notice period (days)</span><span class="sub">Overrides the scheme default.</span></td><td><span class="rt c"><i></i>Contract</span></td><td>Whole number</td><td><div class="usage"><span class="on">Record</span><span>List</span><span class="on">Formulas</span><span class="on">Export</span></div></td><td><span class="fill"><i style="--p:71%"></i>248 / 351</span></td><td>HR & admins</td><td><button class="btn ghost sm" disabled><i data-lucide="pencil"></i> Edit</button></td></tr>
+  <tr><td><span class="name">Cost centre code</span><span class="sub">Finance reference for the GL export.</span></td><td><span class="rt r"><i></i>Pay run</span></td><td>Text</td><td><div class="usage"><span class="on">Record</span><span class="on">List</span><span>Formulas</span><span class="on">Export</span></div></td><td><span class="fill"><i style="--p:100%"></i>47 / 47</span></td><td>Admins</td><td><button class="btn ghost sm" disabled><i data-lucide="pencil"></i> Edit</button></td></tr>`;
+  $('#screen').innerHTML=`<div class="lib">
+    <div class="libtop"><div><h2>Field library</h2><p>Every custom field in this company, where it appears, and how filled it is.</p></div><span class="spacer"></span><button class="btn primary" id="libNew"><i data-lucide="plus"></i> New field</button></div>
+    <div class="kpis"><div class="kpi"><span class="ic"><i data-lucide="sparkles"></i></span><div><div class="v">${customs.length+2}</div><div class="l">Custom fields</div></div></div><div class="kpi"><span class="ic g"><i data-lucide="function-square"></i></span><div><div class="v">${customs.filter(k=>F[k].formula).length+1}</div><div class="l">Feed pay formulas</div></div></div><div class="kpi"><span class="ic b"><i data-lucide="columns-3"></i></span><div><div class="v">${S.cols.filter(c=>F[c.key]&&F[c.key].custom&&c.on).length+1}</div><div class="l">Shown as list columns</div></div></div><div class="kpi"><span class="ic a"><i data-lucide="eye-off"></i></span><div><div class="v">${customs.filter(k=>!placed().includes(k)).length}</div><div class="l">Not on any screen</div></div></div></div>
+    <div class="listwrap"><div class="tbl"><table><thead><tr><th>Field</th><th>Record type</th><th>Type</th><th>Appears in</th><th>Filled</th><th>Who can see</th><th></th></tr></thead><tbody>${rows}${contractRows}</tbody></table></div></div>
+    <p class="foot"><b>Three record types can take custom fields:</b> Employee, Contract and Pay run. Payslip lines, pay totals and statutory returns cannot, because their shape is fixed by the pay scheme and the government file formats. Edit opens the field on the screen it lives on, in Studio.</p></div>`;
+  $$('#screen [data-edit]').forEach(b=>b.addEventListener('click',()=>{ S.screen='form'; S.studio=true; S.sel=b.dataset.edit; S.snapshot=snap(); render(); }));
+  $('#libNew').addEventListener('click',()=>{ S.screen='form'; S.studio=true; S.pal='new'; S.snapshot=snap(); render(); toast('Drag a type from the left onto an open section.'); });
+}
+
+/* ---------- studio controls ---------- */
+const snap=()=>JSON.stringify({layout:S.layout,cols:S.cols,fields:F});
+function restore(){ try{ const s=JSON.parse(S.snapshot); S.layout=s.layout; S.cols=s.cols; Object.keys(F).forEach(k=>delete F[k]); Object.assign(F,s.fields); }catch(e){} }
+$('#studioBtn').addEventListener('click',()=>{ if(S.role!=='admin'){ toast('Only administrators can open Studio. Switch "View as" to Administrator.'); return; } S.studio=true; S.scope='everyone'; S.snapshot=snap(); S.changes=[]; render(); });
+$('#exitBtn').addEventListener('click',()=>{ if(S.changes.length){ openSheet('leave'); return; } S.studio=false; S.sel=null; S.selCol=null; render(); });
+$('#discardBtn').addEventListener('click',()=>{ restore(); S.changes=[]; S.sel=null; S.selCol=null; persist(); render(); toast('Changes discarded. Nothing was published.'); });
+$('#publishBtn').addEventListener('click',()=>openSheet('publish'));
+$$('#scopeWrap button').forEach(b=>b.addEventListener('click',()=>{ S.scope=b.dataset.scope; $$('#scopeWrap button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); renderProps(); icons(); }));
+$$('#palForm .ptabs button').forEach(b=>b.addEventListener('click',()=>{ S.pal=b.dataset.pal; renderPalette(); icons(); }));
+$$('.tabs [role=tab]').forEach(b=>b.addEventListener('click',()=>{ if(S.studio&&S.changes.length){ toast('Publish or discard your changes before switching screens.'); return; } S.screen=b.dataset.screen; S.studio=false; S.sel=null; S.selCol=null; render(); }));
+$('#viewAs').addEventListener('change',e=>{ S.role=e.target.value; if(S.role!=='admin'&&S.studio&&!S.changes.length){ S.studio=false; } render(); });
+
+function openSheet(mode){
+  const sh=$('#sheet');
+  if(mode==='publish'){
+    const newFields=S.changes.filter(c=>c.kind==='Added').length;
+    $('#sheetTitle').textContent=S.scope==='me'?'Save your own view?':'Publish this layout for everyone?';
+    $('#sheetSub').textContent=S.scope==='me'?'Only you see these columns. The company default is untouched.':`Everyone in this company sees the new layout on their next page load.${newFields?' New fields are created on all 348 employee records, empty until filled.':''}`;
+    $('#sheetBody').innerHTML=S.changes.map(c=>`<div class="chg"><i data-lucide="${({Added:'plus-circle',Moved:'move',Hidden:'eye-off',Shown:'eye',Deleted:'trash-2',Renamed:'pencil',Reordered:'arrow-left-right'})[c.kind]||'settings-2'}"></i><span class="k">${c.kind}</span><span>${c.what}</span></div>`).join('');
+    $('#sheetOk').innerHTML=`<i data-lucide="upload"></i> ${S.scope==='me'?'Save my view':'Publish for everyone'}`;
+    $('#sheetOk').onclick=()=>{ sh.classList.remove('show'); const n=S.changes.length; Object.keys(F).forEach(k=>{ if(F[k].fresh){ delete F[k].fresh; } }); S.changes=[]; S.studio=false; S.sel=null; S.selCol=null; persist(); render(); toast(S.scope==='me'?'Your view is saved.':`Published. ${n} change${n>1?'s':''} now live for everyone.`); };
+  } else {
+    $('#sheetTitle').textContent='Leave Studio without publishing?';
+    $('#sheetSub').textContent='Your changes are kept as a draft on this device. Nobody else sees them until you publish.';
+    $('#sheetBody').innerHTML=`<div class="chg"><i data-lucide="file-clock"></i><span class="k">Draft</span><span>${S.changes.length} unpublished change${S.changes.length>1?'s':''}</span></div>`;
+    $('#sheetOk').innerHTML=`<i data-lucide="log-out"></i> Leave, keep draft`;
+    $('#sheetOk').onclick=()=>{ sh.classList.remove('show'); S.studio=false; S.sel=null; S.selCol=null; render(); };
+  }
+  sh.classList.add('show'); icons();
+}
+$('#sheetCancel').addEventListener('click',()=>$('#sheet').classList.remove('show'));
+$('#sheet').addEventListener('click',e=>{ if(e.target===e.currentTarget) e.currentTarget.classList.remove('show'); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('#sheet').classList.remove('show'); } });
+
+render();
+})();
+</script>

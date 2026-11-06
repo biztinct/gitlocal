@@ -1,0 +1,248 @@
+// Scoped to the learning editors, including dialogs. Native field components,
+// validation, keyboard handling and save/discard continue to own the workflow.
+.o_form_view.pb-authoring {
+    --pa-ink: #202342;
+    --pa-muted: #68738d;
+    --pa-purple: #6551c4;
+    --pa-line: #e4e6f1;
+    color: var(--pa-ink);
+    background: #f5f6fb;
+
+    .o_form_sheet_bg { background: transparent; border: 0; }
+    .o_form_sheet {
+        width: calc(100% - 48px);
+        max-width: 1280px;
+        min-width: 0;
+        margin: 24px auto;
+        padding: 0 0 28px;
+        border: 1px solid var(--pa-line);
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 12px 36px #24294408;
+        overflow: visible;
+        > :not(.o_widget_pb_learning_authoring_guide):not(.pb-author-mini):not(.oe_button_box) {
+            margin-left: 28px;
+            margin-right: 28px;
+        }
+        > .o_widget_pb_learning_authoring_guide { margin: 0 0 26px; }
+        > .oe_title {
+            width: calc(100% - 150px) !important;
+            max-width: none;
+            padding: 4px 0 14px;
+            margin-bottom: 10px;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            h1 { display: flex; font-size: 27px; font-weight: 650; line-height: 1.4; margin: 0 !important; }
+            h1 > .o_field_widget { display: block; margin: 0; min-width: 0; width: 100%; }
+            .o_form_label { color: var(--pa-muted); font-size: 12px; font-weight: 650; margin-bottom: 9px; }
+        }
+        > .oe_avatar { float: right; margin-top: 4px; padding: 0; max-width: 64px; border-radius: 16px; }
+        > .o_notebook { width: auto !important; clear: both; margin-top: 20px !important; }
+        .o_inner_group {
+            padding: 20px;
+            border: 1px solid var(--pa-line);
+            border-radius: 16px;
+            background: #fcfcff;
+            align-content: start;
+            .o_inner_group { padding: 0; border: 0; box-shadow: none; }
+        }
+        .o_horizontal_separator { color: var(--pa-ink); font-size: 15px; font-weight: 650; padding-bottom: 12px; }
+    }
+    .o_form_statusbar { padding: 12px 24px; border-bottom: 1px solid var(--pa-line); background: #fff; }
+    .o_notebook_headers {
+        margin: 0 0 20px;
+        .nav-tabs { margin: 0 !important; gap: 6px; border: 0; padding: 6px; background: #f1f2f8; border-radius: 14px; overflow-x: auto; }
+        .nav-item { flex: 1 0 auto; text-align: center; margin: 0; }
+        .nav-link { padding: 12px 18px; border: 0; border-radius: 10px; color: var(--pa-muted); font-weight: 650; white-space: nowrap; }
+        .nav-link.active { color: var(--pa-purple); background: #fff; box-shadow: 0 2px 8px #2429440d; }
+        .nav-link.o_page_invalid { color: #c13951; }
+    }
+    .o_notebook_content > .tab-pane { padding: 0; }
+    .o_field_widget .o_input { background-color: #fafbfe; border: 1px solid var(--pa-line); border-radius: 9px; padding: 9px 11px; color: var(--pa-ink); }
+    .o_field_widget .o_input:focus { border-color: #9788dc; outline: 3px solid #6551c416; }
+    .o_field_widget.o_field_invalid .o_input { border-color: #c13951; }
+    .o_field_html { min-height: 190px; border: 1px solid var(--pa-line); border-radius: 12px; padding: 14px; }
+    .o_field_html .odoo-editor-editable { min-height: 150px; }
+    :is(.o_field_one2many, .o_field_many2many) { border: 1px solid var(--pa-line); border-radius: 14px; overflow: hidden; }
+    .o_list_table {
+        margin-bottom: 0;
+        thead { background: #f6f7fc; color: var(--pa-muted); font-size: 11px; letter-spacing: .045em; text-transform: uppercase; }
+        th, td { padding-top: 13px; padding-bottom: 13px; }
+        // Odoo pads short lists with empty rows; authors need a canvas, not a ledger.
+        tbody tr:has(> td.o_list_number):not(.o_data_row) { display: none; }
+        tbody tr:not(.o_data_row):not(.o_group_header):not(:has(.o_field_x2many_list_row_add)):not(:has(.o_group_name)):has(> td:only-child[colspan]) { display: none; }
+        .o_field_x2many_list_row_add { padding: 18px 14px; background: #faf9ff; }
+        .o_field_x2many_list_row_add a { display: inline-block; padding: 8px 12px; margin: 3px 8px 3px 0; background: #fff; border: 1px solid #dcd6f3; border-radius: 8px; font-weight: 650; color: var(--pa-purple); }
+    }
+    button:focus-visible, a:focus-visible { outline: 3px solid #9d8ee6; outline-offset: 3px; }
+    .o_field_widget.o_field_radio { padding: 0; }
+    .o_field_radio > div { display: flex; flex-wrap: wrap; gap: 8px; }
+    .o_field_radio .o_radio_item {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 42px; max-width: 100%; min-width: 0;
+        padding: 10px 12px; margin: 0; border: 1px solid var(--pa-line); border-radius: 10px; background: #fff;
+        .form-check-input { float: none; margin: 0; flex: 0 0 auto; }
+        .form-check-label { margin: 0; line-height: 1.4; cursor: pointer; white-space: normal; min-width: 0; }
+    }
+    .o_field_radio .o_radio_item:has(input:checked) { background: #f1edff; border-color: #9d8ad8; color: #5342aa; }
+    .o_preview_questions { width: 100% !important; padding: 24px; border-radius: 16px; border: 1px dashed #cbc5e3; color: var(--pa-muted); }
+    .pb-author-inline-help { color: var(--pa-muted); font-size: 12px; line-height: 1.5; }
+}
+
+// Own the native layout here: the legacy theme otherwise adds card gutters,
+// compressed row gaps and standalone field padding even to vu-form-native.
+.o_form_view.pb-authoring .o_form_renderer {
+    .o_form_sheet > .o_group.row { margin: 16px 28px 20px !important; width: auto !important; }
+    .o_form_sheet > :is(.o_field_one2many, .o_field_many2many) { width: calc(100% - 56px); padding: 0; }
+    .o_form_sheet > div > .o_field_widget { padding-left: 0 !important; padding-right: 0 !important; }
+    .o_form_sheet > div:has(> .o_field_many2many_tags) {
+        margin-top: 8px !important; margin-bottom: 0 !important;
+        > .o_field_many2many_tags { width: 100%; max-width: 580px; margin-bottom: 0; }
+    }
+    .oe_title .o_field_many2many_tags { display: block; width: 100%; margin-top: 12px; }
+    .o_field_many2many_tags .o_field_tags { display: flex !important; width: 100%; min-height: 42px; padding: 7px 10px; align-items: center; }
+    .o_field_many2many_tags .o_field_tags input.o_input {
+        border: 0 !important; outline: 0; box-shadow: none; background: transparent; padding: 2px 0;
+    }
+    .o_group.row {
+        padding: 0 !important; margin: 0 0 20px; gap: 20px !important; border: 0; background: transparent; box-shadow: none;
+        > .o_inner_group {
+            flex: 1 1 420px; min-width: 0 !important; padding: 20px !important;
+            background: #fcfcff !important; border: 1px solid var(--pa-line) !important; border-radius: 16px !important; box-shadow: none !important;
+        }
+    }
+    .o_inner_group {
+        gap: 12px 16px !important; margin-bottom: 0 !important;
+        grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+        .o_inner_group { padding: 0 !important; border: 0; background: transparent; }
+        .o_cell { min-width: 0; }
+        .o_wrap_label { padding-top: 9px; align-self: start; }
+        .o_wrap_label .o_form_label { font-size: 12px; line-height: 1.5; font-weight: 600; }
+        .o_wrap_input > .o_field_widget:not(.oe_inline) { width: 100%; }
+        .o_horizontal_separator { margin: 0 0 2px !important; padding-bottom: 10px; border-bottom: 1px solid var(--pa-line); letter-spacing: .04em; font-size: 12px; }
+    }
+    .o_field_boolean { padding-top: 9px; }
+    .o_field_float_time.oe_inline {
+        width: 84px; min-width: 84px; max-width: none;
+        input.o_input { width: 100%; max-width: none; }
+    }
+    .o_field_widget .o_external_button { width: auto !important; flex: 0 0 auto; }
+    .o_field_radio[name="source_type"] > div { flex-direction: row !important; }
+    .o_field_radio .o_radio_item { margin: 0; }
+    // Native notebook lists use a negative top margin to meet the notebook edge.
+    // Our bordered field already supplies its own inset; that margin clips the
+    // header above the field's overflow boundary (notably lesson resources).
+    :is(.o_field_one2many, .o_field_many2many) .o_list_renderer {
+        margin: 0 !important;
+        --ListRenderer-margin-x: 0px;
+    }
+    .pb-author-spotlight {
+        outline: 3px solid #7960d5; outline-offset: 5px;
+        box-shadow: 0 0 0 9px #795bd51a; border-radius: 12px;
+        scroll-margin-block: 100px 24px;
+    }
+    .pb-author-tab-target { box-shadow: inset 0 -3px #7960d5 !important; }
+}
+.o_form_view.pb-author-question .o_inner_group:has(.o_field_radio[name="question_type"]) {
+    grid-template-columns: minmax(0, 1fr);
+    > .o_cell { grid-column: 1 / -1; }
+}
+.o_form_view.pb-author-question .o_form_renderer .o_form_sheet > .o_group.row > .o_inner_group { flex-basis: 340px !important; }
+.o_form_view.pb-author-invite .o_form_renderer {
+    .o_group.row > .o_inner_group { flex-basis: 100% !important; }
+    .o_field_html .odoo-editor-editable { padding: 16px; }
+}
+@media (max-width: 767px) {
+    .o_form_view.pb-authoring .o_form_renderer .o_inner_group {
+        grid-template-columns: minmax(0, 1fr);
+        > .o_cell, > .g-col-sm-2 { grid-column: 1 / -1; }
+        > .o_wrap_label { padding-top: 0; margin-bottom: -6px; }
+        .o_wrap_field_boolean { display: flex !important; align-items: center; gap: 10px; grid-column: 1 / -1; }
+        .o_wrap_field_boolean .o_wrap_input { order: -1 !important; }
+        .o_wrap_field_boolean .o_wrap_label, .o_field_boolean { padding-top: 0; }
+    }
+}
+
+.pb-author-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(260px, 1fr);
+    gap: 30px;
+    padding: 32px;
+    border-radius: 23px 23px 0 0;
+    background: radial-gradient(ellipse at 5% 0%, #e7e0fc 0, transparent 65%), linear-gradient(120deg, #f5f1ff, #f1f7fc);
+    border-bottom: 1px solid #e3dff2;
+    h2 { color: #252344; font-size: clamp(23px, 2.1vw, 32px); font-weight: 700; letter-spacing: -.035em; margin: 16px 0 10px; line-height: 1.2; }
+    p { color: #69718b; font-size: 14px; line-height: 1.7; max-width: 500px; margin: 0; }
+}
+.pb-author-eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; color: #6755b1; font-size: 10px; letter-spacing: .13em; font-weight: 750;
+    > span { letter-spacing: 0; font-size: 11px; font-weight: 550; padding: 4px 9px; background: #ffffffba; border: 1px solid #e1dcf0; border-radius: 20px; }
+}
+.pb-author-facts { display: flex; gap: 10px 22px; flex-wrap: wrap; margin-top: 22px; color: #626681; font-size: 11px; i { margin-right: 5px; color: #7d6db4; } }
+.pb-author-actions { display: flex; gap: 10px; align-items: center; margin-top: 18px;
+    .btn { border-radius: 10px; padding: 10px 16px; font-size: 12px; font-weight: 650; }
+    .btn-primary { background: #6551c4; border-color: #6551c4; box-shadow: 0 4px 10px #6551c425; }
+    .btn-link { color: #655987; text-decoration: none; }
+    i { margin: 0 4px; }
+}
+.pb-author-checklist { padding: 18px 20px; background: #ffffffd9; border: 1px solid #e5e1f2; border-radius: 16px; box-shadow: 0 6px 20px #4e407a06;
+    &__heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: #747b90; font-size: 10px; strong { color: #4a456b; letter-spacing: .08em; } }
+    button { display: flex; align-items: center; gap: 9px; border: 0; background: transparent; padding: 8px 0; width: 100%; text-align: left; color: #646c84; font-size: 12px;
+        > span { flex: 1; }
+        > i:last-child { opacity: .4; font-size: 10px; }
+        &.is-done > i:first-child { color: #26917e; }
+        &:hover { color: #5740ac; }
+        &.is-current { color: #5342aa; background: #eee9fc; border-radius: 8px; padding-left: 8px; padding-right: 8px; box-shadow: inset 3px 0 #6551c4; }
+    }
+}
+.pb-author-progress { height: 4px; background: #eceaf4; border-radius: 8px; overflow: hidden; margin: 12px 0 5px; span { display: block; height: 100%; background: #7a66c9; transition: width .2s ease; } }
+.pb-author-note { display: flex; gap: 13px; align-items: flex-start; padding: 18px 20px; background: #f7f8fc; border: 1px solid #e9eaf3; border-radius: 14px; margin-bottom: 20px;
+    &__icon { display: grid; place-items: center; background: #ece8fa; color: #7760c3; border-radius: 10px; flex: 0 0 34px; height: 34px; font-size: 18px; }
+    h3 { font-size: 14px; font-weight: 650; margin: 0 0 5px; color: #37364f; }
+    p { font-size: 12px; line-height: 1.6; color: #737b91; margin: 0; }
+}
+.pb-author-empty { display: flex; align-items: center; flex-direction: column; gap: 9px; text-align: center; padding: 26px 20px; border: 1px dashed #ded9ef; border-radius: 14px; background: #fdfcff; margin-bottom: 14px; color: #737b91;
+    > i { font-size: 26px; color: #9482d2; }
+    strong { color: #44415e; font-size: 15px; }
+    span { font-size: 12px; }
+}
+.pb-author-mini { padding: 26px 28px; margin: 0 0 24px; background: linear-gradient(115deg, #f0eafa, #f2f7fd); border-bottom: 1px solid #e5e1f1; border-radius: 23px 23px 0 0;
+    h2 { font-size: 24px; color: #30294d; font-weight: 700; margin: 10px 0 8px; letter-spacing: -.025em; }
+    p { font-size: 13px; color: #6d728a; margin: 0; line-height: 1.6; }
+}
+.modal .o_form_view.pb-authoring {
+    .o_form_sheet { width: 100%; margin: 0; border: 0; box-shadow: none; }
+    &.pb-author-invite { padding: 20px; }
+    .pb-author-spotlight { scroll-margin-top: 24px; }
+}
+@media (max-width: 900px) {
+    .pb-author-hero { grid-template-columns: 1fr; gap: 18px; padding: 24px; }
+    .pb-author-checklist { padding: 15px; }
+    .o_form_view.pb-authoring .o_form_sheet { width: calc(100% - 24px); }
+    .o_form_view.pb-authoring .o_notebook_headers {
+        .nav-tabs { flex-wrap: wrap !important; }
+        .nav-item { flex: 1 0 calc(50% - 6px); min-width: 0; }
+        .nav-link { white-space: normal; padding: 10px 8px; }
+    }
+    .modal-content.pb-authoring .modal-footer {
+        justify-content: flex-start !important;
+        .btn { width: auto !important; flex: 0 1 auto; }
+    }
+}
+@media (max-width: 575px) {
+    .o_form_view.pb-authoring .o_form_sheet {
+        margin: 12px auto;
+        > :not(.o_widget_pb_learning_authoring_guide):not(.pb-author-mini):not(.oe_button_box) { margin-left: 16px; margin-right: 16px; }
+        > .oe_title { width: calc(100% - 32px) !important; clear: both; h1 { font-size: 21px; } }
+        > .oe_avatar { margin: 0 16px 12px auto !important; }
+        > :is(.o_field_one2many, .o_field_many2many) { width: calc(100% - 32px); }
+        .o_inner_group { padding: 12px; }
+    }
+    .modal-content.pb-authoring {
+        max-height: calc(100dvh - 16px);
+        .modal-body { overflow-y: auto; min-height: 0; }
+        .modal-header, .modal-footer { flex-shrink: 0; }
+    }
+    .pb-author-hero, .pb-author-mini { padding: 20px; }
+    .pb-author-facts { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .pb-author-progress span { transition: none; } }

@@ -1,0 +1,991 @@
+# MYTEAM — the manager area on the employee home (Indonesian).
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-05 00:00+0000\n"
+"PO-Revision-Date: 2026-11-05 00:00+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "%(a)s is covering for %(b)s"
+msgstr "%(a)s menggantikan %(b)s"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "%s approvals waiting for you"
+msgstr "%s persetujuan menunggu Anda"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "%s requests are waiting for your decision."
+msgstr "%s permintaan menunggu keputusan Anda."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "%s trial periods end soon"
+msgstr "%s masa percobaan segera berakhir"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "(asked, not yet approved)"
+msgstr "(diajukan, belum disetujui)"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "(you)"
+msgstr "(Anda)"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid ", covering for"
+msgstr ", menggantikan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ", in"
+msgstr ", dalam"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ", no decision yet"
+msgstr ", belum ada keputusan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid ". Older ones are in the approvals screen of the app."
+msgstr ". Yang lebih lama ada di layar persetujuan aplikasi."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "1 approval waiting for you"
+msgstr "1 persetujuan menunggu Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "1 day"
+msgstr "1 hari"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "1 other person in your team is away then."
+msgstr "1 orang lain di tim Anda tidak masuk saat itu."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "1 person reports to them"
+msgstr "1 orang melapor kepadanya"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "1 trial period ends soon"
+msgstr "1 masa percobaan segera berakhir"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "1 year with the company"
+msgstr "1 tahun di perusahaan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<option value=\"\">Choose a colleague…</option>"
+msgstr "<option value=\"\">Pilih rekan kerja…</option>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "<span class=\"pbmt-chip pbmt-chip--slate\">Day off</span>"
+msgstr "<span class=\"pbmt-chip pbmt-chip--slate\">Hari libur</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "<span class=\"pbmt-chip pbmt-chip--slate\">Working today</span>"
+msgstr "<span class=\"pbmt-chip pbmt-chip--slate\">Bekerja hari ini</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span class=\"pbmt-key is-away\"/>On leave <span class=\"pbmt-key is-"
+"asked\"/>Asked, not yet approved"
+msgstr ""
+"<span class=\"pbmt-key is-away\"/>Cuti <span class=\"pbmt-key is-"
+"asked\"/>Diajukan, belum disetujui"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-label\">First day away</span>"
+msgstr "<span class=\"pbmt-label\">Hari pertama tidak masuk</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-label\">Last day away</span>"
+msgstr "<span class=\"pbmt-label\">Hari terakhir tidak masuk</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-label\">Who looks after them</span>"
+msgstr "<span class=\"pbmt-label\">Siapa yang menanganinya</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span class=\"pbmt-label\">Why <span class=\"pbmt-label-sub\">Kept with the "
+"decisions they make for you</span></span>"
+msgstr ""
+"<span class=\"pbmt-label\">Alasan <span class=\"pbmt-label-sub\">Disimpan "
+"bersama keputusan yang mereka buat untuk Anda</span></span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-node-j\">You</span>"
+msgstr "<span class=\"pbmt-node-j\">Anda</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-node-j\">Your manager</span>"
+msgstr "<span class=\"pbmt-node-j\">Atasan Anda</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"visually-hidden\">Person</span>"
+msgstr "<span class=\"visually-hidden\">Orang</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span><b>Hiring</b><span class=\"pbmt-row-d\">Interviews and roles you asked"
+" for</span></span>"
+msgstr ""
+"<span><b>Rekrutmen</b><span class=\"pbmt-row-d\">Wawancara dan posisi yang "
+"Anda minta</span></span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span><b>Team training</b><span class=\"pbmt-row-d\">Who still has a course "
+"to finish</span></span>"
+msgstr ""
+"<span><b>Pelatihan tim</b><span class=\"pbmt-row-d\">Siapa yang masih harus "
+"menyelesaikan kursus</span></span>"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "A request is waiting for your decision."
+msgstr "Ada permintaan yang menunggu keputusan Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid ""
+"About people in your team, decided by somebody else. You can follow them "
+"here."
+msgstr ""
+"Tentang orang di tim Anda, diputuskan oleh orang lain. Anda bisa memantaunya"
+" di sini."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "All approvals"
+msgstr "Semua persetujuan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Annual leave"
+msgstr "Cuti tahunan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_breadcrumbs_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Approvals are not open to your login"
+msgstr "Akun Anda belum dapat memberi persetujuan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Approve"
+msgstr "Setujui"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "Approve or send back"
+msgstr "Setujui atau kembalikan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Approved. The person who asked will see it."
+msgstr "Disetujui. Orang yang mengajukan akan melihatnya."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Ask HR to give your login the right to take part in approvals."
+msgstr "Minta HR memberi akun Anda hak untuk ikut dalam persetujuan."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Asked"
+msgstr "Diajukan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "Asked for"
+msgstr "Mengajukan"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Away"
+msgstr "Tidak masuk"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
+msgid "Back to my home"
+msgstr "Kembali ke beranda saya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Birthday"
+msgstr "Ulang tahun"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Choose the first and the last day you are away."
+msgstr "Pilih hari pertama dan hari terakhir Anda tidak masuk."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Choose who looks after your approvals."
+msgstr "Pilih siapa yang menangani persetujuan Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Coming"
+msgstr "Akan datang"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Coming up"
+msgstr "Akan datang"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Contract ends"
+msgstr "Kontrak berakhir"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Dates"
+msgstr "Tanggal"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Decided"
+msgstr "Sudah diputuskan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Details, as sent in"
+msgstr "Rincian, seperti saat dikirim"
+
+#. module: pb_me_team
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_team__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Done. Your approvals are handed over for those days."
+msgstr "Selesai. Persetujuan Anda dialihkan untuk hari-hari tersebut."
+
+#. module: pb_me_team
+#: model:ir.model,name:pb_me_team.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_me_team
+#: model:ir.model,name:pb_me_team.model_pb_me_team
+msgid "Employee home: a manager's team"
+msgstr "Beranda karyawan: tim seorang atasan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ended"
+msgstr "Berakhir"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ends"
+msgstr "Berakhir"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ends today"
+msgstr "Berakhir hari ini"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ends tomorrow"
+msgstr "Berakhir besok"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "From"
+msgstr "Dari"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Give your decision before the date: confirm, extend, or end."
+msgstr ""
+"Beri keputusan sebelum tanggalnya: konfirmasi, perpanjang, atau akhiri."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Hand over my approvals"
+msgstr "Alihkan persetujuan saya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "I'm away"
+msgstr "Saya tidak masuk"
+
+#. module: pb_me_team
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_team__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "In force"
+msgstr "Berlaku"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "In since"
+msgstr "Masuk sejak"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
+msgid "It may have been withdrawn, or it is not one you can see."
+msgstr "Mungkin sudah ditarik, atau bukan permintaan yang dapat Anda lihat."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Joined"
+msgstr "Bergabung"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Joined in the last 90 days."
+msgstr "Bergabung dalam 90 hari terakhir."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Late"
+msgstr "Terlambat"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "Late · in at"
+msgstr "Terlambat · masuk pukul"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Leave still to take"
+msgstr "Sisa cuti"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Left after this"
+msgstr "Sisa setelah ini"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "Left at"
+msgstr "Pulang pukul"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Length"
+msgstr "Lama"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Missing clock-ins this week"
+msgstr "Absen yang hilang minggu ini"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "More for managers"
+msgstr "Lainnya untuk atasan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"Most days left first. Useful to plan the busy months and the end of the "
+"year."
+msgstr ""
+"Yang paling banyak sisa harinya lebih dulu. Berguna untuk merencanakan bulan"
+" sibuk dan akhir tahun."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_breadcrumbs_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "My team"
+msgstr "Tim saya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "New in your team"
+msgstr "Baru di tim Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "No approvals waiting"
+msgstr "Tidak ada persetujuan yang menunggu"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "No clock-in yet · due"
+msgstr "Belum absen masuk · jadwal"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Nobody else in your company can take approvals yet."
+msgstr "Belum ada orang lain di perusahaan yang bisa menerima persetujuan."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Nobody else in your team is away on these days."
+msgstr "Tidak ada orang lain di tim Anda yang tidak masuk pada hari-hari ini."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
+msgid "Nobody reports to you"
+msgstr "Tidak ada yang melapor kepada Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "Nobody reports to you, but decisions are waiting on you."
+msgstr ""
+"Tidak ada yang melapor kepada Anda, tetapi ada keputusan yang menunggu Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid ""
+"Note <span class=\"pbmt-label-sub\">Needed to send back or turn down. The "
+"person who asked reads it.</span>"
+msgstr ""
+"Catatan <span class=\"pbmt-label-sub\">Wajib untuk mengembalikan atau "
+"menolak. Orang yang mengajukan akan membacanya.</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Nothing decided yet"
+msgstr "Belum ada yang diputuskan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Nothing is moving for your team"
+msgstr "Tidak ada yang sedang berjalan untuk tim Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Nothing is waiting for you"
+msgstr "Tidak ada yang menunggu Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "On leave"
+msgstr "Cuti"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
+msgid "Open approvals"
+msgstr "Buka persetujuan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "Open my team"
+msgstr "Buka tim saya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Open the org chart"
+msgstr "Buka bagan organisasi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Open the review"
+msgstr "Buka penilaian"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Overdue"
+msgstr "Lewat batas"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Overtime in"
+msgstr "Lembur bulan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"Pass your approvals to a colleague while you are away. New requests go to "
+"them. Requests already waiting stay with you."
+msgstr ""
+"Alihkan persetujuan ke rekan kerja selama Anda tidak masuk. Permintaan baru "
+"akan ke mereka. Permintaan yang sudah menunggu tetap pada Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Public holiday today"
+msgstr "Hari ini libur nasional"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Requests about your people that somebody else decides show here."
+msgstr ""
+"Permintaan tentang orang Anda yang diputuskan orang lain tampil di sini."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Requests you or others have decided for your team show here."
+msgstr ""
+"Permintaan yang sudah Anda atau orang lain putuskan untuk tim Anda tampil di"
+" sini."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "Review approvals"
+msgstr "Tinjau persetujuan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "See approvals"
+msgstr "Lihat persetujuan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Send back"
+msgstr "Kembalikan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Sent back with your note."
+msgstr "Dikembalikan dengan catatan Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Showing the newest"
+msgstr "Menampilkan yang terbaru:"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Stop"
+msgstr "Hentikan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Stopped. New approvals come to you again."
+msgstr "Dihentikan. Persetujuan baru kembali ke Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+msgid "Stuck"
+msgstr "Tertahan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Team calendar, scroll sideways for more days"
+msgstr "Kalender tim, geser ke samping untuk hari lainnya"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/controllers/portal.py:0
+msgid "That did not go through. Nothing was changed — please try again."
+msgstr "Tidak berhasil. Tidak ada yang berubah — silakan coba lagi."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "That hand-over is not yours to stop."
+msgstr "Pengalihan itu bukan milik Anda untuk dihentikan."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "The last day is in the past."
+msgstr "Hari terakhir sudah lewat."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "The leave"
+msgstr "Cutinya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "The limit is"
+msgstr "Batasnya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"The people who report to you: where they are today, who is away soon, and "
+"what is coming up."
+msgstr ""
+"Orang-orang yang melapor kepada Anda: di mana mereka hari ini, siapa yang "
+"segera tidak masuk, dan apa yang akan datang."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"The person who reports to you: where they are today, who is away soon, and "
+"what is coming up."
+msgstr ""
+"Orang yang melapor kepada Anda: di mana mereka hari ini, apakah segera tidak"
+" masuk, dan apa yang akan datang."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
+msgid ""
+"This page is for managers. When someone's record names you as their manager,"
+" they appear here."
+msgstr ""
+"Halaman ini untuk atasan. Saat data seseorang mencantumkan Anda sebagai "
+"atasannya, mereka tampil di sini."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Today"
+msgstr "Hari ini"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Tomorrow"
+msgstr "Besok"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Trial periods ending"
+msgstr "Masa percobaan yang berakhir"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Turn down"
+msgstr "Tolak"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Turned down with your note."
+msgstr "Ditolak dengan catatan Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Type"
+msgstr "Jenis"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Waiting for you"
+msgstr "Menunggu Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Waiting on others"
+msgstr "Menunggu orang lain"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
+msgid "We could not find that request"
+msgstr "Kami tidak menemukan permintaan itu"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "What happened"
+msgstr "Riwayat"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid ""
+"What is waiting for your decision, and what is moving for the people in your"
+" team."
+msgstr ""
+"Apa yang menunggu keputusan Anda, dan apa yang sedang berjalan untuk orang "
+"di tim Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "When someone sends you a request, it lands here and on your home page."
+msgstr ""
+"Saat seseorang mengirim permintaan kepada Anda, permintaan itu muncul di "
+"sini dan di beranda Anda."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Which approvals"
+msgstr "Persetujuan yang mana"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Who decides"
+msgstr "Siapa yang memutuskan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Who is away, next 4 weeks"
+msgstr "Siapa yang tidak masuk, 4 minggu ke depan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "With"
+msgstr "Sedang di"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Working days with no clock-in and no leave. Fix them before pay day."
+msgstr "Hari kerja tanpa absen dan tanpa cuti. Perbaiki sebelum hari gajian."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "You can still decide the approvals that are waiting on you."
+msgstr "Anda tetap bisa memutuskan persetujuan yang menunggu Anda."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "You cannot decide approvals."
+msgstr "Anda tidak dapat memutuskan persetujuan."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "You cannot hand over approvals."
+msgstr "Anda tidak dapat mengalihkan persetujuan."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Your company does not record clock-ins, so this shows leave only."
+msgstr ""
+"Perusahaan Anda tidak mencatat absen, jadi ini hanya menampilkan cuti."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Your decision"
+msgstr "Keputusan Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Your team on the org chart"
+msgstr "Tim Anda di bagan organisasi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "and"
+msgstr "dan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "approval waiting for you"
+msgstr "persetujuan menunggu Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "approvals waiting for you"
+msgstr "persetujuan menunggu Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "d"
+msgstr "h"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "day"
+msgstr "hari"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "day off"
+msgstr "libur"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "days"
+msgstr "hari"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "first-weeks steps"
+msgstr "langkah minggu-minggu pertama"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "for"
+msgstr "untuk"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "gone home"
+msgstr "sudah pulang"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h"
+msgstr "jam"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h approved"
+msgstr "jam disetujui"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h asked"
+msgstr "jam diajukan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "hours a month per person."
+msgstr "jam per bulan per orang."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "in"
+msgstr "masuk"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "late"
+msgstr "terlambat"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "looks after your approvals"
+msgstr "menangani persetujuan Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "more busy days"
+msgstr "hari sibuk lainnya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "not in yet"
+msgstr "belum masuk"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "of"
+msgstr "dari"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "on leave"
+msgstr "cuti"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "or"
+msgstr "atau"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "other people in your team are away then."
+msgstr "orang lain di tim Anda tidak masuk saat itu."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "people away"
+msgstr "orang tidak masuk"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "people report to them"
+msgstr "orang melapor kepadanya"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "people report to you"
+msgstr "orang melapor kepada Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "person reports to you"
+msgstr "orang melapor kepada Anda"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "to"
+msgstr "sampai"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "working"
+msgstr "bekerja"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "years with the company"
+msgstr "tahun di perusahaan"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "· already extended once"
+msgstr "· sudah diperpanjang sekali"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "· back after"
+msgstr "· kembali setelah"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "· buddy"
+msgstr "· pendamping"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "· due"
+msgstr "· tenggat"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "· sent"
+msgstr "· dikirim"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+msgid "· with"
+msgstr "· sedang di"

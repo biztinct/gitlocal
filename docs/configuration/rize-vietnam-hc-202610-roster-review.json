@@ -1,0 +1,10 @@
+{
+  "configuration_code": "RIZE_VIETNAM_HC_202610",
+  "approved_on": "2026-10-17",
+  "scope": "Include in review roster only",
+  "included_source_statuses": ["Active", "Notice Period"],
+  "expected_review_people": 70,
+  "expected_status_counts": {"Active": 68, "Notice Period": 2},
+  "activate_configuration": false,
+  "assign_live_population": false
+}

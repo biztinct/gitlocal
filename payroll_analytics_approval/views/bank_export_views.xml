@@ -22,25 +22,25 @@
                     <group string="File Options">
                         <field name="export_format" widget="radio"/>
                         <field name="include_header"/>
-                        <field name="analytics_id" readonly="1" attrs="{'invisible': [('analytics_id', '=', False)]}"/>
+                        <field name="analytics_id" readonly="1" invisible="[('analytics_id', '=', False)]"/>
                     </group>
                 </group>
                 
                 <!-- Preview Section -->
-                <group string="Export Preview" attrs="{'invisible': ['&amp;', ('preview_record_count', '=', 0), ('preview_data', '=', False)]}">
-                    <div class="alert alert-success" colspan="2" attrs="{'invisible': [('preview_record_count', '=', 0)]}">
+                <group string="Export Preview" invisible="['&amp;', ('preview_record_count', '=', 0), ('preview_data', '=', False)]">
+                    <div class="alert alert-success" colspan="2" invisible="[('preview_record_count', '=', 0)]">
                         <h5><i class="fa fa-check"/> Export Preview Ready</h5>
                         <p>
                             Found <strong><field name="preview_record_count" readonly="1"/></strong> employees 
                             with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong>
                         </p>
                     </div>
-                    <div class="alert alert-warning" colspan="2" attrs="{'invisible': ['|', ('preview_record_count', '>', 0), ('preview_data', '=', False)]}">
+                    <div class="alert alert-warning" colspan="2" invisible="['|', ('preview_record_count', '&gt;', 0), ('preview_data', '=', False)]">
                         <h5><i class="fa fa-exclamation-triangle"/> Export Preview</h5>
                         <field name="preview_data" readonly="1" nolabel="1"/>
                     </div>
-                    <field name="preview_line_ids" nolabel="1" colspan="2" attrs="{'invisible': [('preview_record_count', '=', 0)]}">
-                        <tree string="Export Preview" create="false" delete="false">
+                    <field name="preview_line_ids" nolabel="1" colspan="2" invisible="[('preview_record_count', '=', 0)]">
+                        <list string="Export Preview" create="false" delete="false">
                             <field name="employee_id"/>
                             <field name="bank_name"/>
                             <field name="account_number"/>
@@ -50,13 +50,13 @@
                             <field name="date"/>
                             <field name="department"/>
                             <field name="job_position"/>
-                        </tree>
+                        </list>
                     </field>
                 </group>
 
                 
                 <!-- Export Results -->
-                <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
+                <group string="Export Results" invisible="[('export_file', '=', False)]">
                     <div class="alert alert-success" colspan="2">
                         <h5><i class="fa fa-download"/> Export Complete</h5>
                         <p>Bank export file has been generated successfully. Click download to save the file.</p>
@@ -66,11 +66,11 @@
                 </group>
                 
                 <footer>
-                    <button string="Preview Export" name="action_preview_export" type="object" class="btn-info" attrs="{'invisible': [('preview_record_count', '>', 0)]}"/>
-                    <button string="Details" name="action_show_details" type="object" class="btn-secondary" attrs="{'invisible': [('preview_record_count', '=', 0)]}"/>
-                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': [('export_file', '!=', False)]}"/>
-                    <button string="Download File" name="action_download_export" type="object" class="btn-success" attrs="{'invisible': [('export_file', '=', False)]}"/>
-                    <button string="Reset" name="action_reset_wizard" type="object" class="btn-secondary" attrs="{'invisible': [('export_file', '=', False)]}"/>
+                    <button string="Preview Export" name="action_preview_export" type="object" class="btn-info" invisible="[('preview_record_count', '>', 0)]"/>
+                    <button string="Details" name="action_show_details" type="object" class="btn-secondary" invisible="[('preview_record_count', '=', 0)]"/>
+                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" invisible="[('export_file', '!=', False)]"/>
+                    <button string="Download File" name="action_download_export" type="object" class="btn-success" invisible="[('export_file', '=', False)]"/>
+                    <button string="Reset" name="action_reset_wizard" type="object" class="btn-secondary" invisible="[('export_file', '=', False)]"/>
                     <button string="Cancel" class="btn-default" special="cancel"/>
                 </footer>
             </form>
@@ -98,17 +98,17 @@
                     <group>
                         <field name="date_from" required="1"/>
                         <field name="date_to" required="1"/>
-                        <field name="analytics_id" readonly="1" attrs="{'invisible': [('analytics_id', '=', False)]}"/>
+                        <field name="analytics_id" readonly="1" invisible="[('analytics_id', '=', False)]"/>
                     </group>
                 </group>
                 
-                <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
+                <group string="Export Results" invisible="[('export_file', '=', False)]">
                     <field name="export_filename" readonly="1" colspan="2"/>
                     <field name="export_file" filename="export_filename" readonly="1" colspan="2"/>
                 </group>
                 
                 <footer>
-                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': [('export_file', '!=', False)]}"/>
+                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" invisible="[('export_file', '!=', False)]"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -130,7 +130,7 @@
         <field name="name">bank.export.log.tree</field>
         <field name="model">bank.export.log</field>
         <field name="arch" type="xml">
-            <tree string="Bank Export History" create="false">
+            <list string="Bank Export History" create="false">
                 <field name="export_date"/>
                 <field name="country"/>
                 <field name="period_name"/>
@@ -139,7 +139,7 @@
                 <field name="export_format"/>
                 <field name="created_by"/>
                 <field name="export_file" filename="filename"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -187,7 +187,7 @@
     <record id="action_bank_export_log" model="ir.actions.act_window">
         <field name="name">Bank Export History</field>
         <field name="res_model">bank.export.log</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

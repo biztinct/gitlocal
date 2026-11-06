@@ -1,0 +1,15 @@
+// ============================================================================
+// PAYOBOOK — RUNTIME BRAND OVERRIDES (loads after biz_theme bundles)
+// ============================================================================
+// Small CSS-custom-property layer for values biz_theme exposes as runtime
+// hooks. Compile-time palette lives in primary_variables.scss.
+
+:root {
+    // Backend chrome (navbar strip) — deep navy-charcoal, matches pb_sidebar
+    --biz-chrome-bg: #0E1430;
+    --biz-chrome-border: rgba(255, 255, 255, .06);
+    // Centre-screen loader (biz_loading.scss): the Payobook wordmark, cut
+    // out on a transparent ground so it can be both picture and mask.
+    --biz-loader-logo: url('/pb_theme/static/src/img/payobook_logo.png');
+    --biz-loader-scrim: rgba(244, 245, 251, .58);
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Trip → Expenses smart button -->
+    <record id="view_pb_business_trip_form_expense" model="ir.ui.view">
+        <field name="name">pb.business.trip.form.expense</field>
+        <field name="model">pb.business.trip</field>
+        <field name="inherit_id" ref="pb_business_trip.view_pb_business_trip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='oe_title']" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button" icon="fa-money" type="object"
+                            name="action_view_expenses" invisible="expense_count == 0">
+                        <field name="expense_count" widget="statinfo" string="Expenses"/>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Expense → Trip traceability field -->
+    <record id="view_hr_expense_form_trip" model="ir.ui.view">
+        <field name="name">hr.expense.form.trip</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_id']" position="after">
+                <field name="pb_trip_id" readonly="1" invisible="not pb_trip_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

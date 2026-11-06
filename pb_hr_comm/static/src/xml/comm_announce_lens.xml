@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       Home, the ANNOUNCE tab (NAV P2): Coming up and, for the HR team,
+       the Calendar. Loop variable is `tb`, never a reserved name (R1).
+       ================================================================== -->
+  <t t-name="pb_hr_comm.PbHrCommAnnounceLens">
+    <div class="pbch-lens">
+      <div t-if="state.canPlan" class="pbim pbch-tabs">
+        <div class="pbim-seg" role="tablist">
+          <t t-foreach="tabs" t-as="tb" t-key="tb.key">
+            <button t-attf-class="pbim-segbtn {{ state.tab === tb.key ? 'on' : '' }}"
+                    role="tab" t-att-aria-selected="state.tab === tb.key ? 'true' : 'false'"
+                    t-on-click="() => this.setTab(tb.key)">
+              <t t-out="ic(tb.icon, 14)"/>
+              <span t-esc="tb.label"/>
+            </button>
+          </t>
+        </div>
+      </div>
+      <div class="pbch-lens-body">
+        <PbHrCommCalendar t-if="state.tab === 'calendar'" t-props="calendarProps"/>
+        <PbHrCommHome t-else="" t-props="homeProps"/>
+      </div>
+    </div>
+  </t>
+
+</templates>

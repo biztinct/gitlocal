@@ -1,0 +1,989 @@
+# MYTEAM — the manager area on the employee home (Vietnamese).
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-05 00:00+0000\n"
+"PO-Revision-Date: 2026-11-05 00:00+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "%(a)s is covering for %(b)s"
+msgstr "%(a)s đang thay %(b)s"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "%s approvals waiting for you"
+msgstr "%s yêu cầu đang chờ bạn duyệt"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "%s requests are waiting for your decision."
+msgstr "%s yêu cầu đang chờ bạn quyết định."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "%s trial periods end soon"
+msgstr "%s kỳ thử việc sắp kết thúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "(asked, not yet approved)"
+msgstr "(đã xin, chưa duyệt)"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "(you)"
+msgstr "(bạn)"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid ", covering for"
+msgstr ", thay cho"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ", in"
+msgstr ", còn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ", no decision yet"
+msgstr ", chưa có quyết định"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid ". Older ones are in the approvals screen of the app."
+msgstr ". Các yêu cầu cũ hơn nằm trong màn hình phê duyệt của ứng dụng."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "1 approval waiting for you"
+msgstr "1 yêu cầu đang chờ bạn duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "1 other person in your team is away then."
+msgstr "1 người khác trong nhóm bạn vắng mặt vào thời gian đó."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "1 person reports to them"
+msgstr "1 người báo cáo cho họ"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "1 trial period ends soon"
+msgstr "1 kỳ thử việc sắp kết thúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "1 year with the company"
+msgstr "1 năm làm việc tại công ty"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<option value=\"\">Choose a colleague…</option>"
+msgstr "<option value=\"\">Chọn một đồng nghiệp…</option>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "<span class=\"pbmt-chip pbmt-chip--slate\">Day off</span>"
+msgstr "<span class=\"pbmt-chip pbmt-chip--slate\">Ngày nghỉ</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "<span class=\"pbmt-chip pbmt-chip--slate\">Working today</span>"
+msgstr "<span class=\"pbmt-chip pbmt-chip--slate\">Hôm nay đi làm</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span class=\"pbmt-key is-away\"/>On leave <span class=\"pbmt-key is-"
+"asked\"/>Asked, not yet approved"
+msgstr ""
+"<span class=\"pbmt-key is-away\"/>Nghỉ phép <span class=\"pbmt-key is-"
+"asked\"/>Đã xin, chưa duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-label\">First day away</span>"
+msgstr "<span class=\"pbmt-label\">Ngày vắng đầu tiên</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-label\">Last day away</span>"
+msgstr "<span class=\"pbmt-label\">Ngày vắng cuối cùng</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-label\">Who looks after them</span>"
+msgstr "<span class=\"pbmt-label\">Ai sẽ xử lý thay</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span class=\"pbmt-label\">Why <span class=\"pbmt-label-sub\">Kept with the "
+"decisions they make for you</span></span>"
+msgstr ""
+"<span class=\"pbmt-label\">Lý do <span class=\"pbmt-label-sub\">Được lưu "
+"cùng các quyết định họ đưa ra thay bạn</span></span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-node-j\">You</span>"
+msgstr "<span class=\"pbmt-node-j\">Bạn</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"pbmt-node-j\">Your manager</span>"
+msgstr "<span class=\"pbmt-node-j\">Quản lý của bạn</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "<span class=\"visually-hidden\">Person</span>"
+msgstr "<span class=\"visually-hidden\">Người</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span><b>Hiring</b><span class=\"pbmt-row-d\">Interviews and roles you asked"
+" for</span></span>"
+msgstr ""
+"<span><b>Tuyển dụng</b><span class=\"pbmt-row-d\">Phỏng vấn và vị trí bạn đã"
+" yêu cầu</span></span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"<span><b>Team training</b><span class=\"pbmt-row-d\">Who still has a course "
+"to finish</span></span>"
+msgstr ""
+"<span><b>Đào tạo của nhóm</b><span class=\"pbmt-row-d\">Ai còn khóa học chưa"
+" hoàn thành</span></span>"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "A request is waiting for your decision."
+msgstr "Có một yêu cầu đang chờ bạn quyết định."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid ""
+"About people in your team, decided by somebody else. You can follow them "
+"here."
+msgstr ""
+"Về người trong nhóm bạn, do người khác quyết định. Bạn có thể theo dõi tại "
+"đây."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "All approvals"
+msgstr "Tất cả phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Annual leave"
+msgstr "Nghỉ phép năm"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_breadcrumbs_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Approvals are not open to your login"
+msgstr "Tài khoản của bạn chưa được dùng phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Approve"
+msgstr "Duyệt"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_home.py:0
+msgid "Approve or send back"
+msgstr "Duyệt hoặc trả lại"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Approved. The person who asked will see it."
+msgstr "Đã duyệt. Người gửi yêu cầu sẽ thấy kết quả."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Ask HR to give your login the right to take part in approvals."
+msgstr "Hãy nhờ bộ phận nhân sự cấp quyền phê duyệt cho tài khoản của bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Asked"
+msgstr "Đã xin"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "Asked for"
+msgstr "Đã xin"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Away"
+msgstr "Vắng mặt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
+msgid "Back to my home"
+msgstr "Về trang của tôi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Birthday"
+msgstr "Sinh nhật"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Choose the first and the last day you are away."
+msgstr "Hãy chọn ngày đầu tiên và ngày cuối cùng bạn vắng mặt."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "Choose who looks after your approvals."
+msgstr "Hãy chọn người xử lý phê duyệt thay bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Coming"
+msgstr "Sắp tới"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Coming up"
+msgstr "Sắp diễn ra"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Contract ends"
+msgstr "Hợp đồng kết thúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Dates"
+msgstr "Ngày"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Decided"
+msgstr "Đã quyết định"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Details, as sent in"
+msgstr "Chi tiết, như khi gửi"
+
+#. module: pb_me_team
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_team__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Done. Your approvals are handed over for those days."
+msgstr "Xong. Phê duyệt của bạn đã được giao lại trong những ngày đó."
+
+#. module: pb_me_team
+#: model:ir.model,name:pb_me_team.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_team
+#: model:ir.model,name:pb_me_team.model_pb_me_team
+msgid "Employee home: a manager's team"
+msgstr "Trang chủ nhân viên: nhóm của quản lý"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ended"
+msgstr "Đã kết thúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ends today"
+msgstr "Kết thúc hôm nay"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Ends tomorrow"
+msgstr "Kết thúc ngày mai"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Give your decision before the date: confirm, extend, or end."
+msgstr "Hãy quyết định trước ngày đó: xác nhận, gia hạn hoặc kết thúc."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Hand over my approvals"
+msgstr "Giao lại phê duyệt của tôi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "I'm away"
+msgstr "Tôi vắng mặt"
+
+#. module: pb_me_team
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_me_team.field_pb_me_team__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "In force"
+msgstr "Đang áp dụng"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "In since"
+msgstr "Có mặt từ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
+msgid "It may have been withdrawn, or it is not one you can see."
+msgstr "Có thể yêu cầu đã bị rút lại, hoặc bạn không được xem yêu cầu này."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Joined"
+msgstr "Vào làm"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Joined in the last 90 days."
+msgstr "Vào làm trong 90 ngày qua."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Late"
+msgstr "Trễ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "Late · in at"
+msgstr "Trễ · vào lúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Leave still to take"
+msgstr "Phép còn lại"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Left after this"
+msgstr "Còn lại sau lần này"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "Left at"
+msgstr "Đã về lúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Length"
+msgstr "Thời gian"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Missing clock-ins this week"
+msgstr "Thiếu chấm công tuần này"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "More for managers"
+msgstr "Thêm cho quản lý"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"Most days left first. Useful to plan the busy months and the end of the "
+"year."
+msgstr ""
+"Người còn nhiều ngày nhất xếp trước. Hữu ích để lên kế hoạch cho tháng bận "
+"và cuối năm."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_breadcrumbs_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "My team"
+msgstr "Nhóm của tôi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "New in your team"
+msgstr "Người mới trong nhóm"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "No approvals waiting"
+msgstr "Không có yêu cầu nào đang chờ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "No clock-in yet · due"
+msgstr "Chưa chấm công · giờ vào"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Nobody else in your company can take approvals yet."
+msgstr "Chưa có ai khác trong công ty có thể nhận phê duyệt."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Nobody else in your team is away on these days."
+msgstr "Không ai khác trong nhóm vắng mặt vào những ngày này."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
+msgid "Nobody reports to you"
+msgstr "Không có ai báo cáo cho bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "Nobody reports to you, but decisions are waiting on you."
+msgstr "Không có ai báo cáo cho bạn, nhưng có quyết định đang chờ bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid ""
+"Note <span class=\"pbmt-label-sub\">Needed to send back or turn down. The "
+"person who asked reads it.</span>"
+msgstr ""
+"Ghi chú <span class=\"pbmt-label-sub\">Bắt buộc khi trả lại hoặc từ chối. "
+"Người gửi yêu cầu sẽ đọc ghi chú này.</span>"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Nothing decided yet"
+msgstr "Chưa có quyết định nào"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Nothing is moving for your team"
+msgstr "Nhóm bạn không có yêu cầu nào đang xử lý"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Nothing is waiting for you"
+msgstr "Không có gì đang chờ bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "On leave"
+msgstr "Nghỉ phép"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
+msgid "Open approvals"
+msgstr "Mở phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "Open my team"
+msgstr "Mở nhóm của tôi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Open the org chart"
+msgstr "Mở sơ đồ tổ chức"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Open the review"
+msgstr "Mở đánh giá"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Overdue"
+msgstr "Quá hạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Overtime in"
+msgstr "Làm thêm giờ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"Pass your approvals to a colleague while you are away. New requests go to "
+"them. Requests already waiting stay with you."
+msgstr ""
+"Giao phê duyệt cho đồng nghiệp khi bạn vắng mặt. Yêu cầu mới sẽ chuyển đến "
+"họ. Yêu cầu đang chờ vẫn ở lại với bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Public holiday today"
+msgstr "Hôm nay là ngày lễ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Requests about your people that somebody else decides show here."
+msgstr ""
+"Các yêu cầu về người trong nhóm do người khác quyết định sẽ hiện ở đây."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Requests you or others have decided for your team show here."
+msgstr ""
+"Các yêu cầu bạn hoặc người khác đã quyết định cho nhóm bạn sẽ hiện ở đây."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "Review approvals"
+msgstr "Xem phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "See approvals"
+msgstr "Xem phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Send back"
+msgstr "Trả lại"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Sent back with your note."
+msgstr "Đã trả lại kèm ghi chú của bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Showing the newest"
+msgstr "Đang hiện các yêu cầu mới nhất:"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Stop"
+msgstr "Dừng"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Stopped. New approvals come to you again."
+msgstr "Đã dừng. Phê duyệt mới sẽ lại đến bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+msgid "Stuck"
+msgstr "Bị kẹt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Team calendar, scroll sideways for more days"
+msgstr "Lịch của nhóm, cuộn ngang để xem thêm ngày"
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/controllers/portal.py:0
+msgid "That did not go through. Nothing was changed — please try again."
+msgstr "Thao tác chưa thành công. Không có gì thay đổi — vui lòng thử lại."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "That hand-over is not yours to stop."
+msgstr "Bạn không thể dừng việc giao lại này."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "The last day is in the past."
+msgstr "Ngày cuối cùng đã qua."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "The leave"
+msgstr "Thông tin nghỉ phép"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "The limit is"
+msgstr "Giới hạn là"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"The people who report to you: where they are today, who is away soon, and "
+"what is coming up."
+msgstr ""
+"Những người báo cáo cho bạn: hôm nay họ ở đâu, ai sắp vắng mặt và điều gì "
+"sắp diễn ra."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid ""
+"The person who reports to you: where they are today, who is away soon, and "
+"what is coming up."
+msgstr ""
+"Người báo cáo cho bạn: hôm nay họ ở đâu, có sắp vắng mặt không và điều gì "
+"sắp diễn ra."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_none
+msgid ""
+"This page is for managers. When someone's record names you as their manager,"
+" they appear here."
+msgstr ""
+"Trang này dành cho quản lý. Khi hồ sơ của ai đó ghi bạn là quản lý, họ sẽ "
+"hiện ở đây."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Tomorrow"
+msgstr "Ngày mai"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Trial periods ending"
+msgstr "Kỳ thử việc sắp kết thúc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Turn down"
+msgstr "Từ chối"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Turned down with your note."
+msgstr "Đã từ chối kèm ghi chú của bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Type"
+msgstr "Loại"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Waiting for you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Waiting on others"
+msgstr "Đang chờ người khác"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_team_approval_missing
+msgid "We could not find that request"
+msgstr "Không tìm thấy yêu cầu đó"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "What happened"
+msgstr "Diễn biến"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid ""
+"What is waiting for your decision, and what is moving for the people in your"
+" team."
+msgstr ""
+"Những gì đang chờ bạn quyết định, và những gì đang được xử lý cho người "
+"trong nhóm bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "When someone sends you a request, it lands here and on your home page."
+msgstr ""
+"Khi ai đó gửi yêu cầu cho bạn, yêu cầu sẽ hiện ở đây và trên trang chủ của "
+"bạn."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approvals
+msgid "Which approvals"
+msgstr "Loại phê duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Who decides"
+msgstr "Ai quyết định"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Who is away, next 4 weeks"
+msgstr "Ai vắng mặt, 4 tuần tới"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "With"
+msgstr "Đang ở"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Working days with no clock-in and no leave. Fix them before pay day."
+msgstr ""
+"Ngày làm việc không chấm công và không nghỉ phép. Hãy xử lý trước ngày trả "
+"lương."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "You can still decide the approvals that are waiting on you."
+msgstr "Bạn vẫn có thể quyết định các yêu cầu đang chờ bạn."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "You cannot decide approvals."
+msgstr "Bạn không thể quyết định phê duyệt."
+
+#. module: pb_me_team
+#. odoo-python
+#: code:addons/pb_me_team/models/pb_me_team.py:0
+msgid "You cannot hand over approvals."
+msgstr "Bạn không thể giao lại phê duyệt."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Your company does not record clock-ins, so this shows leave only."
+msgstr "Công ty bạn không ghi nhận chấm công, nên mục này chỉ hiện nghỉ phép."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "Your decision"
+msgstr "Quyết định của bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "Your team on the org chart"
+msgstr "Nhóm của bạn trên sơ đồ tổ chức"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "and"
+msgstr "và"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "approval waiting for you"
+msgstr "yêu cầu đang chờ bạn duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "approvals waiting for you"
+msgstr "yêu cầu đang chờ bạn duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "d"
+msgstr "ngày"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "day"
+msgstr "ngày"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "day off"
+msgstr "nghỉ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "first-weeks steps"
+msgstr "bước trong những tuần đầu"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "for"
+msgstr "thay"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "gone home"
+msgstr "đã về"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h"
+msgstr "giờ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h approved"
+msgstr "giờ đã duyệt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "h asked"
+msgstr "giờ đã xin"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "hours a month per person."
+msgstr "giờ mỗi tháng cho mỗi người."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "in"
+msgstr "có mặt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "late"
+msgstr "trễ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "looks after your approvals"
+msgstr "xử lý phê duyệt thay bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "more busy days"
+msgstr "ngày bận khác"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "not in yet"
+msgstr "chưa đến"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "of"
+msgstr "trên"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "on leave"
+msgstr "nghỉ phép"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "or"
+msgstr "hoặc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "other people in your team are away then."
+msgstr "người khác trong nhóm bạn vắng mặt vào thời gian đó."
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "people away"
+msgstr "người vắng mặt"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "people report to them"
+msgstr "người báo cáo cho họ"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "people report to you"
+msgstr "người báo cáo cho bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "person reports to you"
+msgstr "người báo cáo cho bạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "to"
+msgstr "đến"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbme_card_team
+msgid "working"
+msgstr "đang làm việc"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "years with the company"
+msgstr "năm làm việc tại công ty"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "· already extended once"
+msgstr "· đã gia hạn một lần"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_status
+msgid "· back after"
+msgstr "· quay lại sau"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team
+msgid "· buddy"
+msgstr "· người kèm cặp"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "· due"
+msgstr "· hạn"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.portal_my_team_approval
+msgid "· sent"
+msgstr "· gửi"
+
+#. module: pb_me_team
+#: model_terms:ir.ui.view,arch_db:pb_me_team.pbmt_ap_card
+msgid "· with"
+msgstr "· đang ở"

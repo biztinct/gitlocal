@@ -1,0 +1,198 @@
+<title>RIZE Wave 2 Closeout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F6F7FB; --surface:#FFFFFF; --surface2:#FAFAFE;
+    --ink:#1E1B2E; --muted:#5B6478; --faint:#8A91A5;
+    --brand:#5A4BB0; --brand-deep:#241F52; --brand-soft:#EDEAF8; --brand-mid:#CBC2EE;
+    --good:#2E7D4F; --good-soft:#E7F3EC;
+    --info:#2563EB; --info-soft:#E8EFFD;
+    --warn:#B45309; --warn-soft:#FBF0E1;
+    --bad:#DC2668;  --bad-soft:#FCE9F0;
+    --border:#E2E8F0; --border2:#D6DBE8;
+    --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px -12px rgba(30,27,46,.12);
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+      --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+      --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-soft:#2B2648; --brand-mid:#3D3766;
+      --good:#5CBF8A; --good-soft:#1D3229;
+      --info:#7CA5F5; --info-soft:#1E2A44;
+      --warn:#E5A455; --warn-soft:#3A2C18;
+      --bad:#F07AA4;  --bad-soft:#3D2030;
+      --border:#33304D; --border2:#403C5E;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141221; --surface:#1E1B31; --surface2:#232039;
+    --ink:#ECEAF6; --muted:#A7ADC2; --faint:#7C829A;
+    --brand:#A99CE6; --brand-deep:#D8D1F5; --brand-soft:#2B2648; --brand-mid:#3D3766;
+    --good:#5CBF8A; --good-soft:#1D3229;
+    --info:#7CA5F5; --info-soft:#1E2A44;
+    --warn:#E5A455; --warn-soft:#3A2C18;
+    --bad:#F07AA4;  --bad-soft:#3D2030;
+    --border:#33304D; --border2:#403C5E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Sora",sans-serif;margin:0;text-wrap:balance}
+  code,.mono{font-family:"IBM Plex Mono",monospace;font-size:.92em}
+  .wrap{max-width:1040px;margin:0 auto;padding:44px 24px 40px}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--good);background:var(--good-soft);border-radius:999px;padding:7px 14px;margin-bottom:16px}
+  .eyebrow svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  h1{font-size:clamp(30px,5vw,42px);font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+  .lede{font-size:17.5px;color:var(--muted);max-width:64ch;margin:0}
+  .lede b{color:var(--ink)}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .stat .n{font-family:"Sora",sans-serif;font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--brand)}
+  .stat .l{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+  section{margin-top:52px}
+  h2{font-size:23px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+  .sub{color:var(--muted);max-width:70ch;margin:0 0 18px;font-size:15px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .mod{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+  .mod .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .mod h3{font-size:15px;font-weight:700}
+  .mod p{margin:0;font-size:13px;color:var(--muted)}
+  .mod .where{font-size:12px;color:var(--brand);font-weight:600;margin-top:2px}
+  .live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--good);background:var(--good-soft);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px}
+  .card.key{border-color:var(--warn);background:var(--warn-soft)}
+  .card.key h3{font-size:16px;margin-bottom:6px}
+  .card.key p{margin:0;font-size:14.5px}
+  .pw{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:6px 12px;margin:6px 0;user-select:all}
+
+  .tw{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--surface)}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.8px}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;text-align:left;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+  td{padding:10px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.k{font-weight:600;white-space:nowrap}
+  .chip{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .chip.on{color:var(--good);background:var(--good-soft)}
+  .chip.off{color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+  .chip.warn{color:var(--warn);background:var(--warn-soft)}
+
+  ol.dec{margin:0;padding:0;list-style:none;counter-reset:d;display:flex;flex-direction:column;gap:10px}
+  ol.dec li{counter-increment:d;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px 14px 56px;position:relative;box-shadow:var(--shadow);font-size:14.5px}
+  ol.dec li::before{content:counter(d);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:8px;background:var(--brand-soft);color:var(--brand);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+  ol.dec li b{display:block;margin-bottom:2px}
+  ol.dec li span{color:var(--muted)}
+
+  pre{margin:0;background:var(--brand-deep);color:#ECEAF6;border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6}
+  :root[data-theme="dark"] pre{background:#0F0D1A}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) pre{background:#0F0D1A}}
+  .note{font-size:14px;color:var(--muted);margin:10px 0 0}
+  .note b{color:var(--ink)}
+
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);color:var(--faint);font-size:13px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+  a{color:var(--brand)}
+</style>
+
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Wave 2 complete · 16 Sep 2026</span>
+  <h1>RIZE Wave 2 Closeout</h1>
+  <p class="lede">The five tabs wave 1 left uncoloured — <b>Hiring, Goals, HR announcements, Leave &amp; field attendance, Training</b> — are built, tested in the browser and live on payobook.com, plus the demo-data clean-up you asked for mid-wave. This page is what you need to take it over.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">5</div><div class="l">tabs delivered</div></div>
+    <div class="stat"><div class="n">11</div><div class="l">build phases</div></div>
+    <div class="stat"><div class="n">886</div><div class="l">automated checks green</div></div>
+    <div class="stat"><div class="n">65</div><div class="l">live-only defects fixed</div></div>
+    <div class="stat"><div class="n">112</div><div class="l">traps recorded</div></div>
+  </div>
+</header>
+
+<section>
+  <h2>What's live, and where to find it</h2>
+  <p class="sub">In the order it was built. Everything sits inside the missions you already had; <b>Learn</b> is now a hub with tabs, like the others.</p>
+  <div class="grid">
+    <div class="mod"><div class="top"><h3>Hiring request → advert</h3><span class="live">Live</span></div><p>A manager asks for a role; the budget is checked; the advert is versioned and agreed; referrals and job-board packs.</p><div class="where">Lifecycle → Hiring · My referrals</div></div>
+    <div class="mod"><div class="top"><h3>Interviews</h3><span class="live">Live</span></div><p>Invites with calendar files, reminders, reschedules and no-shows with reasons, the panel's private opinion page due in 24 working hours, the debrief that picks the candidate.</p><div class="where">Hiring → Interviews · My hiring</div></div>
+    <div class="mod"><div class="top"><h3>Offer → joiner</h3><span class="live">Live</span></div><p>Background check, document request, the offer with its letter and candidate page, and closure into an employee with a contract, pay package, joining checklist and login.</p><div class="where">Hiring → the path strip · Insights → Hiring</div></div>
+    <div class="mod"><div class="top"><h3>Demo data panel</h3><span class="live">Live</span></div><p>Every demo record renamed DEMO and on one register. "What would be removed" is safe; "Remove" switches logins off and deletes the rest.</p><div class="where">Settings → Demo data</div></div>
+    <div class="mod"><div class="top"><h3>Training for the learner</h3><span class="live">Live</span></div><p>Courses on their own page: watch, read, answer, mark done; the test unlocks when every lesson is done; a certificate on a pass.</p><div class="where">Learn → Training · My training</div></div>
+    <div class="mod"><div class="top"><h3>Training assignments</h3><span class="live">Live</span></div><p>Who must take what by when; reminders and escalation; "ask for more time"; the probation gate; yearly refreshers; day-one courses.</p><div class="where">Training → Assignments, Schedules, Rules</div></div>
+    <div class="mod"><div class="top"><h3>Training claims &amp; numbers</h3><span class="live">Live</span></div><p>An allowance per year; a receipt and certificate become a claim, then an award the pay team queues into a run; certificates in the vault.</p><div class="where">Training → Claims · Insights → Training</div></div>
+    <div class="mod"><div class="top"><h3>Goals</h3><span class="live">Live</span></div><p>A goal year; weighted goals with key results; manager agrees, HR lead locks; templates; new joiners get a sheet from their checklist.</p><div class="where">People → Goals · My goals</div></div>
+    <div class="mod"><div class="top"><h3>Goals through the year</h3><span class="live">Live</span></div><p>Monthly check-ins, half-year and year-end reviews, change requests after the lock, scores and bands, the year-end close with past years kept.</p><div class="where">Insights → Goals · Home → Goals</div></div>
+    <div class="mod"><div class="top"><h3>Leave &amp; field staff</h3><span class="live">Live</span></div><p>Public holidays for everybody, late requests escalated to HR, back-dated sick leave, the past-leave lock, carry-forward watch, Field staff with location + selfie check-in.</p><div class="where">Workforce → Holidays, Field · My holidays</div></div>
+    <div class="mod"><div class="top"><h3>HR announcements</h3><span class="live">Live</span></div><p>A calendar of announcements per company and audience, one-off or recurring, with posters; the responsible person is nudged two days before; birthday and anniversary cards redesigned.</p><div class="where">People → Announce · Home → Coming up · Settings → Announcements</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Your login</h2>
+  <div class="card key">
+    <h3>Nothing of yours was touched</h3>
+    <p>Your own login was never used in this wave. The temporary validation login <span class="mono">igc1.validator</span> has now been <b>switched off</b>, as you asked. Every demo person signs in with a <span class="mono">demo.…@example.com</span> address and none of them can receive real email; the full list with passwords is in the written closeout.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Switches</h2>
+  <p class="sub">Anything "off" was left that way on purpose so nothing goes out before you've read it.</p>
+  <div class="tw"><table>
+    <tr><th>Area</th><th>State</th><th>What it means</th></tr>
+    <tr><td class="k">Interview &amp; candidate emails</td><td><span class="chip on">On</span></td><td>Invites with calendar files, reminders the day before and 30 minutes before, next-round and "not this time" notes.</td></tr>
+    <tr><td class="k">Closing an offer writes the contract</td><td><span class="chip warn">On — confirm</span></td><td>That is what gives a joiner a start date. Off means someone types it later.</td></tr>
+    <tr><td class="k">Job-board posting by email</td><td><span class="chip off">Off</span></td><td>Outside services stay off, as agreed. The pack is built and ready.</td></tr>
+    <tr><td class="k">Course reminders &amp; escalation</td><td><span class="chip on">On</span></td><td>3 days, 1 day, on the day, then every 3 days late; manager at 2 days late, HR lead at 5.</td></tr>
+    <tr><td class="k">Day-one courses for joiners</td><td><span class="chip off">Off</span></td><td>The checklist step exists and says what it would assign. Turn on once you pick the induction course.</td></tr>
+    <tr><td class="k">Course-finished email · un-enrol on a failed test</td><td><span class="chip off">Off</span></td><td>Nobody has written the email; and failing the last go must not wipe a person's finished lessons.</td></tr>
+    <tr><td class="k">Training report pack</td><td><span class="chip off">Off</span></td><td>Pointed at a test address until you name the real one.</td></tr>
+    <tr><td class="k">Goal reminders &amp; check-ins</td><td><span class="chip on">On</span></td><td>Check-ins on the 25th; reminders come from the platform's default address, which is yours.</td></tr>
+    <tr><td class="k">Late leave requests</td><td><span class="chip on">On</span></td><td>Two working days for the manager, a chase, then the HR lead. They used to go to you.</td></tr>
+    <tr><td class="k">Carry-forward watch</td><td><span class="chip warn">On — no caps</span></td><td>Nothing is watched until you set a cap per kind of leave.</td></tr>
+    <tr><td class="k">Announcement emails</td><td><span class="chip on">On — no sign-off</span></td><td>An announcement goes out at the time picked. The HR-lead sign-off route is laid and one setting turns it on.</td></tr>
+    <tr><td class="k">Birthday &amp; anniversary cards</td><td><span class="chip off">Off</span></td><td>Designed and proven; one switch turns both on.</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2>Decisions waiting for you</h2>
+  <ol class="dec">
+    <li><b>Push the work.</b><span>More than 1,600 commits sit on the branch, unpushed — this wave and everything before it.</span></li>
+    <li><b>Move the HR-lead seat off your account.</b><span>On the Vietnam company that seat is still you, so late leave, late courses, claims and goal locks all land in your inbox.</span></li>
+    <li><b>The award sitting on a pay run.</b><span>1,200,000 ₫ was queued onto the draft June retail demo run to prove the money path. Pay it with the run or take it off.</span></li>
+    <li><b>Real figures and dates.</b><span>The training allowance, the goal-year dates, the check-in day and the minimum-months rules, the carry-forward caps, the 2026/27 holiday dates, who is field staff.</span></li>
+    <li><b>Wording.</b><span>The two offer letters, the agency name "Talent Partners", the payslip line "Training reimbursement", the goal band names.</span></li>
+    <li><b>Small clean-ups.</b><span>Delete the leftover sample test "MyCompany Vendor Certification"; two small add-ons arrived automatically with the test engine; ten internal to-do emails across the product fail for want of a sender address.</span></li>
+    <li><b>Two product-wide jobs, not part of this wave.</b><span>Dark mode looks like light mode on every cockpit screen; and the older wave-1 modules carry a weakness where a failed follow-up email can undo an approval's own status change. The new modules are built without it.</span></li>
+    <li><b>Announcements.</b><span>Name who looks after announcements in each company (today it is whoever holds HR lead), decide whether they need a sign-off first, and pick the day to switch the birthday cards on — about 32 people a day.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>One money rule, one demo rule</h2>
+  <div class="card">
+    <p style="margin:0 0 10px;font-size:14.5px"><b>A training claim reaches a payslip only the way a bonus does:</b> agreeing it raises an award, and the pay team queues that award into a run from the Awards panel after a preview. Nothing writes to a payslip directly.</p>
+    <p style="margin:0;font-size:14.5px"><b>Nothing on the demo says the customer's name any more.</b> Every demo record starts with DEMO and sits on one register in Settings → Demo data. The only places the name survives are the customer's real tenant record, its backups and the monitoring alerts about it — those have to keep it.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Demo data</h2>
+  <p class="sub">As you asked, everything created during testing stays, renamed and registered: a role filled by two closed offers and one offer waiting on a manager; interviews with opinions; a course passed with a certificate; assignments in every state; two claims; three goal years including a finished one at "Strong"; a change request agreed and one refused; the Vietnamese public holidays; an agronomist's selfie check-in; eight demo announcements. "Remove demo data" takes it all out in one press — except the 1,200,000 ₫ already on that pay run, which comes off the run first.</p>
+</section>
+
+<footer>
+  <span>RIZE HR programme · wave 2 <a href="rize-w2-blueprint.html">blueprint</a> · wave 1 <a href="rize-closeout.html">closeout</a> · full written closeout in docs/handovers</span>
+  <span>Built 15–16 Sep 2026</span>
+</footer>
+
+</div>

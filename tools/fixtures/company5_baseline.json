@@ -1,0 +1,393 @@
+{
+ "asof": "2026-09-06",
+ "headcount": 4533,
+ "teams": [
+  {
+   "key": "t133",
+   "name": "Manufacturing",
+   "department_id": 133,
+   "revenue": true,
+   "heads": 1002,
+   "pay_month_avg": 12303192.81,
+   "roles": [
+    {
+     "key": "r76",
+     "name": "Line Leader",
+     "job_id": 76,
+     "heads": 177,
+     "pay_month_avg": 14960451.98,
+     "level": 3
+    },
+    {
+     "key": "r78",
+     "name": "Shift Supervisor",
+     "job_id": 78,
+     "heads": 52,
+     "pay_month_avg": 38615384.62,
+     "level": 3
+    },
+    {
+     "key": "r74",
+     "name": "Production Operator",
+     "job_id": 74,
+     "heads": 409,
+     "pay_month_avg": 7219559.9,
+     "level": 1
+    },
+    {
+     "key": "r75",
+     "name": "Machine Operator",
+     "job_id": 75,
+     "heads": 278,
+     "pay_month_avg": 9997482.01,
+     "level": 1
+    },
+    {
+     "key": "r77",
+     "name": "Quality Inspector",
+     "job_id": 77,
+     "heads": 84,
+     "pay_month_avg": 22833333.33,
+     "level": 1
+    },
+    {
+     "key": "r0",
+     "name": "Other roles",
+     "job_id": 0,
+     "heads": 1,
+     "pay_month_avg": 12303192.81,
+     "level": 1
+    },
+    {
+     "key": "r102",
+     "name": "Construction Worker",
+     "job_id": 102,
+     "heads": 1,
+     "pay_month_avg": 9396000.0,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t127",
+   "name": "Retail",
+   "department_id": 127,
+   "revenue": true,
+   "heads": 902,
+   "pay_month_avg": 13760864.75,
+   "roles": [
+    {
+     "key": "r69",
+     "name": "Store Supervisor",
+     "job_id": 69,
+     "heads": 174,
+     "pay_month_avg": 15977586.21,
+     "level": 3
+    },
+    {
+     "key": "r70",
+     "name": "Store Manager",
+     "job_id": 70,
+     "heads": 76,
+     "pay_month_avg": 24906578.95,
+     "level": 3
+    },
+    {
+     "key": "r71",
+     "name": "Area Manager",
+     "job_id": 71,
+     "heads": 49,
+     "pay_month_avg": 45248979.59,
+     "level": 3
+    },
+    {
+     "key": "r67",
+     "name": "Sales Associate",
+     "job_id": 67,
+     "heads": 368,
+     "pay_month_avg": 8024184.78,
+     "level": 1
+    },
+    {
+     "key": "r68",
+     "name": "Cashier",
+     "job_id": 68,
+     "heads": 233,
+     "pay_month_avg": 10987982.83,
+     "level": 1
+    },
+    {
+     "key": "r0",
+     "name": "Other roles",
+     "job_id": 0,
+     "heads": 2,
+     "pay_month_avg": 4500000.0,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t157",
+   "name": "Construction",
+   "department_id": 157,
+   "revenue": true,
+   "heads": 799,
+   "pay_month_avg": 14350938.67,
+   "roles": [
+    {
+     "key": "r104",
+     "name": "Site Engineer",
+     "job_id": 104,
+     "heads": 144,
+     "pay_month_avg": 17579861.11,
+     "level": 2
+    },
+    {
+     "key": "r106",
+     "name": "Safety Officer",
+     "job_id": 106,
+     "heads": 41,
+     "pay_month_avg": 49882926.83,
+     "level": 2
+    },
+    {
+     "key": "r102",
+     "name": "Construction Worker",
+     "job_id": 102,
+     "heads": 337,
+     "pay_month_avg": 7576854.6,
+     "level": 1
+    },
+    {
+     "key": "r103",
+     "name": "Steel Fixer",
+     "job_id": 103,
+     "heads": 206,
+     "pay_month_avg": 10814563.11,
+     "level": 1
+    },
+    {
+     "key": "r105",
+     "name": "Foreman",
+     "job_id": 105,
+     "heads": 71,
+     "pay_month_avg": 29697183.1,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t139",
+   "name": "Logistics",
+   "department_id": 139,
+   "revenue": true,
+   "heads": 700,
+   "pay_month_avg": 12877857.14,
+   "roles": [
+    {
+     "key": "r85",
+     "name": "Fleet Supervisor",
+     "job_id": 85,
+     "heads": 40,
+     "pay_month_avg": 35075000.0,
+     "level": 3
+    },
+    {
+     "key": "r81",
+     "name": "Driver",
+     "job_id": 81,
+     "heads": 275,
+     "pay_month_avg": 7617090.91,
+     "level": 1
+    },
+    {
+     "key": "r82",
+     "name": "Delivery Rider",
+     "job_id": 82,
+     "heads": 199,
+     "pay_month_avg": 10839195.98,
+     "level": 1
+    },
+    {
+     "key": "r83",
+     "name": "Warehouse Operative",
+     "job_id": 83,
+     "heads": 111,
+     "pay_month_avg": 14995495.5,
+     "level": 1
+    },
+    {
+     "key": "r84",
+     "name": "Dispatcher",
+     "job_id": 84,
+     "heads": 75,
+     "pay_month_avg": 22604000.0,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t151",
+   "name": "Information Technology",
+   "department_id": 151,
+   "revenue": true,
+   "heads": 600,
+   "pay_month_avg": 31333166.67,
+   "roles": [
+    {
+     "key": "r99",
+     "name": "Tech Lead",
+     "job_id": 99,
+     "heads": 33,
+     "pay_month_avg": 102745454.55,
+     "level": 3
+    },
+    {
+     "key": "r95",
+     "name": "Software Engineer",
+     "job_id": 95,
+     "heads": 230,
+     "pay_month_avg": 15775217.39,
+     "level": 2
+    },
+    {
+     "key": "r96",
+     "name": "QA Engineer",
+     "job_id": 96,
+     "heads": 172,
+     "pay_month_avg": 25181976.74,
+     "level": 2
+    },
+    {
+     "key": "r97",
+     "name": "DevOps Engineer",
+     "job_id": 97,
+     "heads": 123,
+     "pay_month_avg": 40297560.98,
+     "level": 2
+    },
+    {
+     "key": "r98",
+     "name": "Data Analyst",
+     "job_id": 98,
+     "heads": 42,
+     "pay_month_avg": 59359523.81,
+     "level": 2
+    }
+   ]
+  },
+  {
+   "key": "t145",
+   "name": "Corporate Office",
+   "department_id": 145,
+   "revenue": true,
+   "heads": 500,
+   "pay_month_avg": 25654600.0,
+   "roles": [
+    {
+     "key": "r92",
+     "name": "Finance Manager",
+     "job_id": 92,
+     "heads": 26,
+     "pay_month_avg": 96969230.77,
+     "level": 3
+    },
+    {
+     "key": "r88",
+     "name": "Accountant",
+     "job_id": 88,
+     "heads": 208,
+     "pay_month_avg": 12923557.69,
+     "level": 2
+    },
+    {
+     "key": "r89",
+     "name": "HR Officer",
+     "job_id": 89,
+     "heads": 127,
+     "pay_month_avg": 19136220.47,
+     "level": 2
+    },
+    {
+     "key": "r91",
+     "name": "Marketing Specialist",
+     "job_id": 91,
+     "heads": 46,
+     "pay_month_avg": 50250000.0,
+     "level": 2
+    },
+    {
+     "key": "r90",
+     "name": "Legal Counsel",
+     "job_id": 90,
+     "heads": 93,
+     "pay_month_avg": 30926881.72,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t0",
+   "name": "Unassigned",
+   "department_id": 0,
+   "revenue": false,
+   "heads": 17,
+   "pay_month_avg": 15000000.0,
+   "roles": [
+    {
+     "key": "r104",
+     "name": "Site Engineer",
+     "job_id": 104,
+     "heads": 2,
+     "pay_month_avg": 15000000.0,
+     "level": 2
+    },
+    {
+     "key": "r0",
+     "name": "Other roles",
+     "job_id": 0,
+     "heads": 15,
+     "pay_month_avg": 15000000.0,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t656",
+   "name": "RIZE P4 (test)",
+   "department_id": 656,
+   "revenue": true,
+   "heads": 12,
+   "pay_month_avg": 13128571.43,
+   "roles": [
+    {
+     "key": "r0",
+     "name": "Other roles",
+     "job_id": 0,
+     "heads": 12,
+     "pay_month_avg": 13128571.43,
+     "level": 1
+    }
+   ]
+  },
+  {
+   "key": "t655",
+   "name": "Production",
+   "department_id": 655,
+   "revenue": true,
+   "heads": 1,
+   "pay_month_avg": 17060486.92,
+   "roles": [
+    {
+     "key": "r0",
+     "name": "Other roles",
+     "job_id": 0,
+     "heads": 1,
+     "pay_month_avg": 17060486.92,
+     "level": 1
+    }
+   ]
+  }
+ ],
+ "source": "hr.contract + hr.version"
+}

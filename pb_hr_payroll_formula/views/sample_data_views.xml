@@ -9,7 +9,7 @@
         <field name="name">hr.formula.sample.data.tree</field>
         <field name="model">hr.formula.sample.data</field>
         <field name="arch" type="xml">
-            <tree string="Sample Data" decoration-success="all_passed == True"
+            <list string="Sample Data" decoration-success="all_passed == True"
                   decoration-danger="all_passed == False and discrepancy_count > 0">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
@@ -26,7 +26,7 @@
                 <field name="max_discrepancy"/>
                 <field name="last_computed"/>
                 <field name="all_passed" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -34,7 +34,7 @@
         <field name="name">hr.formula.sample.data.form</field>
         <field name="model">hr.formula.sample.data</field>
         <field name="arch" type="xml">
-            <form string="Sample Data">
+            <form string="Sample Data" class="o_pb_fx_grid">
                 <header>
                     <button name="action_recompute" string="Recompute" type="object"
                             class="btn-primary" icon="fa-refresh"/>
@@ -46,9 +46,9 @@
                     <field name="discrepancy_count" invisible="1"/>
 
                     <widget name="web_ribbon" title="All Passed" bg_color="bg-success"
-                            attrs="{'invisible': [('all_passed', '!=', True)]}"/>
+                            invisible="not all_passed"/>
                     <widget name="web_ribbon" title="Failed" bg_color="bg-danger"
-                            attrs="{'invisible': ['|', ('all_passed', '=', True), ('discrepancy_count', '=', 0)]}"/>
+                            invisible="all_passed or discrepancy_count == 0"/>
 
                     <div class="oe_title">
                         <label for="name"/>
@@ -68,9 +68,9 @@
                         <group string="Source">
                             <field name="source_type" widget="radio"/>
                             <field name="source_employee_id"
-                                   attrs="{'invisible': [('source_type', 'not in', ['employee'])]}"/>
+                                   invisible="source_type != 'employee'"/>
                             <field name="source_payslip_id"
-                                   attrs="{'invisible': [('source_type', 'not in', ['payslip'])]}"/>
+                                   invisible="source_type != 'payslip'"/>
                             <field name="source_date"/>
                         </group>
                     </group>
@@ -78,7 +78,7 @@
                     <notebook>
                         <!-- User-Friendly Input (for Manual Entry) -->
                         <page string="Input Values (Table)" name="input_table"
-                              attrs="{'invisible': [('source_type', '!=', 'manual')]}">
+                              invisible="source_type != 'manual'">
                             <div class="alert alert-info mb-3" role="alert" style="margin: 0 0 16px 0;">
                                 <div class="d-flex align-items-center">
                                     <i class="fa fa-info-circle fa-lg me-3"/>
@@ -100,13 +100,13 @@
                             <div class="mb-3">
                                 <button name="action_generate_input_lines" string="Load Input Columns"
                                         type="object" class="btn btn-secondary me-2" icon="fa-download"
-                                        attrs="{'invisible': [('config_id', '=', False)]}"/>
+                                        invisible="not config_id"/>
                                 <button name="%(action_compute_sample_wizard)d" string="Sync &amp; Compute"
                                         type="action" class="btn btn-primary" icon="fa-play"
-                                        attrs="{'invisible': [('config_id', '=', False)]}"/>
+                                        invisible="not config_id"/>
                             </div>
                             <field name="input_line_ids" nolabel="1">
-                                <tree string="Input Values" editable="bottom">
+                                <list string="Input Values" editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="column_letter" readonly="1" string="Col"/>
                                     <field name="column_code" readonly="1" string="Code"/>
@@ -117,7 +117,7 @@
                                     <field name="value" string="Value"/>
                                     <field name="rule_id" invisible="1"/>
                                     <field name="is_editable" invisible="1"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
 
@@ -179,7 +179,7 @@
                 <field name="max_discrepancy"/>
                 <field name="validation_status"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div t-attf-class="oe_kanban_global_click o_kanban_record">
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
@@ -243,7 +243,7 @@
                 <separator/>
                 <filter name="anonymized" string="Anonymized"
                         domain="[('is_anonymized', '=', True)]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter name="group_config" string="Configuration"
                             context="{'group_by': 'config_id'}"/>
                     <filter name="group_source" string="Source Type"
@@ -263,7 +263,7 @@
         <field name="name">hr.formula.test.result.tree</field>
         <field name="model">hr.formula.test.result</field>
         <field name="arch" type="xml">
-            <tree string="Test Results" decoration-success="status == 'passed'"
+            <list string="Test Results" decoration-success="status == 'passed'"
                   decoration-warning="status == 'warning'" decoration-danger="status == 'failed'">
                 <field name="test_date"/>
                 <field name="config_id"/>
@@ -277,7 +277,7 @@
                        decoration-success="status == 'passed'"
                        decoration-warning="status == 'warning'"
                        decoration-danger="status == 'failed'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -303,7 +303,7 @@
                     </group>
                     <group>
                         <field name="status" widget="badge"/>
-                        <field name="error_message" attrs="{'invisible': [('error_message', '=', False)]}"/>
+                        <field name="error_message" invisible="not error_message"/>
                     </group>
                 </sheet>
             </form>
@@ -317,7 +317,7 @@
     <record id="action_sample_data" model="ir.actions.act_window">
         <field name="name">Sample Data</field>
         <field name="res_model">hr.formula.sample.data</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">list,kanban,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create sample data for formula testing
@@ -332,7 +332,7 @@
     <record id="action_test_results" model="ir.actions.act_window">
         <field name="name">Test Results</field>
         <field name="res_model">hr.formula.test.result</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No test results yet

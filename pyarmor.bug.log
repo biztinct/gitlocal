@@ -1,0 +1,12 @@
+[BUG]: out of license
+
+## Command Line
+/usr/local/bin/pyarmor gen --enable-rft --platform linux.x86_64 --output /tmp/protect_build payroll_analytics_approval/
+
+## Environments
+Python 3.14.0
+Pyarmor 9.2.3 (trial), 000000, non-profits
+Platform darwin.x86_64
+Native darwin.x86_64
+Home /Users/adity/.pyarmor
+

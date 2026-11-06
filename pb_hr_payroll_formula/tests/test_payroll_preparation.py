@@ -1,0 +1,934 @@
+"""Money-path and persistence tests for the review worksheet."""
+import json
+from unittest.mock import patch
+
+from odoo import fields
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tests import tagged
+from .test_application_payroll_source import TestApplicationPayrollSource
+
+
+@tagged('post_install', '-at_install')
+class TestPayrollPreparation(TestApplicationPayrollSource):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.bonus = cls.env['hr.formula.rule'].create({
+            'config_id': cls.config.id, 'name': 'Monthly bonus', 'code': 'REVIEWBONUS',
+            'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'money',
+            'application_source_key': 'period.input.REVIEWBONUS', 'application_zero_allowed': True})
+
+    def _draft(self):
+        return self.env['hr.payroll.preparation']._open(self.config, self.employee.ids, self.start, self.end)
+
+    def _previews(self, draft):
+        # PDR S3 — the worksheet no longer computes previews inline.
+        return draft.preview_rows(draft.revision, [self.employee.id])[self.employee.id]['values']
+
+    def _change(self, value='500', **extra):
+        return dict(employee_id=self.employee.id, code=self.bonus.code, value=value, scope='run', reason='Reviewed monthly bonus', **extra)
+
+    def test_review_optional_blank_and_resume(self):
+        draft = self._draft()
+        self.assertEqual(draft, self._draft())
+        ws = draft.workspace()
+        cell = ws['people'][0]['cells'][self.bonus.code]
+        self.assertTrue(cell['optional'])
+        self.assertFalse(cell['issue'])
+        result = draft.review(draft.revision, self._cert()['channels'], 'Period checked')
+        self.assertTrue(result['ready'])
+        self.assertIn([self.employee.id, self.bonus.code], result['review']['zero_cells'])
+        self.assertEqual(self.env['hr.payroll.period.input'].search_count([('config_id','=',self.config.id)]), 0)
+
+    def test_optional_record_blanks_remain_absent_through_frozen_calculation(self):
+        rules = self.env['hr.formula.rule']
+        for kind in ('money', 'quantity', 'integer', 'rate', 'text'):
+            rules |= self.env['hr.formula.rule'].create({
+                'config_id': self.config.id, 'name': 'Optional ' + kind,
+                'code': 'OPTIONAL' + kind.upper(), 'column_type': 'input',
+                'column_role': 'payroll', 'value_kind': kind,
+                'is_contract_component': True, 'is_required': False})
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Optional total', 'code': 'OPTIONALTOTAL',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'excel_formula': '=100+OPTIONALMONEY+OPTIONALQUANTITY+OPTIONALINTEGER+OPTIONALRATE'})
+        draft = self._draft()
+        components = self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)])
+        ws = draft.workspace()
+        for rule in rules:
+            cell = ws['people'][0]['cells'][rule.code]
+            self.assertIsNone(cell['value'])
+            self.assertTrue(cell['optional'])
+            self.assertFalse(cell['issue'])
+            self.assertFalse(cell['required'])
+        self.assertEqual(ws['people'][0]['cells']['OPTIONALTOTAL']['preview'], 'pending')
+        self.assertEqual(self._previews(draft)['OPTIONALTOTAL'], 100)
+        reviewed = draft.review(draft.revision, self._cert()['channels'], 'Optional blanks left unchanged')
+        self.assertTrue(reviewed['ready'])
+        self.assertFalse(set(rules.mapped('code')) & {c[1] for c in reviewed['review']['zero_cells']})
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        frozen = json.loads(slip.application_snapshot_id.payload_json)
+        for rule in rules:
+            self.assertEqual(values[rule.code], '' if rule.value_kind == 'text' else 0)
+            self.assertTrue(sources[rule.code]['omitted'])
+            self.assertIsNone(next(c for c in frozen['inputs'] if c['code'] == rule.code)['value'])
+        self.assertEqual(self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)]), components)
+        self.assertFalse(self.env['hr.payroll.period.input'].search_count([('config_id', '=', self.config.id)]))
+
+    def test_optional_numeric_blank_is_noop_but_explicit_zero_is_saved(self):
+        draft = self._draft()
+        for kind in ('money', 'quantity', 'integer', 'rate'):
+            rule = self.env['hr.formula.rule'].create({
+                'config_id': self.config.id, 'name': 'Optional ' + kind,
+                'code': 'OPTIONAL' + kind.upper(), 'column_type': 'input',
+                'column_role': 'payroll', 'value_kind': kind,
+                'is_contract_component': True, 'is_required': False})
+            revision, events = draft.revision, len(draft.event_ids)
+            for index, blank in enumerate((None, '', '   ')):
+                draft.save_cells(revision, 'optional-blank-%s-%s' % (kind, index),
+                                 [dict(self._change(blank), code=rule.code)])
+            self.assertEqual(draft.revision, revision)
+            self.assertEqual(len(draft.event_ids), events)
+            draft.save_cells(revision, 'optional-zero-' + kind, [dict(self._change('0'), code=rule.code)])
+            cell = draft.workspace()['people'][0]['cells'][rule.code]
+            self.assertEqual(cell['value'], 0)
+            self.assertFalse(cell['optional'])
+            self.assertFalse(cell['issue'])
+            self.assertEqual(cell['edit']['scope'], 'run')
+            # A later blank is an omission, not an instruction to erase zero.
+            draft.save_cells(draft.revision, 'optional-blank-after-' + kind, [dict(self._change(''), code=rule.code)])
+            self.assertEqual(draft.workspace()['people'][0]['cells'][rule.code]['value'], 0)
+        self.assertFalse(self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)]))
+
+    def test_explicit_required_flags_override_optional_record_policy(self):
+        rule = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Required amount', 'code': 'REQUIREDAMOUNT',
+            'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'money',
+            'is_contract_component': True, 'is_required': True})
+        draft = self._draft()
+        for flags in ({'is_required': True, 'application_source_required': False},
+                      {'is_required': False, 'application_source_required': True}):
+            rule.write(flags)
+            cell = draft.workspace()['people'][0]['cells'][rule.code]
+            self.assertTrue(cell['issue'])
+            self.assertFalse(cell['optional'])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision, self._cert()['channels'], 'Cannot skip required amount')
+
+    def _conditional_amount(self):
+        """Arbitrary codes/choices prove this is not a country or tax-name rule."""
+        self.bonus.write({'application_zero_allowed': False, 'column_letter': 'ZY'})
+        mode = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Calculation choice', 'code': 'CHOICEMETHOD',
+            'column_letter': 'ZX', 'column_type': 'input', 'column_role': 'payroll',
+            'value_kind': 'text', 'is_text_component': True, 'is_required': True, 'is_contract_component': True})
+        template = self.env['hr.contract.advantage.template'].create({
+            'name': 'Calculation choice', 'code': mode.code, 'value_type': 'text'})
+        source = self.env['hr.contract.advantage'].create({
+            'contract_id': self.contract.id, 'advantage_template_id': template.id, 'text_value': 'Automatic'})
+        result = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Conditional amount', 'code': 'CHOICERESULT',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'excel_formula': '=IF(APPPAIDDAYS<0,"Review, days",IF($ZX$2="Custom",$ZY$2,42))'})
+        return mode, source, result
+
+    def test_conditional_blank_uses_employee_choice_and_keeps_source_absent(self):
+        mode, source, result = self._conditional_amount()
+        draft = self._draft()
+        ws = draft.workspace()
+        cell = ws['people'][0]['cells'][self.bonus.code]
+        self.assertTrue(cell['not_applicable'], {k: ws['people'][0]['cells'][k] for k in (mode.code, self.bonus.code)})
+        self.assertFalse(cell['issue'])
+        self.assertIsNone(cell['value'])
+        self.assertEqual(self._previews(draft)[result.code], 42)
+        revision = draft.revision
+        draft.save_cells(revision, 'unused-blank-noop', [self._change('')])
+        self.assertEqual(draft.revision, revision)
+        self.assertTrue(draft.review(draft.revision, self._cert()['channels'], 'Automatic branch checked')['ready'])
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        frozen = json.loads(slip.application_snapshot_id.payload_json)
+        cell = next(c for c in frozen['inputs'] if c['code'] == self.bonus.code)
+        self.assertIsNone(cell['value'])
+        self.assertTrue(cell['not_applicable'])
+        self.assertTrue(sources[self.bonus.code]['omitted'])
+        self.assertFalse(self.env['hr.payroll.period.input'].search_count([('config_id', '=', self.config.id)]))
+        self.assertEqual(source.text_value, 'Automatic')
+
+    def test_conditional_requirement_follows_run_correction_and_accepts_zero(self):
+        mode, source, result = self._conditional_amount()
+        draft = self._draft()
+        for index, value in enumerate(('Custom', 'Automatic', 'Custom')):
+            ws = draft.save_cells(draft.revision, 'choice-change-%s' % index,
+                                  [dict(self._change(value), code=mode.code)])
+            cell = ws['people'][0]['cells'][self.bonus.code]
+            self.assertEqual(cell['issue'], value == 'Custom')
+            self.assertEqual(cell['not_applicable'], value == 'Automatic')
+        with self.assertRaises(ValidationError):
+            draft.save_cells(draft.revision, 'custom-blank-refused', [self._change('')])
+        with self.assertRaises(UserError):
+            draft.review(draft.revision, self._cert()['channels'], 'Custom amount still missing')
+        ws = draft.save_cells(draft.revision, 'custom-explicit-zero', [self._change('0')])
+        self.assertFalse(ws['people'][0]['cells'][self.bonus.code]['issue'])
+        self.assertEqual(self._previews(draft)[result.code], 0)
+        self.assertTrue(draft.review(draft.revision, self._cert()['channels'], 'Explicit zero checked')['ready'])
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        self.assertEqual(values[mode.code], 'Custom')
+        self.assertEqual(values[self.bonus.code], 0)
+        self.assertEqual(source.text_value, 'Automatic', 'Run corrections never overwrite the saved mode')
+
+    def test_unknown_mode_and_other_consumers_keep_amount_required(self):
+        mode, source, result = self._conditional_amount()
+        source.unlink()
+        draft = self._draft()
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+        # A mode corrected for this run selects the branch, but another formula
+        # using the same amount must still keep its requirement.
+        draft.save_cells(draft.revision, 'mode-from-blank', [dict(self._change('Automatic'), code=mode.code)])
+        self.assertFalse(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Other payment', 'code': 'OTHERPAYMENT',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'excel_formula': '=REVIEWBONUS+1'})
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+
+    def test_unused_branch_does_not_waive_conflict_or_explicit_source_requirement(self):
+        mode, source, result = self._conditional_amount()
+        draft = self._draft()
+        self.bonus.application_source_required = True
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['issue'])
+        self.bonus.application_source_required = False
+        original = self.config._application_domain_values
+        def pending(config, employee, contract, start, end):
+            facts = original(employee, contract, start, end)
+            facts['period.input.REVIEWBONUS'].update(status='conflict', reason='Pending approval')
+            return facts
+        with patch.object(type(self.config), '_application_domain_values', pending):
+            cell = draft.workspace()['people'][0]['cells'][self.bonus.code]
+            self.assertTrue(cell['issue'])
+            self.assertFalse(cell['not_applicable'])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision, self._cert()['channels'], 'Cannot waive pending approval')
+
+    def test_absent_component_is_blank_but_saved_zero_is_ready(self):
+        rule = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Registered dependents',
+            'code': 'REVIEWDEPENDENTS', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'integer',
+            'is_contract_component': True, 'is_required': True})
+        draft = self._draft()
+        cell = draft.workspace()['people'][0]['cells'][rule.code]
+        self.assertTrue(cell['issue'])
+        self.assertIsNone(cell['value'])
+        template = self.env['hr.contract.advantage.template'].create({
+            'name': 'Registered dependents', 'code': rule.code, 'value_type': 'amount'})
+        self.env['hr.contract.advantage'].create({
+            'contract_id': self.contract.id, 'advantage_template_id': template.id, 'amount': 0})
+        cell = draft.workspace()['people'][0]['cells'][rule.code]
+        self.assertEqual(cell['value'], 0)
+        self.assertFalse(cell['issue'])
+
+    def test_correction_persists_idempotent_and_stale_rejected(self):
+        draft = self._draft()
+        before = draft.revision
+        ws = draft.save_cells(before, 'save-test-0001', [self._change()])
+        self.assertEqual(ws['people'][0]['cells'][self.bonus.code]['value'],500)
+        self.assertEqual(self._draft().id,draft.id)
+        again = draft.save_cells(before, 'save-test-0001', [self._change()])
+        self.assertEqual(again['revision'], ws['revision'])
+        with self.assertRaises(UserError):
+            draft.save_cells(before, 'save-test-0002', [self._change('600')])
+        self.assertEqual(json.loads(draft.edits_json)[f'{self.employee.id}:{self.bonus.code}']['value'],500)
+
+    def test_atomic_paste_rejects_invalid_and_cross_scope(self):
+        draft=self._draft()
+        with self.assertRaises(ValidationError):
+            draft.save_cells(draft.revision,'save-test-0003',[self._change(),dict(self._change(),employee_id=999999)])
+        self.assertEqual(json.loads(draft.edits_json),{})
+        for value in ('NaN','Infinity','1,000','1e99'):
+            with self.assertRaises(ValidationError):
+                draft.save_cells(draft.revision,'save-test-0004',[self._change(value)])
+
+    def test_no_direct_write_or_forged_seal(self):
+        draft=self._draft()
+        with self.assertRaises(AccessError): draft.write({'state':'reviewed'})
+        with self.assertRaises(AccessError): draft.unlink()
+        with self.assertRaises(AccessError): draft.event_ids.write({'kind':'forged'})
+        run,slip=self._run_and_slip()
+        with self.assertRaises(AccessError): run.write({'payroll_preparation_id':draft.id})
+        with self.assertRaises(AccessError):
+            self.env['hr.payroll.preparation'].create({'config_id':self.config.id})
+
+    def test_pending_event_not_overridden_or_zeroed(self):
+        draft=self._draft()
+        original=self.config._application_domain_values
+        def pending(config,employee,contract,start,end):
+            facts=original(employee,contract,start,end)
+            facts['period.input.REVIEWBONUS'].update(status='conflict',reason='Awaiting approval')
+            return facts
+        with patch.object(type(self.config),'_application_domain_values',pending):
+            with self.assertRaises(AccessError):
+                draft.save_cells(draft.revision,'save-test-0005',[self._change()])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision,self._cert()['channels'],'Checked')
+
+    def test_review_rechecks_changed_source(self):
+        draft=self._draft()
+        draft.save_cells(draft.revision,'save-test-0006',[self._change()])
+        draft.review(draft.revision,self._cert()['channels'],'Checked')
+        self.config.fixed_standard_days=30
+        with self.assertRaises(UserError):
+            draft._assert_scope(self.config,self.employee.ids,self.start,self.end)
+
+    def test_override_used_in_frozen_payroll_inputs(self):
+        draft=self._draft()
+        draft.save_cells(draft.revision,'save-test-0007',[self._change()])
+        draft.review(draft.revision,self._cert()['channels'],'Checked')
+        run,slip=self._run_and_slip()
+        review=json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'],review['reason'])
+        draft._attach(run)
+        cert=run._application_certification(self.employee.id)
+        row=self.config._application_employee_inputs(self.employee,self.start,self.end,cert)
+        self.assertTrue(row['ok'],row['blockers'])
+        self.assertEqual(row['values'][self.bonus.code],500)
+        self.assertEqual(row['preparation']['id'],draft.id)
+        values, sources = slip._application_resolve_inputs(self.config)
+        self.assertEqual(values[self.bonus.code], 500)
+        self.assertEqual(json.loads(slip.application_snapshot_id.payload_json)['preparation']['id'], draft.id)
+        with self.assertRaises(UserError):
+            draft.save_cells(draft.revision,'save-test-0008',[self._change('700')])
+        forged=dict(cert,reason='forged')
+        with self.assertRaises(AccessError):
+            self.config._application_employee_inputs(self.employee,self.start,self.end,forged)
+
+    def test_settlement_requires_explicit_no_activity_review(self):
+        self.bonus.application_settlement_kind='recovery_amount'
+        draft=self._draft()
+        self.assertTrue(draft.workspace()['people'][0]['cells'][self.bonus.code]['settlement_zero'])
+        with self.assertRaises(AccessError):
+            draft.save_cells(draft.revision,'save-test-0009',[self._change()])
+        with self.assertRaises(ValidationError):
+            draft.review(draft.revision, self._cert()['channels'], 'Checked monthly inputs')
+        channels = dict(self._cert()['channels'], settlements=True)
+        result = draft.review(draft.revision, channels, 'Verified no settlement activity')
+        self.assertTrue(result['ready'])
+        self.assertIn([self.employee.id, self.bonus.code], result['review']['zero_cells'])
+
+    def test_settlement_without_zero_policy_still_blocks(self):
+        self.bonus.write({'application_settlement_kind': 'recovery_amount', 'application_zero_allowed': False})
+        draft = self._draft()
+        cell = draft.workspace()['people'][0]['cells'][self.bonus.code]
+        self.assertFalse(cell['optional'])
+        with self.assertRaises(UserError):
+            draft.review(draft.revision, dict(self._cert()['channels'], settlements=True), 'Checked')
+
+    def test_review_standard_and_paid_days_are_atomic_and_frozen(self):
+        standard = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Standard days', 'code': 'REVIEWSTANDARD', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'quantity', 'application_source_key': 'period.standard_days'})
+        draft = self._draft()
+        # Paid before standard deliberately exercises order-independent validation.
+        draft.save_cells(draft.revision, 'save-test-day-pair', [
+            dict(self._change('31'), code=self.paid.code), dict(self._change('31'), code=standard.code)])
+        result = draft.review(draft.revision, self._cert()['channels'], 'Client calendar-day basis for this month')
+        self.assertTrue(result['ready'])
+        run, slip = self._run_and_slip()
+        review = json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'], review['reason'])
+        draft._attach(run)
+        values, sources = slip._application_resolve_inputs(self.config)
+        self.assertEqual(values[self.paid.code], 31)
+        self.assertEqual(values[standard.code], 31)
+        self.assertNotEqual(self.config.fixed_standard_days, 31)
+
+    def test_standard_days_cannot_make_paid_days_invalid(self):
+        standard = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Standard days', 'code': 'REVIEWSTANDARD', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'quantity', 'application_source_key': 'period.standard_days'})
+        draft = self._draft()
+        for value in ('0', '-1', '99', '1'):
+            with self.assertRaises(ValidationError):
+                draft.save_cells(draft.revision, 'save-test-standard-' + value,
+                                 [dict(self._change(value), code=standard.code)])
+        self.assertEqual(json.loads(draft.edits_json), {})
+
+    def test_text_record_correction_is_run_scoped_including_explicit_blank(self):
+        flag = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Membership flag', 'code': 'REVIEWFLAG', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'text', 'is_contract_component': True,
+            'is_required': True})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-text', [dict(self._change(''), code=flag.code)])
+        result = draft.review(draft.revision, self._cert()['channels'], 'Client explicitly reports no membership')
+        self.assertTrue(result['ready'])
+        self.assertEqual(draft._resolved(True)['employees'][0]['values'][flag.code], '')
+        self.assertEqual(json.loads(draft.edits_json)[f'{self.employee.id}:{flag.code}']['scope'], 'run')
+
+    def test_numeric_contract_component_without_explicit_source_key(self):
+        salary = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Historical salary', 'code': 'REVIEWCOMPONENT', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'money', 'is_contract_component': True,
+            'is_required': True})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-contract-component', [dict(self._change('2500'), code=salary.code)])
+        self.assertTrue(draft.review(draft.revision, self._cert()['channels'], 'Historical client salary')['ready'])
+        self.assertEqual(draft._resolved(True)['employees'][0]['values'][salary.code], 2500)
+
+    def test_overtime_total_correction_keeps_pending_approval_block(self):
+        key = 'period.ot.weekend.approved_hours'
+        overtime = self.env['hr.formula.rule'].create({'config_id': self.config.id,
+            'name': 'Weekend hours', 'code': 'REVIEWOT', 'column_type': 'input',
+            'column_role': 'payroll', 'value_kind': 'quantity', 'is_required': True,
+            'application_source_key': key})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-overtime', [dict(self._change('8'), code=overtime.code)])
+        self.assertEqual(draft._resolved()['employees'][0]['values'][overtime.code], 8)
+        original = self.config._application_time_values
+        def pending(config, employee, contract, start, end, certification):
+            facts = original(employee, contract, start, end, certification)
+            facts[key].update(status='conflict', reason='Awaiting overtime approval')
+            return facts
+        with patch.object(type(self.config), '_application_time_values', pending):
+            self.assertTrue(draft.workspace()['people'][0]['cells'][overtime.code]['issue'])
+            with self.assertRaises(AccessError):
+                draft.save_cells(draft.revision, 'save-test-overtime-pending', [dict(self._change('9'), code=overtime.code)])
+            with self.assertRaises(UserError):
+                draft.review(draft.revision, self._cert()['channels'], 'Checked overtime')
+
+    def test_period_scope_is_exact(self):
+        draft=self._draft()
+        with self.assertRaises(AccessError):
+            draft._assert_scope(self.config,self.employee.ids,'2026-09-01','2026-09-30')
+
+    def test_preview_does_not_sign_coverage_and_paid_days_are_bounded(self):
+        draft = self._draft()
+        self.assertFalse(draft.workspace()['people'][0]['cells'][self.paid.code]['issue'])
+        with self.assertRaises(ValidationError):
+            draft.review(draft.revision, {}, 'Not signed')
+        with self.assertRaises(ValidationError):
+            draft.save_cells(draft.revision, 'save-test-days', [dict(self._change('99'), code=self.paid.code)])
+
+    def test_future_change_is_proposed_not_written_on_entry(self):
+        if 'pb.records.desk' not in self.env:
+            self.skipTest('Optional Records Desk')
+        wage = self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Contract salary',
+            'code': 'REVIEWWAGE', 'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'money',
+            'application_source_key': 'contract.wage'})
+        self.env['hr.payslip.import.mapping'].create({'salary_structure_id': self.config.id, 'component_id': wage.id,
+            'target_model_id': self.env['ir.model']._get_id('hr.contract'),
+            'target_field_id': self.env['ir.model.fields']._get('hr.contract','wage').id})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'save-test-future', [dict(self._change('2500'), code=wage.code, scope='future')])
+        self.assertEqual(self.contract.wage, 2200)
+        with self.assertRaises(UserError):
+            draft.review(draft.revision, self._cert()['channels'], 'Checked')
+        proposal = self.env['pb.records.apply'].create({'name': 'QA proposal', 'company_id': self.env.company.id, 'state': 'pending'})
+        with patch.object(type(self.env['pb.records.desk']), 'apply_changes', return_value={'apply_id':proposal.id,'pending':True}) as submit:
+            draft.submit_record_changes(draft.revision)
+            self.assertEqual(submit.call_args.args[1][0]['field_id'], 'f:hr.contract:wage')
+        self.assertEqual(self.contract.wage, 2200)
+        with self.assertRaises(UserError):
+            draft.review(draft.revision, self._cert()['channels'], 'Checked')
+
+    def test_another_preparer_cannot_open_or_edit_this_draft(self):
+        user = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name':'Other payroll preparer', 'login':'other.preparer@test.invalid',
+            'company_id':self.env.company.id, 'company_ids':[(6,0,self.env.company.ids)],
+            'group_ids':[(6,0,[self.env.ref('base.group_user').id,self.env.ref('pb_hr_payroll_formula.group_formula_manager').id])]})
+        draft=self._draft()
+        with self.assertRaises(AccessError): draft.with_user(user).workspace()
+        with self.assertRaises(AccessError): draft.with_user(user).save_cells(draft.revision,'save-other-tab',[self._change()])
+
+    def test_preview_never_changes_rules_or_invalidates_review(self):
+        self.env['hr.formula.rule'].create({'config_id':self.config.id, 'name':'Preview bonus',
+            'code':'REVIEWRESULT', 'column_type':'formula', 'column_role':'payroll',
+            'value_kind':'money', 'excel_formula':'=REVIEWBONUS*2', 'appears_on_payslip':True})
+        draft=self._draft()
+        draft.save_cells(draft.revision,'save-preview-stable',[self._change()])
+        before=self.config._application_settings_stamp()
+        with patch.object(type(self.bonus), '_compute_dependencies', side_effect=AssertionError('Preview wrote dependencies')):
+            ws=draft.workspace()
+            self.assertEqual(self._previews(draft)['REVIEWRESULT'],1000)
+            self.assertEqual(self.config._application_settings_stamp(),before)
+            self.assertTrue(draft.review(draft.revision,self._cert()['channels'],'Checked')['ready'])
+            self.assertTrue(draft.workspace()['ready'])
+            draft._assert_scope(self.config,self.employee.ids,self.start,self.end)
+
+    def test_computation_and_repeated_approval_checks_do_not_write_rules(self):
+        draft=self._draft()
+        draft.save_cells(draft.revision,'save-stable-compute',[self._change()])
+        draft.review(draft.revision,self._cert()['channels'],'Reviewed')
+        run,slip=self._run_and_slip()
+        review=json.loads(draft.review_json)
+        run.action_certify_application_data(review['certification'],review['reason'])
+        draft._attach(run)
+        with patch.object(type(self.bonus),'_compute_dependencies',side_effect=AssertionError('Certified evaluation wrote rules')):
+            slip.compute_sheet_with_formulas()
+            before=self.config._application_settings_stamp()
+            self.assertTrue(run._application_assert_current())
+            self.assertTrue(run._application_assert_current())
+            self.assertEqual(self.config._application_settings_stamp(),before)
+            self.assertEqual(json.loads(slip.formula_input_values)[self.bonus.code],500)
+
+    # ------------------------------------------------------------------
+    # PDR P1 — fast worksheet, honest red cells, final-tax-month reminder
+    # ------------------------------------------------------------------
+    def _period_flag(self, code='PDRFINAL', **extra):
+        """A required period yes/no column, like Indonesia's Final tax period."""
+        vals = {'config_id': self.config.id, 'name': 'Final tax period', 'code': code,
+                'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'integer',
+                'is_required': True, 'application_source_key': 'period.input.' + code,
+                'application_zero_allowed': True, 'value_labels': '0=No;1=Yes'}
+        vals.update(extra)
+        return self.env['hr.formula.rule'].create(vals)
+
+    def _contract_flag(self, code, default, labels='0=No;1=Yes'):
+        return self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Flag ' + code, 'code': code,
+            'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'integer',
+            'is_required': True, 'is_contract_component': True,
+            'default_value': default, 'value_labels': labels})
+
+    def _cell(self, ws, code, person=0):
+        return ws['people'][person]['cells'][code]
+
+    def test_pdr_t1_zero_allowed_period_blank_is_quiet_and_zero_in_preview(self):
+        flag = self._period_flag()
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Flag echo', 'code': 'PDRECHO',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'appears_on_payslip': True, 'excel_formula': '=PDRFINAL*10+5'})
+        draft = self._draft()
+        ws = draft.workspace()
+        cell = self._cell(ws, flag.code)
+        self.assertEqual(cell['status'], 'missing')
+        self.assertTrue(cell['optional'])
+        self.assertFalse(cell['issue'])
+        self.assertTrue(next(c for c in ws['columns'] if c['code'] == flag.code)['optional'])
+        self.assertGreaterEqual(ws['optional'], 2)   # REVIEWBONUS + this column
+        row = draft._resolved()['employees'][0]
+        rules = {r.code: r for r in draft._rules()}
+        draft._mark_cells(row, rules, {}, {})
+        self.assertEqual(draft._preview_inputs(row, rules)[flag.code], 0)
+        self.assertEqual(self._previews(draft)['PDRECHO'], 5)
+
+    def test_pdr_t2_no_line_flag_with_usual_no_resolves_to_zero(self):
+        flag = self._contract_flag('PDRREIMB', 0)
+        row = self.config._application_employee_inputs(self.employee, self.start, self.end, self._cert())
+        cell = next(c for c in row['inputs'] if c['code'] == flag.code)
+        self.assertEqual((cell['status'], cell['value']), ('resolved', 0))
+        self.assertTrue(cell['usual_answer'])
+        self.assertTrue(cell['evidence']['usual_answer'])
+        self.assertEqual(cell['source_ids'], [['usual_answer', flag.id]])
+        self.assertEqual(cell['reason'], 'No line on the contract, so this is No (the usual answer).')
+        self.assertEqual(row['values'][flag.code], 0)
+        self.assertEqual(row['provenance'][flag.code],
+                         {'src': 'contract_component', 'via': 'usual_answer', 'status': 'resolved'})
+        self.assertFalse([b for b in row['blockers'] if b['code'] == flag.code])
+        ws = self._draft().workspace()
+        self.assertFalse(self._cell(ws, flag.code)['issue'])
+        self.assertEqual(self._cell(ws, flag.code)['tone'], 'normal')
+        # It never creates a contract line.
+        self.assertFalse(self.env['hr.contract.advantage'].search_count([('contract_id', '=', self.contract.id)]))
+
+    def test_pdr_t3_no_line_flag_with_usual_yes_stays_missing(self):
+        flag = self._contract_flag('PDRTKCOVER', 1)
+        ws = self._draft().workspace()
+        cell = self._cell(ws, flag.code)
+        self.assertEqual(cell['status'], 'missing')
+        self.assertTrue(cell['issue'])
+        self.assertEqual(cell['tone'], 'red')
+
+    def test_pdr_t4_usual_zero_without_words_is_unchanged(self):
+        flag = self._contract_flag('PDRNOWORDS', 0, labels=False)
+        cell = self._cell(self._draft().workspace(), flag.code)
+        self.assertEqual(cell['status'], 'missing')
+        self.assertTrue(cell['issue'])
+        self.assertFalse(cell.get('usual_answer'))
+
+    def test_pdr_t5_final_tax_month_reminder(self):
+        flag = self._period_flag(application_final_period_flag=True)
+        # December: a calm reminder on the blank flagged cell, never an issue.
+        december = self.env['hr.payroll.preparation']._open(
+            self.config, self.employee.ids, '2026-12-01', '2026-12-31')
+        ws = december.workspace()
+        cell = self._cell(ws, flag.code)
+        self.assertTrue(cell['remind'])
+        self.assertEqual(cell['tone'], 'remind')
+        self.assertFalse(cell['issue'])
+        self.assertIn('December', cell['reason'])
+        self.assertIn(flag.name, cell['reason'])
+        self.assertEqual(ws['reminders'], 1)
+        self.assertEqual(ws['people'][0]['reminders'], [flag.code])
+        self.assertEqual(ws['issues'], 0)
+        self.assertEqual(ws['reminder_columns'], [flag.name])
+        # review() goes through with the reminder showing.
+        self.assertTrue(december.review(december.revision, self._cert()['channels'], 'December checked')['ready'])
+        # Flagged cell = 1 -> no reminder.
+        december2 = self.env['hr.payroll.preparation']._open(
+            self.config, self.employee.ids, '2026-12-01', '2026-12-31')
+        ws = december2.save_cells(december2.revision, 'final-month-yes',
+                                  [dict(self._change('1'), code=flag.code)])
+        self.assertFalse(self._cell(ws, flag.code).get('remind'))
+        self.assertEqual(ws['reminders'], 0)
+        # Plain October -> none.
+        ws = self._draft().workspace()
+        self.assertFalse(self._cell(ws, flag.code).get('remind'))
+        self.assertEqual((ws['reminders'], ws['people'][0]['reminders']), (0, []))
+        # October with the contract ending inside the period -> last month of work.
+        self.contract.write({'date_end': '2026-10-20'})
+        ws = self.env['hr.payroll.preparation']._open(
+            self.config, self.employee.ids, self.start, self.end).workspace()
+        cell = self._cell(ws, flag.code)
+        self.assertTrue(cell['remind'])
+        self.assertIn('last month of work', cell['reason'])
+        self.assertEqual(ws['issues'], 0)
+
+    def test_pdr_t6_memo_is_fresh_for_every_call_and_after_writes(self):
+        flag = self._contract_flag('PDRCOVER', 1)
+        record_input = self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Optional record amount', 'code': 'PDRRECORD',
+            'column_type': 'input', 'column_role': 'payroll', 'value_kind': 'money',
+            'is_contract_component': True, 'is_required': False})
+        draft = self._draft()
+        ws = draft.workspace()
+        self.assertTrue(self._cell(ws, flag.code)['issue'])
+        self.assertTrue(self._cell(ws, record_input.code)['optional'])
+        # A new contract line and a requiredness change are seen by the next call.
+        template = self.env['hr.contract.advantage.template'].create({'name': 'Cover', 'code': flag.code})
+        self.env['hr.contract.advantage'].create({'contract_id': self.contract.id,
+                                                  'advantage_template_id': template.id, 'amount': 1})
+        record_input.write({'is_required': True})
+        ws = draft.workspace()
+        self.assertEqual((self._cell(ws, flag.code)['status'], self._cell(ws, flag.code)['value']), ('resolved', 1))
+        self.assertTrue(self._cell(ws, record_input.code)['issue'])
+        # Nothing outlives the call ...
+        key = ('pb_hr_payroll_formula.app_memo', self.config.id)
+        self.assertNotIn(key, self.env.cr.cache)
+        # ... and inside one call a rule write empties the memo.
+        with self.config._application_memo():
+            self.assertTrue(self._cell(draft._workspace(), record_input.code)['issue'])
+            record_input.write({'is_required': False})
+            self.assertTrue(self._cell(draft._workspace(), record_input.code)['optional'])
+        self.assertNotIn(key, self.env.cr.cache)
+
+    def _synthetic_scheme(self):
+        config = self.env['hr.formula.config'].create({
+            'name': 'PDR evaluator equivalence', 'code': 'PDREVAL', 'country_code': 'VN',
+            'company_id': self.env.company.id, 'state': 'active'})
+        rows = [
+            ('BASE', 'input', 'money', False), ('TEXTIN', 'input', 'text', False),
+            ('ZEROIN', 'input', 'money', False), ('RATE', 'constant', 'rate', False),
+            # forward reference: LATER is evaluated after NESTED in sequence
+            ('NESTED', 'formula', 'money', '=IF(BASE>1000,IF(LATER>0,BASE*RATE,1),IF(TEXTIN="Alpha",2,3))'),
+            ('SAFE', 'formula', 'money', '=IFERROR(BASE/ZEROIN,7)'),
+            ('DIVZERO', 'formula', 'money', '=BASE/ZEROIN'),
+            ('WORDS', 'formula', 'text', '=IF(TEXTIN="Alpha","yes, sir (a, b)","no, thanks")'),
+            ('ROUNDED', 'formula', 'money', '=ROUND(NESTED+SAFE+DIVZERO,2)'),
+            ('LATER', 'formula', 'money', '=MAX(BASE-500,0)'),
+        ]
+        rules = self.env['hr.formula.rule']
+        for sequence, (code, ctype, kind, formula) in enumerate(rows):
+            vals = {'config_id': config.id, 'name': code.title(), 'code': code, 'sequence': sequence * 10,
+                    'column_type': ctype, 'value_kind': kind, 'column_role': 'payroll'}
+            if ctype == 'constant':
+                vals['constant_value'] = .1
+            if formula:
+                vals['excel_formula'] = formula
+            rules |= self.env['hr.formula.rule'].create(vals)
+        rules._compute_dependencies()
+        return config, rules
+
+    @staticmethod
+    def _old_sample(probe, input_values, errors, calls):
+        """The pre-PDR readonly loop of formula_sample_data, verbatim."""
+        from ..formula_engine import FormulaEvaluator
+        rules = probe.config_id.rule_ids
+        try:
+            sorted_rules = FormulaEvaluator()._topological_sort(rules)
+        except Exception:
+            sorted_rules = rules.sorted(key=lambda r: r.sequence)
+        results = input_values.copy()
+
+        def run(rule):
+            calls.append(rule.code)
+            return rule._run_formula(results, rule.excel_formula, write_diagnostics=False)
+        for rule in sorted_rules:
+            if rule.column_type == 'input':
+                if rule.code not in results:
+                    results[rule.code] = rule.default_value or 0.0
+            elif rule.column_type == 'constant':
+                results[rule.code] = rule.constant_value or 0.0
+            elif rule.column_type == 'formula':
+                try:
+                    results[rule.code] = run(rule)
+                except Exception as e:
+                    results[rule.code] = 0.0
+                    errors[rule.code] = str(e)
+        for _pass in range(2):
+            changed = False
+            for rule in sorted_rules:
+                if rule.column_type != 'formula':
+                    continue
+                try:
+                    value = run(rule)
+                except Exception as e:
+                    value = 0.0
+                    errors[rule.code] = str(e)
+                else:
+                    errors.pop(rule.code, None)
+                if results.get(rule.code) != value:
+                    results[rule.code] = value
+                    changed = True
+            if not changed:
+                break
+        return results
+
+    def test_pdr_t7_compiled_evaluator_equals_the_old_loop(self):
+        from ..models import formula_program
+        config, rules = self._synthetic_scheme()
+        probe = self.env['hr.formula.sample.data'].new({'config_id': config.id})
+        for inputs in ({'BASE': 2000., 'TEXTIN': 'Alpha', 'ZEROIN': 0},
+                       {'BASE': 300, 'TEXTIN': 'Beta', 'ZEROIN': 4},
+                       {'BASE': '', 'TEXTIN': '', 'ZEROIN': ''}):
+            old_errors, new_errors, old_calls, new_calls = {}, {}, [], []
+            old = self._old_sample(probe, inputs, old_errors, old_calls)
+            real = formula_program._evaluate
+            with patch.object(formula_program, '_evaluate',
+                              side_effect=lambda step, *a: new_calls.append(step[1]) or real(step, *a)):
+                new = probe._evaluate_rules_with_dependencies(inputs, readonly=True, errors=new_errors)
+            self.assertEqual(list(old.items()), list(new.items()))
+            self.assertEqual([type(v) for v in old.values()], [type(v) for v in new.values()])
+            self.assertEqual(old_errors, new_errors)
+            self.assertEqual(old_calls, new_calls)          # same order, same number of passes
+        self.assertEqual(new['WORDS'], 'no, thanks')
+        # The payslip twin (application mode) against its own old loop.
+        slip = self.env['hr.payslip'].new({'employee_id': self.employee.id, 'formula_config_id': config.id})
+        ordered = rules.sorted(key=lambda r: r.sequence)
+        inputs = {'BASE': 2000., 'TEXTIN': 'Alpha', 'ZEROIN': 0}
+        with patch.object(type(slip), '_application_mode', return_value=True):
+            new, new_log = slip._evaluate_rules_with_dependencies(ordered, inputs)
+        old, old_log = self._old_payslip(ordered, inputs)
+        self.assertEqual(list(old.items()), list(new.items()))
+        self.assertEqual(old_log, new_log)
+
+    @staticmethod
+    def _old_payslip(rules, input_values):
+        """The pre-PDR application-mode loop of hr_payslip_formula, verbatim."""
+        from ..formula_engine import FormulaEvaluator
+        try:
+            sorted_rules = FormulaEvaluator()._topological_sort(rules)
+        except Exception:
+            sorted_rules = rules.sorted(key=lambda r: r.sequence)
+        results, log = input_values.copy(), []
+        for rule in sorted_rules:
+            try:
+                if rule.column_type == 'input':
+                    if rule.code not in results:
+                        results[rule.code] = rule.default_value or 0.0
+                    value = results.get(rule.code, 0.0)
+                    log.append(f"[{rule.column_letter}] {rule.code} (input) = {value}")
+                elif rule.column_type == 'constant':
+                    value = rule.constant_value or 0.0
+                    results[rule.code] = value
+                    log.append(f"[{rule.column_letter}] {rule.code} (constant) = {value}")
+                elif rule.column_type == 'formula':
+                    value = rule._run_formula(results, rule.excel_formula, write_diagnostics=False)
+                    results[rule.code] = value
+                    log.append(f"[{rule.column_letter}] {rule.code} = {rule.excel_formula} -> {value}")
+            except Exception as e:
+                log.append(f"[ERROR] Error in {rule.code}: {str(e)}")
+                results[rule.code] = 0.0
+            if rule.column_letter:
+                results[rule.column_letter] = results.get(rule.code, 0.0)
+        for _pass in range(2):
+            changed = False
+            for rule in sorted_rules:
+                if rule.column_type != 'formula':
+                    continue
+                try:
+                    value = rule._run_formula(results, rule.excel_formula, write_diagnostics=False)
+                except Exception as e:
+                    log.append(f"[ERROR] Error in {rule.code}: {str(e)}")
+                    value = 0.0
+                if results.get(rule.code) != value:
+                    results[rule.code] = value
+                    if rule.column_letter:
+                        results[rule.column_letter] = value
+                    changed = True
+            if not changed:
+                break
+        return results, log
+
+    def test_pdr_t8_preview_rows_guards(self):
+        self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Preview bonus',
+            'code': 'REVIEWRESULT', 'column_type': 'formula', 'column_role': 'payroll',
+            'value_kind': 'money', 'excel_formula': '=REVIEWBONUS*2', 'appears_on_payslip': True})
+        draft = self._draft()
+        draft.save_cells(draft.revision, 'preview-rows-guards', [self._change()])
+        user = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'Other previewer', 'login': 'other.previewer@test.invalid',
+            'company_id': self.env.company.id, 'company_ids': [(6, 0, self.env.company.ids)],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                  self.env.ref('pb_hr_payroll_formula.group_formula_manager').id])]})
+        with self.assertRaises(AccessError):
+            draft.with_user(user).preview_rows(draft.revision, [self.employee.id])
+        outsider = self.env['hr.employee'].create({'name': 'Not in this worksheet', 'company_id': self.env.company.id})
+        with self.assertRaises(AccessError):
+            draft.preview_rows(draft.revision, [outsider.id])
+        with self.assertRaises(ValidationError):
+            draft.preview_rows(draft.revision, list(range(1, 27)))
+        with self.assertRaises(UserError):
+            draft.preview_rows(draft.revision - 1, [self.employee.id])
+        # Same numbers as the old in-worksheet preview of this row.
+        answer = draft.preview_rows(draft.revision, [self.employee.id])[self.employee.id]
+        row = draft._resolved()['employees'][0]
+        rules = {r.code: r for r in draft._rules()}
+        draft._mark_cells(row, rules, draft._cards(), json.loads(draft.edits_json))
+        probe = self.env['hr.formula.sample.data'].new({'config_id': self.config.id})
+        old = self._old_sample(probe, draft._preview_inputs(row, rules), {}, [])
+        self.assertEqual(answer['values']['REVIEWRESULT'], old['REVIEWRESULT'])
+        self.assertEqual(answer['values']['REVIEWRESULT'], 1000)
+        self.assertFalse(answer['error'])
+        self.assertFalse(answer['blocked'])
+
+    def test_pdr_t9_save_and_open_never_run_the_evaluator(self):
+        self.env['hr.formula.rule'].create({'config_id': self.config.id, 'name': 'Preview bonus',
+            'code': 'REVIEWRESULT', 'column_type': 'formula', 'column_role': 'payroll',
+            'value_kind': 'money', 'excel_formula': '=REVIEWBONUS*2', 'appears_on_payslip': True})
+        draft = self._draft()
+        Sample = type(self.env['hr.formula.sample.data'])
+        with patch.object(Sample, '_evaluate_rules_with_dependencies',
+                          side_effect=AssertionError('the worksheet ran a preview inline')):
+            ws = draft.save_cells(draft.revision, 'save-without-preview', [self._change()])
+            self.assertEqual(self._cell(ws, 'REVIEWRESULT')['preview'], 'pending')
+            self.assertIsNone(self._cell(ws, 'REVIEWRESULT')['value'])
+            draft.workspace()
+
+    def test_pdr_t10_one_calendar_answer_per_day_for_everyone(self):
+        second = self.env['hr.employee'].create({'name': 'Second on the calendar',
+            'company_id': self.env.company.id, 'resource_calendar_id': self.calendar.id})
+        self.env['hr.contract'].create({'name': 'Second contract', 'employee_id': second.id,
+            'company_id': self.env.company.id, 'date_start': '2026-01-01', 'state': 'open',
+            'wage': 1000., 'resource_calendar_id': self.calendar.id})
+        draft = self.env['hr.payroll.preparation']._open(self.config, (self.employee | second).ids, self.start, self.end)
+        Calendar = type(self.calendar)
+        real, calls = Calendar.get_work_hours_count, []
+
+        def counting(calendar, start, end, compute_leaves=True, domain=None):
+            calls.append((calendar.id, start, end, compute_leaves))
+            return real(calendar, start, end, compute_leaves=compute_leaves, domain=domain)
+        with patch.object(Calendar, 'get_work_hours_count', counting):
+            draft.workspace()
+        days = (self.end - self.start).days + 1
+        self.assertEqual(len(calls), days * 2)
+        self.assertEqual(len(set(calls)), days * 2)
+
+    def test_pdr_t11_optional_period_cells_are_signed_as_zero(self):
+        codes = ['PDRFINAL', 'PDRPRIORTAX']
+        flags = self._period_flag(codes[0]) | self._period_flag(codes[1], name='Prior YTD tax', value_kind='money', value_labels=False)
+        draft = self._draft()
+        reviewed = draft.review(draft.revision, self._cert()['channels'], 'Period inputs checked')
+        self.assertTrue(reviewed['ready'])
+        signed = draft._resolved(True)['employees'][0]
+        for code in codes:
+            self.assertEqual(next(c for c in signed['inputs'] if c['code'] == code)['status'], 'zero_confirmed')
+            self.assertIn([self.employee.id, code], reviewed['review']['zero_cells'])
+        self.assertTrue(set(flags.mapped('application_source_key')) <= set(reviewed['review']['certification']['zero_keys']))
+        draft._assert_scope(self.config, self.employee.ids, self.start, self.end)
+
+    # ------------------------------------------------------------------
+    # PDR P2 — words on the worksheet (T1, T2), lighter payload, reminder
+    # ------------------------------------------------------------------
+
+    def _flag_with_echo(self):
+        flag = self._period_flag(value_labels_hint='Yes in the last month of the tax year.')
+        self.env['hr.formula.rule'].create({
+            'config_id': self.config.id, 'name': 'Flag echo', 'code': 'PDRECHO',
+            'column_type': 'formula', 'column_role': 'payroll', 'net_role': 'earning',
+            'appears_on_payslip': True, 'excel_formula': '=PDRFINAL*10+5'})
+        return flag
+
+    def test_p2_t1_worded_column_carries_labels_control_and_hint(self):
+        flag = self._flag_with_echo()
+        mode = self._period_flag('PDRMODE', name='Tax allowance mode', value_labels='0=None;1=Insurance tax;2=All tax',
+                                 value_labels_hint='All tax = the company pays all the tax.')
+        draft = self._draft()
+        ws = draft.with_context(pr_compact=True).workspace()
+        col = next(c for c in ws['columns'] if c['code'] == flag.code)
+        self.assertEqual(col['labels'], [{'value': 1.0, 'label': 'Yes'}, {'value': 0.0, 'label': 'No'}])
+        self.assertEqual(col['control'], 'toggle')
+        self.assertEqual(col['hint'], 'Yes in the last month of the tax year.')
+        mode_col = next(c for c in ws['columns'] if c['code'] == mode.code)
+        self.assertEqual(mode_col['control'], 'select')
+        self.assertEqual([o['label'] for o in mode_col['labels']], ['None', 'Insurance tax', 'All tax'])
+        plain = next(c for c in ws['columns'] if c['code'] == self.bonus.code)
+        self.assertEqual((plain['labels'], plain['control'], plain['hint']), ([], '', ''))
+        # value 1 is stored as the number; the word is the column's to give
+        ws = draft.with_context(pr_compact=True).save_cells(
+            draft.revision, 'p2-t1-yes', [dict(self._change('1'), code=flag.code)])
+        cell = self._cell(ws, flag.code)
+        self.assertEqual(cell['value'], 1)
+        hit = [o['label'] for o in col['labels'] if o['value'] == cell['value']]
+        self.assertEqual(hit, ['Yes'])
+        # an unmatched number keeps its number (the grid shows "7")
+        ws = draft.with_context(pr_compact=True).save_cells(
+            draft.revision, 'p2-t1-seven', [dict(self._change('7'), code=flag.code)])
+        self.assertEqual(self._cell(ws, flag.code)['value'], 7)
+        self.assertFalse([o for o in col['labels'] if o['value'] == 7])
+
+    def test_p2_t1b_compact_cells_leave_column_facts_on_the_column(self):
+        self._flag_with_echo()
+        draft = self._draft()
+        full = draft.workspace()
+        compact = draft.with_context(pr_compact=True).workspace()
+        for code, cell in compact['people'][0]['cells'].items():
+            self.assertFalse({'label', 'source_owner', 'rule_id', 'key', 'unit', 'provenance', 'code'} & set(cell), code)
+        bonus = self.bonus.code
+        self.assertEqual(compact['people'][0]['cells'][bonus].get('value'), full['people'][0]['cells'][bonus]['value'])
+        self.assertEqual(bool(compact['people'][0]['cells'][bonus].get('issue')), full['people'][0]['cells'][bonus]['issue'])
+        col = next(c for c in compact['columns'] if c['code'] == bonus)
+        self.assertEqual(col['source_owner'], full['people'][0]['cells'][bonus]['source_owner'])
+        self.assertLess(len(json.dumps(compact)), len(json.dumps(full)))
+
+    def test_p2_t2_toggle_save_stores_the_number_and_previews_the_same(self):
+        flag = self._flag_with_echo()
+        previews = {}
+        for spelling in ('1', 'Yes', 'y'):
+            draft = self._draft()
+            if json.loads(draft.edits_json):
+                draft.save_cells(draft.revision, 'p2-t2-restore-%s' % spelling,
+                                 [{'employee_id': self.employee.id, 'code': flag.code, 'restore': True}])
+            draft.save_cells(draft.revision, 'p2-t2-save-%s' % spelling,
+                             [dict(self._change(spelling), code=flag.code)])
+            edit = json.loads(draft.edits_json)['%s:%s' % (self.employee.id, flag.code)]
+            self.assertEqual(edit['value'], 1, spelling)
+            self.assertIsInstance(edit['value'], int)
+            previews[spelling] = draft.preview_rows(draft.revision, [self.employee.id])[self.employee.id]['values']
+        self.assertEqual(previews['1']['PDRECHO'], 15)
+        self.assertEqual(previews['1'], previews['Yes'])
+        self.assertEqual(previews['1'], previews['y'])
+        draft = self._draft()
+        with self.assertRaisesRegex(ValidationError, 'Final tax period needs Y or N'):
+            draft.save_cells(draft.revision, 'p2-t2-maybe', [dict(self._change('maybe'), code=flag.code)])
+
+    def test_p2_reminder_no_longer_says_one_in_brackets(self):
+        flag = self._period_flag(application_final_period_flag=True)
+        draft = self.env['hr.payroll.preparation']._open(
+            self.config, self.employee.ids, '2026-12-01', '2026-12-31')
+        cell = self._cell(draft.workspace(), flag.code)
+        self.assertTrue(cell.get('remind'))
+        self.assertIn('to Yes and fill in', cell['reason'])
+        self.assertNotIn('(1)', cell['reason'])

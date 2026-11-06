@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COUNTRY PACK: SINGAPORE (sg_hours). LEARNING L2, handover §3.6.4.
+         Template rows (company empty, archived); see pack_vn.xml.
+
+         Sources: MOM Safety Orientation Course FAQs (mom.gov.sg); WSH
+         (First-Aid) Regulations reg 5 (sso.agc.gov.sg); St John OFAC; CPF
+         Board SDL; SSG funding for employers (Absentee Payroll); bizSAFE
+         (tal.sg).
+
+         The training-hours return (per person, per course, per calendar
+         year) is the Singapore report on the Numbers page. The Skills
+         Development Levy is information only (payroll works it out) and is
+         a line on the Settings card, not a rule.
+         ================================================================== -->
+
+    <record id="req_sg_soc" model="pb.training.requirement">
+        <field name="name">Safety Orientation Course</field>
+        <field name="code">sg_soc</field>
+        <field name="pack_key">sg_hours</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">401</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">Safety Orientation|SOC</field>
+        <field name="validity_months">24</field>
+        <field name="validity_months_experienced">48</field>
+        <field name="grace_days">30</field>
+        <field name="note">MOM: valid two years, four once the person has more than six years in the sector (tick it on their record). A work-permit renewal needs it valid for at least another month. Pick the jobs (construction, shipyard, metalworking, process).</field>
+    </record>
+
+    <record id="req_sg_first_aider" model="pb.training.requirement">
+        <field name="name">First-aiders per site</field>
+        <field name="code">sg_first_aider</field>
+        <field name="pack_key">sg_hours</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">402</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">Occupational first aid|First aid</field>
+        <field name="validity_months">24</field>
+        <field name="ratio_people">100</field>
+        <field name="ratio_holders">1</field>
+        <field name="ratio_min_people">26</field>
+        <field name="note">WSH (First-Aid) Regulations reg 5: a workplace with more than 25 people needs one trained first-aider per 100 people or part of 100, per shift, and their names posted. Provider certificates run two years.</field>
+    </record>
+
+    <record id="req_sg_bizsafe" model="pb.training.requirement">
+        <field name="name">bizSAFE certificate</field>
+        <field name="code">sg_bizsafe</field>
+        <field name="pack_key">sg_hours</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="ship_inactive" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">403</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">bizSAFE</field>
+        <field name="validity_months">36</field>
+        <field name="grace_days">60</field>
+        <field name="note">bizSAFE: Level 1 (director, 3 hours) and Level 2 (risk-management champion, 2 days) are valid 6 months; Level 3 (audit) 36 months; renew 2 months before. A company-level certificate: pick the person who holds it. Arrives switched off.</field>
+    </record>
+
+</data>
+</odoo>

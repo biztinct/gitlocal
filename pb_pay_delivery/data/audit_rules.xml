@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         BANK FILE LAYOUTS ARE WATCHED, NOT APPROVED.
+
+         A layout says which column of the file the bank reads as the account
+         number and which as the amount, so changing one changes where money
+         goes just as surely as changing the file does. It is deliberately NOT
+         a request in this phase: a layout is set up once, by an administrator,
+         and putting a two-person route in front of a one-off setup task would
+         be ceremony rather than control.
+
+         Every change is written to the platform trail instead, which is what
+         makes "who changed the account-number column?" an answerable question.
+         `noupdate` so a deployment may switch one off without an upgrade
+         switching it back on.
+         ================================================================== -->
+
+    <record id="audit_rule_bank_file_layout" model="biz.audit.rule">
+        <field name="name">Bank file layout changes</field>
+        <field name="model_name">pb.bank.file.layout</field>
+        <field name="field_names">name,bank_format,file_type,delimiter,encoding,with_header,active</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="audit_rule_bank_file_column" model="biz.audit.rule">
+        <field name="name">Bank file column changes</field>
+        <field name="model_name">pb.bank.file.column</field>
+        <field name="field_names">header,source,literal_value,width,pad,number_format,sequence</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

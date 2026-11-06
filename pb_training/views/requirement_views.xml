@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         LEARNING L2. The required-training rules are edited on the Learning
+         › Required screen (drawer). These native views are the ADMIN
+         FALLBACK only, reached by xml id from nowhere on the menu.
+         Anchors are fields, never @string (F9).
+         ================================================================== -->
+
+    <record id="view_pb_training_requirement_list" model="ir.ui.view">
+        <field name="name">pb.training.requirement.list</field>
+        <field name="model">pb.training.requirement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind"/>
+                <field name="target"/>
+                <field name="channel_id"/>
+                <field name="pack_key" optional="show"/>
+                <field name="validity_months"/>
+                <field name="auto_assign"/>
+                <field name="company_id" optional="show"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_training_requirement_form" model="ir.ui.view">
+        <field name="name">pb.training.requirement.form</field>
+        <field name="model">pb.training.requirement</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <group>
+                            <field name="kind"/>
+                            <field name="target"/>
+                            <field name="channel_id"/>
+                            <field name="refresher_channel_id"/>
+                            <field name="document_category_id" invisible="target not in ('certificate', 'licence')"/>
+                            <field name="name_pattern" invisible="target not in ('certificate', 'licence')"/>
+                            <field name="hours_required"/>
+                        </group>
+                        <group>
+                            <field name="validity_months"/>
+                            <field name="validity_months_experienced"/>
+                            <field name="due_days"/>
+                            <field name="every_months"/>
+                            <field name="grace_days"/>
+                            <field name="auto_assign"/>
+                            <field name="counts_for_probation"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="department_ids" widget="many2many_tags"/>
+                            <field name="job_ids" widget="many2many_tags"/>
+                            <field name="work_location_ids" widget="many2many_tags"/>
+                            <field name="country_ids" widget="many2many_tags"/>
+                            <field name="employee_types"/>
+                            <field name="safety_groups"/>
+                            <field name="audience_flag"/>
+                            <field name="include_contractors"/>
+                        </group>
+                        <group>
+                            <field name="ratio_people"/>
+                            <field name="ratio_holders"/>
+                            <field name="ratio_min_people"/>
+                            <field name="code"/>
+                            <field name="pack_key"/>
+                            <field name="unverified"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Why it is required"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_training_requirements" model="ir.actions.act_window">
+        <field name="name">Required training</field>
+        <field name="res_model">pb.training.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('company_id', '!=', False)]</field>
+    </record>
+
+    <!-- The Settings › HR › Required training screen. A RECORD, never a bare
+         tag (W98). -->
+    <record id="action_pb_training_required_settings" model="ir.actions.client">
+        <field name="name">Required training</field>
+        <field name="tag">pb_training_required_settings</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- ==================================================================
+         The employee form: the three facts a rule reads, in the Location
+         group of the Work page (the stock employee_type sits on the Payroll
+         page, which only HR managers see; these are for every HR user).
+         ================================================================== -->
+    <record id="view_employee_form_training_rules" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.training.rules</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">120</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_location_id']" position="after">
+                <field name="pb_safety_group" groups="hr.group_hr_user"/>
+                <field name="pb_posh_ic_member" groups="hr.group_hr_user"/>
+                <field name="pb_sg_experienced" groups="hr.group_hr_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The course form: its hours, beside who is responsible for it. -->
+    <record id="view_slide_channel_form_pb_hours" model="ir.ui.view">
+        <field name="name">slide.channel.form.pb.hours</field>
+        <field name="model">slide.channel</field>
+        <field name="inherit_id" ref="website_slides.view_slide_channel_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="pb_hours"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

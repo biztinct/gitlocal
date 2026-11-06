@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         LEARNING L2: the required-training matrix, printed for an auditor.
+         Landscape A4, 40 people a page, legend and filters in the header,
+         company letterhead and date. Rendered from
+         pb.training.matrix.export.data(), which re-reads the matrix AS THE
+         READER (never sudo: company mixing, F7). Server-side QWeb: no t-key,
+         conditional styles through t-attf (R42/R5). Every translatable text
+         node on one line (LN13).
+         ================================================================== -->
+    <record id="paperformat_required_matrix" model="report.paperformat">
+        <field name="name">Required training matrix</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">28</field>
+        <field name="margin_bottom">14</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_spacing">22</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_required_matrix" model="ir.actions.report">
+        <field name="name">Required training matrix</field>
+        <field name="model">pb.training.matrix.export</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_training.report_required_matrix</field>
+        <field name="report_file">pb_training.report_required_matrix</field>
+        <field name="print_report_name">'Required training'</field>
+        <field name="paperformat_id" ref="paperformat_required_matrix"/>
+    </record>
+
+    <!-- ONE DOCUMENT, PAGINATED BY CSS. The live server's wkhtmltopdf is
+         the unpatched-QT build, which refuses to merge several documents
+         ("Tried to convert multiple documents in wkhtmltopdf using unpatched
+         QT"). So `web.external_layout` is called ONCE (one `article`), and
+         each block of 40 people ends with `page-break-after: always` inside
+         that single document (ledger LN33). -->
+    <template id="report_required_matrix">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="board" t-value="doc.data()"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 10px; line-height: 1.35; color: #1B1733;">
+                        <t t-foreach="board['pages_rows']" t-as="page_rows">
+                            <div t-attf-style="#{'' if page_rows_last else 'page-break-after: always;'}">
+                                <div style="border-bottom: 2px solid #5A4BB0; padding-bottom: 6px; margin-bottom: 8px;">
+                                    <div style="font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #5A4BB0; font-weight: 700;">Required training</div>
+                                    <div style="font-size: 15px; font-weight: 700;" t-esc="board['headline']"/>
+                                    <div style="color: #64748B;"><span>Who:</span> <span t-esc="board['filter_words']"/> · <span>As at</span> <span t-esc="board['today_words']"/> · <span>Page</span> <span t-esc="page_rows_index + 1"/> / <span t-esc="len(board['pages_rows'])"/></div>
+                                </div>
+                                <p t-if="not page_rows" style="color: #64748B;">Nobody is covered by a required-training rule yet.</p>
+                                <table t-else="" style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: #EDEAF8;">
+                                            <th style="text-align: left; padding: 4px 5px; width: 16%;">Person</th>
+                                            <th style="text-align: left; padding: 4px 5px; width: 12%;">Department</th>
+                                            <th t-foreach="board['columns']" t-as="col" style="text-align: left; padding: 4px 5px;" t-esc="col['name']"/>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="page_rows" t-as="row" style="border-bottom: 1px solid #E2E8F0;">
+                                            <td style="padding: 3px 5px; font-weight: 600;" t-esc="row['name']"/>
+                                            <td style="padding: 3px 5px; color: #64748B;" t-esc="row['department']"/>
+                                            <t t-foreach="board['columns']" t-as="col">
+                                                <t t-set="cell" t-value="row['cells'].get(str(col['id'])) or {}"/>
+                                                <td t-attf-style="padding: 3px 5px; #{cell.get('state') == 'missing' and 'color: #B91C1C; font-weight: 600;' or (cell.get('state') == 'expiring' and 'color: #B45309; font-weight: 600;' or (cell.get('state') == 'valid' and 'color: #047857;' or 'color: #94A3B8;'))}" t-esc="cell.get('words') or ''"/>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <t t-if="page_rows_last">
+                                    <p t-if="board['shortfalls']" style="margin-top: 10px; font-weight: 600;">Sites short of trained people</p>
+                                    <ul t-if="board['shortfalls']" style="margin: 0; padding-left: 16px;">
+                                        <li t-foreach="board['shortfalls']" t-as="sf"><span t-esc="sf['name']"/>: <span t-esc="sf['words']"/></li>
+                                    </ul>
+                                </t>
+                                <p style="margin-top: 10px; font-size: 9px; color: #64748B;">Green: in date. Amber: runs out soon. Red: missing. Grey: not due yet, or not for them.</p>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

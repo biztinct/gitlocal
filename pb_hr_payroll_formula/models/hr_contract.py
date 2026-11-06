@@ -4,7 +4,7 @@ from odoo import api, fields, models, _
 
 
 class HrContract(models.Model):
-    _inherit = 'hr.contract'
+    _inherit = ['hr.contract']
 
     advantage_change_count = fields.Integer(
         string='Component Changes',

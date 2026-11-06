@@ -1,0 +1,616 @@
+<title>Learn Revamp Design</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a left section rail + one long reading column; prototypes are real HTML mock-ups inside framed "screens". */
+:root{
+  --bg:#F4F5FB; --card:#FFFFFF; --ink:#1E1B2E; --ink2:#4B4A5E; --mute:#737289; --line:#E2E4EF; --line2:#D5D7E6;
+  --brand:#5A4BB0; --brand-h:#4A3D96; --brand-soft:#EDEAF8; --brand-soft2:#DCD6F3; --brand-ink:#241F52;
+  --ok:#2E7D4F; --ok-soft:#E4F3EA; --warn:#B45309; --warn-soft:#FDF1DF; --bad:#C81E5B; --bad-soft:#FCE7EF; --info:#2563EB; --info-soft:#E6EEFD;
+  --rail:#171433; --rail-ink:#CFCBE6;
+  --display:"Manrope",system-ui,sans-serif; --body:"Source Sans 3",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  --r:14px; --shadow:0 1px 2px rgba(30,27,46,.06),0 8px 24px rgba(30,27,46,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#12111C; --card:#1B1A28; --ink:#EEEDF6; --ink2:#C9C7DA; --mute:#9896B0; --line:#2C2B3E; --line2:#3A3950;
+  --brand:#9A8CE6; --brand-h:#B3A7F0; --brand-soft:#27234A; --brand-soft2:#352F62; --brand-ink:#E6E1FF;
+  --ok:#5DBB82; --ok-soft:#1A3326; --warn:#E8A24A; --warn-soft:#3A2A12; --bad:#F06A98; --bad-soft:#3D1626; --info:#6E9BFF; --info-soft:#1A2746;
+  --rail:#0C0B16; --rail-ink:#B9B5D6; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#12111C; --card:#1B1A28; --ink:#EEEDF6; --ink2:#C9C7DA; --mute:#9896B0; --line:#2C2B3E; --line2:#3A3950;
+  --brand:#9A8CE6; --brand-h:#B3A7F0; --brand-soft:#27234A; --brand-soft2:#352F62; --brand-ink:#E6E1FF;
+  --ok:#5DBB82; --ok-soft:#1A3326; --warn:#E8A24A; --warn-soft:#3A2A12; --bad:#F06A98; --bad-soft:#3D1626; --info:#6E9BFF; --info-soft:#1A2746;
+  --rail:#0C0B16; --rail-ink:#B9B5D6; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+a{color:var(--brand)}
+.wrap{display:grid;grid-template-columns:230px minmax(0,1fr);gap:0;min-height:100%}
+nav.rail{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;background:var(--rail);color:var(--rail-ink);padding:22px 14px;display:flex;flex-direction:column;gap:4px;overflow:auto}
+nav.rail .logo{font-family:var(--display);font-weight:800;color:#fff;font-size:17px;margin:0 8px 14px;letter-spacing:.2px}
+nav.rail .logo small{display:block;font-weight:500;color:var(--rail-ink);font-size:12px;margin-top:2px}
+nav.rail a{display:block;color:var(--rail-ink);text-decoration:none;font-size:14px;padding:7px 10px;border-radius:8px}
+nav.rail a:hover,nav.rail a.on{background:rgba(255,255,255,.08);color:#fff}
+nav.rail .grp{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8683A6;margin:14px 10px 4px}
+main{padding-block:28px 80px;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));max-width:1180px;min-width:0}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:34px;font-weight:800;letter-spacing:-.3px}
+h2{font-size:24px;font-weight:800;margin-top:56px;padding-top:12px;border-top:1px solid var(--line)}
+h3{font-size:18px;font-weight:700;margin-top:28px}
+h4{font-size:15px;font-weight:700;margin-top:18px}
+p{max-width:72ch;margin:10px 0}
+.lead{font-size:19px;color:var(--ink2);max-width:66ch}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);font-weight:700;font-family:var(--display)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:16px 0}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:16px 0}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:15px}
+.kv b{color:var(--mute);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand-ink);border:1px solid var(--brand-soft2);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}.pill.info{background:var(--info-soft);color:var(--info);border-color:transparent}.pill.mute{background:transparent;color:var(--mute);border-color:var(--line2)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-size:12.5px;color:var(--mute);white-space:nowrap}
+code{font-family:var(--mono);font-size:.86em;background:var(--brand-soft);color:var(--brand-ink);padding:1px 6px;border-radius:6px}
+figure{margin:16px 0}figure img{border:1px solid var(--line);border-radius:12px;display:block;max-width:100%}figcaption{font-size:13.5px;color:var(--mute);margin-top:6px}
+.callout{border-left:4px solid var(--brand);background:var(--brand-soft);padding:12px 16px;border-radius:0 12px 12px 0;margin:14px 0;color:var(--brand-ink)}
+.callout.bad{border-color:var(--bad);background:var(--bad-soft);color:var(--ink)}
+.callout.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+ul,ol{padding-left:22px;max-width:72ch}li{margin:4px 0}
+.ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;flex:none}
+/* option tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 8px}
+.tabs button{font:600 14px var(--display);padding:9px 16px;border-radius:999px;border:1px solid var(--line2);background:var(--card);color:var(--ink2);cursor:pointer}
+.tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tabs button:focus-visible,.scr button:focus-visible,.hot:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+.opt{display:none}.opt.on{display:block}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+.verdict .card{padding:14px 16px}.verdict h4{margin-top:0}
+.score{font-family:var(--display);font-weight:800;font-size:28px;color:var(--brand)}
+/* mock screens */
+.scr{background:var(--card);border:1px solid var(--line2);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin:16px 0;font-size:13.5px;color:var(--ink)}
+.scr .bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg);border-bottom:1px solid var(--line);font-size:12px;color:var(--mute)}
+.scr .bar i{width:10px;height:10px;border-radius:50%;background:var(--line2);display:inline-block}
+.scr .bar span{margin-left:8px;font-family:var(--mono)}
+.scr button{font:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:9px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font-weight:600;font-size:13px}
+.btn.p{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.g{background:transparent;border-color:transparent;color:var(--brand)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.app{display:grid;grid-template-columns:56px minmax(0,1fr);min-height:520px}
+.app .lrail{background:var(--rail);display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0}
+.app .lrail i{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.08);display:block}
+.app .lrail i.on{background:var(--brand)}
+.app .body{padding:18px 22px;min-width:0}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hdr h5{font-family:var(--display);font-size:18px;font-weight:800;margin:0}
+/* learning home mock, shared pieces */
+.mockgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.mcard{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
+.mcard b{display:block;font-family:var(--display);font-size:13.5px}
+.mcard small{display:block;color:var(--mute);font-size:12px;margin-top:4px;line-height:1.35}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--ink2)}
+.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}.chip.b{background:var(--brand-soft);color:var(--brand-ink);border-color:transparent}
+.row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .t b{display:block;font-family:var(--display);font-size:13.5px}.row .t small{color:var(--mute);font-size:12px}
+.ring{width:26px;height:26px;border-radius:50%;border:3px solid var(--line2);display:inline-block}
+.ring.done{border-color:var(--ok);background:var(--ok-soft)}.ring.half{border-color:var(--brand);border-right-color:var(--line2);border-bottom-color:var(--line2)}
+.stepper{display:flex;gap:6px;align-items:center;overflow:auto;padding:4px 0}
+.stepper .st{flex:none;display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--card);white-space:nowrap}
+.stepper .st.done{border-color:var(--ok);color:var(--ok)}.stepper .st.now{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-ink);font-weight:700}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;background:var(--card);color:var(--mute);font-size:13.5px}
+.tree{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px}
+.tree .tr a{display:block;padding:5px 8px;border-radius:7px;color:var(--ink2);text-decoration:none;font-size:13px}
+.tree .tr a.on{background:var(--brand-soft);color:var(--brand-ink);font-weight:700}
+.tree .tr .g{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:10px 8px 2px}
+/* treatment board mock */
+.board{overflow-x:auto}
+.board table{font-size:12.5px;min-width:720px}
+.board th{font-size:10.5px;background:transparent;position:relative}
+.board td{padding:8px 10px}
+.board .cmp b{display:block;font-family:var(--display);font-size:12.5px}.board .cmp small{font-family:var(--mono);font-size:10.5px;color:var(--mute)}
+.sel{border:1px solid var(--line2);border-radius:8px;padding:5px 8px;background:var(--card);font-size:12px;display:inline-block;min-width:140px}
+.sel.warn{border-color:var(--warn);background:var(--warn-soft)}
+.src{display:block;color:var(--mute);font-size:10.5px;margin-top:3px}
+.hot{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--mute);font:700 10px var(--display);margin-left:5px;cursor:pointer;vertical-align:middle}
+.hot.on,.hot:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+/* guide panel */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:0}
+.panel{border-left:1px solid var(--line);background:var(--card);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel .ph{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panel .ph b{font-family:var(--display);font-size:14px}
+.sec{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sec .sh{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:12.5px;color:var(--ink2)}
+.sec .sh .pill{margin-left:auto}
+.sec p{font-size:12.5px;margin:6px 0;color:var(--ink2);max-width:none}
+.ws{display:flex;align-items:center;gap:4px;font-size:11.5px;margin-top:6px;flex-wrap:wrap}
+.ws span{padding:3px 8px;border-radius:7px;border:1px solid var(--line);background:var(--bg)}
+.ws span.now{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:700}
+.ws em{color:var(--mute);font-style:normal}
+.todo{display:grid;gap:6px;margin-top:6px}
+.todo div{display:grid;grid-template-columns:20px 1fr auto;gap:8px;align-items:start;font-size:12.5px}
+.todo i{width:18px;height:18px;border-radius:50%;background:var(--warn-soft);color:var(--warn);font:700 10px var(--display);display:inline-flex;align-items:center;justify-content:center;font-style:normal}
+.todo i.ok{background:var(--ok-soft);color:var(--ok)}
+.fc{border:1px solid var(--brand-soft2);border-radius:12px;background:var(--card);padding:12px;box-shadow:var(--shadow);font-size:12.5px}
+.fc h6{font-family:var(--display);font-size:13.5px;margin:0 0 4px}
+.fc .lbl{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:700;margin-top:9px}
+.fc ul{padding-left:16px;margin:3px 0;max-width:none}.fc li{margin:2px 0}
+.fc .cons{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.fc .cons span{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--info-soft);color:var(--info)}
+.fc .foot{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.fieldlist details{border-top:1px solid var(--line);padding:6px 0}
+.fieldlist summary{cursor:pointer;font-weight:700;font-family:var(--display);font-size:12.5px;list-style:none;display:flex;justify-content:space-between}
+.fieldlist summary::after{content:"+";color:var(--mute)}
+.fieldlist details[open] summary::after{content:"–"}
+.hover-fc{position:relative}
+.pop{position:absolute;z-index:5;top:28px;left:0;width:320px;max-width:min(320px,90vw)}
+/* watch step strip */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}
+.step{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card);font-size:12.5px}
+.step .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.step b{display:block;font-family:var(--display);font-size:13px;margin:2px 0 4px}
+.step .l{display:grid;grid-template-columns:52px 1fr;gap:3px 8px;margin-top:6px}
+.step .l em{font-style:normal;color:var(--brand);font-weight:700;font-size:11px}
+.cmp2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp2 .card{padding:12px 14px;font-size:13.5px}
+.cmp2 .card h4{margin-top:0}
+.bad-t{color:var(--bad)}.ok-t{color:var(--ok)}
+.phase{display:grid;grid-template-columns:70px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.phase .pn{font-family:var(--display);font-weight:800;color:var(--brand);font-size:15px}
+.phase b{font-family:var(--display)}
+.phase p{margin:3px 0;font-size:14.5px}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:18px 0}
+.toc a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);text-decoration:none;color:var(--ink);font-weight:600;font-size:14px}
+.toc a small{display:block;color:var(--mute);font-weight:400;font-size:12.5px}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}nav.rail{position:static;height:auto;flex-direction:row;flex-wrap:wrap}nav.rail .grp{display:none}.split{grid-template-columns:1fr}.panel{border-left:0;border-top:1px solid var(--line)}.tree{grid-template-columns:1fr}.cmp2{grid-template-columns:1fr}main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}.app{grid-template-columns:1fr}.app .lrail{display:none}}
+@media (prefers-reduced-motion:no-preference){.opt.on{animation:fade .25s ease}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+ <symbol id="i-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
+ <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5V4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5z"/></symbol>
+ <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+ <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+ <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 20l-6-3V4l6 3 6-3 6 3v13l-6-3-6 3zM9 7v13M15 4v13"/></symbol>
+ <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+ <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+</svg>
+
+<div class="wrap">
+<nav class="rail" aria-label="Sections">
+  <div class="logo">Learn revamp<small>Design review and prototypes</small></div>
+  <a href="#summary" class="on">Summary</a>
+  <a href="#gaps">Gaps found</a>
+  <a href="#bestinclass">Best in class</a>
+  <a href="#engine">The content engine</a>
+  <div class="grp">Options</div>
+  <a href="#options">Three options</a>
+  <a href="#rec">Recommendation</a>
+  <div class="grp">Next</div>
+  <a href="#build">Build plan</a>
+  <a href="#decisions">Decisions for you</a>
+</nav>
+<main>
+
+<section id="summary">
+<div class="eyebrow">Payobook Learn and PayAI help · design review · 17 Oct 2026</div>
+<h1 style="margin-top:8px">Help that explains every field, every step and every next move</h1>
+<p class="lead">Today the lessons describe screens in prose. They do not explain what each field means, how it gets filled, what it changes, how you reached the screen or what to do next. This page lists every gap I found (yours and mine), what the best help systems do, the engine that fixes the root cause, and three designs with working mock-ups. My recommendation is Option C.</p>
+
+<div class="grid3">
+  <div class="card"><div class="eyebrow">Root cause</div><p style="margin-top:6px">Each screen has exactly <b>one sentence</b> for "what should I do next". The same sentence is shown by Explain this screen, the "first time here" nudge and the chat. It is typed by hand, it is not aware of what is on your screen, and nothing explains fields.</p></div>
+  <div class="card"><div class="eyebrow">The fix</div><p style="margin-top:6px">Generate the help <b>from the product's own definitions</b>: every field's meaning, choices, how it is filled, where it is used and what changes if you change it. Add a live "right now" step read from the screen's state. Author only the story on top.</p></div>
+  <div class="card"><div class="eyebrow">Recommendation</div><p style="margin-top:6px"><b>Option C: help on the screen.</b> A Guide panel and field cards inside every product screen, one calm Library page for Learning, and PayAI answering from the same cards. Options A and B are built in as its parts.</p></div>
+</div>
+
+<div class="toc">
+  <a href="#gaps">33 gaps<small>7 you reported, 26 I found</small></a>
+  <a href="#bestinclass">10 products studied<small>what each one does better</small></a>
+  <a href="#engine">The content engine<small>help written from the code</small></a>
+  <a href="#options">3 prototypes<small>click the tabs, press the (i) buttons</small></a>
+  <a href="#build">Build plan<small>quick fixes this week, then 5 phases</small></a>
+</div>
+</section>
+
+<section id="gaps">
+<h2>What is wrong today</h2>
+<p>I walked the live Learning page, the Pulse lesson, the lesson player and the Component treatment screen on payobook.com as the QA test user, and I read the learning content, the chat router and the walkthrough engine in the code. Each gap below says where it comes from and how the new design closes it.</p>
+
+<figure><img src="img/own1.jpg" alt="PayAI chat showing the same sentence for Explain this screen and for What should I do next"><figcaption>Your screenshot. "Explain this screen" and "What should I do next here?" return the same hand-typed sentence. Both read one field in the content file.</figcaption></figure>
+
+<h3>Reported by you</h3>
+<div class="tbl"><table>
+<tr><th>#</th><th>What you saw</th><th>Why it happens</th><th>How the new design closes it</th></tr>
+<tr><td class="n">G1</td><td>"What should I do next here?" gave an off-tangent answer.</td><td>Every screen has one hand-written "next" sentence. Explain, the chat and the first-visit nudge all show that same sentence. It talks about chips that may not be on your screen. On payobook, where the AI assistant is switched on, I typed the same question on the same board and got a generic five-step "check data, run payroll, submit for approval" answer that ignored the screen entirely.</td><td>"Right now" is computed from the screen's state: rows needing an answer, type conflicts, unsaved changes, a run computed before the last save. Each line is a button that does the step.</td></tr>
+<tr><td class="n">G2</td><td>"Open the lesson" took you to the top of Learning, not the lesson.</td><td>The door opens the Learning page with an empty target, although the page already accepts a lesson or station key (other doors pass one).</td><td>Every door carries its target. In Option C the lesson opens inside the Guide panel, so you never leave the screen.</td></tr>
+<tr><td class="n">G3</td><td>Watch was vague and gave little information.</td><td>The Component treatment walkthrough is 4 steps of about 21 words each. It describes the board in general; it never names a field's choices, what it affects or what to press.</td><td>Each step has a fixed shape: Look at, It means, It affects, Press. Steps are written from the field cards, so they carry the real choices and consequences.</td></tr>
+<tr><td class="n">G4</td><td>Opening Ask PayAI shows the top of the chat, not the latest message.</td><td>The chat remounts on every open and nothing scrolls on mount. A scroll only happens when a new message is pushed, which is why the first open on a new screen looks right and the second open does not. Measured live: closed and reopened on the same board, the chat sat at position 0 of 7,099.</td><td>Scroll to the latest message on open; show a "new since you left" marker. A one-line fix, shipped this week.</td></tr>
+<tr><td class="n">G5</td><td>Try did not help much.</td><td>Try plays on a practice replica whose columns differ from the real board (Group and Subtotal instead of Report group and Included in another total; no Run signal). Every step is "observe", so Try is only pressing Next over a fake screen.</td><td>Try becomes a checked task: "set Loan Installment to Taken off net pay and save". The engine checks the real state, not a Next press. Replicas are generated from the same board definition, so they cannot drift.</td></tr>
+<tr><td class="n">G6</td><td>Lessons do not explain fields, how they are filled, the workflow, how you got here or what is next.</td><td>There are 82 field explanations across 20 screens and none for Component treatment or Mapping. Lessons have no "before / after" structure. The board's own explainer text exists but is hidden under an expander and not shared with lessons or PayAI.</td><td>Field cards for every column on every screen, generated from the product's definitions. A "You are here" workflow strip on every Guide. One text, three surfaces.</td></tr>
+<tr><td class="n">G7</td><td>The Lessons page is chaotic; a user gets lost.</td><td>See the next table. The page is 8,000 px tall with about 65 cards of four kinds.</td><td>One calm Library page: Continue, a short path, then screens listed exactly like the sidebar. Details are below in each option.</td></tr>
+</table></div>
+
+<h3>Found by me on the live screens</h3>
+<div class="tbl"><table>
+<tr><th>#</th><th>Gap</th><th>Evidence</th><th>Design response</th></tr>
+<tr><td class="n">G8</td><td>The Learning page is far too long and mixes four kinds of card.</td><td>8,044 px tall. 42 lesson cards, about 20 "Show me how" walkthrough cards, a tour card and a Lifecycle "One person's road" timeline. The same topic appears twice (for example "A day in Workforce" is a lesson card and a walkthrough card).</td><td>One row per screen. Watch, Try and Guide are chips on that row, not separate cards.</td></tr>
+<tr><td class="n">G9</td><td>"Not on your path" appears about 30 times.</td><td>A negative chip on most cards. The eye reads the page as "not for you".</td><td>Only required items get a mark. Everything else is simply listed.</td></tr>
+<tr><td class="n">G10</td><td>Four different ways to practise on one page.</td><td>"Practice missions" button, "Practice mode" banner, "Try" buttons and "Do it live".</td><td>One word: Try. The Library has one Practice entry.</td></tr>
+<tr><td class="n">G11</td><td>Every card wears three or four chips.</td><td>Full lesson · Required · Find it in Pay Run › Runs · About 8 min. The minutes are hand-typed estimates.</td><td>A row shows title, one-line purpose, a progress ring and one primary action.</td></tr>
+<tr><td class="n">G12</td><td>The role is picked for you and changes what is required, with no explanation.</td><td>"Approver" was pre-selected for the QA user ("Picked from your access"). The Continue card says "This is the next lesson the map asks for" and nothing else.</td><td>The Continue card says why: "Required for Approvers · 2 of 7 done · next: Approvals".</td></tr>
+<tr><td class="n">G13</td><td>"Reduce motion" sits in the page header as a primary control.</td><td>It is an accessibility preference.</td><td>Moves to Learn settings; the system setting is respected automatically.</td></tr>
+<tr><td class="n">G14</td><td>Gamification with no meaning.</td><td>"Overall 0 / 42", "Pay Run badge", a streak chip. Nobody is told what the badge gives them.</td><td>Progress is shown per path ("5 of 7 required"). Badges are dropped unless you want them.</td></tr>
+<tr><td class="n">G15</td><td>Search only filters this page.</td><td>It matches lesson titles and summaries, not field names, glossary terms or steps. Placeholder "Search the journey" is internal vocabulary.</td><td>One search over screens, fields, terms, tasks and lessons. Typing "pay role" lands on the field card.</td></tr>
+<tr><td class="n">G16</td><td>The ⌘K lesson search silently fails on load.</td><td>Console on every load today: "lesson rows not added to the search: Cannot translate string: translations have not been loaded".</td><td>Register after translations load. Quick fix this week.</td></tr>
+<tr><td class="n">G17</td><td>The lesson player covers what it is explaining.</td><td>Step 1 of the Pulse lesson explains the headline and places its card over the headline. Two sidebars show at once (the real rail plus the replica's). The text "Press esc to exit full screen" is visible.</td><td>The step card docks to the panel, never over the target. One rail. No full-screen mode.</td></tr>
+<tr><td class="n">G18</td><td>Lesson steps are walls of prose.</td><td>Median 29 words a step, up to 98, with a tip box. No structure says what to look at, what to press or what changes.</td><td>Every step: Look at · It means · It affects · Press. Short, same shape everywhere.</td></tr>
+<tr><td class="n">G19</td><td>The practice replica is a made-up company that drifts from the product.</td><td>"Hoa Sen Retail Co., July 2026", "Total cost to the company: —". The real demo world has 4,500 people and 41 pay runs.</td><td>Practice runs on the demo company for demo tenants, and on generated replicas elsewhere. Replicas are built from the screen definition.</td></tr>
+<tr><td class="n">G20</td><td>Three vocabularies for the same columns.</td><td>The board says Report group, Included in another total, Run signal. The lesson says Group, Subtotal. The anchors say Tells the run.</td><td>Labels come from the field definition once. Nothing else may name a field.</td></tr>
+<tr><td class="n">G21</td><td>A raw word shows in the Comes from column.</td><td>Formula rows show "calculated" because the label map has no entry for it.</td><td>Product bug, fix this week: label "Calculated by a formula".</td></tr>
+<tr><td class="n">G22</td><td>Lessons teach Vietnam to everyone.</td><td>Statutory lessons talk about BHXH, BHYT and thuế TNCN. Rize runs Indonesia, India and Singapore schemes. A Rize user learns the wrong statutory world.</td><td>Country-aware content: the statutory cards are generated from the tenant's own policy records and tax tables.</td></tr>
+<tr><td class="n">G23</td><td>A slow screen is reported as "no access".</td><td>The walkthrough waits 8 seconds for a screen to say it is ready, then shows "You don't have access to this screen". When the board shows an error, the steps end on "That control is not on this screen right now".</td><td>Every failure names its real reason and the next step: "The board is still loading" with Retry; "No scheme selected" with Pick one.</td></tr>
+<tr><td class="n">G24</td><td>A PayAI dead end asks you to repair the app.</td><td>Your screenshot: "I cannot see your list of screens yet. Close and reopen this panel, then ask again."</td><td>The chat reloads its screen list itself and answers. If it truly cannot, it offers the screen door directly.</td></tr>
+<tr><td class="n">G25</td><td>Three surfaces, one sentence.</td><td>The first-visit nudge, Explain this screen and the chat answer all show the same blurb and the same next sentence.</td><td>Each surface has its own job: nudge = one line and a Guide button; Explain = purpose + workflow strip; Right now = live steps.</td></tr>
+<tr><td class="n">G26</td><td>The chat suggests the question it just answered.</td><td>"What should I do next here?" is offered as a chip right under the card that already contains that sentence.</td><td>Suggestions are drawn from what the screen can do next and what people on this screen actually asked.</td></tr>
+<tr><td class="n">G27</td><td>"Do it for real" exists for one task only.</td><td>26 walkthroughs; "Do it live" appears on one card. Most tasks can only be watched or tried on a replica.</td><td>Every task gets a guarded Do mode: the engine points, you press, it stops before anything that writes.</td></tr>
+<tr><td class="n">G28</td><td>The Ask PayAI button covers page content.</td><td>On the Learning page it sits over the Lifecycle timeline's last label and over card text at the bottom right.</td><td>The page reserves space for the button; the Guide panel replaces the floating pill on product screens.</td></tr>
+<tr><td class="n">G29</td><td>Three units of progress for one lesson.</td><td>"About 8 min" on the card, "Full lesson · 8 min" on the outline, "Step 1 of 9" in the player.</td><td>One unit: steps. Minutes are shown once, computed from steps.</td></tr>
+<tr><td class="n">G30</td><td>No feedback loop.</td><td>No "Was this helpful?" on answers, steps or lessons. The question miss log stores no question text, so authors never learn what people could not find.</td><td>A thumbs control on every card and step. Misses are logged as topics (not personal text) and shown to authors in Learn › Settings.</td></tr>
+<tr><td class="n">G31</td><td>Nowhere says where a value is used or what changes if you change it.</td><td>The pay role feeds run totals, the "figures do not add up" check, Home figures, the payslip, pay bands, the bank file and more. No help text lists this.</td><td>The field card has "Used by" and "If you change it" sections, generated from the readers of that field in the code.</td></tr>
+<tr><td class="n">G32</td><td>The board already has good explainer text, hidden and unshared.</td><td>"What do these settings mean? How are they filled?" is an expander on the board. The lesson and PayAI never use it.</td><td>That text becomes the seed of the field cards and is removed from the board (the (i) replaces it).</td></tr>
+<tr><td class="n">G33</td><td>Mixed-language fragments in explanations.</td><td>Under every pay role: "Never reaches Số tiền thực nhận VND …" (an English sentence with a Vietnamese component name) on the Rize Vietnam scheme.</td><td>Sentences name the pay role, not the component: "Never reaches net pay".</td></tr>
+</table></div>
+
+<figure><img src="img/s3.jpg" alt="The Learning page showing lesson cards and a separate Show me how block"><figcaption>Live today: lesson cards with three chips each, followed by a separate "Show me how" block that repeats the same topics as walkthrough cards. This pattern repeats for every chapter down an 8,000 px page.</figcaption></figure>
+<figure><img src="img/t2_player.jpg" alt="The lesson player covering the headline it describes"><figcaption>Live today: the first step of the Pulse lesson explains the headline and covers it. Two sidebars are visible at once.</figcaption></figure>
+</section>
+
+<section id="bestinclass">
+<h2>What the best help systems do</h2>
+<p>I compared ten products whose help is good enough that people rarely need anything else. The last column says what we take. We have one advantage none of them has: our help can be written from the product's own definitions, because we own the code.</p>
+<div class="tbl"><table>
+<tr><th>Product</th><th>What they do well</th><th>What we take</th></tr>
+<tr><td><b>Stripe</b> (API reference)</td><td>Every field is documented from the schema: type, allowed values, default, what it affects. Explanation on the left, a real example on the right.</td><td>Field cards generated from the model. Explanation beside a real example row.</td></tr>
+<tr><td><b>Xero</b> (help panel)</td><td>A right-hand panel reads the page you are on and suggests the right articles. Articles open inside the panel so you keep working.</td><td>The Guide panel that knows the screen and never leaves it.</td></tr>
+<tr><td><b>Gusto</b> (Run payroll)</td><td>A small "?" beside fields, "What's this?" copy in plain words, and a checklist before you run.</td><td>The (i) on every field label. Pre-flight "Right now" checklist.</td></tr>
+<tr><td><b>Notion</b> (help centre)</td><td>Every multi-step instruction has a picture. Quick fixes are separate from courses.</td><td>Tasks ("How do I…") separate from lessons ("Understand…").</td></tr>
+<tr><td><b>Salesforce Trailhead</b></td><td>Hands-on challenges are checked against your live org. A badge proves you did it.</td><td>Try is verified by the real state, not by pressing Next.</td></tr>
+<tr><td><b>Intercom</b> (Fin and resource centre)</td><td>One chat answers from the articles and cites the article. "Was this helpful?" feeds the authors.</td><td>PayAI cites the field card or guide it answered from. Thumbs on every card.</td></tr>
+<tr><td><b>Linear</b> (docs)</td><td>Docs mirror the product's menu exactly. Short pages, keyboard first.</td><td>The Library is organised exactly like the sidebar. ⌘K opens any guide.</td></tr>
+<tr><td><b>Duolingo / iOS Tips</b></td><td>One thing at a time. Small, finishable units. One big Continue button.</td><td>One Continue card. Steps of one idea each.</td></tr>
+<tr><td><b>Shopify</b> (help centre)</td><td>"Learn more" beside every setting. Every article follows one template: Overview, Before you begin, Steps, Considerations.</td><td>One fixed Guide template for every screen.</td></tr>
+<tr><td><b>QuickBooks</b> (field help)</td><td>Field popovers say "where this appears" ("This shows on invoices").</td><td>"Used by" on every field card.</td></tr>
+</table></div>
+<p style="font-size:13.5px;color:var(--mute)">Sources I checked for current patterns: <a href="https://www.chameleon.io/blog/contextual-help-ux">Chameleon on contextual help</a>, <a href="https://userpilot.com/blog/help-center-examples/">Userpilot help centre examples</a>, <a href="https://www.docsie.io/blog/articles/10-key-factors-to-consider-when-building-context-sensitive-help-in-app-guidance/">Docsie on context-sensitive help</a>, <a href="https://productideas.xero.com/forums/939198-for-small-businesses/suggestions/47158450-help-functionality-in-app">Xero's in-app help thread</a>, <a href="https://intercom.com/help/en/articles/9515824-what-is-fin">Intercom Fin</a>. The product-specific points come from my own knowledge of those products.</p>
+</section>
+
+<section id="engine">
+<h2>The content engine: help written from the code</h2>
+<p>This is the part that removes the root cause. Three layers, one source, three surfaces.</p>
+<div class="grid3">
+  <div class="card"><div class="eyebrow">Layer 1 · Generated (the truth)</div><p style="margin-top:6px">For every screen, a generator reads the product: each field's label, help text and choices with their labels; how it gets filled (automatic, set by you, from the file); every place that reads it; each button and what it calls; and the hub and tab path to reach the screen. Bilingual, because labels and help already have Vietnamese translations.</p></div>
+  <div class="card"><div class="eyebrow">Layer 2 · Authored (the meaning)</div><p style="margin-top:6px">Writers add why the screen exists, when you use it, the mistakes it prevents, and the story of one person's pay. This exists today. It gets shorter, because the facts now come from Layer 1.</p></div>
+  <div class="card"><div class="eyebrow">Layer 3 · Live (right now)</div><p style="margin-top:6px">Each screen exposes a small "state to next step" table. Component treatment already counts rows that need an answer and type conflicts. The Guide turns them into numbered steps with buttons.</p></div>
+</div>
+<div class="callout"><b>Truth gate.</b> Nothing may name a field, a choice or a consequence unless it comes from Layer 1. The generator fails the build when a lesson mentions a label that does not exist on the screen. This is what ended the Group / Subtotal / Tells the run confusion for good.</div>
+
+<h3>What one field card contains (real content for Pay role)</h3>
+<p>Everything below is read from the product today: the field's help text, its six choices, the "set by" marker, and the 20-plus places in the code that read it.</p>
+<div class="fc" style="max-width:560px">
+  <h6>Pay role</h6>
+  <div>What net pay does with this component. Worked out from the scheme's own formulas, not from the component's name.</div>
+  <div class="lbl">Choices</div>
+  <ul><li><b>Added to net pay</b>: counts toward gross and reaches net.</li><li><b>Taken off net pay</b>: a deduction.</li><li><b>Net pay itself</b>: the final figure. One per scheme.</li><li><b>Employer cost</b>: paid by the company, never reaches the person.</li><li><b>Information only</b>: shown, never counted. Hours, codes, dates.</li><li><b>Both added and taken off</b>: mixed; usually needs a split.</li></ul>
+  <div class="lbl">How it is filled</div>
+  <div>Suggested by "Re-classify from the formulas". A choice you save is marked <b>Set by a person</b> and is kept on every re-classify. Only money, decimal and whole-number values may take a money role.</div>
+  <div class="lbl">Used by</div>
+  <div class="cons"><span>Pay run totals</span><span>"Figures do not add up" check</span><span>Home figures</span><span>Payslip statement</span><span>Pay bands</span><span>Bank file (net line)</span><span>Employee portal</span><span>Analytics Explorer</span><span>Final settlement</span><span>Decision Room</span></div>
+  <div class="lbl">If you change it</div>
+  <div>Reports use the new role from now on. Payslips already computed keep the old role until you recompute the run.</div>
+  <div class="foot"><span class="pill"><svg class="ic"><use href="#i-play"/></svg> Watch this field (40 s)</span><span class="pill mute">Term: net pay</span><span class="pill mute">Helpful? 👍 👎</span></div>
+</div>
+<p style="font-size:13.5px;color:var(--mute);margin-top:10px">The thumbs icons above are placeholders in this page only. In the product they are Lucide icons, as every icon is.</p>
+
+<h3>What one Guide contains (the fixed template for every screen)</h3>
+<div class="grid2">
+  <div class="card"><b>1 · This screen</b><p>One sentence of purpose, then "You are here": came from → this screen → next. For Component treatment: Formula Studio → Mapping › Component treatment → Pay Run › Run (recompute).</p></div>
+  <div class="card"><b>2 · Right now</b><p>Live steps from the screen's state, each a button. "3 rows need your answer", "1 type says otherwise", "June run was computed before your last save: recompute".</p></div>
+  <div class="card"><b>3 · Fields on this screen</b><p>Every column and control as a field card, searchable. Same cards open from the (i) beside each label.</p></div>
+  <div class="card"><b>4 · Tasks</b><p>"How do I…" recipes with Watch, Try (checked) and Do it (guarded). "Fix figures that do not add up", "Mark hours as information only".</p></div>
+  <div class="card"><b>5 · Understand</b><p>The lesson, rewritten in the step shape: Look at · It means · It affects · Press. Mistakes this prevents. Related terms.</p></div>
+  <div class="card"><b>6 · Ask</b><p>PayAI, answering from the cards above and citing them. Suggested questions come from what people on this screen asked.</p></div>
+</div>
+
+<h3>Walkthrough steps, before and after</h3>
+<div class="cmp2">
+  <div class="card"><h4 class="bad-t">Today (step 3 of 4, Component treatment)</h4><p>"Pay role, subtotal, value type. The pay role decides the arithmetic from gross to net. Subtotal stops a total being counted twice. Only an amount can touch net pay."</p><p style="color:var(--mute);font-size:13px">Three fields in one step, wrong labels, nothing to press.</p></div>
+  <div class="card"><h4 class="ok-t">New (one field a step, same shape every time)</h4>
+    <div class="step"><div class="k">Step 3 of 7 · Pay role</div><b>Loan Installment is "Needs your answer"</b>
+      <div class="l"><em>Look at</em><span>the Pay role cell on the Loan Installment row, amber.</span><em>It means</em><span>the formulas could not tell whether this amount reaches net pay.</span><em>It affects</em><span>run totals, the payslip and the bank file until it is set.</span><em>Press</em><span>the cell and choose <b>Taken off net pay</b>.</span></div></div>
+  </div>
+</div>
+</section>
+
+<section id="options">
+<h2>Three designs</h2>
+<p>All three use the same content engine. They differ in where help lives and what the Learning page becomes. Click a tab. In each mock-up, press an <span class="hot on" style="cursor:default">i</span> to open a field card, and press the panel sections.</p>
+<div class="tabs" role="tablist">
+  <button class="on" data-opt="a" role="tab">Option A · The Manual</button>
+  <button data-opt="b" role="tab">Option B · The Path</button>
+  <button data-opt="c" role="tab">Option C · Help on the screen (recommended)</button>
+</div>
+
+<!-- ============ OPTION A ============ -->
+<div class="opt on" id="opt-a">
+<div class="grid2">
+  <div class="card"><div class="eyebrow">Idea</div><p style="margin-top:6px">Learning becomes a complete manual organised exactly like the product sidebar. Every screen has one Guide page with the fixed template. Search is the hero. Progress is quiet. The same Guide page opens in a side panel on product screens.</p></div>
+  <div class="card"><div class="eyebrow">Who it suits</div><p style="margin-top:6px">People who look things up: payroll officers in month two, administrators, auditors. Teams who want a printable reference.</p></div>
+</div>
+<div class="scr"><div class="bar"><i></i><i></i><i></i><span>payobook.com · Learn › Library</span></div>
+<div class="app"><div class="lrail"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i></div>
+<div class="body">
+  <div class="hdr"><h5>Library</h5><div class="search" style="flex:1;max-width:420px"><svg class="ic"><use href="#i-search"/></svg> Search screens, fields, terms, tasks… ⌘K</div></div>
+  <div class="tree" style="margin-top:14px">
+    <div class="tr">
+      <div class="g">Home</div><a>Pulse</a><a>Approvals</a>
+      <div class="g">Pay Run</div><a>Run</a><a>Runs</a><a>Payslips</a><a>Import</a><a>Adjust</a>
+      <div class="g">Settings</div><a>Formula Engine</a><a>Mapping</a><a class="on">Component treatment</a><a>Approval Matrix</a><a>Statutory</a>
+      <div class="g">People · Lifecycle · Workforce</div><a>Employees</a><a>Pay bands</a><a>Hiring</a><a>Time</a>
+    </div>
+    <div>
+      <div class="eyebrow">Settings › Mapping</div>
+      <h5 style="font-family:var(--display);font-size:20px;margin:4px 0 6px">Component treatment</h5>
+      <div style="color:var(--ink2)">What the scheme does with each component: whether it adds to, takes off or is the net pay; whether it is already counted in another total; what kind of value it is.</div>
+      <div class="ws"><em>You are here:</em><span>Formula Engine</span>→<span>Mapping</span>→<span class="now">Component treatment</span>→<span>Pay Run › Run (recompute)</span></div>
+      <div class="chips" style="margin-top:12px"><span class="chip b">Guide</span><span class="chip">Fields (6)</span><span class="chip">Tasks (3)</span><span class="chip">Lesson · 7 steps</span><span class="chip">Mistakes (3)</span></div>
+      <div class="fieldlist" style="margin-top:12px">
+        <details open><summary>Pay role <span class="pill info" style="font-size:10.5px">used by 10 places</span></summary>
+          <div style="font-size:12.5px;color:var(--ink2);padding:6px 0">What net pay does with this component. Choices: Added to net pay · Taken off net pay · Net pay itself · Employer cost · Information only · Both. Filled by Re-classify; your choice is kept. Changing it affects reports now and payslips after a recompute.</div></details>
+        <details><summary>Report group</summary><div style="font-size:12.5px;color:var(--ink2);padding:6px 0">A label for the grid and reports (Earnings, Deductions, Net pay, Employer costs, Information). Filled from the pay role on import; you can override. Copied onto each payslip line at compute time; used by payslip analytics and the Source Atlas.</div></details>
+        <details><summary>Included in another total</summary><div style="font-size:12.5px;color:var(--ink2);padding:6px 0">Tick when this amount is already inside another component. Pay runs count the total, not this line; the line still shows on the payslip. Used by run totals, pay bands and Explorer.</div></details>
+        <details><summary>Run signal</summary><div style="font-size:12.5px;color:var(--ink2);padding:6px 0">A component that says something about the person, not their pay: "still employed" or "hours worked". The Run screen uses it to decide who gets a payslip and who worked. Leave blank for an ordinary component.</div></details>
+        <details><summary>Value type</summary><div style="font-size:12.5px;color:var(--ink2);padding:6px 0">What the value is: Amount, Decimal, Whole number, Quantity, Percentage, Reference code, Text, Date, Yes/No. Only the first five can become payslip lines or take a money role. Filled from the file's formats and samples; you can correct it.</div></details>
+        <details><summary>Comes from</summary><div style="font-size:12.5px;color:var(--ink2);padding:6px 0">Where the value enters: a file column, a connected system, the contract, a constant, or a formula. Read-only here; change it in Mapping › Connections.</div></details>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn p"><svg class="ic"><use href="#i-play"/></svg> Watch (2 min)</button><button class="btn"><svg class="ic"><use href="#i-flask"/></svg> Try: fix a row</button><button class="btn"><svg class="ic"><use href="#i-arrow"/></svg> Open the screen</button></div>
+    </div>
+  </div>
+</div></div></div>
+<div class="verdict">
+  <div class="card"><h4>Strengths</h4><ul style="font-size:14px"><li>Complete and predictable; the "no other documentation" promise is met on day one.</li><li>Easiest to generate and to keep true.</li><li>Search works across everything.</li></ul></div>
+  <div class="card"><h4>Weaknesses</h4><ul style="font-size:14px"><li>Reading-heavy; a new starter has no path.</li><li>Help still lives one page away from the field.</li><li>Two-pane layout is dense on a 13-inch laptop.</li></ul></div>
+  <div class="card"><h4>Score against the brief</h4><div class="score">7 / 10</div><div style="font-size:13.5px;color:var(--mute)">Comprehensive, not yet "help where the question arises".</div></div>
+</div>
+</div>
+
+<!-- ============ OPTION B ============ -->
+<div class="opt" id="opt-b">
+<div class="grid2">
+  <div class="card"><div class="eyebrow">Idea</div><p style="margin-top:6px">Keep the journey, cut it to the bone. Three zones: Continue, My path (a short checklist for my role), Browse (collapsed by product area). A full-screen lesson player with a step rail on the left and the screen on the right; each step shows the fields it touches.</p></div>
+  <div class="card"><div class="eyebrow">Who it suits</div><p style="margin-top:6px">New starters in their first two weeks. Tenants that onboard many people at once (Rize).</p></div>
+</div>
+<div class="scr"><div class="bar"><i></i><i></i><i></i><span>payobook.com · Learn › Your path</span></div>
+<div class="app"><div class="lrail"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i></div>
+<div class="body">
+  <div class="hdr"><h5>Your path · Approver</h5><div class="search" style="width:300px"><svg class="ic"><use href="#i-search"/></svg> Search…</div></div>
+  <div class="card" style="margin-top:12px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border-left:4px solid var(--brand)">
+    <div><div class="eyebrow">Continue · 2 of 7 done · about 35 min left</div><b style="font-family:var(--display);font-size:16px">Approvals: one inbox, every route</b><div style="color:var(--mute);font-size:12.5px">Required for Approvers because you hold the Payroll approval seat. 9 steps.</div></div>
+    <button class="btn p"><svg class="ic"><use href="#i-play"/></svg> Continue</button>
+  </div>
+  <div style="margin-top:14px"><div class="eyebrow">My path</div>
+    <div class="card" style="padding:4px 6px;margin-top:6px">
+      <div class="row"><span class="ring done"></span><div class="t"><b>Pulse</b><small>Where this month is, in one sentence</small></div><span class="pill ok">Done</span></div>
+      <div class="row"><span class="ring done"></span><div class="t"><b>Runs</b><small>Every pay run on one board</small></div><span class="pill ok">Done</span></div>
+      <div class="row"><span class="ring half"></span><div class="t"><b>Approvals</b><small>One inbox, every route</small></div><button class="btn sm p">Continue</button></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Payslips</b><small>One person's pay, line by line</small></div><span class="pill mute">8 steps</span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Pay review and pay changes</b><small>A yearly review, signed step by step</small></div><span class="pill mute">9 steps</span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Insights › Pulse</b><small>The questions every pay month asks</small></div><span class="pill mute">6 steps</span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Payroll Report and Budget</b><small>This run against the last</small></div><span class="pill mute">6 steps</span></div>
+    </div></div>
+  <div style="margin-top:14px"><div class="eyebrow">Browse everything</div>
+    <div class="chips" style="margin-top:6px"><span class="chip">Home (2)</span><span class="chip">Pay Run (8)</span><span class="chip">Settings (11)</span><span class="chip">People (5)</span><span class="chip">Lifecycle (8)</span><span class="chip">Workforce (3)</span><span class="chip">Insights (4)</span><span class="chip">Compliance (2)</span><span class="chip b">Practice company</span></div></div>
+</div></div></div>
+
+<div class="scr"><div class="bar"><i></i><i></i><i></i><span>Lesson player · Component treatment · step 3 of 7</span></div>
+<div class="split" style="grid-template-columns:260px minmax(0,1fr)">
+  <div class="panel" style="border-left:0;border-right:1px solid var(--line)">
+    <div class="ph"><b>Fix figures that do not add up</b><span class="pill mute">3 / 7</span></div>
+    <div class="row" style="grid-template-columns:20px 1fr"><span class="ring done" style="width:18px;height:18px"></span><div class="t"><b>One board per scheme</b></div></div>
+    <div class="row" style="grid-template-columns:20px 1fr"><span class="ring done" style="width:18px;height:18px"></span><div class="t"><b>What needs you</b></div></div>
+    <div class="row" style="grid-template-columns:20px 1fr;background:var(--brand-soft);border-radius:8px"><span class="ring half" style="width:18px;height:18px"></span><div class="t"><b>Pay role: Loan Installment</b></div></div>
+    <div class="row" style="grid-template-columns:20px 1fr"><span class="ring" style="width:18px;height:18px"></span><div class="t"><b>Value type: hours</b></div></div>
+    <div class="row" style="grid-template-columns:20px 1fr"><span class="ring" style="width:18px;height:18px"></span><div class="t"><b>Included in another total</b></div></div>
+    <div class="row" style="grid-template-columns:20px 1fr"><span class="ring" style="width:18px;height:18px"></span><div class="t"><b>Save</b></div></div>
+    <div class="row" style="grid-template-columns:20px 1fr"><span class="ring" style="width:18px;height:18px"></span><div class="t"><b>Recompute the run</b></div></div>
+    <div class="step" style="margin-top:4px"><div class="k">Fields on this step</div><b>Pay role</b><div class="l"><em>Look at</em><span>the amber cell on Loan Installment.</span><em>It means</em><span>the formulas could not decide if it reaches net pay.</span><em>It affects</em><span>run totals, payslip, bank file.</span><em>Press</em><span>the cell, choose Taken off net pay.</span></div></div>
+    <div style="display:flex;gap:8px"><button class="btn">Back</button><button class="btn p">Next</button><button class="btn g">Leave</button></div>
+  </div>
+  <div class="body board" style="padding:14px">
+    <div class="hdr"><h5 style="font-size:15px">How each component is treated</h5><span class="pill">Practice company</span></div>
+    <table style="margin-top:10px"><tr><th>Component</th><th>Comes from</th><th>Report group</th><th>Pay role</th><th>Value type</th></tr>
+      <tr><td class="cmp"><b>Basic Salary</b><small>BASIC</small></td><td><span class="chip ok">Spreadsheet</span></td><td><span class="sel">Earnings</span></td><td><span class="sel">Added to net pay</span><span class="src">Worked out from the formulas</span></td><td><span class="sel">Amount (currency)</span></td></tr>
+      <tr style="outline:2px solid var(--brand);outline-offset:-2px"><td class="cmp"><b>Loan Installment</b><small>INLOAN</small></td><td><span class="chip ok">Spreadsheet</span></td><td><span class="sel">Deductions</span></td><td><span class="sel warn">Needs your answer</span><span class="src">Confidence: review</span></td><td><span class="sel">Amount (currency)</span></td></tr>
+      <tr><td class="cmp"><b>OT Weekday (hrs)</b><small>OTWD</small></td><td><span class="chip ok">Spreadsheet</span></td><td><span class="sel">Information</span></td><td><span class="sel">Information only</span><span class="src">Worked out from the formulas</span></td><td><span class="sel">Quantity (hours, days)</span></td></tr>
+      <tr><td class="cmp"><b>Net pay</b><small>NET</small></td><td><span class="chip">Calculated by a formula</span></td><td><span class="sel">Net pay</span></td><td><span class="sel">Net pay itself</span><span class="src">Worked out from the formulas</span></td><td><span class="sel">Amount (currency)</span></td></tr>
+    </table>
+  </div>
+</div></div>
+<div class="verdict">
+  <div class="card"><h4>Strengths</h4><ul style="font-size:14px"><li>Calm and finishable; one Continue button.</li><li>Best onboarding experience of the three.</li><li>Keeps what works today (paths, progress, Try).</li></ul></div>
+  <div class="card"><h4>Weaknesses</h4><ul style="font-size:14px"><li>Field reference sits behind lessons; "what does this column mean" is still two clicks away.</li><li>Still a separate place to go; people stop going there after week two.</li></ul></div>
+  <div class="card"><h4>Score against the brief</h4><div class="score">7.5 / 10</div><div style="font-size:13.5px;color:var(--mute)">Great for learning, weaker for looking up.</div></div>
+</div>
+</div>
+
+<!-- ============ OPTION C ============ -->
+<div class="opt" id="opt-c">
+<div class="grid2">
+  <div class="card"><div class="eyebrow">Idea</div><p style="margin-top:6px">The product screen is the manual. Every field label gets a quiet (i) that opens its field card. A Guide panel on the right of any screen has six sections in a fixed order, no tabs: This screen, Right now, Fields, Tasks, Understand, Ask. Learning becomes one calm Library page: Continue, a short path strip, then every screen listed like the sidebar.</p></div>
+  <div class="card"><div class="eyebrow">Who it suits</div><p style="margin-top:6px">Everyone, because the help is where the question arises. New starters follow the path strip; experienced people never leave the screen.</p></div>
+</div>
+
+<div class="scr"><div class="bar"><i></i><i></i><i></i><span>payobook.com · Settings › Mapping › Component treatment · Guide open</span></div>
+<div class="split">
+  <div class="body board" style="padding:14px">
+    <div class="hdr"><h5 style="font-size:15px">How each component is treated</h5><div style="display:flex;gap:6px"><button class="btn sm">Re-classify from the formulas</button><button class="btn sm p">Save</button></div></div>
+    <div class="chips" style="margin:8px 0"><span class="chip b">All 11</span><span class="chip" style="background:var(--warn-soft);color:var(--warn);border-color:transparent">Needs your answer 3</span><span class="chip" style="background:var(--warn-soft);color:var(--warn);border-color:transparent">Type says otherwise 1</span></div>
+    <table><tr>
+      <th>Component</th>
+      <th class="hover-fc">Comes from<button class="hot" data-fc="from" aria-label="Explain Comes from">i</button></th>
+      <th class="hover-fc">Report group<button class="hot" data-fc="group" aria-label="Explain Report group">i</button></th>
+      <th class="hover-fc">Pay role<button class="hot" data-fc="role" aria-label="Explain Pay role">i</button></th>
+      <th class="hover-fc">Included in another total<button class="hot" data-fc="sub" aria-label="Explain Included in another total">i</button></th>
+      <th class="hover-fc">Value type<button class="hot" data-fc="kind" aria-label="Explain Value type">i</button></th></tr>
+      <tr><td class="cmp"><b>Basic Salary</b><small>BASIC</small></td><td><span class="chip ok">Spreadsheet</span></td><td><span class="sel">Earnings</span></td><td><span class="sel">Added to net pay</span><span class="src">Worked out from the formulas</span></td><td style="text-align:center">☐</td><td><span class="sel">Amount (currency)</span></td></tr>
+      <tr><td class="cmp"><b>Loan Installment</b><small>INLOAN</small></td><td><span class="chip ok">Spreadsheet</span></td><td><span class="sel">Deductions</span></td><td><span class="sel warn">Needs your answer</span><span class="src">Could not tell from the formulas</span></td><td style="text-align:center">☐</td><td><span class="sel">Amount (currency)</span></td></tr>
+      <tr><td class="cmp"><b>OT Weekday (hrs)</b><small>OTWD</small></td><td><span class="chip ok">Spreadsheet</span></td><td><span class="sel">Information</span></td><td><span class="sel warn">Added to net pay</span><span class="src">Type says otherwise: hours cannot reach net pay</span></td><td style="text-align:center">☐</td><td><span class="sel">Quantity (hours, days)</span></td></tr>
+      <tr><td class="cmp"><b>Social insurance (employee)</b><small>SIEMP</small></td><td><span class="chip">Calculated by a formula</span></td><td><span class="sel">Deductions</span></td><td><span class="sel">Taken off net pay</span><span class="src">Set by a person</span></td><td style="text-align:center">☐</td><td><span class="sel">Amount (currency)</span></td></tr>
+      <tr><td class="cmp"><b>Gross pay</b><small>GROSS</small></td><td><span class="chip">Calculated by a formula</span></td><td><span class="sel">Earnings</span></td><td><span class="sel">Added to net pay</span><span class="src">Worked out from the formulas</span></td><td style="text-align:center">☑</td><td><span class="sel">Amount (currency)</span></td></tr>
+      <tr><td class="cmp"><b>Net pay</b><small>NET</small></td><td><span class="chip">Calculated by a formula</span></td><td><span class="sel">Net pay</span></td><td><span class="sel">Net pay itself</span><span class="src">Worked out from the formulas</span></td><td style="text-align:center">☐</td><td><span class="sel">Amount (currency)</span></td></tr>
+    </table>
+    <div id="fc-host" style="position:relative;margin-top:10px"></div>
+  </div>
+  <aside class="panel" aria-label="Guide panel">
+    <div class="ph"><b><svg class="ic"><use href="#i-book"/></svg> Guide · Component treatment</b><span class="pill mute">Tiếng Việt</span></div>
+    <div class="sec"><div class="sh"><svg class="ic"><use href="#i-pin"/></svg> This screen</div>
+      <p>Decides what the scheme does with each component: whether it adds to, takes off or is the net pay, whether it is already inside another total, and what kind of value it is. One board per scheme; a change affects every run.</p>
+      <div class="ws"><em>You are here</em><span>Formula Engine</span>→<span>Mapping</span>→<span class="now">Component treatment</span>→<span>Run › Recompute</span></div></div>
+    <div class="sec"><div class="sh"><svg class="ic"><use href="#i-zap"/></svg> Right now <span class="pill warn">4 things</span></div>
+      <div class="todo">
+        <div><i>1</i><span>3 rows still <b>need your answer</b> on Pay role: Loan Installment, KPI Bonus, Incentive.</span><button class="btn sm">Show</button></div>
+        <div><i>2</i><span>1 row has a <b>type that says otherwise</b>: OT Weekday is hours but set to add to net pay.</span><button class="btn sm">Fix</button></div>
+        <div><i>3</i><span><b>Save</b> when the chips are clear. Saving never rewrites a payslip.</span><span></span></div>
+        <div><i>4</i><span>The <b>June run</b> was computed before your last save. Recompute it so the figures add up.</span><button class="btn sm">Open run</button></div>
+      </div></div>
+    <div class="sec"><div class="sh"><svg class="ic"><use href="#i-list"/></svg> Fields on this screen <span class="pill mute">6</span></div>
+      <div class="fieldlist" style="margin-top:4px">
+        <details><summary>Comes from</summary><div style="font-size:12px;color:var(--ink2);padding:4px 0">Where the value enters: file column, connected system, contract, constant or formula. Change it in Mapping › Connections.</div></details>
+        <details><summary>Report group</summary><div style="font-size:12px;color:var(--ink2);padding:4px 0">Label for the grid and reports. Filled from the pay role; your choice is kept.</div></details>
+        <details open><summary>Pay role</summary><div style="font-size:12px;color:var(--ink2);padding:4px 0">What net pay does with the component. Six choices. Used by run totals, Home, payslip, pay bands, bank file. Press the (i) on the column for the full card.</div></details>
+        <details><summary>Included in another total</summary><div style="font-size:12px;color:var(--ink2);padding:4px 0">Already inside another component; counted once.</div></details>
+        <details><summary>Value type</summary><div style="font-size:12px;color:var(--ink2);padding:4px 0">Amount, hours, text, date… Only numbers can reach net pay.</div></details>
+        <details><summary>Re-classify from the formulas</summary><div style="font-size:12px;color:var(--ink2);padding:4px 0">Works all automatic answers out again. Keeps anything a person set.</div></details>
+      </div></div>
+    <div class="sec"><div class="sh"><svg class="ic"><use href="#i-flask"/></svg> Tasks</div>
+      <div class="todo"><div><i class="ok">▸</i><span>Fix figures that do not add up</span><span class="chips" style="margin:0"><span class="chip">Watch 2m</span><span class="chip b">Try</span><span class="chip">Do it</span></span></div>
+      <div><i class="ok">▸</i><span>Mark hours as information only</span><span class="chips" style="margin:0"><span class="chip">Watch 1m</span><span class="chip b">Try</span></span></div></div></div>
+    <div class="sec"><div class="sh"><svg class="ic"><use href="#i-book"/></svg> Understand <span class="pill mute">7 steps · 0 done</span></div><p>The lesson, one field a step, played here beside the real board. Mistakes it prevents: setting hours to add to net pay; saving and forgetting to recompute; two components marked Net pay itself.</p></div>
+    <div class="sec"><div class="sh"><svg class="ic"><use href="#i-chat"/></svg> Ask PayAI</div><div class="search" style="padding:7px 10px;font-size:12.5px">Ask about this screen…</div><div class="chips"><span class="chip">Why does Loan Installment need my answer?</span><span class="chip">What reads the pay role?</span></div></div>
+  </aside>
+</div></div>
+
+<div class="scr"><div class="bar"><i></i><i></i><i></i><span>payobook.com · Learn › Library (the new Learning page)</span></div>
+<div class="app"><div class="lrail"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i></div>
+<div class="body">
+  <div class="hdr"><h5>Learn</h5><div class="search" style="flex:1;max-width:460px"><svg class="ic"><use href="#i-search"/></svg> Search any screen, field, term or task… ⌘K</div></div>
+  <div class="card" style="margin-top:12px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border-left:4px solid var(--brand)">
+    <div><div class="eyebrow">Continue · your path as Approver · 2 of 7 done</div><b style="font-family:var(--display);font-size:16px">Approvals: one inbox, every route</b><div style="color:var(--mute);font-size:12.5px">Required because you hold the Payroll approval seat. 9 steps, plays on the real screen.</div></div>
+    <button class="btn p"><svg class="ic"><use href="#i-play"/></svg> Continue</button>
+  </div>
+  <div class="stepper" style="margin-top:10px"><span class="st done"><svg class="ic"><use href="#i-check"/></svg> Pulse</span><span class="st done"><svg class="ic"><use href="#i-check"/></svg> Runs</span><span class="st now">Approvals</span><span class="st">Payslips</span><span class="st">Pay review</span><span class="st">Insights › Pulse</span><span class="st">Report and Budget</span><span class="st" style="border-style:dashed">Change role</span></div>
+  <div style="margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px">
+    <div><div class="eyebrow">Pay Run</div><div class="card" style="padding:2px 6px;margin-top:6px">
+      <div class="row"><span class="ring done"></span><div class="t"><b>Run</b><small>Start one month's pay run</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span><span class="chip">Try</span></span></div>
+      <div class="row"><span class="ring done"></span><div class="t"><b>Runs</b><small>Every pay run on one board</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span></span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Payslips</b><small>One person's pay, line by line</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span><span class="chip">Try</span></span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Import</b><small>Load this period's pay data</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Try</span></span></div>
+    </div></div>
+    <div><div class="eyebrow">Settings</div><div class="card" style="padding:2px 6px;margin-top:6px">
+      <div class="row"><span class="ring"></span><div class="t"><b>Formula Engine</b><small>The rulebook, out in the open</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span></span></div>
+      <div class="row"><span class="ring half"></span><div class="t"><b>Mapping</b><small>Where every value comes from</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span><span class="chip">Try</span></span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Component treatment</b><small>What the scheme does with each component</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span><span class="chip">Try</span></span></div>
+      <div class="row"><span class="ring"></span><div class="t"><b>Approval Matrix</b><small>Who signs what</small></div><span class="chips" style="margin:0"><span class="chip">Guide</span><span class="chip">Watch</span></span></div>
+    </div></div>
+  </div>
+  <div class="chips" style="margin-top:12px"><span class="chip">Home (2)</span><span class="chip">People (5)</span><span class="chip">Lifecycle (8)</span><span class="chip">Workforce (3)</span><span class="chip">Insights (4)</span><span class="chip">Compliance (2)</span><span class="chip b"><svg class="ic" style="width:12px;height:12px"><use href="#i-flask"/></svg> Practice company</span><span class="chip">Team readiness</span></div>
+</div></div></div>
+<p style="font-size:13.5px;color:var(--mute)">The Library lists only the sections you can open. Progress rings are per screen. Minutes are shown only on the Continue card. No badge, no streak, no "Not on your path".</p>
+
+<div class="verdict">
+  <div class="card"><h4>Strengths</h4><ul style="font-size:14px"><li>Help where the question arises; nobody leaves the screen.</li><li>One content source feeds the panel, the Library and PayAI, so the three can never disagree.</li><li>"Right now" is live and actionable, which is exactly what G1 asked for.</li><li>The Learning page becomes calm without losing the path.</li></ul></div>
+  <div class="card"><h4>Weaknesses</h4><ul style="font-size:14px"><li>The biggest build: (i) buttons and the Guide panel touch every cockpit.</li><li>Needs the generator and a readers map maintained with the code.</li><li>Field cards must stay short or the panel becomes a wall again.</li></ul></div>
+  <div class="card"><h4>Score against the brief</h4><div class="score">9 / 10</div><div style="font-size:13.5px;color:var(--mute)">Meets "no other documentation" and "explain fields, workflow, next step" in one design.</div></div>
+</div>
+</div>
+</section>
+
+<section id="rec">
+<h2>Recommendation: Option C, with A inside it and B's path strip on top</h2>
+<p>Option C is the only one that answers the question where it is asked. It also contains the other two: the generated Guide pages of Option A are the panel's content, and the Continue card and path strip of Option B are the top of the Library. The three bugs you hit all disappear in it: the next step is live, the lesson opens in the panel, and the chat is one section of the same panel.</p>
+<div class="grid3">
+  <div class="card"><b>Hero moment</b><p>Press (i) on any column and see, in one card, what it means, where it is used and what changes if you change it, with the real row beside it.</p></div>
+  <div class="card"><b>Zero dead ends</b><p>Every failure names its reason and next step: still loading, no scheme chosen, no access, nothing to do here. "Close and reopen the panel" is gone.</p></div>
+  <div class="card"><b>Plain language</b><p>Screen words only. The truth gate blocks any label that is not on the screen, in English and Vietnamese.</p></div>
+</div>
+<div class="callout ok"><b>What changes for a Rize user on the screen in your screenshot.</b> They press (i) on Pay role, read the six choices and what reads them, see "3 rows need your answer" as buttons, press Fix, save, and the panel tells them the October run needs a recompute. No lesson needed. If they want the lesson, it plays beside the board, one field a step.</div>
+</section>
+
+<section id="build">
+<h2>Build plan</h2>
+<h3>This week, before anything else (small fixes to the live product)</h3>
+<ul>
+  <li>Chat opens at the latest message (G4).</li>
+  <li>"Open the lesson" carries the screen's lesson key (G2).</li>
+  <li>⌘K lesson rows registered after translations load (G16).</li>
+  <li>"calculated" becomes "Calculated by a formula" (G21).</li>
+  <li>The "cannot see your list of screens" dead end reloads and answers (G24).</li>
+  <li>"Never reaches Số tiền thực nhận…" becomes "Never reaches net pay" (G33).</li>
+</ul>
+<h3>Then five phases</h3>
+<div class="phase"><div class="pn">Phase 1</div><div><b>Content engine</b><p>Generator reads fields, choices, help text, "set by" markers, readers and the hub/tab path for the first eight screens (Component treatment, Mapping, Run, Runs, Payslips, Approvals, Pulse, Formula Engine). Truth gate in the build. Bilingual output.</p></div></div>
+<div class="phase"><div class="pn">Phase 2</div><div><b>Field cards and the Guide panel</b><p>The (i) on every label and the six-section panel on those eight screens. "Right now" wired to each screen's state. PayAI answers from the cards and cites them.</p></div></div>
+<div class="phase"><div class="pn">Phase 3</div><div><b>The Library</b><p>The new Learning page: Continue, path strip, screens listed like the sidebar, one search over everything. Old page retired.</p></div></div>
+<div class="phase"><div class="pn">Phase 4</div><div><b>Lessons and walkthroughs rewritten</b><p>Every step in the Look at · It means · It affects · Press shape, one field a step, played in the panel beside the real screen. Try becomes checked; Do it guarded. Replicas generated from the screen definition. Country-aware statutory content.</p></div></div>
+<div class="phase"><div class="pn">Phase 5</div><div><b>Every other screen, feedback loop, Vietnamese pass</b><p>Remaining 56 screens through the generator. Thumbs on every card and step; misses shown to authors in Learn › Settings. Full Vietnamese review.</p></div></div>
+<p style="margin-top:14px">Each phase ships to payobook first, then the tenants, under the tiered deploy rule. Lessons and tours follow every screen change in the same work, as the standing rule says.</p>
+</section>
+
+<section id="decisions">
+<h2>Decisions for you</h2>
+<ol>
+  <li><b>Which option?</b> I recommend C. A or B can be built alone, and both are smaller.</li>
+  <li><b>Badges and streaks:</b> drop them (my recommendation) or keep them quietly in a profile corner.</li>
+  <li><b>Practice world:</b> demo company on payobook, generated replicas on tenants (my recommendation), or replicas everywhere.</li>
+  <li><b>Workflow:</b> the phased design-then-build cycle, or build directly.</li>
+</ol>
+</section>
+
+</main></div>
+<script>
+(function(){
+  const FC = {
+    from:{t:"Comes from",d:"Where this component's value enters the scheme.",c:["Spreadsheet: a column in the period's file","Connected system: a wire from an integration","Contract: a contract component on the person","Constant: a fixed value in the scheme","Calculated by a formula"],f:"Read-only here. It is derived each time from the connections you set in Mapping › Connections.",u:["Display only on this board"],i:"Nothing. To change where a value comes from, open Mapping › Connections."},
+    group:{t:"Report group",d:"A label used to organise the grid and reports, such as Earnings or Deductions.",c:["Earnings","Deductions","Net pay","Employer costs","Information","Mixed","Needs review (when the formulas disagree)"],f:"Filled automatically from the pay role when the schema is imported or re-classified. A group you choose is marked Set by you and kept.",u:["Payslip lines (copied at compute time)","Payslip analytics grouping","Formula Studio display groups","Source Atlas bands","Workforce planning tags"],i:"Reports and the grid regroup from now on. Payslips already computed keep their old group until the run is recomputed."},
+    role:{t:"Pay role",d:"What net pay does with this component. Worked out from the scheme's own formulas, not from the component's name.",c:["Added to net pay","Taken off net pay","Net pay itself (one per scheme)","Employer cost","Information only","Both added and taken off"],f:"Suggested by Re-classify from the formulas, with a confidence: certain, likely, or review (shown as Needs your answer). A choice you save is marked Set by a person and kept. Only money, decimal and whole-number values may take a money role.",u:["Pay run totals (gross, deductions, net)","\"These figures do not add up\" check","Home figures","Payslip statement","Pay bands and fairness","Bank file (net line)","Employee portal","Analytics Explorer","Final settlement","Decision Room","Blueprint"],i:"Reports use the new role from now on. Payslips already computed keep the old role until you recompute the run."},
+    sub:{t:"Included in another total",d:"Tick when this amount is already counted inside another component of the same kind. The run counts the total, not this line. The line still shows on the payslip.",c:["Ticked: counted once, through the total","Not ticked: counted on its own"],f:"Worked out from the formula connections on import and re-classify. Ticking it yourself marks the row Set by a person.",u:["Pay run totals","Pay bands","Analytics Explorer roll-ups","Payslip subtotal folding","Work segments"],i:"A ticked amount leaves the totals from the next recompute. Double counting ends; nothing is deleted."},
+    kind:{t:"Value type",d:"What this component's value IS. Decides whether it is stored as a number or kept exactly as it arrived, whether it can become a payslip line, and how it is shown.",c:["Amount (currency)","Decimal number","Whole number","Quantity (hours, days)","Percentage / rate","Reference code","Text","Date","Yes / No"],f:"Filled during schema import from the file's formats and samples. New pay-data samples can refine it on re-classify. You can correct it; your choice is kept.",u:["Payslip line rule (text, date, code and yes/no never become lines)","Pay role gate (only numbers may reach net pay)","\"Type says otherwise\" warning","Printed payslip format","Stored-differently drift audit","Formula Studio, Mapping, Decision Room, contract 360"],i:"A non-number type stops the component from becoming a payslip line at the next compute, and clears any money pay role."}
+  };
+  const host=document.getElementById('fc-host');
+  function render(k){
+    const f=FC[k];
+    host.innerHTML='<div class="fc"><div style="display:flex;justify-content:space-between;align-items:center"><h6>'+f.t+'</h6><button class="btn sm g" id="fc-close" aria-label="Close">✕</button></div><div>'+f.d+'</div><div class="lbl">Choices</div><ul>'+f.c.map(x=>'<li>'+x+'</li>').join('')+'</ul><div class="lbl">How it is filled</div><div>'+f.f+'</div><div class="lbl">Used by</div><div class="cons">'+f.u.map(x=>'<span>'+x+'</span>').join('')+'</div><div class="lbl">If you change it</div><div>'+f.i+'</div><div class="foot"><span class="pill">▶ Watch this field</span><span class="pill mute">Open in the Guide</span><span class="pill mute">Helpful?</span></div></div>';
+    document.querySelectorAll('.hot').forEach(h=>h.classList.toggle('on',h.dataset.fc===k));
+    document.getElementById('fc-close').onclick=()=>{host.innerHTML='';document.querySelectorAll('.hot').forEach(h=>h.classList.remove('on'))};
+  }
+  document.querySelectorAll('.hot[data-fc]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();render(b.dataset.fc)}));
+  document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('.opt').forEach(o=>o.classList.toggle('on',o.id==='opt-'+b.dataset.opt));
+    try{localStorage.setItem('lr-opt',b.dataset.opt)}catch(e){}
+  }));
+  try{const s=localStorage.getItem('lr-opt');if(s){const b=document.querySelector('.tabs button[data-opt="'+s+'"]');if(b)b.click()}}catch(e){}
+  const links=[...document.querySelectorAll('nav.rail a')];
+  const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id))}})},{rootMargin:'-20% 0px -70% 0px'});secs.forEach(s=>io.observe(s));}
+})();
+</script>

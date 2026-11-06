@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action Plan Views -->
+    <record id="view_bfsi_action_plan_list" model="ir.ui.view">
+        <field name="name">bfsi.action.plan.list</field>
+        <field name="model">bfsi.action.plan</field>
+        <field name="arch" type="xml">
+            <list string="Action Plans" decoration-danger="is_overdue" decoration-info="state == 'in_progress'">
+                <field name="name"/>
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="manager_id" widget="many2one_avatar_employee" optional="show"/>
+                <field name="commitment_date"/>
+                <field name="target_date"/>
+                <field name="progress_percentage" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'completed'" decoration-danger="state == 'overdue'" decoration-muted="state == 'cancelled'"/>
+                <field name="is_overdue" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bfsi_action_plan_kanban" model="ir.ui.view">
+        <field name="name">bfsi.action.plan.kanban</field>
+        <field name="model">bfsi.action.plan</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="progress_percentage"/>
+                <field name="target_date"/>
+                <field name="is_overdue"/>
+                <field name="state"/>
+                <progressbar field="state" colors='{"draft": "muted", "committed": "info", "in_progress": "warning", "completed": "success", "overdue": "danger", "cancelled": "muted"}'/>
+                <templates>
+                    <t t-name="card">
+                        <field name="employee_id" widget="many2one_avatar_employee"/>
+                        <field name="name" class="fw-bold"/>
+                        <div class="mt-2">
+                            <span>Progress: </span>
+                            <field name="progress_percentage" widget="progressbar"/>
+                        </div>
+                        <footer>
+                            <span class="text-muted">Target: <field name="target_date"/></span>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_bfsi_action_plan_form" model="ir.ui.view">
+        <field name="name">bfsi.action.plan.form</field>
+        <field name="model">bfsi.action.plan</field>
+        <field name="arch" type="xml">
+            <form string="Action Plan">
+                <header>
+                    <button name="action_commit" type="object" string="Commit" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_start" type="object" string="Start Working" invisible="state != 'committed'"/>
+                    <button name="action_complete" type="object" string="Mark Complete" class="btn-success" invisible="state not in ['committed', 'in_progress']"/>
+                    <button name="action_report_progress" type="object" string="Report Progress" invisible="state not in ['committed', 'in_progress']"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ['completed', 'cancelled']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,committed,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-check">
+                            <field name="completed_items" widget="statinfo" string="Completed"/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-tasks">
+                            <field name="action_item_count" widget="statinfo" string="Total Items"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Overdue" bg_color="text-bg-danger" invisible="not is_overdue"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <div class="vu-section">
+                        <div class="vu-section__title">
+                            <span class="vu-section__icon" data-icon="clipboard-list"/>
+                            <div>
+                                <span>Plan Overview</span>
+                                <small class="text-muted d-block">Participants, timeline, and progress tracking</small>
+                            </div>
+                        </div>
+                        <div class="vu-section-grid">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="users-group"/>
+                                    <span>Participants</span>
+                                </div>
+                                <group col="2">
+                                    <field name="employee_id" widget="many2one_avatar_employee"/>
+                                    <field name="manager_id" widget="many2one_avatar_employee"/>
+                                    <field name="branch_id"/>
+                                    <field name="coaching_session_id" invisible="not coaching_session_id"/>
+                                </group>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="calendar"/>
+                                    <span>Timeline</span>
+                                </div>
+                                <group col="2">
+                                    <field name="commitment_date"/>
+                                    <field name="target_date"/>
+                                    <field name="completion_date" invisible="state != 'completed'"/>
+                                    <field name="days_remaining"/>
+                                    <field name="check_in_frequency"/>
+                                    <field name="next_check_in_date"/>
+                                    <field name="is_overdue" invisible="1"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vu-section">
+                        <div class="vu-section__title">
+                            <span class="vu-section__icon" data-icon="activity"/>
+                            <div>
+                                <span>Progress and Review</span>
+                                <small class="text-muted d-block">Track completion and evaluate effectiveness</small>
+                            </div>
+                        </div>
+                        <div class="vu-section-grid">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="timeline"/>
+                                    <span>Progress</span>
+                                </div>
+                                <group col="2">
+                                    <field name="progress_percentage" widget="progressbar"/>
+                                    <field name="last_update_date"/>
+                                </group>
+                            </div>
+                            <div class="vu-card" invisible="state != 'completed'">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="shield-check"/>
+                                    <span>Review</span>
+                                </div>
+                                <group col="2">
+                                    <field name="effectiveness_rating" widget="priority"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <page string="Action Items" name="action_items">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="clipboard-list"/>
+                                    <span>Action Items</span>
+                                </div>
+                                <field name="action_item_ids">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="kpi_category"/>
+                                        <field name="specific_kpi"/>
+                                        <field name="priority"/>
+                                        <field name="start_date"/>
+                                        <field name="target_end_date"/>
+                                        <field name="progress" widget="progressbar"/>
+                                        <field name="state" widget="badge"/>
+                                        <button name="action_mark_complete" type="object" string="✓ Complete" class="btn btn-success btn-sm" invisible="state == 'completed'"/>
+                                    </list>
+                                    <form>
+                                        <div class="vu-section-grid">
+                                            <div class="vu-card">
+                                                <div class="vu-card__title">
+                                                    <span class="vu-section__icon" data-icon="file-text"/>
+                                                    <span>Item Details</span>
+                                                </div>
+                                                <group>
+                                                    <field name="name"/>
+                                                    <field name="description"/>
+                                                    <field name="kpi_category"/>
+                                                    <field name="specific_kpi"/>
+                                                </group>
+                                            </div>
+                                            <div class="vu-card">
+                                                <div class="vu-card__title">
+                                                    <span class="vu-section__icon" data-icon="calendar"/>
+                                                    <span>Targets</span>
+                                                </div>
+                                                <group>
+                                                    <field name="priority"/>
+                                                    <field name="weight"/>
+                                                    <field name="target_date"/>
+                                                    <field name="target_value"/>
+                                                </group>
+                                            </div>
+                                        </div>
+                                        <div class="vu-card">
+                                            <div class="vu-card__title">
+                                                <span class="vu-section__icon" data-icon="shield-check"/>
+                                                <span>Success Criteria</span>
+                                            </div>
+                                            <group>
+                                                <field name="success_criteria"/>
+                                            </group>
+                                        </div>
+                                        <div class="vu-section-grid">
+                                            <div class="vu-card">
+                                                <div class="vu-card__title">
+                                                    <span class="vu-section__icon" data-icon="activity"/>
+                                                    <span>Progress</span>
+                                                </div>
+                                                <group>
+                                                    <field name="progress" widget="progressbar"/>
+                                                    <field name="state"/>
+                                                </group>
+                                            </div>
+                                            <div class="vu-card">
+                                                <div class="vu-card__title">
+                                                    <span class="vu-section__icon" data-icon="file-text"/>
+                                                    <span>Evidence and Notes</span>
+                                                </div>
+                                                <group>
+                                                    <field name="evidence"/>
+                                                    <field name="notes"/>
+                                                </group>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </field>
+                            </div>
+                        </page>
+                        <page string="Banker Notes" name="banker_notes">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="file-text"/>
+                                    <span>Banker Progress Notes</span>
+                                </div>
+                                <field name="employee_notes" placeholder="Banker's progress notes and reflections..."/>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <span>Banker Feedback</span>
+                                </div>
+                                <field name="employee_feedback" placeholder="Feedback on the coaching effectiveness..."/>
+                            </div>
+                        </page>
+                        <page string="Manager Review" name="manager_review" groups="hr_development_ai.group_bfsi_branch_manager">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="users-group"/>
+                                    <span>Manager Comments</span>
+                                </div>
+                                <field name="manager_review" placeholder="Manager comments and observations..."/>
+                            </div>
+                        </page>
+                        <page string="AI Recommendations" name="ai_recommendations">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <span>AI Recommendations</span>
+                                </div>
+                                <field name="ai_recommendations" readonly="1"/>
+                                <group>
+                                    <field name="kpi_focus_areas"/>
+                                </group>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_bfsi_action_plan_search" model="ir.ui.view">
+        <field name="name">bfsi.action.plan.search</field>
+        <field name="model">bfsi.action.plan</field>
+        <field name="arch" type="xml">
+            <search string="Search Action Plans">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="manager_id"/>
+                <field name="branch_id"/>
+                <separator/>
+                <filter name="my_plans" string="My Plans" domain="[('employee_id.user_id', '=', uid)]"/>
+                <filter name="my_team" string="My Team" domain="[('manager_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="active" string="Active" domain="[('state', 'in', ['committed', 'in_progress'])]"/>
+                <filter name="overdue" string="Overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
+                <group>
+                    <filter name="group_by_employee" string="Banker" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_by_manager" string="Manager" context="{'group_by': 'manager_id'}"/>
+                    <filter name="group_by_branch" string="Branch" context="{'group_by': 'branch_id'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_bfsi_action_plan" model="ir.actions.act_window">
+        <field name="name">Action Plans</field>
+        <field name="res_model">bfsi.action.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_active': 1, 'search_default_group_by_employee': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first action plan
+            </p>
+            <p>Action plans are created from coaching sessions to track commitments and progress.</p>
+        </field>
+    </record>
+
+    <record id="action_bfsi_action_plan_my" model="ir.actions.act_window">
+        <field name="name">My Action Plans</field>
+        <field name="res_model">bfsi.action.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_my_plans': 1}</field>
+    </record>
+
+</odoo>

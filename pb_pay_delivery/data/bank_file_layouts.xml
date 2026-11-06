@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <!-- =====================================================================
+         Phase F bank-file layouts — DATA (C18.42b). Adding a bank = a data
+         file, zero code. Column vocabulary: bank_export_wizard.COLUMN_SOURCES.
+
+         PROVENANCE: these are best-effort layouts modelled on common VN bulk
+         salary-transfer templates (VCB-Money / BIDV iBank / TCB Business /
+         MB eBank / VietinBank eFAST / ACB Online). They are INFERRED and must
+         be confirmed against each bank's current import template before a live
+         run (report-back §8.2). The engine is data-driven — corrections are a
+         one-record edit, no code change.
+         ===================================================================== -->
+
+    <!-- Generic CSV -->
+    <record id="layout_generic" model="pb.bank.file.layout">
+        <field name="name">Generic CSV</field>
+        <field name="bank_format">generic</field>
+        <field name="file_type">csv</field>
+        <field name="encoding">utf-8-sig</field>
+        <field name="with_header" eval="True"/>
+        <field name="note">Neutral CSV — account, holder, bank, amount, description.</field>
+    </record>
+    <record id="col_generic_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_generic"/>
+        <field name="sequence">10</field><field name="header">No</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_generic_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_generic"/>
+        <field name="sequence">20</field><field name="header">Account Number</field>
+        <field name="source">account_number</field>
+    </record>
+    <record id="col_generic_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_generic"/>
+        <field name="sequence">30</field><field name="header">Account Name</field>
+        <field name="source">account_name</field>
+    </record>
+    <record id="col_generic_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_generic"/>
+        <field name="sequence">40</field><field name="header">Bank</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_generic_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_generic"/>
+        <field name="sequence">50</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+    </record>
+    <record id="col_generic_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_generic"/>
+        <field name="sequence">60</field><field name="header">Description</field>
+        <field name="source">literal</field><field name="literal_value">Salary</field>
+    </record>
+
+    <!-- Vietcombank -->
+    <record id="layout_vietcombank" model="pb.bank.file.layout">
+        <field name="name">Vietcombank (VCB)</field>
+        <field name="bank_format">vietcombank</field>
+        <field name="file_type">csv</field>
+        <field name="encoding">utf-8-sig</field>
+        <field name="with_header" eval="True"/>
+        <field name="note">VCB-Money bulk salary — STT, account, holder, amount, bank, branch, content. INFERRED.</field>
+    </record>
+    <record id="col_vcb_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">10</field><field name="header">STT</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_vcb_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">20</field><field name="header">So tai khoan</field>
+        <field name="source">account_number</field>
+    </record>
+    <record id="col_vcb_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">30</field><field name="header">Ten nguoi huong</field>
+        <field name="source">account_name</field>
+    </record>
+    <record id="col_vcb_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">40</field><field name="header">So tien</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+    </record>
+    <record id="col_vcb_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">50</field><field name="header">Ngan hang</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_vcb_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">60</field><field name="header">Chi nhanh</field>
+        <field name="source">bank_branch</field>
+    </record>
+    <record id="col_vcb_7" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietcombank"/>
+        <field name="sequence">70</field><field name="header">Noi dung</field>
+        <field name="source">literal</field><field name="literal_value">Thanh toan luong</field>
+    </record>
+
+    <!-- BIDV -->
+    <record id="layout_bidv" model="pb.bank.file.layout">
+        <field name="name">BIDV</field>
+        <field name="bank_format">bidv</field>
+        <field name="file_type">csv</field>
+        <field name="encoding">utf-8-sig</field>
+        <field name="with_header" eval="True"/>
+        <field name="note">BIDV iBank bulk transfer CSV. INFERRED.</field>
+    </record>
+    <record id="col_bidv_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">10</field><field name="header">STT</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_bidv_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">20</field><field name="header">TK thu huong</field>
+        <field name="source">account_number</field>
+    </record>
+    <record id="col_bidv_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">30</field><field name="header">Ten thu huong</field>
+        <field name="source">account_name</field>
+    </record>
+    <record id="col_bidv_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">40</field><field name="header">So tien</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+    </record>
+    <record id="col_bidv_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">50</field><field name="header">Ngan hang</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_bidv_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">60</field><field name="header">Chi nhanh</field>
+        <field name="source">bank_branch</field>
+    </record>
+    <record id="col_bidv_7" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_bidv"/>
+        <field name="sequence">70</field><field name="header">Dien giai</field>
+        <field name="source">literal</field><field name="literal_value">Thanh toan luong</field>
+    </record>
+
+    <!-- Techcombank -->
+    <record id="layout_techcombank" model="pb.bank.file.layout">
+        <field name="name">Techcombank (TCB)</field>
+        <field name="bank_format">techcombank</field>
+        <field name="file_type">csv</field>
+        <field name="encoding">utf-8-sig</field>
+        <field name="with_header" eval="True"/>
+        <field name="note">Techcombank Business bulk transfer CSV. INFERRED.</field>
+    </record>
+    <record id="col_tcb_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_techcombank"/>
+        <field name="sequence">10</field><field name="header">No</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_tcb_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_techcombank"/>
+        <field name="sequence">20</field><field name="header">Beneficiary Account Number</field>
+        <field name="source">account_number</field>
+    </record>
+    <record id="col_tcb_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_techcombank"/>
+        <field name="sequence">30</field><field name="header">Beneficiary Name</field>
+        <field name="source">account_name</field>
+    </record>
+    <record id="col_tcb_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_techcombank"/>
+        <field name="sequence">40</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+    </record>
+    <record id="col_tcb_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_techcombank"/>
+        <field name="sequence">50</field><field name="header">Beneficiary Bank</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_tcb_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_techcombank"/>
+        <field name="sequence">60</field><field name="header">Content</field>
+        <field name="source">literal</field><field name="literal_value">Salary payment</field>
+    </record>
+
+    <!-- MB Bank (XLSX) -->
+    <record id="layout_mb_bank" model="pb.bank.file.layout">
+        <field name="name">MB Bank</field>
+        <field name="bank_format">mb_bank</field>
+        <field name="file_type">xlsx</field>
+        <field name="with_header" eval="True"/>
+        <field name="note">MB eBank bulk salary — Excel upload; Amount is a numeric cell. INFERRED.</field>
+    </record>
+    <record id="col_mb_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_mb_bank"/>
+        <field name="sequence">10</field><field name="header">No</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_mb_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_mb_bank"/>
+        <field name="sequence">20</field><field name="header">Account Number</field>
+        <field name="source">account_number</field>
+    </record>
+    <record id="col_mb_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_mb_bank"/>
+        <field name="sequence">30</field><field name="header">Account Holder</field>
+        <field name="source">account_name</field>
+    </record>
+    <record id="col_mb_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_mb_bank"/>
+        <field name="sequence">40</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+    </record>
+    <record id="col_mb_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_mb_bank"/>
+        <field name="sequence">50</field><field name="header">Bank</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_mb_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_mb_bank"/>
+        <field name="sequence">60</field><field name="header">Description</field>
+        <field name="source">literal</field><field name="literal_value">Salary</field>
+    </record>
+
+    <!-- VietinBank (fixed-width TXT) -->
+    <record id="layout_vietinbank" model="pb.bank.file.layout">
+        <field name="name">VietinBank</field>
+        <field name="bank_format">vietinbank</field>
+        <field name="file_type">txt</field>
+        <field name="encoding">utf-8</field>
+        <field name="with_header" eval="False"/>
+        <field name="note">VietinBank eFAST fixed-width record: account[0:19] holder[19:51] amount[51:66,zero] bank[66:86]. INFERRED — confirm field widths with the bank template.</field>
+    </record>
+    <record id="col_ctg_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietinbank"/>
+        <field name="sequence">10</field>
+        <field name="source">account_number</field>
+        <field name="width">19</field><field name="pad">right</field>
+    </record>
+    <record id="col_ctg_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietinbank"/>
+        <field name="sequence">20</field>
+        <field name="source">account_name</field>
+        <field name="width">32</field><field name="pad">right</field>
+    </record>
+    <record id="col_ctg_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietinbank"/>
+        <field name="sequence">30</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+        <field name="width">15</field><field name="pad">zero</field>
+    </record>
+    <record id="col_ctg_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_vietinbank"/>
+        <field name="sequence">40</field>
+        <field name="source">bank_name</field>
+        <field name="width">20</field><field name="pad">right</field>
+    </record>
+
+    <!-- ACB -->
+    <record id="layout_acb" model="pb.bank.file.layout">
+        <field name="name">ACB</field>
+        <field name="bank_format">acb</field>
+        <field name="file_type">csv</field>
+        <field name="encoding">utf-8-sig</field>
+        <field name="with_header" eval="True"/>
+        <field name="note">ACB Online bulk transfer CSV. INFERRED.</field>
+    </record>
+    <record id="col_acb_1" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">10</field><field name="header">STT</field>
+        <field name="source">row_number</field>
+    </record>
+    <record id="col_acb_2" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">20</field><field name="header">Account No</field>
+        <field name="source">account_number</field>
+    </record>
+    <record id="col_acb_3" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">30</field><field name="header">Account Name</field>
+        <field name="source">account_name</field>
+    </record>
+    <record id="col_acb_4" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">40</field><field name="header">Amount</field>
+        <field name="source">net_amount</field><field name="number_format">int</field>
+    </record>
+    <record id="col_acb_5" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">50</field><field name="header">Bank Name</field>
+        <field name="source">bank_name</field>
+    </record>
+    <record id="col_acb_6" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">60</field><field name="header">Branch</field>
+        <field name="source">bank_branch</field>
+    </record>
+    <record id="col_acb_7" model="pb.bank.file.column">
+        <field name="layout_id" ref="layout_acb"/>
+        <field name="sequence">70</field><field name="header">Remark</field>
+        <field name="source">literal</field><field name="literal_value">Salary</field>
+    </record>
+</odoo>

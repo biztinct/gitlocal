@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_hub.ContextNavigation">
+    <div class="pbhub-navigation" t-att-class="{'pbhub-navigation--compact': env.isSmall, 'pbhub-navigation--has-return': returnLabel}">
+      <nav t-if="returnLabel or parents.length" class="pbhub-navigation__row" aria-label="Page navigation">
+        <button t-if="returnLabel" type="button" class="pbhub-navigation__return" t-on-click="goBack" t-att-title="returnLabel" t-att-data-hotkey="previous ? 'b' : undefined">
+          <span aria-hidden="true" t-out="ic('back')"/><span t-esc="returnLabel"/>
+        </button>
+        <nav t-if="parents.length" class="pbhub-navigation__parents" aria-label="Location">
+          <ol>
+            <li t-foreach="parents" t-as="parent" t-key="parent.key">
+              <span t-if="!parent_first" class="pbhub-navigation__separator" aria-hidden="true" t-out="ic('chevron', 12)"/>
+              <button type="button" t-on-click="parent.run" t-att-title="parent.name"><t t-esc="parent.name"/></button>
+            </li>
+          </ol>
+        </nav>
+      </nav>
+      <div class="pbhub-navigation__title">
+        <span class="pbhub-navigation__current" aria-current="page" t-att-title="current.name" t-esc="current.name"/>
+        <t t-slot="breadcrumb-additional-actions"/>
+        <t t-slot="breadcrumb-status-indicator"/>
+      </div>
+    </div>
+  </t>
+</templates>

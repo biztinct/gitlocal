@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Payobook Pay Runs Cockpit',
+    'summary': 'Pay-run pipeline board + enhanced batch form (KPIs, approval pipeline)',
+    # 19.0.1.6.0 — W105: the hr.payslip.line read ACL that had to sit beside the
+    # hr.payslip one, plus tests/test_payslip_line_access.py.
+    # 19.0.2.0.0 — the three-tier ladder is gone. A pay run is approved by
+    # whatever route the business published for its scheme, its part of the
+    # business and its kind of run (biz_approval_workflow).
+    # 2.3.0: the board prices each run in its SCHEME's money (SCHEMECTX P1).
+    # Python, JS and QWeb all change, so the version has to move for the
+    # deploy-time version-diff gate to see it.
+    # 3.1.0: NAV P3b — readiness checklist with owners on every open card, the
+    # month's cut-off and pay day on the hero (Payroll calendar, read softly:
+    # pb_comp_ben and pb_close stay OUT of depends).
+    # 3.3.0: FILTER wave 5 — the board is on the shared filter panel
+    # (pb_filter_kit): server-counted filters, saved views, paged lanes.
+    # 3.4.0: PRS P1 + P2 — the pay run form IS the new pay run screen (one
+    # OWL widget fed by pb.payruns.get_run_screen; the old pieces hidden,
+    # never deleted; "Show the classic layout" brings them back per tab).
+    # 3.4.1: the route preview no longer reads each payslip's state one by one
+    # (a biz_access lookup per payslip); "All N checks pass" counts real checks.
+    # 3.4.2: PRS P2 follow-up 1 — full-width centred screen, cards sized to
+    # content, "Checks pass · N notes", R6 approved-only compare, R7 asks
+    # before Recalculate.
+    # 3.5.0: PRS P3 (R8) — "Kind of run" (Regular / Top-up) on the run:
+    # Run settings row, header chip, board tag + quick look line; "Compared
+    # with" pairs runs of the same kind only. New stored column (default
+    # Regular, no backfill).
+    'version': '19.0.3.5.0',
+    'category': 'Human Resources/Payroll',
+    'license': 'LGPL-3',
+    'author': 'Payobook',
+    'website': 'https://www.payobook.com',
+    # pb_import_kit is DECLARED rather than relied on transitively: both JS files
+    # here import its `ic()` registry, and an implicit dependency is one uninstall
+    # away from a bundle that cannot resolve a module path.
+    # biz_approval_workflow: the engine this run's approval is carried by.
+    # pb_scheme_map / pb_group: a route is chosen per pay scheme and per
+    # division, and those are the two modules that own those ideas.
+    'depends': ['pb_hub', 'web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme',
+                'pb_hr_workforce', 'pb_import_kit',
+                'biz_approval_workflow', 'pb_scheme_map', 'pb_group',
+                'pb_filter_kit'],
+    'data': [
+        # Phase L: the approval tiers live on pb_* groups, but hr.payslip.run /
+        # hr.payslip carry ACLs only for om_hr_payroll.group_hr_payroll_manager —
+        # so a Payroll Officer (the new level0 tier) could not even READ the
+        # board its own tier owns. One row on group_payroll_base_officer covers
+        # the whole ladder (manager → officer, final approver → … → officer);
+        # read+write only, never create/unlink.
+        'security/ir.model.access.csv',
+        'views/pb_payruns_action.xml',
+        'views/hr_payslip_run_kanban.xml',
+        'views/hr_payslip_run_form_enhance.xml',
+        'views/pb_payrun_reject_views.xml',
+    ],
+    'post_init_hook': 'post_init_hook',
+    'assets': {
+        'web.assets_backend': [
+            'pb_payruns/static/src/scss/payruns.scss',
+            'pb_payruns/static/src/scss/payrun_form.scss',
+            'pb_payruns/static/src/scss/payruns_kanban.scss',
+            'pb_payruns/static/src/scss/payrun_screen.scss',
+            'pb_payruns/static/src/js/pipeline_field.js',
+            'pb_payruns/static/src/js/payruns.js',
+            'pb_payruns/static/src/js/payruns_kanban.js',
+            'pb_payruns/static/src/js/payrun_screen.js',
+            'pb_payruns/static/src/xml/pipeline_field.xml',
+            'pb_payruns/static/src/xml/payruns.xml',
+            'pb_payruns/static/src/xml/payruns_kanban.xml',
+            'pb_payruns/static/src/xml/payrun_screen.xml',
+        ],
+    },
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

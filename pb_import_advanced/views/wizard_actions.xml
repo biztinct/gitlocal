@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_formula_wizard" model="ir.actions.client">
+        <field name="name">Import Formula Configuration</field>
+        <field name="tag">pb_import_formula_wizard</field>
+    </record>
+
+    <record id="action_pb_employee_wizard" model="ir.actions.client">
+        <field name="name">Import Employees</field>
+        <field name="tag">pb_import_employee_wizard</field>
+    </record>
+
+    <record id="action_pb_sync_wizard" model="ir.actions.client">
+        <field name="name">Pull from Connector</field>
+        <field name="tag">pb_import_sync_wizard</field>
+    </record>
+
+    <record id="action_pb_multisheet_wizard" model="ir.actions.client">
+        <field name="name">Multi-sheet Excel Import</field>
+        <field name="tag">pb_import_multisheet_wizard</field>
+    </record>
+</odoo>

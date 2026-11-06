@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend India Dashboard with Analytics Integration -->
+    <record id="view_payroll_dashboard_india_analytics" model="ir.ui.view">
+        <field name="name">India Payroll Dashboard with Analytics</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_india"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
+                
+                <!-- Analytics Approval Tile -->
+                <div class="dashboard-card analytics-card">
+                    <div class="card-icon">
+                        <i class="fa fa-line-chart fa-3x text-primary"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Payroll Analytics</h3>
+                        <p class="card-description">Review and approve payroll with detailed analytics and comparisons</p>
+                        <div class="card-stats">
+                            <span class="stat-item">
+                                <i class="fa fa-exclamation-triangle text-warning"></i>
+                                <span id="india-pending-approvals">Loading...</span> Pending Approvals
+                            </span>
+                        </div>
+                    </div>
+                    <button name="action_open_analytics_dashboard" 
+                            type="object" 
+                            class="dashboard-btn analytics-btn"
+                            data-country="IN">
+                        <i class="fa fa-bar-chart"></i> Open Analytics
+                    </button>
+                </div>
+                
+                <!-- Bank Export Tile -->
+                <div class="dashboard-card export-card">
+                    <div class="card-icon">
+                        <i class="fa fa-bank fa-3x text-success"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Bank Export</h3>
+                        <p class="card-description">Export approved payroll data for bank disbursement</p>
+                        <div class="card-stats">
+                            <span class="stat-item">
+                                <i class="fa fa-check-circle text-success"></i>
+                                <span id="india-ready-exports">Loading...</span> Ready for Export
+                            </span>
+                        </div>
+                    </div>
+                    <button name="action_export_bank_file" 
+                            type="object" 
+                            class="dashboard-btn export-btn"
+                            data-country="IN">
+                        <i class="fa fa-download"></i> Export Bank File
+                    </button>
+                </div>
+                
+                <!-- Gratuity Payment Tile -->
+                <div class="dashboard-card gratuity-card">
+                    <div class="card-icon">
+                        <i class="fa fa-gift fa-3x text-warning"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Gratuity Payments</h3>
+                        <p class="card-description">Process gratuity payments for eligible employees</p>
+                        <div class="card-stats">
+                            <span class="stat-item">
+                                <i class="fa fa-users text-info"></i>
+                                <span id="india-gratuity-eligible">Loading...</span> Eligible Employees
+                            </span>
+                        </div>
+                    </div>
+                    <button name="action_process_gratuity" 
+                            type="object" 
+                            class="dashboard-btn gratuity-btn"
+                            data-country="IN">
+                        <i class="fa fa-gift"></i> Process Gratuity
+                    </button>
+                </div>
+                
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Dashboard Action for India -->
+    <record id="action_open_india_dashboard" model="ir.actions.server">
+        <field name="name">Open India Payroll Dashboard</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="state">code</field>
+        <field name="code">
+action = env.ref('pb_hr_payroll_indonesia.action_payroll_dashboard_india').read()[0]
+action['context'] = {'default_country': 'IN'}
+        </field>
+    </record>
+    
+    <!-- Add India to main menu structure -->
+    <menuitem id="menu_india_dashboard"
+              name="Dashboard"
+              parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
+              action="action_open_india_dashboard"
+              sequence="0"/>
+    
+    <!-- Add Gratuity Payment to India menu -->
+    <menuitem id="menu_india_gratuity"
+              name="Gratuity Payments"
+              parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
+              action="action_gratuity_payment_wizard"
+              sequence="25"
+              groups="pb_hr_payroll_indonesia.group_india_payroll_user"/>
+    
+</odoo>

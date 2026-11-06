@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Guided connector cockpit. Opened by the Import landing with
+         params={connector_id}. The native connector form stays as the
+         "Advanced form" escape hatch. -->
+    <record id="action_pb_import_connector_cockpit" model="ir.actions.client">
+        <field name="name">Connector</field>
+        <field name="tag">pb_import_connector_cockpit</field>
+    </record>
+</odoo>

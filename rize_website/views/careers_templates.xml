@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Rize careers pages: /jobs, /jobs/<role>, /jobs/apply/<role>.
+    Served publicly at jobs.rize.farm (same database as the staff app).
+
+    /jobs and the role page open on Rize's terraced rice-field photograph (from
+    their former careers site) with the top bar floating over it. The list's
+    data — faceted filters, posted dates, summaries — is computed in
+    controllers/careers.py; the template only draws it (rz_* values).
+
+    The stock role advert (hr.job.website_description default) is a Belgian
+    sales job with a photo wall, and every Rize role was created with it saved,
+    so the role page refuses an advert that still contains the stock image path
+    and falls back to the role summary, then to a plain line. A role published
+    from Hiring always carries its own agreed advert (pb_hiring posting.py).
+
+    Priority 90 so these replacements apply after every stock inherit.
+  -->
+
+  <!-- ============================ JOBS LIST ============================ -->
+  <template id="rz_jobs_index" inherit_id="website_hr_recruitment.index" priority="90" name="Rize open roles">
+    <xpath expr="//div[@id='wrap']" position="before">
+      <t t-set="additional_title">Open roles</t>
+    </xpath>
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_shell">
+        <t t-set="rz_active" t-value="'jobs'"/>
+        <t t-set="rz_variant" t-value="'photo'"/>
+
+        <!-- ~~~ Hero: the photograph, Rize's own words, the search bar ~~~ -->
+        <section t-attf-class="rz-cx-hero #{'' if rz_where_opts else 'rz-cx-hero--solo'}">
+          <div class="rz-cx-hero__photo" aria-hidden="true"></div>
+          <div class="rz-cx-hero__inner">
+            <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span>Real work, real impact</span>
+            <h1 class="rz-cx-hero__title">Modernizing the world's most <span class="rz-gold-text">essential crop.</span></h1>
+            <p class="rz-cx-hero__sub">We're building the infrastructure for future-proof farming — affordable finance, AI-driven agronomy and market access that boost farmer incomes while preserving our planet's water and soil.</p>
+            <ul t-if="rz_stats['roles']" class="rz-cx-stats">
+              <li><strong t-esc="rz_stats['roles']"/> open <t t-esc="'role' if rz_stats['roles'] == 1 else 'roles'"/></li>
+              <li t-if="rz_stats['teams'] &gt; 1"><strong t-esc="rz_stats['teams']"/> teams</li>
+              <li t-if="rz_stats['markets'] &gt; 1"><strong t-esc="rz_stats['markets']"/> countries</li>
+            </ul>
+          </div>
+
+          <form t-if="rz_any_roles" action="/jobs#find" method="get" class="rz-cx-search" role="search">
+            <label class="rz-cx-search__field rz-cx-search__field--what">
+              <span class="rz-cx-search__label">What</span>
+              <span class="rz-cx-search__control">
+                <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'search'"/></t>
+                <input type="search" name="search" t-att-value="search or ''" placeholder="Role, team or skill" autocomplete="off"/>
+              </span>
+            </label>
+            <label t-if="rz_where_opts" class="rz-cx-search__field">
+              <span class="rz-cx-search__label">Where</span>
+              <span class="rz-cx-search__control">
+                <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'pin'"/></t>
+                <select name="where">
+                  <option value="">All locations</option>
+                  <option t-foreach="rz_where_opts" t-as="o" t-att-value="o['value']"
+                          t-att-selected="'selected' if rz_picked['where'] == o['value'] else None">
+                    <t t-esc="o['label']"/> (<t t-esc="o['count']"/>)
+                  </option>
+                </select>
+              </span>
+            </label>
+            <t t-foreach="['team', 'type', 'posted']" t-as="keep">
+              <input t-if="rz_picked[keep]" type="hidden" t-att-name="keep" t-att-value="rz_picked[keep]"/>
+            </t>
+            <input t-if="rz_sort" type="hidden" name="sort" t-att-value="rz_sort"/>
+            <button type="submit" class="rz-btn rz-btn--gold rz-cx-search__go">Search</button>
+          </form>
+        </section>
+
+        <!-- ~~~ The board: filters on the left, roles on the right ~~~ -->
+        <section class="rz-cx-board" id="roles" aria-label="Open roles">
+          <t t-if="rz_any_roles">
+            <div t-attf-class="rz-cx-board__grid #{'' if rz_facets else 'rz-cx-board__grid--solo'}">
+
+              <aside t-if="rz_facets" class="rz-cx-rail" aria-label="Filters">
+                <input type="checkbox" id="rz-cx-filters" class="rz-cx-rail__toggle"/>
+                <label for="rz-cx-filters" class="rz-cx-rail__open">
+                  <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'filters'"/></t>
+                  Filters<span t-if="rz_chips" class="rz-cx-rail__n" t-esc="len(rz_chips)"/>
+                </label>
+                <label for="rz-cx-filters" class="rz-cx-rail__scrim" aria-hidden="true"></label>
+                <div class="rz-cx-rail__panel">
+                  <div class="rz-cx-rail__head">
+                    <h2>Filters</h2>
+                    <a t-if="rz_chips" href="/jobs#find" class="rz-cx-rail__clear">Clear all</a>
+                  </div>
+                  <div t-foreach="rz_facets" t-as="f" class="rz-cx-facet">
+                    <h3 class="rz-cx-facet__title" t-esc="f['title']"/>
+                    <ul class="rz-cx-facet__list">
+                      <li t-foreach="f['options']" t-as="o">
+                        <t t-set="on" t-value="rz_picked[f['key']] == o['value']"/>
+                        <a t-att-href="rz_url(f['key'], '' if on else o['value']) + '#find'"
+                           t-attf-class="rz-cx-opt #{'is-on' if on else ''} #{'is-zero' if not o['count'] and not on else ''}"
+                           t-att-aria-current="'true' if on else None" rel="nofollow">
+                          <span class="rz-cx-opt__box" aria-hidden="true">
+                            <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'check'"/></t>
+                          </span>
+                          <span class="rz-cx-opt__label" t-esc="o['label']"/>
+                          <span class="rz-cx-opt__count" t-esc="o['count']"/>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <label for="rz-cx-filters" class="rz-btn rz-btn--gold rz-cx-rail__done">
+                    Show <t t-esc="rz_total"/> <t t-esc="'role' if rz_total == 1 else 'roles'"/>
+                  </label>
+                </div>
+              </aside>
+
+              <div class="rz-cx-results">
+                <div class="rz-cx-results__head">
+                  <p class="rz-cx-count" aria-live="polite">
+                    <strong t-esc="rz_total"/> open <t t-esc="'role' if rz_total == 1 else 'roles'"/>
+                  </p>
+                  <nav t-if="rz_total &gt; 1" class="rz-cx-sort" aria-label="Sort roles">
+                    <span>Sort</span>
+                    <a t-att-href="rz_url(sort='') + '#find'" t-attf-class="#{'is-on' if not rz_sort else ''}" rel="nofollow">Best match</a>
+                    <a t-att-href="rz_url(sort='new') + '#find'" t-attf-class="#{'is-on' if rz_sort == 'new' else ''}" rel="nofollow">Newest</a>
+                    <a t-att-href="rz_url(sort='az') + '#find'" t-attf-class="#{'is-on' if rz_sort == 'az' else ''}" rel="nofollow">A–Z</a>
+                  </nav>
+                </div>
+
+                <div t-if="rz_chips" class="rz-cx-chips">
+                  <a t-foreach="rz_chips" t-as="chip" t-att-href="chip['url'] + '#find'" class="rz-cx-chip" rel="nofollow">
+                    <t t-esc="chip['label']"/>
+                    <span class="visually-hidden">— remove this filter</span>
+                    <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'x'"/></t>
+                  </a>
+                  <a t-if="len(rz_chips) &gt; 1" href="/jobs#find" class="rz-cx-chips__clear">Clear all</a>
+                </div>
+
+                <ol t-if="jobs" class="rz-cx-list">
+                  <li t-foreach="jobs" t-as="job" t-attf-style="--rz-i: #{job_index}">
+                    <t t-set="j" t-value="job.sudo()"/>
+                    <t t-set="c" t-value="rz_cards[j.id]"/>
+                    <a t-attf-href="/jobs/#{ slug(job) }" class="rz-cx-job">
+                      <div class="rz-cx-job__main">
+                        <div class="rz-cx-job__top">
+                          <span class="rz-cx-job__team" t-esc="j.department_id.name or 'Rize'"/>
+                          <span t-if="c['is_new'] and j.website_published" class="rz-cx-badge">New</span>
+                          <span t-if="not j.website_published" class="rz-cx-badge rz-cx-badge--muted">Not public yet</span>
+                        </div>
+                        <h2 class="rz-cx-job__title" t-esc="j.name"/>
+                        <ul class="rz-cx-meta">
+                          <li><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'pin'"/></t><t t-esc="c['where']"/></li>
+                          <li t-if="j.contract_type_id"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'briefcase'"/></t><t t-esc="j.contract_type_id.name"/></li>
+                          <li t-if="j.no_of_recruitment &gt; 1"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'users'"/></t><t t-esc="j.no_of_recruitment"/> people wanted</li>
+                        </ul>
+                        <p t-if="c['summary']" class="rz-cx-job__sum" t-esc="c['summary']"/>
+                      </div>
+                      <div class="rz-cx-job__side">
+                        <span t-if="c['posted_label']" class="rz-cx-job__posted" t-esc="c['posted_label']"/>
+                        <span class="rz-cx-job__go">View role <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'arrow'"/></t></span>
+                      </div>
+                    </a>
+                  </li>
+                </ol>
+
+                <div t-else="" class="rz-cx-empty">
+                  <span class="rz-cx-empty__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'search'"/></t></span>
+                  <h2>No roles match <t t-if="search">“<t t-esc="search"/>”</t><t t-else="">these filters</t></h2>
+                  <p>Try fewer filters or another word — or see every open role.</p>
+                  <a class="rz-btn rz-btn--gold" href="/jobs#find">Show every role</a>
+                </div>
+
+                <div t-if="pager and pager.get('page_count', 0) &gt; 1" class="rz-pager">
+                  <t t-call="website.pager"/>
+                </div>
+              </div>
+            </div>
+          </t>
+
+          <div t-else="" class="rz-cx-empty rz-cx-empty--none">
+            <span class="rz-cx-empty__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'sprout'"/></t></span>
+            <h2>No open roles right now</h2>
+            <p>New roles appear here the moment they are agreed. Follow Rize on LinkedIn to hear about them first.</p>
+            <div class="rz-cx-empty__cta">
+              <a class="rz-btn rz-btn--gold" href="https://www.linkedin.com/company/rizefarm/" target="_blank" rel="noopener">Follow Rize on LinkedIn</a>
+              <a class="rz-btn rz-btn--line" href="https://www.rize.farm" target="_blank" rel="noopener">Visit rize.farm</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- After a search, filter or sort (links end in #find) land on the
+             search bar + results. #find names no element on purpose: the
+             browser's and the website's own anchor jumps both land wrong here
+             (one fires before layout, the other aligns the board to the top
+             and hides the search bar), so this script is the only one to act. -->
+        <script>
+          // Refining results is not a first visit: skip the hero's entrance.
+          if (location.hash === '#find') { document.getElementById('wrap').classList.add('rz-cx-landed'); }
+          window.addEventListener('load', function () {
+            if (location.hash !== '#find') { return; }
+            // offsetTop, not getBoundingClientRect: the bar is still sliding in
+            // (a transform) when this runs, and the transform must not count.
+            var bar = document.querySelector('.rz-cx-search');
+            var hero = document.querySelector('.rz-cx-hero');
+            var board = document.getElementById('roles');
+            setTimeout(function () {
+              var top = board.getBoundingClientRect().top + window.scrollY;
+              if (bar) { if (hero) { top = hero.getBoundingClientRect().top + window.scrollY + bar.offsetTop; } }
+              window.scrollTo({top: top - 16, behavior: 'instant'});
+            }, 60);
+          });
+        </script>
+
+        <!-- ~~~ How hiring works ~~~ -->
+        <section class="rz-cx-band rz-cx-how" aria-labelledby="rz-how">
+          <div class="rz-cx-band__head">
+            <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span>No surprises</span>
+            <h2 id="rz-how">How hiring works at Rize</h2>
+          </div>
+          <ol class="rz-cx-steps">
+            <li>
+              <span class="rz-cx-steps__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'file'"/></t></span>
+              <h3>Apply in minutes</h3>
+              <p>Send your CV and answer a few short questions. No account needed.</p>
+            </li>
+            <li>
+              <span class="rz-cx-steps__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'usercheck'"/></t></span>
+              <h3>A recruiter reads it</h3>
+              <p>A real person reviews every application and tells you what happens next.</p>
+            </li>
+            <li>
+              <span class="rz-cx-steps__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'talk'"/></t></span>
+              <h3>Meet the team</h3>
+              <p>A few conversations with the people you'd work with — sometimes a short assignment.</p>
+            </li>
+            <li>
+              <span class="rz-cx-steps__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'badge'"/></t></span>
+              <h3>Offer and welcome</h3>
+              <p>A clear offer, then everything you need for your first day.</p>
+            </li>
+          </ol>
+        </section>
+
+        <!-- ~~~ What you would help build (Rize's own mission, in their words) ~~~ -->
+        <section class="rz-cx-band rz-cx-why" aria-labelledby="rz-why">
+          <div class="rz-cx-band__head">
+            <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span>Why Rize</span>
+            <h2 id="rz-why">What you'll help build</h2>
+          </div>
+          <div class="rz-cx-why__grid">
+            <article>
+              <span class="rz-cx-why__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'wallet'"/></t></span>
+              <h3>Affordable finance</h3>
+              <p>Credit that rice farmers can actually use, so better seasons are within reach.</p>
+            </article>
+            <article>
+              <span class="rz-cx-why__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'sprout'"/></t></span>
+              <h3>AI-driven agronomy</h3>
+              <p>Field advice built on data, helping every farm grow more from every hectare.</p>
+            </article>
+            <article>
+              <span class="rz-cx-why__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'trend'"/></t></span>
+              <h3>Market access</h3>
+              <p>Fair routes to buyers, so the extra harvest turns into extra income.</p>
+            </article>
+            <article>
+              <span class="rz-cx-why__icon"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'drops'"/></t></span>
+              <h3>Water and soil</h3>
+              <p>Farming that saves water and protects the land for the next generation.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ~~~ Closing call ~~~ -->
+        <section class="rz-cx-close">
+          <div class="rz-cx-close__photo" aria-hidden="true"></div>
+          <div class="rz-cx-close__inner">
+            <h2>Don't see your role yet?</h2>
+            <p>Rize is growing across Southeast Asia and India. Follow us to hear about new roles first.</p>
+            <div class="rz-cx-close__cta">
+              <a class="rz-btn rz-btn--gold rz-btn--lg" href="https://www.linkedin.com/company/rizefarm/" target="_blank" rel="noopener">
+                <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'linkedin'"/></t> Follow Rize on LinkedIn
+              </a>
+              <a class="rz-btn rz-btn--line rz-btn--lg" href="https://www.rize.farm" target="_blank" rel="noopener">Visit rize.farm</a>
+            </div>
+          </div>
+        </section>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================ ROLE PAGE ============================ -->
+  <template id="rz_job_detail" inherit_id="website_hr_recruitment.detail" priority="90" name="Rize role page">
+    <!-- The stock "All Jobs" bar sits outside #wrap; our frame has its own way back. -->
+    <xpath expr="//t[@t-call='website.layout']/nav" position="replace"/>
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <t t-call="rize_website.rz_shell">
+        <t t-set="rz_active" t-value="'jobs'"/>
+        <t t-set="rz_variant" t-value="'photo'"/>
+        <t t-set="j" t-value="job.sudo()"/>
+        <t t-set="c" t-value="rz_card or {}"/>
+        <t t-set="advert" t-value="j.website_description or ''"/>
+        <t t-set="advert_is_stock" t-value="'website_hr_recruitment/static/src/img' in advert"/>
+        <!-- Signed-in people are shown roles that are not public yet; the form
+             refuses those, so only offer Apply when the form will take it. -->
+        <t t-set="can_apply" t-value="j.pb_hiring_accepts_applications(website)"/>
+
+        <article class="rz-cx-role" itemscope="itemscope" itemtype="https://schema.org/JobPosting">
+          <!-- Structured data for job search engines (Google for Jobs etc.). -->
+          <meta t-if="j.contract_type_id" itemprop="employmentType" t-att-content="j.contract_type_id.name"/>
+          <meta t-if="j.published_date" itemprop="datePosted" t-att-content="j.published_date"/>
+          <meta itemprop="title" t-att-content="j.name"/>
+          <meta itemprop="directApply" content="true"/>
+          <span itemprop="hiringOrganization" itemscope="itemscope" itemtype="https://schema.org/Organization">
+            <meta itemprop="name" t-att-content="j.company_id.name"/>
+            <meta itemprop="logo" t-attf-content="/logo.png?company=#{j.company_id.id}"/>
+          </span>
+          <span itemprop="jobLocation" itemscope="itemscope" itemtype="https://schema.org/Place">
+            <span itemprop="address" itemscope="itemscope" itemtype="https://schema.org/PostalAddress">
+              <meta t-if="j.address_id.city" itemprop="addressLocality" t-att-content="j.address_id.city"/>
+              <meta t-if="c.get('country')" itemprop="addressCountry" t-att-content="c['country'].code"/>
+            </span>
+          </span>
+
+          <header class="rz-cx-rhero">
+            <div class="rz-cx-hero__photo" aria-hidden="true"></div>
+            <div class="rz-cx-rhero__inner">
+              <a href="/jobs#find" class="rz-back">
+                <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'back'"/></t>
+                All open roles
+              </a>
+              <span class="rz-eyebrow"><span class="rz-eyebrow__dot"></span><t t-esc="j.department_id.name or 'Careers at Rize'"/></span>
+              <h1 class="rz-cx-rhero__title" t-esc="j.name"/>
+              <ul class="rz-cx-meta rz-cx-meta--light">
+                <li><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'pin'"/></t><t t-esc="c.get('where') or 'Remote'"/></li>
+                <li t-if="j.contract_type_id"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'briefcase'"/></t><t t-esc="j.contract_type_id.name"/></li>
+                <li t-if="c.get('posted_label')"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'clock'"/></t><t t-esc="c['posted_label']"/></li>
+              </ul>
+            </div>
+          </header>
+
+          <div class="rz-cx-rbody">
+            <div class="rz-paper" itemprop="description">
+              <div t-if="advert and not advert_is_stock" class="rz-advert" t-field="job.website_description"/>
+              <div t-elif="j.description" class="rz-advert" t-out="j.description"/>
+              <div t-else="" class="rz-advert rz-advert--empty">
+                <p>The full description for this role is still being written. You can apply now — the recruiter will walk you through the details on your first call.</p>
+              </div>
+            </div>
+
+            <aside class="rz-cx-side" aria-label="About this role">
+              <div class="rz-cx-side__card">
+                <a t-if="can_apply" class="rz-btn rz-btn--gold rz-btn--lg rz-cx-side__apply" t-attf-href="/jobs/apply/#{ slug(job) }">Apply for this role</a>
+                <div t-else="" class="rz-role__closed" role="note">
+                  <div>
+                    <strong>Not public yet</strong>
+                    <span>Only people signed in can see this role. Applications open once it is agreed and published from Hiring.</span>
+                  </div>
+                </div>
+                <p t-if="can_apply" class="rz-cx-side__hint">Takes about five minutes. No account needed.</p>
+
+                <dl class="rz-cx-facts">
+                  <div t-if="j.department_id"><dt><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'team'"/></t>Team</dt><dd t-esc="j.department_id.name"/></div>
+                  <div><dt><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'pin'"/></t>Location</dt><dd t-esc="c.get('where') or 'Remote'"/></div>
+                  <div t-if="j.contract_type_id"><dt><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'briefcase'"/></t>Job type</dt><dd t-esc="j.contract_type_id.name"/></div>
+                  <div t-if="j.no_of_recruitment &gt; 1"><dt><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'users'"/></t>People wanted</dt><dd t-esc="j.no_of_recruitment"/></div>
+                  <div t-if="c.get('posted')"><dt><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'clock'"/></t>Posted</dt><dd t-esc="c['posted'].strftime('%-d %b %Y')"/></div>
+                </dl>
+
+                <div t-if="rz_share and j.website_published" class="rz-cx-share">
+                  <span class="rz-cx-share__label">Share this role</span>
+                  <div class="rz-cx-share__row">
+                    <button type="button" class="rz-cx-share__btn" t-att-data-url="rz_share['url']"
+                            onclick="var b=this;navigator.clipboard&amp;&amp;navigator.clipboard.writeText(b.dataset.url).then(function(){b.classList.add('is-done');setTimeout(function(){b.classList.remove('is-done')},2200)})"
+                            aria-label="Copy link to this role">
+                      <span class="rz-cx-share__a"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'link'"/></t></span>
+                      <span class="rz-cx-share__b"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'check'"/></t></span>
+                      <span class="rz-cx-share__tip" aria-live="polite">Link copied</span>
+                    </button>
+                    <a class="rz-cx-share__btn" t-att-href="rz_share['linkedin']" target="_blank" rel="noopener" aria-label="Share on LinkedIn"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'linkedin'"/></t></a>
+                    <a class="rz-cx-share__btn" t-att-href="rz_share['whatsapp']" target="_blank" rel="noopener" aria-label="Share on WhatsApp"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'chat'"/></t></a>
+                    <a class="rz-cx-share__btn" t-att-href="rz_share['mail']" aria-label="Share by email"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'mail'"/></t></a>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <div t-if="can_apply" class="rz-role__foot">
+            <p>Sounds like you? The form takes a few minutes.</p>
+            <a class="rz-btn rz-btn--gold rz-btn--lg" t-attf-href="/jobs/apply/#{ slug(job) }">Apply for this role</a>
+          </div>
+
+          <section t-if="rz_more" class="rz-cx-more" aria-labelledby="rz-more">
+            <h2 id="rz-more">More open roles</h2>
+            <div class="rz-cx-more__grid">
+              <a t-foreach="rz_more" t-as="pair" t-attf-href="/jobs/#{ slug(pair[0]) }" class="rz-cx-mini">
+                <span class="rz-cx-job__team" t-esc="pair[0].department_id.name or 'Rize'"/>
+                <strong t-esc="pair[0].name"/>
+                <span class="rz-cx-mini__where"><t t-call="rize_website.rz_icon"><t t-set="i" t-value="'pin'"/></t><t t-esc="pair[1]['where']"/></span>
+              </a>
+            </div>
+            <a href="/jobs#find" class="rz-cx-more__all">See every open role <t t-call="rize_website.rz_icon"><t t-set="i" t-value="'arrow'"/></t></a>
+          </section>
+
+          <!-- Phones: the Apply button stays in reach while reading. -->
+          <div t-if="can_apply" class="rz-cx-applybar">
+            <span class="rz-cx-applybar__title" t-esc="j.name"/>
+            <a class="rz-btn rz-btn--gold" t-attf-href="/jobs/apply/#{ slug(job) }">Apply</a>
+          </div>
+        </article>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ========================== APPLICATION FORM ========================= -->
+  <!-- The Hiring app renders its own form (pb_hiring.application_journey);
+       only the frame around it changes here. -->
+  <template id="rz_application" inherit_id="pb_hiring.application_journey" priority="90" name="Rize application frame">
+    <xpath expr="//main[hasclass('pb-apply')]" position="replace">
+      <!-- The browser tab otherwise reads the view's name, "Application journey". -->
+      <t t-set="additional_title" t-value="job.name"/>
+      <t t-call="rize_website.rz_shell">
+        <t t-set="rz_active" t-value="'jobs'"/>
+        <!-- `$0` must be the whole text of its element to be swapped for the original node. -->
+        <t>$0</t>
+      </t>
+    </xpath>
+  </template>
+</odoo>

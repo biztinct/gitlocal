@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payobook Filter Patterns</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one long proposal page; three live mock screens of the Employees list share one sample roster and one filter engine. */
+:root{
+  --canvas:#F4F5FB; --card:#FFFFFF; --card2:#F8F8FC; --ink:#1E1B2E; --ink2:#4B4866; --mute:#7A7793;
+  --line:#E2E8F0; --line2:#EEF0F6;
+  --p:#5A4BB0; --p-hover:#4A3D96; --p-soft:#EDEAF8; --p-light:#CBC2EE; --p-ink:#241F52;
+  --ok:#2E7D4F; --ok-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1; --err:#DC2668; --err-soft:#FCE7EE;
+  --shadow:0 1px 2px rgba(30,27,46,.06),0 8px 24px rgba(30,27,46,.08);
+  --shadow-lg:0 12px 40px rgba(30,27,46,.18);
+  --font-d:"Manrope",ui-sans-serif,system-ui,sans-serif; --font-b:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  --r:14px; --r-s:9px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --canvas:#131224; --card:#1B1A2F; --card2:#211F38; --ink:#ECEAF6; --ink2:#B9B5D1; --mute:#8B88A6;
+  --line:#2E2B48; --line2:#262340; --p:#9D8FE0; --p-hover:#B3A7EA; --p-soft:#2A2550; --p-light:#4A3F8C; --p-ink:#E4DEFB;
+  --ok:#5CC88A; --ok-soft:#173224; --info:#7FA6F5; --info-soft:#1B2A4D; --warn:#F2B35A; --warn-soft:#3A2A10; --err:#F07AA0; --err-soft:#43182A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --shadow-lg:0 12px 40px rgba(0,0,0,.6); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --canvas:#131224; --card:#1B1A2F; --card2:#211F38; --ink:#ECEAF6; --ink2:#B9B5D1; --mute:#8B88A6;
+  --line:#2E2B48; --line2:#262340; --p:#9D8FE0; --p-hover:#B3A7EA; --p-soft:#2A2550; --p-light:#4A3F8C; --p-ink:#E4DEFB;
+  --ok:#5CC88A; --ok-soft:#173224; --info:#7FA6F5; --info-soft:#1B2A4D; --warn:#F2B35A; --warn-soft:#3A2A10; --err:#F07AA0; --err-soft:#43182A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --shadow-lg:0 12px 40px rgba(0,0,0,.6); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-b);font-size:14px;line-height:1.5;
+  padding-block:0 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3,h4{font-family:var(--font-d);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--p)}
+.lede{font-size:16px;color:var(--ink2);max-width:68ch}
+.num{font-family:var(--font-d);font-variant-numeric:tabular-nums}
+a{color:var(--p)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+input{font:inherit;color:inherit}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-3px}
+
+/* page sections */
+.hero{padding-block:48px 28px;display:grid;gap:14px}
+section{margin-top:40px}
+.sec-head{display:grid;gap:6px;margin-bottom:16px}
+.sec-head p{color:var(--ink2);max-width:70ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* today */
+.today{padding:22px;display:grid;gap:14px}
+.today ul{margin:0;padding-left:18px;color:var(--ink2);display:grid;gap:6px}
+.today li b{color:var(--ink)}
+.scale{padding:22px;display:grid;gap:10px}
+.scale .row{display:grid;grid-template-columns:150px 1fr 70px;align-items:center;gap:12px}
+.scale .bar{height:22px;border-radius:6px;background:var(--p-soft);border:1px solid var(--p-light);position:relative}
+.scale .bar.now{background:var(--warn-soft);border-color:var(--warn)}
+.scale .lbl{font-weight:600}
+.scale .val{text-align:right;color:var(--mute)}
+.scale small{color:var(--mute)}
+
+/* benchmark table */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top}
+th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);font-weight:700}
+tr:last-child td{border-bottom:0}
+.tscroll{overflow-x:auto}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:var(--p-soft);color:var(--p-ink)}
+.tag.a{background:var(--p-soft);color:var(--p-ink)} .tag.b{background:var(--info-soft);color:var(--info)} .tag.c{background:var(--warn-soft);color:var(--warn)}
+
+/* option tabs */
+.otabs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media (max-width:1000px){.otabs{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.otabs{grid-template-columns:1fr}}
+.otab .reco-tag{display:inline-block;margin-left:6px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--ok-soft);color:var(--ok);border-radius:999px;padding:1px 7px;vertical-align:2px}
+.otab{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;text-align:left;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);transition:border-color .15s,box-shadow .15s,transform .15s}
+.otab:hover{border-color:var(--p-light);transform:translateY(-1px)}
+.otab[aria-selected="true"]{border-color:var(--p);box-shadow:0 0 0 3px var(--p-soft)}
+.otab .letter{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-family:var(--font-d);font-weight:800;font-size:16px;background:var(--p-soft);color:var(--p-ink)}
+.otab[aria-selected="true"] .letter{background:var(--p);color:#fff}
+.otab .t{font-family:var(--font-d);font-weight:700;font-size:15px}
+.otab .s{color:var(--mute);font-size:12.5px;margin-top:2px}
+.otab .seen{margin-top:6px;font-size:12px;color:var(--ink2)}
+.opanel[hidden]{display:none}
+
+/* mock screen */
+.screen{background:var(--canvas);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.screen-top{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+.screen-top b{color:var(--ink)}
+.screen-top .crumb{display:flex;align-items:center;gap:6px}
+.screen-top .actions{margin-left:auto;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--r-s);border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13px;white-space:nowrap;transition:background .12s,border-color .12s}
+.btn:hover{background:var(--card2);border-color:var(--p-light)}
+.btn.primary{background:var(--p);border-color:var(--p);color:#fff}
+.btn.primary:hover{background:var(--p-hover)}
+.btn.outline{border-color:var(--p-light);color:var(--p)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--p-soft)}
+.btn.on{background:var(--p-soft);border-color:var(--p-light);color:var(--p-ink)}
+.btn .badge{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--p);color:#fff;font-size:11px;display:grid;place-items:center}
+.btn.sm{padding:4px 8px;font-size:12px}
+.screen-body{padding:14px 16px 18px;display:grid;gap:12px}
+.kpis{display:flex;flex-wrap:wrap;gap:0 16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:8px 14px;font-size:12.5px;color:var(--mute)}
+.kpis span{display:inline-flex;align-items:center;gap:6px;padding:4px 0}
+.kpis b{color:var(--ink);font-family:var(--font-d);font-size:14px}
+.kpis .sep{width:1px;height:16px;background:var(--line)}
+.kpis .warn b{color:var(--warn)} .kpis .ok b{color:var(--ok)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block}
+.dot.ok{background:var(--ok)}
+
+/* toolbar common */
+.tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tbar .right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.search{display:flex;align-items:center;gap:8px;padding:0 10px;height:36px;border:1px solid var(--line);border-radius:var(--r-s);background:var(--card);min-width:220px;flex:1 1 220px;max-width:340px;color:var(--mute)}
+.search input{border:0;background:none;outline:none;flex:1;min-width:0;color:var(--ink)}
+.search input::placeholder{color:var(--mute)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r-s);overflow:hidden;background:var(--card)}
+.seg button{padding:6px 9px;color:var(--mute);display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600}
+.seg button.on{background:var(--p-soft);color:var(--p-ink)}
+.count{font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count b{color:var(--ink)}
+
+/* pills + chips */
+.pillwrap{position:relative}
+.pill{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 10px 0 12px;border:1px solid var(--line);border-radius:var(--r-s);background:var(--card);font-weight:600;font-size:13px;color:var(--ink2);white-space:nowrap;transition:background .12s,border-color .12s,color .12s}
+.pill:hover{border-color:var(--p-light);color:var(--ink)}
+.pill.on{background:var(--p-soft);border-color:var(--p-light);color:var(--p-ink)}
+.pill .v{font-weight:700;color:var(--p-ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill .n{background:var(--p);color:#fff;border-radius:999px;font-size:11px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center}
+.pill.add{border-style:dashed;color:var(--p)}
+.pill.add:hover{background:var(--p-soft)}
+.pill .x{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;color:var(--mute);margin-left:2px}
+.pill .x:hover{background:var(--err-soft);color:var(--err)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;animation:rise .18s ease-out}
+.chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 10px;border-radius:999px;background:var(--p-soft);border:1px solid var(--p-light);color:var(--p-ink);font-size:12.5px;font-weight:600;animation:rise .18s ease-out}
+.chip .f{color:var(--mute);font-weight:500}
+.chip .x{display:grid;place-items:center;width:20px;height:20px;border-radius:50%}
+.chip .x:hover{background:var(--err-soft);color:var(--err)}
+.chip.ghost{background:transparent;border-color:transparent;color:var(--p);padding:0 8px}
+@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* popover */
+.pop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;width:300px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);animation:popin .14s ease-out;overflow:hidden}
+.pop.right{left:auto;right:0}
+@keyframes popin{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+.pop .head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line2);font-weight:700;font-size:13px}
+.pop .head .back{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;color:var(--mute)}
+.pop .head .back:hover{background:var(--card2);color:var(--ink)}
+.pop .head .sp{margin-left:auto;font-weight:500;color:var(--mute);font-size:12px}
+.pop .psearch{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line2);color:var(--mute)}
+.pop .psearch input{border:0;outline:none;background:none;flex:1;color:var(--ink);min-width:0}
+.pop .list{max-height:300px;overflow:auto;padding:6px}
+.pop .group{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);font-weight:700;padding:8px 8px 4px}
+.opt{display:flex;align-items:center;gap:10px;width:100%;padding:7px 8px;border-radius:8px;text-align:left;font-size:13px;color:var(--ink)}
+.opt:hover{background:var(--card2)}
+.opt .ic{color:var(--mute)}
+.opt .c{margin-left:auto;color:var(--mute);font-size:12px;font-variant-numeric:tabular-nums}
+.opt .ol{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt .only{margin-left:auto;font-size:11px;font-weight:700;color:var(--p);padding:0 4px;visibility:hidden}
+.opt:hover .only{visibility:visible}
+.opt .only + .c{margin-left:0}
+.opt.zero{opacity:.45}
+.opt kbd{margin-left:auto;font:600 10.5px var(--font-b);color:var(--mute);background:var(--card2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.box{width:16px;height:16px;border:1.5px solid var(--line);border-radius:5px;display:grid;place-items:center;color:#fff;flex:none;background:var(--card)}
+.box.on{background:var(--p);border-color:var(--p)}
+.box .ic{width:12px;height:12px;stroke-width:3;opacity:0}
+.opt .box .ic{color:#fff}
+.box.on .ic{opacity:1}
+.opt .box{transition:background .1s}
+.pop .foot{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--line2);font-size:12.5px}
+.pop .foot .sp{margin-left:auto}
+.lnk{color:var(--p);font-weight:600}
+.lnk:hover{text-decoration:underline}
+.ranges{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:12px}
+.ranges input{width:100%;height:34px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:var(--card)}
+.ranges .to{color:var(--mute);font-size:12px}
+.hint{padding:0 12px 12px;color:var(--mute);font-size:12px}
+
+/* saved views row */
+.views{display:flex;gap:4px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:0}
+.view{padding:8px 10px;font-weight:600;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.view:hover{color:var(--ink)}
+.view.on{color:var(--p);border-bottom-color:var(--p)}
+.view .c{font-size:11px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:0 6px;color:var(--mute)}
+.view.on .c{background:var(--p-soft);border-color:var(--p-light);color:var(--p-ink)}
+.view.add{color:var(--p)}
+.view.dirty{color:var(--p)}
+
+/* roster */
+.roster{display:grid;gap:8px}
+.row{display:grid;grid-template-columns:44px 1fr auto auto auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;animation:rise .2s ease-out}
+.row .av{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;color:#fff;font-family:var(--font-d);font-weight:800;font-size:18px}
+.row .nm{font-family:var(--font-d);font-weight:700;font-size:14.5px}
+.row .jb{color:var(--mute);font-size:12.5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.row .jb .ctry{display:inline-flex;align-items:center;gap:4px;padding:0 6px;border-radius:999px;background:var(--card2);border:1px solid var(--line2);font-size:11px;font-weight:600;color:var(--ink2)}
+.row .st{display:flex;gap:6px;align-items:center}
+.pillst{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+.pillst.Running{background:var(--ok-soft);color:var(--ok)} .pillst.Probation{background:var(--info-soft);color:var(--info)}
+.pillst.Expiring{background:var(--warn-soft);color:var(--warn)} .pillst.Exit{background:var(--err-soft);color:var(--err)}
+.pillst.None{background:var(--card2);color:var(--mute)}
+.row .money{text-align:right}
+.row .money b{font-family:var(--font-d);font-size:15px;color:var(--ok);font-variant-numeric:tabular-nums;display:block}
+.row .money small{color:var(--mute);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.row .rd{color:var(--ok)} .row .rd.no{color:var(--warn)}
+@media (max-width:720px){.row{grid-template-columns:44px 1fr auto}.row .st,.row .btn{display:none}}
+.empty{padding:40px;text-align:center;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:12px;display:grid;gap:8px;justify-items:center}
+.empty b{color:var(--ink);font-family:var(--font-d)}
+.more{text-align:center;color:var(--mute);font-size:12.5px;padding:6px}
+
+/* kanban */
+.kan{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:10px;overflow-x:auto;padding-bottom:6px}
+.kcol{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:8px;display:grid;gap:6px;align-content:start;min-height:120px}
+.kcol h4{font-size:12px;display:flex;justify-content:space-between;padding:4px 6px;color:var(--ink2)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12.5px;display:grid;gap:2px}
+.kcard b{font-family:var(--font-d)}
+.kcard small{color:var(--mute)}
+
+/* option B facets */
+.facet-layout{display:grid;grid-template-columns:272px 1fr;gap:12px;transition:grid-template-columns .22s ease}
+.facet-layout.closed{grid-template-columns:0 1fr}
+.facet-layout.closed aside{opacity:0;pointer-events:none}
+@media (max-width:860px){.facet-layout{grid-template-columns:1fr}.facet-layout.closed aside{display:none}}
+aside.facets{background:var(--card);border:1px solid var(--line);border-radius:12px;align-self:start;overflow:hidden;transition:opacity .2s;position:sticky;top:8px;max-height:calc(100vh - 32px);overflow-y:auto}
+.facets .fh{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line2);font-family:var(--font-d);font-weight:700}
+.facets .fh .sp{margin-left:auto;font:600 12px var(--font-b);color:var(--p)}
+.fsec{border-bottom:1px solid var(--line2)}
+.fsec button.ft{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;font-weight:700;font-size:13px;text-align:left}
+.fsec button.ft .ic{color:var(--mute)}
+.fsec button.ft .n{margin-left:auto;font-size:11px;background:var(--p);color:#fff;border-radius:999px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 5px}
+.fsec button.ft .chev{color:var(--mute);transition:transform .15s}
+.fsec button.ft .n + .chev{margin-left:6px}
+.fsec.closed button.ft .chev{transform:rotate(-90deg)}
+.fsec .fb{padding:0 8px 10px}
+.fsec.closed .fb{display:none}
+.fsec .opt{padding:5px 6px}
+.fsec .psearch{padding:4px 6px 8px}
+.fsec .fth{display:flex;align-items:center}
+.fsec .fth > button.ft{flex:1;min-width:0}
+.fsec .fth .pinbtn{width:26px;height:26px;margin-right:8px;border-radius:6px;display:grid;place-items:center;color:var(--mute);opacity:0;transition:opacity .12s}
+.fsec .fth:hover .pinbtn,.fsec .fth .pinbtn.on{opacity:1}
+.fsec .fth .pinbtn.on{color:var(--p)}
+.fsec .fth .pinbtn:hover{background:var(--p-soft);color:var(--p)}
+.fsec .fth button.ft .sum{margin-left:auto;font-weight:600;color:var(--p);font-size:12px;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fsec .fth button.ft .n + .sum{margin-left:6px}
+.fsec .fth button.ft .sum + .chev,.fsec .fth button.ft .n + .chev{margin-left:6px}
+.fsec.on > .fth > button.ft{color:var(--p-ink)}
+.fsec .fclear{display:block;padding:4px 8px 2px;font-size:12px}
+.fdiv{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);font-weight:700;padding:12px 14px 4px;background:var(--card2);border-bottom:1px solid var(--line2)}
+.facets .fsearch{padding:8px 12px;border-bottom:1px solid var(--line2)}
+.facets .fsearch .x{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;color:var(--mute)}
+.facets .fsearch .x:hover{background:var(--err-soft);color:var(--err)}
+.facets .ffoot{display:flex;gap:6px;align-items:center;padding:10px 14px;font-size:11.5px;color:var(--mute)}
+@keyframes flash{0%{box-shadow:inset 0 0 0 2px var(--p)}100%{box-shadow:none}}
+.fsec.flash{animation:flash 1.2s ease-out}
+.chip.go{cursor:pointer}
+.chip.go:hover{background:var(--p-light)}
+.foverlay{display:none;position:fixed;inset:0;background:rgba(20,18,40,.38);z-index:40}
+@media (max-width:860px){
+  .facet-layout.plus:not(.closed) aside.facets{position:fixed;left:0;top:0;bottom:0;width:min(320px,88vw);z-index:41;border-radius:0;max-height:none;padding-left:env(safe-area-inset-left,0px);padding-top:env(safe-area-inset-top,0px)}
+  .facet-layout.plus:not(.closed) .foverlay{display:block}
+}
+
+/* option C drawer */
+.overlay{position:fixed;inset:0;background:rgba(20,18,40,.38);z-index:40;animation:fade .18s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--card);z-index:41;display:grid;grid-template-rows:auto auto 1fr auto;box-shadow:var(--shadow-lg);animation:slide .22s cubic-bezier(.2,.8,.2,1);padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px)}
+@keyframes slide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.drawer .dh{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line2);font-family:var(--font-d);font-weight:800;font-size:17px}
+.drawer .dh .close{margin-left:auto;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--mute)}
+.drawer .dh .close:hover{background:var(--card2);color:var(--ink)}
+.drawer .mode{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--line2);font-size:12.5px;color:var(--ink2)}
+.drawer .body{overflow:auto;padding:8px 10px}
+.dcard{border:1px solid var(--line2);border-radius:10px;margin:6px 0;overflow:hidden}
+.dcard.on{border-color:var(--p-light);box-shadow:0 0 0 2px var(--p-soft)}
+.dcard > button.ft{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;font-weight:700;font-size:13px;text-align:left}
+.dcard > button.ft .ic{color:var(--mute)}
+.dcard > button.ft .sum{margin-left:auto;font-weight:600;color:var(--p);font-size:12px;max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dcard > button.ft .chev{color:var(--mute);transition:transform .15s}
+.dcard.closed > button.ft .chev{transform:rotate(-90deg)}
+.dcard .fb{padding:0 6px 8px;border-top:1px solid var(--line2)}
+.dcard.closed .fb{display:none}
+.drawer .df{display:flex;gap:8px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);padding-bottom:max(14px,env(safe-area-inset-bottom,0px))}
+.drawer .df .btn.primary{margin-left:auto;min-width:200px;justify-content:center}
+.live{display:inline-block;min-width:1.6em;text-align:center}
+
+/* notes under each option */
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+@media (max-width:900px){.notes{grid-template-columns:1fr}}
+.note{padding:16px 18px;display:grid;gap:8px;align-content:start}
+.note h4{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.note ul{margin:0;padding-left:18px;color:var(--ink2);display:grid;gap:5px}
+.note.good h4{color:var(--ok)} .note.bad h4{color:var(--warn)}
+.try{display:flex;gap:8px;align-items:flex-start;padding:12px 16px;background:var(--p-soft);border:1px solid var(--p-light);border-radius:12px;color:var(--p-ink);margin-bottom:12px;font-size:13.5px}
+.try .ic{color:var(--p);margin-top:2px}
+
+/* verdict */
+.score td:not(:first-child){text-align:center}
+.score th:not(:first-child){text-align:center}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:inline-block}
+.dots i.on{background:var(--p)}
+.reco{padding:24px;display:grid;gap:14px;border:2px solid var(--p);background:var(--card)}
+.reco .head{display:flex;align-items:center;gap:12px}
+.reco .letter{width:44px;height:44px;border-radius:12px;background:var(--p);color:#fff;display:grid;place-items:center;font-family:var(--font-d);font-weight:800;font-size:20px}
+.reco ol{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--ink2)}
+.reco li b{color:var(--ink)}
+.borrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:900px){.borrow{grid-template-columns:1fr}}
+.borrow .b{padding:14px 16px;border:1px solid var(--line);border-radius:12px;display:grid;gap:4px;background:var(--card2)}
+.borrow .b b{font-family:var(--font-d)}
+.borrow .b span{color:var(--ink2);font-size:13px}
+
+/* contract */
+.parts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (max-width:900px){.parts{grid-template-columns:1fr}}
+.part{padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.part .ib{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--p-soft);color:var(--p)}
+.part b{font-family:var(--font-d)}
+.part span{color:var(--ink2);font-size:13px;display:block}
+.foot{margin-top:40px;color:var(--mute);font-size:12.5px;text-align:center}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-panel-l" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+  <symbol id="i-panel-r" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></symbol>
+  <symbol id="i-kanban" viewBox="0 0 24 24"><path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+  <symbol id="i-cmd" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-pin2" viewBox="0 0 24 24"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></symbol>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Design proposal · 30 October 2026 · Updated the same evening after the owner chose the panel · Proof of concept, nothing is wired to the real app</div>
+  <h1>One filter for every list in Payobook</h1>
+  <p class="lede">Three ways to filter a list, each built as a working mock of the Employees screen on the same sample of 140 people, plus the upgraded panel built after the owner picked Option B. Click around in each one. The scoring and the final recommendation are at the bottom.</p>
+</header>
+
+<section id="today">
+  <div class="sec-head">
+    <h2>What the Employees screen does today</h2>
+    <p>The filter block is a panel of buttons that grows with the number of departments. It is the tallest thing on the page and it only knows two questions.</p>
+  </div>
+  <div class="grid2">
+    <div class="panel today">
+      <h3>The problems, in order</h3>
+      <ul>
+        <li><b>Height.</b> With 32 departments the filter panel is about 380 px tall. On a laptop that is roughly 40% of the screen before the first employee appears.</li>
+        <li><b>Only two things to filter on.</b> Join date and department. No country, status, contract type, pay band, manager, work location, payroll-readiness, or contract end date.</li>
+        <li><b>One choice at a time.</b> You cannot pick two departments, or a department plus a country.</li>
+        <li><b>Every screen builds its own.</b> Employees, Contracts, Pay structures and Hiring each have their own chip rows with different rules. A filter learned on one screen does not carry to the next.</li>
+        <li><b>Nothing is saved.</b> Each visit starts from "All time, all departments".</li>
+      </ul>
+    </div>
+    <div class="panel scale">
+      <h3>Height of the filter area, to scale</h3>
+      <div class="row"><span class="lbl">Today</span><div class="bar now" style="width:100%"></div><span class="val num">≈ 380 px</span></div>
+      <div class="row"><span class="lbl">Option A · bar</span><div class="bar" style="width:12%"></div><span class="val num">≈ 44 px</span></div>
+      <div class="row"><span class="lbl">A with filters on</span><div class="bar" style="width:23%"></div><span class="val num">≈ 88 px</span></div>
+      <div class="row"><span class="lbl">Option B · side panel</span><div class="bar" style="width:12%"></div><span class="val num">≈ 44 px</span></div>
+      <div class="row"><span class="lbl">B+ · panel, upgraded</span><div class="bar" style="width:23%"></div><span class="val num">≈ 88 px</span></div>
+      <div class="row"><span class="lbl">Option C · drawer</span><div class="bar" style="width:12%"></div><span class="val num">≈ 44 px</span></div>
+      <small>Options B and B+ spend width instead of height: about 272 px of the list's width while the panel is open, nothing when hidden. B+ adds a 44 px row of saved-view tabs.</small>
+    </div>
+  </div>
+</section>
+
+<section id="bench">
+  <div class="sec-head">
+    <h2>How the best products do it</h2>
+    <p>Twelve products people already know, grouped by the pattern they settled on. The ones built for work lists have converged on one answer.</p>
+  </div>
+  <div class="panel tscroll">
+    <table>
+      <thead><tr><th>Product</th><th>Pattern</th><th>What they do well</th><th>Worth copying</th></tr></thead>
+      <tbody>
+        <tr><td><b>Linear</b></td><td><span class="tag a">A · Filter bar</span></td><td>One "Filter" button opens a searchable list of every field. Each applied filter becomes a chip you can click to edit. Views can be saved and shared.</td><td>Field picker you can type into; chip you click to change.</td></tr>
+        <tr><td><b>Notion</b></td><td><span class="tag a">A · Filter bar</span></td><td>Quick pills for the most used fields sit in the bar; "Add filter" reaches everything else. Advanced "any / all" grouping is one click deeper.</td><td>Pinned quick pills plus "add filter" for the rest.</td></tr>
+        <tr><td><b>Shopify admin</b></td><td><span class="tag a">A · Filter bar</span></td><td>Search, filter pills and saved views as tabs above every list (orders, products, customers). Identical on every screen.</td><td>Saved views as tabs; same bar everywhere.</td></tr>
+        <tr><td><b>Stripe dashboard</b></td><td><span class="tag a">A · Filter bar</span></td><td>Pill per common field with a tight dropdown; a count of applied filters; URL carries the filters so a link reproduces the view.</td><td>Shareable link to a filtered view.</td></tr>
+        <tr><td><b>GitHub issues · Gmail</b></td><td><span class="tag a">A · Filter bar</span></td><td>Pills in the bar, with a typed query behind them for power users.</td><td>Keep a typed path for advanced users later.</td></tr>
+        <tr><td><b>Amazon · Google Shopping</b></td><td><span class="tag b">B · Facet panel</span></td><td>Left column of checkboxes with a count next to each value. Perfect for browsing when you do not know what you want.</td><td>Counts next to each value.</td></tr>
+        <tr><td><b>Workday reports</b></td><td><span class="tag b">B · Facet panel</span></td><td>Collapsible left panel, each field a section, counts update as you tick.</td><td>Collapsible sections with a "show more".</td></tr>
+        <tr><td><b>HubSpot</b></td><td><span class="tag c">C · Drawer</span></td><td>"Advanced filters" slides in from the side with every property grouped; applied rules then show as chips.</td><td>Live "Show N records" button at the bottom.</td></tr>
+        <tr><td><b>Salesforce Lightning</b></td><td><span class="tag c">C · Drawer</span></td><td>Filter panel on the right of the list, rule rows with field + condition + value, "match all / any".</td><td>Rule rows for the rare complex case.</td></tr>
+        <tr><td><b>Jira · Airtable</b></td><td><span class="tag a">A → C</span></td><td>Start with a simple bar; an "Advanced" switch opens a full rule builder.</td><td>Simple first, power one click away.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="options">
+  <div class="sec-head">
+    <h2>The three options, live</h2>
+    <p>Each tab is a working mock. The roster, the numbers and the filter engine are shared; only the way you reach the filters changes. Try the same job in each: show Running employees in Vietnam and Indonesia who joined this year. The first tab is the upgraded panel; the other three are the original options for comparison.</p>
+  </div>
+
+  <div class="otabs" role="tablist">
+    <button class="otab" role="tab" data-tab="plus" aria-selected="true"><span class="letter">B+</span><span><span class="t">Facet panel, upgraded<span class="reco-tag">Recommended</span></span><div class="s">The left panel you chose, with the best of A folded in: saved views, clickable chips, find-a-filter, pinned sections, hide-and-keep-chips.</div><div class="seen">Workday · Amazon, plus Linear · Shopify ideas</div></span></button>
+    <button class="otab" role="tab" data-tab="bar" aria-selected="false"><span class="letter">A</span><span><span class="t">Filter bar with chips</span><div class="s">One line. Pinned pills for the common fields, "Add filter" for the rest, applied filters as chips, saved views as tabs.</div><div class="seen">Linear · Notion · Shopify · Stripe</div></span></button>
+    <button class="otab" role="tab" data-tab="facets" aria-selected="false"><span class="letter">B</span><span><span class="t">Facet panel on the left</span><div class="s">A collapsible column of checkboxes with live counts next to every value. Tick to narrow.</div><div class="seen">Amazon · Google Shopping · Workday</div></span></button>
+    <button class="otab" role="tab" data-tab="drawer" aria-selected="false"><span class="letter">C</span><span><span class="t">Filter drawer</span><div class="s">A quiet bar with one "Filters" button. It slides in a panel with every field, "match all / any", and a live count on the Apply button.</div><div class="seen">HubSpot · Salesforce · Jira advanced</div></span></button>
+  </div>
+
+  <!-- OPTION B+ -->
+  <div class="opanel" id="panel-plus" role="tabpanel">
+    <div class="try"><svg class="ic"><use href="#i-bulb"/></svg><div><b>Try:</b> type "hanoi" in the panel's find box and see Work location and Department open with just the matching values. Hover a value and press "Only". Click a chip above the list to jump to its section. Hover a section title and pin it. Press "Hide filters" and notice the chips stay. Change something and press "Save view".</div></div>
+    <div class="screen" id="scr-plus"></div>
+    <div class="notes">
+      <div class="panel note good"><h4>Kept from B</h4><ul><li>Every field in view, nothing to discover.</li><li>A live count beside every value, recomputed against the other filters. Values at zero fade, they never disappear.</li><li>Tick to narrow, in any order. Sections collapse and remember.</li><li>The layout payroll and HR suites use (Workday reports, ADP, Rippling's filter rail).</li></ul></div>
+      <div class="panel note good"><h4>Borrowed from A</h4><ul><li><b>Saved views as tabs</b> above the bar, with "Save view", "Reset" and a dot when the view has unsaved changes. These replace today's hard-coded buttons.</li><li><b>Chips</b> above the list show what is applied; clicking one jumps to its section.</li><li><b>Find a filter</b> at the top of the panel searches field names and values at once ("hanoi", "manager", "probation").</li><li><b>Pinned sections</b> stay at the top; the rest sit under "More filters", collapsed.</li><li><b>Hide filters</b> gives the list the full width while the chips keep the state readable.</li></ul></div>
+      <div class="panel note bad"><h4>Still costs, and how it is softened</h4><ul><li>About 272 px of width while open. Hidden state is remembered per screen, and the chips mean nothing is lost.</li><li>On a narrow window or phone the same panel slides in as a drawer (shrink this window to see it).</li><li>Every tick re-counts the sections on the server. The counts are cached per screen and only the open sections are counted.</li><li>Boards that already use the width (kanban with many columns) start with the panel hidden.</li></ul></div>
+    </div>
+  </div>
+
+  <!-- OPTION A -->
+  <div class="opanel" id="panel-bar" role="tabpanel">
+    <div class="try"><svg class="ic"><use href="#i-bulb"/></svg><div><b>Try:</b> click "Add filter", type "cou" and pick Country. Then click the Department chip to change it. Then press "Save view" to keep what you built as a tab.</div></div>
+    <div class="screen" id="scr-bar"></div>
+    <div class="notes">
+      <div class="panel note good"><h4>Why it works</h4><ul><li>Takes one line. Everything else is the list.</li><li>Any number of fields, any number of values, no extra height.</li><li>The applied filters are always readable as a sentence of chips.</li><li>Saved views replace today's hard-coded status buttons and date rows.</li><li>Works unchanged on a list, a kanban board or a card grid, and on a phone.</li><li>This is what people already know from Linear, Notion, Shopify, Stripe.</li></ul></div>
+      <div class="panel note bad"><h4>Where it costs</h4><ul><li>You do not see every possible value until you open a pill.</li><li>Two clicks for a field that is not pinned (Add filter → field → value).</li><li>Needs a small server call per pill to fetch the values and counts.</li></ul></div>
+      <div class="panel note"><h4>Details that make it premium</h4><ul><li>Type-to-find in every picker; keyboard up/down/enter.</li><li>Counts next to each value, recalculated against the other filters.</li><li>Chips are clickable to edit, not just removable.</li><li>"Clear all" undoes with one click; the view tab shows a dot when it has unsaved changes.</li><li>The link in the address bar carries the filters, so a view can be shared.</li></ul></div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="opanel" id="panel-facets" role="tabpanel" hidden>
+    <div class="try"><svg class="ic"><use href="#i-bulb"/></svg><div><b>Try:</b> tick two countries and watch every other count change. Press "Hide filters" to give the list the whole width back. Open "Department" and use "Show all".</div></div>
+    <div class="screen" id="scr-facets"></div>
+    <div class="notes">
+      <div class="panel note good"><h4>Why it works</h4><ul><li>Everything is visible at once; nothing to discover.</li><li>Counts beside every value answer "how many?" before you click.</li><li>Great for exploring when you do not know what you are looking for.</li></ul></div>
+      <div class="panel note bad"><h4>Where it costs</h4><ul><li>Spends about 270 px of width. Payobook already has a main rail and a sub-rail on the left; this makes a third column.</li><li>Long value lists (32 departments, 50 managers) need "show more" and a search inside the panel anyway.</li><li>On a phone it has to become a drawer, so you build two patterns.</li><li>Every tick re-counts every section on the server. Fine at 140 rows, costly at 4,500.</li><li>Awkward on kanban boards and dashboards that already use the width.</li></ul></div>
+      <div class="panel note"><h4>Best fit</h4><ul><li>Catalogue-style screens: pay components, report catalogue, learning library.</li><li>Less suited to day-to-day work lists that are scanned fast.</li></ul></div>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="opanel" id="panel-drawer" role="tabpanel" hidden>
+    <div class="try"><svg class="ic"><use href="#i-bulb"/></svg><div><b>Try:</b> press "Filters". Change a few things and watch the count on the big button update before you apply. Switch "match all" to "match any".</div></div>
+    <div class="screen" id="scr-drawer"></div>
+    <div class="notes">
+      <div class="panel note good"><h4>Why it works</h4><ul><li>The quietest bar of the three. The list gets all the room.</li><li>Room for every field, grouped, with explanations.</li><li>"Match all / match any" and a live "Show N employees" button make complex filters safe.</li><li>Same component on desktop and phone.</li></ul></div>
+      <div class="panel note bad"><h4>Where it costs</h4><ul><li>Every filter is behind a click. Changing one value is open → change → apply.</li><li>The drawer covers the list, so you cannot see the effect while choosing (only the count).</li><li>Feels like "settings", not like working with the list.</li></ul></div>
+      <div class="panel note"><h4>Best fit</h4><ul><li>The advanced step behind Option A for the rare complex question (Insights, Explorer, audit lists).</li><li>Not the daily driver.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="verdict">
+  <div class="sec-head">
+    <h2>Scoring and recommendation</h2>
+    <p>Scored on what matters for a work list that someone opens many times a day. Five dots is best. The bar still wins on raw space; the upgraded panel wins on finding things and matches what payroll suites do, which is why it is now the recommendation.</p>
+  </div>
+  <div class="grid2" style="align-items:start">
+    <div class="panel tscroll">
+      <table class="score">
+        <thead><tr><th>What matters</th><th>B+ · Panel upgraded</th><th>A · Bar</th><th>B · Facets</th><th>C · Drawer</th></tr></thead>
+        <tbody id="scoreBody"></tbody>
+      </table>
+    </div>
+    <div class="reco panel">
+      <div class="head"><span class="letter">B+</span><div><div class="eyebrow">Recommendation, updated after the owner chose B</div><h3>Facet panel on the left, upgraded with the best of A</h3></div></div>
+      <ol>
+        <li><b>It is the panel you chose, kept whole.</b> Every field visible, a live count beside every value, tick to narrow. This matches the payroll and HR suites people compare us with.</li>
+        <li><b>Saved views fix the biggest gap.</b> "Not payroll-ready", "Expiring soon", "Joined this month" become tabs anyone can add or rename. Product defaults ship with each screen.</li>
+        <li><b>Find a filter makes 11 fields feel like 3.</b> Typing "hanoi" opens the two sections that hold it. Typing "manager" jumps to the field. No scrolling through sections.</li>
+        <li><b>Chips and pins keep it fast.</b> Chips above the list show what is on and jump to the section. Pinned sections stay on top; everything else waits under "More filters".</li>
+        <li><b>Hiding it costs nothing.</b> One click gives the list the full width; the chips stay, the state stays, and the choice is remembered per screen.</li>
+      </ol>
+      <div class="borrow">
+        <div class="b"><b>From A</b><span>Saved views as tabs, clickable chips, type-to-find, pinned fields, hide that keeps chips.</span></div>
+        <div class="b"><b>From C</b><span>On phones and narrow windows the panel becomes a slide-in drawer. "Match any" can come later as a switch at the top of the panel.</span></div>
+        <div class="b"><b>Keep from today</b><span>The slim numbers line stays the one-click shortcut: pressing "47 Not payroll-ready" ticks that box in the panel.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contract">
+  <div class="sec-head">
+    <h2>What every screen would get</h2>
+    <p>With B+ as the standard, this is the shared kit. A screen only lists its fields and which three start pinned; everything below comes for free.</p>
+  </div>
+  <div class="parts">
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-search"/></svg></span><div><b>Search that understands the screen</b><span>Name, job, department, email, employee number. One box, always first.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-pin2"/></svg></span><div><b>Pinned sections on top</b><span>Three per screen to start. Anyone can pin or unpin from the section title; the rest sit under "More filters", collapsed.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-filter"/></svg></span><div><b>Find a filter, by field or by value</b><span>One box at the top of the panel. "hanoi" opens Work location and Department with just the matching rows; "probation" opens Status.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-layers"/></svg></span><div><b>Six field types the pickers understand</b><span>Choice (one or many, with counts) · Yes/No · Date (This month, This year, Last 90 days, Next 30 days, custom range) · Number range · Person · Free text.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-bookmark"/></svg></span><div><b>Saved views as tabs</b><span>Product defaults plus the user's own. "Save view" and "Reset" live in the tab row. A dot marks unsaved changes.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-tag"/></svg></span><div><b>Chips that jump</b><span>Applied filters show as chips above the list. Clicking one opens the panel at that section; the cross removes it.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-link"/></svg></span><div><b>Shareable</b><span>The address carries the filters, so a link to "Expiring in Hanoi" opens exactly that for a colleague.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-kanban"/></svg></span><div><b>Same panel on list, kanban and cards</b><span>The view switch sits at the right end of the bar. Filters survive the switch. Wide boards start with the panel hidden.</span></div></div>
+    <div class="panel part"><span class="ib"><svg class="ic"><use href="#i-phone"/></svg></span><div><b>Phone-ready</b><span>The panel becomes a slide-in drawer behind the "Filters" button. Chips still show what is on.</span></div></div>
+  </div>
+  <p class="foot">Sample data is invented for this page. Counts, names and wages are not from any live system.</p>
+</section>
+
+</div>
+
+<script>
+/* ---------- icons ---------- */
+const ic = (n, s = 16) => `<svg class="ic" style="width:${s}px;height:${s}px"><use href="#i-${n}"/></svg>`;
+
+/* ---------- sample roster ---------- */
+const TODAY = new Date(2026, 9, 30);
+let seed = 20261030; const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const COUNTRIES = {
+  Vietnam:   { w: 46, cur: v => '₫' + (v / 1e6).toFixed(1) + 'M', base: 9e6, site: ['Hanoi HQ', 'HCMC plant', 'Da Nang'], fam: ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Hoàng', 'Bùi', 'Đặng', 'Vũ', 'Đỗ', 'Hồ'], giv: ['Anh', 'Minh', 'Thu', 'Hà', 'Khoa', 'Nam', 'Lan', 'Cường', 'Hương', 'Tuấn', 'Linh', 'Dũng'] },
+  Indonesia: { w: 14, cur: v => 'Rp ' + (v / 1e6).toFixed(1) + 'M', base: 6.5e6, site: ['Jakarta', 'Surabaya'], fam: ['Santoso', 'Wijaya', 'Pratama', 'Putri', 'Siregar', 'Halim'], giv: ['Dewi', 'Budi', 'Rina', 'Agus', 'Sari', 'Yoga'] },
+  India:     { w: 12, cur: v => '₹' + Math.round(v / 1e3) + 'K', base: 48e3, site: ['Bengaluru', 'Pune'], fam: ['Sharma', 'Iyer', 'Patel', 'Reddy', 'Nair', 'Gupta'], giv: ['Priya', 'Arjun', 'Kavya', 'Rohan', 'Neha', 'Vikram'] },
+  Singapore: { w: 8, cur: v => 'S$' + (v / 1e3).toFixed(1) + 'K', base: 4800, site: ['Singapore'], fam: ['Tan', 'Lim', 'Ong', 'Goh', 'Koh'], giv: ['Wei Ling', 'Jun Hao', 'Mei', 'Kai', 'Shu Fen'] },
+  Thailand:  { w: 8, cur: v => '฿' + Math.round(v / 1e3) + 'K', base: 32e3, site: ['Bangkok'], fam: ['Srisai', 'Chaiyasit', 'Wongsa', 'Kittipong'], giv: ['Somchai', 'Nok', 'Ploy', 'Arthit', 'Mali'] },
+  Malaysia:  { w: 7, cur: v => 'RM' + (v / 1e3).toFixed(1) + 'K', base: 5200, site: ['Kuala Lumpur'], fam: ['Abdullah', 'Chong', 'Rahman', 'Kumar', 'Yap'], giv: ['Aisyah', 'Daniel', 'Farah', 'Hafiz', 'Siti'] },
+  Cambodia:  { w: 5, cur: v => '៛' + (v / 1e6).toFixed(1) + 'M', base: 1.9e6, site: ['Phnom Penh'], fam: ['Sok', 'Chea', 'Sam', 'Keo'], giv: ['Dara', 'Sreyneang', 'Vannak', 'Bopha'] },
+};
+const DEPTS = ['Manufacturing / Assembly Line A', 'Manufacturing / Assembly Line B', 'Manufacturing / Maintenance', 'Manufacturing / Quality Control', 'Manufacturing / Warehouse', 'Retail / Stores - Central', 'Retail / Stores - North', 'Retail / E-commerce', 'Construction / Civil Works', 'Construction / Site Safety', 'Logistics / Fleet - Hanoi', 'Logistics / Dispatch', 'Information Technology / Engineering', 'Information Technology / IT Support', 'Corporate Office / Finance', 'Corporate Office / Human Resources', 'Corporate Office / Legal', 'Facilities'];
+const JOBS = { Manufacturing: ['Operative', 'Line lead', 'Technician', 'Quality inspector'], Retail: ['Store associate', 'Store manager', 'Merchandiser'], Construction: ['Construction worker', 'Foreman', 'Safety officer'], Logistics: ['Driver', 'Dispatcher', 'Warehouse clerk'], 'Information Technology': ['Software engineer', 'Support analyst', 'Data analyst'], 'Corporate Office': ['Accountant', 'HR partner', 'Legal counsel', 'Executive assistant'], Facilities: ['Fixed-term operative', 'Caretaker'] };
+const BANDS = ['Operative', 'Senior operative', 'Specialist', 'Lead', 'Manager', 'Director'];
+const BANDX = [1, 1.3, 1.8, 2.4, 3.4, 5.2];
+const MANAGERS = ['Nguyễn Thu Hà', 'Trần Minh Tuấn', 'Lê Hương Lan', 'Dewi Santoso', 'Priya Sharma', 'Tan Wei Ling', 'Somchai Srisai', 'Aisyah Rahman', 'Phạm Anh Dũng', 'Hoàng Khoa'];
+const CTYPES = ['Permanent', 'Permanent', 'Permanent', 'Fixed-term', 'Fixed-term', 'Probation', 'Contractor', 'Part-time'];
+const AVC = ['#5A4BB0', '#2E7D4F', '#2563EB', '#D97706', '#0F766E', '#BE185D', '#7C3AED', '#B45309'];
+const cw = Object.entries(COUNTRIES).flatMap(([k, v]) => Array(v.w).fill(k));
+const daysAgo = d => new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() - d);
+const ROWS = [];
+for (let i = 0; i < 140; i++) {
+  const country = pick(cw), C = COUNTRIES[country];
+  const dept = pick(DEPTS), top = dept.split(' / ')[0];
+  const bandIx = Math.min(5, Math.floor(Math.pow(rnd(), 1.6) * 6));
+  const r = rnd();
+  const status = r < .78 ? 'Running' : r < .87 ? 'Probation' : r < .94 ? 'Expiring' : r < .975 ? 'Exit' : 'None';
+  const ctype = status === 'Probation' ? 'Probation' : status === 'Expiring' ? 'Fixed-term' : pick(CTYPES);
+  const joinedDays = status === 'Probation' ? Math.floor(rnd() * 80) : Math.floor(Math.pow(rnd(), 1.4) * 2900);
+  const joined = daysAgo(joinedDays);
+  const ends = status === 'Expiring' ? daysAgo(-Math.floor(rnd() * 30) - 1) : ctype === 'Fixed-term' || ctype === 'Contractor' ? daysAgo(-(31 + Math.floor(rnd() * 400))) : status === 'Exit' ? daysAgo(-Math.floor(rnd() * 45)) : null;
+  const wage = Math.round(C.base * BANDX[bandIx] * (0.85 + rnd() * .4));
+  ROWS.push({
+    id: i + 1, name: pick(C.fam) + ' ' + pick(C.giv) + (country === 'Vietnam' ? ' ' + pick(C.giv) : ''), country, department: dept, job: pick(JOBS[top]),
+    status, contract: ctype, band: BANDS[bandIx], manager: pick(MANAGERS), site: pick(C.site),
+    ready: status === 'None' ? false : rnd() > .06, joined, ends, wage, wageText: C.cur(wage),
+    years: Math.round(joinedDays / 365 * 10) / 10, av: AVC[i % AVC.length],
+  });
+}
+ROWS.sort((a, b) => a.name.localeCompare(b.name));
+
+/* ---------- field registry (what a screen declares) ---------- */
+const FIELDS = [
+  { key: 'status', label: 'Status', type: 'enum', icon: 'ok', group: 'Contract', quick: true, labels: { Running: 'Running', Probation: 'On probation', Expiring: 'Expiring within 30 days', Exit: 'Exit notice given', None: 'No contract' } },
+  { key: 'department', label: 'Department', type: 'enum', icon: 'building', group: 'People', quick: true, search: true, short: v => v.split(' / ').pop() },
+  { key: 'country', label: 'Country', type: 'enum', icon: 'globe', group: 'People', quick: true },
+  { key: 'site', label: 'Work location', type: 'enum', icon: 'pin', group: 'People' },
+  { key: 'manager', label: 'Manager', type: 'enum', icon: 'user', group: 'People', search: true },
+  { key: 'contract', label: 'Contract type', type: 'enum', icon: 'file', group: 'Contract' },
+  { key: 'band', label: 'Pay band', type: 'enum', icon: 'tag', group: 'Pay' },
+  { key: 'ready', label: 'Payroll-ready', type: 'bool', icon: 'shield', group: 'Pay', yes: 'Ready to be paid', no: 'Missing something' },
+  { key: 'years', label: 'Years of service', type: 'number', icon: 'hourglass', group: 'People', unit: 'years' },
+  { key: 'joined', label: 'Joined', type: 'date', icon: 'calendar', group: 'Dates' },
+  { key: 'ends', label: 'Contract ends', type: 'date', icon: 'clock', group: 'Dates' },
+];
+const FIELD = Object.fromEntries(FIELDS.map(f => [f.key, f]));
+const GROUPS = ['People', 'Contract', 'Pay', 'Dates'];
+const DATE_PRESETS = [
+  ['this_month', 'This month', d => d >= new Date(TODAY.getFullYear(), TODAY.getMonth(), 1) && d <= TODAY],
+  ['this_year', 'This year', d => d.getFullYear() === TODAY.getFullYear() && d <= TODAY],
+  ['last_90', 'Last 90 days', d => d >= daysAgo(90) && d <= TODAY],
+  ['next_30', 'Next 30 days', d => d > TODAY && d <= daysAgo(-30)],
+  ['next_90', 'Next 90 days', d => d > TODAY && d <= daysAgo(-90)],
+  ['none', 'No date set', d => !d],
+];
+const valLabel = (F, v) => F.labels ? (F.labels[v] || v) : v === true ? F.yes : v === false ? F.no : v;
+const fmtDate = d => d ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+
+/* ---------- filter engine ---------- */
+const emptyFilter = key => ({ field: key, values: [], value: null, preset: null, from: '', to: '', min: '', max: '' });
+const isActive = f => { const F = FIELD[f.field]; return F.type === 'enum' ? f.values.length > 0 : F.type === 'bool' ? f.value !== null : F.type === 'date' ? !!(f.preset || f.from || f.to) : (f.min !== '' || f.max !== ''); };
+function matches(row, f) {
+  const F = FIELD[f.field], v = row[f.field];
+  if (F.type === 'enum') return !f.values.length || f.values.includes(v);
+  if (F.type === 'bool') return f.value === null || v === f.value;
+  if (F.type === 'number') return (f.min === '' || v >= +f.min) && (f.max === '' || v <= +f.max);
+  if (F.type === 'date') {
+    if (f.preset) { const p = DATE_PRESETS.find(p => p[0] === f.preset); return p ? p[2](v) : true; }
+    if (!v) return !(f.from || f.to);
+    return (!f.from || v >= new Date(f.from)) && (!f.to || v <= new Date(f.to));
+  }
+  return true;
+}
+const matchQ = (r, q) => !q || (r.name + ' ' + r.job + ' ' + r.department + ' ' + r.site).toLowerCase().includes(q.toLowerCase());
+function apply(rows, st, exceptField) {
+  const act = st.filters.filter(isActive).filter(f => f.field !== exceptField);
+  return rows.filter(r => matchQ(r, st.q) && (st.mode === 'any' && act.length ? act.some(f => matches(r, f)) : act.every(f => matches(r, f))));
+}
+function counts(st, key) {
+  const base = st.mode === 'any' ? ROWS.filter(r => matchQ(r, st.q)) : apply(ROWS, st, key);
+  const m = new Map(); base.forEach(r => { const v = r[key]; m.set(v, (m.get(v) || 0) + 1); });
+  return m;
+}
+function optionsFor(F, st) {
+  const c = counts(st, F.key);
+  const all = [...new Set(ROWS.map(r => r[F.key]))];
+  const order = F.labels ? Object.keys(F.labels) : all.sort((a, b) => String(a).localeCompare(String(b)));
+  return order.filter(v => all.includes(v)).map(v => ({ v, label: valLabel(F, v), n: c.get(v) || 0 }));
+}
+function summary(f) {
+  const F = FIELD[f.field];
+  if (F.type === 'enum') { const l = f.values.map(v => F.short ? F.short(v) : valLabel(F, v)); return l.length <= 2 ? l.join(', ') : l.slice(0, 2).join(', ') + ' +' + (l.length - 2); }
+  if (F.type === 'bool') return f.value ? F.yes : F.no;
+  if (F.type === 'number') return f.min !== '' && f.max !== '' ? `${f.min} to ${f.max} ${F.unit}` : f.min !== '' ? `${f.min}+ ${F.unit}` : `up to ${f.max} ${F.unit}`;
+  if (f.preset) return DATE_PRESETS.find(p => p[0] === f.preset)[1];
+  return (f.from ? 'from ' + fmtDate(new Date(f.from)) : '') + (f.from && f.to ? ' ' : '') + (f.to ? 'to ' + fmtDate(new Date(f.to)) : '');
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const getF = (st, key) => st.filters.find(f => f.field === key);
+const ensureF = (st, key) => getF(st, key) || (st.filters.push(emptyFilter(key)), getF(st, key));
+const activeCount = st => st.filters.filter(isActive).length;
+
+/* ---------- shared value control (one picker, three chromes) ---------- */
+function controlHTML(F, f, st, opts = {}) {
+  const pfx = opts.pfx || '';
+  if (F.type === 'enum') {
+    const list = optionsFor(F, st);
+    const q = opts.vq != null ? opts.vq : ((st.pq && st.pq[F.key]) || '');
+    const shown = list.filter(o => !q || o.label.toLowerCase().includes(q.toLowerCase()));
+    const limit = opts.limit && !st.showAll?.[F.key] && !q ? opts.limit : 999;
+    let h = '';
+    if ((F.search || list.length > 8) && opts.vq == null) h += `<div class="psearch">${ic('search', 14)}<input id="${pfx}q-${F.key}" data-act="pq" data-field="${F.key}" placeholder="Find ${F.label.toLowerCase()}…" value="${esc(q)}"></div>`;
+    h += `<div class="list" role="group">`;
+    h += shown.slice(0, limit).map(o => `<button class="opt ${o.n ? '' : 'zero'}" data-act="toggle" data-field="${F.key}" data-v="${esc(o.v)}"><span class="box ${f.values.includes(o.v) ? 'on' : ''}">${ic('check')}</span><span class="ol">${esc(o.label)}</span>${opts.only ? `<span class="only" role="button" data-act="only" data-field="${F.key}" data-v="${esc(o.v)}">Only</span>` : ''}<span class="c num">${o.n}</span></button>`).join('');
+    if (shown.length > limit) h += `<button class="opt lnk" data-act="showall" data-field="${F.key}">Show all ${shown.length}</button>`;
+    if (!shown.length) h += `<div class="hint" style="padding:10px 12px">Nothing matches "${esc(q)}".</div>`;
+    return h + '</div>';
+  }
+  if (F.type === 'bool') {
+    return `<div class="list">` + [[null, 'Anyone'], [true, F.yes], [false, F.no]].map(([v, l]) => `<button class="opt" data-act="setbool" data-field="${F.key}" data-v="${v}"><span class="box ${f.value === v ? 'on' : ''}">${ic('check')}</span>${l}</button>`).join('') + '</div>';
+  }
+  if (F.type === 'date') {
+    const presets = DATE_PRESETS.filter(p => F.key === 'ends' ? p[0] !== 'this_year' && p[0] !== 'last_90' : !p[0].startsWith('next') && p[0] !== 'none');
+    return `<div class="list">` + presets.map(p => `<button class="opt" data-act="preset" data-field="${F.key}" data-v="${p[0]}"><span class="box ${f.preset === p[0] ? 'on' : ''}">${ic('check')}</span>${p[1]}</button>`).join('') + `</div>
+      <div class="ranges"><input type="date" id="${pfx}from-${F.key}" data-act="from" data-field="${F.key}" value="${f.from}"><span class="to">to</span><input type="date" id="${pfx}to-${F.key}" data-act="to" data-field="${F.key}" value="${f.to}"></div>`;
+  }
+  return `<div class="ranges"><input type="number" id="${pfx}min-${F.key}" data-act="min" data-field="${F.key}" placeholder="From" value="${f.min}"><span class="to">to</span><input type="number" id="${pfx}max-${F.key}" data-act="max" data-field="${F.key}" placeholder="To" value="${f.max}"></div><div class="hint">${F.unit[0].toUpperCase() + F.unit.slice(1)} with this company.</div>`;
+}
+
+/* ---------- shared roster ---------- */
+function rosterHTML(rows, st, total) {
+  if (!rows.length) return `<div class="empty">${ic('search', 22)}<b>No employees match these filters</b><span>Remove one filter, or clear them all and start again.</span><button class="btn outline" data-act="clear">Clear all filters</button></div>`;
+  if (st.view === 'kanban') {
+    const cols = ['Running', 'Probation', 'Expiring', 'Exit', 'None'];
+    return `<div class="kan">` + cols.map(c => { const rs = rows.filter(r => r.status === c); return `<div class="kcol"><h4><span>${FIELD.status.labels[c]}</span><span class="num">${rs.length}</span></h4>${rs.slice(0, 6).map(r => `<div class="kcard"><b>${esc(r.name)}</b><small>${esc(r.job)} · ${esc(r.country)}</small></div>`).join('')}${rs.length > 6 ? `<div class="more">+${rs.length - 6} more</div>` : ''}</div>`; }).join('') + '</div>';
+  }
+  const shown = rows.slice(0, 12);
+  return `<div class="roster">` + shown.map(r => `<div class="row">
+    <div class="av" style="background:${r.av}">${esc(r.name[0])}</div>
+    <div><div class="nm">${esc(r.name)}</div><div class="jb">${esc(r.job)} · ${esc(r.department.split(' / ').pop())}<span class="ctry">${ic('globe', 11)}${esc(r.country)}</span></div></div>
+    <div class="st"><span class="pillst ${r.status}">${FIELD.status.labels[r.status]}</span></div>
+    <div class="money"><b>${esc(r.wageText)}</b><small>Monthly</small></div>
+    <div style="display:flex;gap:10px;align-items:center"><span class="rd ${r.ready ? '' : 'no'}" title="${r.ready ? 'Payroll-ready' : 'Not payroll-ready'}">${ic(r.ready ? 'ok' : 'warn', 18)}</span><button class="btn sm outline">${ic('file', 13)} Contract</button></div>
+  </div>`).join('') + (rows.length > 12 ? `<div class="more">Showing the first 12 of ${rows.length}. The real screen pages or scrolls.</div>` : '') + '</div>';
+}
+const kpiHTML = `<div class="kpis"><span><b class="num">4547</b> Headcount</span><span class="sep"></span><span><b class="num">4509</b> Running contracts</span><span class="sep"></span><span class="warn"><i class="dot"></i><b class="num">3</b> Expiring within 30 days</span><span class="sep"></span><span class="ok"><i class="dot ok"></i><b class="num">2</b> New this month</span><span class="sep"></span><span class="warn"><i class="dot"></i><b class="num">47</b> Not payroll-ready</span><span class="sep"></span><span><b class="num">₫76.9B</b> Monthly wage</span></div>`;
+const topHTML = `<div class="screen-top"><span class="crumb">People ${ic('chev-r', 12)} <b>Employees</b></span><span class="actions"><button class="btn outline sm">${ic('file', 13)} Contracts</button><button class="btn primary sm">${ic('plus', 13)} Add employee</button></span></div>`;
+const viewSeg = st => `<div class="seg"><button class="${st.view === 'list' ? 'on' : ''}" data-act="view" data-v="list" title="List">${ic('list', 14)}</button><button class="${st.view === 'kanban' ? 'on' : ''}" data-act="view" data-v="kanban" title="Board">${ic('kanban', 14)}</button></div>`;
+const countLine = (rows, st, extra = '') => `<div class="count"><span>Showing <b class="num">${rows.length}</b> of <b class="num">${ROWS.length}</b> in this sample${activeCount(st) ? ` · <b class="num">${activeCount(st)}</b> filter${activeCount(st) > 1 ? 's' : ''}` : ''}</span>${extra}</div>`;
+
+/* ---------- common state + event plumbing ---------- */
+function makeState(extra) { return Object.assign({ q: '', filters: [], view: 'list', mode: 'all', pq: {}, showAll: {}, open: null, focus: null }, extra); }
+function flipPops(root) { const edge = root.getBoundingClientRect().right - 8; root.querySelectorAll('.pop').forEach(p => { if (p.getBoundingClientRect().right > edge) p.classList.add('right'); }); }
+function bind(root, st, render) {
+  const rerender = () => { render(); flipPops(root); if (st.afterRender) st.afterRender(); if (st.focus) { const el = root.querySelector('#' + CSS.escape(st.focus.id)); if (el) { el.focus(); try { el.setSelectionRange(st.focus.pos, st.focus.pos); } catch (e) {} } } };
+  root.addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b || !root.contains(b)) return;
+    const a = b.dataset.act, key = b.dataset.field, v = b.dataset.v;
+    const handled = st.onAct && st.onAct(a, b, e);
+    if (handled) { rerender(); return; }
+    switch (a) {
+      case 'toggle': { const f = ensureF(st, key); const val = v; f.values = f.values.includes(val) ? f.values.filter(x => x !== val) : [...f.values, val]; break; }
+      case 'setbool': ensureF(st, key).value = v === 'null' ? null : v === 'true'; break;
+      case 'preset': { const f = ensureF(st, key); f.preset = f.preset === v ? null : v; f.from = f.to = ''; break; }
+      case 'showall': st.showAll[key] = true; break;
+      case 'remove': st.filters = st.filters.filter(f => f.field !== key); st.open = null; break;
+      case 'clear': st.filters = []; st.q = ''; st.open = null; break;
+      case 'view': st.view = v; break;
+      default: return;
+    }
+    st.focus = null; rerender();
+  });
+  root.addEventListener('input', e => {
+    const el = e.target.closest('[data-act]'); if (!el) return;
+    const a = el.dataset.act, key = el.dataset.field;
+    st.focus = { id: el.id, pos: el.selectionEnd };
+    if (a === 'q') st.q = el.value;
+    else if (a === 'pq') st.pq[key] = el.value;
+    else if (a === 'from' || a === 'to') { const f = ensureF(st, key); f[a] = el.value; f.preset = null; }
+    else if (a === 'min' || a === 'max') ensureF(st, key)[a] = el.value;
+    else if (a === 'newname') st.newName = el.value;
+    else if (st.onInput && st.onInput(a, el)) {}
+    else return;
+    rerender();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && st.open) { if (st.open === 'drawer') { st.onAct('close', { dataset: {} }); } else { st.open = null; } st.focus = null; rerender(); } });
+  document.addEventListener('click', e => { if (st.open && !e.target.closest('.pop') && !e.target.closest('[data-act="open"]') && !e.target.closest('.drawer')) { if (st.open === 'drawer') return; st.open = null; st.focus = null; rerender(); } });
+  rerender();
+}
+
+/* ---------- saved views (shared by A and B+) ---------- */
+const PRESET_VIEWS = [
+  { id: 'all', name: 'All employees', filters: [] },
+  { id: 'notready', name: 'Not payroll-ready', filters: [Object.assign(emptyFilter('ready'), { value: false })] },
+  { id: 'expiring', name: 'Expiring soon', filters: [Object.assign(emptyFilter('status'), { values: ['Expiring'] })] },
+  { id: 'newmonth', name: 'Joined this month', filters: [Object.assign(emptyFilter('joined'), { preset: 'this_month' })] },
+];
+const cloneF = fs => fs.map(f => ({ ...f, values: [...f.values] }));
+const sigF = fs => JSON.stringify(fs.filter(isActive).map(f => ({ ...f })).sort((a, b) => a.field.localeCompare(b.field)));
+const allViews = st => [...PRESET_VIEWS, ...st.views];
+const curView = st => allViews(st).find(x => x.id === st.viewOn) || PRESET_VIEWS[0];
+const isDirty = st => sigF(st.filters) !== sigF(curView(st).filters);
+function viewActs(st, a, b) {
+  const v = b.dataset.v;
+  if (a === 'useview') { const vw = allViews(st).find(x => x.id === v); st.viewOn = v; st.filters = cloneF(vw.filters); st.q = ''; st.open = null; return true; }
+  if (a === 'saveopen') { st.saveOpen = !st.saveOpen; st.newName = ''; st.focus = st.saveOpen ? { id: st.pfx + 'newname', pos: 0 } : null; return true; }
+  if (a === 'savego') { const n = st.newName.trim() || 'My view'; const id = 'u' + Date.now(); st.views.push({ id, name: n, filters: cloneF(st.filters) }); st.viewOn = id; st.saveOpen = false; st.focus = null; return true; }
+  if (a === 'reset') { st.filters = cloneF(curView(st).filters); return true; }
+  return false;
+}
+function viewsHTML(st) {
+  const dirty = isDirty(st);
+  return `<div class="views">` + allViews(st).map(vw => {
+    const n = apply(ROWS, { ...st, q: '', filters: vw.filters }).length;
+    return `<button class="view ${st.viewOn === vw.id ? 'on' : ''} ${st.viewOn === vw.id && dirty ? 'dirty' : ''}" data-act="useview" data-v="${vw.id}">${vw.name}${st.viewOn === vw.id && dirty ? ' •' : ''}<span class="c num">${n}</span></button>`;
+  }).join('') + (dirty ? `<span class="pillwrap" style="margin-left:auto"><button class="view add" data-act="saveopen">${ic('save', 14)} Save view</button>${st.saveOpen ? `<div class="pop right" style="width:260px"><div class="head">Name this view</div><div class="ranges" style="grid-template-columns:1fr"><input id="${st.pfx}newname" data-act="newname" placeholder="e.g. Hanoi plant, expiring" value="${esc(st.newName)}"></div><div class="foot"><button class="lnk" data-act="saveopen">Cancel</button><button class="btn primary sm sp" data-act="savego">Save</button></div></div>` : ''}</span><button class="view" data-act="reset" title="Back to the saved view">${ic('undo', 14)} Reset</button>` : '') + '</div>';
+}
+
+/* ========== OPTION B+: facet panel, upgraded ========== */
+(function () {
+  const root = document.getElementById('scr-plus');
+  const st = makeState({ pfx: 'p-', panel: true, closed: {}, pinned: ['status', 'department', 'country'], fs: '', flash: null, views: [], viewOn: 'all', saveOpen: false, newName: '' });
+  st.filters = [Object.assign(emptyFilter('country'), { values: ['Vietnam', 'Indonesia'] }), Object.assign(emptyFilter('status'), { values: ['Running'] })];
+  st.onAct = (a, b) => {
+    const key = b.dataset.field;
+    if (viewActs(st, a, b)) return true;
+    if (a === 'panel') { st.panel = !st.panel; return true; }
+    if (a === 'sec') { st.closed[key] = !st.closed[key]; return true; }
+    if (a === 'pin') { st.pinned = st.pinned.includes(key) ? st.pinned.filter(k => k !== key) : [...st.pinned, key]; return true; }
+    if (a === 'only') { ensureF(st, key).values = [b.dataset.v]; return true; }
+    if (a === 'jump') { st.panel = true; st.closed[key] = false; st.fs = ''; st.flash = key; return true; }
+    if (a === 'clearfs') { st.fs = ''; st.focus = null; return true; }
+    if (a === 'clearfield') { st.filters = st.filters.filter(f => f.field !== key); return true; }
+    return false;
+  };
+  st.onInput = (a, el) => { if (a === 'fs') { st.fs = el.value; return true; } return false; };
+  st.afterRender = () => { if (st.flash) { const el = root.querySelector(`[data-sec="${st.flash}"]`); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); st.flash = null; } };
+
+  function section(F) {
+    const f = getF(st, F.key) || emptyFilter(F.key);
+    const on = isActive(f);
+    const fs = st.fs.trim().toLowerCase();
+    let vq = null;
+    if (fs) {
+      const labelMatch = F.label.toLowerCase().includes(fs);
+      const vals = F.type === 'enum' ? optionsFor(F, st).filter(o => o.label.toLowerCase().includes(fs)) : [];
+      if (!labelMatch && !vals.length) return '';
+      if (!labelMatch) vq = fs;
+    }
+    const closed = fs ? false : !!st.closed[F.key];
+    const n = F.type === 'enum' ? f.values.length : on ? 1 : 0;
+    const pinned = st.pinned.includes(F.key);
+    return `<div class="fsec ${closed ? 'closed' : ''} ${on ? 'on' : ''} ${st.flash === F.key ? 'flash' : ''}" data-sec="${F.key}">
+      <div class="fth"><button class="ft" data-act="sec" data-field="${F.key}" aria-expanded="${!closed}">${ic(F.icon, 15)}${F.label}${n ? `<span class="n">${n}</span>` : ''}${closed && on ? `<span class="sum">${esc(summary(f))}</span>` : ''}<span class="chev" style="${n || (closed && on) ? '' : 'margin-left:auto'}">${ic('chev-d', 14)}</span></button><button class="pinbtn ${pinned ? 'on' : ''}" data-act="pin" data-field="${F.key}" title="${pinned ? 'Unpin from the top' : 'Pin to the top'}">${ic('pin2', 13)}</button></div>
+      <div class="fb">${controlHTML(F, f, st, { pfx: 'p-', limit: 6, only: true, vq })}${on ? `<button class="lnk fclear" data-act="clearfield" data-field="${F.key}">Clear ${F.label.toLowerCase()}</button>` : ''}</div></div>`;
+  }
+  function render() {
+    const rows = apply(ROWS, st);
+    const act = st.filters.filter(isActive);
+    const fs = st.fs.trim();
+    const pinnedF = st.pinned.map(k => FIELD[k]).filter(Boolean);
+    const restF = FIELDS.filter(F => !st.pinned.includes(F.key));
+    let secs = pinnedF.map(section).join('');
+    const rest = restF.map(section).join('');
+    if (rest) secs += (!fs ? `<div class="fdiv">More filters</div>` : '') + rest;
+    if (!secs) secs = `<div class="hint" style="padding:14px">Nothing called "${esc(fs)}". Try a field like "manager" or a value like "Hanoi".</div>`;
+    const chips = act.length ? `<div class="chips">` + act.map(f => { const F = FIELD[f.field]; return `<span class="chip go" data-act="jump" data-field="${F.key}" title="Open this filter">${ic(F.icon, 13)}<span class="f">${F.label}</span>${esc(summary(f))}<button class="x" data-act="remove" data-field="${F.key}" title="Remove">${ic('x', 12)}</button></span>`; }).join('') + `<button class="chip ghost" data-act="clear">Clear all</button></div>` : '';
+    root.innerHTML = topHTML + `<div class="screen-body">${kpiHTML}${viewsHTML(st)}
+      <div class="tbar"><button class="btn ${st.panel ? 'on' : ''}" data-act="panel">${ic('panel-l', 15)} ${st.panel ? 'Hide filters' : 'Filters'}${act.length ? `<span class="badge">${act.length}</span>` : ''}</button><label class="search">${ic('search', 15)}<input id="p-q" data-act="q" placeholder="Search name, job, department…" value="${esc(st.q)}"></label><span class="right"><button class="btn ghost sm">${ic('sort', 14)} Name</button>${viewSeg(st)}</span></div>
+      <div class="facet-layout plus ${st.panel ? '' : 'closed'}">${st.panel ? `<div class="foverlay" data-act="panel"></div>` : ''}<aside class="facets"><div class="fh">${ic('filter', 15)} Filters<button class="sp" data-act="clear">Clear all</button></div>
+        <div class="psearch fsearch">${ic('search', 14)}<input id="p-fs" data-act="fs" placeholder="Find a filter or a value…" value="${esc(st.fs)}">${fs ? `<button class="x" data-act="clearfs" title="Clear">${ic('x', 12)}</button>` : ''}</div>
+        ${secs}<div class="ffoot">${ic('link', 13)} The address bar carries these filters, so the view can be shared.</div></aside>
+      <div style="min-width:0;display:grid;gap:10px;align-content:start">${chips}${countLine(rows, st)}${rosterHTML(rows, st)}</div></div></div>`;
+  }
+  bind(root, st, render);
+})();
+
+/* ========== OPTION A: filter bar with chips ========== */
+(function () {
+  const root = document.getElementById('scr-bar');
+  const st = makeState({ pfx: 'a-', fq: '', views: [], viewOn: 'all', saveOpen: false, newName: '' });
+  // start with one filter on so the pattern reads at rest
+  st.filters = [Object.assign(emptyFilter('department'), { values: ['Manufacturing / Assembly Line B', 'Manufacturing / Maintenance'] })];
+  st.onAct = (a, b) => {
+    const key = b.dataset.field, v = b.dataset.v;
+    if (viewActs(st, a, b)) return true;
+    if (a === 'open') { st.open = st.open === key ? null : key; st.fq = ''; st.focus = key === 'add' ? { id: 'a-fq', pos: 0 } : null; return true; }
+    if (a === 'pickfield') { ensureF(st, key); st.open = key; st.focus = null; return true; }
+    if (a === 'back') { st.open = 'add'; st.focus = { id: 'a-fq', pos: 0 }; return true; }
+    if (a === 'done') { st.open = null; st.focus = null; return true; }
+    if (a === 'clearfield') { st.filters = st.filters.filter(f => f.field !== key); return true; }
+    return false;
+  };
+  st.onInput = (a, el) => { if (a === 'fq') { st.fq = el.value; return true; } return false; };
+
+  function render() {
+    const rows = apply(ROWS, st);
+    const quick = FIELDS.filter(F => F.quick);
+    const extra = st.filters.filter(f => isActive(f) && !FIELD[f.field].quick);
+    const pillHTML = F => {
+      const f = getF(st, F.key), on = f && isActive(f);
+      return `<span class="pillwrap"><button class="pill ${on ? 'on' : ''}" data-act="open" data-field="${F.key}" aria-expanded="${st.open === F.key}">${ic(F.icon, 14)}${F.label}${on ? `<span class="v">· ${esc(summary(f))}</span>` : ''}${ic('chev-d', 13)}</button>${st.open === F.key ? popFor(F) : ''}</span>`;
+    };
+    const popFor = F => `<div class="pop"><div class="head">${!F.quick ? `<button class="back" data-act="back" title="All fields">${ic('chev-l', 14)}</button>` : ''}${ic(F.icon, 14)} ${F.label}<span class="sp">${FIELD[F.key].type === 'enum' ? 'pick one or many' : ''}</span></div>${controlHTML(FIELD[F.key], ensureF(st, F.key), st, { pfx: 'a-' })}<div class="foot"><button class="lnk" data-act="clearfield" data-field="${F.key}">Clear</button><button class="btn primary sm sp" data-act="done">Done</button></div></div>`;
+
+    const addPop = () => {
+      const q = st.fq.toLowerCase();
+      const fields = FIELDS.filter(F => !q || F.label.toLowerCase().includes(q));
+      return `<div class="pop"><div class="psearch">${ic('search', 14)}<input id="a-fq" data-act="fq" placeholder="Type a field name…" value="${esc(st.fq)}"></div><div class="list">` +
+        GROUPS.map(g => { const fs = fields.filter(F => F.group === g); return fs.length ? `<div class="group">${g}</div>` + fs.map(F => `<button class="opt" data-act="pickfield" data-field="${F.key}">${ic(F.icon, 15)}${F.label}${getF(st, F.key) && isActive(getF(st, F.key)) ? `<span class="c">${esc(summary(getF(st, F.key)))}</span>` : ''}</button>`).join('') : ''; }).join('') +
+        (!fields.length ? `<div class="hint" style="padding:10px 12px">No field called "${esc(st.fq)}".</div>` : '') + `</div><div class="foot"><span style="color:var(--mute)">${ic('cmd', 13)} Up / down then Enter</span></div></div>`;
+    };
+
+    const chips = extra.length ? `<div class="chips">` + extra.map(f => { const F = FIELD[f.field]; return `<span class="pillwrap"><span class="chip"><button data-act="open" data-field="${F.key}" style="display:inline-flex;gap:6px;align-items:center">${ic(F.icon, 13)}<span class="f">${F.label}</span>${esc(summary(f))}</button><button class="x" data-act="remove" data-field="${F.key}" title="Remove">${ic('x', 12)}</button></span>${st.open === F.key ? popFor(F) : ''}</span>`; }).join('') + `<button class="chip ghost" data-act="clear">Clear all</button></div>` : '';
+
+    root.innerHTML = topHTML + `<div class="screen-body">${kpiHTML}${viewsHTML(st)}
+      <div class="tbar"><label class="search">${ic('search', 15)}<input id="a-q" data-act="q" placeholder="Search name, job, department…" value="${esc(st.q)}"></label>
+        ${quick.map(pillHTML).join('')}
+        <span class="pillwrap"><button class="pill add" data-act="open" data-field="add">${ic('plus', 14)} Add filter</button>${st.open === 'add' ? addPop() : ''}</span>
+        <span class="right"><button class="btn ghost sm">${ic('sort', 14)} Name</button>${viewSeg(st)}</span></div>
+      ${chips}${countLine(rows, st)}${rosterHTML(rows, st)}</div>`;
+  }
+  bind(root, st, render);
+})();
+
+/* ========== OPTION B: facet panel ========== */
+(function () {
+  const root = document.getElementById('scr-facets');
+  const st = makeState({ panel: true, closed: {} });
+  st.filters = [Object.assign(emptyFilter('country'), { values: ['Vietnam', 'Indonesia'] })];
+  st.onAct = (a, b) => {
+    if (a === 'panel') { st.panel = !st.panel; return true; }
+    if (a === 'sec') { const k = b.dataset.field; st.closed[k] = !st.closed[k]; return true; }
+    return false;
+  };
+  function render() {
+    const rows = apply(ROWS, st);
+    const act = st.filters.filter(isActive);
+    const secs = FIELDS.map(F => {
+      const f = getF(st, F.key) || emptyFilter(F.key);
+      const on = isActive(f);
+      const n = F.type === 'enum' ? f.values.length : on ? 1 : 0;
+      return `<div class="fsec ${st.closed[F.key] ? 'closed' : ''}"><button class="ft" data-act="sec" data-field="${F.key}" aria-expanded="${!st.closed[F.key]}">${ic(F.icon, 15)}${F.label}${n ? `<span class="n">${n}</span>` : ''}<span class="chev" style="${n ? '' : 'margin-left:auto'}">${ic('chev-d', 14)}</span></button><div class="fb">${controlHTML(F, f, st, { pfx: 'b-', limit: 6 })}</div></div>`;
+    }).join('');
+    const chips = act.length ? `<div class="chips">` + act.map(f => { const F = FIELD[f.field]; return `<span class="chip">${ic(F.icon, 13)}<span class="f">${F.label}</span>${esc(summary(f))}<button class="x" data-act="remove" data-field="${F.key}">${ic('x', 12)}</button></span>`; }).join('') + `<button class="chip ghost" data-act="clear">Clear all</button></div>` : '';
+    root.innerHTML = topHTML + `<div class="screen-body">${kpiHTML}
+      <div class="tbar"><button class="btn ${st.panel ? 'on' : ''}" data-act="panel">${ic('panel-l', 15)} ${st.panel ? 'Hide filters' : 'Show filters'}${act.length ? `<span class="badge">${act.length}</span>` : ''}</button><label class="search">${ic('search', 15)}<input id="b-q" data-act="q" placeholder="Search name, job, department…" value="${esc(st.q)}"></label><span class="right"><button class="btn ghost sm">${ic('sort', 14)} Name</button>${viewSeg(st)}</span></div>
+      <div class="facet-layout ${st.panel ? '' : 'closed'}"><aside class="facets"><div class="fh">${ic('filter', 15)} Filters<button class="sp" data-act="clear">Clear all</button></div>${secs}</aside>
+      <div style="min-width:0;display:grid;gap:10px;align-content:start">${chips}${countLine(rows, st)}${rosterHTML(rows, st)}</div></div></div>`;
+  }
+  bind(root, st, render);
+})();
+
+/* ========== OPTION C: filter drawer ========== */
+(function () {
+  const root = document.getElementById('scr-drawer');
+  const st = makeState({ applied: [], appliedMode: 'all', closed: {} });
+  st.filters = [Object.assign(emptyFilter('status'), { values: ['Running'] }), Object.assign(emptyFilter('band'), { values: ['Lead', 'Manager'] })];
+  const clone = fs => fs.map(f => ({ ...f, values: [...f.values] }));
+  st.applied = clone(st.filters);
+  st.onAct = (a, b) => {
+    if (a === 'drawer') { st.open = 'drawer'; st.filters = clone(st.applied); st.mode = st.appliedMode; return true; }
+    if (a === 'close') { st.open = null; st.filters = clone(st.applied); st.mode = st.appliedMode; return true; }
+    if (a === 'applygo') { st.applied = clone(st.filters); st.appliedMode = st.mode; st.open = null; return true; }
+    if (a === 'mode') { st.mode = b.dataset.v; return true; }
+    if (a === 'sec') { const k = b.dataset.field; st.closed[k] = !st.closed[k]; return true; }
+    if (a === 'remove') { st.applied = st.applied.filter(f => f.field !== b.dataset.field); st.filters = clone(st.applied); return true; }
+    if (a === 'clear') { st.applied = []; st.filters = []; st.q = ''; return true; }
+    if (a === 'clearall-draft') { st.filters = []; return true; }
+    return false;
+  };
+  function render() {
+    const shownSt = { ...st, filters: st.applied, mode: st.appliedMode };
+    const rows = apply(ROWS, shownSt);
+    const act = st.applied.filter(isActive);
+    const chips = act.length ? `<div class="chips">` + act.map(f => { const F = FIELD[f.field]; return `<span class="chip">${ic(F.icon, 13)}<span class="f">${F.label}</span>${esc(summary(f))}<button class="x" data-act="remove" data-field="${F.key}">${ic('x', 12)}</button></span>`; }).join('') + (act.length > 1 ? `<span class="chip ghost" style="color:var(--mute)">match ${st.appliedMode}</span>` : '') + `<button class="chip ghost" data-act="clear">Clear all</button></div>` : '';
+    let drawer = '';
+    if (st.open === 'drawer') {
+      const live = apply(ROWS, st).length;
+      const cards = GROUPS.map(g => `<div class="group" style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);font-weight:700;padding:10px 8px 2px">${g}</div>` + FIELDS.filter(F => F.group === g).map(F => {
+        const f = getF(st, F.key) || emptyFilter(F.key); const on = isActive(f);
+        const closed = st.closed[F.key] === undefined ? !on : st.closed[F.key];
+        return `<div class="dcard ${on ? 'on' : ''} ${closed ? 'closed' : ''}"><button class="ft" data-act="sec" data-field="${F.key}" aria-expanded="${!closed}">${ic(F.icon, 15)}${F.label}${on ? `<span class="sum">${esc(summary(f))}</span>` : ''}<span class="chev" style="${on ? 'margin-left:6px' : 'margin-left:auto'}">${ic('chev-d', 14)}</span></button><div class="fb">${controlHTML(F, f, st, { pfx: 'c-', limit: 6 })}</div></div>`;
+      }).join('')).join('');
+      drawer = `<div class="overlay" data-act="close"></div><div class="drawer" role="dialog" aria-label="Filters"><div class="dh">${ic('sliders', 18)} Filters<button class="close" data-act="close" title="Close">${ic('x', 16)}</button></div>
+        <div class="mode">Show people who match <span class="seg"><button class="${st.mode === 'all' ? 'on' : ''}" data-act="mode" data-v="all">all of these</button><button class="${st.mode === 'any' ? 'on' : ''}" data-act="mode" data-v="any">any of these</button></span></div>
+        <div class="body">${cards}</div>
+        <div class="df"><button class="lnk" data-act="clearall-draft">Clear</button><button class="btn primary" data-act="applygo">Show <span class="live num">${live}</span> employee${live === 1 ? '' : 's'}</button></div></div>`;
+    }
+    root.innerHTML = topHTML + `<div class="screen-body">${kpiHTML}
+      <div class="tbar"><label class="search">${ic('search', 15)}<input id="c-q" data-act="q" placeholder="Search name, job, department…" value="${esc(st.q)}"></label><button class="btn ${act.length ? 'on' : ''}" data-act="drawer">${ic('sliders', 15)} Filters${act.length ? `<span class="badge">${act.length}</span>` : ''}</button><span class="right"><button class="btn ghost sm">${ic('sort', 14)} Name</button>${viewSeg(st)}</span></div>
+      ${chips}${countLine(rows, shownSt)}${rosterHTML(rows, st)}</div>${drawer}`;
+  }
+  bind(root, st, render);
+})();
+
+/* ---------- score table ---------- */
+const SCORES = [
+  ['Screen space for the list', 4, 5, 2, 5],
+  ['Finding any field or value quickly', 5, 4, 5, 4],
+  ['Changing one value (clicks)', 5, 5, 5, 2],
+  ['Seeing what is applied at a glance', 5, 5, 4, 4],
+  ['Works on list, kanban, board', 3, 5, 2, 4],
+  ['Works on a phone', 4, 4, 2, 5],
+  ['Familiar to users', 4, 5, 4, 3],
+  ['Many conditions, any / all', 3, 3, 2, 5],
+  ['Cost to build and run', 3, 4, 2, 4],
+];
+const dots = n => `<span class="dots">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+document.getElementById('scoreBody').innerHTML = SCORES.map(r => `<tr><td>${r[0]}</td>${[1, 2, 3, 4].map(i => `<td>${dots(r[i])}</td>`).join('')}</tr>`).join('') +
+  `<tr><td><b>Total</b></td>${[1, 2, 3, 4].map(i => `<td><b class="num">${SCORES.reduce((s, r) => s + r[i], 0)}</b> / 45</td>`).join('')}</tr>`;
+
+/* ---------- option tabs + hash ---------- */
+const TABS = ['plus', 'bar', 'facets', 'drawer'];
+function showTab(id) {
+  if (!TABS.includes(id)) id = 'plus';
+  document.querySelectorAll('.otab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+  TABS.forEach(t => { document.getElementById('panel-' + t).hidden = t !== id; });
+}
+document.querySelectorAll('.otab').forEach(b => b.addEventListener('click', () => { const id = b.dataset.tab; if (location.hash !== '#' + id) location.hash = id; showTab(id); }));
+window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
+showTab(location.hash.slice(1));
+</script>
+
+</body>
+</html>

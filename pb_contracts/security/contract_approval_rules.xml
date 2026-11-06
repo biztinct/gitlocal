@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60). The route's first rung is the
+         person's own manager, who holds no HR role at all, and the engine
+         re-checks `check_access('read')` before it accepts a decision. The
+         wide rule ships with the narrow one: an HR user is also a plain
+         internal user, and the narrow rule alone would take their own
+         proposals away from them. -->
+
+    <record id="rule_contract_proposal_seat" model="ir.rule">
+        <field name="name">Contract change: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_contract_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_contract_proposal_hr" model="ir.rule">
+        <field name="name">Contract change: HR</field>
+        <field name="model_id" ref="model_pb_contract_proposal"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

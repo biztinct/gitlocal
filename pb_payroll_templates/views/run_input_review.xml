@@ -1,0 +1,12 @@
+<odoo>
+    <record id="run_input_review_button" model="ir.ui.view">
+        <field name="name">Payroll batch input changes</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_input_changes" type="object" string="Input changes"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

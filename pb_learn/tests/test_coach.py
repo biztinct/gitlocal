@@ -1,0 +1,668 @@
+# -*- coding: utf-8 -*-
+"""The Payobook Coach: precision, capability, and the honesty rules.
+
+The honesty rules are the point of this file. They are not conventions to be
+remembered — each is asserted, because "the Coach never invents a rate" is only
+true for as long as nothing has quietly made it false.
+
+Phase 1a retarget: the intents, screens and column glossary are the static
+content plane rather than four ORM tables, and the screen MATCHERS moved from
+`learn.screen` to `learn.runtime`. Every property asserted below is the one
+that was asserted before — what changed is where the material is read from.
+"""
+import json
+import os
+import re
+
+from odoo.modules.module import get_module_path
+from odoo.tests.common import TransactionCase, tagged
+
+from .common import load_content, one
+
+# Questions a payroll officer or an owner might genuinely type into a help box
+# on a payroll system, and that this system must never help with. Every one of
+# them must come back as the `compliance` refusal and nothing else — a
+# retrieval score is a guess, and a guess about how to reduce a statutory
+# obligation reads as instruction.
+#
+# These are not hard to mis-match: "làm sao để giảm đóng BHXH" shares real
+# topic words with the `bhxh` glossary intent, which explains what the 8% is.
+# Scored rather than denied, the Coach answers "how do I under-declare" with
+# the contribution rates.
+OUT_OF_SCOPE = [
+    "how do we pay less tax on salaries",
+    "is there a way to avoid tax on the bonus",
+    "how do we under declare the insurance base",
+    "làm sao để giảm đóng bhxh",
+    "có cách nào lách phần thuế này không",
+    "khai thấp lương đóng bảo hiểm được không",
+]
+# NOT out of scope: "what is BHXH" or "why did the net change". Those are the
+# questions the Coach exists for, and refusing them would be its own failure.
+
+TOKEN_RE = re.compile(r"\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}")
+
+
+@tagged('post_install', '-at_install')
+class TestCoach(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.Intent = cls.env['learn.intent']
+        cls.Content = cls.env['learn.content']
+        cls.Runtime = cls.env['learn.runtime']
+        cls.content = load_content()
+        cls.screens = cls.content['screens']
+        cls.intents = cls.content['intents']
+        cls.screen_keys = [s['key'] for s in cls.screens]
+
+    def matchers(self, screen):
+        return self.Runtime._matchers(screen, self.Runtime._contested_models())
+
+    # ------------------------------------------------------------ precision
+    def test_01_out_of_scope_questions_resolve_to_nothing(self):
+        """A wrong answer costs more than no answer.
+
+        Especially here: the Coach sits on a payroll system, and a confident
+        product answer to "how do we pay less" is worse than silence.
+        """
+        leaked = []
+        for q in OUT_OF_SCOPE:
+            for screen in (None, 'payruns', 'payslips'):
+                key = self.Intent.resolve(q, screen)
+                # `compliance` is the RIGHT answer: an explicit refusal that
+                # then points at where the rates live and who owns the policy.
+                # Anything else is the Coach answering a tax-advice question
+                # with product content.
+                if key and key != 'compliance':
+                    leaked.append('%r on %s -> %s' % (q, screen, key))
+        self.assertFalse(leaked, "Out-of-scope questions the Coach answered:\n  "
+                                 + "\n  ".join(leaked))
+
+    def test_01b_advice_questions_are_refused_and_routed(self):
+        """Refusing is half of it. A dead end leaves the person exactly where
+        they started, so the refusal must name who owns the policy and where
+        the numbers actually come from."""
+        for q in OUT_OF_SCOPE:
+            res = self.Intent.ask(q, 'payslips')
+            self.assertTrue(res['matched'], "no refusal offered for %r" % q)
+            kinds = {b['kind'] for b in res['blocks']}
+            self.assertIn('refusal', kinds, "%r was not refused" % q)
+            self.assertIn('who', kinds, "%r refused with no route to a decision owner" % q)
+            self.assertIn('how', kinds, "%r refused with nothing to do instead" % q)
+
+    def test_02_the_refusal_actually_says_something(self):
+        """A refusal that renders empty is indistinguishable from a crash.
+
+        Refusing on purpose beats matching nothing and falling through to a
+        generic list, but only if the refusal has words in it.
+        """
+        answer = self.Intent._answer('compliance', 'payslips')
+        self.assertTrue(answer, "the compliance refusal is missing entirely")
+        text = " ".join(b['body']['en'] for b in answer['blocks']
+                        if isinstance(b.get('body'), dict))
+        self.assertTrue(text.strip(), "the compliance refusal says nothing at all")
+
+    # --------------------------------------------------------------- recall
+    def test_03_every_intent_is_reachable_by_its_own_label(self):
+        """If the Coach offers a question as a suggestion, asking it must work.
+
+        The suggestion buttons submit the label verbatim, so a label that does
+        not resolve to its own intent is a dead button.
+        """
+        misses = []
+        for intent in self.intents:
+            for lang in ('en', 'vi'):
+                label = one(intent['label'], lang)
+                got = self.Intent.resolve(label, None)
+                if got != intent['key']:
+                    misses.append('%s [%s] %r -> %s'
+                                  % (intent['key'], lang, label[:50], got))
+        self.assertFalse(misses, "Intents unreachable by their own label:\n  "
+                                 + "\n  ".join(misses))
+
+    def test_04_every_suggested_question_resolves(self):
+        misses = []
+        for screen in self.screens:
+            for chip in screen['suggest']:
+                got = self.Intent.resolve(one(chip['label']), screen['key'])
+                if got != chip['key']:
+                    misses.append('%s on %s -> %s' % (chip['key'], screen['key'], got))
+        self.assertFalse(misses, "Suggested questions that do not resolve:\n  "
+                                 + "\n  ".join(misses))
+
+    # ----------------------------------------------------------- capability
+    def test_05_capability_is_read_from_the_real_gate(self):
+        """Not from a role name the tutorial keeps its own copy of."""
+        Users = self.env['res.users'].with_context(no_reset_password=True)
+        base = self.env.ref('base.group_user').id
+        officer = self.env.ref('pb_hr_payroll_base.group_payroll_base_officer').id
+        manager = self.env.ref('pb_hr_payroll_base.group_payroll_base_manager').id
+
+        plain = Users.create({'name': 'Coach Plain', 'login': 'coach_plain_test',
+                              'group_ids': [(6, 0, [base])]})
+        clerk = Users.create({'name': 'Coach Clerk', 'login': 'coach_clerk_test',
+                              'group_ids': [(6, 0, [base, officer])]})
+        boss = Users.create({'name': 'Coach Boss', 'login': 'coach_boss_test',
+                             'group_ids': [(6, 0, [base, manager])]})
+
+        # With no screen in play, the group is the only thing that decides.
+        # A signed-in user with NO payroll group is 'no_access', not
+        # 'operator': telling someone who holds nothing that they can run a
+        # payroll is the confidently-wrong answer this gate exists to prevent.
+        self.assertEqual(self.env(user=plain)['learn.intent']._capability(None), 'no_access')
+        self.assertEqual(self.env(user=clerk)['learn.intent']._capability(None), 'operator')
+        self.assertEqual(self.env(user=boss)['learn.intent']._capability(None), 'manager')
+
+        # A final approver is 'manager' too. They are not in the manager group,
+        # and the honest answer to "can I approve this run" from them is still
+        # yes — the capability follows the GATE, not the group's name.
+        approver = Users.create({
+            'name': 'Coach Approver', 'login': 'coach_approver_test',
+            'group_ids': [(6, 0, [
+                base, self.env.ref('pb_hr_payroll_base.group_payroll_final_approver').id])],
+        })
+        self.assertEqual(self.env(user=approver)['learn.intent']._capability(None), 'manager')
+
+        # VISIBILITY WINS, and the ordering is deliberate. Run Payroll's leaf
+        # is group-gated in pb_sidebar, so a user without those groups does not
+        # have it in their sidebar — and the honest answer to "how do I compute
+        # July" is then "you cannot even see that screen", not a lecture about
+        # a permission they also do not have.
+        self.assertEqual(
+            self.env(user=plain)['learn.intent']._capability('runpayroll'), 'no_access')
+
+    def test_06_the_capability_answer_differs(self):
+        """`approve` is the intent whose answer depends on permission.
+
+        Every capability must get an answer, and the answer for someone who
+        cannot approve must actually refuse — not quietly show the affirmative
+        and leave them to discover the greyed-out button themselves.
+
+        (The `approve` intent is Run A2 content; this test is what tells A2 it
+        is not finished until every reader gets a true answer.)
+        """
+        blocks_by_cap = {}
+        intent = self.Content.intent('approve')
+        self.assertTrue(intent, "the approve intent is missing")
+        for block in intent['blocks']:
+            blocks_by_cap.setdefault(block['capability'], []).append(block['kind'])
+        for cap in ('no_access', 'operator', 'manager'):
+            self.assertIn(cap, blocks_by_cap, "no answer for capability %s" % cap)
+        self.assertIn('refusal', blocks_by_cap['no_access'],
+                      "someone without the screen is not told so")
+        self.assertIn('ok', blocks_by_cap['manager'],
+                      "a manager is not told they can approve")
+
+    def test_07_a_refusal_always_says_who_can_and_how_to_ask(self):
+        """A refusal that stops at "you can't" leaves the person stuck, which
+        is the exact state the Coach exists to get them out of."""
+        bad = []
+        for intent in self.intents:
+            caps = {b['capability'] for b in intent['blocks'] if b['kind'] == 'refusal'}
+            for cap in caps:
+                kinds = {b['kind'] for b in intent['blocks'] if b['capability'] == cap}
+                if not ({'who', 'how'} & kinds):
+                    bad.append('%s [%s]' % (intent['key'], cap))
+        self.assertFalse(bad, "Refusals with no route forward:\n  " + "\n  ".join(bad))
+
+    # -------------------------------------------------------------- honesty
+    def test_08_the_coach_can_never_act(self):
+        """No control an answer renders may reach a product method.
+
+        Asserted against the source: every `data-act` the Coach emits must be
+        in COACH_ACTIONS, which contains only its own controls.
+        """
+        path = os.path.join(get_module_path('pb_learn'), 'static/src/coach/coach.js')
+        with open(path, encoding='utf-8') as fh:
+            src = fh.read()
+        declared = set(re.findall(r'"(c-[a-z-]+)"',
+                                  src.split('COACH_ACTIONS = new Set([')[1].split('])')[0]))
+        emitted = set(re.findall(r'data-act="(c-[a-z-]+)"', src))
+        self.assertTrue(declared, "COACH_ACTIONS could not be read")
+        rogue = emitted - declared
+        self.assertFalse(rogue, "The Coach renders actions outside its own set: %s" % rogue)
+        # And nothing in the answer path calls the action service directly.
+        answer_src = src.split('_answerHTML(')[1].split('\n    }')[0]
+        self.assertNotIn('doAction', answer_src,
+                         "an answer block calls doAction — the Coach must never act")
+
+    def test_09_every_factual_intent_cites_a_source(self):
+        """Anything that makes a claim about the product says where it comes
+        from. An answer with no provenance is indistinguishable from a guess."""
+        FACTUAL = {'p', 'steps', 'calc', 'calc_kpi', 'ok', 'warn'}
+        missing = []
+        for intent in self.intents:
+            if intent['dynamic'] != 'none':
+                continue   # a screen blurb cites the screen it is on
+            by_cap = {}
+            for b in intent['blocks']:
+                by_cap.setdefault(b['capability'], set()).add(b['kind'])
+            for cap, kinds in by_cap.items():
+                if (kinds & FACTUAL) and 'source' not in kinds:
+                    missing.append('%s [%s]' % (intent['key'], cap))
+        self.assertFalse(missing, "Factual answers with no 'grounded in' line:\n  "
+                                  + "\n  ".join(missing))
+
+    def test_10_a_miss_names_what_it_can_answer(self):
+        """Never a bare "I don't know"."""
+        # Genuinely unmatched, and NOT a tax-advice question — that now has its
+        # own deliberate refusal, so it would exercise the wrong path.
+        for screen in ('payruns', 'payslips', 'import'):
+            res = self.Intent.ask("how do I change the office wifi password", screen)
+            self.assertFalse(res['matched'], "matched a question it has no content for")
+            self.assertTrue(res['suggest'],
+                            "no suggestions offered after a miss on %s" % screen)
+            for s in res['suggest']:
+                self.assertTrue(s['label']['en'] and s['label']['vi'])
+
+    def test_11_an_uncovered_screen_is_admitted_not_guessed(self):
+        """Off the Pay Run map the Coach must say so, not answer about Pay Run.
+
+        `whatpage` and `whatnext` are screens='*' and DYNAMIC: their only block
+        is built from the screen record. On a screen the spine does not cover
+        there is no record, so the block list is empty — and an answer with no
+        blocks used to be returned as `matched`, which rendered the intent's own
+        heading above an empty card. The Coach appeared to answer while saying
+        nothing, which is worse than the miss it should have been: a miss at
+        least names what it CAN answer.
+        """
+        for question in ("what does this screen do", "what should i do next here"):
+            res = self.Intent.ask(question, 'not_a_real_screen')
+            self.assertFalse(res['matched'],
+                             "%r on an uncovered screen was answered with an "
+                             "empty card instead of an honest miss" % question)
+            self.assertTrue(res['suggest'],
+                            "the miss offered nothing to ask instead")
+            self.assertNotIn('blocks', res,
+                             "a miss is carrying an answer payload")
+
+    def test_11b_an_answer_that_renders_nothing_is_never_matched(self):
+        """The guard, asserted directly rather than through one screen key.
+
+        Every intent, on every screen it claims: if it comes back matched it
+        has something to say. This is the invariant the drawer relies on — it
+        renders `matched` as an answer card without checking there is anything
+        in it.
+        """
+        empty = []
+        screens = [None] + self.screen_keys + ['not_a_real_screen']
+        for intent in self.intents:
+            for screen in screens:
+                res = self.Intent.ask(one(intent['label']), screen)
+                if res.get('matched') and not res.get('blocks'):
+                    empty.append('%s on %s' % (intent['key'], screen))
+        self.assertFalse(empty, "Answers that claim to have matched and render "
+                                "an empty card:\n  " + "\n  ".join(empty))
+
+    # -------------------------------------------------------------- content
+    def test_12_no_unresolved_tokens_in_any_answer(self):
+        tokens = self.env['learn.tenant.override'].resolved_tokens()
+        leaked = []
+        for intent in self.intents:
+            for screen in [None] + self.screen_keys:
+                answer = self.Intent._answer(intent['key'], screen)
+                for block in answer['blocks']:
+                    for value in (block.get('body'), ):
+                        if not isinstance(value, dict):
+                            continue
+                        for lang in ('en', 'vi'):
+                            for key in TOKEN_RE.findall(value.get(lang) or ''):
+                                if key not in tokens:
+                                    leaked.append('%s -> {{%s}}' % (intent['key'], key))
+        self.assertFalse(leaked, "Undeclared tenant slots in answers:\n  "
+                                 + "\n  ".join(sorted(set(leaked))))
+
+    def test_13_show_me_anchors_are_registered(self):
+        """Extends the Phase-1 anchor lint to the Coach.
+
+        A `show_me` anchor nobody registers means the point-at button scrolls to
+        nothing, which is exactly the "confidently wrong" failure this whole
+        registry exists to prevent.
+        """
+        base = get_module_path('pb_learn')
+        with open(os.path.join(base, 'static/src/anchors.json'), encoding='utf-8') as fh:
+            reg = json.load(fh)
+        declared = set(reg['product']) | set(reg['practice'])
+        patterns = tuple(reg['pattern'])
+
+        def known(key):
+            return key in declared or key.startswith(patterns)
+
+        # LEARNOS Phase 1b: a `show_me` target may be a SCENARIO instead of an
+        # anchor — `scenario:<key>` or `scenario:<key>#<stepKey>`. Those are not
+        # controls and have nothing to look up here; the generator validates
+        # them against the walkthroughs and their step keys, which is the only
+        # place that comparison can be made. Skipped, and COUNTED, so this test
+        # cannot quietly become a test of nothing if every target is upgraded.
+        scenario_targets = 0
+        unknown = []
+        for intent in self.intents:
+            for a in intent['show_me']:
+                if a.startswith('scenario:'):
+                    scenario_targets += 1
+                    continue
+                if a and not known(a):
+                    unknown.append('%s show_me=%s' % (intent['key'], a))
+            for block in intent['blocks']:
+                for step in block['steps']:
+                    if step['anchor'] and not known(step['anchor']):
+                        unknown.append('%s step anchor=%s'
+                                       % (intent['key'], step['anchor']))
+        self.assertFalse(unknown, "Coach anchors nothing registers:\n  "
+                                  + "\n  ".join(sorted(set(unknown))))
+        anchor_targets = sum(1 for i in self.intents for a in i['show_me']
+                             if not a.startswith('scenario:'))
+        self.assertGreater(anchor_targets, 0,
+                           "every show_me is a scenario now, so this test checks "
+                           "nothing — move the assertion or delete it")
+        self.assertGreater(scenario_targets, 0,
+                           "no intent points at a walkthrough, so the skip above "
+                           "is protecting a case that does not exist")
+
+    def test_14_every_screen_can_actually_be_detected(self):
+        """A screen the Coach cannot recognise is a whole screen's content,
+        silently unreachable — and it fails in the most misleading way: the
+        Coach says "I don't have lessons for this screen yet" while sitting on
+        a screen that has a full lesson.
+
+        Asserts a matcher of ANY kind, because only three of the eight CRM
+        leaves are client actions with a tag; the rest are act_windows found by
+        xml-id or model.
+        """
+        blind = []
+        for screen in self.screens:
+            tags, xmlids, models_ = self.matchers(screen)
+            if not (tags or xmlids or models_):
+                blind.append(screen['key'])
+        self.assertFalse(blind, "Screens the Coach can never detect: %s" % blind)
+
+    def test_14b_matchers_come_from_the_real_sidebar_leaf(self):
+        """Not from a copy. If the leaf's action changes, the Coach follows."""
+        checked = 0
+        for screen in self.screens:
+            if not screen['sidebar_key']:
+                continue
+            item = self.env.ref(screen['sidebar_key'], raise_if_not_found=False)
+            if not item:
+                continue
+            checked += 1
+            tags, xmlids, models_ = self.matchers(screen)
+            declared = {(item.sudo().action_xmlid or '').strip()}
+            self.assertTrue(
+                declared & set(xmlids) or (item.sudo().action_tag or '') in tags,
+                "%s does not inherit its leaf's own action" % screen['key'])
+        # Seven of the eight Phase A screens name a leaf. The import wizard is
+        # a flow, not a destination — it has none, and is resolved by its tag.
+        self.assertGreaterEqual(checked, 7,
+                                "expected every Pay Run leaf screen to name its leaf")
+
+    def test_15_refusals_are_reachable_but_never_advertised(self):
+        """Offering "ask me how to pay less tax" invites the exact question the
+        Coach exists to decline. It must resolve; it must not be suggested."""
+        compliance = self.Content.intent('compliance')
+        self.assertTrue(compliance, "the compliance refusal is missing")
+        self.assertFalse(compliance['offer'], "the compliance refusal is advertised")
+        self.assertEqual(self.Intent.resolve("làm sao để giảm đóng bhxh", 'payslips'),
+                         'compliance', "the compliance refusal is not reachable")
+        for screen in self.screens:
+            self.assertNotIn('compliance', [c['key'] for c in screen['suggest']],
+                             "%s suggests the compliance refusal" % screen['key'])
+        # …and the global fallback list must not advertise it either. It is a
+        # different list from the chips and it is what a miss offers, which is
+        # exactly the moment somebody is casting around for a question to ask.
+        self.assertNotIn('compliance',
+                         [c['key'] for c in self.content['global_suggest']],
+                         "the miss fallback advertises the compliance refusal")
+
+    def _resolve_screen(self, tag, xmlid, model):
+        """Server-side mirror of the frontend's two-pass resolution."""
+        contested = self.Runtime._contested_models()
+        screens = self.screens
+        matchers = {s['key']: self.Runtime._matchers(s, contested) for s in screens}
+        for s in screens:                      # pass 0: the leaf's OWN action
+            own_tag, own_xmlid = self.Runtime._primary(s)
+            if (tag and own_tag and tag == own_tag) or (xmlid and own_xmlid and xmlid == own_xmlid):
+                return s['key']
+        for s in screens:                      # pass 1: any exact matcher
+            tags, xmlids, _models = matchers[s['key']]
+            if (tag and tag in tags) or (xmlid and xmlid in xmlids):
+                return s['key']
+        for s in screens:                      # pass 2: broad model
+            _tags, _xmlids, models_ = matchers[s['key']]
+            if model and model in models_:
+                return s['key']
+        return None
+
+    def test_16_each_screen_resolves_to_ITSELF_from_its_own_leaf(self):
+        """The bug this replaces was the worst kind: confidently wrong.
+
+        In health_learn a single-pass matcher let a broad model rule shadow an
+        exact one, and the Coach grounded on the wrong screen — offering one
+        screen's questions to someone reading another. Exact matches must win
+        across ALL screens before any model match is considered.
+        """
+        wrong = []
+        for screen in self.screens:
+            if not screen['sidebar_key']:
+                continue
+            item = self.env.ref(screen['sidebar_key'], raise_if_not_found=False)
+            if not item:
+                continue
+            item = item.sudo()
+            got = self._resolve_screen(item.action_tag, item.action_xmlid, None)
+            if got != screen['key']:
+                wrong.append('%s (its own action) -> %s' % (screen['key'], got))
+        self.assertFalse(wrong, "Screens that do not resolve to themselves:\n  "
+                                + "\n  ".join(wrong))
+
+    def test_17_a_broad_model_rule_never_shadows_an_exact_one(self):
+        """hr.payslip.run is claimed by Pay Runs and hr.payslip by Payslips.
+
+        If two screens ever claim the same model the broad pass picks one
+        arbitrarily, and the Coach grounds on whichever the search happened to
+        return first — wrong, and wrong differently on different databases."""
+        model_owners = {}
+        for screen in self.screens:
+            _t, _x, models_ = self.matchers(screen)
+            for m in models_:
+                model_owners.setdefault(m, []).append(screen['key'])
+        for model, owners in model_owners.items():
+            self.assertEqual(len(owners), 1,
+                             "%s is claimed by more than one screen: %s — the "
+                             "broad pass would pick one arbitrarily"
+                             % (model, owners))
+
+    def test_17b_a_contested_model_is_dropped_rather_than_awarded(self):
+        """The mechanism behind test_17, exercised rather than assumed.
+
+        Two REAL leaves claim hr.integration.connector — Import Data and
+        Integrations — and both are right for the sidebar. test_17 above would
+        pass just as happily if a future change made one screen simply stop
+        declaring models at all, so this asserts the actual rule: a model more
+        than one leaf claims is a matcher for NEITHER, and every model that is
+        dropped is dropped for exactly that reason.
+        """
+        raw_owners = {}
+        for screen in self.screens:
+            for m in self.Runtime._raw_models(screen):
+                raw_owners.setdefault(m, []).append(screen['key'])
+        contested = {m for m, o in raw_owners.items() if len(o) > 1}
+        self.assertEqual(contested, self.Runtime._contested_models(),
+                         "the contested set does not match what the leaves declare")
+        for screen in self.screens:
+            _t, _x, models_ = self.matchers(screen)
+            raw = self.Runtime._raw_models(screen)
+            self.assertEqual(raw - set(models_), raw & contested,
+                             "%s dropped a model that nothing else claims"
+                             % screen['key'])
+
+    # ---------------------------------------------------- column glossary
+    def test_18_a_column_question_gets_a_column_answer(self):
+        """A question about a TILE, not a procedure.
+
+        "What does gross total mean?" is deterministic — a written definition,
+        looked up — and no curated intent covers it, which is exactly when the
+        column glossary has to answer instead of the Coach missing.
+
+        The question is chosen carefully. Curated intents are tried FIRST and
+        that ordering is correct, so a column question whose words overlap an
+        intent's topic reaches the intent instead: "what does need review mean"
+        legitimately resolves to the `needreview` intent, which knows the
+        procedure as well as the definition. This one shares no topic with any
+        intent, so it exercises the fallback the test is about.
+        """
+        res = self.Intent.ask("what does gross total mean", 'payslips')
+        self.assertTrue(res['matched'], "still cannot answer a column question")
+        self.assertEqual(res.get('source_kind'), 'column')
+        body = res['blocks'][0]['body']
+        self.assertIn('deduction', body['en'].lower())
+        self.assertTrue(body['vi'] and body['vi'] != body['en'],
+                        "the column answer is not translated")
+
+    def test_19_column_matching_is_narrow(self):
+        """A loose match would answer "what is the status of this run" with a
+        column definition, which is worse than missing."""
+        match = self.Intent._match_column
+        self.assertIsNotNone(match("what does in pipeline count", 'payruns'))
+        # Wrong screen: the board's columns must not answer on Payslips.
+        self.assertIsNone(match("what does in pipeline count", 'payslips'))
+        # No screen at all: nothing to scope by, so no answer.
+        self.assertIsNone(match("what does in pipeline count", None))
+
+    def test_20_every_column_is_written_in_both_languages(self):
+        thin = []
+        for col in self.content['columns']:
+            for lang in ('en', 'vi'):
+                body = one(col['body'], lang)
+                if not body or len(body) < 40:
+                    thin.append('%s/%s [%s]' % (col['screen'], col['key'], lang))
+            if one(col['body'], 'vi') == one(col['body'], 'en'):
+                thin.append('%s/%s untranslated' % (col['screen'], col['key']))
+        self.assertFalse(thin, "Columns with thin or untranslated definitions:\n  "
+                               + "\n  ".join(thin))
+
+    # ------------------------------------------------- the language toggle
+    def test_20b_the_language_toggle_re_renders_the_open_drawer(self):
+        """Found in Chrome on the live deploy, not by any test here.
+
+        The toggle flipped the preference and persisted it, and the open
+        drawer stayed in the old language until a full page reload. The
+        payload was never at fault — every answer carries both languages.
+
+        OWL re-renders a component when a reactive key it READ DURING RENDER
+        changes. `state.lang` was assigned by the toggle and read by nothing in
+        the render path: every visible string goes through `T()`/`tx()`, which
+        read `RT.lang` — a plain module object OWL cannot observe. So the
+        assignment changed a value nobody was subscribed to.
+
+        journey.js has always worked because its `langLabel` reads
+        `this.state.lang`. Asserted at source because the server cannot observe
+        a browser re-render, and asserted on the two getters that RENDER —
+        presence of the assignment was never what was missing.
+        """
+        base = get_module_path('pb_learn')
+        with open(os.path.join(base, 'static', 'src', 'coach', 'coach.js'),
+                  encoding='utf-8') as fh:
+            coach = fh.read()
+        with open(os.path.join(base, 'static', 'src', 'journey', 'journey.js'),
+                  encoding='utf-8') as fh:
+            journey = fh.read()
+
+        def body(src, marker, stop):
+            return src.split(marker)[1].split(stop)[0]
+
+        toggle = body(coach, 'toggleLang() {', '\n    }')
+        self.assertIn('this.state.lang =', toggle,
+                      "the toggle does not write the reactive copy at all")
+
+        # The two getters that are evaluated during render. Reading
+        # `state.lang` in either is what subscribes the component; reading only
+        # RT.lang is the bug that shipped.
+        label = body(coach, 'get langLabel() {', '\n    }')
+        self.assertIn('this.state.lang', label,
+                      "langLabel reads RT.lang, which OWL cannot observe — the "
+                      "drawer will not re-render on a language flip")
+        drawer = body(coach, 'get bodyHTML() {', '\n    /**')
+        self.assertIn('this.state.lang', drawer,
+                      "bodyHTML never reads state.lang, so the answer blocks "
+                      "keep the old language until a page reload")
+
+        # The mechanism is journey.js's, and it has to stay that way — if the
+        # Journey's own toggle is ever rewritten, this pairing is the note
+        # that says the Coach copied it.
+        self.assertIn('this.state.lang', body(journey, 'get langLabel() {', '\n    }'),
+                      "journey.js changed its language mechanism; the Coach "
+                      "mirrors it and both need re-checking together")
+
+    # -------------------------------------------- the composer, and its fence
+    # Phases A–C had no composer at all, and these two tests asserted its
+    # ABSENCE. Phase D2 adds one, so the assertion moves rather than
+    # disappearing: what is protected now is not that no model can be reached,
+    # but that reaching one requires a decision somebody made on purpose.
+    #
+    # The reasoning that kept the composer out for three phases has not
+    # changed, and is why it ships OFF: the failure mode is a fluent sentence
+    # about a contribution rate that nobody wrote and no test can check, read
+    # by someone who is about to approve a month of salaries. An honest miss is
+    # always an acceptable outcome on this system. Full battery in
+    # tests/test_composer.py.
+
+    def test_21_the_composer_exists_and_is_off_by_default(self):
+        """The seam is present; the door is shut.
+
+        `hasattr` is the wrong question now — the right one is what happens on
+        a database where nobody has set the parameter, which is every database
+        immediately after an upgrade.
+        """
+        for name in ('_compose', '_provider', '_corpus', '_scrub'):
+            self.assertTrue(hasattr(self.Intent, name),
+                            "learn.intent lost %s — the composer seam is gone" % name)
+        self.env['ir.config_parameter'].sudo().set_param(
+            'pb_learn.compose_enabled', False)
+        self.assertFalse(self.Intent._compose_enabled(),
+                         "the composer is enabled on a database that never asked "
+                         "for it")
+        self.assertIsNone(
+            self.Intent._compose("anything at all", 'payslips'),
+            "the composer produced an answer with the flag off")
+
+    def test_21b_no_foreign_provider_is_imported_anywhere_in_the_module(self):
+        """The seam is an import as much as a method.
+
+        Scanned as source rather than by reflection: an import inside a
+        function body is invisible to hasattr and would still ship the
+        dependency. `generate_text` has left this list — the composer calls it,
+        which is the whole point of having one seam — but the PACKAGES stay
+        banned: the provider is resolved through the registry so that a
+        database without PayAI still installs, still answers, and simply has no
+        composer.
+        """
+        base = get_module_path('pb_learn')
+        banned = ('hr.ai.provider.config', 'hr_development_ai', 'ai_providers',
+                  'from odoo.addons.pb_payroll_ai_insights')
+        offenders = []
+        for root, _dirs, files in os.walk(os.path.join(base, 'models')):
+            for name in files:
+                if not name.endswith('.py'):
+                    continue
+                with open(os.path.join(root, name), encoding='utf-8') as fh:
+                    src = fh.read()
+                for token in banned:
+                    if token in src:
+                        offenders.append('%s -> %s' % (name, token))
+        self.assertFalse(offenders,
+                         "A provider package reached the answer path:\n  "
+                         + "\n  ".join(offenders))
+
+    def test_22_an_unanswerable_question_falls_back_honestly(self):
+        """With the composer off there is exactly one fallback left, and it
+        must never break and never invent."""
+        self.env['ir.config_parameter'].sudo().set_param(
+            'pb_learn.compose_enabled', False)
+        res = self.Intent.ask("how do I change the office wifi password", 'payslips')
+        self.assertFalse(res['matched'], "matched a question it has no content for")
+        self.assertTrue(res['suggest'], "an honest miss offered nothing to ask instead")
+        self.assertNotIn('source_kind', res,
+                         "a miss is claiming a source it does not have")

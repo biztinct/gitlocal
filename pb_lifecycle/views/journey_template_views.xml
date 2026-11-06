@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The checklists. Native views on purpose: they are configuration an
+         administrator opens rarely, and the form engine already skins them
+         to the product. There is no menu — the door is the hub's cog and the
+         ⌘K deep link, so the rail keeps its one level.
+         ================================================================== -->
+
+    <record id="view_journey_template_list" model="ir.ui.view">
+        <field name="name">pb.journey.template.list</field>
+        <field name="model">pb.journey.template</field>
+        <field name="arch" type="xml">
+            <list string="Journey checklists">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="case_type"/>
+                <field name="country_id" optional="show"/>
+                <field name="step_count" string="Steps"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_journey_template_form" model="ir.ui.view">
+        <field name="name">pb.journey.template.form</field>
+        <field name="model">pb.journey.template</field>
+        <field name="arch" type="xml">
+            <form string="Journey checklist">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Checklist"/>
+                        <h1><field name="name" placeholder="e.g. New joiner — standard"/></h1>
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="not overlap_warning">
+                        <field name="overlap_warning" readonly="1" nolabel="1"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="case_type"/>
+                            <field name="country_id"
+                                   help="Leave empty to use this checklist everywhere."/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Steps" name="steps">
+                            <field name="step_ids">
+                                <list string="Steps" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="step_kind"/>
+                                    <field name="assignee_rule"/>
+                                    <field name="assignee_user_id"
+                                           invisible="assignee_rule != 'user'"/>
+                                    <field name="anchor"/>
+                                    <field name="offset_days" string="Days"/>
+                                    <field name="escalation_days" optional="hide"/>
+                                    <field name="blocking_ff" optional="show"/>
+                                    <field name="mail_template_id" optional="hide"
+                                           invisible="step_kind != 'email'"/>
+                                    <field name="letter_template_id" optional="hide"
+                                           invisible="step_kind != 'letter'"/>
+                                </list>
+                                <form string="Step">
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="step_kind"/>
+                                            <field name="assignee_rule"/>
+                                            <field name="assignee_user_id"
+                                                   invisible="assignee_rule != 'user'"/>
+                                        </group>
+                                        <group>
+                                            <field name="anchor"/>
+                                            <field name="offset_days" string="Days before (-) or after (+)"/>
+                                            <field name="escalation_days"/>
+                                            <field name="blocking_ff"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="mail_template_id"
+                                               invisible="step_kind != 'email'"/>
+                                        <field name="letter_template_id"
+                                               invisible="step_kind != 'letter'"/>
+                                    </group>
+                                    <field name="description" placeholder="What has to happen, in plain words…"/>
+                                    <field name="form_questions_json"
+                                           invisible="step_kind != 'form'"
+                                           placeholder='[{"key": "kit", "label": "Which laptop do you need?", "type": "choice", "options": ["13 inch", "15 inch"]}]'/>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note" placeholder="Why this checklist exists, and who to ask about it."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_journey_template" model="ir.actions.act_window">
+        <field name="name">Journey checklists</field>
+        <field name="res_model">pb.journey.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write your first checklist</p>
+            <p>A checklist is what happens every time someone joins, leaves or
+               finishes probation — who does what, and how many days before or
+               after the key date it is due.</p>
+        </field>
+    </record>
+
+</odoo>

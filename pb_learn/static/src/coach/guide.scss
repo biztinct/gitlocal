@@ -1,0 +1,874 @@
+/* =============================================================================
+   LEARNREV P2 — the Guide panel (six sections above the one chat), the dock,
+   the (i) beside a column and the field card it opens.
+
+   Payobook palette only: indigo #5A4BB0 (soft #EDEAF8), ok #2E7D4F, warn
+   #D97706, bad #DC2668, white cards, ink #241F52. Lucide icons from the
+   pb_learn sprite. No gradients. A card fades up in 160 ms; nothing moves
+   under Reduce motion. Every min() lives inside a custom property (Sass).
+   ========================================================================== */
+
+// ------------------------------------------------------------- the panel
+.lrn-drawer.lrn-has-guide {
+    --lrn-dw: min(480px, calc(100vw - 44px));
+    --lrn-guide-max: 58%;
+}
+
+// LEARNREV P5a (S6): once a message has been sent the Guide may take at most
+// 45 % of the panel, so the conversation always keeps more than half of it.
+// (A playing lesson sets its own larger share further down and wins.)
+.lrn-drawer.lrn-has-guide.lrn-convo:not(.lrn-lp-on) {
+    --lrn-guide-max: 40%;
+}
+
+.lrn-guide {
+    // Its own height, up to 58 % of the panel; the chat takes the rest and
+    // scrolls (a shrinkable Guide lost every pixel to the chat's long
+    // opening card — seen in the B1 walk).
+    flex: 0 0 auto;
+    max-height: var(--lrn-guide-max, 58%);
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px 12px 2px;
+    background: #FAF9FE;
+    border-bottom: 1px solid #ECEAF6;
+}
+
+.lrn-drawer.lrn-has-guide .payai-embed { flex: 1 1 0; min-height: 0; }
+.lrn-drawer.lrn-has-guide .lrn-dbody { flex: 1 1 0; min-height: 0; }
+
+.lrn-gsecs.busy .lrn-gsec[data-sec="now"] .lrn-gsecic { opacity: .55; }
+
+.lrn-gsec {
+    margin-bottom: 8px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid #E4E1F2;
+    border-radius: 12px;
+    transition: border-color .16s;
+
+    &.open { border-color: #DCD7F0; }
+}
+
+.lrn-gsech { margin: 0; font-size: inherit; }
+
+.lrn-gsecbtn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 750;
+    color: #241F52;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover { background: #F6F5FC; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: -2px; }
+}
+
+.lrn-gsecic {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    border-radius: 7px;
+    background: #EDEAF8;
+    color: #5A4BB0;
+
+    .lrn-ic { width: 14px; height: 14px; }
+}
+
+.lrn-gsect { flex: 1 1 auto; min-width: 0; }
+
+.lrn-gbadge {
+    min-width: 20px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 750;
+    text-align: center;
+    background: #F1F0F7;
+    color: #4B4866;
+
+    &.warn { background: #FDF0DD; color: #B45F06; }
+}
+
+.lrn-gchev {
+    display: grid;
+    place-items: center;
+    color: #8A86A3;
+    transition: transform .16s;
+
+    .lrn-ic { width: 15px; height: 15px; }
+}
+.lrn-gsec.open .lrn-gchev { transform: rotate(180deg); }
+
+.lrn-gsecb {
+    padding: 0 12px 11px;
+    font-size: 12.5px;
+    color: var(--vuf-ink, #1E1B2E);
+    animation: lrn-g-in .16s ease-out;
+
+    &[hidden] { display: none; }
+    p { margin: 0 0 8px; }
+}
+
+@keyframes lrn-g-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.lrn-glabel {
+    margin: 10px 0 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #6B6787;
+}
+
+// -- 1. This screen -----------------------------------------------------------
+.lrn-gpurpose { font-size: 13px; line-height: 1.5; color: #241F52; }
+
+.lrn-gstrip { margin-top: 4px; }
+.lrn-gstripl {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #6B6787;
+
+    .lrn-ic { width: 12px; height: 12px; color: #5A4BB0; }
+}
+.lrn-gchips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+.lrn-gsep {
+    display: grid;
+    place-items: center;
+    color: #B5B1CC;
+
+    .lrn-ic { width: 12px; height: 12px; }
+}
+.lrn-gchip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    padding: 4px 9px;
+    border: 1px solid #E4E1F2;
+    border-radius: 8px;
+    background: var(--vuf-surface, #fff);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    color: #241F52;
+    cursor: pointer;
+
+    small {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        opacity: .7;
+    }
+    &:hover { border-color: #CBC2EE; background: #F6F5FC; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+    &.before { color: #6B6787; background: #F6F5FB; }
+    &.here {
+        background: #5A4BB0;
+        border-color: #5A4BB0;
+        color: #fff;
+        cursor: default;
+    }
+    &.after { border-color: #5A4BB0; color: #5A4BB0; }
+}
+
+// -- 2. Right now ---------------------------------------------------------------
+.lrn-gtodo {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.lrn-gtodo-i {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+    line-height: 1.45;
+
+    .lrn-gact { white-space: nowrap; }
+}
+.lrn-gnum {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 800;
+    background: #FDF0DD;
+    color: #B45F06;
+
+    .lrn-ic { width: 12px; height: 12px; }
+    &.ok { background: #E6F3EB; color: #2E7D4F; }
+}
+.lrn-gtodo-i.sev-info .lrn-gnum { background: #EDEAF8; color: #5A4BB0; }
+.lrn-gtodo-i.sev-bad .lrn-gnum { background: #FCE7EF; color: #DC2668; }
+.lrn-gtodo-i.ok { grid-template-columns: 22px minmax(0, 1fr); color: #2E5E40; }
+
+.lrn-gstate {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    padding: 2px 0;
+    font-size: 12.5px;
+
+    > .lrn-ic { width: 15px; height: 15px; flex: 0 0 auto; }
+    > span { flex: 1 1 160px; min-width: 0; }
+    &.mute { color: #6B6787; }
+    &.ok { color: #2E7D4F; font-weight: 650; }
+    &.bad { color: #A3184B; }
+    &.note {
+        padding: 8px 10px;
+        border: 1px dashed #DCD7F0;
+        border-radius: 10px;
+        background: #FAF9FE;
+        color: #3F338A;
+    }
+    .lrn-gretry { margin-left: auto; }
+}
+.lrn-gfall {
+    margin: 6px 0 0;
+    padding-left: 22px;
+    font-size: 12px;
+    color: #6B6787;
+}
+
+.lrn-gskel {
+    display: grid;
+    gap: 7px;
+    padding: 4px 0 10px;
+
+    i {
+        display: block;
+        height: 10px;
+        border-radius: 6px;
+        background: #ECEAF6;
+        animation: lrn-g-pulse 1.2s ease-in-out infinite;
+    }
+    i:nth-child(2) { width: 82%; animation-delay: .15s; }
+    i:nth-child(3) { width: 64%; animation-delay: .3s; }
+}
+@keyframes lrn-g-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .45; }
+}
+
+// -- 3. Fields ------------------------------------------------------------------
+.lrn-gfind {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    border: 1px solid #E4E1F2;
+    border-radius: 10px;
+    background: #fff;
+    color: #8A86A3;
+
+    .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; }
+    input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+        font: inherit;
+        font-size: 12.5px;
+        color: #241F52;
+    }
+    &:focus-within { border-color: #5A4BB0; }
+}
+.lrn-gfield {
+    &[hidden] { display: none; }
+    & + .lrn-gfield { border-top: 1px solid #F1F0F7; }
+    &.open .lrn-gchev { transform: rotate(180deg); }
+}
+.lrn-gfrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 2px;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 1px; border-radius: 6px; }
+}
+.lrn-gftx {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    b { font-size: 12.5px; color: #241F52; }
+    small {
+        overflow: hidden;
+        font-size: 11.5px;
+        color: #6B6787;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+.lrn-gfcard {
+    margin: 2px 0 10px;
+    padding: 11px 12px;
+    border: 1px solid #DCD7F0;
+    border-radius: 12px;
+    background: #fff;
+    animation: lrn-g-in .16s ease-out;
+}
+.lrn-gnomatch { margin: 4px 0 0; color: #6B6787; &[hidden] { display: none; } }
+
+// -- 4. Tasks -------------------------------------------------------------------
+.lrn-gtask {
+    padding: 8px 0;
+
+    & + .lrn-gtask { border-top: 1px solid #F1F0F7; }
+    b { display: block; font-size: 12.5px; color: #241F52; }
+    .lrn-tchips { margin-top: 6px; }
+}
+
+// -- 5. Understand ----------------------------------------------------------------
+.lrn-glesson {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+.lrn-glessonic {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    border-radius: 9px;
+    background: #EDEAF8;
+    color: #5A4BB0;
+
+    .lrn-ic { width: 16px; height: 16px; }
+}
+.lrn-glessontx {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    b { font-size: 12.5px; color: #241F52; }
+    small { font-size: 11px; color: #6B6787; }
+}
+.lrn-gterms { display: flex; flex-wrap: wrap; gap: 5px; }
+.lrn-gterm.lrn-gloss {
+    padding: 3px 9px;
+    border: 1px solid #E4E1F2;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 11.5px;
+    font-weight: 650;
+    color: #3F338A;
+    text-decoration: none;
+    cursor: help;
+
+    &:hover, &:focus-visible { background: #EDEAF8; border-color: #CBC2EE; outline: none; }
+}
+.lrn-gmist {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li { display: flex; gap: 7px; align-items: flex-start; line-height: 1.45; }
+    .lrn-ic { width: 14px; height: 14px; margin-top: 2px; flex: 0 0 auto; color: #D97706; }
+}
+
+// -- 6. Ask -------------------------------------------------------------------------
+.lrn-gask {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px 7px;
+    border-bottom: 1px solid #F1F0F7;
+    background: var(--vuf-surface, #fff);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #6B6787;
+
+    .lrn-ic { width: 13px; height: 13px; color: #5A4BB0; }
+}
+
+// ------------------------------------------------------------- folded (P3)
+// LEARNREV P3 (S8b): while a conversation is under way the five sections
+// show their titles only, and one quiet link opens them again.
+.lrn-gfolded .lrn-gsecs { gap: 0; }
+.lrn-gshow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 12px 8px;
+    padding: 4px 2px;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5A4BB0;
+    cursor: pointer;
+
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover, &:focus-visible { border-bottom-color: currentColor; outline: none; }
+}
+// The header's "Guide · Component treatment": up to two lines at the docked
+// width (never cut to "Component …"), and the language pill on one line.
+.lrn-drawer.lrn-has-guide {
+    .lrn-dname { min-width: 0; }
+    .lrn-dname b {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        font-size: 13.5px;
+        line-height: 1.25;
+        white-space: normal;
+    }
+    .lrn-langpill { white-space: nowrap; }
+}
+
+// ------------------------------------------------------------- the dock
+// `.lrn-dhead .lrn-hbtn` sets display; match its specificity to hide it.
+.lrn-dhead .lrn-dockbtn { display: none; }
+
+@media (min-width: 1280px) {
+    .lrn-dhead .lrn-dockbtn { display: inline-flex; }
+
+    body.lrn-docked {
+        --lrn-dock-w: 420px;
+
+        .pb-layout-wrapper > .o_action_manager,
+        &:not(.has-pb-sidebar) .o_action_manager {
+            padding-right: var(--lrn-dock-w, 420px);
+        }
+        // The panel header has Close; the corner button would sit on it.
+        .lrn-fab { display: none; }
+    }
+
+    body.lrn-one-helper.lrn-docked .lrn-drawer.lrn-dockable,
+    body.lrn-docked .lrn-drawer.lrn-dockable.lrn-has-chat {
+        --lrn-dw: var(--lrn-dock-w, 420px);
+        top: var(--lrn-dock-top, 0px);
+        right: 0;
+        bottom: 0;
+        width: var(--lrn-dock-w, 420px);
+        height: auto;
+        max-height: none;
+        border: 0;
+        border-left: 1px solid #E4E1F2;
+        border-radius: 0;
+        box-shadow: -14px 0 32px -26px rgba(36, 31, 82, .45);
+        animation: lrn-dock-in .16s ease-out;
+    }
+}
+
+@keyframes lrn-dock-in {
+    from { opacity: 0; transform: translateX(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+// ------------------------------------------------------------- the (i)
+.lrn-i {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    margin: 0 0 0 5px;
+    padding: 0;
+    border: 1px solid #CBC2EE;
+    border-radius: 50%;
+    background: #fff;
+    color: #5A4BB0;
+    vertical-align: -3px;
+    cursor: pointer;
+    transition: background .16s, border-color .16s;
+
+    .lrn-ic { width: 10px; height: 10px; stroke-width: 2.4; }
+    &:hover { background: #EDEAF8; border-color: #5A4BB0; }
+    &:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+}
+
+// ------------------------------------------------------------- the card
+.lrn-fieldcard {
+    --lrn-fc-max: min(72vh, 600px);
+    position: fixed;
+    z-index: 1080;
+    width: 360px;
+    max-width: calc(100vw - 16px);
+    max-height: var(--lrn-fc-max, 72vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px 16px 12px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid #CBC2EE;
+    border-radius: 14px;
+    box-shadow: 0 18px 48px -12px rgba(36, 31, 82, .28);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--vuf-ink, #1E1B2E);
+
+    &[hidden] { display: none; }
+    &.in { animation: lrn-fc-in .16s ease-out both; }
+    &.in.above { animation-name: lrn-fc-in-up; }
+}
+@keyframes lrn-fc-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes lrn-fc-in-up {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.lrn-fc-x {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #6B6787;
+    cursor: pointer;
+
+    .lrn-ic { width: 15px; height: 15px; }
+    &:hover { background: #F1F0F7; }
+    &:focus-visible { outline: 2px solid #5A4BB0; }
+}
+
+.lrn-fc-h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 28px;
+
+    b { font-size: 14px; color: #241F52; }
+}
+.lrn-fc-ic {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    border-radius: 7px;
+    background: #EDEAF8;
+    color: #5A4BB0;
+
+    .lrn-ic { width: 14px; height: 14px; }
+}
+.lrn-fc-help { margin: 8px 0 0; color: #3A3757; }
+.lrn-fc-l {
+    margin: 12px 0 5px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #5A4BB0;
+}
+.lrn-fieldcard p, .lrn-gfcard p { margin: 0; }
+.lrn-fc-choices {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        padding: 5px 8px;
+        border-radius: 8px;
+        background: #F8F7FD;
+        line-height: 1.4;
+    }
+    b { display: block; font-size: 12px; color: #241F52; }
+    span { display: block; font-size: 11px; color: #5E5A78; }
+}
+.lrn-fc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+}
+.lrn-fc-chip {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #EDEAF8;
+    font-size: 11px;
+    font-weight: 650;
+    color: #3F338A;
+
+    &[hidden] { display: none; }
+    &.src { background: #F1F0F7; color: #4B4866; }
+}
+.lrn-fc-more {
+    padding: 2px 6px;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 750;
+    color: #5A4BB0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+.lrn-fc-if {
+    padding: 7px 9px;
+    border-left: 3px solid #D97706;
+    border-radius: 0 8px 8px 0;
+    background: #FEF7EC;
+    color: #5B3B07;
+}
+.lrn-fc-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #F1F0F7;
+}
+.lrn-fb {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+.lrn-fbbtn {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #E4E1F2;
+    border-radius: 8px;
+    background: #fff;
+    color: #6B6787;
+    cursor: pointer;
+
+    .lrn-ic { width: 14px; height: 14px; }
+    &:hover:not(:disabled) { background: #EDEAF8; color: #5A4BB0; }
+    &.on { background: #EDEAF8; border-color: #5A4BB0; color: #5A4BB0; }
+    &:disabled:not(.on) { opacity: .45; cursor: default; }
+}
+.lrn-fbthanks { font-size: 11px; font-weight: 650; color: #2E7D4F; }
+
+/* LEARNREV P5b — the same thumbs under a lesson step, a walkthrough card and
+   a practice-copy card: one quiet row, right-aligned, after the lines. */
+.lrn-lp-rate {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0 2px;
+    .lrn-fb { margin-left: 0; gap: 6px; }
+}
+.lrn-lp-ratel { font-size: 11.5px; color: #6B6787; margin-right: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-gsecb, .lrn-gfcard, .lrn-fieldcard.in, .lrn-gskel i { animation: none; }
+    .lrn-gchev, .lrn-i, .lrn-gsec { transition: none; }
+    body.lrn-docked .lrn-drawer { animation: none; }
+}
+.lrn-still .lrn-gsecb, .lrn-still .lrn-gfcard { animation: none; }
+
+// ============================================================ LEARNREV P4
+// The lesson played INSIDE the Guide panel (coach/lesson_panel.js). One step,
+// four lines; the panel is the card, so nothing is drawn over the screen but
+// the dim around the real control (engine/spotlight.js PanelSpot).
+.lrn-drawer.lrn-lp-on { --lrn-guide-max: 80%; }
+
+.lrn-lp {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 2px 0 6px;
+    animation: lrn-lp-in .16s ease-out;
+}
+@keyframes lrn-lp-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+}
+.lrn-lp-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    .lrn-ic { width: 13px; height: 13px; margin-right: 4px; vertical-align: -2px; }
+}
+.lrn-lp-kicker {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #5A4BB0;
+}
+.lrn-lp-count { color: #6B6787; white-space: nowrap; }
+.lrn-lp-meter {
+    height: 4px;
+    border-radius: 999px;
+    background: #ECEAF6;
+    overflow: hidden;
+    i { display: block; height: 100%; background: #5A4BB0; transition: width .2s; }
+}
+.lrn-lp-title { margin: 2px 0 0; font-size: 15px; line-height: 1.3; font-weight: 700; color: #241F52; }
+.lrn-lp-lines { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.lrn-lp-line {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 8px;
+    align-items: start;
+    padding: 7px 9px;
+    border: 1px solid #ECEAF6;
+    border-radius: 10px;
+    background: #fff;
+
+    dt {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+        font-size: 11px;
+        font-weight: 700;
+        color: #5A4BB0;
+        .lrn-ic { width: 14px; height: 14px; flex: 0 0 auto; }
+    }
+    dd { margin: 0; min-width: 0; font-size: 12.5px; line-height: 1.45; color: #2B2745; }
+    dd p { margin: 0; }
+    &.press { border-color: #CBC2EE; background: #F6F4FD; }
+    &.press dd { font-weight: 650; color: #241F52; }
+}
+.lrn-lp-uses { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.lrn-lp-note, .lrn-lp-tip, .lrn-lp-conseq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    > .lrn-ic { width: 15px; height: 15px; flex: 0 0 auto; }
+    > span { flex: 1 1 180px; min-width: 0; }
+}
+.lrn-lp-note { background: #EDEAF8; color: #3F3593; }
+.lrn-lp-note.loading { background: #FFF7EB; color: #8A4B05; }
+.lrn-lp-tip { background: #F7F7FA; color: #4B4766; }
+.lrn-lp-conseq { background: #FFF7EB; color: #8A4B05; }
+.lrn-lp-p { margin: 0; font-size: 12.5px; color: #4B4766; }
+// The step's controls stay in view while its lines scroll above them.
+.lrn-lp-foot {
+    position: sticky;
+    bottom: -2px;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 0 4px;
+    background: #FAF9FE;
+    border-top: 1px solid #ECEAF6;
+}
+.lrn-lp-quiz .lrn-opts { display: flex; flex-direction: column; gap: 6px; }
+.lrn-lp-done .lrn-lp-kicker { color: #2E7D4F; }
+// The practice copy's card draws the same four lines (journey.js).
+.lrn-coach .lrn-lp-lines, .lrn-sccard .lrn-lp-lines { margin: 6px 0; }
+.lrn-sccard .lrn-lp-line { grid-template-columns: 84px 1fr; }
+.lrn-coach > .lrn-lp-note { margin-bottom: 8px; }
+.lrn-coach .lrn-lp-line { grid-template-columns: 84px 1fr; }
+
+// S10 — on the Library, with the Guide on, the corner launcher does not float
+// over the rows: each row's Guide chip and the search's Ask PayAI are the way
+// in (journey.js sets lrn-on-library, coach.js lrn-guide-on).
+body.lrn-on-library.lrn-guide-on .lrn-fab { display: none; }
+
+// S3 — a walkthrough running beside the Guide (Tasks section).
+.lrn-gplaying {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 8px;
+    border: 1px solid #CBC2EE;
+    border-radius: 10px;
+    background: #F6F4FD;
+}
+.lrn-gplayic {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: #5A4BB0;
+    color: #fff;
+    .lrn-ic { width: 13px; height: 13px; }
+}
+.lrn-gplaytx {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    b { font-size: 12.5px; color: #241F52; }
+    small { font-size: 11px; color: #5A4BB0; }
+}
+
+// The dim around the real control. Under the drawer (1040) so the panel is
+// never dimmed; it takes no clicks, so the control can still be pressed.
+.lrn-pspot { position: fixed; inset: 0; z-index: 1030; pointer-events: none; }
+.lrn-pspot-hole {
+    position: fixed;
+    display: none;
+    pointer-events: none;
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px #5A4BB0, 0 0 0 9999px rgba(24, 20, 56, .38);
+    transition: top .2s, left .2s, width .2s, height .2s;
+}
+// A floating Guide that would sit on the control moves to the other side.
+body.lrn-pspot-flip .lrn-drawer:not(.lrn-dockable),
+body.lrn-pspot-flip:not(.lrn-docked) .lrn-drawer { right: auto; left: 22px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-lp { animation: none; }
+    .lrn-pspot-hole, .lrn-lp-meter i { transition: none; }
+}
+.lrn-still .lrn-lp { animation: none; }

@@ -459,7 +459,7 @@ class FieldMapping(models.TransientModel):
     
     wizard_id = fields.Many2one('payroll.import.wizard', 'Wizard', ondelete='cascade')
     column_name = fields.Char('Column Name', required=True)
-    odoo_field = fields.Char('Odoo Field', required=True)
+    odoo_field = fields.Char('Payobook Field', required=True)
     field_type = fields.Selection([
         ('char', 'Text'),
         ('float', 'Number'),

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         Who reads an expense claim in the backend (D10).
+
+         NO PORTAL ROW (ledger E-R2): an employee login reaches its claims
+         only through the /my pages, under sudo after an ownership guard.
+
+         Group rules OR together; the company rule is global (AND).
+           * everyone inside the business: their OWN claims, and the claims
+             a published route asked them to decide (`seat_user_ids`, AM60 —
+             a seat is also a read AND a write: the engine writes the claim's
+             status as the person who decided, pb_training's
+             test_t1_a_seat_is_a_read_and_a_write);
+           * team approvers: stock's approver shape
+             (hr_expense/security/ir_rule.xml `ir_rule_hr_expense_approver`);
+           * expense officers and accountants: every claim.
+         ================================================================== -->
+
+    <record id="rule_claim_company" model="ir.rule">
+        <field name="name">Expense claim: company</field>
+        <field name="model_id" ref="model_pb_expense_claim"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_claim_own" model="ir.rule">
+        <field name="name">Expense claim: my own</field>
+        <field name="model_id" ref="model_pb_expense_claim"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_claim_seat" model="ir.rule">
+        <field name="name">Expense claim: the people the route asked to decide it</field>
+        <field name="model_id" ref="model_pb_expense_claim"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_claim_team_approver" model="ir.rule">
+        <field name="name">Expense claim: team approver</field>
+        <field name="model_id" ref="model_pb_expense_claim"/>
+        <field name="domain_force">['|', '|', '|', '|',
+            ('employee_id.user_id', '=', user.id),
+            ('employee_id.department_id.manager_id.user_id', '=', user.id),
+            ('employee_id', 'child_of', user.employee_ids.ids),
+            ('employee_id.expense_manager_id', '=', user.id),
+            ('seat_user_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_team_approver'))]"/>
+    </record>
+
+    <record id="rule_claim_all" model="ir.rule">
+        <field name="name">Expense claim: expense officers and accountants</field>
+        <field name="model_id" ref="model_pb_expense_claim"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_user')), (4, ref('account.group_account_user'))]"/>
+    </record>
+
+</odoo>

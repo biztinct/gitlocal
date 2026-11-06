@@ -1,0 +1,9 @@
+<odoo noupdate="1">
+  <record id="cron_hiring_connections" model="ir.cron">
+    <field name="name">Hiring: verify signatures and process reminders</field>
+    <field name="model_id" ref="model_pb_hiring_connection_jobs"/>
+    <field name="state">code</field><field name="code">model._run()</field>
+    <field name="interval_number">5</field><field name="interval_type">minutes</field>
+    <field name="active" eval="True"/>
+  </record>
+</odoo>

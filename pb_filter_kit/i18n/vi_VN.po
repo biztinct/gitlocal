@@ -1,0 +1,846 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-30 12:30+0000\n"
+"PO-Revision-Date: 2026-10-30 12:30+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid " or "
+msgstr " hoặc "
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "%(n)s %(noun)s"
+msgstr "%(n)s %(noun)s"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "%(n)s of %(total)s %(noun)s"
+msgstr "%(n)s / %(total)s %(noun)s"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "%s or more"
+msgstr "Từ %s trở lên"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid ", or a value such as a department."
+msgstr ", hoặc một giá trị như tên phòng ban."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid ", or clear some filters."
+msgstr ", hoặc bỏ bớt bộ lọc."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "All filters"
+msgstr "Tất cả bộ lọc"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Already passed"
+msgstr "Đã qua"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Back to the view as it was saved"
+msgstr "Quay về chế độ xem như lúc đã lưu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Change the order"
+msgstr "Đổi thứ tự"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Change this filter"
+msgstr "Đổi bộ lọc này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Changed since it was saved"
+msgstr "Đã thay đổi kể từ lúc lưu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Changes saved to “%s”."
+msgstr "Đã lưu thay đổi vào “%s”."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Clear"
+msgstr "Làm sạch"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Clear all"
+msgstr "Xóa tất cả"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Clear the search"
+msgstr "Xóa nội dung tìm kiếm"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Clear this filter"
+msgstr "Bỏ bộ lọc này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Copies a link that opens this list filtered exactly like this"
+msgstr "Sao chép liên kết mở danh sách này với đúng các bộ lọc hiện tại"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Copy a link to this list"
+msgstr "Sao chép liên kết tới danh sách này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Copy this link"
+msgstr "Sao chép liên kết này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Counting…"
+msgstr "Đang đếm…"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Dates"
+msgstr "Ngày"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Delete view"
+msgstr "Xóa chế độ xem"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Delete “"
+msgstr "Xóa “"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_mixin__display_name model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Everyone who uses this list can now see “%s”."
+msgstr "Mọi người dùng danh sách này giờ đều thấy “%s”."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Everyone who uses this list sees it as a tab. Off: only you see it."
+msgstr "Mọi người dùng danh sách này đều thấy nó dưới dạng một thẻ. Tắt: chỉ bạn thấy."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Everyone who uses this list sees this tab."
+msgstr "Mọi người dùng danh sách này đều thấy thẻ này."
+
+#. module: pb_filter_kit
+#: model:ir.model,name:pb_filter_kit.model_pb_filter_mixin
+msgid "Filter panel for a list screen"
+msgstr "Bảng lọc cho màn hình danh sách"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0 model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__filters
+msgid "Filters"
+msgstr "Bộ lọc"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Find a filter or a value"
+msgstr "Tìm bộ lọc hoặc giá trị"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Find a filter or a value…"
+msgstr "Tìm bộ lọc hoặc giá trị…"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Find in %s…"
+msgstr "Tìm trong %s…"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "From %s"
+msgstr "Từ %s"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Give the list the full width"
+msgstr "Cho danh sách toàn bộ chiều ngang"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "Give the view a name."
+msgstr "Hãy đặt tên cho chế độ xem."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Hide filters"
+msgstr "Ẩn bộ lọc"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_mixin__id model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "In this list now:"
+msgstr "Trong danh sách hiện tại:"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "It disappears for everyone."
+msgstr "Nó sẽ biến mất với mọi người."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "It may exist outside the filters that are on. Try the name of a filter, like"
+msgstr "Có thể nó nằm ngoài các bộ lọc đang bật. Thử tên một bộ lọc, ví dụ"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "It shows"
+msgstr "Hiện có"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Keeps these filters as a tab you can come back to."
+msgstr "Giữ các bộ lọc này thành một thẻ để bạn quay lại sau."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Last 90 days"
+msgstr "90 ngày qua"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__write_date
+msgid "Last Updated on"
+msgstr "Ngày cập nhật cuối"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Last month"
+msgstr "Tháng trước"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Last year"
+msgstr "Năm trước"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Later than 90 days"
+msgstr "Sau 90 ngày"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Link copied. Anyone who opens it sees this list filtered the same way."
+msgstr "Đã sao chép liên kết. Ai mở liên kết này cũng thấy danh sách được lọc giống hệt."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "More filters"
+msgstr "Thêm bộ lọc"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0 model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Next 30 days"
+msgstr "30 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Next 90 days"
+msgstr "90 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "No match here."
+msgstr "Không có kết quả ở đây."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả khớp với “"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Only"
+msgstr "Chỉ chọn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Only the most common are listed. Type in the box above to find the rest."
+msgstr "Chỉ liệt kê các giá trị phổ biến nhất. Gõ vào ô phía trên để tìm phần còn lại."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Only you can see this tab."
+msgstr "Chỉ bạn thấy thẻ này."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Pick dates…"
+msgstr "Chọn ngày…"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Pin it to the top"
+msgstr "Ghim lên đầu"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Press / to search"
+msgstr "Nhấn / để tìm"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Remove"
+msgstr "Bỏ"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Remove %s"
+msgstr "Bỏ %s"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Removed"
+msgstr "Đã bị xóa"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Rename"
+msgstr "Đổi tên"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Rename, share or delete this view"
+msgstr "Đổi tên, chia sẻ hoặc xóa chế độ xem này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Reset"
+msgstr "Đặt lại"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Save as new"
+msgstr "Lưu thành mới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Save changes"
+msgstr "Lưu thay đổi"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Save this view"
+msgstr "Lưu chế độ xem này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Save view"
+msgstr "Lưu chế độ xem"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__user_id
+msgid "Saved by"
+msgstr "Người lưu"
+
+#. module: pb_filter_kit
+#: model:ir.model,name:pb_filter_kit.model_pb_filter_view
+msgid "Saved filter view"
+msgstr "Chế độ xem bộ lọc đã lưu"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__screen
+msgid "Screen"
+msgstr "Màn hình"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__search_text
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Search the list"
+msgstr "Tìm trong danh sách"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Search…"
+msgstr "Tìm kiếm…"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0 model:ir.model.fields,field_description:pb_filter_kit.field_pb_filter_view__shared
+msgid "Share with everyone"
+msgstr "Chia sẻ với mọi người"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Shared by %s"
+msgstr "Được chia sẻ bởi %s"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Sharing could not be changed."
+msgstr "Không thể thay đổi chia sẻ."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Show all"
+msgstr "Xem tất cả"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Show fewer"
+msgstr "Thu gọn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Show only this one"
+msgstr "Chỉ hiển thị mục này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Show the filters"
+msgstr "Hiện bộ lọc"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "The changes could not be saved."
+msgstr "Không thể lưu thay đổi."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "The list could not be refreshed. Try again in a moment."
+msgstr "Không thể làm mới danh sách. Vui lòng thử lại sau giây lát."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "The view could not be deleted."
+msgstr "Không thể xóa chế độ xem."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "The view could not be renamed."
+msgstr "Không thể đổi tên chế độ xem."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "The view could not be saved."
+msgstr "Không thể lưu chế độ xem."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "These numbers could not be counted. Close and open the section to try again."
+msgstr "Không đếm được các con số này. Đóng rồi mở lại mục để thử lại."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_view.py:0
+msgid "This list cannot save views."
+msgstr "Danh sách này không lưu được chế độ xem."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0 code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "This year"
+msgstr "Năm nay"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "To"
+msgstr "Đến"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Try the name of a filter, like"
+msgstr "Thử tên một bộ lọc, ví dụ"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Unpin: move it under More filters"
+msgstr "Bỏ ghim: chuyển xuống Thêm bộ lọc"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Until %s"
+msgstr "Đến %s"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Up to %s"
+msgstr "Tối đa %s"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "View options"
+msgstr "Tùy chọn chế độ xem"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "View saved and shared with everyone."
+msgstr "Đã lưu chế độ xem và chia sẻ với mọi người."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "View saved. Only you can see it."
+msgstr "Đã lưu chế độ xem. Chỉ bạn thấy được."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "View “%s” deleted."
+msgstr "Đã xóa chế độ xem “%s”."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "Views"
+msgstr "Chế độ xem"
+
+#. module: pb_filter_kit
+#: model:ir.model.fields,help:pb_filter_kit.field_pb_filter_view__screen
+msgid "Which list this view belongs to, e.g. \"employees\"."
+msgstr "Danh sách mà chế độ xem này thuộc về, vd. \"employees\"."
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Work"
+msgstr "Công việc"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Your view, only you can see it"
+msgstr "Chế độ xem của bạn, chỉ bạn thấy"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_components.js:0
+msgid "Your view, shared with everyone"
+msgstr "Chế độ xem của bạn, đã chia sẻ với mọi người"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "e.g. Hanoi plant, ending soon"
+msgstr "vd. Nhà máy Hà Nội, sắp hết hạn"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "records"
+msgstr "bản ghi"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "right now."
+msgstr "kết quả lúc này."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "to"
+msgstr "đến"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "“%s” is private again."
+msgstr "“%s” đã trở lại chế độ riêng tư."
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/xml/filter_kit.xml:0
+msgid "” here"
+msgstr "” ở đây"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "This quarter"
+msgstr "Quý này"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "This quarter"
+msgstr "Quý này"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Next 7 days"
+msgstr "7 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Next 7 days"
+msgstr "7 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-python
+#: code:addons/pb_filter_kit/models/filter_mixin.py:0
+msgid "Next 60 days"
+msgstr "60 ngày tới"
+
+#. module: pb_filter_kit
+#. odoo-javascript
+#: code:addons/pb_filter_kit/static/src/js/filter_kit.js:0
+msgid "Next 60 days"
+msgstr "60 ngày tới"

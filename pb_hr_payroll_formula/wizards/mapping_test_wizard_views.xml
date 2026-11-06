@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_mapping_test_wizard_form" model="ir.ui.view">
+        <field name="name">hr.integration.mapping.test.wizard.form</field>
+        <field name="model">hr.integration.mapping.test.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Test Mappings">
+                <group>
+                    <field name="connector_id" readonly="line_ids != []"/>
+                    <field name="employee_id"
+                           options="{'no_create': True}"/>
+                </group>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <button name="action_run" type="object" string="Run Test" class="btn-primary"/>
+                    <field name="error_count" invisible="1"/>
+                    <span class="text-danger" invisible="error_count == 0">
+                        <field name="error_count" nolabel="1" class="d-inline"/> mapping(s) with errors — see red rows.
+                    </span>
+                </div>
+                <field name="line_ids" nolabel="1" invisible="not line_ids">
+                    <list create="false" delete="false" decoration-danger="error">
+                        <field name="source_field"/>
+                        <field name="target"/>
+                        <field name="raw_value" string="Raw"/>
+                        <field name="transformed_value" string="Transformed"/>
+                        <field name="error"/>
+                    </list>
+                </field>
+                <footer>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

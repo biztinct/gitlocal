@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         LEARNING L4: the sign-in sheet (one session) and the attendance
+         certificate (one person at one session). Both are ONE record id and
+         ONE `web.external_layout` call — the live wkhtmltopdf cannot merge
+         documents (ledger LN33); a long roster runs onto the next page
+         inside the one document. Every text node on one line (LN13).
+         ================================================================== -->
+    <record id="paperformat_session_sheet" model="report.paperformat">
+        <field name="name">Session sign-in sheet</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">30</field>
+        <field name="margin_bottom">16</field>
+        <field name="margin_left">12</field>
+        <field name="margin_right">12</field>
+        <field name="header_spacing">24</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_session_sheet" model="ir.actions.report">
+        <field name="name">Session sign-in sheet</field>
+        <field name="model">pb.training.session</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_training.report_session_sheet</field>
+        <field name="report_file">pb_training.report_session_sheet</field>
+        <field name="print_report_name">'Sign-in sheet - %s' % (object.name or '')</field>
+        <field name="paperformat_id" ref="paperformat_session_sheet"/>
+    </record>
+
+    <template id="report_session_sheet">
+        <t t-call="web.html_container">
+            <t t-set="o" t-value="docs[:1]"/>
+            <t t-call="web.external_layout">
+                <div class="page" style="font-size: 12.5px; line-height: 1.5; color: #1B1733;">
+                    <table style="width: 100%; border-bottom: 2px solid #5A4BB0; margin-bottom: 14px;">
+                        <tr>
+                            <td style="vertical-align: top; padding-bottom: 10px;">
+                                <div style="font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #5A4BB0; font-weight: 700;">Sign-in sheet</div>
+                                <div style="font-size: 21px; font-weight: 700; margin-top: 2px;" t-esc="o.channel_id.name"/>
+                                <div style="color: #475569; margin-top: 4px;"><span t-esc="o.when_words"/></div>
+                                <div style="color: #475569;"><span t-esc="o.where_words"/></div>
+                                <div t-if="o.trainer_id or o.trainer_name" style="color: #475569;"><span>Trainer:</span> <span t-esc="o.trainer_id.name or o.trainer_name"/></div>
+                            </td>
+                            <td style="width: 150px; text-align: center; vertical-align: top; padding-bottom: 10px;">
+                                <img t-att-src="o.qr_src(220)" style="width: 130px; height: 130px;"/>
+                                <div style="font-size: 10px; color: #475569;">Scan to be marked as here</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #EDEAF8;">
+                                <th style="text-align: left; padding: 6px 8px; width: 28px;">#</th>
+                                <th style="text-align: left; padding: 6px 8px;">Name</th>
+                                <th style="text-align: left; padding: 6px 8px;">Department</th>
+                                <th style="text-align: left; padding: 6px 8px; width: 90px;">Checked in</th>
+                                <th style="text-align: left; padding: 6px 8px; width: 170px;">Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.sheet_rows()" t-as="row" style="border-bottom: 1px solid #E2E8F0; page-break-inside: avoid;">
+                                <td style="padding: 9px 8px;" t-esc="row_index + 1"/>
+                                <td style="padding: 9px 8px;" t-esc="row['name']"/>
+                                <td style="padding: 9px 8px; color: #475569;" t-esc="row['department']"/>
+                                <td style="padding: 9px 8px;" t-esc="row['checked_in']"/>
+                                <td style="padding: 9px 8px;"/>
+                            </tr>
+                            <tr t-foreach="range(5)" t-as="blank" style="border-bottom: 1px solid #E2E8F0;">
+                                <td style="padding: 11px 8px;"/>
+                                <td style="padding: 11px 8px;"/>
+                                <td style="padding: 11px 8px;"/>
+                                <td style="padding: 11px 8px;"/>
+                                <td style="padding: 11px 8px;"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="color: #64748B; margin-top: 12px; font-size: 11px;"><span t-esc="o.seats_words"/></p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- ============ the attendance certificate ============ -->
+    <record id="action_report_session_certificate" model="ir.actions.report">
+        <field name="name">Certificate of attendance</field>
+        <field name="model">pb.training.attendance</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_training.report_session_certificate</field>
+        <field name="report_file">pb_training.report_session_certificate</field>
+        <field name="print_report_name">'Certificate - %s' % (object.employee_id.name or '')</field>
+        <field name="paperformat_id" ref="paperformat_session_sheet"/>
+    </record>
+
+    <template id="report_session_certificate">
+        <t t-call="web.html_container">
+            <t t-set="o" t-value="docs[:1]"/>
+            <t t-call="web.external_layout">
+                <div class="page" style="color: #1B1733; text-align: center; padding-top: 40px;">
+                    <div style="font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #5A4BB0; font-weight: 700;">Certificate of attendance</div>
+                    <div style="font-size: 30px; font-weight: 700; margin-top: 26px;" t-esc="o.employee_id.name"/>
+                    <div style="font-size: 15px; color: #475569; margin-top: 14px;">attended</div>
+                    <div style="font-size: 22px; font-weight: 700; margin-top: 10px;" t-esc="o.session_id.channel_id.name"/>
+                    <div style="font-size: 14px; color: #475569; margin-top: 18px;"><span t-esc="o.session_id.when_words"/></div>
+                    <div style="font-size: 14px; color: #475569;"><span t-esc="o.session_id.where_words"/></div>
+                    <div t-if="o.hours" style="font-size: 14px; color: #475569; margin-top: 8px;"><span t-esc="'%g' % o.hours"/> <span>hours of training</span></div>
+                    <div t-if="o.session_id.trainer_id or o.session_id.trainer_name" style="font-size: 14px; margin-top: 36px;"><span>Trainer:</span> <b t-esc="o.session_id.trainer_id.name or o.session_id.trainer_name"/></div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

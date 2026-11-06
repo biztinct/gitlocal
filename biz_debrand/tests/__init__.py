@@ -1,0 +1,8 @@
+# Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
+from . import test_debrand
+from . import test_field_terms
+from . import test_no_odoo_in_ui
+from . import test_notification_seam
+from . import test_rewrite
+from . import test_translate_patch
+from . import test_unreachable_names

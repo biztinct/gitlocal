@@ -2,8 +2,11 @@
 
 import base64
 import json
+import logging
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 from odoo.addons.pb_hr_payroll_formula.integrations.excel_connector import ExcelConnector
 
@@ -137,6 +140,18 @@ class HrFullFinalGenerateWizard(models.TransientModel):
                 'computed_values_json': json.dumps(computed_values),
                 'currency_id': config.currency_id.id or employee.company_id.currency_id.id,
             })
+
+        # Creating the settlement IS the act — the figure is what everybody in
+        # the route agrees to, and it cannot be known before it is worked out.
+        # So each one is made in draft and sent in (P7).
+        if 'biz.approval.engine' in self.env:
+            for settlement in created:
+                try:
+                    self.env['biz.approval.engine'].submit(settlement)
+                except Exception:       # noqa: BLE001 — one settlement, one grave
+                    _logger.exception(
+                        'pb_hr_fullandfinal: %s could not be sent for '
+                        'approval', settlement.name)
 
         action = self.env.ref('pb_hr_fullandfinal.action_full_and_final_employees').read()[0]
         if created:

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_shift_pulse_officer,pb.shift.pulse attendance officer read,model_pb_shift_pulse,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_shift_pulse_hr_mgr,pb.shift.pulse hr manager read,model_pb_shift_pulse,hr.group_hr_manager,1,0,0,0
+access_pb_shift_pulse_system,pb.shift.pulse system,model_pb_shift_pulse,base.group_system,1,1,1,1

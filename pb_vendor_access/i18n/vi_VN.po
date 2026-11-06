@@ -1,0 +1,407 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+#: model_terms:ir.ui.view,arch_db:pb_vendor_access.view_pb_vendor_search
+msgid "Already run out"
+msgstr "Đã hết hạn"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "Coming up for renewal"
+msgstr "Sắp đến hạn gia hạn"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "On the register"
+msgstr "Trong danh sách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "With nothing recorded"
+msgstr "Chưa ghi nhận gì"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "You look after"
+msgstr "Bạn phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendor_palette.js:0
+msgid "Vendors"
+msgstr "Nhà cung cấp"
+
+#. module: pb_vendor_access
+#: model:pb.role.profile,name:pb_vendor_access.role_tenant_administrator
+msgid "Tenant administrator"
+msgstr "Quản trị viên đơn vị"
+
+#. module: pb_vendor_access
+#: model:pb.role.profile,description:pb_vendor_access.role_tenant_administrator
+msgid "Runs this whole application: pay, people, joining and leaving, budgets, reporting, the connected systems, the calculation rules, and who here can do what. It does not include the system administrator permission, so it cannot switch developer mode on, open the raw permission table, or reach anything belonging to the platform this runs on. Growth plans are deliberately not part of it — give those to your head of HR separately."
+msgstr "Điều hành toàn bộ ứng dụng này: lương, nhân sự, vào làm và nghỉ việc, ngân sách, báo cáo, các hệ thống được kết nối, quy tắc tính toán và ai ở đây được làm gì. Không bao gồm quyền quản trị hệ thống, nên không bật được chế độ nhà phát triển, không mở được bảng phân quyền gốc và không đụng đến nền tảng mà hệ thống chạy trên đó. Kế hoạch phát triển được cố ý để riêng — hãy giao phần đó cho trưởng phòng nhân sự."
+
+# ===================================================================
+#  FILTER wave 4 (2026-10-31): the shared filter panel.
+# ===================================================================
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "%(n)s on the register, %(x)s coming up for renewal."
+msgstr "%(n)s trong danh sách, %(x)s sắp đến hạn gia hạn."
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "%(n)s on the register, and %(x)s already run out."
+msgstr "%(n)s trong danh sách, và %(x)s đã hết hạn."
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "%s agreements"
+msgstr "%s thỏa thuận"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "%s agreements have"
+msgstr "%s thỏa thuận"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "%s on the register, and nothing needs renewing."
+msgstr "%s trong danh sách, và không có gì cần gia hạn."
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "%s vendors"
+msgstr "%s nhà cung cấp"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "1 agreement"
+msgstr "1 thỏa thuận"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "1 agreement has"
+msgstr "1 thỏa thuận"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "1 vendor"
+msgstr "1 nhà cung cấp"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Add the first vendor"
+msgstr "Thêm nhà cung cấp đầu tiên"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__agreement_state model_terms:ir.ui.view,arch_db:pb_vendor_access.view_pb_vendor_agreement_form
+msgid "Agreement"
+msgstr "Thỏa thuận"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Agreement ending soonest"
+msgstr "Thỏa thuận sắp hết hạn trước"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "All vendors"
+msgstr "Tất cả nhà cung cấp"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__company_id model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor_agreement__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 code:addons/pb_vendor_access/models/vendor_export.py:0 code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Every company"
+msgstr "Mọi công ty"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Every vendor and every agreement, as a spreadsheet"
+msgstr "Mọi nhà cung cấp và mọi thỏa thuận, dưới dạng bảng tính"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "I look after"
+msgstr "Tôi phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 model_terms:ir.ui.view,arch_db:pb_vendor_access.view_pb_vendor_search
+msgid "I look after them"
+msgstr "Tôi phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Loading vendors"
+msgstr "Đang tải nhà cung cấp"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Looked after by me"
+msgstr "Do tôi phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Name, Z to A"
+msgstr "Tên, Z đến A"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Newest on the register"
+msgstr "Mới thêm vào danh sách gần nhất"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__next_end_date
+msgid "Next agreement ends"
+msgstr "Thỏa thuận kế tiếp kết thúc"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "No agreement yet"
+msgstr "Chưa có thỏa thuận"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0 model_terms:ir.actions.act_window,help:pb_vendor_access.action_pb_vendor
+msgid "No suppliers on the register yet"
+msgstr "Chưa có nhà cung cấp nào trong danh sách"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "No team"
+msgstr "Chưa có bộ phận"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "No vendor matches these filters"
+msgstr "Không có nhà cung cấp nào khớp với các bộ lọc này"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "No vendor on the register matches these filters."
+msgstr "Không có nhà cung cấp nào khớp với các bộ lọc này."
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "No vendors on the register yet."
+msgstr "Chưa có nhà cung cấp nào trong danh sách."
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Nothing on the register matches “"
+msgstr "Không có mục nào trong danh sách khớp với “"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Nothing recorded"
+msgstr "Chưa ghi nhận gì"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Remove a filter above, or start again from the whole register."
+msgstr "Bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại từ toàn bộ danh sách."
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Search a vendor, a contact or an owner"
+msgstr "Tìm nhà cung cấp, người liên hệ hoặc người phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Show every vendor"
+msgstr "Hiện tất cả nhà cung cấp"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_vendor_access
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0
+msgid "Someone else does"
+msgstr "Người khác phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__department_id
+msgid "Team they work with"
+msgstr "Bộ phận làm việc cùng"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "The vendors could not be listed. Try again in a moment."
+msgstr "Không thể hiển thị danh sách nhà cung cấp. Vui lòng thử lại sau giây lát."
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid ""
+"This is where the agencies, trainers, insurers and software\n"
+"                suppliers HR deals with live — who they are, who here owns the\n"
+"                relationship, and what has been agreed. Put one in and Payobook\n"
+"                starts telling its owner before the agreement runs out, instead of\n"
+"                afterwards."
+msgstr "Đây là nơi lưu các công ty tuyển dụng, đơn vị đào tạo, công ty bảo hiểm và nhà cung cấp phần mềm mà bộ phận nhân sự làm việc cùng — họ là ai, ai ở đây phụ trách mối quan hệ, và những gì đã thỏa thuận. Thêm một nhà cung cấp và Payobook sẽ nhắc người phụ trách trước khi thỏa thuận hết hạn, thay vì sau đó."
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid ""
+"This is where the agencies, trainers, insurers and software\n"
+"            suppliers HR deals with live — who they are, who here owns the\n"
+"            relationship, and what has been agreed. Put one in and Payobook\n"
+"            starts telling its owner before the agreement runs out, instead of\n"
+"            afterwards."
+msgstr "Đây là nơi lưu các công ty tuyển dụng, đơn vị đào tạo, công ty bảo hiểm và nhà cung cấp phần mềm mà bộ phận nhân sự làm việc cùng — họ là ai, ai ở đây phụ trách mối quan hệ, và những gì đã thỏa thuận. Thêm một nhà cung cấp và Payobook sẽ nhắc người phụ trách trước khi thỏa thuận hết hạn, thay vì sau đó."
+
+#. module: pb_vendor_access
+#: model_terms:ir.actions.act_window,help:pb_vendor_access.action_pb_vendor
+msgid ""
+"This is where the agencies, training providers, insurers and\n"
+"                software suppliers HR deals with live — who they are, who here\n"
+"                looks after them, and when the agreement runs out. Payobook\n"
+"                tells the owner before it does."
+msgstr "Đây là nơi lưu các công ty tuyển dụng, đơn vị đào tạo, công ty bảo hiểm và nhà cung cấp phần mềm mà bộ phận nhân sự làm việc cùng — họ là ai, ai ở đây phụ trách mối quan hệ, và những gì đã thỏa thuận. Thêm một nhà cung cấp và Payobook sẽ nhắc người phụ trách trước khi thỏa thuận hết hạn, thay vì sau đó."
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 code:addons/pb_vendor_access/models/vendor_export.py:0 code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__vendor_type model_terms:ir.ui.view,arch_db:pb_vendor_access.view_pb_vendor_search
+msgid "What they do"
+msgstr "Họ làm gì"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_vendor_access/models/pb_vendors_facade.py:0 code:addons/pb_vendor_access/models/vendor_export.py:0 code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0 model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor__responsible_user_id model:ir.model.fields,field_description:pb_vendor_access.field_pb_vendor_agreement__responsible_user_id model_terms:ir.ui.view,arch_db:pb_vendor_access.view_pb_vendor_search
+msgid "Who looks after them"
+msgstr "Người phụ trách"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "more"
+msgstr "mục"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/js/vendors_board.js:0
+msgid "vendors"
+msgstr "nhà cung cấp"
+
+#. module: pb_vendor_access
+#. odoo-javascript
+#: code:addons/pb_vendor_access/static/src/xml/vendors_board.xml:0
+msgid "”. Check the spelling, or search by contact, team or owner."
+msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo người liên hệ, bộ phận hoặc người phụ trách."

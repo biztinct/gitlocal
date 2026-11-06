@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Claims › REQUESTS (LEARNING L5). The quiet board
+       (QuietGlance is not needed: the four steps ARE the numbers) over a
+       list of request rows. `=` rules in comments (R35); text nodes on one
+       line (LN13); scrims are direct children of the root (R114). The step
+       picker is built in JS (LN36).
+       ==================================================================== -->
+  <t t-name="pb_training.PbRequestsLens">
+    <div class="pbim pbss pbss-vars pbcl" t-att-class="{ 'pbss--embedded': props.embedded }">
+      <div class="pbss-wrap">
+
+        <div t-if="!state.loaded" class="pbss-hero pbss-skel" aria-busy="true"><div class="pbss-skel-line"/></div>
+
+        <div t-elif="state.failed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The course requests could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <div t-elif="!allowed" class="pbss-panel pbss-empty">
+          <div class="pbss-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Course requests are looked after by the training team</h2>
+          <p>A request you were asked to decide is in your Approvals inbox.</p>
+        </div>
+
+        <t t-else="">
+          <section class="pbss-hero">
+            <div class="pbss-hero-top">
+              <div class="pbss-hero-id">
+                <div class="pbss-eyebrow"><t t-out="ic('send',13)"/> Course requests</div>
+                <p class="pbss-headline" t-esc="data.headline"/>
+                <p t-if="kpis.claimed_words" class="pbss-note" t-esc="claimedWords"/>
+              </div>
+              <div t-if="data.can_write" class="pbss-hero-act">
+                <button class="pbim-btn primary" t-on-click="openPut"><t t-out="ic('userPlus',15)"/> Put someone on a course</button>
+              </div>
+            </div>
+          </section>
+
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="'Where every request is'"/>
+            <t t-set="qStepPick" t-value="stepPicker()"/>
+          </t>
+          <div class="pbim-showing">
+            <span t-esc="showing.text"/>
+            <button t-if="!showing.all" type="button" class="pbim-showall" t-on-click="showAll">Show all</button>
+          </div>
+
+          <div class="pbss-bar">
+            <label class="pbss-search"><t t-out="ic('search',14)"/><input type="search" placeholder="Find a person or a course" t-att-value="state.f.q" t-on-input="onSearch"/></label>
+            <div class="pbss-modes" role="group">
+              <button t-foreach="data.kinds || []" t-as="kd" t-key="kd.key" class="pbss-filter" t-att-class="{ 'is-on': state.f.kind === kd.key }" t-on-click="() => this.setKind(kd.key)" t-esc="kd.label"/>
+            </div>
+          </div>
+
+          <div t-if="!rows.length and !kpis.total" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('send',26)"/></div>
+            <h2>Nobody has asked to take a course yet</h2>
+            <p>People ask from My learning (or their own training page): one of our courses, one from the outside list, or something they found. Their manager decides, and the HR lead too when it costs money. Agreed outside courses are claimed back with the receipt and the certificate.</p>
+            <div t-if="data.can_write" class="pbss-empty-act"><button class="pbim-btn primary" t-on-click="openPut"><t t-out="ic('userPlus',15)"/> Put someone on a course</button></div>
+          </div>
+          <div t-elif="!rows.length" class="pbss-panel pbss-empty">
+            <div class="pbss-empty-ic"><t t-out="ic('search',26)"/></div>
+            <h2>No request matches that</h2>
+            <button class="pbim-btn ghost" t-on-click="showAll">Show all</button>
+          </div>
+
+          <div t-else="" class="pbcl-reqs">
+            <div t-foreach="rows" t-as="req" t-key="req.id" class="pbss-panel pbcl-req" t-att-class="{ 'is-wait': req.state === 'submitted' }">
+              <div class="pbcl-req-main">
+                <div class="pbcl-req-who">
+                  <b t-esc="req.who"/>
+                  <span class="pbss-dim"><t t-esc="req.department"/><t t-if="req.manager"> · <t t-esc="req.manager"/></t></span>
+                </div>
+                <div class="pbcl-req-what">
+                  <span class="pbcl-req-course"><t t-out="ic(kindIcon(req),14)"/> <t t-esc="req.course"/></span>
+                  <span class="pbss-dim"><t t-esc="req.kind_word"/><t t-if="req.provider"> · <t t-esc="req.provider"/></t><t t-if="req.when_words"> · <t t-esc="req.when_words"/></t></span>
+                  <span t-if="req.why" class="pbcl-why">“<t t-esc="req.why"/>”</span>
+                </div>
+                <div class="pbcl-req-money" t-esc="req.amount_words"/>
+              </div>
+              <div class="pbcl-req-foot">
+                <span class="pbss-state" t-att-class="stateClass(req)" t-esc="req.state_word"/>
+                <span t-if="req.waiting_on" class="pbss-chip is-warn"><t t-out="ic('hourglass',12)"/> <t t-esc="req.waiting_on"/></span>
+                <span t-if="req.put_on_by" class="pbss-chip"><t t-out="ic('userCheck',12)"/> <t t-esc="putByWords(req)"/></span>
+                <span t-if="req.refuse_note" class="pbss-chip"><t t-out="ic('messageSquare',12)"/> <t t-esc="req.refuse_note"/></span>
+                <span class="pbcl-gap"/>
+                <button class="pbim-btn ghost" t-on-click="() => this.openRequest(req)" title="Open the request"><t t-out="ic('external',14)"/></button>
+                <button t-if="data.can_write and req.can_mark_taken" class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.markTaken(req)"><t t-out="ic('checkCheck',14)"/> Mark as taken</button>
+                <t t-if="data.can_write and req.can_decide">
+                  <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.openRefuse(req)">Turn down</button>
+                  <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="() => this.approve(req)"><t t-out="ic('check',14)"/> Agree</button>
+                </t>
+              </div>
+            </div>
+            <p t-if="data.matching > data.shown" class="pbss-note" t-esc="capWords"/>
+          </div>
+        </t>
+      </div>
+
+      <!-- ================= turn it down ================= -->
+      <div t-if="state.refuse" class="pbim-modal-scrim pbss-scrim" t-on-click="closeRefuse">
+        <div class="pbss-drawer pbcl-drawer-s" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Turn this request down</div>
+              <h2 class="pbss-drawer-title"><t t-esc="state.refuse.who"/> · <t t-esc="state.refuse.course"/></h2>
+              <p class="pbss-note">They get this in an email, and it is on their own page.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeRefuse" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Why</span><textarea class="pbss-in" rows="4" placeholder="One line is enough — for example, not this quarter: the team is short until March." t-att-value="state.refuseNote" t-on-input="onRefuseNote"/></label>
+          </div>
+          <div class="pbss-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closeRefuse">Leave it</button>
+            <button class="pbim-btn primary" t-att-disabled="!state.refuseNote.trim() or state.busy" t-on-click="confirmRefuse">Turn it down</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= put someone on a course ================= -->
+      <div t-if="state.drawer" class="pbim-modal-scrim pbss-scrim" t-on-click="closePut">
+        <div class="pbss-drawer" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Put someone on a course</div>
+              <h2 class="pbss-drawer-title">Agreed by you now, on their behalf</h2>
+              <p class="pbss-note">One of ours goes on their training page straight away. An outside course is set aside from their allowance and claimed back with the receipt and the certificate.</p>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closePut" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <div class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">What</span>
+              <div class="pbss-modes" role="group">
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.put.kind === 'ours' }" t-on-click="() => this.setPutKind('ours')">One of our courses</button>
+                <button t-if="state.outside.length" class="pbss-filter" t-att-class="{ 'is-on': state.put.kind === 'outside' }" t-on-click="() => this.setPutKind('outside')">An outside course</button>
+                <button class="pbss-filter" t-att-class="{ 'is-on': state.put.kind === 'other' }" t-on-click="() => this.setPutKind('other')">Something else</button>
+              </div>
+            </div>
+            <label t-if="state.put.kind === 'ours'" class="pbss-f pbss-f--wide"><span class="pbss-f-l">Course</span>
+              <select class="pbss-in" t-on-change="(ev) => this.setPut('channel_id', ev, 'num')"><option value="0">Pick one</option><t t-foreach="state.courses" t-as="crs" t-key="crs.id"><option t-att-value="crs.id" t-esc="crs.name"/></t></select>
+            </label>
+            <label t-if="state.put.kind === 'outside'" class="pbss-f pbss-f--wide"><span class="pbss-f-l">Outside course</span>
+              <select class="pbss-in" t-on-change="(ev) => this.setPut('outside_course_id', ev, 'num')"><option value="0">Pick one</option><t t-foreach="state.outside" t-as="ocs" t-key="ocs.id"><option t-att-value="ocs.id"><t t-esc="ocs.name"/> · <t t-esc="ocs.cost_words"/></option></t></select>
+            </label>
+            <t t-if="state.put.kind === 'other'">
+              <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">What the course is called</span><input class="pbss-in" type="text" t-att-value="state.put.course_name" t-on-input="(ev) => this.setPut('course_name', ev)"/></label>
+              <label class="pbss-f"><span class="pbss-f-l">Who runs it</span><input class="pbss-in" type="text" t-att-value="state.put.provider" t-on-input="(ev) => this.setPut('provider', ev)"/></label>
+              <label class="pbss-f"><span class="pbss-f-l">What it costs (0 if free)</span><input class="pbss-in" type="number" min="0" t-att-value="state.put.amount" t-on-change="(ev) => this.setPut('amount', ev, 'num')"/></label>
+              <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Link</span><input class="pbss-in" type="text" placeholder="https://" t-att-value="state.put.url" t-on-input="(ev) => this.setPut('url', ev)"/></label>
+            </t>
+            <div class="pbss-f pbss-f--wide">
+              <span class="pbss-f-l">Who</span>
+              <input class="pbss-in" type="search" placeholder="Find somebody by name — accents and all" t-att-value="state.put.term" t-on-input="onPeopleTerm"/>
+              <div t-if="state.people.length" class="pbss-picklist">
+                <label t-foreach="state.people" t-as="emp" t-key="emp.id" class="pbss-pick" t-att-class="{ 'is-on': state.put.picked.includes(emp.id) }">
+                  <input type="checkbox" class="pbss-pick-box" t-att-checked="state.put.picked.includes(emp.id)" t-on-change="() => this.togglePick(emp.id)"/>
+                  <b t-esc="emp.name"/><span class="pbss-dim-i" t-esc="emp.email"/>
+                </label>
+              </div>
+              <p t-else="" class="pbss-note">Nobody matches that.</p>
+            </div>
+            <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Why (they read it in the email)</span><textarea class="pbss-in" rows="2" t-att-value="state.put.why" t-on-input="(ev) => this.setPut('why', ev)"/></label>
+          </div>
+          <div class="pbss-drawer-foot">
+            <span t-if="putHint" class="pbss-hint" t-esc="putHint"/>
+            <button class="pbim-btn ghost" t-on-click="closePut">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!!putHint or state.busy" t-on-click="confirmPut"><t t-out="ic('userPlus',15)"/> Put them on it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COUNTRY PACK: INDIA (in_posh). LEARNING L2, handover §3.6.2.
+         Template rows (company empty, archived); see pack_vn.xml.
+
+         Sources: POSH Act 2013 s.19(c), s.21, s.26; POSH Rules 2013 r.13
+         (taxclue), r.14 / s.21 (mondaq); Factories Act 1948 s.41C / s.111A
+         (advocatekhoj); OSH Code 2020, central rules 2026 (sansalegal).
+
+         The law asks for awareness sessions "at regular intervals" with no
+         fixed frequency: the pack says once a year, and the rule can be
+         edited. The annual report (sessions held, attendance register) is
+         the India report on the Numbers page; its filing date is set per
+         office by the District Officer (31 January is the usual answer).
+         ================================================================== -->
+
+    <record id="req_in_posh_all" model="pb.training.requirement">
+        <field name="name">Harassment-awareness session (everybody)</field>
+        <field name="code">in_posh_all</field>
+        <field name="pack_key">in_posh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">201</field>
+        <field name="target">course</field>
+        <field name="include_contractors" eval="True"/>
+        <field name="validity_months">12</field>
+        <field name="every_months">12</field>
+        <field name="due_days">30</field>
+        <field name="note">POSH Act 2013 s.19(c): regular awareness sessions for every worker, contractors, interns and consultants included. The law sets no frequency; once a year is the pack's default. Attendance is the finished course. Link your session course here.</field>
+    </record>
+
+    <record id="req_in_posh_ic" model="pb.training.requirement">
+        <field name="name">Internal Committee orientation</field>
+        <field name="code">in_posh_ic</field>
+        <field name="pack_key">in_posh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">202</field>
+        <field name="target">course</field>
+        <field name="audience_flag">posh_ic</field>
+        <field name="validity_months">12</field>
+        <field name="every_months">12</field>
+        <field name="note">POSH Rules 2013 r.13: orientation and skill-building for the Internal Committee. Mark the members on their employee record (Internal Committee member).</field>
+    </record>
+
+    <record id="req_in_hazardous_medical" model="pb.training.requirement">
+        <field name="name">Medical fitness — hazardous processes</field>
+        <field name="code">in_hazardous_medical</field>
+        <field name="pack_key">in_posh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="ship_inactive" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">203</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_health_check"/>
+        <field name="name_pattern">Medical fitness</field>
+        <field name="validity_months">12</field>
+        <field name="note">Factories Act 1948 s.41C: a medical examination before the job and at least every 12 months for workers in hazardous processes. Arrives switched off: pick the jobs, then switch it on.</field>
+    </record>
+
+    <record id="req_in_mock_drill" model="pb.training.requirement">
+        <field name="name">Mock drill (Maharashtra factories)</field>
+        <field name="code">in_mock_drill</field>
+        <field name="pack_key">in_posh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">204</field>
+        <field name="target">course</field>
+        <field name="validity_months">6</field>
+        <field name="every_months">6</field>
+        <field name="note">Confirm before switching on. Maharashtra factories rules, 2025 amendment (secondary sources): a mock drill every six months. Confirm which sites are factories under state rules.</field>
+    </record>
+
+</data>
+</odoo>

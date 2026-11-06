@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_training.AuthoringGuide">
+    <section class="pb-author-hero" t-ref="root" aria-label="Learning authoring guide">
+      <div class="pb-author-hero__main">
+        <div class="pb-author-eyebrow"><i t-att-class="isCourse ? 'fa fa-graduation-cap' : 'fa fa-check-square-o'" aria-hidden="true"/> LEARNING STUDIO <span t-esc="status"/></div>
+        <h2 t-esc="title"/>
+        <p t-esc="subtitle"/>
+        <div class="pb-author-facts"><span><i class="fa fa-lock" aria-hidden="true"/> <t t-esc="audience"/></span><span><i class="fa fa-compass" aria-hidden="true"/> <t t-esc="rules"/></span></div>
+        <div class="pb-author-actions"><button t-if="!env.inDialog &amp;&amp; !props.readonly" type="button" class="btn btn-primary" t-att-disabled="state.saving" t-on-click="save"><i class="fa fa-check" aria-hidden="true"/> <t t-esc="saveLabel"/></button><button type="button" class="btn btn-link" t-on-click="() => this.go('options')">Review settings <i class="fa fa-arrow-right" aria-hidden="true"/></button></div>
+      </div>
+      <aside class="pb-author-checklist" aria-label="Setup checklist">
+        <div class="pb-author-checklist__heading"><strong>YOUR STARTING POINT</strong><span t-esc="progressLabel" aria-live="polite"/></div>
+        <div class="pb-author-progress" role="progressbar" t-att-aria-valuenow="completed" aria-valuemin="0" aria-valuemax="3" aria-label="Essentials added"><span t-att-style="'width:' + (completed / 3 * 100) + '%'"/></div>
+        <button t-foreach="checks" t-as="check" t-key="check.key" type="button" t-att-class="{'is-done': check.done, 'is-current': state.destination === check.key}" t-att-aria-pressed="state.destination === check.key ? 'true' : 'false'" t-on-click="() => this.go(check.key)"><i t-att-class="check.done ? 'fa fa-check-circle' : 'fa fa-circle-o'" aria-hidden="true"/><span t-esc="check.label"/><i class="fa fa-arrow-right" aria-hidden="true"/></button>
+      </aside>
+    </section>
+  </t>
+</templates>

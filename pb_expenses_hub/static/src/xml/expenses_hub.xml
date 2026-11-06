@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ================================================ the Expenses hub
+       NAV P2. The whole surface is the kit's shell. Section comments use `=`
+       rules and never a doubled hyphen (W22/W72). -->
+  <t t-name="pb_expenses_hub.PbExpensesHub">
+    <HubShell config="config" action="props.action or {}"/>
+  </t>
+
+  <!-- ================================================ Expenses, Claims tab
+       FILTER wave 7: the claims on the shared filter panel. The wrapper is
+       a definite-height box that scrolls itself inside the hub canvas
+       (W20), so the panel stays in view while the rows scroll. -->
+  <t t-name="pb_expenses_hub.PbClaimsLens">
+    <div class="pbexpense-lens pbim pbcl">
+      <PbFilterLayout kit="kit" searchPlaceholder="searchHint">
+        <t t-set-slot="toolbar">
+          <button type="button" class="pbcl-btn" t-on-click="() => this.openClaim(false)">
+            <span t-out="ic('plus', 14)"/> New claim
+          </button>
+        </t>
+
+        <t t-set="ek" t-value="emptyKind"/>
+        <div t-if="!state.loaded" class="pbcl-skel" aria-busy="true" aria-label="Loading expense claims">
+          <span/><span/><span/><span/>
+        </div>
+
+        <div t-elif="kit.failed" class="pbcl-empty">
+          <span class="pbcl-empty__ic" t-out="ic('lock', 26)"/>
+          <h3>Expense claims are not open to you</h3>
+          <p t-if="kit.refusal" t-esc="kit.refusal"/>
+          <p t-else="">The list could not be loaded. Reload the page to try again.</p>
+        </div>
+
+        <div t-elif="ek === 'none'" class="pbcl-empty">
+          <span class="pbcl-empty__ic" t-out="ic('receipt', 26)"/>
+          <h3>No expense claims yet</h3>
+          <p>People send their claims from their own pages. Each claim holds one or more receipts and is decided from Approvals.</p>
+        </div>
+
+        <div t-elif="ek === 'calm'" class="pbcl-empty">
+          <span class="pbcl-empty__ic" t-out="ic('checkCircle', 26)"/>
+          <h3>Nothing is waiting approval</h3>
+          <p>Every claim sent in has been decided.</p>
+          <button type="button" class="pbcl-btn" t-on-click="showEverything">Show every claim</button>
+        </div>
+
+        <div t-elif="ek === 'search'" class="pbcl-empty">
+          <span class="pbcl-empty__ic" t-out="ic('search', 26)"/>
+          <h3>No claim matches “<t t-esc="kit.search"/>”</h3>
+          <p>Try a claim reference, a person’s name or a word from the note.</p>
+          <button type="button" class="pbcl-btn" t-on-click="() => kit.setSearch('', true)">Clear the search</button>
+        </div>
+
+        <div t-elif="ek === 'filters'" class="pbcl-empty">
+          <span class="pbcl-empty__ic" t-out="ic('filter', 26)"/>
+          <h3>No claim matches these filters</h3>
+          <p>Remove a filter above, or start again from the claims waiting approval.</p>
+          <button type="button" class="pbcl-btn pbcl-btn--primary" t-on-click="startAgain">Start again</button>
+        </div>
+
+        <t t-else="">
+          <div class="pbcl-table" role="table" aria-label="Expense claims">
+            <div class="pbcl-head" role="row">
+              <span role="columnheader">Claim</span>
+              <span role="columnheader">Who sent it</span>
+              <span role="columnheader">Sent on</span>
+              <span role="columnheader" class="num">Receipts</span>
+              <span role="columnheader" class="num">Total</span>
+              <span role="columnheader">Status</span>
+            </div>
+            <div class="pbcl-rows" t-key="listKey">
+              <div t-foreach="state.rows" t-as="r" t-key="r.id" class="pbcl-row" role="row"
+                   tabindex="0" t-att-aria-label="r.name + ' · ' + r.employee"
+                   t-on-click="() => this.openClaim(r.id)"
+                   t-on-keydown="(ev) => this.onRowKey(ev, r)">
+                <span class="ref" role="cell" t-esc="r.name"/>
+                <span class="who" role="cell">
+                  <img t-if="r.avatar" t-att-src="r.avatar" alt="" loading="lazy"/>
+                  <span>
+                    <b t-esc="r.employee"/>
+                    <small t-if="r.department" t-esc="r.department"/>
+                  </span>
+                </span>
+                <span class="when" role="cell">
+                  <t t-if="r.sent" t-esc="r.sent"/>
+                  <i t-else="">Not sent yet</i>
+                </span>
+                <span class="num" role="cell" t-esc="r.receipts"/>
+                <span class="num amt" role="cell" t-esc="r.total"/>
+                <span role="cell"><span t-attf-class="pbcl-st is-{{ r.state }}" t-esc="r.state_label"/></span>
+              </div>
+            </div>
+          </div>
+          <div class="pbcl-foot">
+            Showing <b t-esc="state.rows.length"/> of <b t-esc="state.total"/>
+            <button t-if="hasMore" type="button" class="pbcl-btn" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+        </t>
+      </PbFilterLayout>
+    </div>
+  </t>
+
+</templates>

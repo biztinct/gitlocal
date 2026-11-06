@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Read receipts (TIERS T3b D4). The employee pages write them under
+         sudo after the ownership guard (ledger T-R11), so there is NO portal
+         row. A full-account employee sees only their own receipts; the HR
+         team sees them all (group rules OR); every reader stays inside their
+         companies (global rule). -->
+    <record id="rule_notice_read_company" model="ir.rule">
+        <field name="name">Notice read: my companies</field>
+        <field name="model_id" ref="model_pb_me_notice_read"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_notice_read_own" model="ir.rule">
+        <field name="name">Notice read: my own</field>
+        <field name="model_id" ref="model_pb_me_notice_read"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="rule_notice_read_hr" model="ir.rule">
+        <field name="name">Notice read: the HR team sees them all</field>
+        <field name="model_id" ref="model_pb_me_notice_read"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+    </record>
+</odoo>

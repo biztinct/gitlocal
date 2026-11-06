@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Morning report of NEW demo sign-ups to the lead_notify_to list.
+         Runs hourly; the code only sends once a day, between 5 am and noon
+         Sydney time, and only when someone new signed up (owner ruling
+         2026-10-10). noupdate so a switch-off survives module upgrades. -->
+    <record id="cron_signup_report" model="ir.cron">
+        <field name="name">Demo sign-ups: morning report to the team</field>
+        <field name="model_id" ref="model_pb_demo_signup_report"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_daily_report()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Where the first report starts: lead 386 was the last sign-up in the
+         one-off report sent to the owner on 2026-10-08. -->
+    <record id="param_signup_report_cursor" model="ir.config_parameter">
+        <field name="key">pb_demo_portal.signup_report_last_lead_id</field>
+        <field name="value">386</field>
+    </record>
+</odoo>

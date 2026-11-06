@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         RECRUIT P3 — the emails of a hiring request, the budget flag, the
+         shared advert, the referral announcement, an adverse background
+         check and papers that are late.
+
+         noupdate="1" like every template in this module: a tenant that has
+         reworded one keeps its words. EVERY ONE is sent with an explicit
+         `email_to` (R6); the field below documents who it is for.
+
+         `email_from` is the company's hiring sender (`pb.hiring._sender`,
+         parameter `pb_hiring.sender`, then the company's own address) —
+         never the person who pressed the button. Internal readers' emails
+         are English (R11). Links are the record's PUBLIC url fields
+         (`pb_request_url`, `pb_share_url`), never a private method.
+         ================================================================== -->
+
+    <!-- ============ the manager: please complete the request ============ -->
+    <record id="mail_template_request_ask" model="mail.template">
+        <field name="name">Hiring: please complete the hiring request</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="email_to">{{ object.asked_employee_id.work_email or '' }}</field>
+        <field name="subject">{{ ctx.get('pb_reminder') and 'Reminder: ' or '' }}Please complete the hiring request for {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.asked_employee_id.name or ''"/>,</p>
+                <p t-if="ctx.get('pb_reminder')" style="color:#92400E;">
+                    A friendly reminder — this is reminder
+                    <t t-out="ctx.get('pb_reminder')"/>.
+                </p>
+                <p>
+                    <strong><t t-out="object.asked_by_id.name or 'The hiring team'"/></strong>
+                    asked you to complete the hiring request for
+                    <strong><t t-out="object.title or ''"/></strong>
+                    (<t t-out="object.department_id.name or ''"/>).
+                </p>
+                <p t-if="object.ask_message" style="border-left:3px solid #4F46E5; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.ask_message"/>
+                </p>
+                <p>
+                    It is one page. It saves as you type, so you can stop and
+                    come back. Pressing <strong>Send in</strong> at the end is
+                    your agreement to the role.
+                </p>
+                <p style="margin:24px 0;">
+                    <a t-att-href="object.pb_request_url"
+                       style="background:#4F46E5; color:#FFFFFF; padding:12px 20px; border-radius:8px; text-decoration:none; font-weight:600;">
+                        Open the request
+                    </a>
+                </p>
+                <p style="color:#4A5568; font-size:13px;">
+                    The link is yours; there is nothing to sign in to. The
+                    role can already be advertised and candidates met — the
+                    request only has to be agreed before an offer is sent.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the talent lead: nobody has written it ============ -->
+    <record id="mail_template_request_escalated" model="mail.template">
+        <field name="name">Hiring: a hiring request has not been completed</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">{{ object.asked_employee_id.name or 'The manager' }} has not completed the request for {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.asked_employee_id.name or ''"/></strong>
+                    was asked on <t t-out="object.asked_on and object.asked_on.strftime('%d %b') or ''"/>
+                    to complete the hiring request for
+                    <strong><t t-out="object.title or ''"/></strong>
+                    and has not sent it in.
+                    <t t-if="object.remind_count == 1">They have been reminded once.</t>
+                    <t t-elif="object.remind_count">They have been reminded
+                    <t t-out="object.remind_count"/> times.</t>
+                </p>
+                <p>
+                    A short call usually settles it. The role carries on
+                    meanwhile; only the offer waits for an agreed request.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the recruiter: the request is sent in ============ -->
+    <record id="mail_template_request_sent_in" model="mail.template">
+        <field name="name">Hiring: a hiring request was sent in</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="email_to">{{ object.recruiter_id.email or '' }}</field>
+        <field name="subject">The request for {{ object.title }} is sent in</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The hiring request for
+                    <strong><t t-out="object.title or ''"/></strong> has been
+                    sent in<t t-if="object.manager_agreed_by_id"> by
+                    <strong><t t-out="object.manager_agreed_by_id.name"/></strong>,
+                    which is their agreement</t>. The Head of HR is asked to
+                    agree it now.
+                </p>
+                <p t-if="object.budget_status == 'over'" style="color:#9F1239;">
+                    <t t-out="object.budget_note or ''"/>
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the recruiter: the request is agreed ============ -->
+    <record id="mail_template_request_agreed" model="mail.template">
+        <field name="name">Hiring: a hiring request is agreed</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="email_to">{{ object.recruiter_id.email or '' }}</field>
+        <field name="subject">The request for {{ object.title }} is agreed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The hiring request for
+                    <strong><t t-out="object.title or ''"/></strong> is
+                    agreed. When you have the person you want, the offer can
+                    be sent.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the budget watchers: over budget ============ -->
+    <record id="mail_template_budget_flag" model="mail.template">
+        <field name="name">Hiring: a request is over budget</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Over budget: {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The hiring request for
+                    <strong><t t-out="object.title or ''"/></strong>
+                    (<t t-out="object.headcount or 1"/> ×,
+                    <t t-out="object.department_id.name or ''"/>) asks for
+                    more than the budget.
+                </p>
+                <p style="border-left:3px solid #E11D48; padding-left:12px;">
+                    <t t-out="object.budget_note or ''"/>
+                </p>
+                <p>
+                    You are told because you watch the budget. Nothing is
+                    waiting for you and nothing is blocked; if the figure
+                    needs a conversation, reply to the recruiter
+                    (<t t-out="object.recruiter_id.name or 'the hiring team'"/>).
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ everyone: a role is open to referrals ============ -->
+    <record id="mail_template_referral_open" model="mail.template">
+        <field name="name">Hiring: a role is open to referrals</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Know someone for {{ object.title }}?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    We are hiring
+                    <strong><t t-out="object.title or ''"/></strong>
+                    (<t t-out="object.department_id.name or ''"/><t t-if="object.location or object.country_id">,
+                    <t t-out="object.location or object.country_id.name or ''"/></t>).
+                    If you know somebody good, put them forward — it takes a
+                    minute and you can follow how far they get.
+                </p>
+                <p style="margin:24px 0;">
+                    <a t-att-href="(object.get_base_url() or '') + '/my/refer'"
+                       style="background:#4F46E5; color:#FFFFFF; padding:12px 20px; border-radius:8px; text-decoration:none; font-weight:600;">
+                        Refer someone
+                    </a>
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the manager: the advert, for input ============ -->
+    <record id="mail_template_jd_share" model="mail.template">
+        <field name="name">Hiring: an advert shared for input</field>
+        <field name="model_id" ref="model_pb_hiring_jd"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Your input on the advert for {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.shared_with_id.name or ''"/>,</p>
+                <p>
+                    Here is version <t t-out="object.version or 1"/> of the
+                    advert for <strong><t t-out="object.title or ''"/></strong>.
+                    Read it and leave a comment if anything should change —
+                    nothing needs your signature.
+                </p>
+                <div style="border:1px solid #E2E8F0; border-radius:8px; padding:16px; margin:16px 0;">
+                    <t t-out="object.body or ''"/>
+                </div>
+                <p style="margin:24px 0;">
+                    <a t-att-href="object.pb_share_url"
+                       style="background:#4F46E5; color:#FFFFFF; padding:12px 20px; border-radius:8px; text-decoration:none; font-weight:600;">
+                        Leave a comment
+                    </a>
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the Head of HR: a check came back ============ -->
+    <record id="mail_template_bgv_adverse" model="mail.template">
+        <field name="name">Hiring: a background check came back with something</field>
+        <field name="model_id" ref="model_pb_hiring_bgv"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Background check: something came back for {{ object.candidate_name or '' }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The background check for
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    (<t t-out="object.requisition_id.title or ''"/>) came back
+                    with something on
+                    <strong><t t-out="ctx.get('pb_item') or ''"/></strong>.
+                </p>
+                <p>
+                    Nothing is blocked: the check runs alongside the offer.
+                    Read the line on the role's Offer &amp; joining tab and
+                    decide with the recruiter.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the talent lead: the papers are late ============ -->
+    <record id="mail_template_docreq_escalated" model="mail.template">
+        <field name="name">Hiring: papers still missing after the deadline</field>
+        <field name="model_id" ref="model_pb_hiring_docreq"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Papers still missing: {{ object.candidate_name or '' }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.candidate_name or ''"/></strong>
+                    was asked for their papers and the deadline
+                    (<t t-out="object.deadline or ''"/>) has passed with
+                    some still missing. The recruiter has a to-do; this is so
+                    it does not sit unnoticed. Nothing is blocked.
+                </p>
+                <br/>
+                The hiring team
+            </div>
+        </field>
+    </record>
+</data>
+</odoo>

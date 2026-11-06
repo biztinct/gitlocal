@@ -10,14 +10,22 @@
             <field name="name">Worker</field>
             <field name="country_id" eval="False"/>
         </record>
+        <!-- NOTE: these two used to set default_resource_calendar_id to
+             resource.resource_calendar_std_38h. That calendar is defined in
+             resource/data/resource_demo.xml, i.e. it only exists when demo data
+             is loaded, so this ALWAYS-loaded file could not be installed on a
+             database built without demo data ("External ID not found in the
+             system: resource.resource_calendar_std_38h"). Real data may never
+             depend on demo data. The field is optional and these Belgian CP200
+             structure types are unused on this product, so the reference is
+             simply dropped; the records themselves are untouched, and the block
+             is noupdate="1" so existing databases keep whatever they hold. -->
         <record id="structure_type_employee_cp200_pfi" model="hr.payroll.structure.type">
             <field name="name">CP200 PFI: Belgian Employee</field>
-            <field name="default_resource_calendar_id" ref="resource.resource_calendar_std_38h"/>
             <field name="country_id" ref="base.be"/>
         </record>
         <record id="structure_type_employee_cp200" model="hr.payroll.structure.type">
             <field name="name">CP200: Belgian Employee</field>
-            <field name="default_resource_calendar_id" ref="resource.resource_calendar_std_38h"/>
             <field name="country_id" ref="base.be"/>
         </record>
 
@@ -48,12 +56,10 @@
         <record id="ir_cron_data_contract_update_state" model="ir.cron">
             <field name="name">HR Contract: update state</field>
             <field name="model_id" ref="model_hr_contract"/>
-            <field name="type">ir.actions.server</field>
             <field name="state">code</field>
             <field name="code">model.with_context(from_cron=True).update_state()</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
         </record>
     </data>
 </odoo>

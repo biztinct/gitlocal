@@ -1,0 +1,649 @@
+<title>Payobook Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a light-tint hero that states today's situation and holds the one action, a "needs you" line that collects
+   every open action, then a 2:1 split — the 12-month chart that doubles as the month picker (with the month's figures
+   and one stacked cost bar underneath) beside the month's steps and what's coming — then one row of three cards and a
+   quiet closing row. One brand indigo, solid fills, Lucide icons, the Pay Runs board semantic set. */
+:root{
+  --bg:#F4F5FB; --lane:#ECEDF6; --surface:#FFFFFF;
+  --ink:#1E1B2E; --ink2:#3F3B57; --muted:#6F6B86; --faint:#9D99B4;
+  --line:#E4E5F1; --line2:#D6D7E8;
+  --p:#5A4BB0; --p600:#4A3D96; --p-deep:#241F52; --p-soft:#EDEAF8; --p-soft2:#DDD6F2; --p-wash:#F3F0FB; --p-ring:rgba(90,75,176,.22);
+  --amber:#B45309; --amber-s:#FEF3C7; --green:#0F7B4F; --green-s:#D9F2E4; --rose:#DC2655; --rose-s:#FFE4E8;
+  --slate:#64748B; --slate-s:#EDF0F4; --teal:#0F766E; --teal-s:#D6F1EC;
+  --sh-1:0 1px 2px rgba(30,27,46,.06),0 1px 1px rgba(30,27,46,.03);
+  --sh-2:0 12px 30px rgba(60,50,130,.13),0 2px 6px rgba(60,50,130,.06);
+  --tip-bg:#1E1B2E; --tip-ink:#FFFFFF; --on-p:#FFFFFF;
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --r-card:14px; --r-lane:20px; --r-btn:10px;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#14131C; --lane:#191823; --surface:#1C1B26;
+  --ink:#ECEAF4; --ink2:#D6D4E0; --muted:#A5A8B8; --faint:#7C7F93;
+  --line:#2C2B3A; --line2:#3A394A;
+  --p:#9C8DE6; --p600:#B1A5EE; --p-deep:#C9C0F4; --p-soft:#2A2545; --p-soft2:#342E58; --p-wash:#221E3A; --p-ring:rgba(156,141,230,.30);
+  --amber:#E8B45C; --amber-s:#3A2F14; --green:#7BC49A; --green-s:#1F3328; --rose:#F08AA5; --rose-s:#40222C;
+  --slate:#A5A8B8; --slate-s:#262532; --teal:#6CC7B8; --teal-s:#163530;
+  --sh-1:0 1px 2px rgba(0,0,0,.4); --sh-2:0 12px 30px rgba(0,0,0,.45);
+  --tip-bg:#ECEAF4; --tip-ink:#1E1B2E; --on-p:#14131C; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#14131C; --lane:#191823; --surface:#1C1B26;
+  --ink:#ECEAF4; --ink2:#D6D4E0; --muted:#A5A8B8; --faint:#7C7F93;
+  --line:#2C2B3A; --line2:#3A394A;
+  --p:#9C8DE6; --p600:#B1A5EE; --p-deep:#C9C0F4; --p-soft:#2A2545; --p-soft2:#342E58; --p-wash:#221E3A; --p-ring:rgba(156,141,230,.30);
+  --amber:#E8B45C; --amber-s:#3A2F14; --green:#7BC49A; --green-s:#1F3328; --rose:#F08AA5; --rose-s:#40222C;
+  --slate:#A5A8B8; --slate-s:#262532; --teal:#6CC7B8; --teal-s:#163530;
+  --sh-1:0 1px 2px rgba(0,0,0,.4); --sh-2:0 12px 30px rgba(0,0,0,.45);
+  --tip-bg:#ECEAF4; --tip-ink:#1E1B2E; --on-p:#14131C; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13.5px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:var(--p600);text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:none;box-shadow:0 0 0 3px var(--p-ring);border-radius:8px}
+svg.lucide{width:1em;height:1em;stroke-width:2;flex:none}
+.num{font-variant-numeric:tabular-nums}
+
+/* page */
+.wrap{max-width:1500px;margin:0 auto;padding-block:20px 80px;padding-inline:28px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.greet{font-size:13px;color:var(--muted)}
+.greet b{color:var(--ink);font-weight:700}
+.topline .meta{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12.5px;flex-wrap:wrap}
+.ask{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted);box-shadow:var(--sh-1);min-width:260px;cursor:text}
+.ask .lucide{color:var(--p)}
+.ask kbd{margin-left:auto;font:600 10.5px var(--font);color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:var(--bg)}
+.proto{font-size:11px;font-weight:700;color:var(--muted);background:var(--slate-s);border-radius:999px;padding:3px 9px}
+
+/* hero */
+.hero{background:var(--p-wash);border:1px solid var(--p-soft2);border-radius:var(--r-lane);padding:24px 28px;display:grid;grid-template-columns:1.4fr .9fr;gap:28px;align-items:stretch;box-shadow:var(--sh-1)}
+.eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--p);margin-bottom:8px}
+.hero h1{margin:0 0 8px;font-size:27px;font-weight:800;letter-spacing:-.02em;color:var(--p-deep);text-wrap:balance;line-height:1.2}
+.hero h1 .sep{color:var(--p-soft2);font-weight:400;margin:0 8px}
+.hero .say{font-size:15.5px;font-weight:500;color:var(--ink2);max-width:64ch;margin:0 0 18px}
+.hero .say b{font-weight:700;color:var(--ink)}
+.hero .say .link{border-bottom:2px solid var(--p-soft2);font-weight:700;color:var(--p-deep);cursor:pointer;display:inline}
+.hero .say .link:hover{border-color:var(--p)}
+.journey{display:flex;align-items:flex-start;margin:0 0 20px}
+.jn{position:relative;flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.jn .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--p-soft2);background:var(--surface);display:grid;place-items:center;color:var(--on-p);font-size:11px;font-weight:800;position:relative;z-index:1}
+.jn .dot .lucide{width:12px;height:12px;stroke-width:3}
+.jn.done .dot{background:var(--green);border-color:var(--green)}
+.jn.now .dot{background:var(--p);border-color:var(--p);box-shadow:0 0 0 4px var(--p-ring)}
+.jn.wait .dot{background:var(--amber);border-color:var(--amber)}
+.jn.todo .dot{color:var(--faint)}
+.jn:not(:last-child)::after{content:"";position:absolute;top:10px;left:22px;right:0;height:2px;background:var(--p-soft2)}
+.jn.done:not(:last-child)::after{background:var(--green)}
+.jn .l{font-size:12px;font-weight:700;color:var(--ink)}
+.jn .s{font-size:11px;color:var(--muted)}
+.jn.todo .l{color:var(--muted)}
+.jn.wait .s{color:var(--amber);font-weight:700}
+.hero .cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-btn);padding:9px 14px;font-size:13px;font-weight:700;border:1px solid var(--line2);background:var(--surface);color:var(--ink);transition:transform .15s,box-shadow .15s,border-color .15s}
+.btn .lucide{width:15px;height:15px}
+.btn.primary{background:var(--p);border-color:var(--p);color:var(--on-p);box-shadow:0 4px 12px rgba(90,75,176,.22)}
+.btn.primary:hover{background:var(--p600);transform:translateY(-1px)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--p600)}
+.btn.ghost:hover{background:var(--p-soft)}
+.btn:not(.primary):not(.ghost):hover{border-color:var(--p-soft2)}
+.btn.sm{padding:6px 11px;font-size:12px}
+.hero-fig{background:var(--surface);border:1px solid var(--p-soft2);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--sh-1)}
+.hero-fig .lab{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pill{font-size:10.5px;font-weight:800;letter-spacing:0;text-transform:none;background:var(--p-soft);color:var(--p600);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.pill.amber{background:var(--amber-s);color:var(--amber)} .pill.green{background:var(--green-s);color:var(--green)}
+.hero-fig .big{font-size:36px;font-weight:800;letter-spacing:-.025em;color:var(--p-deep);line-height:1.1}
+.hero-fig .big small{font-size:15px;font-weight:600;color:var(--muted);margin-left:8px;letter-spacing:0}
+.prog{height:10px;border-radius:5px;background:var(--p-soft);overflow:hidden;position:relative}
+.prog i{display:block;height:100%;background:var(--p);border-radius:5px;transition:width .8s cubic-bezier(.16,1,.3,1)}
+.hero-fig .row{display:flex;align-items:center;gap:6px 14px;color:var(--muted);font-size:12.5px;flex-wrap:wrap}
+.hero-fig .row b{color:var(--ink2);font-weight:700}
+.hero-fig .sparkwrap{margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+.hero-fig .spark{height:46px}
+.hero-fig .foot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:4px}
+.hero-fig .foot b{color:var(--ink2);font-weight:700}
+
+/* needs-you line */
+.glance{display:flex;align-items:center;gap:4px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:14px 0 16px;box-shadow:var(--sh-1)}
+.glance .cap{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:6px;display:flex;align-items:center;gap:6px}
+.gl{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:8px;font-size:12.5px;color:var(--ink2);transition:background .15s}
+.gl:hover{background:var(--bg)}
+.gl .n{font-size:14px;font-weight:800;color:var(--ink)}
+.gl .d{width:7px;height:7px;border-radius:50%;background:var(--line2)}
+.gl.amber .d{background:var(--amber)} .gl.amber .n{color:var(--amber)}
+.gl.rose .d{background:var(--rose)} .gl.rose .n{color:var(--rose)}
+.glance .all{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--p600);display:inline-flex;align-items:center;gap:4px;padding:5px 8px}
+
+/* split */
+.split{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-1);padding:16px 18px;min-width:0}
+.card h2{margin:0;font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card h2 .lucide{width:16px;height:16px;color:var(--p)}
+.card .sub{font-size:12px;color:var(--muted);margin:3px 0 0}
+.card .head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:inline-flex;background:var(--lane);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{padding:5px 11px;border-radius:999px;font-size:12px;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--p);color:var(--on-p)}
+.seg button:not(.on):hover{color:var(--ink)}
+.chart{position:relative;border-radius:8px}
+.chart svg{display:block;width:100%;height:auto}
+.chart .tip{position:absolute;pointer-events:none;background:var(--tip-bg);color:var(--tip-ink);border-radius:10px;padding:8px 11px;font-size:12px;box-shadow:var(--sh-2);opacity:0;transition:opacity .12s;white-space:nowrap;z-index:2}
+.chart .tip b{display:block;font-size:12.5px;margin-bottom:2px}
+.chart .tip .r{display:flex;justify-content:space-between;gap:16px;opacity:.85}
+.chart .tip.show{opacity:1}
+.hint{font-size:11.5px;color:var(--faint);margin-top:2px;display:flex;gap:14px;flex-wrap:wrap;opacity:0;transition:opacity .2s;min-height:18px}
+.chart:focus-within + .hint, .card:hover .hint{opacity:1}
+.hint kbd{font:600 10.5px var(--font);border:1px solid var(--line);border-radius:5px;padding:0 5px;color:var(--muted);background:var(--bg)}
+
+/* month panel inside the chart card */
+.month{margin-top:12px;padding-top:14px;border-top:1px solid var(--line)}
+.month .mh{display:flex;align-items:baseline;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin-bottom:12px}
+.month .mh h3{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.month .mfacts{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.month .mfacts b{color:var(--ink);font-weight:700}
+.month .mfacts .ok{color:var(--green);display:inline-flex;align-items:center;gap:4px;font-weight:700}
+.month .mfacts .ok .lucide{width:13px;height:13px}
+.month .mfacts .soon{color:var(--amber);display:inline-flex;align-items:center;gap:4px;font-weight:700}
+.month .mfacts .soon .lucide{width:13px;height:13px}
+.figs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.fig{min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:end}
+.fig .l{grid-column:1/3;font-size:11.5px;font-weight:600;color:var(--muted)}
+.fig .v{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--ink);line-height:1.15}
+.fig .v small{font-size:12px;font-weight:600;color:var(--muted);margin-left:3px;letter-spacing:0}
+.fig .spark{width:72px;height:28px;grid-row:2/4;grid-column:2}
+.fig .delta{grid-column:1;justify-self:start}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.delta .lucide{width:13px;height:13px;color:var(--faint)}
+.bar-title{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:4px}
+.bar-title b{font-size:14px;font-weight:800}
+.bar-title span{color:var(--muted)}
+.bracket{position:relative;height:16px;font-size:11px;color:var(--muted)}
+.bracket i{font-style:normal;position:absolute;left:0;top:11px;height:5px;border:1px solid var(--line2);border-bottom:0;border-radius:3px 3px 0 0}
+.bracket span{position:absolute;top:-4px;left:0;background:var(--surface);padding-right:6px}
+.bracket span b{color:var(--ink);font-weight:700}
+.stack{height:22px;display:flex;gap:2px;border-radius:6px;overflow:hidden;background:var(--lane)}
+.stack i{display:flex;align-items:center;padding-left:8px;height:100%;font-size:11px;font-weight:700;font-style:normal;color:var(--on-p);white-space:nowrap;overflow:hidden;transition:width .6s cubic-bezier(.16,1,.3,1)}
+.stack i.net{background:var(--p)} .stack i.ded{background:var(--slate)} .stack i.er{background:var(--teal)}
+.stack i span{font-weight:600;opacity:.85;margin-left:4px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.sw-net{background:var(--p)} .sw-ded{background:var(--slate)} .sw-er{background:var(--teal)}
+
+/* steps card */
+.steps{display:flex;flex-direction:column;margin-top:4px}
+.st{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:10px 0;position:relative}
+.st:not(:last-child)::after{content:"";position:absolute;left:13px;top:38px;bottom:-4px;width:2px;background:var(--line)}
+.st.done:not(:last-child)::after{background:var(--green)}
+.st .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;border:2px solid var(--line2);color:var(--faint);background:var(--surface);position:relative;z-index:1}
+.st .n .lucide{width:13px;height:13px;stroke-width:3}
+.st.done .n{background:var(--green);border-color:var(--green);color:var(--on-p)}
+.st.now .n{background:var(--p);border-color:var(--p);color:var(--on-p);box-shadow:0 0 0 4px var(--p-ring)}
+.st.wait .n{background:var(--amber);border-color:var(--amber);color:var(--on-p)}
+.st .t{font-size:13px;font-weight:700}
+.st.todo .t{color:var(--muted)}
+.st .s{font-size:12px;color:var(--muted);margin-top:1px}
+.st .s .who{display:inline-flex;align-items:center;gap:5px}
+.st .s .av{width:16px;height:16px;border-radius:50%;background:var(--p-soft);color:var(--p600);font-size:8.5px;font-weight:800;display:inline-grid;place-items:center}
+.st .w{font-size:11.5px;color:var(--faint);white-space:nowrap;padding-top:2px}
+.st .w.amber{color:var(--amber);font-weight:700}
+.st .s .rose{color:var(--rose);font-weight:700}
+
+.upcoming{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column}
+.upcoming li{border-top:1px solid var(--line)}
+.upcoming li:first-child{border-top:0}
+.upcoming a{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:8px 2px;color:inherit;border-radius:8px}
+.upcoming a:hover .t{color:var(--p600)}
+.upcoming .d{text-align:center;background:var(--bg);border-radius:9px;padding:4px 0;line-height:1.1}
+.upcoming .d b{display:block;font-size:15px;font-weight:800}
+.upcoming .d span{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.upcoming .d.hot{background:var(--p-soft)} .upcoming .d.hot b{color:var(--p-deep)}
+.upcoming .t{font-size:12.5px;font-weight:700}
+.upcoming .s{font-size:11.5px;color:var(--muted)}
+.upcoming .s .amber{color:var(--amber);font-weight:700}
+.upcoming .in{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.upcoming .in.amber{color:var(--amber);font-weight:700}
+
+/* card rows */
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.card .link{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--p600);margin-top:12px}
+.card .link .lucide{width:14px;height:14px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:8px}
+.kv .k{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kv .v{font-size:19px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.kv .v small{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:0}
+.kv .v a.amber{font-size:11.5px;font-weight:700;color:var(--amber)}
+.outbar{margin-top:12px}
+.outbar .t{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.outbar .t b{color:var(--ink);font-weight:800}
+.outbar .stack{height:12px}
+.outbar .stack i{padding:0}
+.outbar .stack i.a{background:var(--p)} .outbar .stack i.b{background:var(--p-soft2)}
+.density{display:flex;gap:3px;align-items:flex-end;height:34px;margin-top:24px}
+.density i{font-style:normal;flex:1;background:var(--p-soft2);border-radius:3px 3px 0 0;position:relative;cursor:default}
+.density i.today{background:var(--p)}
+.density i.wknd{background:var(--line)}
+.density i b{position:absolute;left:50%;transform:translateX(-50%);top:-14px;font-size:10px;font-weight:800;color:var(--ink2);font-style:normal}
+.dlabels{display:flex;gap:3px;margin-top:4px}
+.dlabels span{flex:1;text-align:center;font-size:10px;color:var(--faint);font-weight:600}
+.dlabels span.today{color:var(--p600);font-weight:800}
+.rowlink{display:block;margin-top:8px;font-size:12px;color:var(--rose);font-weight:700}
+.rowlink .lucide{width:13px;height:13px;vertical-align:-2px}
+.runs{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column}
+.runs li{border-top:1px solid var(--line)}
+.runs li:first-child{border-top:0}
+.runs button{display:grid;grid-template-columns:34px 1fr auto;gap:11px;align-items:center;padding:9px 2px;width:100%;border-radius:8px}
+.runs button:hover .t{color:var(--p600)}
+.mg{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:11.5px;font-weight:800;background:var(--p-soft);color:var(--p600)}
+.runs .t{font-size:12.5px;font-weight:700}
+.runs .s{font-size:11.5px;color:var(--muted);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.runs .p{height:5px;border-radius:3px;background:var(--p-soft);margin-top:6px;overflow:hidden}
+.runs .p i{display:block;height:100%;background:var(--p);border-radius:3px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--slate-s);color:var(--slate)}
+.badge .lucide{width:11px;height:11px}
+.badge.amber{background:var(--amber-s);color:var(--amber)} .badge.green{background:var(--green-s);color:var(--green)} .badge.indigo{background:var(--p-soft);color:var(--p600)} .badge.rose{background:var(--rose-s);color:var(--rose)}
+.runs .m{text-align:right}
+.runs .m b{display:block;font-size:13.5px;font-weight:800}
+.runs .m span{font-size:11px;color:var(--muted)}
+.note{margin-top:10px;border-radius:9px;padding:8px 10px;font-size:12px;background:var(--amber-s);color:var(--amber);display:flex;gap:8px;align-items:flex-start}
+.note .lucide{width:14px;height:14px;flex:none;margin-top:2px}
+.note b{display:block}
+.note .nx{color:var(--ink2);font-weight:600;margin-top:2px}
+.note.rose{background:var(--rose-s);color:var(--rose)}
+.hlist{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column}
+.hlist li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:12.5px}
+.hlist li:first-child{border-top:0}
+.hlist .k{color:var(--ink2);font-weight:600}
+.hlist .v{font-weight:800}
+.hlist .v.rose{color:var(--rose)} .hlist .v.amber{color:var(--amber)}
+
+.row2 .card{display:flex;gap:14px;align-items:flex-start}
+.row2 .ic{width:40px;height:40px;border-radius:11px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;flex:none}
+.row2 .ic .lucide{width:19px;height:19px}
+.row2 .body{flex:1;min-width:0}
+.row2 .lab{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row2 .t{font-size:13.5px;font-weight:700;margin-top:2px}
+.row2 .s{font-size:12px;color:var(--muted);margin-top:2px}
+.row2 .s b{color:var(--ink2);font-weight:700}
+.row2 .act{margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row2 .quiet{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--green);font-weight:700}
+.row2 .quiet .lucide{width:13px;height:13px}
+.streak{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:var(--muted)}
+.streak .lucide{width:13px;height:13px}
+
+.foot{font-size:11.5px;color:var(--faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px}
+
+/* motion */
+@media (prefers-reduced-motion:no-preference){
+  .hero,.glance,.split,.row3,.row2{animation:rise .55s cubic-bezier(.16,1,.3,1) both}
+  .glance{animation-delay:.05s}.split{animation-delay:.1s}.row3{animation-delay:.15s}.row2{animation-delay:.2s}
+  .jn.now .dot::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--p);opacity:0;animation:pulse 2.4s ease-out infinite}
+  .chart .col{transform-box:fill-box;transform-origin:bottom;animation:grow .6s cubic-bezier(.16,1,.3,1) both}
+}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{transform:scale(.7);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+/* responsive */
+@media (max-width:1280px){.row3{grid-template-columns:repeat(2,1fr)}.figs{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1100px){.split{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.hint{opacity:1}}
+@media (max-width:760px){
+  .wrap{padding-inline:16px}
+  .row3,.row2,.figs{grid-template-columns:1fr}
+  .hero{padding:18px}
+  .hero h1{font-size:22px}
+  .journey .s{display:none}
+  .glance .all{margin-left:0}
+  .ask{min-width:0;flex:1}
+  .stack i{font-size:0}
+}
+</style>
+
+<div class="wrap">
+  <div class="topline">
+    <div class="greet">Good morning, <b>Ash</b> · Monday 12 October 2026 · Payobook Vietnam JSC</div>
+    <div class="meta">
+      <span class="proto">Prototype · sample figures</span>
+      <span>Updated 9:14 am</span>
+      <div class="ask" role="button" tabindex="0" aria-label="Ask Payobook"><i data-lucide="sparkles"></i><span>Ask Payobook anything…</span><kbd>⌘K</kbd></div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" aria-label="Where October payroll stands">
+    <div>
+      <div class="eyebrow">October 2026 payroll</div>
+      <h1>8 days to payday<span class="sep">·</span>1 pay run needs your approval</h1>
+      <p class="say">October is at <button class="link" data-go="steps">step 2 of 5</button>. Minh Tran has submitted the <b>Ho Chi Minh · Sales</b> run (212 people, 2.5 bn đ) for your approval, and the <b>Hanoi office</b> run is being prepared. <button class="link" data-go="runs">Ho Chi Minh · Operations</button> starts after Thursday's cut-off.</p>
+      <div class="journey" aria-label="October payroll journey">
+        <div class="jn done"><div class="dot"><i data-lucide="check"></i></div><div class="l">Set up</div><div class="s">Done 1 Oct</div></div>
+        <div class="jn now"><div class="dot">2</div><div class="l">Prepare</div><div class="s">Under way</div></div>
+        <div class="jn wait"><div class="dot">3</div><div class="l">Approve</div><div class="s">Waiting on you</div></div>
+        <div class="jn todo"><div class="dot">4</div><div class="l">Pay</div><div class="s">Tue 20 Oct</div></div>
+        <div class="jn todo"><div class="dot">5</div><div class="l">Deliver payslips</div><div class="s">Email, EN + VI</div></div>
+      </div>
+      <div class="cta">
+        <button class="btn primary"><i data-lucide="file-check"></i>Review Ho Chi Minh · Sales</button>
+        <button class="btn"><i data-lucide="layout-grid"></i>Open pay runs</button>
+        <button class="btn ghost"><i data-lucide="trending-up"></i>Insights</button>
+      </div>
+    </div>
+    <div class="hero-fig">
+      <div class="lab"><span>October so far</span><span class="pill">In progress</span></div>
+      <div class="big num">400<small>of 4,547 payslips prepared</small></div>
+      <div class="prog" aria-label="400 of 4,547 payslips prepared"><i id="octProg" style="width:0"></i></div>
+      <div class="row"><span><b>4.7 bn đ</b> net pay so far</span><span><b>3</b> pay runs</span><span>cut-off <b>Thu 15 Oct</b></span></div>
+      <div class="sparkwrap">
+        <div class="spark" id="heroSpark"></div>
+        <div class="foot"><span>Net pay, last 12 months</span><span>Steady · Tet bonus in <b>Feb</b></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEEDS YOU -->
+  <div class="glance" aria-label="What needs you today">
+    <span class="cap"><i data-lucide="bell"></i>Needs you</span>
+    <a class="gl amber" href="#"><span class="d"></span><span class="n num">1</span>pay run to approve</a>
+    <a class="gl amber" href="#"><span class="d"></span><span class="n num">3</span>leave requests to approve</a>
+    <a class="gl amber" href="#"><span class="d"></span><span class="n num">2</span>final settlements to check</a>
+    <a class="gl amber" href="#"><span class="d"></span><span class="n num">3</span>contract renewals to start</a>
+    <a class="gl rose" href="#"><span class="d"></span><span class="n num">2</span>interview write-ups overdue</a>
+    <a class="all" href="#">All 4 approvals <i data-lucide="arrow-right"></i></a>
+  </div>
+
+  <!-- SPLIT -->
+  <div class="split">
+    <section class="card" aria-label="Payroll month by month">
+      <div class="head">
+        <div><h2><i data-lucide="chart-column"></i>Payroll, month by month</h2><p class="sub">Click a month to read its figures below. The last 12 months of completed pay runs.</p></div>
+        <div class="seg" role="tablist" id="measureSeg">
+          <button class="on" data-m="net">Net pay</button><button data-m="gross">Gross pay</button><button data-m="ded">Deductions</button><button data-m="er">Employer cost</button><button data-m="people">People</button>
+        </div>
+      </div>
+      <div class="chart" id="chart" tabindex="0" aria-label="Column chart. Use the arrow keys to change month, Escape for the latest month.">
+        <div class="tip" id="tip"></div>
+      </div>
+      <div class="hint"><span><kbd>←</kbd> <kbd>→</kbd> walk the months</span><span><kbd>Esc</kbd> back to the latest</span><span>Hover a column for the full figures</span></div>
+
+      <div class="month" id="monthPanel">
+        <div class="mh">
+          <h3><span id="mTitle">September 2026</span><span class="pill" id="mPill">Latest completed</span></h3>
+          <div class="mfacts" id="mFacts"></div>
+        </div>
+        <div class="figs">
+          <div class="fig"><div class="l">People paid</div><div class="v num" data-fig="people">4,509</div><div class="spark" data-spark="people"></div><span class="delta" data-delta="people"></span></div>
+          <div class="fig"><div class="l">Net pay</div><div class="v num" data-fig="net">53.1<small>bn đ</small></div><div class="spark" data-spark="net"></div><span class="delta" data-delta="net"></span></div>
+          <div class="fig"><div class="l">Average net per person</div><div class="v num" data-fig="avg">11.8<small>M đ</small></div><div class="spark" data-spark="avg"></div><span class="delta" data-delta="avg"></span></div>
+          <div class="fig"><div class="l">Total cost to the company</div><div class="v num" data-fig="total">76.1<small>bn đ</small></div><div class="spark" data-spark="total"></div><span class="delta" data-delta="total"></span></div>
+        </div>
+        <div class="bar-title"><span>Where the money goes</span><b class="num" id="stackTotal">76.1 bn đ</b></div>
+        <div class="bracket"><i id="brkLine" style="width:82.4%"></i><span>Gross pay <b class="num" id="brkV">62.7 bn đ</b></span></div>
+        <div class="stack" id="stack"></div>
+        <div class="legend"><span><i class="sw-net"></i>Net pay to people</span><span><i class="sw-ded"></i>Deductions (tax, insurance)</span><span><i class="sw-er"></i>Employer cost (insurance, union)</span></div>
+      </div>
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <section class="card" id="steps" aria-label="October, step by step">
+        <div class="head"><div><h2><i data-lucide="list-checks"></i>October, step by step</h2><p class="sub">Cut-off Thu 15 Oct · payday Tue 20 Oct</p></div></div>
+        <div class="steps">
+          <div class="st done"><div class="n"><i data-lucide="check"></i></div><div><div class="t">Set up the month</div><div class="s">38 joiners and 12 leavers added</div></div><div class="w">1 Oct</div></div>
+          <div class="st now"><div class="n">2</div><div><div class="t">Prepare payslips</div><div class="s">Hanoi office run in progress</div></div><div class="w">today</div></div>
+          <div class="st wait"><div class="n">3</div><div><div class="t">Approve</div><div class="s"><span class="who"><span class="av">MT</span>Minh Tran submitted the Ho Chi Minh · Sales run</span></div></div><div class="w amber">waiting on you</div></div>
+          <div class="st todo"><div class="n">4</div><div><div class="t">Pay</div><div class="s">Bank file for 4 banks · <span class="rose">2 people have no bank account</span></div></div><div class="w">20 Oct</div></div>
+          <div class="st todo"><div class="n">5</div><div><div class="t">Deliver payslips</div><div class="s">Email in English and Vietnamese</div></div><div class="w">22 Oct</div></div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="Coming up">
+        <div class="head"><div><h2><i data-lucide="calendar"></i>Coming up</h2></div></div>
+        <ul class="upcoming">
+          <li><a href="#"><div class="d hot"><b>15</b><span>Oct</span></div><div><div class="t">Last day for October changes</div><div class="s">New joiners, salary changes, overtime</div></div><div class="in amber">in 3 days</div></a></li>
+          <li><a href="#"><div class="d"><b>16</b><span>Oct</span></div><div><div class="t">4 interviews</div><div class="s">Senior accountant, Hanoi</div></div><div class="in">Friday</div></a></li>
+          <li><a href="#"><div class="d"><b>20</b><span>Oct</span></div><div><div class="t">Payday</div><div class="s">4 banks · bank file not built yet</div></div><div class="in">in 8 days</div></a></li>
+          <li><a href="#"><div class="d"><b>31</b><span>Oct</span></div><div><div class="t">7 contracts end</div><div class="s"><span class="amber">3 renewals to start</span> · 4 already renewed</div></div><div class="in">in 19 days</div></a></li>
+          <li><a href="#"><div class="d"><b>1</b><span>Jan</span></div><div><div class="t">Next public holiday</div><div class="s">New Year's Day · Vietnam</div></div><div class="in">in 81 days</div></a></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <!-- ROW: people / runs / hiring -->
+  <div class="row3">
+    <section class="card" aria-label="People this month">
+      <div class="head"><div><h2><i data-lucide="users"></i>People this month</h2><p class="sub">4,510 people with an active contract</p></div></div>
+      <div class="kv">
+        <div><div class="k">Joined</div><div class="v num">38<small>6 more than September</small></div></div>
+        <div><div class="k">Leaving</div><div class="v num">12<a class="amber" href="#">2 settlements to check</a></div></div>
+      </div>
+      <div class="outbar">
+        <div class="t"><span>Out today</span><b class="num">23</b></div>
+        <div class="stack" aria-label="23 out today: 14 on leave, 9 travelling"><i class="a" style="width:60.9%"></i><i class="b" style="width:39.1%"></i></div>
+        <div class="legend"><span><i class="sw-net"></i>On leave 14</span><span><i style="background:var(--p-soft2)"></i>Travelling 9</span></div>
+      </div>
+      <div class="density" aria-label="People out over the next 7 days"><i style="height:68%" class="today" title="Mon 12 Oct · 23 out"><b>23</b></i><i style="height:52%" title="Tue 13 Oct · 18 out"></i><i style="height:58%" title="Wed 14 Oct · 20 out"></i><i style="height:80%" title="Thu 15 Oct · 27 out"><b>27</b></i><i style="height:44%" title="Fri 16 Oct · 15 out"></i><i style="height:12%" class="wknd" title="Sat 17 Oct · 4 out"></i><i style="height:9%" class="wknd" title="Sun 18 Oct · 3 out"></i></div>
+      <div class="dlabels"><span class="today">Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <a class="rowlink" href="#"><i data-lucide="triangle-alert"></i> 37 people have no active contract and cannot be paid · Fix in Contracts</a>
+      <a class="link" href="#">Open People <i data-lucide="arrow-right"></i></a>
+    </section>
+
+    <section class="card" id="runs" aria-label="October pay runs">
+      <div class="head"><div><h2><i data-lucide="layers"></i>October pay runs</h2><p class="sub">Three runs, one per office</p></div></div>
+      <ul class="runs">
+        <li><button type="button"><div class="mg">HN</div><div><div class="t">Hanoi office</div><div class="s"><span class="badge indigo"><i data-lucide="loader"></i>Preparing</span>400 of 2,110 payslips</div><div class="p"><i style="width:19%"></i></div></div><div class="m"><b class="num">4.7 <span>bn đ so far</span></b></div></button></li>
+        <li><button type="button"><div class="mg">HS</div><div><div class="t">Ho Chi Minh · Sales</div><div class="s"><span class="badge amber"><i data-lucide="clock"></i>Waiting on you</span>212 people · balances</div><div class="p"><i style="width:100%"></i></div></div><div class="m"><b class="num">2.5 <span>bn đ</span></b></div></button></li>
+        <li><button type="button"><div class="mg">HC</div><div><div class="t">Ho Chi Minh · Operations</div><div class="s"><span class="badge">Not started</span>2,225 people · after cut-off</div><div class="p"><i style="width:0"></i></div></div><div class="m"><b class="num">—</b></div></button></li>
+      </ul>
+      <div class="note rose"><i data-lucide="triangle-alert"></i><div><b>2 people in Hanoi have no bank account</b><div class="nx">Add one before payday, or they will be paid in cash.</div></div></div>
+      <a class="link" href="#">Open pay runs <i data-lucide="arrow-right"></i></a>
+    </section>
+
+    <section class="card" aria-label="Hiring">
+      <div class="head"><div><h2><i data-lucide="briefcase"></i>Hiring</h2><p class="sub">6 open roles · 41 candidates</p></div></div>
+      <ul class="hlist">
+        <li><span class="k">Interviews this week</span><span class="v num">4</span></li>
+        <li><span class="k">Roles over budget</span><span class="v rose num">1</span></li>
+        <li><span class="k">Offers waiting for a reply</span><span class="v num">3</span></li>
+        <li><span class="k">Referrals this month</span><span class="v num">5</span></li>
+      </ul>
+      <div class="note"><i data-lucide="clock"></i><div><b>Senior accountant, Hanoi: 2 write-ups overdue</b><div class="nx">Remind Linh and Duc, or decide without them.</div></div></div>
+      <a class="link" href="#">Open Hiring <i data-lucide="arrow-right"></i></a>
+    </section>
+  </div>
+
+  <!-- ROW: learn / pay schemes -->
+  <div class="row2">
+    <section class="card" aria-label="Keep learning">
+      <div class="ic"><i data-lucide="graduation-cap"></i></div>
+      <div class="body"><div class="lab">Keep learning</div><div class="t">Approve a pay run</div><div class="s">4 minutes · the step you are about to do</div>
+        <div class="act"><button class="btn sm"><i data-lucide="play"></i>Start lesson</button><span class="streak"><i data-lucide="flame"></i>5-day streak</span></div></div>
+    </section>
+    <section class="card" aria-label="Pay schemes">
+      <div class="ic"><i data-lucide="calculator"></i></div>
+      <div class="body"><div class="lab">Pay schemes</div><div class="t">13 schemes in use · 1,297 components</div><div class="s">Vietnam 2026 tax tables <b>current</b> · every October run uses a tested scheme</div>
+        <div class="act"><span class="quiet"><i data-lucide="circle-check"></i>All 90 tests passed, 2 hours ago</span><a class="btn sm ghost" href="#">Open Formula Studio <i data-lucide="arrow-right"></i></a></div></div>
+    </section>
+  </div>
+
+  <div class="foot"><span>Figures are the pay run totals and match the payslips exactly.</span><span>Payobook · prototype for review</span></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+(function(){
+  'use strict';
+  // ---------- sample data (12 months, in đ) ----------
+  const B = 1e9, M = 1e6;
+  const months = [
+    {k:'2025-11',label:'November 2025',short:'Nov',people:4380,net:51.1*B,ded:9.2*B,er:12.9*B,approved:'24 Nov',delivered:'26 Nov'},
+    {k:'2025-12',label:'December 2025',short:'Dec',people:4392,net:51.4*B,ded:9.3*B,er:13.0*B,approved:'23 Dec',delivered:'24 Dec'},
+    {k:'2026-01',label:'January 2026',short:'Jan',people:4401,net:52.0*B,ded:9.4*B,er:13.1*B,approved:'23 Jan',delivered:'26 Jan'},
+    {k:'2026-02',label:'February 2026',short:'Feb',people:4408,net:63.8*B,ded:11.9*B,er:13.1*B,note:'Tet bonus paid',approved:'12 Feb',delivered:'13 Feb'},
+    {k:'2026-03',label:'March 2026',short:'Mar',people:4415,net:51.9*B,ded:9.4*B,er:13.1*B,approved:'24 Mar',delivered:'26 Mar'},
+    {k:'2026-04',label:'April 2026',short:'Apr',people:4402,net:51.6*B,ded:9.3*B,er:13.1*B,approved:'23 Apr',delivered:'27 Apr'},
+    {k:'2026-05',label:'May 2026',short:'May',people:4431,net:52.0*B,ded:9.4*B,er:13.2*B,approved:'22 May',delivered:'26 May'},
+    {k:'2026-06',label:'June 2026',short:'Jun',people:4486,net:52.7*B,ded:9.5*B,er:13.3*B,approved:'24 Jun',delivered:'26 Jun'},
+    {k:'2026-07',label:'July 2026',short:'Jul',people:4470,net:52.4*B,ded:9.5*B,er:13.3*B,approved:'24 Jul',delivered:'27 Jul'},
+    {k:'2026-08',label:'August 2026',short:'Aug',people:4498,net:52.9*B,ded:9.6*B,er:13.4*B,approved:'24 Aug',delivered:'26 Aug'},
+    {k:'2026-09',label:'September 2026',short:'Sep',people:4509,net:53.1*B,ded:9.6*B,er:13.4*B,latest:true,approved:'24 Sep',delivered:'26 Sep'},
+    {k:'2026-10',label:'October 2026',short:'Oct',people:400,net:4.7*B,ded:0.9*B,er:1.2*B,inprogress:true,of:4547},
+  ];
+  months.forEach(m=>{ m.gross=m.net+m.ded; m.avg=m.net/m.people; m.total=m.gross+m.er; m.runs=3; });
+  const LATEST = months.findIndex(m=>m.latest);
+  let sel = LATEST, measure = 'net';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- formatting (unit after the number, as the app shows it) ----------
+  function money(v){
+    if (v>=B) return {n:(v/B).toFixed(1), u:'bn đ'};
+    if (v>=M) return {n:(v/M).toFixed(1), u:'M đ'};
+    return {n:Math.round(v/1e3).toLocaleString('en'), u:'K đ'};
+  }
+  function moneyHtml(v){ const m=money(v); return `${m.n}<small>${m.u}</small>`; }
+  function moneyText(v){ const m=money(v); return `${m.n} ${m.u}`; }
+  function full(v){ return Math.round(v).toLocaleString('en')+' đ'; }
+  function int(v){ return Math.round(v).toLocaleString('en'); }
+  const MEAS = {
+    net:{get:m=>m.net}, gross:{get:m=>m.gross}, ded:{get:m=>m.ded}, er:{get:m=>m.er}, people:{get:m=>m.people},
+  };
+
+  // ---------- svg helpers ----------
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+  function roundedTop(x,y,w,h,r){ r=Math.min(r,w/2,h); return `M${x},${y+h} L${x},${y+r} Q${x},${y} ${x+r},${y} L${x+w-r},${y} Q${x+w},${y} ${x+w},${y+r} L${x+w},${y+h} Z`; }
+  function text(svg, x, y, str, attrs){ const t=el('text',Object.assign({x,y,'font-family':'var(--font)'},attrs),svg); t.textContent=str; return t; }
+
+  // sparkline: 12 points, 2px line, 10% area, highlighted point with a surface ring
+  function sparkline(host, values, opts){
+    opts=opts||{}; host.innerHTML='';
+    const W=host.clientWidth||72, H=host.clientHeight||28, pad=5;
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,'aria-hidden':'true'},host);
+    const vals=values.filter(v=>v!=null); const min=Math.min(...vals), max=Math.max(...vals), span=(max-min)||1;
+    const n=values.length, step=(W-pad*2)/(n-1);
+    const pts=values.map((v,i)=>[pad+i*step, v==null?null:H-pad-((v-min)/span)*(H-pad*2)]);
+    const live=pts.filter(p=>p[1]!=null);
+    const d=live.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    const last=live[live.length-1];
+    el('path',{d:d+` L${last[0].toFixed(1)},${H} L${live[0][0]},${H} Z`,fill:'var(--p)','fill-opacity':'.10'},svg);
+    el('path',{d,fill:'none',stroke:'var(--p)','stroke-width':'2','stroke-linejoin':'round','stroke-linecap':'round'},svg);
+    const hi = opts.highlight!=null && pts[opts.highlight][1]!=null ? pts[opts.highlight] : last;
+    el('circle',{cx:hi[0],cy:hi[1],r:'5',fill:'var(--surface)'},svg);
+    el('circle',{cx:hi[0],cy:hi[1],r:'3.5',fill:'var(--p)'},svg);
+  }
+
+  // ---------- main column chart (also the month picker) ----------
+  const chart=document.getElementById('chart'), tip=document.getElementById('tip');
+  let chartSvg=null;
+  function niceStep(raw){ const p=Math.pow(10,Math.floor(Math.log10(raw))); const r=raw/p; return (r<=1?1:r<=2?2:r<=5?5:10)*p; }
+  function tickLabel(t){ if(measure==='people') return int(t); const m=money(t); return m.n.replace(/\.0$/,'')+' '+m.u.replace(' đ',''); }
+  function drawChart(){
+    if(chartSvg) chartSvg.remove();
+    const W=chart.clientWidth||800, H=236, padL=46, padR=10, padT=22, padB=30;
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:'img'},chart); chartSvg=svg;
+    const get=MEAS[measure].get;
+    const done=months.filter(m=>!m.inprogress), ref=months[LATEST];
+    const max=Math.max(...done.map(get))*1.08;
+    const plotH=H-padT-padB, plotW=W-padL-padR, slot=plotW/months.length, cw=Math.min(24,slot*.55);
+    const nice=niceStep(max/4); for(let t=nice;t<=max;t+=nice){ const y=padT+plotH-(t/max)*plotH;
+      el('line',{x1:padL,x2:W-padR,y1:y,y2:y,stroke:'var(--line)','stroke-width':'1'},svg);
+      text(svg,padL-8,y+4,tickLabel(t),{'text-anchor':'end','font-size':'10.5','font-weight':'600',fill:'var(--faint)'});
+    }
+    el('line',{x1:padL,x2:W-padR,y1:padT+plotH,y2:padT+plotH,stroke:'var(--line2)','stroke-width':'1'},svg);
+    months.forEach((m,i)=>{
+      const v=get(m), isSel=i===sel, x=padL+i*slot+(slot-cw)/2;
+      const g=el('g',{class:'slot'},svg);
+      let topY;
+      if(m.inprogress){
+        // ghost column at the latest completed month's height, with the prepared share filled inside it
+        const gh=Math.max(2,(get(ref)/max)*plotH), gy=padT+plotH-gh;
+        el('path',{d:roundedTop(x,gy,cw,gh,4),fill:'var(--surface)',stroke:isSel?'var(--p)':'var(--p-soft2)','stroke-width':isSel?'2':'1.5',class:'col'},g);
+        const h=Math.max(2,(v/max)*plotH), y=padT+plotH-h;
+        el('path',{d:roundedTop(x+1,y,cw-2,h-1,3),fill:isSel?'var(--p)':'var(--p-soft2)',class:'col'},g);
+        topY=gy;
+        text(g,x+cw/2,gy-7,'In progress',{'text-anchor':'middle','font-size':'9.5','font-weight':'700',fill:isSel?'var(--p600)':'var(--muted)'});
+      } else {
+        const h=Math.max(2,(v/max)*plotH), y=padT+plotH-h; topY=y;
+        const p=el('path',{d:roundedTop(x,y,cw,h,4),fill:isSel?'var(--p)':'var(--p-soft2)',class:'col'},g);
+        if(!reduce) p.style.animationDelay=(i*30)+'ms';
+        if(m.latest) text(g,x+cw/2,y-7,'Latest',{'text-anchor':'middle','font-size':'9.5','font-weight':'700',fill:'var(--p600)'});
+        if(m.note) text(g,x+cw/2,y-7,'Tet',{'text-anchor':'middle','font-size':'9.5','font-weight':'700',fill:'var(--muted)'});
+      }
+      text(g,x+cw/2,H-10,m.short+(m.short==='Jan'||i===0?' '+m.k.slice(2,4):''),{'text-anchor':'middle','font-size':'11','font-weight':isSel?'800':'600',fill:isSel?'var(--p-deep)':'var(--muted)'});
+      const hit=el('rect',{x:padL+i*slot,y:padT-14,width:slot,height:plotH+14,fill:'transparent',style:'cursor:pointer'},g);
+      hit.addEventListener('mouseenter',()=>showTip(i,x+cw/2,topY));
+      hit.addEventListener('mouseleave',hideTip);
+      hit.addEventListener('click',()=>select(i));
+    });
+  }
+  function showTip(i,cx,cy){
+    const m=months[i];
+    tip.innerHTML = `<b>${m.label}${m.inprogress?' · in progress':''}</b>`+
+      `<div class="r"><span>Net pay</span><span>${full(m.net)}</span></div>`+
+      `<div class="r"><span>Gross pay</span><span>${full(m.gross)}</span></div>`+
+      `<div class="r"><span>Deductions</span><span>${full(m.ded)}</span></div>`+
+      `<div class="r"><span>Employer cost</span><span>${full(m.er)}</span></div>`+
+      `<div class="r"><span>People paid</span><span>${int(m.people)}${m.of?' of '+int(m.of)+' so far':''}</span></div>`+
+      (m.note?`<div class="r"><span>Note</span><span>${m.note}</span></div>`:'');
+    tip.style.left=cx+'px'; tip.style.top=(cy-10)+'px'; tip.style.transform='translate(-50%,-100%)'; tip.classList.add('show');
+  }
+  function hideTip(){ tip.classList.remove('show'); }
+
+  // ---------- selection → month panel ----------
+  function deltaHtml(node, kind, cur, prev, label, inprogress){
+    if(inprogress){ node.innerHTML=`<i data-lucide="clock"></i>so far · no comparison yet`; return; }
+    if(prev==null){ node.innerHTML='no earlier month'; return; }
+    let icon, textStr;
+    if(kind==='people'){ const d=cur-prev; icon=d>0?'trending-up':d<0?'trending-down':'move-right'; textStr=(d===0?'same as':(d>0?'+':'')+int(d)+' vs ')+label; }
+    else { const d=(cur-prev)/prev*100; if(Math.abs(d)<0.5){ icon='move-right'; textStr='about the same as '+label; } else { icon=d>0?'trending-up':'trending-down'; textStr=(d>0?'+':'')+d.toFixed(1)+'% vs '+label; } }
+    node.innerHTML=`<i data-lucide="${icon}"></i>${textStr}`;
+  }
+  function countUp(node, from, to, render){
+    if(reduce || from==null){ render(to); return; }
+    const t0=performance.now(), dur=520;
+    (function f(now){ const k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3); render(from+(to-from)*e); if(k<1) requestAnimationFrame(f); })(t0);
+  }
+  const prevVals={};
+  function applyMonth(){
+    const m=months[sel], prev=months[sel-1]||null;
+    const vals={people:m.people, net:m.net, avg:m.avg, total:m.total};
+    for(const key in vals){
+      const node=document.querySelector(`[data-fig="${key}"]`);
+      const render = key==='people' ? v=>node.textContent=int(v) : v=>node.innerHTML=moneyHtml(v);
+      countUp(node, prevVals[key], vals[key], render); prevVals[key]=vals[key];
+      deltaHtml(document.querySelector(`[data-delta="${key}"]`), key, vals[key], prev?prev[key]:null, prev?prev.short:'', m.inprogress);
+      sparkline(document.querySelector(`[data-spark="${key}"]`), months.map(x=>x.inprogress?null:x[key]), {highlight:m.inprogress?LATEST:sel});
+    }
+    document.getElementById('mTitle').textContent=m.label;
+    const pill=document.getElementById('mPill'); pill.textContent=m.inprogress?'In progress':m.latest?'Latest completed':'Completed'; pill.className='pill'+(m.inprogress?' amber':'');
+    document.getElementById('mFacts').innerHTML = m.inprogress
+      ? `<span><b>${m.runs}</b> pay runs</span><span>payday <b>Tue 20 Oct</b></span><span class="soon"><i data-lucide="clock"></i>Figures grow as payslips are prepared</span>`
+      : `<span><b>${m.runs}</b> pay runs</span><span>approved <b>${m.approved}</b></span><span>delivered <b>${m.delivered}</b></span><span class="ok"><i data-lucide="circle-check"></i>All runs balance</span>`;
+    // one stacked bar: net | deductions | employer cost, with a bracket for gross over the first two
+    const pc=v=>(v/m.total*100).toFixed(1)+'%';
+    document.getElementById('stack').innerHTML=
+      `<i class="net" style="width:${pc(m.net)}">Net ${moneyText(m.net)}</i>`+
+      `<i class="ded" style="width:${pc(m.ded)}">${moneyText(m.ded)}</i>`+
+      `<i class="er" style="width:${pc(m.er)}">${moneyText(m.er)}</i>`;
+    document.getElementById('stackTotal').textContent=moneyText(m.total);
+    document.getElementById('brkLine').style.width=pc(m.gross);
+    document.getElementById('brkV').textContent=moneyText(m.gross);
+    document.getElementById('mFacts').classList.toggle('inprog',!!m.inprogress);
+    window.lucide && lucide.createIcons();
+  }
+  function select(i){ if(i<0||i>=months.length) return; sel=i; drawChart(); applyMonth(); }
+
+  document.getElementById('measureSeg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#measureSeg button').forEach(x=>x.classList.toggle('on',x===b)); measure=b.dataset.m; drawChart(); });
+  chart.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'){e.preventDefault();select(sel-1);} else if(e.key==='ArrowRight'){e.preventDefault();select(sel+1);} else if(e.key==='Escape'){e.preventDefault();select(LATEST);} });
+  document.querySelectorAll('[data-go]').forEach(a=>a.addEventListener('click',()=>{ const t=document.getElementById(a.dataset.go); t&&t.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'}); }));
+  function heroSpark(){ sparkline(document.getElementById('heroSpark'), months.map(x=>x.inprogress?null:x.net), {highlight:LATEST}); }
+
+  function boot(){ drawChart(); applyMonth(); heroSpark(); requestAnimationFrame(()=>{ document.getElementById('octProg').style.width=(400/4547*100).toFixed(1)+'%'; }); window.lucide && lucide.createIcons(); }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else boot();
+  let rt; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ drawChart(); heroSpark(); applyMonth(); },120); });
+})();
+</script>

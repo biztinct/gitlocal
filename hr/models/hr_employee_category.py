@@ -6,9 +6,9 @@ from random import randint
 from odoo import fields, models
 
 
-class EmployeeCategory(models.Model):
+class HrEmployeeCategory(models.Model):
+    _name = 'hr.employee.category'
 
-    _name = "hr.employee.category"
     _description = "Employee Category"
 
     def _get_default_color(self):
@@ -16,8 +16,9 @@ class EmployeeCategory(models.Model):
 
     name = fields.Char(string="Tag Name", required=True)
     color = fields.Integer(string='Color Index', default=_get_default_color)
-    employee_ids = fields.Many2many('hr.employee', 'employee_category_rel', 'category_id', 'emp_id', string='Employees')
+    employee_ids = fields.Many2many('hr.employee', 'employee_category_rel', 'category_id', 'employee_id', string='Employees')
 
-    _sql_constraints = [
-        ('name_uniq', 'unique (name)', "Tag name already exists !"),
-    ]
+    _name_uniq = models.Constraint(
+        'unique (name)',
+        'Tag name already exists!',
+    )

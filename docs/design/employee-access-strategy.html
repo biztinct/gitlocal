@@ -1,0 +1,281 @@
+<title>Employee Access Strategy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --bg:#f7f6fb; --panel:#ffffff; --fg:#1d1b2e; --muted:#5f5c73; --line:#e4e1ef;
+  --accent:#5A4BB0; --accent-soft:#ece9f8; --accent-ink:#3f3390;
+  --good:#1f7a4d; --good-soft:#e3f3ea; --warn:#9a5b00; --warn-soft:#fbf0dc; --bad:#a3313a; --bad-soft:#f9e3e5;
+  --teal:#0f766e; --teal-soft:#dff3f1; --code:#f1effa;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15131f; --panel:#1e1b2b; --fg:#ecebf4; --muted:#a7a3bd; --line:#2f2b40;
+    --accent:#9c8ff0; --accent-soft:#2a2544; --accent-ink:#c9c0ff;
+    --good:#5ccc8f; --good-soft:#15301f; --warn:#f0b24c; --warn-soft:#352a14; --bad:#f08a92; --bad-soft:#3a1b1f;
+    --teal:#5fd3c8; --teal-soft:#123532; --code:#262238;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15131f; --panel:#1e1b2b; --fg:#ecebf4; --muted:#a7a3bd; --line:#2f2b40;
+  --accent:#9c8ff0; --accent-soft:#2a2544; --accent-ink:#c9c0ff;
+  --good:#5ccc8f; --good-soft:#15301f; --warn:#f0b24c; --warn-soft:#352a14; --bad:#f08a92; --bad-soft:#3a1b1f;
+  --teal:#5fd3c8; --teal-soft:#123532; --code:#262238;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.55;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:980px;margin:0 auto}
+header.top{padding-block:40px 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+h1{font-size:clamp(28px,4.2vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:0 0 12px;text-wrap:balance}
+h2{font-size:22px;font-weight:800;letter-spacing:-.01em;margin:44px 0 12px;text-wrap:balance}
+h3{font-size:16px;font-weight:700;margin:22px 0 8px}
+p{margin:0 0 12px;max-width:72ch}
+.lede{font-size:18px;color:var(--muted);max-width:70ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin-top:14px}
+.answer{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:20px 22px;margin:18px 0 8px}
+.answer h2{margin:0 0 10px;font-size:18px}
+.answer ol{margin:0;padding-left:20px}
+.answer li{margin-bottom:6px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:14px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.card h3{margin:0 0 6px;font-size:15px}
+.card p{font-size:14px;color:var(--muted);margin:0}
+.card .big{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--fg);display:block;margin-bottom:2px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);letter-spacing:.02em;white-space:nowrap}
+.tag.good{background:var(--good-soft);color:var(--good)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}
+.tag.teal{background:var(--teal-soft);color:var(--teal)}
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--code)}
+tr:last-child td{border-bottom:0}
+td.k{font-weight:700;white-space:nowrap}
+.door{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.door:first-of-type{border-top:0}
+.door .n{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;display:grid;place-items:center;font-size:14px}
+.door p{margin:0;font-size:15px}
+.door small{color:var(--muted);font-size:13px;display:block;margin-top:2px}
+.opts{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin:14px 0}
+.opt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;position:relative}
+.opt.rec{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.opt .lab{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.opt h3{margin:0 0 8px;font-size:18px}
+.opt ul{padding-left:18px;margin:8px 0;font-size:14px}
+.opt li{margin-bottom:5px}
+.opt .verdict{font-size:14px;font-weight:600;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ribbon{position:absolute;top:-11px;right:16px}
+.tiers{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:14px 0}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0}
+.tier h3{margin:0 0 4px;font-size:18px}
+.tier .who{color:var(--muted);font-size:14px;margin-bottom:10px}
+.tier ul{padding-left:18px;margin:0;font-size:14px}
+.tier li{margin-bottom:4px}
+.phase{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.phase:first-of-type{border-top:0}
+.phase .ph{font-weight:800;color:var(--accent-ink)}
+.phase .ph small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
+.phase p{margin:0 0 4px;font-size:15px}
+.phase ul{margin:4px 0 0;padding-left:18px;font-size:14px;color:var(--muted)}
+.note{background:var(--warn-soft);border-left:4px solid var(--warn);border-radius:8px;padding:12px 14px;font-size:14px;margin:12px 0}
+.note.good{background:var(--good-soft);border-color:var(--good)}
+.note.info{background:var(--accent-soft);border-color:var(--accent)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;margin:12px 0}
+summary{cursor:pointer;font-weight:700}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--code);padding:1px 6px;border-radius:5px}
+ul.plain{padding-left:18px;max-width:72ch}
+ul.plain li{margin-bottom:6px}
+.src{font-size:13px;color:var(--muted)}
+.src a{color:var(--accent-ink)}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:10px 0}
+.q h3{margin:0 0 6px}
+.q p{margin:0;font-size:15px}
+@media (max-width:520px){.phase{grid-template-columns:1fr;gap:6px}.door{grid-template-columns:30px 1fr}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Findings and proposal</p>
+  <h1>Who gets the portal, who gets the backend</h1>
+  <p class="lede">An honest look at how employee logins work in Payobook today, what the best HR products do, and a strategy for general employees versus staff.</p>
+  <div class="meta"><span>Prepared 15 Oct 2026</span><span>For the product owner</span><span>Sources: live code of this build, vendor help centres</span></div>
+</header>
+
+<section class="answer">
+  <h2>Short answer</h2>
+  <ol>
+    <li><strong>No, there is no "portal only" role today.</strong> Every real employee login is a full account. The system has no role called Employee or Self-service.</li>
+    <li><strong>The nine dots at the top left of the portal are the backend shortcut,</strong> and every full account sees them, plain employees included. One click opens the backend Home. The "Apps" link in the account menu and typing the address are the other two doors. Inside the backend the app switcher is already hidden for a plain employee (they only have one app).</li>
+    <li><strong>The portal already has most of what a general employee needs.</strong> Payslips, leave, schedule, documents, profile changes, training, goals, recognition, resignation, onboarding, referrals are all there. The gaps are tickets, clock in and out, expenses, announcements and one "my requests" list.</li>
+    <li><strong>The market pattern is clear:</strong> one product, one login, one brand. Employees get a "My" world with their own records only. Managers get a "My team" slice. Admin tools sit behind a separate role, and an admin who is also an employee switches between the two views.</li>
+    <li><strong>Proposal: two tiers.</strong> <em>Employee</em> = a portal account, the default for everyone hired, never sees the backend. <em>Staff</em> = a full account with roles, as today. Built in four phases, the first of which locks the door this week.</li>
+  </ol>
+</section>
+
+<h2>1. What happens today</h2>
+<p>The system has two account types, exactly like the products in the market comparison below. A <strong>full account</strong> opens the backend (the admin web app). A <strong>portal account</strong> can only open the portal pages under "My Payobook" and is physically unable to load the backend. The problem is not that the second type is missing. It is that employees are never given it.</p>
+
+<div class="tbl"><table>
+<thead><tr><th>How the login is made</th><th>Account type</th><th>What the person gets</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td class="k">Demo employee logins</td><td>Full</td><td>Full account, can open the backend. Manager demos also get HR and attendance manager rights.</td><td><span class="tag warn">Backend reachable</span></td></tr>
+<tr><td class="k">Access screen, People lens ("Create login")</td><td>Full</td><td>Full account with no roles yet. Roles are handed out afterwards.</td><td><span class="tag warn">Backend reachable</span></td></tr>
+<tr><td class="k">Hired through Hiring, or synced from the connected HR system</td><td>Portal</td><td>A portal account is made automatically for the joiner. But it is stored on a side field of the employee record, so none of the portal pages can find the employee. The person logs in and sees an empty portal.</td><td><span class="tag bad">Portal, but broken</span></td></tr>
+<tr><td class="k">Suppliers and agencies</td><td>Portal</td><td>The one place portal accounts are used properly today.</td><td><span class="tag good">Works</span></td></tr>
+</tbody></table></div>
+
+<h3>What a plain employee with a full account sees in the backend</h3>
+<p>The system already tries to keep them out of harm's way. It recognises an "employee only" person (an employee record, no payroll or hiring rights, not an admin) and does four things: lands them on My Payobook after sign-in, shows only the Payroll app so the nine dots vanish, hides the Pulse tab on Home, and skips the first-login welcome card. That is a courtesy, not a wall. Here are the doors that remain open:</p>
+
+<div class="card" style="margin:12px 0 18px">
+<div class="door"><div class="n">1</div><div><p>The purple corner with the nine dots on every portal page opens the backend Home.</p><small>It is shown to every full account. Home then shows Approvals, the recognition Wall and Announcements, plus a left rail with Home, Learn and a locked Settings.</small></div></div>
+<div class="door"><div class="n">2</div><div><p>The "Apps" item in the account menu (top right of the portal) does the same.</p><small>Same condition: any full account.</small></div></div>
+<div class="door"><div class="n">3</div><div><p>Typing the backend address by hand works. The sign-in redirect sends them to My Payobook only when they have no destination in mind.</p><small>Hidden menus hide buttons, not data. Any record a full account is allowed to read (for example their own leave requests in the native leave screen) can still be opened by address.</small></div></div>
+<div class="door"><div class="n">4</div><div><p>Every full account automatically carries two extra rights: the approvals inbox and the AI assistant.</p><small>So every employee today is, technically, an AI assistant user and an approvals user, whether or not they ever use either.</small></div></div>
+<div class="door"><div class="n">5</div><div><p>Single sign-on through the connected HR system skips the "send employees to My Payobook" rule entirely and lands them in the backend.</p><small>Only matters for tenants using that sign-on.</small></div></div>
+</div>
+
+<div class="note info"><strong>What this means for you.</strong> Today's "employee only" behaviour is a nice landing, not a security boundary. A curious employee can reach the backend in two clicks and can see whatever the native screens allow a full account to see. Nothing dangerous (payroll screens are gated by role), but it is a product the employee was never meant to see, and it looks like an admin tool.</div>
+
+<h2>2. What the best products do</h2>
+<p>I looked at the six products most often cited for employee self-service. The design is strikingly similar everywhere: the employee never sees the administrator's product.</p>
+
+<div class="tbl"><table>
+<thead><tr><th>Product</th><th>Employee role</th><th>What the employee sees</th><th>Managers</th><th>Admins who are also employees</th></tr></thead>
+<tbody>
+<tr><td class="k">BambooHR</td><td>"Employee" access level, the default for everyone</td><td>Their own "My Info" tab: pay, time off, documents, benefits. Nothing company-wide beyond the directory.</td><td>"Manager" level adds their direct reports' time off and approvals.</td><td>Custom access levels. One login, more tabs appear.</td></tr>
+<tr><td class="k">Personio</td><td>"All employees" role, assigned automatically</td><td>Own profile, with each field marked View, <em>Propose</em> or Edit. "Propose" means the change goes to HR for approval, exactly like our profile change request.</td><td>A supervisor role scoped to their team.</td><td>Extra roles stack on top of "All employees".</td></tr>
+<tr><td class="k">Rippling</td><td>Employee self-service</td><td>Own pay, documents, time off, devices, apps. Field-level permissions decide what is visible.</td><td>Custom roles scoped by team, department or location.</td><td>Role-based: an admin's view simply has more.</td></tr>
+<tr><td class="k">Gusto</td><td>Employee account</td><td>Pay stubs, tax forms, time off, benefits.</td><td>Limited "manager" permissions for time off.</td><td>Separate employee and admin accounts; an admin who is also on payroll <strong>switches</strong> between the two views.</td></tr>
+<tr><td class="k">Employment Hero</td><td>The "Work" app (formerly Swag), a separate employee-facing app</td><td>Payslips, leave, clock in and out, timesheets, rosters, expenses, on a phone.</td><td>Approvals inside the same app.</td><td>Admins use the separate web platform.</td></tr>
+<tr><td class="k">Workday</td><td>"Employee as Self" security group</td><td>Own pay, time, absence, benefits, help cases.</td><td>"Manager" group over their organisation.</td><td>Same tenant, more security groups.</td></tr>
+<tr><td class="k">Third-party portal add-ons for this platform</td><td>Convert the employee's login to a portal account</td><td>Payslips, leave, timesheets, expenses on the portal only.</td><td>Not covered. Managers stay in the backend.</td><td>Not covered.</td></tr>
+</tbody></table></div>
+
+<h3>Six patterns worth copying</h3>
+<div class="grid">
+<div class="card"><h3>One product, one login</h3><p>The employee never sees a second "admin" product. Payobook's portal and backend are two faces of one product; the employee should only ever meet one.</p></div>
+<div class="card"><h3>"My" means mine only</h3><p>Own payslips, own leave, own documents. Company-wide data is a separate right, never a side effect of having a login.</p></div>
+<div class="card"><h3>Propose, don't edit</h3><p>Personio's "Propose" is our profile change request. The employee asks, HR approves, the record is written once. We already have this.</p></div>
+<div class="card"><h3>Managers get "My team", not the admin tool</h3><p>Approvals and a team view are the only manager features in the employee-facing app. Everything else is staff work.</p></div>
+<div class="card"><h3>Help lives inside self-service</h3><p>Workday Help cases, Personio Conversations, Rippling's requests: the employee asks a question where they already are, and it lands on HR's desk.</p></div>
+<div class="card"><h3>Phone first for employees</h3><p>Employment Hero and BambooHR lead with the mobile app for employees. Payslip, leave, clock in: three taps.</p></div>
+</div>
+
+<h2>3. The strategy: two tiers</h2>
+<p>Match the market. Give every person one of two account types, and make the choice obvious on the Access screen.</p>
+
+<div class="tiers">
+<div class="tier"><h3>Employee</h3><div class="who">Everyone by default. Warehouse staff, drivers, office staff, anyone who is paid.</div><ul>
+<li>A <strong>portal account</strong>. Cannot load the backend at all, not by click, not by address.</li>
+<li>Lives in My Payobook: payslips, leave, schedule, documents, profile changes, training, goals, recognition, onboarding, referrals.</li>
+<li>Gains: help tickets, clock in and out, expenses, announcements, one "My requests" list.</li>
+<li>No roles to manage. "Employee" <em>is</em> the role.</li>
+</ul></div>
+<div class="tier"><h3>Team lead</h3><div class="who">Supervisors who approve leave, timesheets and fixes for their people.</div><ul>
+<li>Phase 1 to 3: a <strong>full account</strong> with the approvals and lifecycle "team" roles only. They land on My Payobook and can open the backend Home for approvals.</li>
+<li>Later (optional): a "My team" page on the portal, so most team leads can drop to an Employee account too.</li>
+</ul></div>
+<div class="tier"><h3>Staff</h3><div class="who">HR, payroll, finance, recruiters, admins. The people who run the product.</div><ul>
+<li>A <strong>full account</strong> with role bundles from the Access screen, exactly as today.</li>
+<li>They also have an employee record, so they see their own payslips in My Payobook, and switch to the backend through the purple corner. That is the Gusto "switch" pattern and it already works.</li>
+</ul></div>
+</div>
+
+<h3>What changes on the Access screen</h3>
+<p>The People lens gets a single switch on each person: <strong>Employee (portal only)</strong> or <strong>Staff (full account)</strong>. New hires default to Employee. Promoting someone to Staff flips the switch and then roles can be handed out. Demoting does the reverse and strips the roles. Nothing else about the Access screen changes.</p>
+
+<h2>4. Three ways to get there</h2>
+<div class="opts">
+<div class="opt"><div class="lab">Option A</div><h3>Lock the door, keep full accounts</h3>
+<ul><li>Block the backend address for employee-only people and send them to My Payobook.</li><li>Hide the purple corner and the "Apps" link for them.</li><li>Fix the single sign-on gap.</li></ul>
+<p class="src">Size: small, a few days. No change to how logins are created.</p>
+<div class="verdict">A fence, not a wall. The account can still read whatever a full account can read. It is the right first step but a poor final state, and it still carries the AI and approvals rights.</div></div>
+
+<div class="opt rec"><span class="ribbon tag">Recommended</span><div class="lab">Option B</div><h3>Two tiers: portal accounts for employees</h3>
+<ul><li>Make every "My Payobook" page work for a portal account (five places write as the signed-in person and currently refuse a portal account; the home page's employee look; finding the employee for auto-made logins).</li><li>Add "Employee / Staff" to the Access screen with promote and demote.</li><li>New hires get Employee by default. Convert existing employee-only accounts in one sweep.</li><li>Close the portal feature gaps so no employee ever needs the backend.</li></ul>
+<p class="src">Size: medium. Four phases, roughly two weeks of build in total plus the new portal features.</p>
+<div class="verdict">A real wall, the market pattern, lighter on the server (portal accounts never load the backend), and it makes the Access screen honest about who is who.</div></div>
+
+<div class="opt"><div class="lab">Option C</div><h3>Portal accounts, no fence first</h3>
+<ul><li>As B, but skip the quick lock in Option A and go straight to converting accounts.</li></ul>
+<p class="src">Size: as B minus a few days.</p>
+<div class="verdict">Saves a few days but leaves the door open for the weeks until conversion. Not worth it; the fence is cheap and its work is reused.</div></div>
+</div>
+
+<div class="note good"><strong>Recommendation: Option B, starting with Option A's fence as Phase 1.</strong> The fence is small, lands this week, and every piece of it (who counts as employee-only, where they are sent) is reused when portal accounts take over.</div>
+
+<h2>5. What the portal must gain so employees never need the backend</h2>
+<p>Measured against your definition of a general employee: view payslips, raise tickets, apply for leave, and "other activities like that".</p>
+
+<div class="tbl"><table>
+<thead><tr><th>Activity</th><th>On the portal today</th><th>For a portal account</th><th>What to do</th></tr></thead>
+<tbody>
+<tr><td class="k">View payslips, pay explainer, tax sheet</td><td>Yes</td><td><span class="tag bad">List refuses</span></td><td>Give portal accounts read on their own payslips (a rule for "own payslips" already exists, the permission row was deliberately left out).</td></tr>
+<tr><td class="k">Apply for leave, see balances</td><td>Yes</td><td><span class="tag bad">Apply refuses</span></td><td>Create the leave on the employee's behalf through the existing helper, as the other portal pages already do.</td></tr>
+<tr><td class="k">Change my details (address, phone, emergency contact)</td><td>Yes, as a change request</td><td><span class="tag bad">Refuses</span></td><td>Same fix: the request is created through the helper, not as the raw account.</td></tr>
+<tr><td class="k">Upload a document (ID, certificate)</td><td>Yes</td><td><span class="tag bad">Refuses</span></td><td>Same fix for the file and the document record; check download links.</td></tr>
+<tr><td class="k">See my week, request a timesheet fix</td><td>Yes</td><td><span class="tag bad">Fix refuses</span></td><td>Same fix.</td></tr>
+<tr><td class="k">Schedule, overtime, public holidays, assets, pay letters, growth plan, recognition, resignation, onboarding, buddy, org chart, referrals, interviews, training, goals</td><td>Yes</td><td><span class="tag good">Works</span></td><td>Nothing. These already read and write through helpers.</td></tr>
+<tr><td class="k">Raise a ticket, ask HR a question</td><td><span class="tag warn">Not anywhere</span></td><td>—</td><td><strong>New: "Ask HR".</strong> Category, message, attachment. HR sees a queue, replies in a thread the employee sees on the portal, status New / With HR / Answered / Closed. Rides the existing approvals engine for anything that needs a sign-off.</td></tr>
+<tr><td class="k">One list of everything I asked for</td><td><span class="tag warn">Scattered</span></td><td>—</td><td><strong>New: "My requests".</strong> Leave, fixes, profile changes, tickets, assets, resignation in one list with a status each. The home page's "Needs you" list already reads these sources.</td></tr>
+<tr><td class="k">Clock in and out</td><td><span class="tag warn">Field staff only</span></td><td>—</td><td><strong>New on the portal.</strong> Today the phone check-in is a separate app for drivers and field staff and needs a full account. Open it to every Employee as a portal page.</td></tr>
+<tr><td class="k">Enter a timesheet (hours per project)</td><td><span class="tag warn">Backend only</span></td><td>—</td><td>Only for tenants that bill by hours. A simple week grid on the portal, later phase.</td></tr>
+<tr><td class="k">Claim an expense, request a business trip</td><td><span class="tag warn">Backend only</span></td><td>—</td><td>New portal pages: claim with photo of the receipt, trip request. Later phase.</td></tr>
+<tr><td class="k">Change my bank details</td><td>Linked from the portal to the existing secure flow</td><td>To verify</td><td>Check the flow accepts a portal account.</td></tr>
+<tr><td class="k">Read announcements</td><td><span class="tag warn">Backend Home only</span></td><td>—</td><td>Show the Announcements tab on the portal home.</td></tr>
+<tr><td class="k">Notifications</td><td>Email</td><td>Email</td><td>Keep email. Portal accounts have no in-app inbox, which is the market norm for the employee tier.</td></tr>
+</tbody></table></div>
+
+<h2>6. Phases</h2>
+<div class="card">
+<div class="phase"><div class="ph">Phase 1<small>Fence · days</small></div><div><p>Lock the backend for employee-only people today.</p><ul><li>Backend address sends them to My Payobook. The nine-dots corner and the "Apps" link are not drawn for them. Single sign-on lands on the same locked address, so it needs no change.</li><li>Team leads keep the backend: anyone with a role, a direct report or a decision waiting on them is never locked out.</li></ul></div></div>
+<div class="phase"><div class="ph">Phase 2<small>Portal accounts · 1 week</small></div><div><p>Make My Payobook complete for a portal account.</p><ul><li>The five refusals above, the employee look of the home page, finding the employee for auto-made logins.</li><li>Employee / Staff switch on the Access screen with promote and demote. New hires default to Employee.</li><li>Demo logins: the ten employee demos become portal accounts so the demo shows the real thing.</li><li>The two automatic rights (AI assistant, approvals) stop reaching employees on their own, because a portal account never carries them.</li></ul></div></div>
+<div class="phase"><div class="ph">Phase 3<small>Employee features · 1 to 2 weeks</small></div><div><p>Close the gaps that force an employee into the backend.</p><ul><li>"Ask HR" tickets, "My requests", clock in and out on the portal, Announcements on the portal home.</li></ul></div></div>
+<div class="phase"><div class="ph">Phase 4<small>Switch-over · days</small></div><div><p>Convert existing employee-only accounts in one sweep, tenant by tenant, with a rollback list.</p><ul><li>Expenses, business trips and timesheet entry follow as separate small phases when a tenant needs them.</li></ul></div></div>
+</div>
+
+<h2>7. Decisions I need from you</h2>
+<div class="q"><h3>1. Which way?</h3><p>Two tiers with the fence first (recommended), the fence only, or portal accounts without the fence.</p></div>
+<div class="q"><h3>2. Team leads</h3><p>Keep them on full accounts for approvals (recommended for now), or build "My team" on the portal in Phase 3 so they can be Employee accounts too.</p></div>
+<div class="q"><h3>3. "Ask HR"</h3><p>In scope for Phase 3, or park it. There is no ticketing anywhere in the product today, so this is new ground rather than a port.</p></div>
+
+<h2 style="margin-top:40px">Appendix for engineers</h2>
+<details><summary>Where each finding lives in the code</summary>
+<ul class="plain" style="font-size:14px;margin-top:10px">
+<li>Employee-only rule: <code>pb_me_portal/models/ess_landing.py:36-57</code> (internal, employee record, no Pay Run menu, Hiring cannot open). Landing redirect <code>controllers/ess_landing.py:17-31</code>; does not block <code>/bizapp</code> afterwards.</li>
+<li>Login creation: demo <code>pb_demo/models/demo_ess.py:44-86</code> (internal); People lens <code>biz_access/models/pb_access_facade.py:1296-1337</code> (internal, no roles); auto login <code>pb_zoho_bridge/models/zoho_pipeline.py:586-623</code> (portal, stored on <code>pb_portal_user_id</code>, never copied to <code>user_id</code>); offer-to-hire <code>pb_hiring/models/offer_closure.py:385-407</code> uses the same.</li>
+<li>Stock allows a share user as <code>hr.employee.user_id</code>: no <code>share</code> domain or constraint (<code>hr/models/hr_employee.py:88-98</code>, <code>resource_resource.py:38-40</code>); the form's "Internal Users" filter is a UI default only.</li>
+<li>Backend doors: <code>website/views/website_templates.xml:289-305</code> (corner triangle, <code>groups="base.group_user"</code>), <code>portal/views/portal_templates.xml:113</code> (Apps link), both re-pointed to <code>/bizapp</code> by <code>biz_deroute_website</code>. Nine dots hidden at one app by <code>biz_theme/static/src/webclient/apps_menu.xml:9-14</code>; menu pruning <code>pb_dashboard/models/menu_rails.py:72-103</code>.</li>
+<li>Auto rights via <code>base.group_user</code>: <code>biz_approval_workflow/security/biz_approval_workflow_groups.xml:71-73</code>, <code>pb_payroll_ai_insights/security/payroll_ai_security.xml:92-94</code>.</li>
+<li>SSO bypass: <code>pb_zoho_sso/controllers/main.py:299-301</code> calls <code>_get_login_redirect_url</code> directly.</li>
+<li>Portal-account refusals: change request <code>pb_me_portal/controllers/portal.py:170-206</code>; upload <code>:287-302</code> (ir.attachment 0000 for portal); payslip list <code>om_hr_payroll/controllers/portal.py:63,83</code> (plain search; portal rule exists at <code>pb_hr_payroll_base/.../payroll_base_security_enhanced.xml:316-328</code>, ACL row deliberately absent per comment <code>:348-354</code>); timesheet fix <code>pb_ess_workforce/models/ess_workforce.py:355-367</code>; leave <code>:496-508</code>. Employee look: <code>_pb_employee_only()</code> false for share users, so <code>.pbme-employee</code> is not applied.</li>
+<li>Employee lookup everywhere: <code>hr.employee.sudo().search([('user_id','=',uid)])</code>; <code>pb_hiring/models/privacy_p4.py:97-104</code> is the one place that falls back to <code>pb_portal_user_id</code>.</li>
+<li>Already portal-safe (ACL rows or sudo helpers): pb_assets, pb_offboarding, pb_probation, pb_goals (portal ACLs + rules), pb_onboarding, pb_rnr, pb_pay, pb_comp_ben, pb_pip, pb_hiring employee routes, pb_training, pb_timeoff.</li>
+<li>No helpdesk, ticket or <code>hr.request</code> model in the repo. Phone check-in <code>pb_driver_checkin</code> is gated on field-staff/driver groups that imply <code>base.group_user</code>.</li>
+<li>Role catalogue <code>pb_vendor_access/hooks.py:76-399</code>: no Employee or Self-service bundle.</li>
+</ul>
+<p class="src">Market sources: BambooHR help centre (access levels), Personio help centre (All Employees role, View/Propose/Edit), Rippling blog and Stitchflow write-ups (self-service vs scoped admins), Gusto support (employee vs admin accounts, switching), Employment Hero and Paycat (Work app features), Workday documentation (Employee as Self), apps.odoo.com listings of portal ESS add-ons for version 19.</p>
+</details>
+
+<section class="card" id="what-shipped">
+<h2>What shipped · 16 October 2026</h2>
+<p>The chosen two-tier approach is live across payobook, rize, p0clone,
+payobook_template and abm. Employee logins use My Payobook; staff and team leads
+retain the backend according to their responsibilities.</p>
+<ul><li>Employee-safe payslips, profile and document requests, leave and timesheet fixes.</li>
+<li>Ask HR, My requests, clock in/out, notices with read receipts, colleague photos,
+and tokened pay, leave and training downloads.</li>
+<li>Buddy stand-ins are restricted to the offered active colleagues in the same company.</li>
+<li>The owner reviewed and approved 12 demo account conversions and five joiner links.
+Driver, field-staff, manager and HR access was preserved. No Rize accounts needed migration.</li></ul>
+<p class="src">The earlier sections preserve the original assessment. Deployment and
+verification details: docs/handovers/tiers/TIERS_CLOSEOUT.md.</p>
+</section>
+</div>

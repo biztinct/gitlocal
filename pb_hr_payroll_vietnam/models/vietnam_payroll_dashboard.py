@@ -98,7 +98,7 @@ class VietnamPayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Vietnam Employees'),
             'res_model': 'hr.employee',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', vietnam_employees.ids)],
             'context': {'create': False}
         }
@@ -116,7 +116,7 @@ class VietnamPayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Vietnam Current Month Payslips'),
             'res_model': 'hr.payslip',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [
                 ('employee_id', 'in', vietnam_employees.ids),
                 ('date_from', '>=', current_month),

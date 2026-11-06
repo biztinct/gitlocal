@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_advanced.MultisheetWizard">
+    <div class="pbim pbw-root">
+      <div class="pbw-card pbms" t-if="state.defaults">
+
+        <div class="pbw-head">
+          <div>
+            <div class="pbw-eyebrow">Payobook · Import</div>
+            <h2>Multi-sheet Excel import</h2>
+          </div>
+          <button class="pbw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pbw-rail">
+          <t t-foreach="steps" t-as="s" t-key="s_index">
+            <div t-attf-class="pbw-step {{ state.step === s_index+1 ? 'cur' : (state.step > s_index+1 ? 'done' : '') }}">
+              <span class="pbw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',13)"/></t><t t-else="" t-esc="s_index+1"/></span>
+              <span class="pbw-lab" t-esc="s"/>
+            </div>
+            <div t-if="!s_last" t-attf-class="pbw-bar {{ state.step > s_index+1 ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <div class="pbw-body">
+          <div t-if="state.loading" class="pbw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <!-- STEP 1: UPLOAD -->
+          <t t-if="state.step === 1 and !state.loading">
+            <div class="pbw-sec">
+              <h4>Target &amp; workbook</h4>
+              <label class="pbw-label">Target configuration</label>
+              <select class="pbw-in" t-on-change="(ev) => this.onField('config_id', ev)">
+                <option t-foreach="state.defaults.configs" t-as="c" t-key="c.id" t-att-value="c.id"
+                        t-att-selected="('' + c.id) === state.form.config_id" t-esc="c.name"/>
+              </select>
+              <label class="pbw-label">Workbook (.xlsx with multiple tabs)</label>
+              <label class="pbw-drop">
+                <t t-out="ic('table',22)"/>
+                <span t-if="!state.form.file_name">Click to choose a workbook</span>
+                <span t-else="" class="fn"><t t-out="ic('file',15)"/> <t t-esc="state.form.file_name"/></span>
+                <input type="file" accept=".xlsx,.xls" t-on-change="onFile" style="display:none"/>
+              </label>
+              <div class="pbw-note">We’ll analyze the tabs, then let you choose sheets and columns. The advanced ordering &amp; mapping steps open in the detailed view.</div>
+            </div>
+          </t>
+
+          <!-- STEP 2: SHEETS -->
+          <t t-if="state.step === 2 and !state.loading and state.data">
+            <div class="pbw-sec">
+              <h4>Worksheets — pick the main sheet and which to include</h4>
+              <div class="pbms-sheets">
+                <div t-foreach="sheets" t-as="s" t-key="s.id" t-attf-class="pbms-sheet {{ s.is_main ? 'main' : '' }}">
+                  <label class="pbms-check">
+                    <input type="checkbox" t-att-checked="s.selected" t-on-change="(ev) => this.toggleSheet(s.id, ev)"/>
+                  </label>
+                  <div class="pbms-sheet-id">
+                    <span class="nm" t-esc="s.name"/>
+                    <span class="mt"><t t-esc="s.rows"/> rows · <t t-esc="s.cols"/> cols · header row <t t-esc="s.header_row"/></span>
+                  </div>
+                  <button t-attf-class="pbms-main-btn {{ s.is_main ? 'on' : '' }}" t-on-click="() => this.setMain(s.id)">
+                    <t t-if="s.is_main"><t t-out="ic('check',13)"/> Main</t>
+                    <t t-else="">Set main</t>
+                  </button>
+                </div>
+              </div>
+              <div class="pbw-note">Next, the detailed view lets you pick the primary key that joins the sheets, choose columns, set the append order and map any missing fields.</div>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbw-foot">
+          <button t-if="state.step === 1" class="pbim-btn ghost" t-on-click="close">Cancel</button>
+          <button t-else="" class="pbim-btn ghost" t-on-click="back" t-att-disabled="state.loading"><t t-out="ic('back',15)"/> Back</button>
+          <div class="pbw-sp"/>
+          <button t-if="state.step === 1" class="pbim-btn primary" t-att-disabled="!canStart || state.loading" t-on-click="start"><t t-out="ic('arrow',15)"/> Analyze</button>
+          <button t-if="state.step === 2" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="finish">Continue in advanced view <t t-out="ic('arrow',15)"/></button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

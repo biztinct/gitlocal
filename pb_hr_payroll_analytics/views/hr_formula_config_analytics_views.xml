@@ -12,8 +12,7 @@
         <field name="priority">16</field>
         <field name="arch" type="xml">
             <form string="Salary Structure Analytics"
-                  create="false" delete="false"
-                  js_class="formula_config_analytics_dashboard">
+                  create="false" delete="false">
 
                 <!-- Header Actions -->
                 <header>
@@ -23,11 +22,11 @@
                     <button name="action_back_to_hierarchy" type="object"
                             class="btn btn-sm btn-outline-secondary"
                             string="Back to Home" icon="fa-home"
-                            attrs="{'invisible': [('active_view', '=', 'hierarchy')]}"/>
+                            invisible="active_view == 'hierarchy'"/>
                     <button name="action_back_to_config" type="object"
                             class="btn btn-sm btn-outline-info"
                             string="Back to Config" icon="fa-arrow-left"
-                            attrs="{'invisible': [('active_view', '!=', 'department_detail')]}"/>
+                            invisible="active_view != 'department_detail'"/>
                 </header>
 
                 <sheet>
@@ -240,9 +239,8 @@
                             <field name="consolidated_data_json" invisible="1"/>
                         </page>
 
-                        <!-- Tab 3: Salary Details -->
                         <page string="Salary Details" name="config_detail"
-                              attrs="{'invisible': [('selected_config_id', '=', False)]}">
+                              invisible="not selected_config_id">
                             <div style="padding: 20px;">
                                 <!-- Config Header - Light Pastel with Border and Glow -->
                                 <div style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
@@ -299,9 +297,8 @@
                             <field name="config_detail_data_json" invisible="1"/>
                         </page>
 
-                        <!-- Tab 4: Department Detail -->
                         <page string="Department Detail" name="department_detail"
-                              attrs="{'invisible': [('selected_department_id', '=', False)]}">
+                              invisible="not selected_department_id">
                             <div style="padding: 20px;">
                                 <!-- Department Header - Light Teal Pastel with Border and Glow -->
                                 <div style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);

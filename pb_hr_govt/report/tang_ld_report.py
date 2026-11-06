@@ -55,7 +55,7 @@ class TangLdReportXlsx(ReportXlsxAbstract):
             coef = emp.contract_id.struct_id.name if emp.contract_id else ""
             allowance = emp_lines.get("ALLOW", 0.0)
             extra = emp_lines.get("EXTRA", 0.0)
-            province_code, district_code, commune_code = base._location_codes(emp.address_home_id)
+            province_code, district_code, commune_code = base._location_codes(emp)
             reason_note = dict(wizard._fields["tang_reason"].selection).get(wizard.tang_reason, "") or ""
             region_note = wizard.tang_region_code or ""
             note = (
@@ -66,7 +66,7 @@ class TangLdReportXlsx(ReportXlsxAbstract):
             sheet.write(row, 0, emp.name or "")
             sheet.write(row, 1, emp.identification_id or "")
             sheet.write(row, 2, _fmt(emp.birthday))
-            sheet.write(row, 3, "X" if emp.gender == "female" else "")
+            sheet.write(row, 3, base._is_female(emp) and "X" or "")
             sheet.write(row, 4, emp.identification_id or "")
             sheet.write(row, 5, emp.job_id.name or "")
             sheet.write_number(row, 6, wage)

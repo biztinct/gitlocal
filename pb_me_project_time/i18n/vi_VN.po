@@ -1,0 +1,594 @@
+# Translation of project time on the self-service pages (ETP E3) — Vietnamese.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 00:00+0000\n"
+"PO-Revision-Date: 2026-10-16 00:00+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "%s cells copied from last week. Change anything that was different."
+msgstr "Đã chép %s ô từ tuần trước. Chỗ nào khác thì hãy sửa lại."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/pb_me_home.py:0
+msgid "%s days this week have no project time"
+msgstr "%s ngày trong tuần này chưa có giờ dự án"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/pb_me_home.py:0
+msgid "%s days this week have no project time."
+msgstr "%s ngày trong tuần này chưa có giờ dự án."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "%s empty working days now have 8 h."
+msgstr "%s ngày làm việc trống nay đã có 8 giờ."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "1 cell copied from last week. Change anything that was different."
+msgstr "Đã chép 1 ô từ tuần trước. Nếu có gì khác thì hãy sửa lại."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+msgid "1 day empty"
+msgstr "1 ngày trống"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/pb_me_home.py:0
+msgid "1 day this week has no project time"
+msgstr "1 ngày trong tuần này chưa có giờ dự án"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/pb_me_home.py:0
+msgid "1 day this week has no project time."
+msgstr "1 ngày trong tuần này chưa có giờ dự án."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "1 empty working day now has 8 h."
+msgstr "1 ngày làm việc trống nay đã có 8 giờ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "<b>Some hours did not save.</b>"
+msgstr "<b>Một số giờ chưa được lưu.</b>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_ring
+msgid "<small>h logged</small>"
+msgstr "<small>giờ đã ghi</small>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid ""
+"<span class=\"pbpt-note-hint pbpt-jsonly\"><kbd>Enter</kbd> saves the note, "
+"<kbd>Esc</kbd> closes</span>"
+msgstr ""
+"<span class=\"pbpt-note-hint pbpt-jsonly\"><kbd>Enter</kbd> để lưu ghi chú, "
+"<kbd>Esc</kbd> để đóng</span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid ""
+"<span data-pbpt-word=\"offline\">That did not save. Check your connection and try again.</span>\n"
+"            <span data-pbpt-word=\"saving\">Saving…</span>\n"
+"            <span data-pbpt-word=\"saved\">Every cell saves as you type</span>\n"
+"            <span data-pbpt-word=\"removed\">Row removed.</span>"
+msgstr ""
+"<span data-pbpt-word=\"offline\">Chưa lưu được. Hãy kiểm tra kết nối rồi thử lại.</span>\n"
+"            <span data-pbpt-word=\"saving\">Đang lưu…</span>\n"
+"            <span data-pbpt-word=\"saved\">Mỗi ô tự lưu khi bạn gõ</span>\n"
+"            <span data-pbpt-word=\"removed\">Đã bỏ dòng.</span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid ""
+"<span>Arrow keys move, <kbd>Enter</kbd> saves and goes down, <kbd>Tab</kbd> "
+"goes right, <kbd>Esc</kbd> undoes, <kbd>N</kbd> adds a note. Type 7.5 or "
+"7:30.</span>"
+msgstr ""
+"<span>Phím mũi tên để di chuyển, <kbd>Enter</kbd> lưu và xuống dòng, "
+"<kbd>Tab</kbd> sang phải, <kbd>Esc</kbd> hoàn tác, <kbd>N</kbd> thêm ghi "
+"chú. Gõ 7.5 hoặc 7:30.</span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "<span>Every cell saves as you type</span>"
+msgstr "<span>Mỗi ô tự lưu khi bạn gõ</span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "<span>Fix those cells and save again. Everything else is saved.</span>"
+msgstr "<span>Hãy sửa các ô đó rồi lưu lại. Mọi thứ khác đã được lưu.</span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "<span>Remove this row<small>Clear its hours first</small></span>"
+msgstr "<span>Bỏ dòng này<small>Hãy xoá giờ của dòng trước</small></span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "<span>Remove this row<small>It has no hours this week</small></span>"
+msgstr ""
+"<span>Bỏ dòng này<small>Dòng này chưa có giờ trong tuần</small></span>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "A week ahead"
+msgstr "Tuần sắp tới"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Add a note"
+msgstr "Thêm ghi chú"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "Add a project"
+msgstr "Thêm dự án"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Add a project and type your hours — they save as you go."
+msgstr "Thêm một dự án rồi gõ số giờ — giờ được lưu ngay khi bạn gõ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "Add to my week"
+msgstr "Thêm vào tuần của tôi"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/pb_me_home.py:0
+msgid "Add your hours while you still remember them"
+msgstr "Hãy ghi giờ khi bạn vẫn còn nhớ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "An earlier week"
+msgstr "Tuần trước đó"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Ask HR"
+msgstr "Hỏi phòng nhân sự"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Ask HR to open one."
+msgstr "Hãy nhờ phòng nhân sự mở một dự án."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_no_employee
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Back to my home"
+msgstr "Về trang của tôi"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Back to this week"
+msgstr "Về tuần này"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Closed for new time"
+msgstr "Đã đóng, không nhận thêm giờ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Copy last week"
+msgstr "Chép tuần trước"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Days of the week"
+msgstr "Các ngày trong tuần"
+
+#. module: pb_me_project_time
+#: model:ir.model.fields,field_description:pb_me_project_time.field_res_config_settings__pb_me_project_time_enabled
+msgid "Employees enter project time on their self-service pages"
+msgstr "Nhân viên tự nhập giờ dự án trên trang tự phục vụ"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "Every working day on that row already has hours."
+msgstr "Mọi ngày làm việc trên dòng đó đã có giờ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Fill the week with"
+msgstr "Điền cả tuần với"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid ""
+"Fills empty cells with last week's hours. Nothing you typed is overwritten."
+msgstr ""
+"Điền các ô trống bằng giờ của tuần trước. Không ghi đè những gì bạn đã gõ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Half an hour less"
+msgstr "Bớt nửa giờ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Half an hour more"
+msgstr "Thêm nửa giờ"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Hours cannot be below zero."
+msgstr "Số giờ không được nhỏ hơn 0."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "In your week"
+msgstr "Đã có trong tuần"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Looking for when you clocked in and out?"
+msgstr "Bạn đang tìm giờ vào ca và ra ca?"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Made from your leave — read only"
+msgstr "Lấy từ ngày nghỉ của bạn — chỉ xem"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Minutes go up to 59, like 1:45."
+msgstr "Số phút tối đa là 59, ví dụ 1:45."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Next week"
+msgstr "Tuần sau"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "No project lets you log time yet."
+msgstr "Chưa có dự án nào cho phép bạn ghi giờ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "No project lets you log time yet. Ask HR to open one."
+msgstr ""
+"Chưa có dự án nào cho phép bạn ghi giờ. Hãy nhờ phòng nhân sự mở một dự án."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_ring
+msgid "No working hours are set for you this week"
+msgstr "Tuần này bạn chưa có giờ làm việc được đặt"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Note for this day"
+msgstr "Ghi chú cho ngày này"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Nothing logged this week yet."
+msgstr "Tuần này bạn chưa ghi giờ nào."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "Nothing matches. Try another word."
+msgstr "Không tìm thấy. Hãy thử từ khác."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid ""
+"Nothing to copy: those cells already have hours, or last week was empty."
+msgstr "Không có gì để chép: các ô đó đã có giờ, hoặc tuần trước trống."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "One cell holds 24 hours at most."
+msgstr "Mỗi ô tối đa 24 giờ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+msgid "Open the week"
+msgstr "Mở tuần"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Pick a project from the list."
+msgstr "Hãy chọn một dự án trong danh sách."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Previous week"
+msgstr "Tuần trước"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Project"
+msgstr "Dự án"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "Project or task"
+msgstr "Dự án hoặc công việc"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_breadcrumbs_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_home_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Project time"
+msgstr "Giờ theo dự án"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Project time is not available here yet"
+msgstr "Giờ theo dự án chưa dùng được ở đây"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_no_employee
+msgid "Project time is not set up for you yet"
+msgstr "Giờ theo dự án chưa được thiết lập cho bạn"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Project time is switched off for your company"
+msgstr "Giờ theo dự án đang tắt cho công ty của bạn"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Project time is switched off for your company."
+msgstr "Giờ theo dự án đang tắt cho công ty của bạn."
+
+#. module: pb_me_project_time
+#: model:ir.model,name:pb_me_project_time.model_pb_me_project_time
+msgid "Project time on the self-service pages"
+msgstr "Giờ theo dự án trên trang tự phục vụ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+msgid "Project time this week"
+msgstr "Giờ dự án tuần này"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "Projects and tasks"
+msgstr "Dự án và công việc"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Projects shared by every company"
+msgstr "Dự án dùng chung cho mọi công ty"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "Row options"
+msgstr "Tuỳ chọn dòng"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Save week"
+msgstr "Lưu tuần"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "Search projects and tasks"
+msgstr "Tìm dự án và công việc"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "That day is not a real date."
+msgstr "Ngày đó không hợp lệ."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "That did not save. Try again in a moment."
+msgstr "Chưa lưu được. Hãy thử lại sau giây lát."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "That is My Timesheet."
+msgstr "Đó là Bảng chấm công của tôi."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "That is not your employee record."
+msgstr "Đây không phải hồ sơ nhân viên của bạn."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "That would make %(total)s h on %(day)s. A day has 24 hours."
+msgstr "Như vậy %(day)s sẽ có %(total)s giờ. Một ngày chỉ có 24 giờ."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_picker
+msgid "The whole project, no task"
+msgstr "Cả dự án, không theo công việc"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Time off and public holidays"
+msgstr "Nghỉ phép và ngày lễ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "Type hours like 8, 7.5 or 1:30."
+msgstr "Hãy gõ số giờ như 8, 7.5 hoặc 1:30."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Weeks"
+msgstr "Các tuần"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "What did you work on?"
+msgstr "Bạn đã làm việc gì?"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid ""
+"When HR turns it on, you can enter your hours by project here, one week at a"
+" time."
+msgstr ""
+"Khi phòng nhân sự bật lên, bạn có thể nhập giờ theo dự án ở đây, từng tuần "
+"một."
+
+#. module: pb_me_project_time
+#: model:ir.model.fields,help:pb_me_project_time.field_res_config_settings__pb_me_project_time_enabled
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.res_config_settings_view_form_project_time
+msgid ""
+"When off, the Project time page shows that it is switched off, and its home "
+"tile and card are hidden. Time entered here before stays where it is."
+msgstr ""
+"Khi tắt, trang Giờ theo dự án báo là đang tắt, ô và thẻ trên trang chủ được "
+"ẩn. Giờ đã nhập trước đó vẫn được giữ nguyên."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+msgid "You cannot log time on that project. Pick one from the list."
+msgstr ""
+"Bạn không thể ghi giờ vào dự án đó. Hãy chọn một dự án trong danh sách."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/models/project_time.py:0
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid ""
+"Your company counts project time in days, which this page does not do yet."
+msgstr ""
+"Công ty của bạn tính giờ dự án theo ngày, trang này chưa hỗ trợ cách đó."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "Your hours by project, from Monday to Sunday"
+msgstr "Giờ làm của bạn theo dự án, từ thứ Hai đến Chủ nhật"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_home_project_time
+msgid "Your hours by project, week by week"
+msgstr "Giờ làm của bạn theo dự án, từng tuần"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.portal_my_project_time
+msgid "Your hours on each project, one week at a time."
+msgstr "Giờ làm của bạn trên từng dự án, từng tuần một."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_no_employee
+msgid ""
+"Your login is not linked to an employee record, so there is no week to fill "
+"in. Ask HR to link it."
+msgstr ""
+"Tài khoản của bạn chưa gắn với hồ sơ nhân viên nên chưa có tuần nào để điền."
+" Hãy nhờ phòng nhân sự gắn tài khoản."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "Your login is not linked to an employee record. Ask HR to link it."
+msgstr ""
+"Tài khoản của bạn chưa gắn với hồ sơ nhân viên. Hãy nhờ phòng nhân sự gắn "
+"tài khoản."
+
+#. module: pb_me_project_time
+#. odoo-python
+#: code:addons/pb_me_project_time/controllers/portal.py:0
+msgid "Your week is saved."
+msgstr "Đã lưu tuần của bạn."
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+msgid "day off"
+msgstr "ngày nghỉ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+msgid "days empty"
+msgstr "ngày trống"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_ring
+msgid "h"
+msgstr "giờ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+msgid "h logged"
+msgstr "giờ đã ghi"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "h this week"
+msgstr "giờ tuần này"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_ring
+msgid "h time off"
+msgstr "giờ nghỉ"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_row
+msgid "h<small>Only empty working days</small>"
+msgstr "giờ<small>Chỉ những ngày làm việc còn trống</small>"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbme_card_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_grid
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_ring
+msgid "of"
+msgstr "trên"
+
+#. module: pb_me_project_time
+#: model_terms:ir.ui.view,arch_db:pb_me_project_time.pbpt_ring
+msgid "plus"
+msgstr "thêm"

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Development Objective Action - must be defined before form view that references it -->
+    <record id="action_hr_development_objective" model="ir.actions.act_window">
+        <field name="name">Development Objectives</field>
+        <field name="res_model">hr.development.objective</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No objectives found
+            </p>
+        </field>
+    </record>
+
+    <!-- Development Plan Form View -->
+    <record id="view_hr_development_plan_form" model="ir.ui.view">
+        <field name="name">hr.development.plan.form</field>
+        <field name="model">hr.development.plan</field>
+        <field name="arch" type="xml">
+            <form string="Development Plan">
+                <header>
+                    <button name="action_activate" string="Activate Plan" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_complete" string="Mark Complete" type="object" class="oe_highlight" invisible="state != 'active'"/>
+                    <button name="action_schedule_review" string="Schedule Review" type="object" invisible="state not in ['active']"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ['completed', 'cancelled']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_hr_development_objective)d" type="action" class="oe_stat_button" icon="fa-tasks" context="{'search_default_development_plan_id': id}">
+                            <field name="objective_count" widget="statinfo" string="Objectives"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" placeholder="Development Plan Name..."/>
+                        </h1>
+                        <h3>
+                            <field name="employee_id"/> → <field name="manager_id"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="Timeline">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group string="Progress">
+                            <field name="progress" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Objectives" name="objectives">
+                            <field name="objective_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="objective_type"/>
+                                    <field name="target_date"/>
+                                    <field name="progress" widget="progressbar"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Learning Paths" name="learning">
+                            <field name="learning_enrollment_ids">
+                                <list>
+                                    <field name="learning_path_name"/>
+                                    <field name="start_date"/>
+                                    <field name="progress" widget="progressbar"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mentorships" name="mentorships">
+                            <field name="mentorship_ids">
+                                <list>
+                                    <field name="mentor_id"/>
+                                    <field name="mentee_id"/>
+                                    <field name="start_date"/>
+                                    <field name="focus_area"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Focus Skills" name="skills">
+                            <field name="focus_skill_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Career Goal" name="career_goal">
+                            <field name="career_goal" placeholder="Describe the employee's career aspirations and how this plan supports them..."/>
+                        </page>
+                        <page string="Reviews" name="reviews">
+                            <group>
+                                <group>
+                                    <field name="last_review_date"/>
+                                    <field name="next_review_date"/>
+                                </group>
+                            </group>
+                            <field name="review_notes" placeholder="Review meeting notes, progress discussions, adjustments made..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Development Plan List View -->
+    <record id="view_hr_development_plan_list" model="ir.ui.view">
+        <field name="name">hr.development.plan.list</field>
+        <field name="model">hr.development.plan</field>
+        <field name="arch" type="xml">
+            <list string="Development Plans" decoration-success="state == 'completed'" decoration-info="state == 'active'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="manager_id" optional="show"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="objective_count"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'active'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Development Plan Kanban View -->
+    <record id="view_hr_development_plan_kanban" model="ir.ui.view">
+        <field name="name">hr.development.plan.kanban</field>
+        <field name="model">hr.development.plan</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="progress"/>
+                <field name="objective_count"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+                                    <div class="o_secondary"><field name="employee_id"/></div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="mb-2">
+                                    <field name="progress" widget="progressbar"/>
+                                </div>
+                                <div><field name="objective_count"/> objectives</div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Development Plan Action -->
+    <record id="action_hr_development_plan" model="ir.actions.act_window">
+        <field name="name">Development Plans</field>
+        <field name="res_model">hr.development.plan</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Development Plan
+            </p>
+            <p>
+                Individual Development Plans (IDPs) help employees grow their skills and advance their careers.
+            </p>
+        </field>
+    </record>
+
+    <!-- Development Objective Form View -->
+    <record id="view_hr_development_objective_form" model="ir.ui.view">
+        <field name="name">hr.development.objective.form</field>
+        <field name="model">hr.development.objective</field>
+        <field name="arch" type="xml">
+            <form string="Development Objective">
+                <header>
+                    <button name="action_start" string="Start" type="object" class="oe_highlight" invisible="state != 'not_started'"/>
+                    <button name="action_complete" string="Mark Complete" type="object" class="oe_highlight" invisible="state != 'in_progress'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="not_started,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" placeholder="Objective..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Details">
+                            <field name="development_plan_id"/>
+                            <field name="objective_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Progress">
+                            <field name="progress" widget="progressbar"/>
+                            <field name="target_date"/>
+                            <field name="completion_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Related Items">
+                            <field name="skill_id" invisible="objective_type != 'skill'"/>
+                            <field name="course_id" invisible="objective_type != 'course'"/>
+                            <field name="task_id" invisible="objective_type != 'project'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Detailed description of this objective..."/>
+                        </page>
+                        <page string="Success Criteria" name="success_criteria">
+                            <field name="success_criteria" placeholder="How will we know this objective is successfully completed?"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Progress updates, challenges, notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Development Objective List View -->
+    <record id="view_hr_development_objective_list" model="ir.ui.view">
+        <field name="name">hr.development.objective.list</field>
+        <field name="model">hr.development.objective</field>
+        <field name="arch" type="xml">
+            <list string="Development Objectives" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="development_plan_id"/>
+                <field name="objective_type"/>
+                <field name="target_date"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

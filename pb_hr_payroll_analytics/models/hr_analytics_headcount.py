@@ -153,9 +153,45 @@ class HrAnalyticsHeadcount(models.Model):
                     count += 1
         return count
 
+    #: The employment types that mean "not on our permanent payroll". Read from
+    #: `hr.employee.employee_type` — Odoo's own field, which `pb_contract_lifecycle`
+    #: (RIZE P10) adopts, backfills and keeps up to date, and which is the only
+    #: honest answer to "is this person a contractor".
+    _CONTRACTOR_TYPES = ('contractor', 'freelance')
+
     def _count_contractors(self, employees):
-        """Count contractor employees"""
-        return len(employees.filtered(lambda e: e.contract_id and e.contract_id.type_id and 'contractor' in e.contract_id.type_id.name.lower()))
+        """How many of these people are contractors rather than staff.
+
+        TWO SIGNALS, UNIONED, AND THE ORDER MATTERS.
+
+        1. `employee_type` — the real field. A person recorded as a contractor
+           or a freelancer counts, whatever their contract type happens to be
+           called.
+        2. The old string-match on the contract type's NAME, kept as a
+           FALLBACK for anybody the field has not caught up with — a tenant
+           that has never installed the contract-lifecycle module, or a record
+           created through a route that bypassed the backfill.
+
+        The fallback is deliberately not removed. Dropping it would turn this
+        number to zero the moment somebody upgraded, and a headcount report
+        that quietly answers zero is worse than one that over-counts by one.
+        Deduplicated by construction: `filtered` is applied to the same
+        recordset twice and the two results are ORed as recordsets, so nobody
+        is counted twice.
+        """
+        by_type = employees.browse()
+        try:
+            by_type = employees.filtered(
+                lambda e: (e.employee_type or '') in self._CONTRACTOR_TYPES)
+        except Exception:               # noqa: BLE001 — an older build
+            # `employee_type` lives on the version record on Odoo 19 and is
+            # absent altogether on some builds. Absent field, no signal, the
+            # string-match below still answers.
+            _logger.debug('Headcount: no employee_type on this build')
+        by_name = employees.filtered(
+            lambda e: e.contract_id and e.contract_id.type_id
+            and 'contractor' in (e.contract_id.type_id.name or '').lower())
+        return len(by_type | by_name)
 
     def _group_by_type(self, employees):
         """Group employees by employment type"""

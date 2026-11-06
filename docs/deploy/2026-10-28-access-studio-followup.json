@@ -1,0 +1,929 @@
+{
+  "release_commit": "d109a025781e5cc33b59d09a8218f1780041a1a2",
+  "implementation_commit": "1e344c514df775047d70fa8726b5edcc424080a6",
+  "module_version": "19.0.1.8.2",
+  "ssh_target": "Payobook19v2",
+  "addons_directory": "/odoo/odoo-server/addons",
+  "combined_custom_trees_verified": 154,
+  "regression_before_final_corrections": {
+    "p0clone": {
+      "tests": 203,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook_template": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "rize": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    }
+  },
+  "final_release_regression": {
+    "p0clone": {
+      "tests": 204,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "payobook_template": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    },
+    "rize": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "successful": true,
+      "skipped": 0
+    }
+  },
+  "final_release_changes": "Conditional field dropdown values and scoped role-search XPath corrected; role editor impact includes profile and independent grant holders, deduplicates people, and projects their proposed role changes accurately. Direct-grant revocation remains separate.",
+  "local_validation": [
+    "Mounted complete inherited OWL screen; scoped XPath uniqueness; fields show saved values and changes update draft; See it as person search preserved",
+    "OWL template and SCSS compilation",
+    "Python compileall",
+    "git diff --check"
+  ],
+  "chrome": {
+    "successful": true,
+    "browser": "Chrome",
+    "sites": [
+      "https://payobook.com",
+      "https://rize.payobook.com"
+    ],
+    "checks": [
+      "Hiring: three populated profiles; Recruiter, Talent Lead and Hiring Manager assignments visible",
+      "Talent Lead found using full login; switching to Profiles preserves the separate profile search",
+      "Single role-search field and four-resource CRUD matrix; Record rules and Form fields available",
+      "Field dropdowns match saved values: Recruiter candidate fields View & edit; offer Reference View only",
+      "Role menu preview labeled as one role; Screens labeled as full menu with combined access",
+      "See it as person search finds Talent Lead; combined menu preview loads; returned to own view",
+      "Role editor counts Recruiter profile holder once and review lists DEMO Recruiter with zero additions/removals for unchanged abilities",
+      "Hiring, People and Payroll use the module inner rail; no global sidebar Access child entries",
+      "All twelve global module entries visible; navigation database audit covers all four environments",
+      "Rize: Learning administration profile contains Head of training and one member; Komal assignment visible",
+      "390px profile page has no document overflow; permission table scrolls inside its 278px container while document remains 390px",
+      "No Chrome console errors on either tested tab"
+    ],
+    "viewport_restored": true,
+    "live_permission_changes_saved_during_UI_testing": false,
+    "test_screenshots_saved_to_disk": false
+  },
+  "http": {
+    "payobook.com": "200",
+    "rize.payobook.com": "200",
+    "p0clone.payobook.com": "200"
+  },
+  "traceability_http_checks": [
+    {
+      "login": "demo.agency@example.com",
+      "authenticated": true,
+      "path": "/my/agency",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "demo.field@example.com",
+      "authenticated": true,
+      "path": "/field",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "demo.hiringmanager@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false,
+      "hiring_board_allowed": true
+    },
+    {
+      "login": "demo.hr@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "demo.learner@example.com",
+      "authenticated": true,
+      "path": "/my/training",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "demo.recruiter@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false,
+      "hiring_board_allowed": true
+    },
+    {
+      "login": "demo.talentlead@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false,
+      "hiring_board_allowed": true
+    },
+    {
+      "login": "diep.thai@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "ess1.demo@payobook.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "huy.dinh@example.com",
+      "authenticated": true,
+      "path": "/my/growth",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "khoi.tran@example.com",
+      "authenticated": true,
+      "path": "/my/journey",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "lam.ngo@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "linh.quan@example.com",
+      "authenticated": true,
+      "path": "/my",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    },
+    {
+      "login": "tuan.quach@example.com",
+      "authenticated": true,
+      "path": "/my/resignation",
+      "status": 200,
+      "login_redirect": false,
+      "server_error": false
+    }
+  ],
+  "traceability_checks_before_after_identical": 15,
+  "traceability_checks_note": "Account login and before/after native-access probes ran after adoption at commit 1e344c514. Subsequent fixes changed template selections and role-impact previews. The final setup receipt confirms all account assignments and native groups remain unchanged.",
+  "database_setup": {
+    "p0clone": {
+      "database": "p0clone",
+      "applied": true,
+      "profiles": [
+        {
+          "id": 119,
+          "name": "Recruiting team",
+          "workspace": "hiring",
+          "company": "My Company",
+          "roles": [
+            "Recruiter"
+          ],
+          "logins": []
+        },
+        {
+          "id": 120,
+          "name": "Hiring leadership",
+          "workspace": "hiring",
+          "company": "My Company",
+          "roles": [
+            "Head of hiring"
+          ],
+          "logins": []
+        },
+        {
+          "id": 121,
+          "name": "Hiring managers",
+          "workspace": "hiring",
+          "company": "My Company",
+          "roles": [
+            "Hiring requestor"
+          ],
+          "logins": []
+        },
+        {
+          "id": 122,
+          "name": "People records team",
+          "workspace": "people",
+          "company": "My Company",
+          "roles": [
+            "Employee records team"
+          ],
+          "logins": []
+        },
+        {
+          "id": 123,
+          "name": "Payroll preparation",
+          "workspace": "payroll",
+          "company": "My Company",
+          "roles": [
+            "Payroll officer"
+          ],
+          "logins": []
+        },
+        {
+          "id": 124,
+          "name": "Payroll reporting",
+          "workspace": "payroll",
+          "company": "My Company",
+          "roles": [
+            "Payroll \u2014 can look",
+            "Pay reporting \u2014 can look"
+          ],
+          "logins": []
+        }
+      ],
+      "accounts": [],
+      "policies": []
+    },
+    "payobook": {
+      "database": "payobook",
+      "applied": true,
+      "profiles": [
+        {
+          "id": 40,
+          "name": "Employee self service",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Employee self service"
+          ],
+          "logins": [
+            "ess1.demo@payobook.com",
+            "tuan.quach@example.com"
+          ]
+        },
+        {
+          "id": 41,
+          "name": "Hiring managers",
+          "workspace": "hiring",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Hiring requestor"
+          ],
+          "logins": [
+            "demo.hiringmanager@example.com"
+          ]
+        },
+        {
+          "id": 42,
+          "name": "Recruiting team",
+          "workspace": "hiring",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Recruiter"
+          ],
+          "logins": [
+            "demo.recruiter@example.com"
+          ]
+        },
+        {
+          "id": 43,
+          "name": "Hiring leadership",
+          "workspace": "hiring",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Head of hiring"
+          ],
+          "logins": [
+            "demo.talentlead@example.com"
+          ]
+        },
+        {
+          "id": 44,
+          "name": "Learning administration",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Head of training"
+          ],
+          "logins": [
+            "komal@rize.farm"
+          ]
+        },
+        {
+          "id": 45,
+          "name": "Team managers",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Team management"
+          ],
+          "logins": [
+            "lam.ngo@example.com"
+          ]
+        },
+        {
+          "id": 46,
+          "name": "Finance budget reviewers",
+          "workspace": "money",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Finance \u2014 budgets"
+          ],
+          "logins": [
+            "linh.quan@example.com"
+          ]
+        },
+        {
+          "id": 47,
+          "name": "Function budget owners",
+          "workspace": "money",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Budget holder"
+          ],
+          "logins": [
+            "diep.thai@example.com"
+          ]
+        },
+        {
+          "id": 48,
+          "name": "Field team",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Field staff"
+          ],
+          "logins": [
+            "demo.field@example.com"
+          ]
+        },
+        {
+          "id": 49,
+          "name": "HR service team",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "HR records administration",
+            "Equipment team",
+            "Head of pay \u2014 packages and awards",
+            "Recognition lead",
+            "HR lead for goals",
+            "Training manager",
+            "Growth plans \u2014 head of HR",
+            "Head of announcements"
+          ],
+          "logins": [
+            "demo.hr@example.com"
+          ]
+        },
+        {
+          "id": 50,
+          "name": "HR lifecycle team",
+          "workspace": "lifecycle",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "HR lifecycle team"
+          ],
+          "logins": [
+            "demo.hr@example.com"
+          ]
+        },
+        {
+          "id": 51,
+          "name": "HR budget administration",
+          "workspace": "money",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Budget team"
+          ],
+          "logins": [
+            "demo.hr@example.com"
+          ]
+        },
+        {
+          "id": 52,
+          "name": "HR payroll operations",
+          "workspace": "payroll",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Payroll operations",
+            "Pay reporting \u2014 can look",
+            "Pay formulas \u2014 can look"
+          ],
+          "logins": [
+            "demo.hr@example.com"
+          ]
+        },
+        {
+          "id": 53,
+          "name": "HR access and vendor administration",
+          "workspace": "system",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Access team",
+            "Vendor team"
+          ],
+          "logins": [
+            "demo.hr@example.com"
+          ]
+        },
+        {
+          "id": 54,
+          "name": "Workforce HR reviewer",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "HR records administration"
+          ],
+          "logins": [
+            "tuan.quach@example.com"
+          ]
+        },
+        {
+          "id": 55,
+          "name": "People records team",
+          "workspace": "people",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Employee records team"
+          ],
+          "logins": []
+        },
+        {
+          "id": 56,
+          "name": "Payroll preparation",
+          "workspace": "payroll",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Payroll officer"
+          ],
+          "logins": []
+        },
+        {
+          "id": 57,
+          "name": "Payroll reporting",
+          "workspace": "payroll",
+          "company": "Payobook Vietnam JSC",
+          "roles": [
+            "Payroll \u2014 can look",
+            "Pay reporting \u2014 can look"
+          ],
+          "logins": []
+        }
+      ],
+      "accounts": [
+        {
+          "login": "ess1.demo@payobook.com",
+          "portal": false,
+          "profiles": [
+            "Employee self service"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "demo.learner@example.com",
+          "portal": true,
+          "profiles": [],
+          "native_groups_retained": true,
+          "scope": "Existing portal controller and employee/agency ownership rules"
+        },
+        {
+          "login": "demo.hr@example.com",
+          "portal": false,
+          "profiles": [
+            "HR service team",
+            "HR lifecycle team",
+            "HR budget administration",
+            "HR payroll operations",
+            "HR access and vendor administration"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "demo.hiringmanager@example.com",
+          "portal": false,
+          "profiles": [
+            "Hiring managers"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "demo.recruiter@example.com",
+          "portal": false,
+          "profiles": [
+            "Recruiting team"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "demo.talentlead@example.com",
+          "portal": false,
+          "profiles": [
+            "Hiring leadership"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "komal@rize.farm",
+          "portal": false,
+          "profiles": [
+            "Learning administration"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "lam.ngo@example.com",
+          "portal": false,
+          "profiles": [
+            "Team managers"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "tuan.quach@example.com",
+          "portal": false,
+          "profiles": [
+            "Employee self service",
+            "Workforce HR reviewer"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "linh.quan@example.com",
+          "portal": false,
+          "profiles": [
+            "Finance budget reviewers"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "diep.thai@example.com",
+          "portal": false,
+          "profiles": [
+            "Function budget owners"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        },
+        {
+          "login": "demo.agency@example.com",
+          "portal": true,
+          "profiles": [],
+          "native_groups_retained": true,
+          "scope": "Existing portal controller and employee/agency ownership rules"
+        },
+        {
+          "login": "khoi.tran@example.com",
+          "portal": true,
+          "profiles": [],
+          "native_groups_retained": true,
+          "scope": "Existing portal controller and employee/agency ownership rules"
+        },
+        {
+          "login": "huy.dinh@example.com",
+          "portal": true,
+          "profiles": [],
+          "native_groups_retained": true,
+          "scope": "Existing portal controller and employee/agency ownership rules"
+        },
+        {
+          "login": "demo.field@example.com",
+          "portal": false,
+          "profiles": [
+            "Field team"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        }
+      ],
+      "policies": []
+    },
+    "payobook_template": {
+      "database": "payobook_template",
+      "applied": true,
+      "profiles": [
+        {
+          "id": 40,
+          "name": "Recruiting team",
+          "workspace": "hiring",
+          "company": "My Company",
+          "roles": [
+            "Recruiter"
+          ],
+          "logins": []
+        },
+        {
+          "id": 41,
+          "name": "Hiring leadership",
+          "workspace": "hiring",
+          "company": "My Company",
+          "roles": [
+            "Head of hiring"
+          ],
+          "logins": []
+        },
+        {
+          "id": 42,
+          "name": "Hiring managers",
+          "workspace": "hiring",
+          "company": "My Company",
+          "roles": [
+            "Hiring requestor"
+          ],
+          "logins": []
+        },
+        {
+          "id": 43,
+          "name": "People records team",
+          "workspace": "people",
+          "company": "My Company",
+          "roles": [
+            "Employee records team"
+          ],
+          "logins": []
+        },
+        {
+          "id": 44,
+          "name": "Payroll preparation",
+          "workspace": "payroll",
+          "company": "My Company",
+          "roles": [
+            "Payroll officer"
+          ],
+          "logins": []
+        },
+        {
+          "id": 45,
+          "name": "Payroll reporting",
+          "workspace": "payroll",
+          "company": "My Company",
+          "roles": [
+            "Payroll \u2014 can look",
+            "Pay reporting \u2014 can look"
+          ],
+          "logins": []
+        }
+      ],
+      "accounts": [],
+      "policies": []
+    },
+    "rize": {
+      "database": "rize",
+      "applied": true,
+      "profiles": [
+        {
+          "id": 40,
+          "name": "Learning administration",
+          "workspace": "people",
+          "company": "Rize Farms",
+          "roles": [
+            "Head of training"
+          ],
+          "logins": [
+            "komal@rize.farm"
+          ]
+        },
+        {
+          "id": 41,
+          "name": "Recruiting team",
+          "workspace": "hiring",
+          "company": "Rize Farms",
+          "roles": [
+            "Recruiter"
+          ],
+          "logins": []
+        },
+        {
+          "id": 42,
+          "name": "Hiring leadership",
+          "workspace": "hiring",
+          "company": "Rize Farms",
+          "roles": [
+            "Head of hiring"
+          ],
+          "logins": []
+        },
+        {
+          "id": 43,
+          "name": "Hiring managers",
+          "workspace": "hiring",
+          "company": "Rize Farms",
+          "roles": [
+            "Hiring requestor"
+          ],
+          "logins": []
+        },
+        {
+          "id": 44,
+          "name": "People records team",
+          "workspace": "people",
+          "company": "Rize Farms",
+          "roles": [
+            "Employee records team"
+          ],
+          "logins": []
+        },
+        {
+          "id": 45,
+          "name": "Payroll preparation",
+          "workspace": "payroll",
+          "company": "Rize Farms",
+          "roles": [
+            "Payroll officer"
+          ],
+          "logins": []
+        },
+        {
+          "id": 46,
+          "name": "Payroll reporting",
+          "workspace": "payroll",
+          "company": "Rize Farms",
+          "roles": [
+            "Payroll \u2014 can look",
+            "Pay reporting \u2014 can look"
+          ],
+          "logins": []
+        }
+      ],
+      "accounts": [
+        {
+          "login": "komal@rize.farm",
+          "portal": false,
+          "profiles": [
+            "Learning administration"
+          ],
+          "native_groups_retained": true,
+          "scope": "Profiles plus remaining independent application permissions"
+        }
+      ],
+      "policies": []
+    }
+  },
+  "navigation": {
+    "p0clone": {
+      "active_access_sidebar_entries": [],
+      "top_level_modules": [
+        "Home",
+        "Payroll",
+        "People",
+        "Hiring",
+        "Workforce",
+        "Expenses",
+        "Insights",
+        "Compliance",
+        "Talent",
+        "Learning",
+        "Help",
+        "Settings"
+      ],
+      "retired_studio_links": 3
+    },
+    "payobook": {
+      "active_access_sidebar_entries": [],
+      "top_level_modules": [
+        "Home",
+        "Payroll",
+        "People",
+        "Hiring",
+        "Workforce",
+        "Expenses",
+        "Insights",
+        "Compliance",
+        "Talent",
+        "Learning",
+        "Help",
+        "Settings"
+      ],
+      "retired_studio_links": 3
+    },
+    "payobook_template": {
+      "active_access_sidebar_entries": [],
+      "top_level_modules": [
+        "Home",
+        "Payroll",
+        "People",
+        "Hiring",
+        "Workforce",
+        "Expenses",
+        "Insights",
+        "Compliance",
+        "Talent",
+        "Learning",
+        "Help",
+        "Settings"
+      ],
+      "retired_studio_links": 3
+    },
+    "rize": {
+      "active_access_sidebar_entries": [],
+      "top_level_modules": [
+        "Home",
+        "Payroll",
+        "People",
+        "Hiring",
+        "Workforce",
+        "Expenses",
+        "Insights",
+        "Compliance",
+        "Talent",
+        "Learning",
+        "Help",
+        "Settings"
+      ],
+      "retired_studio_links": 3
+    }
+  },
+  "module_local_rail_entries": [
+    "Hiring",
+    "People",
+    "Payroll"
+  ],
+  "navigation_note": "All 12 active top-level entries audited. Three existing Studio global-sidebar child links retired; module inner rails retained. Other access areas remain in the shared Settings catalogue.",
+  "isolated_adopted_recruiter_policy_probe": [
+    "Other-owner record read denied",
+    "Hidden salary field blocked through elevated application read",
+    "Delete denied",
+    "Probe rolled back"
+  ],
+  "policy_scope": "Explicit defaults follow existing native ACLs; application company, record, field and workflow restrictions remain. Unsupported resources use application controls. Portal users retain portal access.",
+  "backup_locations": {
+    "p0clone": "/odoo/backups/access-studio-20261027T212224Z/p0clone",
+    "payobook": "/odoo/backups/access-studio-20261027T212224Z/payobook",
+    "payobook_template": "/odoo/backups/access-studio-20261027T212224Z/payobook_template",
+    "rize": "/odoo/archives/rize-access-studio-20261027T212224Z"
+  },
+  "initial_setup_backups": {
+    "p0clone": "/odoo/backups/access-studio-20261027T210200Z/p0clone",
+    "payobook": "/odoo/backups/access-studio-20261027T210200Z/payobook",
+    "payobook_template": "/odoo/backups/access-studio-20261027T210200Z/payobook_template",
+    "rize": "/odoo/archives/rize-access-studio-20261027T210200Z"
+  },
+  "rize_backups_permanent": true,
+  "retired_abm_touched": false,
+  "cleanup": {
+    "isolated_database_removed": true,
+    "isolated_test_filestore_removed": true,
+    "rehearsal_dump_removed": true,
+    "test_screenshots_saved_to_disk": false,
+    "local_test_png_files": 0
+  },
+  "unrelated_work_preserved": [
+    "outputs/komal-learning-2026-10-23/"
+  ]
+}

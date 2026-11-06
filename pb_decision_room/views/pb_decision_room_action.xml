@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Declared as a RECORD rather than reached by a bare tag: a bare tag is
+         synthesised with no action NAME, so anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+
+         Test URL: /odoo/action-pb_decision_room   (the room on its own)
+         Its real home is the People hub's Plan lens. -->
+
+    <record id="action_pb_decision_room" model="ir.actions.client">
+        <field name="name">Decision Room</field>
+        <field name="tag">pb_decision_room</field>
+    </record>
+
+</odoo>

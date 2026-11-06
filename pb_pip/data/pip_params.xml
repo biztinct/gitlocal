@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         The dials, shipped so they are DISCOVERABLE rather than folklore.
+
+         THE FOUR SWITCHES ARE NOT HERE, and that is the same call P3, P4
+         and P5 all wrote down: they default in code
+         (`pip_common.DEFAULTS`), and shipping a record for a switch freezes
+         whatever value a test run happened to leave behind, because
+         `noupdate="1"` means the next upgrade never corrects it.
+
+         The switches are:
+           pb_pip.pip_mail          on   — the emails this module sends
+           pb_pip.employee_view     on   — /my/growth, and the acknowledgement
+           pb_pip.manager_sees_own  on   — the requester sees their request
+           pb_pip.auto_terminate    on   — a resignation closes a running plan
+
+         The last three are set from the PIP lens by the head of HR
+         (`pb.pip.set_switch`), which writes the same parameter this file
+         would have. Everything below is a number with a sensible answer.
+         ================================================================== -->
+
+    <record id="param_default_weeks" model="ir.config_parameter">
+        <field name="key">pb_pip.default_weeks</field>
+        <!-- Long enough for somebody to actually change something, short
+             enough that the answer is not a year away. -->
+        <field name="value">6</field>
+    </record>
+
+    <record id="param_missed_days" model="ir.config_parameter">
+        <field name="key">pb_pip.missed_checkin_days</field>
+        <!-- How many days after a planned check-in it counts as missed. Two:
+             a conversation moved by a day is a diary, a conversation nobody
+             held for three days is a plan drifting. -->
+        <field name="value">2</field>
+    </record>
+
+</data>
+</odoo>

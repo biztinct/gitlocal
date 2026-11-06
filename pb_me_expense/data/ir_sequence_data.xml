@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Cloned from pb_business_trip/data/ir_sequence_data.xml (D1). -->
+    <record id="seq_expense_claim" model="ir.sequence">
+        <field name="name">Expense claim</field>
+        <field name="code">pb.expense.claim</field>
+        <field name="prefix">EXP/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

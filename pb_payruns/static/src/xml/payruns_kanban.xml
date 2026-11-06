@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Quiet numbers line + numbered steps + date chips, full-width above
+       the kanban columns. -->
+  <t t-name="pb_payruns.KanbanView" t-inherit="web.KanbanView" t-inherit-mode="primary">
+    <xpath expr="//t[@t-component='props.Renderer']" position="before">
+      <!-- QUIET BOARD: one slim numbers line (grey at zero, a colour only
+           when a person has to act) and the three stages as numbered steps.
+           A run is at exactly one step, so the counts add up; a rejected
+           run is an outcome at no step, reached from the numbers line. -->
+      <div t-if="pbState.loaded" class="pbk-quiet" data-coach="pk-kpis">
+        <div class="pbk-quiet-top">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="pbGlance"/>
+            <t t-set="qGlanceOn" t-value="pbGlanceOn"/>
+          </t>
+          <button class="pbk-run" data-coach="pk-run" t-on-click="pbRunPayroll">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Run payroll
+          </button>
+        </div>
+        <div data-coach="pk-tabs">
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="pbSteps"/>
+            <t t-set="qStepsLabel" t-value="'Where every pay run is'"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+        </div>
+        <div class="pbim-showing">
+          <t t-if="pbShowing.all">Showing <b t-esc="pbShowing.text"/> · press a step or a number to narrow it</t>
+          <t t-else="">Showing <b t-esc="pbShowing.text"/><t t-if="pbShowing.where"> at <b t-esc="pbShowing.where"/></t>
+            <button type="button" class="pbim-showall" t-on-click="pbShowAll">Show all</button></t>
+        </div>
+      </div>
+
+      <div class="pbk-chipbar">
+        <div class="pbk-datechips" data-coach="pk-datechips">
+          <button t-foreach="pbDateTabs" t-as="dt" t-key="dt.id"
+                  t-attf-class="pbk-datechip {{ pbState.dateFilter === dt.id ? 'active' : '' }}"
+                  t-on-click="() => this.setDateFilter(dt.id)" t-esc="dt.label"/>
+          <button t-attf-class="pbk-datechip {{ pbState.dateFilter === 'custom' ? 'active' : '' }}"
+                  t-on-click="() => this.setDateFilter('custom')">Custom</button>
+          <t t-if="pbState.dateFilter === 'custom'">
+            <input type="date" class="pbk-dateinput" t-att-value="pbState.customFrom" t-on-change="(ev) => this.onCustomDate('from', ev)"/>
+            <span class="pbk-dash">–</span>
+            <input type="date" class="pbk-dateinput" t-att-value="pbState.customTo" t-on-change="(ev) => this.onCustomDate('to', ev)"/>
+          </t>
+        </div>
+      </div>
+      <div class="pbk-chipbar pbk-divchips" data-coach="pk-divchips" t-if="pbState.divisions.length">
+        <div class="pbk-datechips">
+          <button t-foreach="pbDivisionTabs" t-as="dv" t-key="dv.key"
+                  t-attf-class="pbk-datechip {{ pbState.activeDivision === dv.key ? 'active' : '' }}"
+                  t-on-click="() => this.setDivision(dv.key)" t-esc="dv.label"/>
+        </div>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

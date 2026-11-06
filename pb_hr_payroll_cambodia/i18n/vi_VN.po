@@ -1,0 +1,131 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hr_payroll_cambodia
+#: model:ir.ui.view,string:pb_hr_payroll_cambodia.view_payroll_dashboard_cambodia
+msgid "Cambodia Payroll Dashboard"
+msgstr "Bảng điều khiển tiền lương của Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: model:ir.ui.menu,name:pb_hr_payroll_cambodia.menu_cambodia_dashboard
+msgid "Cambodia Dashboard"
+msgstr "Trang tổng quan Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: model:ir.ui.menu,name:pb_hr_payroll_cambodia.menu_cambodia_nssf
+msgid "Cambodia NSSF Processing"
+msgstr "Chế biến NSSF Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: field:hr.payslip,cambodia_nssf_employee:0
+msgid "NSSF - Employee"
+msgstr "NSSF - Nhân Viên"
+
+#. module: pb_hr_payroll_cambodia
+#: field:hr.payslip,cambodia_nssf_company:0
+msgid "NSSF - Company"
+msgstr "NSSF - Công ty"
+
+#. module: pb_hr_payroll_cambodia
+#: field:hr.payslip,cambodia_oc_employee:0
+msgid "Occupational Risk Insurance - Employee"
+msgstr "Bảo hiểm rủi ro nghề nghiệp - Người lao động"
+
+#. module: pb_hr_payroll_cambodia
+#: field:hr.payslip,cambodia_oc_company:0
+msgid "Occupational Risk Insurance - Company"
+msgstr "Bảo hiểm rủi ro nghề nghiệp - Công ty"
+
+#. module: pb_hr_payroll_cambodia
+#: field:hr.payslip,cambodia_healthcare:0
+msgid "Healthcare Fund Contribution"
+msgstr "Đóng góp quỹ chăm sóc sức khỏe"
+
+#. module: pb_hr_payroll_cambodia
+#: button:hr.payslip,action_compute_cambodia_nssf:0
+msgid "Compute Cambodia NSSF"
+msgstr "Tính toán NSSF Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: view:hr.payslip:0
+msgid "Cambodia Payslip"
+msgstr "Phiếu lương Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: view:hr.payslip:0
+msgid "Cambodia NSSF Components"
+msgstr "Thành phần NSSF Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: view:hr.payslip:0
+msgid "NSSF Contribution Calculation"
+msgstr "Tính toán đóng góp NSSF"
+
+#. module: pb_hr_payroll_cambodia
+#. odoo-python
+#: code:addons/pb_hr_payroll_cambodia/models/hr_payslip_cambodia.py:50
+msgid "Cambodia NSSF computed successfully"
+msgstr "NSSF Campuchia đã tính toán thành công"
+
+#. module: pb_hr_payroll_cambodia
+#. odoo-python
+#: code:addons/pb_hr_payroll_cambodia/models/hr_payslip_cambodia.py:60
+msgid "Error computing Cambodia NSSF: %s"
+msgstr "Lỗi tính toán NSSF Campuchia: %s"
+
+#. module: pb_hr_payroll_cambodia
+#: help:hr.payslip,cambodia_nssf_employee:0
+msgid "Employee contribution to National Social Security Fund"
+msgstr "Đóng góp của người lao động vào Quỹ An sinh xã hội Quốc gia"
+
+#. module: pb_hr_payroll_cambodia
+#: help:hr.payslip,cambodia_nssf_company:0
+msgid "Company contribution to National Social Security Fund"
+msgstr "Đóng góp của công ty vào Quỹ An sinh xã hội quốc gia"
+
+#. module: pb_hr_payroll_cambodia
+#: res.groups,name:pb_hr_payroll_cambodia.group_cambodia_payroll_officer
+msgid "Cambodia Payroll Officer"
+msgstr "Cán bộ nhân sự Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: button:payroll.dashboard,action_process_cambodia_payroll:0
+msgid "Process Cambodia Payroll"
+msgstr "Quy trình bảng lương Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: button:payroll.dashboard,action_export_cambodia_data:0
+msgid "Export Cambodia Data"
+msgstr "Xuất dữ liệu Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: dashboard.payroll:0
+msgid "Cambodia Payroll Management System"
+msgstr "Hệ thống quản lý tiền lương của Campuchia"
+
+#. module: pb_hr_payroll_cambodia
+#: dashboard.payroll:0
+msgid "NSSF Management and Compliance"
+msgstr "Quản lý và tuân thủ NSSF"
+
+#. module: pb_hr_payroll_cambodia
+#: dashboard.payroll:0
+msgid "Occupational Risk Insurance"
+msgstr "Bảo hiểm rủi ro nghề nghiệp"
+
+#. module: pb_hr_payroll_cambodia
+#: dashboard.payroll:0
+msgid "Healthcare Fund Management"
+msgstr "Quản lý quỹ chăm sóc sức khỏe"

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ITS OWN LADDER, FOR THE SAME REASON P6 GAVE ITSELF ONE.
+
+         What somebody is paid, and what they were awarded on top of it, is
+         the most closely held fact in an HR system. A lifecycle
+         administrator who looks after arrivals and departures has no
+         business reading a pay package, and "they can already see the
+         joining checklist" is not a reason to hand it over.
+
+         So: NO implied_ids from any lifecycle or people group in either
+         direction. Access is granted by name.
+
+         WHAT IS DIFFERENT FROM P6: the two facades here DO admit
+         `_is_admin()`, deliberately. An improvement plan is information
+         about a person that an administrator has no operational need for; a
+         payroll calendar and an award ledger are the pay team's operating
+         surfaces, and an administrator locked out of the pay calendar
+         cannot fix a payroll that is stuck. The employee's OWN page is a
+         portal route and is gated by the session user, not by either group.
+         ================================================================== -->
+
+    <record id="module_category_comp_ben" model="ir.module.category">
+        <field name="name">Pay Packages and Awards</field>
+        <field name="sequence">56</field>
+    </record>
+
+    <!-- Odoo 19: `res.groups` has no `category_id`; a privilege carries it. -->
+    <record id="res_groups_privilege_comp_ben" model="res.groups.privilege">
+        <field name="name">Pay Packages and Awards</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_comp_ben"/>
+    </record>
+
+    <record id="group_comp_user" model="res.groups">
+        <field name="name">Pay team — packages and awards</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_comp_ben"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Write pay packages, raise awards, read the payroll calendar and the benefit plans. Granted by name — it is not part of the general HR permissions.</field>
+    </record>
+
+    <record id="group_comp_head" model="res.groups">
+        <field name="name">Head of pay — packages and awards</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_comp_ben"/>
+        <field name="implied_ids" eval="[(4, ref('group_comp_user'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Adding
+             whoever happened to run the upgrade is the failure a ladder like
+             this exists to prevent. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Everything above, plus approving an award, putting awards into a pay run, and building the payroll calendar.</field>
+    </record>
+
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COMPANY. Global rules (no `groups`), ANDed with everything below.
+         ================================================================== -->
+
+    <record id="rule_comp_company" model="ir.rule">
+        <field name="name">Pay package: company</field>
+        <field name="model_id" ref="model_pb_employee_comp"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_comp_line_company" model="ir.rule">
+        <field name="name">Pay package line: company</field>
+        <field name="model_id" ref="model_pb_employee_comp_line"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_incentive_company" model="ir.rule">
+        <field name="name">Award: company</field>
+        <field name="model_id" ref="model_pb_incentive"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_calendar_company" model="ir.rule">
+        <field name="name">Payroll month: company</field>
+        <field name="model_id" ref="model_pb_payroll_calendar"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_plan_company" model="ir.rule">
+        <field name="name">Benefit plan: company</field>
+        <field name="model_id" ref="model_pb_benefit_plan"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_enrollment_company" model="ir.rule">
+        <field name="name">Benefit enrollment: company</field>
+        <field name="model_id" ref="model_pb_benefit_enrollment"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE PAY TEAM SEES EVERYTHING IN ITS COMPANIES. One rule per model,
+         so a reader who holds only this ladder is not left with an empty
+         screen because some other module's narrow rule was the only one
+         that applied to them.
+         ================================================================== -->
+
+    <record id="rule_comp_team" model="ir.rule">
+        <field name="name">Pay package: the pay team</field>
+        <field name="model_id" ref="model_pb_employee_comp"/>
+        <field name="groups" eval="[(4, ref('group_comp_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_incentive_team" model="ir.rule">
+        <field name="name">Award: the pay team</field>
+        <field name="model_id" ref="model_pb_incentive"/>
+        <field name="groups" eval="[(4, ref('group_comp_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- R60 BITES INSIDE A MODULE AS EASILY AS ACROSS ONE. Group rules are
+         ORed, but only over the rules that APPLY. Ship the narrow "my own"
+         rule below without this wide one beside it and the pay team has
+         exactly one applicable group rule — the narrow one — so a pay
+         administrator can read their OWN benefit enrollment and nobody
+         else's. Found live: `read` on the enrollment this phase had just
+         created was refused for uid 2. -->
+    <record id="rule_enrollment_team" model="ir.rule">
+        <field name="name">Benefit enrollment: the pay team</field>
+        <field name="model_id" ref="model_pb_benefit_enrollment"/>
+        <field name="groups" eval="[(4, ref('group_comp_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE LETTER, BORROWED FROM P0 — AND THIS RULE COMES IN A PAIR (R60).
+
+         Odoo ORs the group rules that apply to a user. P0 put only a GLOBAL
+         company rule on `pb.hr.letter`, so today a lifecycle manager reads
+         every letter in their companies. Adding a single narrow rule for
+         this module's group would REGRESS them: a lifecycle manager who is
+         also given the pay-team group would suddenly have exactly one
+         applicable group rule — the narrow one — and would lose sight of
+         every offer and confirmation letter in the company.
+
+         P6 shipped the same pair for the same model. Both narrow rules and
+         both wide ones are ORed, so a person holding both ladders sees the
+         union, which is what they saw before either existed.
+         ================================================================== -->
+
+    <record id="rule_letter_lifecycle_all_cb" model="ir.rule">
+        <field name="name">Letter: the lifecycle team (unchanged, from awards)</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_hr_letter"/>
+        <field name="groups" eval="[(4, ref('pb_lifecycle.group_lifecycle_user')), (4, ref('pb_lifecycle.group_lifecycle_manager')), (4, ref('pb_lifecycle.group_lifecycle_admin'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_letter_award_only" model="ir.rule">
+        <field name="name">Letter: award letters only</field>
+        <field name="model_id" ref="pb_lifecycle.model_pb_hr_letter"/>
+        <field name="groups" eval="[(4, ref('group_comp_user'))]"/>
+        <field name="domain_force">[('letter_type', '=', 'incentive')]</field>
+    </record>
+
+    <!-- ==================================================================
+         THE EMPLOYEE'S OWN ROWS.
+
+         `/my/compensation` reads under sudo behind a route that resolves the
+         employee from the SESSION, so these rules are not what makes the
+         page work, and there is deliberately NO portal ACL on any model here
+         — the route is the only door, exactly as P6 left `/my/growth`. What
+         these two rules cover is an INTERNAL user who reaches the models some
+         other way: they see their own package and nothing else.
+         ================================================================== -->
+
+    <record id="rule_comp_mine" model="ir.rule">
+        <field name="name">Pay package: my own</field>
+        <field name="model_id" ref="model_pb_employee_comp"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id), ('state', '=', 'active')]</field>
+    </record>
+
+    <record id="rule_enrollment_mine" model="ir.rule">
+        <field name="name">Benefit enrollment: my own</field>
+        <field name="model_id" ref="model_pb_benefit_enrollment"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+    </record>
+
+</data>
+</odoo>

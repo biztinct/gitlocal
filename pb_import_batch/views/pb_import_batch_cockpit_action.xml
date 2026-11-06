@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Read-friendly batch-detail cockpit. Opened by the landing with
+         params={batch_id}. The native form stays available as "Advanced form". -->
+    <record id="action_pb_import_batch_cockpit" model="ir.actions.client">
+        <field name="name">Import Batch</field>
+        <field name="tag">pb_import_batch_cockpit</field>
+    </record>
+</odoo>

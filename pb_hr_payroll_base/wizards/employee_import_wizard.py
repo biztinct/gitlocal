@@ -862,7 +862,8 @@ class EmployeeImportWizard(models.TransientModel):
             'name': _('Imported Employees'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.employee',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
+            'views': [[False, 'list'], [False, 'form']],
             'domain': [('country_id.code', '=', self.country_code)],
             'context': {'create': False},
         }

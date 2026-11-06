@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- The page reuses `pb_me_portal`'s .pbme kit — the same hero, the same
+       cards, the same empty state — so /my/assets looks like it was always
+       part of the employee's own area rather than bolted on. -->
+
+  <template id="portal_my_home_menu_assets" name="Assets portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="36">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'assets'" class="breadcrumb-item active">My Things</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_home_assets" name="Assets home card"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="24">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Things</t>
+        <t t-set="text">The laptop, phone and accounts you have been given</t>
+        <t t-set="url" t-value="'/my/assets'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'asset_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/assets                                                        -->
+  <!-- ================================================================= -->
+  <template id="portal_my_assets" name="My Things (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pba">
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My Things</t>
+          <t t-set="hero_sub">Everything the company has given you — and what is
+            already back.</t>
+        </t>
+
+        <div t-if="notice" class="pba-notice">
+          <t t-call="pb_me_portal.ess_icon">
+            <t t-set="icon" t-value="'check-circle'"/>
+          </t>
+          <span t-esc="notice"/>
+        </div>
+
+        <div t-if="unconfirmed" class="pba-ask">
+          <strong>Please check <t t-esc="unconfirmed"/> of these.</strong>
+          <span>Tap “Yes, I have it” so the record matches what is actually on
+            your desk. If something on this list is not with you, tell HR.</span>
+        </div>
+
+        <t t-if="not items and not extra_digital">
+          <div class="pbme-empty">
+            <div class="pbme-empty-ic">
+              <t t-call="pb_me_portal.ess_icon">
+                <t t-set="icon" t-value="'file-text'"/>
+                <t t-set="isz" t-value="26"/>
+              </t>
+            </div>
+            <h3>Nothing is out with you</h3>
+            <p>When the company gives you a laptop, a phone or an account, it
+               appears here with the date you got it.</p>
+          </div>
+        </t>
+
+        <div t-else="" class="pbme-grid pba-grid">
+          <t t-foreach="items" t-as="it">
+            <div class="pbme-card pba-card">
+              <div class="pba-card-top">
+                <span class="pba-kind" t-esc="it['category']"/>
+                <span t-if="it['confirmed']" class="pbme-badge pbme-badge--approved">Confirmed</span>
+                <span t-else="" class="pbme-badge pbme-badge--hr">Please check</span>
+              </div>
+              <div class="pba-name" t-esc="it['name']"/>
+              <div class="pba-code" t-esc="it['code']"/>
+              <div class="pba-kv">
+                <div t-if="it['serial']"><span>Serial / address</span><b t-esc="it['serial']"/></div>
+                <div t-if="it['model_name']"><span>Make and model</span><b t-esc="it['model_name']"/></div>
+                <div t-if="it['since']"><span>You have had it since</span><b t-esc="it['since']" t-options="{'widget': 'date'}"/></div>
+                <div t-if="it['condition_out']"><span>Condition when given</span><b t-esc="it['condition_out']"/></div>
+              </div>
+              <form t-if="not it['confirmed'] and it['id']" method="post"
+                    t-attf-action="/my/assets/confirm/{{ it['id'] }}"
+                    class="pba-act">
+                <input type="hidden" name="csrf_token"
+                       t-att-value="request.csrf_token()"/>
+                <button type="submit" class="pbme-btn">Yes, I have it</button>
+              </form>
+            </div>
+          </t>
+          <t t-foreach="extra_digital" t-as="it">
+            <div class="pbme-card pba-card">
+              <div class="pba-card-top">
+                <span class="pba-kind" t-esc="it['category']"/>
+                <span class="pbme-badge pbme-badge--approved">Active</span>
+              </div>
+              <div class="pba-name" t-esc="it['name']"/>
+              <div class="pba-code" t-esc="it['code']"/>
+              <div class="pba-kv">
+                <div t-if="it['serial']"><span>Address</span><b t-esc="it['serial']"/></div>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <t t-if="past">
+          <h2 class="pbme-h">Already back</h2>
+          <div class="pbme-doc-list">
+            <t t-foreach="past" t-as="it">
+              <div class="pbme-doc-row">
+                <div class="pbme-doc-main">
+                  <div class="pbme-doc-name">
+                    <t t-esc="it['name']"/>
+                    <span class="pba-code-inline" t-esc="it['code']"/>
+                  </div>
+                  <div class="pbme-doc-meta">
+                    <t t-esc="it['category']"/>
+                    <t t-if="it['since']"> · from <t t-esc="it['since']" t-options="{'widget': 'date'}"/></t>
+                    <t t-if="it['until']"> to <t t-esc="it['until']" t-options="{'widget': 'date'}"/></t>
+                    <t t-if="it['condition_in']"> · came back: <t t-esc="it['condition_in']"/></t>
+                  </div>
+                </div>
+              </div>
+            </t>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

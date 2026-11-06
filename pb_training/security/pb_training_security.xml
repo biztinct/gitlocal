@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ITS OWN LADDER, WIRED INTO THE TWO ENGINES RATHER THAN BESIDE THEM.
+
+         This module owns no model. Every row it reads and writes belongs to
+         the content engine (courses, lessons, memberships) or to the test
+         engine (tests, questions, attempts), and both already ship a
+         permission system over their own tables. Two permission systems over
+         one set of records is a permission system nobody can reason about —
+         so a Payobook training tier IMPLIES the engine tier it needs, and the
+         engines keep enforcing their own rules underneath.
+
+         That is also why there is no `ir.model.access.csv` here and no record
+         rule: a rule of ours ORed beside theirs would silently narrow
+         somebody who holds both (R60), and there is no model of ours for it
+         to be about.
+
+         NO `&` IN A PRIVILEGE NAME, EVER (R124). Odoo 19 builds the user
+         form's access-rights arch by embedding privilege names into
+         `<group string="…">` without escaping, and one ampersand makes
+         opening ANY user from Settings crash.
+         ================================================================== -->
+
+    <record id="module_category_training" model="ir.module.category">
+        <field name="name">Training</field>
+        <field name="sequence">57</field>
+    </record>
+
+    <!-- Odoo 19 pattern: `res.groups` has no `category_id`; a privilege
+         record carries it instead. -->
+    <record id="res_groups_privilege_training" model="res.groups.privilege">
+        <field name="name">Training</field>
+        <field name="sequence">10</field>
+        <field name="category_id" ref="module_category_training"/>
+    </record>
+
+    <record id="group_training_user" model="res.groups">
+        <field name="name">Trainer</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_training"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('website_slides.group_website_slides_officer')), (4, ref('survey.group_survey_user'))]"/>
+        <field name="comment">Write courses and lessons, write tests, and put people on a course. This is the group the training board is for.</field>
+    </record>
+
+    <record id="group_training_manager" model="res.groups">
+        <field name="name">Training manager</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_training"/>
+        <field name="implied_ids" eval="[(4, ref('group_training_user')), (4, ref('website_slides.group_website_slides_manager')), (4, ref('survey.group_survey_manager'))]"/>
+        <field name="comment">Everything above, plus every course and every test in the company whoever wrote it, and the results behind them.</field>
+    </record>
+
+    <record id="group_training_admin" model="res.groups">
+        <field name="name">Head of training</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_training"/>
+        <field name="implied_ids" eval="[(4, ref('group_training_manager'))]"/>
+        <!-- The two built-in administrator accounts and NOBODY ELSE. Every
+             other person is added by a human, on purpose. -->
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">Everything above, plus the switches: whether the built-in course site is open to people who are not staff, and whether a finished course sends an email.</field>
+    </record>
+
+</odoo>

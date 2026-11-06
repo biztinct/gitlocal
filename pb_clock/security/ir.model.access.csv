@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_clock_punch_officer,pb.clock.punch officer,model_pb_clock_punch,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_clock_punch_manager,pb.clock.punch manager,model_pb_clock_punch,hr_attendance.group_hr_attendance_manager,1,1,1,0
+access_pb_clock_punch_system,pb.clock.punch system,model_pb_clock_punch,base.group_system,1,1,1,1
+access_pb_clock_device_officer,pb.clock.device officer,model_pb_clock_device,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_clock_device_manager,pb.clock.device manager,model_pb_clock_device,hr_attendance.group_hr_attendance_manager,1,1,1,0
+access_pb_clock_device_system,pb.clock.device system,model_pb_clock_device,base.group_system,1,1,1,1
+access_pb_clock_command_officer,pb.clock.command officer,model_pb_clock_command,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_clock_command_system,pb.clock.command system,model_pb_clock_command,base.group_system,1,1,1,1
+access_pb_clock_alert_officer,pb.clock.alert officer,model_pb_clock_alert,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_clock_alert_system,pb.clock.alert system,model_pb_clock_alert,base.group_system,1,1,1,1

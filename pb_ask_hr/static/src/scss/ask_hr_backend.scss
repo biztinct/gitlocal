@@ -1,0 +1,41 @@
+// =====================================================================
+//  Ask HR — the HR queue's kanban cards (TIERS T3a). Kit tokens only
+//  ($pbim-* from pb_import_kit's backend bundle), flat colour, no
+//  gradients. Grey at rest; amber only when a question has waited 2+ days.
+// =====================================================================
+
+.o_kanban_view.pbah-kanban {
+    .o_kanban_record.pbah-card,
+    .pbah-card {
+        display: flex; flex-direction: column; gap: 8px;
+        padding: 12px 14px;
+        border-radius: $pbim-r-sm;
+    }
+    .pbah-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .pbah-card-num {
+        font-size: 11px; font-weight: 800; letter-spacing: .06em; color: $pbim-muted;
+        font-variant-numeric: tabular-nums;
+    }
+    .pbah-age {
+        font-size: 11px; font-weight: 700; color: $pbim-muted; white-space: nowrap;
+        &.is-late { color: $pbim-amber; }
+    }
+    .pbah-card-subject {
+        font-size: 14px; font-weight: 700; color: $pbim-ink; line-height: 1.35;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .pbah-card-person { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 12.5px; color: $pbim-text; }
+    .pbah-card-av { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; flex: none; background: $pbim-soft; }
+    .pbah-card-emp { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbah-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; }
+    .pbah-card-actions { display: flex; align-items: center; gap: 8px; }
+    .pbah-take { padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .pbah-chip {
+        display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px;
+        font-size: 11px; font-weight: 700; background: $pbim-slate-soft; color: $pbim-slate;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;
+    }
+}
+
+// the form's one-line instruction under the title
+.pbah-form-hint { font-size: 13px; }

@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payobook Formula Engine — Product Vision</title>
+<style>
+  :root{
+    --ink:#1E1B2E; --muted:#5D5A72; --faint:#8B88A0;
+    --i:#5A4BB0; --i-deep:#241F52; --i-soft:#EDEAF8; --i-soft2:#DDD6F2; --i-border:#CBC2EE;
+    --bg:#F7F7FC; --card:#FFFFFF; --line:#E4E4F0; --line-soft:#EFEFF7;
+    --green:#0F8A63; --green-soft:#E3F4EE; --amber:#B7791F; --amber-soft:#FBF1DE;
+    --cyan:#0E7490; --cyan-soft:#E0F2F7; --red:#DC2626; --red-soft:#FDE8E8;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important;transition:none!important}}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--i-soft2)}
+
+  /* ---------- chapter rail ---------- */
+  .rail{position:fixed;top:0;left:0;bottom:0;width:232px;background:var(--card);border-right:1px solid var(--line);padding:26px 0 20px;overflow-y:auto;z-index:50}
+  .rail .brand{display:flex;align-items:center;gap:10px;padding:0 20px 20px;border-bottom:1px solid var(--line-soft);margin-bottom:14px}
+  .rail .brand .pmark{width:32px;height:32px;border-radius:9px;background:var(--i-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+  .rail .brand b{font-size:14px;letter-spacing:-0.01em}
+  .rail .brand span{display:block;font-size:11px;color:var(--faint);font-weight:500;margin-top:1px}
+  .rail a{display:flex;align-items:baseline;gap:10px;padding:7px 20px;font-size:13px;color:var(--muted);text-decoration:none;border-left:2.5px solid transparent}
+  .rail a .n{font-family:var(--mono);font-size:10.5px;color:var(--faint);min-width:18px}
+  .rail a:hover{background:var(--bg);color:var(--ink)}
+  .rail a.on{border-left-color:var(--i);color:var(--i);font-weight:600;background:var(--i-soft)}
+  .rail a.on .n{color:var(--i)}
+  .rail .grp{padding:16px 20px 5px;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--faint)}
+  .railtoggle{display:none}
+  @media(max-width:1080px){
+    .rail{display:none}
+    .railtoggle{display:flex;position:fixed;top:14px;right:14px;z-index:60;width:40px;height:40px;border-radius:10px;background:var(--i-deep);color:#fff;border:none;align-items:center;justify-content:center;cursor:pointer}
+    .rail.open{display:block;width:min(300px,84vw);box-shadow:0 10px 40px rgba(30,27,46,.25)}
+    main{margin-left:0!important;padding:0 18px!important}
+  }
+
+  main{margin-left:232px;padding:0 48px;max-width:1120px}
+  .wrap{max-width:880px}
+
+  /* ---------- type ---------- */
+  h1{font-size:clamp(34px,4.6vw,52px);line-height:1.06;letter-spacing:-0.035em;font-weight:800;margin:0 0 18px;text-wrap:balance}
+  h2{font-size:28px;letter-spacing:-0.025em;font-weight:800;margin:0 0 6px;text-wrap:balance}
+  h3{font-size:19px;letter-spacing:-0.015em;font-weight:700;margin:34px 0 10px}
+  h4{font-size:15px;font-weight:700;margin:22px 0 8px}
+  p{max-width:70ch;margin:0 0 14px}
+  .lead{font-size:18.5px;line-height:1.6;color:var(--muted);max-width:64ch}
+  .eyebrow{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--i);margin:0 0 14px}
+  .eyebrow .n{font-family:var(--mono);background:var(--i-soft);border:1px solid var(--i-border);border-radius:6px;padding:2px 7px;letter-spacing:0.05em}
+  section{padding:74px 0 10px;border-bottom:1px solid var(--line);scroll-margin-top:20px}
+  section:last-of-type{border-bottom:none}
+  code,.code{font-family:var(--mono);font-size:0.86em;background:var(--i-soft);border:1px solid var(--line);border-radius:5px;padding:1px 5px;white-space:nowrap}
+  .muted{color:var(--muted)}
+  .small{font-size:13px}
+
+  /* ---------- shared components ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 10px;white-space:nowrap}
+  .pill.green{background:var(--green-soft);color:var(--green)}
+  .pill.amber{background:var(--amber-soft);color:var(--amber)}
+  .pill.cyan{background:var(--cyan-soft);color:var(--cyan)}
+  .pill.red{background:var(--red-soft);color:var(--red)}
+  .pill.indigo{background:var(--i-soft);color:var(--i)}
+  .pill.gray{background:var(--line-soft);color:var(--muted)}
+  .ic{width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .ic.lg{width:22px;height:22px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th{text-align:left;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);font-weight:700;padding:8px 12px;border-bottom:2px solid var(--line);white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .tblwrap table{min-width:640px}
+  .tblwrap td:first-child,.tblwrap th:first-child{padding-left:16px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 56px;border-bottom:1px solid var(--line)}
+  .hero .tag{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--i-border);color:var(--i);border-radius:99px;font-size:12px;font-weight:600;padding:5px 13px;margin-bottom:22px}
+  .hero h1 em{font-style:normal;color:var(--i)}
+  .hero .sheetline{margin:34px 0 0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .hero .sheetline .bar{display:flex;align-items:center;gap:10px;background:var(--i-deep);color:#fff;padding:9px 14px;font-size:12px;font-weight:600}
+  .hero .sheetline .bar .fx{font-family:var(--mono);opacity:.75;font-weight:500}
+  .hero .sheetline .formula{font-family:var(--mono);font-size:14px;padding:13px 16px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;overflow-x:auto}
+  .tk{border-radius:5px;padding:1.5px 6px;white-space:nowrap}
+  .tk.fn{color:var(--i);font-weight:700}
+  .tk.ref{background:var(--i-soft);border:1px solid var(--i-border);color:var(--i-deep);font-weight:600}
+  .tk.ref.amb{background:var(--amber-soft);border-color:#E7CFA0;color:var(--amber)}
+  .tk.ref.cy{background:var(--cyan-soft);border-color:#B3DCE7;color:var(--cyan)}
+  .tk.num{color:var(--cyan)}
+  .tk.op{color:var(--faint)}
+  .hero .caption{font-size:12.5px;color:var(--faint);padding:0 16px 13px}
+
+  /* ---------- pillars ---------- */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 8px}
+  @media(max-width:900px){.pillars{grid-template-columns:1fr}}
+  .pillar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px}
+  .pillar .ph{display:flex;align-items:center;gap:10px}
+  .pillar .ph .pi{width:34px;height:34px;border-radius:9px;background:var(--i-soft);color:var(--i);display:flex;align-items:center;justify-content:center;flex:none}
+  .pillar b{font-size:14.5px;letter-spacing:-0.01em}
+  .pillar p{font-size:13px;color:var(--muted);margin:0}
+  .pillar .pn{font-family:var(--mono);font-size:10px;color:var(--faint)}
+
+  /* ---------- mock chrome ---------- */
+  .mock{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:20px 0;box-shadow:0 1px 2px rgba(30,27,46,.04)}
+  .mock .mbar{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#FBFBFE;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .mock .mbar .dots{display:flex;gap:5px}
+  .mock .mbar .dots i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+  .mock .mbar b{color:var(--ink);font-size:12.5px}
+  .mock .mbar .spacer{flex:1}
+  .mockcap{font-size:12.5px;color:var(--faint);margin:-10px 0 24px;max-width:75ch}
+
+  /* grid studio mock */
+  .gs{overflow-x:auto}
+  .gs table{border-collapse:separate;border-spacing:0;font-size:12px;min-width:820px;width:100%}
+  .gs th,.gs td{border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft);padding:6px 10px;text-transform:none;letter-spacing:0}
+  .gs thead th{background:#FBFBFE;font-family:var(--mono);font-size:10.5px;color:var(--faint);text-align:center;padding:5px}
+  .gs thead th .cc{display:block;font-family:var(--sans);font-size:11px;font-weight:700;color:var(--ink);letter-spacing:0}
+  .gs tbody th{background:#FBFBFE;font-size:10.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:0.08em;text-align:left;padding:6px 12px;white-space:nowrap}
+  .gs td{font-family:var(--mono);font-size:11.5px;white-space:nowrap;background:var(--card)}
+  .gs td.name{font-family:var(--sans);font-weight:600;font-size:12px}
+  .gs td.cat{font-family:var(--sans)}
+  .gs td.up{background:var(--amber-soft)}
+  .gs td.down{background:var(--cyan-soft)}
+  .gs td.sel{outline:2px solid var(--i);outline-offset:-2px;background:var(--i-soft);position:relative}
+  .gs td.err{position:relative}
+  .gs td.err::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 8px 8px 0;border-color:transparent var(--red) transparent transparent}
+  .gs .valrow td{color:var(--green);font-weight:600}
+  .gs .fbar{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;background:var(--card)}
+  .gs .fbar .cellref{background:var(--i-soft);border:1px solid var(--i-border);border-radius:6px;padding:2px 9px;font-weight:700;color:var(--i-deep);font-size:11.5px}
+  .gs .legend{display:flex;flex-wrap:wrap;gap:14px;padding:10px 14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);background:#FBFBFE}
+  .gs .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+  /* mapping canvas mock */
+  .mapc{position:relative;display:grid;grid-template-columns:1fr 90px 1fr;gap:0;padding:18px}
+  .mapc .colhead{font-size:10.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+  .mapc .plug{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12.5px;font-weight:600;margin-bottom:8px}
+  .mapc .plug .sub{display:block;font-family:var(--mono);font-size:10.5px;color:var(--faint);font-weight:500}
+  .mapc .plug.hot{border-color:var(--i-border);background:var(--i-soft)}
+  .mapc svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .mapc .conf{position:absolute;font-size:10px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:1px 7px;color:var(--green)}
+
+  /* confidence gauge */
+  .gauge{display:flex;gap:22px;align-items:center;flex-wrap:wrap;padding:20px}
+  .gauge .ringwrap{position:relative;width:120px;height:120px;flex:none}
+  .gauge .ringwrap svg{transform:rotate(-90deg)}
+  .gauge .ringwrap .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:24px;letter-spacing:-0.02em}
+  .gauge .ringwrap .val span{font-size:10px;font-weight:600;color:var(--faint);letter-spacing:0.08em;text-transform:uppercase}
+  .gauge .breakdown{flex:1;min-width:260px}
+  .gauge .brow{display:grid;grid-template-columns:170px 1fr 46px;gap:10px;align-items:center;font-size:12.5px;margin-bottom:8px}
+  .gauge .brow .track{height:7px;border-radius:99px;background:var(--line-soft);overflow:hidden}
+  .gauge .brow .fill{height:100%;border-radius:99px;background:var(--i)}
+  .gauge .brow .pct{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:right}
+
+  /* payslip studio mock */
+  .pslip{display:grid;grid-template-columns:220px 1fr;gap:0}
+  @media(max-width:760px){.pslip{grid-template-columns:1fr}}
+  .pslip .tray{border-right:1px solid var(--line);padding:14px;background:#FBFBFE}
+  .pslip .tray .traylabel{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin:10px 0 7px}
+  .pslip .chip{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-bottom:6px;cursor:grab}
+  .pslip .chip .cl{font-family:var(--mono);font-size:9.5px;background:var(--i-soft);color:var(--i);border-radius:4px;padding:1px 5px;font-weight:700}
+  .pslip .canvas{padding:18px 22px}
+  .pslip .sec{border:1px dashed var(--i-border);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+  .pslip .sec .sh{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+  .pslip .line{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--line-soft)}
+  .pslip .line:last-child{border-bottom:none}
+  .pslip .line .amt{font-family:var(--mono);font-size:12.5px}
+  .pslip .sec.earn .sh{color:var(--green)}
+  .pslip .sec.ded .sh{color:var(--red)}
+  .pslip .sec.net{border-style:solid;background:var(--i-soft);border-color:var(--i-border)}
+  .pslip .sec.net .line{font-weight:800;border:none}
+  .pslip .viz{font-size:10.5px;color:var(--faint)}
+
+  /* teardown */
+  .steal td:first-child{font-weight:600;white-space:nowrap}
+  .steal td:nth-child(2){color:var(--muted)}
+
+  /* capability matrix */
+  .capmx td:nth-child(n+2){text-align:center}
+  .capmx .dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+  .capmx .dot.full{background:var(--green)}
+  .capmx .dot.part{background:var(--amber)}
+  .capmx .dot.none{background:var(--line);border:1px solid var(--line)}
+
+  /* wow table */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 12px;align-items:center}
+  .toolbar input[type=search]{flex:1;min-width:180px;border:1.5px solid var(--line);border-radius:10px;padding:8px 13px;font-size:13.5px;font-family:var(--sans);background:var(--card);color:var(--ink)}
+  .toolbar input[type=search]:focus{outline:none;border-color:var(--i)}
+  .fbtn{border:1.5px solid var(--line);background:var(--card);color:var(--muted);border-radius:99px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .fbtn:hover{border-color:var(--i-border);color:var(--i)}
+  .fbtn.on{background:var(--i-deep);border-color:var(--i-deep);color:#fff}
+  .fbtn:focus-visible,.rail a:focus-visible,button:focus-visible{outline:2.5px solid var(--i);outline-offset:2px}
+  .fsep{width:1px;align-self:stretch;background:var(--line);margin:2px 4px}
+  .fbtn-st{display:inline-flex;align-items:center;gap:6px}
+  .fbtn-st::before{content:"";width:8px;height:8px;border-radius:99px;background:var(--muted)}
+  .fbtn-st.done::before{background:var(--green)} .fbtn-st.part::before{background:var(--amber)} .fbtn-st.todo::before{background:var(--faint)}
+  .stpill{font-variant-numeric:tabular-nums}
+  #wowtable tr.st-todo td:nth-child(2) b{color:var(--muted)}
+  #wowtable tr.st-todo{background:linear-gradient(var(--line-soft),var(--line-soft))}
+  #wowtable tr.st-part{background:color-mix(in srgb,var(--amber-soft) 35%,transparent)}
+  #wowtable th{cursor:pointer;user-select:none}
+  #wowtable th:hover{color:var(--i)}
+  #wowtable td:first-child{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  #wowtable td:nth-child(2){min-width:290px}
+  #wowtable td:nth-child(2) b{display:block;font-size:13px}
+  #wowtable td:nth-child(2) span{font-size:12px;color:var(--muted)}
+  .score{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;min-width:26px;text-align:center}
+  .s5,.s4{background:var(--green-soft);color:var(--green)}
+  .s3{background:var(--amber-soft);color:var(--amber)}
+  .s2,.s1{background:var(--line-soft);color:var(--muted)}
+  .count{font-size:12.5px;color:var(--faint);margin-left:auto}
+
+  /* roadmap */
+  .tier{margin:22px 0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+  .tier .th{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .tier .th .tn{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .tier .th b{font-size:15px}
+  .tier .th .when{margin-left:auto;font-size:12px;color:var(--faint)}
+  .tier ul{margin:0;padding:12px 18px 14px 34px;columns:2;column-gap:36px;font-size:13.5px}
+  .tier ul li{margin-bottom:7px;break-inside:avoid}
+  @media(max-width:800px){.tier ul{columns:1}}
+  .tier.t1 .th{background:var(--green-soft)} .tier.t2 .th{background:var(--cyan-soft)}
+  .tier.t3 .th{background:var(--i-soft)} .tier.t4 .th{background:var(--amber-soft)}
+
+  /* phase 1 */
+  .steps{counter-reset:st;margin:18px 0}
+  .step{display:grid;grid-template-columns:44px 1fr;gap:14px;margin-bottom:16px}
+  .step .sn{counter-increment:st;width:34px;height:34px;border-radius:50%;background:var(--i-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .step .sn::before{content:counter(st)}
+  .step b{display:block;font-size:14.5px}
+  .step p{font-size:13.5px;color:var(--muted);margin:4px 0 0}
+  .step .eff{font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+  footer{padding:40px 0 60px;font-size:12.5px;color:var(--faint)}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h6"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7 15h10"/></symbol>
+  </defs>
+</svg>
+
+<button class="railtoggle" onclick="document.querySelector('.rail').classList.toggle('open')" aria-label="Toggle navigation"><svg class="ic lg"><use href="#i-menu"/></svg></button>
+
+<nav class="rail" aria-label="Chapters">
+  <div class="brand">
+    <div class="pmark">P</div>
+    <div><b>Payobook</b><span>Formula Engine Vision</span></div>
+  </div>
+  <a href="#thesis" class="on"><span class="n">01</span> The thesis</a>
+  <a href="#teardown"><span class="n">02</span> Competitive teardown</a>
+  <div class="grp">The three studios</div>
+  <a href="#formula-studio"><span class="n">03</span> Formula Studio, next level</a>
+  <a href="#grid-studio"><span class="n">04</span> Grid Studio</a>
+  <a href="#payslip-studio"><span class="n">05</span> Payslip Studio</a>
+  <div class="grp">Intelligence &amp; trust</div>
+  <a href="#intelligence"><span class="n">06</span> Formula Intelligence</a>
+  <a href="#migration"><span class="n">07</span> Migration Confidence</a>
+  <a href="#mapping"><span class="n">08</span> Mapping Canvas</a>
+  <a href="#payai"><span class="n">09</span> PayAI everywhere</a>
+  <a href="#trust"><span class="n">10</span> Trust Layer</a>
+  <div class="grp">The catalogue</div>
+  <a href="#features"><span class="n">11</span> 114 WOW features</a>
+  <a href="#gaps"><span class="n">12</span> Table-stakes gaps</a>
+  <a href="#roadmap"><span class="n">13</span> Roadmap</a>
+  <a href="#phase1"><span class="n">14</span> Phase-1 build plan</a>
+</nav>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <header class="hero wrap" id="thesis">
+    <span class="tag"><svg class="ic"><use href="#i-sparkles"/></svg> Product vision · Formula Engine · July 2026</span>
+    <h1>Your Excel <em>is</em> the configuration.</h1>
+    <p class="lead">Every payroll platform on earth asks the customer to abandon the spreadsheet that already runs their payroll and re-express it in a proprietary rule builder. Payobook does the opposite: we take the client's working Excel and make it a living, intelligent, audited system — same mental model, superpowers added. Nothing to re-learn, almost nothing to re-work.</p>
+    <div class="sheetline">
+      <div class="bar"><svg class="ic"><use href="#i-grid"/></svg> Formula Bar <span class="fx">fx</span><span style="margin-left:auto;opacity:.7">PIT — Personal Income Tax · Column T</span></div>
+      <div class="formula">
+        <span class="tk op">=</span><span class="tk fn">MAX</span><span class="tk op">(</span><span class="tk num">0</span><span class="tk op">,</span>
+        <span class="tk op">(</span><span class="tk ref amb">Q · TAXABLE</span><span class="tk op">−</span><span class="tk ref amb">R · DEDUCTFAM</span><span class="tk op">)</span>
+        <span class="tk op">×</span><span class="tk ref cy">S · TAXRATE</span><span class="tk op">)</span>
+      </div>
+      <div class="caption">The exact formula the client wrote in Excel — now typed, traced, validated and explained. Amber = upstream inputs, cyan = rate table. One click shows everything it touches.</div>
+    </div>
+
+    <h3 style="margin-top:44px">Six pillars</h3>
+    <div class="pillars">
+      <div class="pillar"><div class="ph"><div class="pi"><svg class="ic"><use href="#i-grid"/></svg></div><b>Grid Studio</b></div><p>A full-screen spreadsheet that understands payroll: typed cells, dependency tinting, live sample values, keyboard-first everything.</p><span class="pn">PILLAR 1 · CH 04</span></div>
+      <div class="pillar"><div class="ph"><div class="pi"><svg class="ic"><use href="#i-eye"/></svg></div><b>Formula Intelligence</b></div><p>An X-ray layer over the formula graph: impact analysis, execution replay, circular-ref explainers. Deterministic — works offline.</p><span class="pn">PILLAR 2 · CH 06</span></div>
+      <div class="pillar"><div class="ph"><div class="pi"><svg class="ic"><use href="#i-shield"/></svg></div><b>Migration Confidence</b></div><p>The industry first: recompute the client's own historical payroll and prove, cell by cell, that the import is faithful.</p><span class="pn">PILLAR 3 · CH 07</span></div>
+      <div class="pillar"><div class="ph"><div class="pi"><svg class="ic"><use href="#i-sparkles"/></svg></div><b>PayAI everywhere</b></div><p>Explain, draft, review and document formulas with a cloud LLM — degrading gracefully to local models or deterministic logic.</p><span class="pn">PILLAR 4 · CH 09</span></div>
+      <div class="pillar"><div class="ph"><div class="pi"><svg class="ic"><use href="#i-map"/></svg></div><b>Mapping Canvas</b></div><p>One visual "wire the plugs" language for every mapping: Excel columns, API fields, mid→end cycles, employee→scheme.</p><span class="pn">PILLAR 5 · CH 08</span></div>
+      <div class="pillar"><div class="ph"><div class="pi"><svg class="ic"><use href="#i-history"/></svg></div><b>Trust Layer</b></div><p>Version history with visual diff, scenario sandboxes, simulate-before-activate, sign-off workflow, auto-written audit narrative.</p><span class="pn">PILLAR 6 · CH 10</span></div>
+    </div>
+
+    <h3>Who it's for</h3>
+    <div class="grid3">
+      <div class="card"><b class="small" style="font-size:13.5px">Implementation consultant</b><p class="small muted" style="margin-top:6px">Hero flows: single-drop Excel import, mapping canvas, Shadow Parallel Run. Goal: a faithful migration in days, provable to the client.</p></div>
+      <div class="card"><b class="small" style="font-size:13.5px">In-house payroll manager</b><p class="small muted" style="margin-top:6px">Hero flows: plain-language explanations, simulate-before-activate, version diffs. Goal: change a rate without fear, three days before payday.</p></div>
+      <div class="card"><b class="small" style="font-size:13.5px">Payroll bureau</b><p class="small muted" style="margin-top:6px">Hero flows: config templates, cross-client cloning, legislation packs, per-client health scores. Goal: run fifty clients with one team.</p></div>
+    </div>
+  </header>
+
+  <!-- ============ TEARDOWN ============ -->
+  <section class="wrap" id="teardown">
+    <div class="eyebrow"><span class="n">02</span> Competitive teardown</div>
+    <h2>What we steal, and where everyone fails</h2>
+    <p class="lead">The best configuration experiences ever built were not built for payroll. Payroll platforms, meanwhile, universally treat configuration as a consultant-gated back office of forms. Both facts are opportunities.</p>
+
+    <h3>Concepts worth stealing</h3>
+    <div class="tblwrap"><table class="steal">
+      <thead><tr><th>Source</th><th>The concept</th><th>Applied to payroll</th></tr></thead>
+      <tbody>
+        <tr><td>Excel</td><td>Formula auditing: trace precedents/dependents, F9 to evaluate a sub-expression</td><td>Dependency tinting in the grid; click any part of a formula to see its live value for the selected employee</td></tr>
+        <tr><td>Excel</td><td>Drag-fill and relative references</td><td>Fill a formula pattern across components with server-side reference translation and a ghost preview before commit</td></tr>
+        <tr><td>Google Sheets</td><td>Presence + comments anchored to cells</td><td>Reviewer annotations pinned to specific formulas; see who is editing which component</td></tr>
+        <tr><td>Notion</td><td>Everything is a block; slash-command insertion</td><td><code>/</code> in any formula cell inserts components, brackets, rate tables; formula docs live beside the formula, not in a wiki</td></tr>
+        <tr><td>Figma</td><td>Multiplayer on one canvas; components &amp; variants</td><td>A payslip scheme is a component with country variants; edit the master, variants inherit with visible overrides</td></tr>
+        <tr><td>Linear</td><td>Command palette; keyboard-first; opinionated speed</td><td><code>⌘K</code> jumps to any component, runs any action ("simulate June", "explain PIT") without touching the mouse</td></tr>
+        <tr><td>Airtable</td><td>Typed fields with rich cell editors</td><td>Cells aren't strings: currency cells, percent cells, bracket-table cells, component-reference cells with pickers</td></tr>
+        <tr><td>Miro / LucidChart</td><td>Spatial thinking; wires between things</td><td>The Mapping Canvas: every mapping problem becomes "draw a wire from left to right", with auto-suggested wires</td></tr>
+        <tr><td>Power BI / Tableau</td><td>Drill-down from aggregate to record</td><td>Payrun delta histogram → click a bar → the 14 employees in it → one payslip → the formula step that moved</td></tr>
+        <tr><td>VS Code / JetBrains</td><td>Problems panel, refactoring, go-to-definition, git lens</td><td>A Problems rail for the whole config; rename-component refactors every referencing formula; blame per formula</td></tr>
+        <tr><td>Obsidian</td><td>The graph view of linked notes</td><td>The formula graph as a first-class navigation surface, not a diagram bolted onto a form</td></tr>
+        <tr><td>OpenAI / Claude apps</td><td>Conversation as an interface to structured tools</td><td>PayAI drafts formulas, reviews imports and narrates payrun anomalies — always grounded in the deterministic engine</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Where the payroll incumbents stand</h3>
+    <div class="tblwrap"><table class="steal">
+      <thead><tr><th>Platform</th><th>Genuinely good at</th><th>Universal failure we exploit</th></tr></thead>
+      <tbody>
+        <tr><td>Workday / Oracle HCM / SAP SF</td><td>Depth of legislation coverage, global scale, eligibility engines</td><td>Calculation rules live in opaque back-end objects; a rate change is a consulting ticket, not an edit</td></tr>
+        <tr><td>Dayforce / ADP / Ceridian</td><td>Continuous calculation, compliance updates, bureau operations</td><td>Configuration UX is decades of accumulated forms; no one can see *why* a number is what it is</td></tr>
+        <tr><td>Rippling / Gusto</td><td>Onboarding polish, self-serve for simple US payroll</td><td>Simple because rules are hard-coded; collapses on VN/ID/IN-style formula-heavy legislation</td></tr>
+        <tr><td>Employment Hero / Xero / MYOB / QuickBooks</td><td>SMB price point, accountant familiarity</td><td>Custom pay logic = CSV gymnastics or "not supported"</td></tr>
+        <tr><td>Paylocity / Paychex</td><td>Service model, US tax filing</td><td>The spreadsheet the client actually trusts stays *outside* the product forever</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:16px"><b>The unexplored opportunity, stated once:</b> nobody in the industry treats the customer's existing Excel as the source of truth to be imported, verified against history, and then <em>improved in place</em>. Everyone imports data; nobody imports <em>logic</em> — with proof. That is the moat, and every chapter that follows is built on it.</p>
+  </section>
+
+  <!-- ============ FORMULA STUDIO ============ -->
+  <section class="wrap" id="formula-studio">
+    <div class="eyebrow"><span class="n">03</span> The three studios · 1 of 3</div>
+    <h2>Formula Studio, next level</h2>
+    <p class="lead">The Cards view stays — it is the best narrative surface for understanding one component deeply. It gains the things power users miss and the things reviewers need. Cards, Grid and Payslip are three lenses on the same <code>hr.formula.rule</code> graph: edit in any, all update.</p>
+
+    <div class="grid2">
+      <div class="card"><h4 style="margin-top:0">Raw-Excel mode</h4><p class="small muted">A toggle on every card: chips ⇄ raw Excel text with syntax highlighting and the same 260 ms live validation. Consultants who think in Excel type Excel; the chips remain the default for everyone else. Both write to the same <code>excel_formula</code>.</p></div>
+      <div class="card"><h4 style="margin-top:0">Command palette (⌘K)</h4><p class="small muted">Jump to any component by code or name, switch configs, run actions: "explain PIT", "simulate June", "show unused", "diff v12 v13". The Linear lesson: speed is a feature senior users choose products for.</p></div>
+      <div class="card"><h4 style="margin-top:0">Find &amp; replace across the config</h4><p class="small muted">Search formulas, names and codes; replace with preview of every affected formula. Rename-component is a refactor: every reference updates atomically or not at all.</p></div>
+      <div class="card"><h4 style="margin-top:0">Version rail on every card</h4><p class="small muted">The card's right edge shows its history: who changed it, when, and a one-line AI summary ("bracket 2 rate 10% → 12%"). Click to see the visual diff or restore.</p></div>
+      <div class="card"><h4 style="margin-top:0">Inline docs &amp; legislation links</h4><p class="small muted">Notion-style: each component carries a description block, worked example, and a link to the circular/decree it implements. Docs export to the client handbook automatically.</p></div>
+      <div class="card"><h4 style="margin-top:0">Problems rail</h4><p class="small muted">IDE-style panel aggregating every error, warning and lint across the config: circular refs, unused components, hardcoded magic numbers, components that never reach a payslip. Click-to-fix where deterministic.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ GRID STUDIO ============ -->
+  <section id="grid-studio">
+    <div class="wrap">
+      <div class="eyebrow"><span class="n">04</span> The three studios · 2 of 3</div>
+      <h2>Grid Studio: the spreadsheet that understands payroll</h2>
+      <p class="lead">Full-screen, keyboard-first, Excel-superset. The client's sheet, alive. Below: the actual layout — components as columns (exactly as they arrived from Excel), property rows frozen on the left, and a live value row computed for a real sample employee.</p>
+    </div>
+
+    <div class="mock">
+      <div class="mbar"><div class="dots"><i></i><i></i><i></i></div><b>Grid Studio</b> · VN Office — End-cycle config <span class="spacer"></span><span class="pill green"><svg class="ic" style="width:12px;height:12px"><use href="#i-check"/></svg> Active</span><span class="pill indigo">Sample: Nguyễn Thị Mai</span></div>
+      <div class="gs">
+        <div class="fbar"><span class="cellref">T · PIT</span><span style="color:var(--faint)">fx</span>
+          <span><span class="tk op">=</span><span class="tk fn">MAX</span><span class="tk op">(</span><span class="tk num">0</span><span class="tk op">,(</span><span class="tk ref amb">Q</span><span class="tk op">−</span><span class="tk ref amb">R</span><span class="tk op">)×</span><span class="tk ref amb">S</span><span class="tk op">)</span></span>
+          <span style="margin-left:auto" class="pill green">Valid</span>
+        </div>
+        <table>
+          <thead><tr>
+            <th style="min-width:110px"></th>
+            <th>P<span class="cc">GROSS</span></th>
+            <th>Q<span class="cc">TAXABLE</span></th>
+            <th>R<span class="cc">DEDUCTFAM</span></th>
+            <th>S<span class="cc">TAXRATE</span></th>
+            <th>T<span class="cc">PIT</span></th>
+            <th>U<span class="cc">SIEMP</span></th>
+            <th>V<span class="cc">NETPAY</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><th scope="row">Name</th><td class="name">Gross salary</td><td class="name up">Taxable income</td><td class="name up">Family deduction</td><td class="name up">Tax rate</td><td class="name sel">Personal income tax</td><td class="name">Social ins. (emp)</td><td class="name down">Net pay</td></tr>
+            <tr><th scope="row">Category</th><td class="cat"><span class="pill green">Earning</span></td><td class="cat"><span class="pill gray">Intermediate</span></td><td class="cat"><span class="pill gray">Input</span></td><td class="cat"><span class="pill gray">Rate</span></td><td class="cat"><span class="pill red">Tax</span></td><td class="cat"><span class="pill red">Deduction</span></td><td class="cat"><span class="pill indigo">Total</span></td></tr>
+            <tr><th scope="row">Formula</th><td>=SUM(D:O)</td><td class="up">=P−U−N</td><td class="up">11000000+4400000×G</td><td class="up">=VLOOKUP(Q,Rates,2)</td><td class="sel">=MAX(0,(Q−R)×S)</td><td class="err">=P×10.5%</td><td class="down">=P−T−U</td></tr>
+            <tr class="valrow"><th scope="row">Value ₫</th><td class="num">28,400,000</td><td class="num up">23,418,000</td><td class="num up">15,400,000</td><td class="num up">10%</td><td class="num sel">801,800</td><td class="num">2,982,000</td><td class="num down">24,616,200</td></tr>
+            <tr><th scope="row">Status</th><td><span class="pill green">OK</span></td><td><span class="pill green">OK</span></td><td><span class="pill green">OK</span></td><td><span class="pill green">OK</span></td><td><span class="pill green">OK · on payslip</span></td><td><span class="pill amber">Warn: hardcoded rate</span></td><td><span class="pill green">OK · on payslip</span></td></tr>
+          </tbody>
+        </table>
+        <div class="legend">
+          <span><i style="background:var(--i-soft);outline:2px solid var(--i);outline-offset:-2px"></i>Selected: T · PIT</span>
+          <span><i style="background:var(--amber-soft)"></i>Upstream (feeds the selection)</span>
+          <span><i style="background:var(--cyan-soft)"></i>Downstream (moves if you edit)</span>
+          <span><i style="background:var(--red);border-radius:0;clip-path:polygon(100% 0,0 0,100% 100%)"></i>Validation flag on cell</span>
+        </div>
+      </div>
+    </div>
+    <p class="mockcap wrap">Click <code>T · PIT</code> and the sheet answers the two questions Excel never could: <b>what feeds this</b> (amber) and <b>what moves if I change it</b> (cyan) — plus the live value for a real employee, recomputed on every keystroke through the actual engine, so "editing" and "testing" stop being separate activities.</p>
+
+    <div class="wrap">
+      <h3>Beyond Excel, deliberately</h3>
+      <div class="grid2">
+        <div class="card"><h4 style="margin-top:0">Keyboard-first, all the way down</h4><p class="small muted">Arrows/Tab/Enter to move, F2 to edit, Ctrl+click multi-select, Shift+arrows ranges, ⌘K anywhere. Roving focus, single input overlay, Vietnamese IME-safe (commits on compositionend).</p></div>
+        <div class="card"><h4 style="margin-top:0">Typed cells, not strings</h4><p class="small muted">Airtable's lesson: a rate cell renders as %, a bracket table opens a bracket editor, a component reference opens a picker. The grid enforces types the engine already knows.</p></div>
+        <div class="card"><h4 style="margin-top:0">Bulk edit &amp; drag-fill with a safety net</h4><p class="small muted">Select five columns → set category once. Drag a formula across allowance columns → server translates references → ghost preview shows all five results before anything commits.</p></div>
+        <div class="card"><h4 style="margin-top:0">Collapse by category, frozen panes</h4><p class="small muted">Fold "Allowances (12)" to one summary column. Header and label column stay frozen via CSS sticky — no scroll-sync JS, no jank.</p></div>
+        <div class="card"><h4 style="margin-top:0">Scenario columns, side by side</h4><p class="small muted">Duplicate any column into a scenario variant ("PIT — 2027 proposal") and compare live values in the same sheet. Promote or discard the variant in one action.</p></div>
+        <div class="card"><h4 style="margin-top:0">Multiple sample rows</h4><p class="small muted">Pin three live value rows — junior, median, executive — and watch every edit ripple through all three. Edge cases stop being an afterthought.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAYSLIP STUDIO ============ -->
+  <section id="payslip-studio">
+    <div class="wrap">
+      <div class="eyebrow"><span class="n">05</span> The three studios · 3 of 3</div>
+      <h2>Payslip Studio: design the document, not just the data</h2>
+      <p class="lead">The payslip is the only payroll artifact every employee reads. Today <code>appears_on_payslip</code> is a checkbox; it should be a canvas. Drag components from the tray into sections; visibility rules, ordering and grouping are visual properties, previewed against real sample employees.</p>
+    </div>
+
+    <div class="mock" style="max-width:880px">
+      <div class="mbar"><div class="dots"><i></i><i></i><i></i></div><b>Payslip Studio</b> · VN Office scheme <span class="spacer"></span><span class="pill indigo">Preview: Nguyễn Thị Mai · June 2026</span></div>
+      <div class="pslip">
+        <div class="tray">
+          <div class="traylabel">Component tray</div>
+          <div class="chip"><span class="cl">D</span> Lunch allowance</div>
+          <div class="chip"><span class="cl">E</span> Phone allowance</div>
+          <div class="chip"><span class="cl">M</span> OT 150%</div>
+          <div class="traylabel">Hidden on payslip</div>
+          <div class="chip" style="opacity:.55"><span class="cl">Q</span> Taxable income</div>
+          <div class="chip" style="opacity:.55"><span class="cl">S</span> Tax rate</div>
+        </div>
+        <div class="canvas">
+          <div class="sec earn"><div class="sh"><span>Earnings</span><span class="viz">visible: always</span></div>
+            <div class="line"><span>Basic salary</span><span class="amt">22,000,000</span></div>
+            <div class="line"><span>Position allowance</span><span class="amt">4,000,000</span></div>
+            <div class="line"><span>OT 150% <span class="viz">· visible when &gt; 0</span></span><span class="amt">2,400,000</span></div>
+          </div>
+          <div class="sec ded"><div class="sh"><span>Deductions</span><span class="viz">auto-collapses when empty</span></div>
+            <div class="line"><span>Social insurance (8%)</span><span class="amt">−2,272,000</span></div>
+            <div class="line"><span>Personal income tax</span><span class="amt">−801,800</span></div>
+          </div>
+          <div class="sec net"><div class="line"><span>NET PAY</span><span class="amt">24,616,200 ₫</span></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="mockcap wrap">Both studios stay in sync because both are views of the rule graph: drop a component here and its <code>appears_on_payslip</code>, section and order update; flip the flag in the grid and it appears in the tray. Conditional visibility ("show OT only when &gt; 0") is a visible label, not buried logic. Colour-coding by category is automatic; sections with no visible lines collapse on the printed slip.</p>
+    <div class="wrap grid3">
+      <div class="card"><h4 style="margin-top:0">Bilingual by design</h4><p class="small muted">EN/VI labels side by side, per-scheme. The printed payslip and the employee portal use the same definition.</p></div>
+      <div class="card"><h4 style="margin-top:0">Variants, Figma-style</h4><p class="small muted">One master scheme per country; division variants inherit and show their overrides as badges. Update the master, variants follow.</p></div>
+      <div class="card"><h4 style="margin-top:0">Print &amp; portal preview</h4><p class="small muted">Toggle A4 PDF / mobile portal preview with one key, rendered from real computed values — never lorem numbers.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ INTELLIGENCE ============ -->
+  <section class="wrap" id="intelligence">
+    <div class="eyebrow"><span class="n">06</span> Pillar 2</div>
+    <h2>Formula Intelligence: the X-ray layer</h2>
+    <p class="lead">Excel's Formula Auditing, rebuilt for a system that actually knows the whole graph. Everything here is deterministic — computed from <code>formula_dependencies</code> and the topological evaluator, shipped to the client once, traversed instantly. No LLM, no network, no excuses.</p>
+    <div class="grid2">
+      <div class="card"><h4 style="margin-top:0"><svg class="ic" style="vertical-align:-3px;color:var(--i)"><use href="#i-eye"/></svg> Impact analysis on click</h4><p class="small muted">"Editing <b>BASIC</b> affects <b>14 downstream components</b>, 6 of which appear on the payslip, across <b>4,512 employees</b>." Expandable list, click-to-jump. The number that stops a Friday-afternoon mistake.</p></div>
+      <div class="card"><h4 style="margin-top:0"><svg class="ic" style="vertical-align:-3px;color:var(--i)"><use href="#i-play"/></svg> Execution replay</h4><p class="small muted">Time-travel debugging: pick a real payslip, press play, and watch the topological order execute step by step — each component's inputs, expression and result filling in. Pause, step back, inspect. The single best training tool ever put in front of a payroll clerk.</p></div>
+      <div class="card"><h4 style="margin-top:0"><svg class="ic" style="vertical-align:-3px;color:var(--i)"><use href="#i-layers"/></svg> Dependency graph as navigation</h4><p class="small muted">The Obsidian move: the graph is a place you work, not a diagram you glance at. Filter by category, highlight critical paths (longest chains), spot the hub components everything hangs off.</p></div>
+      <div class="card"><h4 style="margin-top:0"><svg class="ic" style="vertical-align:-3px;color:var(--i)"><use href="#i-alert"/></svg> Circular refs, explained</h4><p class="small muted">Not a flag — a sentence and a picture: "T → Q → P → T. PIT depends on TAXABLE, which subtracts PIT." With the two standard fixes offered: split into pre/post components, or iterate-to-convergence mode.</p></div>
+      <div class="card"><h4 style="margin-top:0">Execution order &amp; timing</h4><p class="small muted">The evaluator's actual order, visualized as a timeline with per-component compute cost across the last payrun. Slow VLOOKUP-style lookups stand out; optimisation suggestions attach to the offenders.</p></div>
+      <div class="card"><h4 style="margin-top:0">Unused &amp; orphan detection</h4><p class="small muted">Components nothing references and nothing prints; inputs no formula reads; constants that duplicate a rate table. Each with a safe one-click archive. Configs stay clean for years, not months.</p></div>
+      <div class="card"><h4 style="margin-top:0">Config health score</h4><p class="small muted">The existing health ring, made honest: weighted from validation state, cycle-freedom, test coverage, unused count, hardcoded-number lint. Bureaus triage fifty clients by sorting on it.</p></div>
+      <div class="card"><h4 style="margin-top:0">Change heatmap</h4><p class="small muted">Which components change most often, which formulas fail tests most, which cause payrun exceptions. Where the heat is, that's where review attention goes.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ MIGRATION ============ -->
+  <section class="wrap" id="migration">
+    <div class="eyebrow"><span class="n">07</span> Pillar 3 · The industry first</div>
+    <h2>Migration Confidence: prove it against their own history</h2>
+    <p class="lead">The moment that closes deals: import the client's Excel — formulas <em>and</em> the last twelve months of computed results — then recompute history through the engine and verify cell by cell. Nobody in the industry does this. It converts the scariest sentence in payroll ("trust the new system") into a number.</p>
+
+    <div class="mock" style="max-width:820px">
+      <div class="mbar"><div class="dots"><i></i><i></i><i></i></div><b>Shadow Parallel Run</b> · VN Office · Jul 2025 – Jun 2026 <span class="spacer"></span><span class="pill green">Verified</span></div>
+      <div class="gauge">
+        <div class="ringwrap">
+          <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line-soft)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--green)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="1.0"/>
+          </svg>
+          <div class="val">99.7%<span>confidence</span></div>
+        </div>
+        <div class="breakdown">
+          <div class="brow"><span>Historical values reproduced</span><div class="track"><div class="fill" style="width:99.7%"></div></div><span class="pct num">53,838 / 54,000</span></div>
+          <div class="brow"><span>Formulas resolved</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="pct num">96 / 96</span></div>
+          <div class="brow"><span>Employees matched</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="pct num">450 / 450</span></div>
+          <div class="brow"><span>Discrepancies</span><div class="track"><div class="fill" style="width:2%;background:var(--amber)"></div></div><span class="pct num">162</span></div>
+          <div class="small" style="color:var(--muted);margin-top:4px">All 162 discrepancies isolated to <b>OT rounding in March</b> — Excel used banker's rounding; one <code>number_format</code> change resolves the set. <a href="#" style="color:var(--i)">Review discrepancies →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>The reimagined import, end to end</h3>
+    <div class="steps">
+      <div class="step"><div class="sn"></div><div><b>Single drop</b><p>One drag of the workbook. Header detection, merged-cell categories, cross-sheet resolution and constant detection run instantly — the analysis the wizard already does, presented as one animated moment, not seven screens.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Resolved-formula preview</b><p>Every component shown as <em>Excel original</em> vs <em>engine formula</em>, side by side. Nothing has been committed. What used to silently become <code>0</code> is now a red row.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Broken-reference triage</b><p>Each unresolved reference gets a fix action: map to a component, convert to input, acknowledge as zero, or skip. Join-key health check flags fragile primary-key matches before they eat a row.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Confidence score, then commit</b><p>The weighted score (resolution ratio, would-be zeros, column match, key match) gates the import. Below threshold, PayAI reviews the suspicious rows and says why.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Shadow Parallel Run</b><p>Historical result sheets recomputed through the engine, verified cell by cell. Discrepancies clustered by cause, not listed by row. The client signs off on evidence.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ============ MAPPING CANVAS ============ -->
+  <section class="wrap" id="mapping">
+    <div class="eyebrow"><span class="n">08</span> Pillar 5</div>
+    <h2>Mapping Canvas: one visual language for every mapping</h2>
+    <p class="lead">Four different mapping problems live in four different screens today — free-text API paths, an empty mid→end wizard, division fields, import columns. They are the same problem: <em>things on the left connect to things on the right</em>. One canvas, learned once.</p>
+
+    <div class="mock" style="max-width:780px">
+      <div class="mbar"><div class="dots"><i></i><i></i><i></i></div><b>Mapping Canvas</b> · Mid-month → End-month · VN Office <span class="spacer"></span><span class="pill indigo">3 auto-suggested</span></div>
+      <div class="mapc">
+        <div>
+          <div class="colhead">Mid-cycle components</div>
+          <div class="plug hot">ADVPAY <span class="sub">Advance payment</span></div>
+          <div class="plug hot">MIDOT <span class="sub">Mid-cycle overtime</span></div>
+          <div class="plug">MIDBON <span class="sub">Ad-hoc bonus</span></div>
+        </div>
+        <div></div>
+        <div>
+          <div class="colhead">End-cycle components</div>
+          <div class="plug hot">ADVDED <span class="sub">Advance deduction</span></div>
+          <div class="plug hot">OTCARRY <span class="sub">OT carried forward</span></div>
+          <div class="plug">BONUS <span class="sub">Bonus total</span></div>
+        </div>
+        <svg class="wires" viewBox="0 0 700 170" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M 285 44 C 380 44 320 44 415 44" stroke="var(--green)" stroke-width="2.5" fill="none"/>
+          <path d="M 285 92 C 380 92 320 92 415 92" stroke="var(--green)" stroke-width="2.5" fill="none"/>
+          <path d="M 285 140 C 380 140 320 140 415 140" stroke="var(--i-border)" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+          <circle cx="285" cy="44" r="4" fill="var(--green)"/><circle cx="415" cy="44" r="4" fill="var(--green)"/>
+          <circle cx="285" cy="92" r="4" fill="var(--green)"/><circle cx="415" cy="92" r="4" fill="var(--green)"/>
+          <circle cx="285" cy="140" r="4" fill="var(--i-border)"/><circle cx="415" cy="140" r="4" fill="var(--i-border)"/>
+        </svg>
+        <span class="conf" style="left:48%;top:26px">100%</span>
+        <span class="conf" style="left:48%;top:74px">92%</span>
+        <span class="conf" style="left:48%;top:122px;color:var(--amber)">suggest 78%</span>
+      </div>
+    </div>
+    <p class="mockcap">Solid wires are accepted mappings; the dashed wire is an auto-suggestion (exact code match = 100%, normalized code = 90s, name similarity ≥ 75%) awaiting one keystroke. Accept-all for the confident set, drag to wire manually, batch-test the whole board against a sample employee before saving.</p>
+
+    <div class="grid2">
+      <div class="card"><h4 style="margin-top:0">API fields → inputs</h4><p class="small muted">Left column becomes a real field browser fed by the connector's actual recent payloads — dot-paths with live sample values, autocomplete instead of typed strings. Broken nested paths surface as errors on the wire, never as silent zeros.</p></div>
+      <div class="card"><h4 style="margin-top:0">Excel columns → components</h4><p class="small muted">The import's mapping step uses the same canvas: sheet columns left, engine components right, suggested wires pre-drawn with confidence, unmapped items visually parked, not lost.</p></div>
+      <div class="card"><h4 style="margin-top:0">Employees → schemes</h4><p class="small muted">Assignment rules ("division = Retail → VN Retail config") with a live preview panel: <em>who lands where</em>, coverage stats, and the unassigned exception list — before running anything.</p></div>
+      <div class="card"><h4 style="margin-top:0">Transformations on the wire</h4><p class="small muted">Click any wire to attach a transform (×, ÷, round, expression) — shown as a small badge on the wire itself, with input → output preview for the sample employee.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ PAYAI ============ -->
+  <section class="wrap" id="payai">
+    <div class="eyebrow"><span class="n">09</span> Pillar 4</div>
+    <h2>PayAI everywhere, with a floor under it</h2>
+    <p class="lead">Every AI capability has three rungs: <b>cloud LLM</b> (best), <b>local model</b> (Ollama/vLLM via the existing OpenAI-compatible engine — data never leaves the server), and a <b>deterministic floor</b> that always works. The product is never broken because a key is missing; it is merely less magical.</p>
+    <div class="tblwrap"><table class="capmx">
+      <thead><tr><th>Capability</th><th>Cloud LLM</th><th>Local LLM</th><th>Deterministic floor</th></tr></thead>
+      <tbody>
+        <tr><td><b>Explain formula</b> — plain English / Tiếng Việt, with the sample employee's numbers woven in</td><td><span class="dot full"></span></td><td><span class="dot full"></span></td><td>Template narration from the AST (<code>_explain()</code>)</td></tr>
+        <tr><td><b>Draft from description</b> — "OT is 150% of hourly rate beyond 40h" → formula + suggested code/category</td><td><span class="dot full"></span></td><td><span class="dot part"></span></td><td>Pattern library of common payroll formulas</td></tr>
+        <tr><td><b>Import reviewer</b> — "component 23 uses MAX where the sheet pattern suggests MIN"</td><td><span class="dot full"></span></td><td><span class="dot part"></span></td><td>Rule-based lint: zero-refs, orphans, magnitude outliers</td></tr>
+        <tr><td><b>Payrun anomaly narration</b> — "Net pay fell for 14 employees; all share the new SIEMP cap"</td><td><span class="dot full"></span></td><td><span class="dot full"></span></td><td>Statistical outlier list with drill-down</td></tr>
+        <tr><td><b>Test generation</b> — edge-case samples targeting brackets, caps and conditions</td><td><span class="dot full"></span></td><td><span class="dot part"></span></td><td>Boundary-value generation from bracket/IF analysis</td></tr>
+        <tr><td><b>Documentation</b> — client-ready handbook of every component, bilingual</td><td><span class="dot full"></span></td><td><span class="dot full"></span></td><td>Structured export of names, formulas, dependencies</td></tr>
+        <tr><td><b>Legislation packs</b> — draft a country starter config from statutory rules</td><td><span class="dot full"></span></td><td><span class="dot none"></span></td><td>Curated pack library, human-maintained</td></tr>
+        <tr><td><b>Duplicate-logic detection</b> — "these 3 formulas are the same expression; extract a component"</td><td><span class="dot full"></span></td><td><span class="dot part"></span></td><td>AST-hash comparison across the config</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small muted" style="margin-top:12px"><span class="dot full" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green)"></span> full quality &nbsp; <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--amber)"></span> reduced quality &nbsp; <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--line);border:1px solid var(--line)"></span> cloud-only. Every AI proposal lands as a <b>draft</b> — validated by the deterministic engine and test suite before a human accepts it. AI suggests; the engine decides.</p>
+  </section>
+
+  <!-- ============ TRUST ============ -->
+  <section class="wrap" id="trust">
+    <div class="eyebrow"><span class="n">10</span> Pillar 6</div>
+    <h2>Trust Layer: change without fear</h2>
+    <p class="lead">Payroll's deepest emotion is fear of the silent mistake. The Trust Layer makes every change visible, testable, reversible and signed — which is what finally lets non-consultants edit their own payroll.</p>
+    <div class="grid2">
+      <div class="card"><h4 style="margin-top:0"><svg class="ic" style="vertical-align:-3px;color:var(--i)"><use href="#i-history"/></svg> Version history with visual diff</h4><p class="small muted">Every formula save is a version. Diffs are token-aware — "<code>0.10</code> → <code>0.12</code> in bracket 2", not a wall of red/green text. Restore any version; compare any two config snapshots.</p></div>
+      <div class="card"><h4 style="margin-top:0"><svg class="ic" style="vertical-align:-3px;color:var(--i)"><use href="#i-flask"/></svg> Simulate before activate</h4><p class="small muted">Any draft change runs against last month's real inputs: a delta distribution across all 4,512 employees, biggest movers first, zero-change count. "This edit changes nobody's net pay except the 3 people it should" — as a chart.</p></div>
+      <div class="card"><h4 style="margin-top:0">Scenario sandboxes</h4><p class="small muted">Branch a config ("2027 minimum-wage increase"), edit freely, simulate, then merge or discard. Git semantics without git vocabulary.</p></div>
+      <div class="card"><h4 style="margin-top:0">Testing framework, continuous</h4><p class="small muted">The Test workbench grows CI habits: samples auto-run on every save, red before wrong; coverage view shows which components no test exercises; boundary tests generated from bracket analysis.</p></div>
+      <div class="card"><h4 style="margin-top:0">Sign-off workflow</h4><p class="small muted">The lifecycle rail becomes a review: changes bundled into a named release, reviewer sees diffs + simulation + test results in one screen, annotations pin to specific formulas, approval is recorded and immutable.</p></div>
+      <div class="card"><h4 style="margin-top:0">Audit narrative, auto-written</h4><p class="small muted">Per period, per config: "June 2026 — 3 formula changes (PIT bracket update per Decree 65, approved by L.Anh), 0 test regressions, parallel-run variance 0.0%." Auditors read prose, not logs.</p></div>
+    </div>
+    <h3>Accessibility, mobile, performance — commitments, not chapters</h3>
+    <div class="grid3">
+      <div class="card"><h4 style="margin-top:0">Accessible</h4><p class="small muted">Full keyboard operation of every studio; visible focus everywhere; status never encoded by colour alone (icons + text); WCAG AA contrast on the locked palette; reduced-motion honoured in every animation including dependency tracing.</p></div>
+      <div class="card"><h4 style="margin-top:0">Tablet-ready, mobile-honest</h4><p class="small muted">Configuration is a desktop craft; review is not. Tablet: read-only studios, full approval flow, simulation review. Phone: approve/reject releases, read explanations, payrun alerts. No fake mobile editing.</p></div>
+      <div class="card"><h4 style="margin-top:0">Fast by architecture</h4><p class="small muted">Graph shipped once, traversed client-side; virtualized rows past 60 components; debounced single-employee preview (the existing 260 ms pattern); simulation chunked server-side like the payrun wizard; import preview capped with expanders.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ WOW FEATURES ============ -->
+  <section id="features">
+    <div class="wrap">
+      <div class="eyebrow"><span class="n">11</span> The catalogue</div>
+      <h2>114 WOW features, ranked</h2>
+      <p class="lead">Every idea in this book plus the ones that didn't fit a chapter — scored for impact, originality, implementation complexity and user value (1–5; for complexity, 5 = hardest). Now with a live <b>build status</b> — filter by <b>Implemented / Partial / Not built</b> (as of July 2026). Search, filter by pillar, roadmap tier or status, click a column header to sort.</p>
+    </div>
+    <div class="toolbar" role="group" aria-label="Feature filters">
+      <input type="search" id="wowsearch" placeholder="Search 114 features…" aria-label="Search features">
+      <button class="fbtn on" data-f="all">All</button>
+      <button class="fbtn" data-f="cat:Grid">Grid</button>
+      <button class="fbtn" data-f="cat:Intel">Intelligence</button>
+      <button class="fbtn" data-f="cat:Migrate">Migration</button>
+      <button class="fbtn" data-f="cat:AI">PayAI</button>
+      <button class="fbtn" data-f="cat:Map">Mapping</button>
+      <button class="fbtn" data-f="cat:Payslip">Payslip</button>
+      <button class="fbtn" data-f="cat:Trust">Trust</button>
+      <button class="fbtn" data-f="cat:Collab">Collab</button>
+      <button class="fbtn" data-f="cat:Sim">Simulation</button>
+      <button class="fbtn" data-f="cat:UX">UX</button>
+      <button class="fbtn" data-f="tier:QW">Quick wins</button>
+      <button class="fbtn" data-f="tier:MS">Moonshots</button>
+      <span class="fsep" aria-hidden="true"></span>
+      <button class="fbtn fbtn-st done" data-f="st:done">Implemented</button>
+      <button class="fbtn fbtn-st part" data-f="st:part">Partial</button>
+      <button class="fbtn fbtn-st todo" data-f="st:todo">Not built</button>
+      <span class="count" id="wowcount"></span>
+    </div>
+    <div class="tblwrap"><table id="wowtable">
+      <thead><tr>
+        <th data-k="id">#</th><th data-k="title">Feature</th><th data-k="cat">Pillar</th>
+        <th data-k="impact">Impact</th><th data-k="orig">Original</th><th data-k="cx">Complex</th>
+        <th data-k="val">Value</th><th data-k="pri">Priority</th><th data-k="tier">Tier</th><th data-k="status">Status</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <!-- ============ GAPS ============ -->
+  <section class="wrap" id="gaps">
+    <div class="eyebrow"><span class="n">12</span> Honesty section</div>
+    <h2>Table-stakes gaps</h2>
+    <p class="lead">Features that are <em>not</em> innovations — competitors already have them, and their absence loses evaluations no matter how magical the Formula Engine is. Ranked by how often they block a deal.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Capability</th><th>Why it matters</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td><b>Statutory reports &amp; e-filing</b></td><td>VN PIT declarations, SI/HI/UI reports, and equivalents per country. The first question every payroll manager asks.</td><td><span class="pill red">High</span></td></tr>
+        <tr><td><b>Bank payment file generation</b></td><td>Per-bank transfer file formats from the payrun. Without it, "payroll" ends in manual banking.</td><td><span class="pill red">High</span></td></tr>
+        <tr><td><b>Employee self-service</b></td><td>Payslip access, YTD views, tax documents in the portal — expected everywhere, half-built today.</td><td><span class="pill red">High</span></td></tr>
+        <tr><td><b>Payslip delivery</b></td><td>Scheduled, secured email/portal distribution of payslips with per-country templates.</td><td><span class="pill red">High</span></td></tr>
+        <tr><td><b>Termination / final settlement</b></td><td>Pro-rated final pay, leave encashment, severance — a formula-config archetype, needs a guided flow.</td><td><span class="pill red">High</span></td></tr>
+        <tr><td><b>Off-cycle &amp; bonus runs</b></td><td>13th month, ad-hoc bonus, correction runs as first-class run types, not workarounds.</td><td><span class="pill red">High</span></td></tr>
+        <tr><td><b>GL posting rules</b></td><td>Component → account/analytic mapping with preview; the journal fields exist, the mapping UX doesn't.</td><td><span class="pill amber">Medium</span></td></tr>
+        <tr><td><b>Leave &amp; attendance depth</b></td><td>Native accruals and timesheet ingestion feeding worked-day inputs without spreadsheets.</td><td><span class="pill amber">Medium</span></td></tr>
+        <tr><td><b>Loans &amp; advances ledger</b></td><td>Balance-tracked deductions with schedules — today only expressible as raw formulas.</td><td><span class="pill amber">Medium</span></td></tr>
+        <tr><td><b>Year-end tax finalization</b></td><td>Annual PIT reconciliation flows (VN quyết toán thuế) with employee declarations.</td><td><span class="pill amber">Medium</span></td></tr>
+        <tr><td><b>Payroll calendar &amp; reminders</b></td><td>Cut-off, approval and payment dates with notifications; bureaus live by this.</td><td><span class="pill amber">Medium</span></td></tr>
+        <tr><td><b>Multi-currency</b></td><td>Per-rule currency with period FX — expat and regional payrolls need it.</td><td><span class="pill amber">Medium</span></td></tr>
+        <tr><td><b>Role-based approval matrix</b></td><td>Amount- and division-scoped approvals beyond the current linear lifecycle.</td><td><span class="pill gray">Low</span></td></tr>
+        <tr><td><b>Costing splits</b></td><td>Employee cost split across projects/departments for reporting.</td><td><span class="pill gray">Low</span></td></tr>
+        <tr><td><b>Retro pay UX</b></td><td>The engine supports retro; the review/communication flow around it doesn't exist yet.</td><td><span class="pill gray">Low</span></td></tr>
+        <tr><td><b>Compensation history views</b></td><td>Per-employee pay change timeline for HR conversations.</td><td><span class="pill gray">Low</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ============ ROADMAP ============ -->
+  <section class="wrap" id="roadmap">
+    <div class="eyebrow"><span class="n">13</span> Sequencing</div>
+    <h2>Roadmap</h2>
+    <p class="lead">Four tiers. Each item tags where it lands: <code>studio</code> = pb_formula_studio, <code>engine</code> = pb_hr_payroll_formula, <code>ai</code> = pb_payroll_ai_insights / studio LLM layer, <code>new</code> = new module.</p>
+
+    <div class="tier t1"><div class="th"><span class="tn">TIER 1</span><b>Quick Wins</b><span class="when">~7 weeks · Phase-1, fully planned below</span></div>
+      <ul>
+        <li>Formula Intelligence v1: impact panel, unused detector, execution order, circular-ref explainer <code>studio</code></li>
+        <li>Grid Studio v1: editable grid, keyboard-first, dependency tinting, bulk edit, drag-fill, live sample row <code>studio</code></li>
+        <li>Import Confidence v1: resolved-formula preview, broken-reference triage, confidence score <code>engine</code></li>
+        <li>Mid→end mapping auto-suggest with accept-all <code>engine</code></li>
+        <li>API mapping field browser + batch test (kills silent failures) <code>engine</code></li>
+        <li>PayAI "Explain formula" EN/VI with deterministic fallback <code>ai</code></li>
+        <li>PayAI import reviewer <code>ai</code></li>
+        <li>Command palette ⌘K + find/replace in studio <code>studio</code></li>
+      </ul>
+    </div>
+
+    <div class="tier t2"><div class="th"><span class="tn">TIER 2</span><b>Medium-term Enhancements</b><span class="when">1–2 quarters</span></div>
+      <ul>
+        <li><b>Shadow Parallel Run + migration certificate — the hero</b> <code>engine</code></li>
+        <li>Formula version history with token diff + restore <code>engine/studio</code></li>
+        <li>Simulate-before-activate: org-wide delta distribution <code>engine/studio</code></li>
+        <li>Payslip Studio v1: drag-drop canvas, sections, visibility rules, A4/portal preview <code>new</code></li>
+        <li>Unified Mapping Canvas component (all four mapping surfaces) <code>new kit</code></li>
+        <li>Typed cells: bracket-table editor, rate cells, reference pickers <code>studio</code></li>
+        <li>Raw-Excel editing mode on cards + grid <code>studio</code></li>
+        <li>Problems rail + magic-number lint + rename-refactor <code>studio</code></li>
+        <li>Test coverage view + boundary-value test generation <code>engine</code></li>
+        <li>Excel round-trip export (config → living workbook) <code>engine</code></li>
+        <li>Scenario columns in grid <code>studio</code></li>
+        <li>Comments &amp; annotations on components <code>studio</code></li>
+        <li>Payrun anomaly narration <code>ai</code></li>
+        <li>Table-stakes: payslip delivery, off-cycle runs, GL mapping UX <code>engine</code></li>
+      </ul>
+    </div>
+
+    <div class="tier t3"><div class="th"><span class="tn">TIER 3</span><b>Long-term Innovations</b><span class="when">2–4 quarters</span></div>
+      <ul>
+        <li>Execution replay: time-travel debugging on real payslips <code>studio</code></li>
+        <li>Scenario sandboxes: branch / simulate / merge configs <code>engine</code></li>
+        <li>Release bundles + sign-off workflow + immutable audit narrative <code>engine</code></li>
+        <li>Legislation packs per country, AI-drafted, human-curated <code>ai/new</code></li>
+        <li>Scheme variants with inheritance (Figma components model) <code>engine</code></li>
+        <li>Bureau cockpit: multi-client health board, config templates, cross-client cloning <code>new</code></li>
+        <li>Client review portal: read-only share with commenting <code>new</code></li>
+        <li>What-if sliders + annualized cost projection <code>studio</code></li>
+        <li>Dependency graph as primary navigation surface <code>studio</code></li>
+        <li>Table-stakes wave 2: statutory e-filing, bank files, self-service, final settlement <code>new</code></li>
+      </ul>
+    </div>
+
+    <div class="tier t4"><div class="th"><span class="tn">TIER 4</span><b>Moonshots</b><span class="when">bets, not commitments</span></div>
+      <ul>
+        <li>Live multiplayer grid — shared cursors, Figma-grade presence <code>studio</code></li>
+        <li>Compliance Watch: AI monitors legislation feeds, drafts the formula change, opens a release for review <code>ai</code></li>
+        <li>Full NL config generation: "Vietnam retail, 2 cycles, PIT + SI" → working draft config with tests <code>ai</code></li>
+        <li>Employee-facing "why did my pay change" conversational explainer <code>ai</code></li>
+        <li>Voice-driven payroll ops for approvals and queries <code>ai</code></li>
+        <li>Probabilistic payroll: OT/attendance scenario ranges for budget planning <code>engine</code></li>
+        <li>Cross-company anonymized benchmark ("your OT load is 2.1× sector median") <code>new</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 1 ============ -->
+  <section class="wrap" id="phase1">
+    <div class="eyebrow"><span class="n">14</span> From vision to commit</div>
+    <h2>Phase-1 build plan</h2>
+    <p class="lead">Tier 1, planned to file level against the live codebase and ready to execute — full detail in <code>docs/PHASE1_FORMULA_ENGINE_PLAN.md</code> in the repo. Build order chosen so the dependency-graph API built first powers both the grid and the import preview.</p>
+    <div class="steps">
+      <div class="step"><div class="sn"></div><div><b>Formula Intelligence v1 <span class="eff">· 4–6 days</span></b><p>New <code>get_intelligence(config_id)</code> + <code>get_impact_analysis(rule_id)</code> RPCs on <code>pb.formula.studio</code> (reuse the evaluator's topological sort). Insights section on the editor card, execution-order + unused panels, circular-ref explainer. Client-side BFS helpers become the grid's highlight primitives.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Grid Studio v1 <span class="eff">· ~3 weeks</span></b><p>New lean OWL grid (<code>grid_studio.js</code>, <code>formula_bar.js</code>, <code>cell_autocomplete.js</code>) evolving the studio's existing read-only grid view — the dormant legacy widget is harvested for ideas, not resurrected. CSS-sticky frozen panes, roving focus, IME-safe editing. New RPCs: <code>bulk_update_components</code>, <code>translate_formula</code> (drag-fill with ghost preview).</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Import Confidence <span class="eff">· ~1.5 weeks</span></b><p>Mixin <code>multisheet_import_preview.py</code> (never grow the 3,814-line wizard): preview lines with original-vs-resolved formulas, fix actions, weighted confidence score. Extends the existing review step; nothing commits until confirm.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Mapping upgrades <span class="eff">· ~1 week</span></b><p>Mid→end auto-suggest (exact code → normalized → name similarity ≥ 0.75) with accept-all. API mapping gains a field browser fed by real connector payloads plus batch-test against a sample employee — silent nested-path failures become visible errors.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>AI quick wins <span class="eff">· 3–4 days</span></b><p><code>explain_formula_ai(rule_id, lang)</code> EN/VI with the deterministic <code>_explain()</code> floor; <code>ai_review_import</code> over the preview lines with rule-based fallback. Explain button on the card; AI review on the import confirm step.</p></div></div>
+      <div class="step"><div class="sn"></div><div><b>Polish &amp; verification <span class="eff">· ~3 days</span></b><p>pb_coach tour steps for the new surfaces; full validation against the pb_demo VN world (4,512 employees, 30.5k payslips) via Chrome MCP: hand-traced impact counts, keyboard grid round-trips, Thaco template import with confidence gating, batch recompute regression check.</p></div></div>
+    </div>
+    <p class="small muted">Guardrails carried from the plan: engine/wizard/mapping server code stays in <code>pb_hr_payroll_formula</code> (headless-installable); all cockpit UI and studio RPCs in <code>pb_formula_studio</code>; manifest version bumped on every asset change; grid state keyed by component id, never array index.</p>
+  </section>
+
+  <footer class="wrap">Payobook Formula Engine — Product Vision · Prepared July 2026 · Grounded in the live codebase (pb_hr_payroll_formula · pb_formula_studio · pb_payroll_ai_insights · pb_demo VN world).</footer>
+</main>
+
+<script>
+// rail active state on scroll
+const links=[...document.querySelectorAll('.rail a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const spy=()=>{let cur=secs[0];for(const s of secs){if(s.getBoundingClientRect().top<140)cur=s}
+  links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur.id))};
+document.addEventListener('scroll',spy,{passive:true});spy();
+links.forEach(a=>a.addEventListener('click',()=>document.querySelector('.rail').classList.remove('open')));
+</script>
+<script>
+// [id, title, desc, cat, impact, originality, complexity(5=hardest), value, priority, tier]
+const F=[
+[1,"Full-screen Grid Studio","Excel-superset grid as the configuration centre","Grid",5,3,4,5,"High","QW"],
+[2,"Dependency tinting on click","Upstream amber, downstream cyan — the two questions Excel can't answer","Grid",5,4,2,5,"High","QW"],
+[3,"Live sample value row","Every keystroke recomputes a real employee through the actual engine","Grid",5,4,2,5,"High","QW"],
+[4,"Multiple pinned sample rows","Junior / median / executive computed side by side while editing","Grid",4,4,2,4,"Medium","MT"],
+[5,"Drag-fill with ghost preview","Server-side reference translation; see all results before commit","Grid",4,3,3,4,"High","QW"],
+[6,"Multi-cell bulk edit","Select N columns, set category/format once","Grid",4,2,2,4,"High","QW"],
+[7,"Typed cells","Rate %, currency, bracket-table and reference-picker cell editors","Grid",4,4,4,4,"Medium","MT"],
+[8,"Collapse by category","Fold 'Allowances (12)' to one summary column","Grid",3,3,2,4,"Medium","MT"],
+[9,"Scenario columns","Duplicate a column as a variant, compare live, promote or discard","Grid",4,5,3,4,"Medium","MT"],
+[10,"Frozen panes","CSS-sticky header + label column, zero scroll-sync JS","Grid",3,1,1,4,"High","QW"],
+[11,"Syntax-colored formula bar","Same token palette as the cards, editable, live-validated","Grid",4,2,2,5,"High","QW"],
+[12,"Component autocomplete in cells","Type '=BA' → BASIC, with name and live value in the dropdown","Grid",4,2,2,5,"High","QW"],
+[13,"Per-cell validation badges","Error corners and warning pills exactly where the problem is","Grid",4,2,1,5,"High","QW"],
+[14,"Find & replace across config","Formulas, names, codes — with preview of every hit","Grid",4,2,2,5,"High","QW"],
+[15,"Conditional formatting on values","Heat-shade the live value row: outliers jump out","Grid",3,3,2,3,"Low","MT"],
+[16,"Cell comments & notes","Anchored to components, visible in grid and cards","Grid",3,2,2,4,"Medium","MT"],
+[17,"Smart paste from Excel","Paste a formula column from a live sheet; parse and map on the fly","Grid",4,4,4,4,"Medium","LT"],
+[18,"Shortcuts overlay","Press ? — every keyboard command on one card","Grid",2,1,1,3,"Medium","QW"],
+[19,"Impact analysis on click","'Affects 14 downstream, 6 on payslip, 4,512 employees'","Intel",5,4,2,5,"High","QW"],
+[20,"Execution replay","Time-travel a real payslip through the topological order, step by step","Intel",5,5,4,5,"High","LT"],
+[21,"Circular refs explained","The actual cycle path in a sentence, with the two standard fixes offered","Intel",4,4,2,5,"High","QW"],
+[22,"Execution order & timing","Evaluator order as a timeline with per-component compute cost","Intel",3,3,2,4,"Medium","QW"],
+[23,"Unused & orphan detector","Dead components, unread inputs, duplicate constants — one-click archive","Intel",4,3,2,5,"High","QW"],
+[24,"Honest health score","Weighted from validation, cycles, coverage, lint — bureaus triage by it","Intel",4,3,2,4,"Medium","MT"],
+[25,"Change heatmap","Which components churn, fail tests, cause exceptions","Intel",3,4,3,3,"Low","LT"],
+[26,"Graph as navigation","The Obsidian move: work inside the dependency graph","Intel",4,4,4,4,"Medium","LT"],
+[27,"Critical-path highlight","Longest dependency chains and hub components made visible","Intel",3,4,2,3,"Low","MT"],
+[28,"Magic-number lint","Hardcoded 10.5% flagged; suggest extracting a rate component","Intel",4,3,2,5,"High","MT"],
+[29,"Go-to-definition & peek","Click any reference: jump, or peek its formula inline","Intel",4,2,2,5,"High","MT"],
+[30,"Rename as refactor","Renaming a code updates every referencing formula atomically","Intel",4,3,3,5,"High","MT"],
+[31,"Problems rail","IDE-style aggregation of every error/warning/lint across the config","Intel",4,3,2,5,"High","MT"],
+[32,"Formula blame","Who last touched each formula, with the one-line reason","Intel",3,3,2,4,"Medium","MT"],
+[33,"Shadow Parallel Run","Recompute 12 months of the client's history; verify cell by cell","Migrate",5,5,4,5,"High","MT"],
+[34,"Migration confidence score","One weighted number gates the import; breakdown on hover","Migrate",5,5,2,5,"High","QW"],
+[35,"Resolved-formula preview","Excel original vs engine formula, side by side, before commit","Migrate",5,4,2,5,"High","QW"],
+[36,"Broken-reference triage","Every would-be silent zero becomes a red row with a fix action","Migrate",5,4,2,5,"High","QW"],
+[37,"Join-key health check","Fragile primary-key matches flagged before they eat rows","Migrate",4,3,2,4,"High","QW"],
+[38,"Single-drop import","One drag; detection runs as one animated moment, not seven screens","Migrate",4,3,3,5,"High","MT"],
+[39,"Discrepancy clustering","162 mismatches → 'all OT rounding in March', not 162 rows","Migrate",4,5,3,5,"High","MT"],
+[40,"Diff re-import","Re-import an updated workbook; see exactly what changed as a config diff","Migrate",4,4,3,5,"High","LT"],
+[41,"Excel round-trip export","Export the config back to a living .xlsx with working formulas","Migrate",4,4,3,4,"Medium","MT"],
+[42,"Rate-table extraction","Detect constants/lookup blocks; promote to named bracket tables","Migrate",4,4,3,4,"Medium","MT"],
+[43,"Multi-file import session","Formulas + historical results + employee master in one session","Migrate",4,3,3,4,"Medium","LT"],
+[44,"Migration certificate","Signed PDF of the parallel-run evidence for client sign-off","Migrate",4,5,2,4,"Medium","MT"],
+[45,"Explain formula (EN/VI)","Plain language with the sample employee's numbers woven in","AI",5,3,2,5,"High","QW"],
+[46,"NL → formula drafting","Describe the rule; get formula + code + category as a validated draft","AI",5,3,3,5,"High","MT"],
+[47,"AI import reviewer","'Component 23 uses MAX where the sheet pattern suggests MIN'","AI",4,5,2,4,"High","QW"],
+[48,"Payrun anomaly narration","'Net fell for 14 employees; all share the new SI cap'","AI",5,4,3,5,"High","MT"],
+[49,"AI test generation","Edge-case samples targeting brackets, caps and IF branches","AI",4,4,2,4,"Medium","MT"],
+[50,"Auto documentation","Bilingual client handbook generated from the config, always current","AI",4,3,2,4,"Medium","MT"],
+[51,"Legislation pack generator","Draft a country starter config from statutory rules; human-curated","AI",5,4,4,4,"Medium","LT"],
+[52,"Duplicate-logic detection","AST-hash + AI: 'these 3 formulas are the same; extract a component'","AI",3,4,3,4,"Medium","LT"],
+[53,"Naming & category suggestions","Consistent codes and categories proposed at creation time","AI",3,2,1,3,"Low","MT"],
+[54,"Simplification suggestions","Nested-IF chains rewritten as brackets; confidence-scored","AI",3,3,2,4,"Medium","LT"],
+[55,"Voice queries","'Why is Mai's PIT higher this month?' — spoken, answered","AI",3,4,3,3,"Low","MS"],
+[56,"Copilot × coach tours","AI answers 'how do I…' by launching the interactive tour","AI",3,4,2,4,"Medium","MT"],
+[57,"Employee pay explainer","'Why did my pay change?' — safe, grounded, employee-facing","AI",5,5,4,5,"High","MS"],
+[58,"Compliance Watch","AI monitors legislation feeds, drafts the change, opens a release","AI",5,5,5,5,"High","MS"],
+[59,"Unified Mapping Canvas","One wire-the-plugs surface for all four mapping problems","Map",5,5,3,5,"High","MT"],
+[60,"Mid→end auto-suggest","Code/name similarity wiring with confidence %, accept-all","Map",4,3,2,5,"High","QW"],
+[61,"API field browser","Real payload dot-paths with sample values; autocomplete, not typing","Map",4,3,2,5,"High","QW"],
+[62,"Transforms on the wire","×, ÷, round, expression as badges on the wire, with preview","Map",3,4,2,4,"Medium","MT"],
+[63,"Batch-test the board","Run every mapping against a sample employee before saving","Map",4,3,2,5,"High","QW"],
+[64,"Scheme assignment rules","'division = Retail → VN Retail config' with who-lands-where preview","Map",4,3,3,5,"High","MT"],
+[65,"Mapping templates","Save and reuse mapping boards across clients (bureau gold)","Map",4,3,2,4,"Medium","LT"],
+[66,"No silent failures","Broken paths error on the wire; zeros are never a fallback","Map",5,3,2,5,"High","QW"],
+[67,"Drag-drop payslip canvas","Components from tray to sections; the checkbox becomes a canvas","Payslip",5,4,3,5,"High","MT"],
+[68,"Visible visibility rules","'shows when > 0' as a label on the line, not buried logic","Payslip",4,4,2,4,"High","MT"],
+[69,"Auto-collapsing sections","Empty sections vanish from the printed slip automatically","Payslip",3,3,1,4,"Medium","MT"],
+[70,"Bilingual labels","EN/VI side by side per scheme; print and portal share the definition","Payslip",4,2,2,5,"High","MT"],
+[71,"Scheme variants","Figma components: master per country, division variants inherit","Payslip",4,5,4,4,"Medium","LT"],
+[72,"Print & portal preview","A4 PDF ⇄ mobile portal toggle, rendered from real computed values","Payslip",4,2,2,5,"High","MT"],
+[73,"Payslip themes","Client branding: logo, accent, typography within compliance bounds","Payslip",3,2,2,4,"Medium","LT"],
+[74,"Slip-linked explainers","Each payslip line links to its formula explanation (manager view)","Payslip",3,4,2,4,"Medium","LT"],
+[75,"Version history + token diff","'0.10 → 0.12 in bracket 2', not a wall of red/green","Trust",5,4,3,5,"High","MT"],
+[76,"Config snapshots & compare","Diff any two points in a config's life","Trust",4,3,2,4,"High","MT"],
+[77,"Scenario sandboxes","Branch, edit, simulate, merge — git semantics, no git vocabulary","Trust",5,4,4,5,"High","LT"],
+[78,"Simulate before activate","Delta distribution across all employees before any change goes live","Trust",5,4,3,5,"High","MT"],
+[79,"Release bundles + sign-off","Changes reviewed as a named release: diffs + simulation + tests","Trust",5,4,3,5,"High","LT"],
+[80,"Pinned annotations","Reviewer comments anchored to specific formulas","Trust",3,3,2,4,"Medium","MT"],
+[81,"Auto audit narrative","Per-period prose: what changed, who approved, what variance","Trust",4,5,2,5,"High","LT"],
+[82,"Tests run on save","CI habits: red before wrong, on every formula commit","Trust",4,3,2,5,"High","MT"],
+[83,"Test coverage view","Which components no sample exercises — visible, sortable","Trust",4,3,2,4,"Medium","MT"],
+[84,"Boundary-value generation","Tests generated at bracket edges and cap thresholds","Trust",4,4,2,4,"Medium","MT"],
+[85,"Immutable approval log","Signed, append-only record of every activation","Trust",4,2,2,5,"High","LT"],
+[86,"One-action rollback","Revert an entire release; simulation shows the reversal first","Trust",4,3,3,5,"High","LT"],
+[87,"Presence","See who's viewing/editing which component, Google-Docs style","Collab",3,3,3,3,"Low","LT"],
+[88,"Comment threads","Discussions attached to components, resolved like PR reviews","Collab",3,2,2,4,"Medium","MT"],
+[89,"@mentions & notifications","'@Anh check bracket 3' pings with deep link","Collab",3,2,2,4,"Medium","LT"],
+[90,"Live multiplayer grid","Shared cursors in the grid — Figma-grade co-editing","Collab",4,5,5,3,"Low","MS"],
+[91,"Guided handoff mode","Consultant leaves narrated waypoints for the client team","Collab",3,5,3,4,"Medium","LT"],
+[92,"Client review portal","Read-only share link with commenting for sign-off","Collab",4,4,3,4,"Medium","LT"],
+[93,"What-if sliders","Drag an input; watch the org-wide ripple live","Sim",4,4,3,4,"Medium","LT"],
+[94,"Cost projection","Annualized employer cost of any draft change","Sim",4,3,2,5,"High","LT"],
+[95,"Budget vs actual","Payrun compared to budget line, variance drill-down","Sim",3,2,2,4,"Medium","LT"],
+[96,"Probabilistic payroll","OT/attendance scenario ranges for budget planning","Sim",3,5,5,3,"Low","MS"],
+[97,"Period comparison","Any two payruns side by side, deltas explained per component","Sim",4,3,2,5,"High","MT"],
+[98,"Offer calculator","New-hire cost/net preview computed through the live config","Sim",4,4,2,4,"Medium","LT"],
+[99,"Command palette ⌘K","Every component, config and action reachable without the mouse","UX",4,2,2,5,"High","QW"],
+[100,"Hover preview cards","Hover any reference: formula, value, category — no click","UX",4,3,1,5,"High","QW"],
+[101,"Animated dependency tracing","Pulses travel the graph edges when tracing — comprehension, not decoration","UX",3,4,2,4,"Medium","MT"],
+[102,"Formula timeline scrubber","Drag through a formula's edit history like a video","UX",3,5,3,3,"Low","LT"],
+[103,"Floating calculator","Pin a mini calc that references live component values","UX",2,3,2,3,"Low","LT"],
+[104,"Snippet library","Reusable formula fragments: proration, caps, brackets","UX",3,2,2,4,"Medium","MT"],
+[105,"Studio tours","pb_coach walkthroughs for grid, import and mapping surfaces","UX",3,2,1,4,"High","QW"],
+[106,"Dark mode","Across all studios, honoring the locked palette","UX",2,1,2,3,"Low","LT"],
+[107,"Full keyboard operation","Every studio operable without a mouse; visible focus everywhere","UX",4,2,3,4,"High","MT"],
+[108,"Tablet review mode","Read-only studios + full approval flow on iPad; honest phone scope","UX",3,2,3,3,"Medium","LT"],
+[109,"Virtualized grid","Smooth at 200+ components; graph shipped once, BFS client-side","UX",3,1,3,4,"High","MT"],
+[110,"Import preview capping","Side-by-side rows capped with expanders; never a frozen tab","UX",2,1,1,3,"Medium","QW"],
+[111,"Category-grouping columns","Add a column and drag it so every component of a category sits together","Grid",3,2,2,3,"Medium","QW"],
+[112,"Post-calculation results grid","Every employee's computed components in one Excel-style grid — one-click .xlsx download","Payslip",4,2,2,5,"High","MT"],
+[113,"Country payroll templates","Ready-to-use starter configs — all ASEAN (VN, ID, SG, MY, TH…) plus India — pick a country and go","Migrate",5,3,3,5,"High","MT"],
+[114,"Ready-made HR/API connectors","Pre-built Zoho, Workday, SAP &amp; Oracle integrations — just map the fields and run","Map",5,3,4,5,"High","MT"],
+];
+// Implementation status as of 2026-07, cross-referenced against the live codebase:
+// the original 24 shipped (F1–F15 / B1–B9) plus Phase-5 work-packages WP-A…WP-L
+// (feature-tagged commits Wnn / Fnnn). done = built & live; part = partially built; todo = not yet.
+const ST={};
+// Built & live — original core grid/intel/migration/AI/mapping/payslip/trust set…
+[1,2,3,5,6,7,9,10,11,12,13,16,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,36,39,44,45,46,47,59,60,61,63,64,66,67,68,69,70,71,75,76,77,78,79,80,88,92,93,94,105,110,111,112,114,
+// …plus Phase-5 shipped features (WP-A…WP-L):
+//  A: find&replace(14) cmd-palette(99) hover-cards(100) virtualized-grid(109); join-key(37) diff-reimport(40)
+//  D: rollback(86) tests-on-save(82) period-compare(97) anomaly-narration(48)
+//  F: shortcuts(18) pinned-rows(4) collapse-category(8) snippets(104)
+//  G: coverage(83) boundary-gen(84) AI-test-profiles(49)
+//  H: budget-vs-actual(95) offer-calc(98)
+//  I: wire-transforms(62) mapping-templates(65)
+//  J: simplification(54) rate-table-extract(42)
+//  L: living-export(41) smart-paste(17) payslip-themes(73)
+//  F113: country starter templates (VN/SG/ID/MY/TH/IN packs)
+4,8,14,17,18,37,40,41,42,48,49,54,62,65,73,82,83,84,86,95,97,98,99,100,104,109,113].forEach(i=>ST[i]="done");
+// Partially built — designed/scoped down or only one half shipped:
+//  38 single-drop, 72 print/portal preview, 101 anim tracing, 107 keyboard (UX partials);
+//  51 legislation-pack (starter packs shipped, AI generator pending);
+//  52 duplicate-logic (WP-J detection lens only, no extract action);
+//  81 audit narrative, 85 approval log (trust partials)
+[38,51,52,72,81,85,101,107].forEach(i=>ST[i]="part");
+// Not built yet — includes WP-K (designed, deferred): 50 auto-docs, 74 slip explainers, 89 @mentions
+[15,25,43,50,53,55,56,57,58,74,87,89,90,91,96,102,103,106,108].forEach(i=>ST[i]="todo");
+const STATUS={done:["Implemented","green"],part:["Partial","amber"],todo:["Not built","gray"]};
+const CATNAME={Grid:"Grid",Intel:"Intelligence",Migrate:"Migration",AI:"PayAI",Map:"Mapping",Payslip:"Payslip",Trust:"Trust",Collab:"Collab",Sim:"Simulation",UX:"UX"};
+const TIER={QW:["Quick win","green"],MT:["Medium","cyan"],LT:["Long-term","indigo"],MS:["Moonshot","amber"]};
+const PRI={High:"green",Medium:"amber",Low:"gray"};
+let filter="all",query="",sortK="id",sortDir=1;
+const tb=document.querySelector('#wowtable tbody');
+const sc=v=>`<span class="score s${v}">${v}</span>`;
+function render(){
+  let rows=F.filter(r=>{
+    const [id,t,d,cat,,,,,pri,tier]=r;const st=ST[id]||"todo";
+    if(filter!=="all"){const [k,v]=filter.split(":");const cur=k==="cat"?cat:k==="st"?st:tier;if(cur!==v)return false}
+    if(query&&!(t+" "+d+" "+CATNAME[cat]+" "+STATUS[st][0]).toLowerCase().includes(query))return false;
+    return true});
+  const ix={id:0,title:1,cat:3,impact:4,orig:5,cx:6,val:7,pri:8,tier:9};
+  const po={High:3,Medium:2,Low:1},to={QW:1,MT:2,LT:3,MS:4},so={done:1,part:2,todo:3};
+  rows.sort((a,b)=>{
+    let x=sortK==="status"?so[ST[a[0]]||"todo"]:a[ix[sortK]],
+        y=sortK==="status"?so[ST[b[0]]||"todo"]:b[ix[sortK]];
+    if(sortK==="pri"){x=po[x];y=po[y]} if(sortK==="tier"){x=to[x];y=to[y]}
+    return (x<y?-1:x>y?1:0)*sortDir});
+  tb.innerHTML=rows.map(r=>{const[id,t,d,cat,im,o,cx,v,pri,tier]=r;const st=ST[id]||"todo";
+    return `<tr class="st-${st}"><td class="num">${String(id).padStart(3,"0")}</td><td><b>${t}</b><span>${d}</span></td>
+    <td><span class="pill indigo">${CATNAME[cat]}</span></td>
+    <td>${sc(im)}</td><td>${sc(o)}</td><td>${sc(cx)}</td><td>${sc(v)}</td>
+    <td><span class="pill ${PRI[pri]}">${pri}</span></td>
+    <td><span class="pill ${TIER[tier][1]}">${TIER[tier][0]}</span></td>
+    <td><span class="pill ${STATUS[st][1]} stpill">${STATUS[st][0]}</span></td></tr>`}).join("");
+  const dn=F.filter(r=>(ST[r[0]]||"todo")==="done").length,pt=F.filter(r=>(ST[r[0]]||"todo")==="part").length,td=F.filter(r=>(ST[r[0]]||"todo")==="todo").length;
+  document.getElementById('wowcount').innerHTML=`${rows.length} of ${F.length} shown &nbsp;·&nbsp; <b style="color:var(--green)">${dn} implemented</b> · <b style="color:var(--amber)">${pt} partial</b> · <b style="color:var(--muted)">${td} not built</b>`;
+}
+document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');filter=b.dataset.f;render()}));
+document.getElementById('wowsearch').addEventListener('input',e=>{query=e.target.value.toLowerCase();render()});
+document.querySelectorAll('#wowtable th').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=(k==="id"||k==="title"||k==="cat"||k==="status")?1:-1}render()}));
+render();
+</script>

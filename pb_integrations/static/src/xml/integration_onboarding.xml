@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Section comments use `=` rules and never name a CSS custom property: a
+       doubled hyphen inside an XML comment is a parse error that takes the
+       whole file down (W22/W72). And nothing sits between a branch and its
+       `t-else` (W23). -->
+  <t t-name="pb_integrations.IntegrationOnboarding">
+    <div class="pbim itg pplw-root itgw">
+      <div class="pplw-card">
+
+        <!-- ========================= head ========================= -->
+        <div class="pplw-head">
+          <div>
+            <div class="pplw-eyebrow">Payobook · Integrations</div>
+            <h2>Connect an HR system</h2>
+          </div>
+          <div class="itgw-head-right">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <button class="pplw-x" t-on-click="close" title="Close" aria-label="Close">
+              <t t-out="ic('x',16)"/>
+            </button>
+          </div>
+        </div>
+
+        <!-- ======================= the stepper ======================= -->
+        <div class="pplw-rail">
+          <t t-foreach="steps" t-as="st" t-key="st.id">
+            <div t-attf-class="pplw-step {{ st_index === stepIndex ? 'cur' : '' }} {{ st_index &lt; stepIndex ? 'done' : '' }}">
+              <span class="pplw-dot" t-esc="st_index + 1"/>
+              <span class="pplw-lab" t-esc="st.label"/>
+            </div>
+            <div t-if="!st_last" t-attf-class="pplw-bar {{ st_index &lt; stepIndex ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <!-- ========================= the body ========================= -->
+        <div class="pplw-body">
+          <div t-if="!state.ready" class="pplw-busy"><div class="pbim-spin"/><span>Starting…</span></div>
+          <div t-elif="state.busy" class="pplw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+          <t t-else="">
+
+            <div t-if="state.error" class="itgw-err">
+              <t t-out="ic('alert',15)"/> <span t-esc="state.error"/>
+            </div>
+
+            <!-- ================= step 1: choose the system ================= -->
+            <t t-if="step === 'vendor'">
+              <p class="itgw-lead">Pick the system payroll should read from. Every
+                one of these ships a field template, so the mapping starts filled in.</p>
+              <div class="itgw-vendors">
+                <button t-foreach="state.vendors" t-as="v" t-key="v.id"
+                        class="itgw-vendor"
+                        t-att-class="{ 'is-on': state.form.connector_type === v.id }"
+                        t-on-click="() => this.pickVendor(v.id)">
+                  <span class="itgw-vendor__ic" t-out="ic('plug',18)"/>
+                  <span class="itgw-vendor__l" t-esc="v.label"/>
+                </button>
+              </div>
+              <label class="pplw-label">Payroll configuration these fields will feed</label>
+              <select class="pplw-in" t-on-change="(ev) => this.onField('config_id', ev)">
+                <option value="">— pick later —</option>
+                <option t-foreach="state.configs" t-as="c" t-key="c.id"
+                        t-att-value="c.id" t-att-selected="isConfig(c.id)"
+                        t-esc="c.name"/>
+              </select>
+            </t>
+
+            <!-- ==================== step 2: connect ==================== -->
+            <t t-if="step === 'auth'">
+              <div t-if="s.guide" class="itgw-guide">
+                <div class="itgw-guide__badge" t-esc="s.badge"/>
+                <div class="itgw-guide__tx" t-out="guideHtml"/>
+              </div>
+              <div class="pplw-grid2">
+                <div class="pplw-sec">
+                  <h4>Connection</h4>
+                  <label class="pplw-label">Name</label>
+                  <input class="pplw-in" t-att-value="state.form.name"
+                         t-on-change="(ev) => this.onField('name', ev)"/>
+                  <label class="pplw-label">API endpoint</label>
+                  <input class="pplw-in" placeholder="https://…" t-att-value="state.form.api_endpoint"
+                         t-on-change="(ev) => this.onField('api_endpoint', ev)"/>
+                  <label class="pplw-label">Authentication</label>
+                  <select class="pplw-in" t-on-change="(ev) => this.onField('auth_type', ev)">
+                    <option t-foreach="state.authTypes" t-as="a" t-key="a.id"
+                            t-att-value="a.id" t-att-selected="state.form.auth_type === a.id"
+                            t-esc="a.label"/>
+                  </select>
+                </div>
+                <div class="pplw-sec">
+                  <h4>Credentials</h4>
+                  <t t-if="usesField('api_key')">
+                    <label class="pplw-label">API key</label>
+                    <input class="pplw-in" type="password" autocomplete="off"
+                           t-on-change="(ev) => this.onField('api_key', ev)"/>
+                  </t>
+                  <t t-if="usesField('client_id')">
+                    <label class="pplw-label">Client ID</label>
+                    <input class="pplw-in" autocomplete="off"
+                           t-on-change="(ev) => this.onField('client_id', ev)"/>
+                  </t>
+                  <t t-if="usesField('client_secret')">
+                    <label class="pplw-label">Client secret</label>
+                    <input class="pplw-in" type="password" autocomplete="off"
+                           t-on-change="(ev) => this.onField('client_secret', ev)"/>
+                  </t>
+                  <!-- What is stored is reported, never read back: this surface
+                       is full screen and gets screenshotted. -->
+                  <div class="pplw-note">
+                    <t t-if="s.has_api_key or s.has_client_secret">A credential is already stored for this connection. Leave the box empty to keep it.</t>
+                    <t t-else="">Credentials are written to the connector and never shown again.</t>
+                  </div>
+                  <div t-if="s.connection_status" class="itgw-status">
+                    <span t-attf-class="pbim-badge {{ s.connection_status }}"><span class="d"/><t t-esc="s.connection_status"/></span>
+                  </div>
+                </div>
+              </div>
+            </t>
+
+            <!-- ================ step 3: field mapping ================ -->
+            <t t-if="step === 'mappings'">
+              <p class="itgw-lead" t-esc="mappingSummary"/>
+              <p class="itgw-sub">Suggested rows are excluded from sync until they
+                resolve against your real payload — that is what “Test mappings” does.</p>
+              <div t-if="s.mappings.length" class="pbim-tablewrap itgw-tw">
+                <table class="pbim-table">
+                  <thead><tr><th>Source field</th><th>Target code</th><th>State</th></tr></thead>
+                  <tbody>
+                    <tr t-foreach="s.mappings" t-as="m" t-key="m.id">
+                      <td class="mono" t-esc="m.source"/>
+                      <td t-esc="m.target or '—'"/>
+                      <td><span t-attf-class="pbim-badge {{ stateTone(m.state) }}"><span class="d"/><t t-esc="m.state"/></span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div t-else="" class="pbim-empty">No field mappings were created.</div>
+              <div t-if="moreMappings" class="itgw-more" t-esc="moreMappings"/>
+            </t>
+
+            <!-- ==================== step 4: confirm ==================== -->
+            <t t-if="step === 'activate'">
+              <div class="pplw-result">
+                <div class="pplw-result-ic"><t t-out="ic('checkCircle',30)"/></div>
+                <h3 t-if="!s.done">Ready to go</h3>
+                <h3 t-else="">Connected</h3>
+                <p t-esc="s.connector_name"/>
+                <p t-if="!s.done">Activating turns this connection on for payroll
+                  imports. Suggested field mappings stay excluded until you confirm them.</p>
+              </div>
+            </t>
+          </t>
+        </div>
+
+        <!-- ========================= the footer ========================= -->
+        <div class="pplw-foot">
+          <button class="pbim-btn ghost" t-att-disabled="state.busy"
+                  t-if="step !== 'vendor' and !s.done" t-on-click="goBack">
+            <t t-out="ic('back',15)"/> Back
+          </button>
+          <button class="pbim-btn ghost" t-if="step === 'vendor'" t-on-click="close">Cancel</button>
+          <div class="pplw-sp"/>
+
+          <button t-if="step === 'vendor'" class="pbim-btn primary"
+                  t-att-disabled="!canContinue" t-on-click="chooseVendor">
+            Continue <t t-out="ic('arrow',15)"/>
+          </button>
+
+          <t t-if="step === 'auth'">
+            <button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="testConnection">
+              <t t-out="ic('zap',15)"/> Test connection
+            </button>
+            <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="applyTemplate">
+              Load field template <t t-out="ic('arrow',15)"/>
+            </button>
+          </t>
+
+          <t t-if="step === 'mappings'">
+            <button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="testMappings">
+              <t t-out="ic('play',15)"/> Test mappings
+            </button>
+            <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="toActivate">
+              Continue <t t-out="ic('arrow',15)"/>
+            </button>
+          </t>
+
+          <t t-if="step === 'activate'">
+            <button t-if="!s.done" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="finish">
+              <t t-out="ic('check',15)"/> Finish &amp; activate
+            </button>
+            <button t-else="" class="pbim-btn primary" t-on-click="openConnector">
+              <t t-out="ic('arrow',15)"/> Open the connector
+            </button>
+          </t>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

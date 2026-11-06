@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- ===================================================================== BAR
+     Rose, thin, on every page of a support session and on nobody else's.
+     No close button: the only way to make it go away is to leave, which is the
+     point. -->
+<t t-name="pb_tenancy.SupportBar">
+  <div t-if="sess" t-attf-class="pbtn-supbar {{ closing ? 'closing' : '' }} {{ state.pulsed ? 'pulsed' : '' }}"
+       role="status" aria-live="polite">
+    <span class="pbtn-supbar-ic"><t t-out="ic('shield',16)"/></span>
+    <span class="pbtn-supbar-tt">
+      You are in <b t-esc="company"/> as Payobook support
+    </span>
+    <span class="pbtn-supbar-when">
+      <t t-out="ic('clock',13)"/>
+      <t t-if="endsAt">ends <t t-esc="endsAt"/> · </t>
+      <t t-esc="countdown"/>
+    </span>
+    <span class="pbtn-supbar-sp"/>
+    <button class="pbtn-supbar-leave" t-on-click="leave"
+            t-att-disabled="state.leaving"
+            title="End this support session and sign out">
+      <t t-if="state.leaving">Leaving…</t>
+      <t t-else=""><t t-out="ic('logOut',13)"/> Leave</t>
+    </button>
+  </div>
+</t>
+
+<!-- ==================================================================== PAGE
+     The customer's own record of every time we have been in. -->
+<t t-name="pb_tenancy.SupportPage">
+  <div class="pbim pbim-page pbtn">
+    <div class="pbim-wrap pbtn-sup">
+
+      <div class="pbtn-wn-head">
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+        <div class="pbim-eyebrow"><t t-out="ic('shield',13)"/> About Payobook</div>
+        <h1 class="pbim-h1">Support access</h1>
+        <div class="pbim-sub">
+          When Payobook support opens your company's data, it is written down
+          here — and you decide whether we may at all.
+        </div>
+      </div>
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading your record…</span>
+      </div>
+
+      <div t-elif="state.error" class="pbim-card pbtn-empty">
+        <span class="pbtn-empty-ic"><t t-out="ic('alert',26)"/></span>
+        <b>This page could not be read.</b>
+        <span t-esc="state.error"/>
+        <button class="pbim-btn outline" t-on-click="load">
+          <t t-out="ic('refresh',14)"/> Try again
+        </button>
+      </div>
+
+      <!-- Somebody who may not work the switch meets a sentence, not a fault. -->
+      <div t-elif="!mayManage" class="pbim-card pbtn-empty">
+        <span class="pbtn-empty-ic"><t t-out="ic('lock',26)"/></span>
+        <b>This page belongs to whoever manages permissions here.</b>
+        <span>They can see every time Payobook support has opened your company's
+              data, and they decide whether we may at all. Ask them if you would
+              like to know.</span>
+      </div>
+
+      <t t-else="">
+        <!-- ================== THE SWITCH: the whole promise ================== -->
+        <div t-attf-class="pbim-card pbtn-sup-hero {{ allowed ? 'on' : 'off' }}">
+          <div t-attf-class="pbtn-sup-hero-ic {{ allowed ? 'on' : 'off' }}">
+            <t t-if="allowed"><t t-out="ic('shield',26)"/></t>
+            <t t-else=""><t t-out="ic('lock',26)"/></t>
+          </div>
+          <div class="pbtn-sup-hero-tx">
+            <div class="pbim-eyebrow">Support access</div>
+            <b t-if="allowed">Payobook support may open your data when you ask</b>
+            <b t-else="">Payobook support cannot open your data</b>
+            <p t-esc="switchSentence"/>
+          </div>
+          <button class="pbtn-sup-switch" t-on-click="() => this.setAllowed(!allowed)"
+                  t-att-disabled="state.busy"
+                  t-att-aria-pressed="allowed ? 'true' : 'false'"
+                  t-attf-title="{{ allowed ? 'Switch support access off' : 'Switch support access on' }}">
+            <span class="pbtn-sup-knob"/>
+          </button>
+        </div>
+
+        <div t-if="!allowed" class="pbtn-sup-offnote">
+          <t t-out="ic('info',15)"/>
+          <span>While this is off, the Payobook team's own screen shows your
+                company as closed and the button that would open it does
+                nothing. There is no way round it from our side.</span>
+        </div>
+
+        <!-- ======================= THE TRAIL ======================= -->
+        <div class="pbtn-pu-sec">
+          <h2 class="pbim-h2">Every time we have been in</h2>
+          <span class="pbim-sub">Newest first. Nobody — including Payobook —
+                can remove a line from this list.</span>
+        </div>
+
+        <div t-if="empty" class="pbim-card pbtn-empty">
+          <span class="pbtn-empty-ic"><t t-out="ic('shield',26)"/></span>
+          <b>Payobook support has never opened your company's data.</b>
+          <span>If we ever do, it will appear here within seconds — with the
+                reason we were given and every screen that was opened.</span>
+        </div>
+
+        <div t-else="" class="pbim-card pbtn-sup-trail">
+          <div t-foreach="rows" t-as="row" t-key="row.id"
+               t-attf-class="pbtn-sup-row {{ row.state }} {{ state.open === row.id ? 'open' : '' }}">
+            <div class="pbtn-sup-line" t-on-click="() => this.toggleRow(row.id)">
+              <span t-attf-class="pbtn-sup-dot {{ row.tone }}"/>
+              <span class="pbtn-sup-when" t-esc="row.when"/>
+              <span class="pbtn-sup-who" t-esc="row.who"/>
+              <span class="pbtn-sup-why" t-esc="row.reason"/>
+              <span t-attf-class="pbim-badge {{ row.tone }}" t-esc="row.state_label"/>
+              <span class="pbtn-sup-screens">
+                <t t-if="row.screen_count">
+                  <t t-out="ic('layers',13)"/> <t t-esc="row.screen_count"/> screen(s)
+                </t>
+                <t t-else="">—</t>
+              </span>
+              <span class="pbtn-sup-caret"><t t-out="ic('chevronDown',14)"/></span>
+            </div>
+            <div t-if="state.open === row.id" class="pbtn-sup-det">
+              <div class="pbtn-sup-facts">
+                <div><span>Allowed for</span><b t-esc="row.allowed_for or '—'"/></div>
+                <div t-if="row.lasted"><span>Actually lasted</span><b t-esc="row.lasted"/></div>
+                <div t-if="row.ended_by"><span>Ended because</span><b t-esc="row.ended_by"/></div>
+                <div t-if="row.refused_reason"><span>Refused because</span><b t-esc="row.refused_reason"/></div>
+                <div t-if="row.source_ip"><span>Connected from</span><b t-esc="row.source_ip"/></div>
+              </div>
+              <div t-if="row.screens.length" class="pbtn-sup-chips">
+                <span t-foreach="row.screens" t-as="scr" t-key="scr_index"
+                      class="pbtn-sup-chip" t-att-title="scr.ts">
+                  <t t-esc="screenLabel(scr)"/>
+                </span>
+              </div>
+              <div t-else="" class="pbtn-sup-noscreens">
+                No screens were opened during this session.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="pbtn-sup-foot">
+          Payobook support signs in as a recovery account that belongs to us,
+          never as one of your people — so nothing here is ever mistaken for
+          something a colleague did.
+        </p>
+      </t>
+
+    </div>
+  </div>
+</t>
+
+</templates>

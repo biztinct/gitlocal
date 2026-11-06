@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         COUNTRY PACK: VIETNAM (vn_osh). LEARNING L2, handover §3.6.1.
+
+         TEMPLATE rows: company empty, archived. Nobody is measured against
+         them until a company switches the pack on (Settings › HR › Required
+         training), which COPIES them into that company with "assign it by
+         itself" OFF. Rows graded [U] carry `unverified` and arrive archived
+         even then, with a note saying what to confirm.
+
+         Sources (primary text read where marked [P]):
+           Decree 44/2016/ND-CP (EN) https://apolatlegal.com/wp-content/uploads/2025/06/Decree-44_2016_ND-CP.pdf
+           Decree 140/2018/ND-CP (EN, luatvietnam) · Circular 06/2020/TT-BLDTBXH (vbpl.vn)
+           Decree 105/2025/ND-CP fire (pccc.vn) · Circular 19/2016/TT-BYT Art 7 (hethongphapluat)
+
+         Encoding: groups 1-6 = employee field pb_safety_group. Validity 24
+         months (group 4: 12). Refresher = half the initial hours. The legal
+         list of renewals due within 30 days (Art 25.2) is the Vietnam report
+         on the Numbers page.
+         ================================================================== -->
+
+    <record id="req_vn_osh_g1" model="pb.training.requirement">
+        <field name="name">Safety training — group 1 (managers)</field>
+        <field name="code">vn_osh_g1</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">101</field>
+        <field name="safety_groups">1</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">OSH group 1|nhóm 1</field>
+        <field name="hours_required">16</field>
+        <field name="validity_months">24</field>
+        <field name="refresher_hours">8</field>
+        <field name="grace_days">30</field>
+        <field name="note">Decree 44/2016 Art 17-19: 16 hours to start, a refresher of 8 hours every two years. Certificate from a licensed training provider.</field>
+    </record>
+
+    <record id="req_vn_osh_g2" model="pb.training.requirement">
+        <field name="name">Safety training — group 2 (safety officers)</field>
+        <field name="code">vn_osh_g2</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">102</field>
+        <field name="safety_groups">2</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">OSH group 2|nhóm 2</field>
+        <field name="hours_required">48</field>
+        <field name="validity_months">24</field>
+        <field name="refresher_hours">24</field>
+        <field name="grace_days">30</field>
+        <field name="note">Decree 44/2016 Art 17-19: 48 hours to start, a refresher of 24 hours every two years. Certificate from a licensed training provider.</field>
+    </record>
+
+    <record id="req_vn_osh_g3" model="pb.training.requirement">
+        <field name="name">Safety card — group 3 (strict-safety jobs)</field>
+        <field name="code">vn_osh_g3</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">103</field>
+        <field name="safety_groups">3</field>
+        <field name="target">licence</field>
+        <field name="document_category_id" ref="pb_training.cat_licence"/>
+        <field name="name_pattern">Safety card|thẻ an toàn</field>
+        <field name="hours_required">24</field>
+        <field name="validity_months">24</field>
+        <field name="refresher_hours">12</field>
+        <field name="grace_days">30</field>
+        <field name="note">Decree 44/2016 Art 17-19: 24 hours to start, 12 hours every two years. The employer issues the safety card after a pass (jobs on the strict-safety list, Circular 06/2020). Confirm the card form number before printing.</field>
+    </record>
+
+    <record id="req_vn_osh_g4" model="pb.training.requirement">
+        <field name="name">Safety training — group 4 (other workers)</field>
+        <field name="code">vn_osh_g4</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">104</field>
+        <field name="safety_groups">4</field>
+        <field name="target">course</field>
+        <field name="hours_required">16</field>
+        <field name="validity_months">12</field>
+        <field name="refresher_hours">8</field>
+        <field name="grace_days">30</field>
+        <field name="note">Decree 44/2016 Art 17-19: 16 hours to start (apprentices and people on probation included), 8 hours every year. The employer's own training record counts — link your course here.</field>
+    </record>
+
+    <record id="req_vn_osh_g5" model="pb.training.requirement">
+        <field name="name">Safety training — group 5 (health staff)</field>
+        <field name="code">vn_osh_g5</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">105</field>
+        <field name="safety_groups">5</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">OSH group 5|nhóm 5</field>
+        <field name="hours_required">16</field>
+        <field name="validity_months">24</field>
+        <field name="refresher_hours">8</field>
+        <field name="grace_days">30</field>
+        <field name="note">Decree 140/2018: occupational-health staff, 16 hours, renewed every two years at half the hours.</field>
+    </record>
+
+    <record id="req_vn_osh_g6" model="pb.training.requirement">
+        <field name="name">Safety training — group 6 (safety-hygiene officers)</field>
+        <field name="code">vn_osh_g6</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="sequence">106</field>
+        <field name="safety_groups">6</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">OSH group 6|nhóm 6</field>
+        <field name="hours_required">4</field>
+        <field name="validity_months">24</field>
+        <field name="refresher_hours">2</field>
+        <field name="grace_days">30</field>
+        <field name="note">Decree 44/2016: 4 hours on top of the person's own group, renewed every two years.</field>
+    </record>
+
+    <record id="req_vn_osh_retrain" model="pb.training.requirement">
+        <field name="name">Safety retraining after a job change or a long absence</field>
+        <field name="code">vn_osh_retrain</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">107</field>
+        <field name="target">course</field>
+        <field name="validity_months">12</field>
+        <field name="note">Confirm before switching on. Decree 44/2016 Art 21.3: retrain before a new job, equipment or technology (unless trained in the last 12 months), and at half the hours after more than six months away. The system does not spot a job change or a long absence by itself yet: pick the people this applies to.</field>
+    </record>
+
+    <record id="req_vn_fire_g1" model="pb.training.requirement">
+        <field name="name">Fire training — group 1</field>
+        <field name="code">vn_fire_g1</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">111</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">Fire training group 1|PCCC</field>
+        <field name="hours_required">8</field>
+        <field name="validity_months">60</field>
+        <field name="refresher_hours">4</field>
+        <field name="note">Confirm before switching on. Decree 105/2025 (secondary sources): facility heads, people in fire or explosion-risk areas and vehicle operators; 8 to 12 hours, a five-year cycle with a yearly refresher of 4 to 8 hours. Certificate from the fire police.</field>
+    </record>
+
+    <record id="req_vn_fire_g2" model="pb.training.requirement">
+        <field name="name">Fire training — group 2 (facility fire brigade)</field>
+        <field name="code">vn_fire_g2</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">112</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">Fire training group 2</field>
+        <field name="hours_required">16</field>
+        <field name="validity_months">60</field>
+        <field name="refresher_hours">4</field>
+        <field name="note">Confirm before switching on. Decree 105/2025 (secondary sources): the facility's own fire brigade; 16 to 24 hours, five-year cycle, 4 to 8 hours yearly.</field>
+    </record>
+
+    <record id="req_vn_fire_g3" model="pb.training.requirement">
+        <field name="name">Fire training — group 3 (fire inspectors)</field>
+        <field name="code">vn_fire_g3</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="needs_audience" eval="True"/>
+        <field name="sequence">113</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">Fire training group 3</field>
+        <field name="hours_required">24</field>
+        <field name="validity_months">60</field>
+        <field name="refresher_hours">8</field>
+        <field name="note">Confirm before switching on. Decree 105/2025 (secondary sources): fire inspectors and specialised brigades; 24 to 32 hours, five-year cycle, 8 to 12 hours yearly. Confirm which fire group each site has and whether Decree 347/2026 applies.</field>
+    </record>
+
+    <record id="req_vn_first_aid" model="pb.training.requirement">
+        <field name="name">First-aiders on site</field>
+        <field name="code">vn_first_aid</field>
+        <field name="pack_key">vn_osh</field>
+        <field name="kind">statutory</field>
+        <field name="company_id" eval="False"/>
+        <field name="active" eval="False"/>
+        <field name="unverified" eval="True"/>
+        <field name="sequence">114</field>
+        <field name="target">certificate</field>
+        <field name="document_category_id" ref="pb_employee_vault.cat_certificate"/>
+        <field name="name_pattern">First aid|sơ cứu</field>
+        <field name="hours_required">16</field>
+        <field name="validity_months">12</field>
+        <field name="ratio_people">150</field>
+        <field name="ratio_holders">1</field>
+        <field name="note">Confirm before switching on. Circular 19/2016 Art 7 (secondary sources): at least one trained first-aider per 150 workers (per 100 on strict-safety sites), 16 hours, retrained yearly; every worker gets 4 hours. Confirm the ratio and the yearly hours.</field>
+    </record>
+
+</data>
+</odoo>

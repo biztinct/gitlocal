@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+  <!-- Global constraints apply only to bank entries; existing native question rules remain intact. -->
+  <record id="question_bank_company_rule" model="ir.rule">
+    <field name="name">Library questions: training access, company and source restrictions</field>
+    <field name="model_id" ref="survey.model_survey_question"/>
+    <field name="domain_force">['|', ('pb_bank', '=', False), '&amp;', ('pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else []), '|', ('pb_bank_restrict_ids', '=', False), ('pb_bank_restrict_ids', 'in', user.id)] if not user.has_group('pb_training.group_training_manager') else ['|', ('pb_bank', '=', False), ('pb_bank_company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="question_bank_answer_rule" model="ir.rule">
+    <field name="name">Library answers follow question visibility</field>
+    <field name="model_id" ref="survey.model_survey_question_answer"/>
+    <field name="domain_force">['&amp;', '|', ('question_id', '=', False), '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else []), '|', ('matrix_question_id', '=', False), '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_company_id', 'in', company_ids if user.has_group('pb_training.group_training_user') else [])] + ([] if user.has_group('pb_training.group_training_manager') else ['&amp;', '|', ('question_id', '=', False), '|', '|', ('question_id.pb_bank', '=', False), ('question_id.pb_bank_restrict_ids', '=', False), ('question_id.pb_bank_restrict_ids', 'in', user.id), '|', ('matrix_question_id', '=', False), '|', '|', ('matrix_question_id.pb_bank', '=', False), ('matrix_question_id.pb_bank_restrict_ids', '=', False), ('matrix_question_id.pb_bank_restrict_ids', 'in', user.id)])</field>
+  </record>
+  <!-- Native user rules traverse a survey. Independent library records have
+       no survey; the existing trainer role gets this new library surface only.
+       The global rules above still enforce company and source restrictions. -->
+  <record id="question_bank_trainer_rule" model="ir.rule">
+    <field name="name">Trainers author independent library questions</field>
+    <field name="model_id" ref="survey.model_survey_question"/>
+    <field name="groups" eval="[(4, ref('pb_training.group_training_user'))]"/>
+    <field name="domain_force">[('pb_bank', '=', True)]</field>
+  </record>
+  <record id="question_bank_answer_trainer_rule" model="ir.rule">
+    <field name="name">Trainers author answers to independent library questions</field>
+    <field name="model_id" ref="survey.model_survey_question_answer"/>
+    <field name="groups" eval="[(4, ref('pb_training.group_training_user'))]"/>
+    <field name="domain_force">['|', ('question_id.pb_bank', '=', True), ('matrix_question_id.pb_bank', '=', True)]</field>
+  </record>
+  <record id="question_bank_list" model="ir.ui.view">
+    <field name="name">Learning question library</field><field name="model">survey.question</field>
+    <field name="arch" type="xml">
+      <list string="Question bank" decoration-muted="pb_bank_state == 'archived'">
+        <header><button name="action_bank_approve" type="object" string="Approve selected"/><button name="action_bank_archive" type="object" string="Archive selected"/></header>
+        <field name="pb_bank_code" string="Reference"/><field name="title"/><field name="pb_bank_topic_id"/>
+        <field name="question_type"/><field name="pb_bank_difficulty"/><field name="pb_bank_state" widget="badge" decoration-success="pb_bank_state == 'approved'" decoration-warning="pb_bank_state == 'draft'"/>
+        <field name="pb_bank_revision"/><field name="pb_bank_language_id" optional="show"/><field name="pb_bank_tag_ids" widget="many2many_tags" optional="hide"/>
+        <field name="pb_bank_owner_id" optional="hide"/><field name="pb_bank_origin_id" optional="hide"/><field name="write_date" optional="hide"/>
+      </list>
+    </field>
+  </record>
+  <record id="question_bank_search" model="ir.ui.view">
+    <field name="name">Learning question library filters</field><field name="model">survey.question</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="title"/><field name="id" string="Question number"/><field name="pb_bank_topic_id"/><field name="pb_bank_tag_ids"/><field name="pb_bank_skill_ids"/>
+        <field name="question_type"/><field name="pb_bank_difficulty"/><field name="pb_bank_language_id"/><field name="pb_bank_owner_id"/><field name="pb_bank_origin_id"/><field name="pb_bank_origin_slide_id"/>
+        <filter name="approved" string="Approved" domain="[('pb_bank_state','=','approved')]"/>
+        <filter name="review" string="Needs review" domain="[('pb_bank_state','=','draft')]"/>
+        <filter name="archived" string="Archived" domain="[('pb_bank_state','=','archived')]"/>
+        <separator/><filter name="mine" string="My questions" domain="[('pb_bank_owner_id','=',uid)]"/>
+        <filter name="scored" string="Scored questions" domain="[('is_scored_question','=',True)]"/>
+        <filter name="updated" string="Updated" date="write_date"/>
+        <group><filter name="topic" string="Topic" context="{'group_by':'pb_bank_topic_id'}"/><filter name="difficulty" string="Difficulty" context="{'group_by':'pb_bank_difficulty'}"/><filter name="type" string="Type" context="{'group_by':'question_type'}"/><filter name="status" string="Status" context="{'group_by':'pb_bank_state'}"/></group>
+        <searchpanel><field name="pb_bank_topic_id" string="Topics"/><field name="pb_bank_state" string="Status"/></searchpanel>
+      </search>
+    </field>
+  </record>
+  <record id="question_bank_native_metadata" model="ir.ui.view">
+    <field name="name">Question library metadata and snapshots</field><field name="model">survey.question</field>
+    <field name="inherit_id" ref="pb_training.view_question_authoring_studio"/><field name="priority">100</field>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet/*[1]" position="before">
+        <field name="pb_bank" invisible="1"/>
+        <div class="pb-bank-source" invisible="pb_bank or is_page">
+          <field name="pb_bank_source_id" readonly="1" options="{'no_open': True}"/>
+          <field name="pb_bank_source_revision" readonly="1" invisible="not pb_bank_source_id"/>
+          <button name="action_save_to_bank" type="object" string="Save to question bank" invisible="pb_bank_source_id" class="btn btn-secondary"/>
+          <widget name="pb_bank_refresh" invisible="not pb_bank_source_id"/>
+        </div>
+        </xpath>
+      <xpath expr="//notebook" position="inside"><page string="04 · Answer explanation"><field name="pb_bank_explanation" placeholder="Explain why the answer is correct. This feedback is also reused in lesson knowledge checks."/></page><page string="05 · Library details" invisible="not pb_bank"><group string="Library details" invisible="not pb_bank">
+          <group><field name="pb_bank_code" readonly="1"/><field name="pb_bank_topic_id"/><field name="pb_bank_difficulty"/><field name="pb_bank_language_id"/><field name="pb_bank_owner_id"/></group>
+          <group><field name="pb_bank_company_id" groups="base.group_multi_company"/><field name="pb_bank_skill_ids" widget="many2many_tags"/><field name="pb_bank_tag_ids" widget="many2many_tags"/><field name="pb_bank_origin_id" readonly="1"/><field name="pb_bank_origin_slide_id" readonly="1"/><field name="pb_bank_usage" readonly="1"/><field name="pb_bank_restrict_ids" widget="many2many_tags" groups="pb_training.group_training_manager"/></group>
+          <field name="pb_bank_dependency_note" invisible="not pb_bank_dependency_note"/>
+        </group>
+      </page></xpath>
+    </field>
+  </record>
+  <record id="question_bank_form" model="ir.ui.view">
+    <field name="name">Question bank editor</field><field name="model">survey.question</field>
+    <field name="inherit_id" ref="survey.survey_question_form"/><field name="mode">primary</field><field name="priority">200</field>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="attributes"><attribute name="create">true</attribute><attribute name="delete">false</attribute></xpath>
+      <xpath expr="//sheet" position="before"><header>
+        <button name="action_bank_approve" string="Approve for reuse" type="object" class="btn-primary" invisible="pb_bank_state == 'approved'"/>
+        <button name="action_bank_draft" string="Return to review" type="object" invisible="pb_bank_state == 'draft'"/>
+        <button name="action_bank_archive" string="Archive" type="object" invisible="pb_bank_state == 'archived'"/>
+        <field name="pb_bank_state" widget="statusbar"/><field name="pb_bank_revision" readonly="1"/>
+      </header></xpath>
+    </field>
+  </record>
+  <record id="action_question_bank" model="ir.actions.act_window">
+    <field name="name">Question bank</field><field name="res_model">survey.question</field><field name="view_mode">list,form</field>
+    <field name="view_ids" eval="[(5,0,0),(0,0,{'view_mode':'list','view_id':ref('question_bank_list')}),(0,0,{'view_mode':'form','view_id':ref('question_bank_form')})]"/>
+    <field name="search_view_id" ref="question_bank_search"/><field name="domain">[('pb_bank','=',True),('is_page','=',False)]</field>
+    <field name="context">{'default_pb_bank': True, 'default_survey_id': False, 'default_is_page': False}</field>
+    <field name="help" type="html"><p class="o_view_nocontent_smiling_face">Build your question library</p><p>Create reusable questions, organise them by topic and difficulty, then approve them for tests and lesson knowledge checks.</p></field>
+  </record>
+  <record id="action_pb_training_questions" model="ir.actions.act_window">
+    <field name="domain">[('pb_bank','=',True),('is_page','=',False)]</field>
+    <field name="context">{'default_pb_bank': True, 'default_survey_id': False, 'default_is_page': False}</field>
+    <field name="view_ids" eval="[(5,0,0),(0,0,{'view_mode':'list','view_id':ref('question_bank_list')}),(0,0,{'view_mode':'form','view_id':ref('question_bank_form')})]"/>
+    <field name="search_view_id" ref="question_bank_search"/>
+  </record>
+  <record id="view_test_bank_picker" model="ir.ui.view">
+    <field name="name">Test question library picker</field><field name="model">survey.survey</field><field name="inherit_id" ref="pb_training.view_test_authoring_studio"/>
+    <field name="arch" type="xml"><xpath expr="//field[@name='question_and_page_ids']" position="before"><widget name="pb_question_bank" colspan="2"/></xpath></field>
+  </record>
+  <record id="view_lesson_bank_picker" model="ir.ui.view">
+    <field name="name">Lesson question library picker</field><field name="model">slide.slide</field><field name="inherit_id" ref="website_slides.view_slide_slide_form"/>
+    <field name="arch" type="xml"><xpath expr="//field[@name='question_ids']" position="before"><widget name="pb_question_bank" colspan="2"/></xpath></field>
+  </record>
+  <record id="view_lesson_bank_source" model="ir.ui.view">
+    <field name="name">Lesson question library source</field><field name="model">slide.question</field><field name="inherit_id" ref="website_slides.slide_question_view_form"/>
+    <field name="arch" type="xml"><xpath expr="//sheet" position="inside"><group string="Question library"><field name="pb_bank_source_id" readonly="1" options="{'no_open': True}"/><field name="pb_bank_source_revision" readonly="1" invisible="not pb_bank_source_id"/><button name="action_save_to_bank" type="object" string="Save to question bank" invisible="pb_bank_source_id"/><widget name="pb_bank_refresh" invisible="not pb_bank_source_id"/></group></xpath></field>
+  </record>
+  <record id="view_course_bank_entry" model="ir.ui.view">
+    <field name="name">Course final assessment entry</field><field name="model">slide.channel</field><field name="inherit_id" ref="website_slides.view_slide_channel_form"/>
+    <field name="arch" type="xml"><xpath expr="//field[@name='slide_ids']" position="before"><div class="pb-bank-course-help"><strong>Finish with an assessment</strong><p>Use Add final test below to choose an existing assessment or create one. In its Questions tab, use Add from question bank.</p></div></xpath><xpath expr="//create[@name='add_slide_certificate']" position="attributes"><attribute name="string">Add final test</attribute></xpath></field>
+  </record>
+</odoo>

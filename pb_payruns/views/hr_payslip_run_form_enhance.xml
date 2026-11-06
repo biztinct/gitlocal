@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Enhance the native Payslip Batch form (kept editable + VU-skinned):
+        - replace the old three-tier header buttons with one Submit
+        - swap the plain statusbar for the pb_pipeline approval widget
+        - inject a KPI summary band (gross / deductions / net / employees)
+        - tag the <form> for scoped styling (pb-payrun-form)
+        - show employee on the embedded payslip list
+    -->
+    <record id="hr_payslip_run_form_pb_enhance" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.pb-enhance</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <!-- PRS P2: `vu-no-hero` switches off the VU engine's automatic
+                 "R2 / DRAFT" card — the pay run screen below draws the run's
+                 identity itself (biz_theme vu_form_compiler.js). -->
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="pb-payrun-form vu-no-hero" separator=" "/>
+                <!-- PRS P2 item 11 — the stray "New" above "Back to Pay runs"
+                     is the form's own create button (core). On this build a
+                     run's name and dates are read-only on the form, so a
+                     blank run made here can never be saved: a dead end. Runs
+                     are made by Run payroll; the button goes. -->
+                <attribute name="create">0</attribute>
+            </xpath>
+
+            <!-- The two tier-advance buttons are gone with the tiers. Who signs
+                 a pay run off is now a published route, so there is exactly one
+                 thing to press here — Submit for approval — and the decision
+                 itself is made in Approvals, against the request. -->
+            <xpath expr="//header/button[@name='action_payslip_run_level1_done']" position="replace"/>
+            <xpath expr="//header/button[@name='action_payslip_run_level2_done']" position="replace"/>
+
+            <xpath expr="//header/button[@name='done_payslip_run']" position="replace">
+                <button name="action_approval_submit" type="object"
+                        string="Submit for approval" class="oe_highlight"
+                        invisible="state != 'draft'"/>
+            </xpath>
+            <!-- LEARN REFRESH step 6: Reject asks "Why?" first (a small
+                 window), so every rejected run carries its reason. -->
+            <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="replace">
+                <button name="action_pb_ask_reject" type="object" string="Reject"
+                        invisible="state not in ('draft', 'approval_pending')"/>
+            </xpath>
+
+            <!-- hide the cramped native statusbar; render the workflow as a
+                 full-width numbered stepper (health19 vu_progress_rail) on the
+                 row below the action buttons -->
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Starting the period again without deleting the run. Deleting
+                 the run is what used to leave 152 drafts loose for the next
+                 run to adopt, so the safe way needs to be the visible one. -->
+            <xpath expr="//form/header" position="inside">
+                <button name="action_pb_print_payslips"
+                        type="object"
+                        string="Print Payslips"
+                        invisible="state == 'cancel' or not slip_ids"
+                        help="Download a PDF of computed payslips, including drafts for review."/>
+                <button name="action_split_review_groups"
+                        type="object"
+                        string="Split Into Review Groups"
+                        invisible="state != 'draft' or not slip_ids"
+                        confirm="This makes one pay run per pay scheme and part of the business, moving every payslip into the right one. The original run is removed once it is empty. Continue?"/>
+                <button name="action_pb_delete_draft_payslips"
+                        type="object"
+                        string="Delete Draft Payslips"
+                        invisible="state != 'draft' or not slip_ids"
+                        confirm="This deletes every DRAFT payslip on this pay run. The run itself, and any payslip already approved, are kept. Continue?"/>
+            </xpath>
+
+            <!-- PRS P2 — THE PAY RUN SCREEN (docs/handovers/payrunscreen/).
+                 One OWL widget draws the whole run from
+                 pb.payruns.get_run_screen: journey, money, checks, who signs
+                 it off, people, history. Everything it replaces is HIDDEN,
+                 never deleted (ledger C7: other modules anchor on these
+                 nodes), with the class `pb-prs-legacy`, so More › "Show the
+                 classic layout" can bring it all back for this browser tab.
+                 `invisible="1"` would not do: an invisible node is never
+                 rendered, so no class could ever unhide it. -->
+            <xpath expr="//sheet/label[@for='name']" position="before">
+                <widget name="pb_payrun_screen"/>
+                <field name="write_date" invisible="1"/>
+                <div class="pb-prs-legacy">
+                    <widget name="vu_progress_rail"
+                            steps="draft,approval_pending,done"
+                            labels="Draft,Waiting for approval,Done"
+                            state_field="state"/>
+                </div>
+            </xpath>
+            <xpath expr="//sheet/label[@for='name']" position="attributes">
+                <attribute name="class" add="pb-prs-legacy" separator=" "/>
+            </xpath>
+            <xpath expr="//sheet/h1" position="attributes">
+                <attribute name="class">pb-prs-legacy</attribute>
+            </xpath>
+            <xpath expr="//sheet/separator" position="attributes">
+                <attribute name="class">pb-prs-legacy</attribute>
+            </xpath>
+
+            <!-- Run settings: the native group, kept native (the form's own
+                 save, the existing readonly rules), restyled as a card and
+                 relabelled in screen words. journal_id comes from
+                 om_hr_payroll_account, which pb_payruns does not depend on,
+                 so its label is set in `_get_view` instead of by an xpath
+                 that would break where accounting is not installed. -->
+            <xpath expr="//sheet/group" position="attributes">
+                <attribute name="class">pb-prs-settings</attribute>
+                <attribute name="string">Run settings</attribute>
+                <attribute name="col">2</attribute>
+            </xpath>
+            <xpath expr="//sheet/group/label[@for='date_start']" position="before">
+                <field name="name" string="Run name"/>
+                <!-- PRS P3 (R8): Regular / Top-up. A draft-time choice like
+                     every other setting here (the model refuses a change
+                     after the draft too); "Compared with" pairs runs of the
+                     same kind only. -->
+                <field name="pb_run_kind" widget="radio"
+                       options="{'horizontal': true}"
+                       readonly="state != 'draft'"/>
+            </xpath>
+            <xpath expr="//sheet/group/label[@for='date_start']" position="attributes">
+                <attribute name="string">Work dates</attribute>
+            </xpath>
+            <xpath expr="//label[@for='pb_std_work_days']" position="attributes">
+                <attribute name="string">Full month in working days</attribute>
+            </xpath>
+            <!-- A changed month length after sending would change nothing
+                 the approver saw; it is locked with everything else. -->
+            <xpath expr="//field[@name='pb_std_work_days']" position="attributes">
+                <attribute name="readonly">state != 'draft'</attribute>
+                <attribute name="help">Used to work out pay for anyone who joined or left part-way through the month. Recalculate everyone afterwards so the payslips pick it up.</attribute>
+            </xpath>
+            <xpath expr="//field[@name='credit_note']" position="attributes">
+                <attribute name="string">Reverses an earlier run</attribute>
+                <attribute name="help">Turn on only to cancel out a run that was paid by mistake.</attribute>
+            </xpath>
+
+            <xpath expr="//sheet/group" position="after">
+                <!-- Who has to say yes, and who it is with right now. One
+                     sentence, because that is what the question is. -->
+                <div class="alert alert-info pb-payrun-route pb-prs-legacy" role="status">
+                    <field name="pb_approval_line" nolabel="1" readonly="1"/>
+                </div>
+                <!-- Why this run came back. Written when an approver sends it
+                     back and cleared the moment it is sent in again, so it
+                     always reads as "this is what has to be fixed", never as
+                     history. -->
+                <!-- Why this run was rejected: kept for good, because a
+                     rejected run never comes back and this is its last word. -->
+                <div class="alert alert-danger pb-payrun-rejected pb-prs-legacy" role="alert"
+                     invisible="state != 'cancel' or not pb_reject_note">
+                    <div>
+                    <b>Rejected<span invisible="not pb_reject_uid"> by
+                        <field name="pb_reject_uid" nolabel="1" readonly="1" class="pb-sb-who"/></span><span invisible="not pb_reject_date">
+                        on <field name="pb_reject_date" nolabel="1" readonly="1" class="pb-sb-when"/></span>:</b>
+                    <span class="ms-1"/><field name="pb_reject_note" nolabel="1" readonly="1" class="pb-sb-why d-inline ms-1"/>
+                    </div>
+                </div>
+                <div class="alert alert-warning pb-payrun-sentback pb-prs-legacy" role="alert"
+                     invisible="not pb_return_note">
+                    <b>Sent back by
+                        <field name="pb_return_uid" nolabel="1" readonly="1" class="pb-sb-who"/>
+                        on <field name="pb_return_date" nolabel="1" readonly="1" class="pb-sb-when"/>:</b>
+                    <field name="pb_return_note" nolabel="1" readonly="1" class="pb-sb-why"/>
+                </div>
+                <!-- VALUEKIND P5 — payroll that ran on no data must not be able
+                     to look like payroll that ran. Above the KPI band, because
+                     the band is exactly what it is warning you not to believe. -->
+                <div class="alert alert-warning pb-payrun-nodata pb-prs-legacy" role="alert"
+                     invisible="not pb_unsourced_count">
+                    <b><field name="pb_unsourced_count" nolabel="1" readonly="1"
+                              class="pb-nodata-n"/> payslip(s) were computed with no
+                        source data.</b>
+                    Every value came from a scheme default — no file, no connected
+                    system, no contract, no employee record — so the figures below
+                    are not this period's pay. Run payroll again with this period's
+                    pay data, or sync the connected system first.
+                </div>
+                <!-- Gross minus deductions IS take-home. When it is not, a
+                     component sits under the wrong heading and every figure in
+                     the band below is affected — so this warning goes above
+                     them, exactly like the no-data one. It names the amount
+                     that is unaccounted for and where to go and fix it; it
+                     never blocks the run, because the run may still be right
+                     for reasons only a person can know. -->
+                <field name="pb_balance_ok" invisible="1"/>
+                <!-- ONE child, deliberately. The theme lays an `alert` out with
+                     `display:flex`, and Odoo wraps every `<field>` in a div of
+                     its own — so a sentence with an amount in the middle of it
+                     came out as four side-by-side columns. Wrapping the whole
+                     message in a single element gives the flex row one item and
+                     hands the text back to normal flow inside it. -->
+                <div class="alert alert-warning pb-payrun-unbalanced pb-prs-legacy" role="alert"
+                     invisible="pb_balance_ok">
+                    <div>
+                        <b>These figures do not add up.</b>
+                        Gross pay less deductions should be take-home pay, and
+                        <field name="pb_balance_gap" nolabel="1" readonly="1"
+                               class="pb-unb-gap d-inline-block"/>
+                        is unaccounted for. Usually a component is set to the
+                        wrong thing — a working figure counted as pay, or a
+                        running total counted twice. Open the pay scheme and
+                        check Component treatment.
+                    </div>
+                </div>
+                <div class="pb-payrun-kpis pb-prs-legacy">
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Total gross</span>
+                        <field name="pb_total_gross" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Deductions</span>
+                        <field name="pb_total_deductions" nolabel="1" class="pb-pk-v amber"/>
+                    </div>
+                    <!-- What the company pays on top of gross. Shown only when
+                         the scheme actually has employer contributions, so a
+                         run that has none keeps the tighter four-tile band. -->
+                    <div class="pb-pk" invisible="not pb_total_employer_cost">
+                        <span class="pb-pk-l">Employer cost</span>
+                        <field name="pb_total_employer_cost" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk hero">
+                        <span class="pb-pk-l">Total net</span>
+                        <field name="pb_total_net" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Employees</span>
+                        <field name="pb_employee_count" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='slip_ids']" position="replace">
+                <field name="slip_ids" invisible="not slip_ids" class="pb-prs-legacy">
+                    <list decoration-muted="state == 'cancel'" create="false">
+                        <field name="employee_id"/>
+                        <field name="name" optional="hide"/>
+                        <field name="number" optional="show"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="state" widget="badge"
+                               decoration-success="state == 'done'"
+                               decoration-info="state == 'verify'"
+                               decoration-muted="state == 'cancel'"/>
+                    </list>
+                </field>
+            </xpath>
+
+            <!-- The mock-up's lower row: What happened | Run settings. The
+                 history is a second, tiny widget that reads the payload the
+                 screen already loaded (no second round trip); the native
+                 settings group is MOVED in beside it — moved, not copied, so
+                 it is still the one group every field xpath above lands in. -->
+            <xpath expr="//sheet/group[hasclass('pb-prs-settings')]" position="before">
+                <div class="pb-prs-lower">
+                    <widget name="pb_payrun_history"/>
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('pb-prs-lower')]" position="inside">
+                <xpath expr="//sheet/group[hasclass('pb-prs-settings')]" position="move"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

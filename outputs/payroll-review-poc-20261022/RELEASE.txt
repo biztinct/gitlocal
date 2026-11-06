@@ -1,0 +1,36 @@
+Payroll review worksheet — released 22 October 2026
+
+Final deployed code: f9d5eaca8 (combined branch 19.1).
+Implementation commits: f6406159e, a0a826a49, f00b5fd54, eeb620c4a, f9d5eaca8.
+Modules: pb_hr_payroll_formula 19.0.1.158.0; pb_payrun_wizard 19.0.1.36.0.
+Targets: p0clone, payobook, payobook_template, rize. ABM excluded and untouched.
+Learning: preserved live 19.0.1.8.0 initially; waited for Learning L5 DONE;
+final release preserves the independently deployed 19.0.1.9.0 tree.
+
+Verification
+- 69 backend tests passed on p0clone using the final backend implementation.
+- Mounted OWL regression checks passed: delayed source response, cell autosave,
+  correction highlighting, restore source, maximize, checklist, inherited templates.
+- Local Chrome: edited fictional bonus, reopened/reloaded saved preparation,
+  navigated to calendar, completed review, computed 3 fictional payslips.
+- A fresh backend transaction verified all 3 computed QA payslips still matched
+  their sealed source evidence. Diagnostic evaluation no longer changes rules.
+- Live Chrome on rize: selected focused Vietnam, opened 50-employee worksheet,
+  maximized it, used Next issue, filtered employees/time fields, opened Paid Days
+  source details and the employee's calendar, discarded the form without changes.
+- Final fullscreen footer measured within viewport (bottom 933 / height 934).
+- Live October review: 1,050 optional blank cells; 352 cells still require source
+  or required-data review. No guessed values, period certification, payroll
+  computation, approval or posting was performed on production.
+- 153 custom module trees and installed manifest versions verified across all
+  four databases; exact cron sets retained (26/37/0/69); three sites warmed HTTP 200.
+- No test screenshot files remain. Inline browser captures were not saved to disk.
+
+Release receipts on Payobook19v2
+/tmp/payroll-review-c6180e7c8/receipt.json — final backend and UI rollout, 69 tests
+/tmp/payroll-review-layout-f9d5eaca8/receipt.json — static fullscreen refinement
+Permanent Rize backup:
+/odoo/archives/rize-payroll-review-final-20261022T092918Z
+Nonproduction backups: /odoo/backups/payroll-review-final-20261022T092918Z
+Retention: seven days preserving latest usable nonproduction backups; Rize permanent.
+All deployments logged and executed under /tmp/payobook-studio-deploy.lock.

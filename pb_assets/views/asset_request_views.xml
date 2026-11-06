@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The approval stepper
+         is the widget `biz_approval_chain` ships; the buttons are gated by the
+         cosmetic `can_*` booleans and refused server-side by `_approval_can`. -->
+
+    <record id="view_pb_asset_request_form" model="ir.ui.view">
+        <field name="name">pb.asset.request.form</field>
+        <field name="model">pb.asset.request</field>
+        <field name="arch" type="xml">
+            <form string="Asset Request">
+                <header>
+                    <button name="action_submit" string="Send for approval"
+                            type="object" class="btn-primary"
+                            invisible="not can_submit"/>
+                    <button name="action_manager_approve" string="Approve as manager"
+                            type="object" class="btn-primary"
+                            invisible="not can_manager_approve"/>
+                    <button name="action_final_approve" string="Approve"
+                            type="object" class="btn-primary"
+                            invisible="not can_final_approve"/>
+                    <button name="action_fulfil" string="Hand it over"
+                            type="object" class="btn-primary"
+                            invisible="not can_fulfil"/>
+                    <button name="action_refuse_chain" string="Turn down"
+                            type="object" invisible="not can_refuse"/>
+                    <button name="action_reset_to_draft" string="Back to draft"
+                            type="object"
+                            invisible="state not in ('submitted', 'refused')"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('cancelled', 'refused')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,manager_approved,approved"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Turned down"
+                            bg_color="text-bg-danger" invisible="state != 'refused'"/>
+                    <widget name="web_ribbon" title="Cancelled"
+                            bg_color="text-bg-secondary" invisible="state != 'cancelled'"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Who and what">
+                            <field name="employee_id"/>
+                            <field name="manager_id"/>
+                            <field name="category_id"/>
+                            <field name="country_id"/>
+                            <field name="needed_by"/>
+                        </group>
+                        <group string="How it will be met">
+                            <field name="fulfilment"/>
+                            <field name="spare_asset_id" readonly="1"
+                                   help="The oldest matching item sitting unused."/>
+                            <field name="asset_id" readonly="1"/>
+                            <field name="assignment_id" invisible="1"/>
+                            <field name="journey_task_id" readonly="1"
+                                   invisible="not journey_task_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Why it is needed">
+                        <field name="justification" colspan="2" nolabel="1"
+                               placeholder="What the item is for…"/>
+                    </group>
+                    <notebook>
+                        <page string="Approvals" name="approval">
+                            <field name="approval_widget_json"
+                                   widget="biz_approval_stepper" nolabel="1"/>
+                        </page>
+                    </notebook>
+                    <field name="can_submit" invisible="1"/>
+                    <field name="can_manager_approve" invisible="1"/>
+                    <field name="can_final_approve" invisible="1"/>
+                    <field name="can_refuse" invisible="1"/>
+                    <field name="can_fulfil" invisible="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_asset_request_list" model="ir.ui.view">
+        <field name="name">pb.asset.request.list</field>
+        <field name="model">pb.asset.request</field>
+        <field name="arch" type="xml">
+            <list string="Asset Requests"
+                  decoration-muted="state in ('cancelled', 'refused')"
+                  decoration-success="state == 'approved'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="category_id"/>
+                <field name="country_id" optional="hide"/>
+                <field name="needed_by"/>
+                <field name="spare_asset_id" optional="show"/>
+                <field name="asset_id" optional="hide"/>
+                <field name="fulfilment"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_asset_request_search" model="ir.ui.view">
+        <field name="name">pb.asset.request.search</field>
+        <field name="model">pb.asset.request</field>
+        <field name="arch" type="xml">
+            <search string="Asset Requests">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="category_id"/>
+                <filter name="f_open" string="Still open"
+                        domain="[('state', 'in', ('draft', 'submitted', 'manager_approved'))]"/>
+                <filter name="f_approved" string="Approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="f_todo" string="Nothing handed over yet"
+                        domain="[('fulfilment', 'not in', ('delivered', 'confirmed'))]"/>
+                <separator/>
+                <filter name="f_mine" string="For me"
+                        domain="[('employee_id.user_id', '=', uid)]"/>
+                <group>
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_category" string="Category"
+                            context="{'group_by': 'category_id'}"/>
+                    <filter name="g_employee" string="Employee"
+                            context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_asset_request" model="ir.actions.act_window">
+        <field name="name">Asset requests</field>
+        <field name="res_model">pb.asset.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_asset_request_search"/>
+        <field name="context">{'search_default_f_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has been asked for yet</p>
+            <p>A request is how somebody says “this person needs a laptop”. It
+               goes to their manager, then to the asset team, and Payobook looks
+               for a spare one before anybody buys anything.</p>
+        </field>
+    </record>
+
+</odoo>

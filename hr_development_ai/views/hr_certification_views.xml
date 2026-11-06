@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Certification Form View -->
+    <record id="view_hr_certification_form" model="ir.ui.view">
+        <field name="name">hr.certification.form</field>
+        <field name="model">hr.certification</field>
+        <field name="arch" type="xml">
+            <form string="Certification">
+                <header>
+                    <field name="is_expired" invisible="1"/>
+                    <div class="alert alert-danger" role="alert" invisible="not is_expired">
+                        This certification has expired!
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="is_expired or days_until_expiry &gt; 30 or days_until_expiry == 0">
+                        This certification expires in <field name="days_until_expiry"/> days
+                    </div>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" placeholder="Certification Name..."/>
+                        </h1>
+                        <h3>
+                            <field name="employee_id"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="Certification Details">
+                            <field name="certification_type"/>
+                            <field name="issuing_organization"/>
+                            <field name="course_id"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Validity">
+                            <field name="issue_date"/>
+                            <field name="expiry_date"/>
+                            <field name="is_expired" widget="boolean" readonly="1"/>
+                            <field name="days_until_expiry" readonly="1" invisible="is_expired or days_until_expiry == 0"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Credentials">
+                            <field name="credential_id"/>
+                            <field name="credential_url" widget="url"/>
+                        </group>
+                        <group string="Documentation">
+                            <field name="certificate_file" filename="certificate_filename"/>
+                            <field name="certificate_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Skills Certified" name="skills">
+                            <field name="skill_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                    <field name="employee_count"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Describe what this certification covers..."/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Certification List View -->
+    <record id="view_hr_certification_list" model="ir.ui.view">
+        <field name="name">hr.certification.list</field>
+        <field name="model">hr.certification</field>
+        <field name="arch" type="xml">
+            <list string="Certifications" decoration-danger="is_expired" decoration-warning="days_until_expiry &gt; 0 and days_until_expiry &lt;= 30">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="certification_type"/>
+                <field name="issuing_organization"/>
+                <field name="issue_date"/>
+                <field name="expiry_date"/>
+                <field name="is_expired" widget="boolean"/>
+                <field name="days_until_expiry" optional="show" string="Days to Expiry"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Certification Kanban View -->
+    <record id="view_hr_certification_kanban" model="ir.ui.view">
+        <field name="name">hr.certification.kanban</field>
+        <field name="model">hr.certification</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="certification_type"/>
+                <field name="issuing_organization"/>
+                <field name="issue_date"/>
+                <field name="expiry_date"/>
+                <field name="is_expired"/>
+                <field name="days_until_expiry"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+                                    <div class="o_secondary">
+                                        <field name="employee_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="mb-2">
+                                    <span class="badge" t-att-class="record.certification_type.raw_value == 'external' ? 'text-bg-primary' : record.certification_type.raw_value == 'license' ? 'text-bg-success' : 'text-bg-info'">
+                                        <field name="certification_type"/>
+                                    </span>
+                                    <span t-if="record.is_expired.raw_value" class="badge text-bg-danger ms-1">
+                                        Expired
+                                    </span>
+                                    <span t-elif="record.days_until_expiry.raw_value &gt; 0 and record.days_until_expiry.raw_value &lt;= 30" class="badge text-bg-warning ms-1">
+                                        Expires Soon
+                                    </span>
+                                </div>
+                                <div><strong>Issuer:</strong> <field name="issuing_organization"/></div>
+                                <div><strong>Issued:</strong> <field name="issue_date"/></div>
+                                <div t-if="record.expiry_date.raw_value">
+                                    <strong>Expires:</strong> <field name="expiry_date"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Certification Action -->
+    <record id="action_hr_certification" model="ir.actions.act_window">
+        <field name="name">Certifications</field>
+        <field name="res_model">hr.certification</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a Certification
+            </p>
+            <p>
+                Track employee certifications, licenses, and course completions with automatic expiry notifications.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,105 @@
+Payroll source tracing — 2026-10-22
+
+Implementation
+- 72b1b732a: source inspector, business record buttons, formula consumers,
+  Payroll sources → Scheme tool, application Journey arrow routing.
+- d09a1da49: reject the internal application-mode switch as an inspectable input.
+- c59fb1452: accurate holiday/calendar and time/attendance record ownership.
+- Payroll module versions: pb_hr_payroll_formula 19.0.1.154.0;
+  pb_formula_studio 19.0.1.210.0.
+
+Behavior
+- Each payroll source row has View source and retains Change source.
+- The inspector explains the configured calculation and shows source record
+  buttons, employee/date filters, and direct plus downstream formula references.
+  Formula conditions determine whether a reference is used for a specific run.
+- Paid Days opens contracts, assigned work calendars and time off. Timesheet mode
+  additionally offers approved timesheets and attendance. Holiday inputs use
+  calendars; regular time uses timesheets, attendance and calendars.
+- Browsing records does not calculate a payroll result or certify completeness.
+  No source values, mapping configuration, approvals or payroll runs are changed.
+- Record actions open in a dialog, retaining the inspector and mapping location.
+- Company, employee, component and date scopes are checked server-side. Model
+  destinations are derived from the saved input source, never arbitrary RPC input.
+  Normal model permissions and record rules apply; these actions do not use sudo.
+- New Tools entry: Payroll sources → Scheme. Application read arrows open the
+  inspector on their exact payroll component. Native employee/contract writeback
+  links still open the existing Employee & contract mapping screen.
+- Work calendar lists are limited to calendars assigned to accessible company
+  employees/contracts. Monthly adjustments retain configuration/component scope
+  and the exact selected period. No-data cases remain empty rather than fabricated.
+
+Local verification
+- Initial targeted Odoo suite: 52 tests, zero failures/errors.
+- Final source class after refinements: 32 tests, zero failures/errors.
+- A method-prefix selector initially matched zero tests; it was replaced by the
+  complete source class, whose nonzero result above is the verification evidence.
+- 19 existing component-focus checks, 3 application-versus-record routing checks,
+  6 inspector scope/dialog/unsaved-edit checks passed.
+- Source workspace and inspector mounted in Owl/jsdom; search, mapping picker,
+  formula consumer rendering and save payload verified. Eight templates compiled;
+  JavaScript/Python syntax and workspace SCSS compilation passed.
+
+Release coordination
+- Waited for Learning L3 START 2026-10-21 19:55 UTC to receive DONE at 20:01 UTC.
+- Refreshed all server hashes/versions after L3; only the two payroll modules differ.
+- Clean committed archive baseline c59fb1452, including the completed Learning L3
+  code. Other sessions' working files and output deletions are not part of the release.
+- Shared lock /tmp/payobook-studio-deploy.lock; detached systemd release unit
+  payroll-source-trace-c59fb1452; START 2026-10-21 20:02 UTC.
+- Target databases: p0clone, payobook, payobook_template, rize. Sole addons root:
+  /odoo/odoo-server/addons. Standard Odoo addons and retired ABM untouched.
+
+Further checks during live Chrome testing
+- New tool entry, Paid Days explanation and consuming formulas rendered correctly.
+- Opening the work calendar exposed a pre-existing hr_contract aggregate call
+  incompatible with Odoo 19. The fix is an override in the custom payroll module;
+  server standard addons remain untouched. Counts and calendar form fields now
+  have a regression test.
+- Empty time-off views displayed Odoo sample records. Source actions now disable
+  useSampleModel and supply a real empty-state explanation; no dummy records were
+  created or deleted.
+- bf2e0ec87 groups downstream formulas separately and preserves destination-view
+  diagnostics. Static deployment completed without downtime on all four databases.
+- ae74eaf50 fixes the calendar count, empty source lists, and source selection after
+  reload. 55 local source/mapping tests passed; templates and mounted UI passed.
+
+Deployment and Chrome evidence
+Completed on all four active databases.
+- Initial release: 173 deployed tests passed (zero failures/errors).
+- Calendar/source follow-up: 55 deployed tests passed (zero failures/errors).
+- Final static release ca4a95dc0 includes 11fe3c1e4 (explicit no-sample flag) and
+  ca4a95dc0 (exact return-to-mapping context). Zero downtime for static releases.
+- All 153 custom module trees and installed versions verified against the final
+  combined release. Exact cron sets preserved: p0clone 26, payobook 37,
+  payobook_template 0, rize 69. All three sites warmed with HTTP 200.
+- Chrome: Tools contains Payroll sources → Scheme, alongside Employee & contract.
+- Chrome: Vietnam Paid Days application arrow directly opens its own inspector.
+  It shows four direct formula references and 37 downstream references, collapsed
+  separately. Formula expressions remain available by expanding their names.
+- Chrome: for a selected Vietnam employee and September 2026, Work calendar opens
+  the actual 40-hour schedule (weekday morning/lunch/afternoon rows). Employment
+  contract opens with its working schedule. Neither form was saved; Discard used.
+- Chrome: Time off shows the scoped empty result with zero sample rows.
+- Chrome: Back to mapping returns to Vietnam and Paid Days component scope.
+- Chrome: reloading restores the same Vietnam configuration and Paid Days inspector.
+- Final source inspector visually reviewed; browser error log empty.
+- No payroll calculation, approval, employee edit or source mapping change was
+  submitted during live verification.
+- No PNG or screenshot files saved by this test run. Inline visual inspection only;
+  QA directory scanned with zero PNG files. Other sessions' screenshots preserved.
+
+Initial release evidence
+- Deployed p0clone suite: 173 tests, zero failures/errors.
+- Initial service downtime: 372 seconds.
+- Permanent Rize backup: /odoo/archives/rize-payroll-source-trace-20261021T200225Z
+- Nonproduction backups: /odoo/backups/payroll-source-trace-20261021T200225Z
+- Receipt: /tmp/payroll-source-trace-c59fb1452/receipt.json
+
+Final release evidence
+- Calendar compatibility release downtime: 326 seconds.
+- Permanent Rize follow-up backup: /odoo/archives/rize-payroll-source-trace-20261021T201807Z
+- Nonproduction follow-up backups: /odoo/backups/payroll-source-trace-20261021T201807Z
+- Receipt: /tmp/payroll-source-trace-ae74eaf50/receipt.json
+- Final static receipt: /tmp/payroll-source-trace-ca4a95dc0/receipt.json
+- Final runtime commit: ca4a95dc04b7dc1c61f6ba19058e637c19aeec45

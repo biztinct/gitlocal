@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Buttons + Light-tint hero — 3 palette options · Payobook POC</title>
+<link rel="stylesheet" href="payrun-poc.css"/>
+<style>
+  body { background:var(--bg); }
+  .wrap { max-width:1080px; margin:0 auto; padding:26px 24px 80px; }
+  .lead { text-align:center; margin-bottom:8px; }
+  .lead h1 { font-size:24px; font-weight:800; margin:0; }
+  .lead p { color:var(--muted); font-size:14px; margin:7px 0 0; }
+  .swatches { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; margin:14px 0 4px; }
+  .sw { font-size:10.5px; font-weight:700; color:#fff; border-radius:8px; padding:6px 11px; }
+
+  .opt { margin-top:30px; }
+  .opt-cap { display:flex; align-items:baseline; gap:12px; margin-bottom:11px; }
+  .opt-cap .n { font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:4px 11px; }
+  .opt-cap .t { font-size:16px; font-weight:800; }
+  .opt-cap .d { font-size:12.5px; color:var(--muted); }
+
+  /* action bar shell */
+  .ab2 { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:13px; padding:9px 13px; margin-bottom:12px; }
+  .ab2 .sp { flex:1; } .ab2 .div { width:1px; height:20px; background:var(--line); margin:0 3px; }
+  .b2 { border:1px solid var(--line); background:#fff; color:#475569; border-radius:9px; padding:8px 14px; font-size:12.5px; font-weight:700; font-family:inherit; cursor:pointer; transition:.14s; display:inline-flex; align-items:center; gap:7px; }
+  .b2.ghost { background:var(--bg); }
+  .b2.danger { color:var(--rose); }
+
+  /* hero shell (Light tint) */
+  .hero3 { border-radius:18px; padding:20px 24px; display:flex; align-items:center; gap:20px; }
+  .hero3 .av { width:62px; height:62px; border-radius:17px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:21px; flex:none; background:#fff; box-shadow:0 2px 10px rgba(40,40,80,.10); }
+  .hero3 .id { flex:1; min-width:0; }
+  .hero3 .nm { font-size:20px; font-weight:800; color:var(--ink); }
+  .hero3 .jt { font-size:13px; margin-top:2px; color:#6b6f86; }
+  .hero3 .chips { display:flex; gap:8px; margin-top:11px; flex-wrap:wrap; }
+  .hero3 .chip { display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700; border-radius:999px; padding:5px 12px; background:#fff; }
+  .hero3 .net { text-align:right; flex:none; }
+  .hero3 .net .k { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#6b6f86; }
+  .hero3 .net .v { font-size:30px; font-weight:800; letter-spacing:-.02em; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .hero3 .pl { margin-top:13px; }
+  .pl .pipe .dot { width:19px; height:19px; }
+
+  /* ============ OPTION 1 · Violet Storm (muted solid) ============ */
+  .o1 .opt-cap .n { color:#4D517F; background:#E4E5F1; }
+  .b1.primary { background:#5C619D; border:1px solid #5C619D; color:#fff; }
+  .b1.primary:hover { background:#4D517F; }
+  .b1.outline { color:#4D517F; border-color:#C9CCE0; background:#fff; }
+  .b1.outline:hover { background:#ECEDF5; }
+  .h-o1 { background:#ECEDF5; border:1px solid #D7DAEC; }
+  .h-o1 .av { color:#5C619D; } .h-o1 .chip { border:1px solid #D7DAEC; color:#4D517F; }
+  .h-o1 .chip .ic { color:#5C619D; } .h-o1 .net .v { color:#5C619D; }
+  .h-o1 .pipe .step.cur .dot { background:#5C619D; border-color:#5C619D; box-shadow:0 0 0 4px rgba(92,97,157,.18); } .h-o1 .pipe .step.cur .lbl { color:#5C619D; }
+
+  /* ============ OPTION 2 · Periwinkle soft-fill (cool, airy) ============ */
+  .o2 .opt-cap .n { color:#3D4280; background:#E2E3FB; }
+  .b2p.primary { background:#DADCFF; border:1px solid #C2C5F2; color:#3D4280; }
+  .b2p.primary:hover { background:#C9CCFA; }
+  .b2p.outline { color:#4D517F; border-color:#CFD2F0; background:#fff; }
+  .b2p.outline:hover { background:#EFEFFE; }
+  .h-o2 { background:#EFEFFE; border:1px solid #DADCFB; }
+  .h-o2 .av { color:#4D517F; } .h-o2 .chip { border:1px solid #DADCFB; color:#3D4280; }
+  .h-o2 .chip .ic { color:#5C619D; } .h-o2 .net .v { color:#4D517F; }
+  .h-o2 .pipe .step.cur .dot { background:#5256A0; border-color:#5256A0; box-shadow:0 0 0 4px rgba(82,86,160,.16); } .h-o2 .pipe .step.cur .lbl { color:#4D517F; }
+
+  /* ============ OPTION 3 · Lavender (warmer solid) ============ */
+  .o3 .opt-cap .n { color:#6B43A6; background:#EEE1FB; }
+  .b3.primary { background:#8455C6; border:1px solid #8455C6; color:#fff; }
+  .b3.primary:hover { background:#6F44A8; }
+  .b3.outline { color:#6F44A8; border-color:#DCC6F5; background:#fff; }
+  .b3.outline:hover { background:#F4ECFC; }
+  .h-o3 { background:#F4ECFC; border:1px solid #E4D4F7; }
+  .h-o3 .av { color:#8455C6; } .h-o3 .chip { border:1px solid #E4D4F7; color:#6B43A6; }
+  .h-o3 .chip .ic { color:#8455C6; } .h-o3 .net .v { color:#8455C6; }
+  .h-o3 .pipe .step.cur .dot { background:#8455C6; border-color:#8455C6; box-shadow:0 0 0 4px rgba(132,85,198,.18); } .h-o3 .pipe .step.cur .lbl { color:#8455C6; }
+</style>
+</head>
+<body>
+<div class="poc-bar">
+  <b>Payobook · Pay Run redesign POC</b>
+  <a href="payrun-landing.html">① Landing</a>
+  <a href="payslip-statement.html">② Statement</a>
+  <a href="payslip-button-options.html" class="on">⌗ Button options</a>
+  <a href="payrun-batch.html">③ Batch</a>
+  <a href="payrun-report.html">⑤ Report</a>
+  <span class="sp"></span><span class="tag">Light-tint hero · palette buttons</span>
+</div>
+
+<div class="wrap">
+  <div class="lead">
+    <h1>Light-tint hero + three button palettes</h1>
+    <p>No bright-indigo primary. Each option pairs the airy Light-tint hero with a calmer button system from your palette.</p>
+    <div class="swatches">
+      <span class="sw" style="background:#5C619D">Violet Storm #5C619D</span>
+      <span class="sw" style="background:#4D517F">Roman Violet #4D517F</span>
+      <span class="sw" style="background:#7CADD4">Tropical Indigo #7CADD4</span>
+      <span class="sw" style="background:#B57EDC">Lavender #B57EDC</span>
+      <span class="sw" style="background:#CCCCFF;color:#3D4280">Periwinkle #CCCCFF</span>
+      <span class="sw" style="background:#D6B4FC;color:#5b3a86">Light Violet #D6B4FC</span>
+    </div>
+  </div>
+
+  <!-- OPTION 1 -->
+  <div class="opt o1">
+    <div class="opt-cap"><span class="n">Option 1</span><span class="t">Violet Storm</span><span class="d">— muted slate-violet solid primary. Calmest &amp; most corporate.</span></div>
+    <div class="ab2">
+      <button class="b2 b1 primary"><svg class="ic"><use href="#i-check"/></svg> Confirm</button>
+      <button class="b2 b1 outline"><svg class="ic"><use href="#i-play"/></svg> Compute</button>
+      <div class="div"></div>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-printer"/></svg> Print</button>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-mail"/></svg> Email</button>
+      <div class="sp"></div>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-undo"/></svg> Refund</button>
+      <button class="b2 ghost danger"><svg class="ic"><use href="#i-x"/></svg> Cancel</button>
+    </div>
+    <div class="hero3 h-o1">
+      <div class="av">NH</div>
+      <div class="id">
+        <div class="nm">Nguyễn Hồng Nhung</div><div class="jt">Kế toán viên · Ban kế toán</div>
+        <div class="chips"><span class="chip"><svg class="ic sm"><use href="#i-calendar"/></svg> 01 Apr – 30 Apr 2026</span><span class="chip"><svg class="ic sm"><use href="#i-layers"/></svg> Vietnam Standard Payroll</span><span class="chip"><svg class="ic sm"><use href="#i-hash"/></svg> SLIP/2026/04/001</span></div>
+        <div class="pl"><span class="pipe"><span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span><span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span><span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span><span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span></span></div>
+      </div>
+      <div class="net"><div class="k">Net pay</div><div class="v">₫10,963,500</div><span class="badge done"><span class="d"></span>Paid</span></div>
+    </div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div class="opt o2">
+    <div class="opt-cap"><span class="n">Option 2</span><span class="t">Periwinkle soft-fill</span><span class="d">— soft periwinkle primary with deep-violet text. Airy, low-contrast, gentlest.</span></div>
+    <div class="ab2">
+      <button class="b2 b2p primary"><svg class="ic"><use href="#i-check"/></svg> Confirm</button>
+      <button class="b2 b2p outline"><svg class="ic"><use href="#i-play"/></svg> Compute</button>
+      <div class="div"></div>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-printer"/></svg> Print</button>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-mail"/></svg> Email</button>
+      <div class="sp"></div>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-undo"/></svg> Refund</button>
+      <button class="b2 ghost danger"><svg class="ic"><use href="#i-x"/></svg> Cancel</button>
+    </div>
+    <div class="hero3 h-o2">
+      <div class="av">NH</div>
+      <div class="id">
+        <div class="nm">Nguyễn Hồng Nhung</div><div class="jt">Kế toán viên · Ban kế toán</div>
+        <div class="chips"><span class="chip"><svg class="ic sm"><use href="#i-calendar"/></svg> 01 Apr – 30 Apr 2026</span><span class="chip"><svg class="ic sm"><use href="#i-layers"/></svg> Vietnam Standard Payroll</span><span class="chip"><svg class="ic sm"><use href="#i-hash"/></svg> SLIP/2026/04/001</span></div>
+        <div class="pl"><span class="pipe"><span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span><span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span><span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span><span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span></span></div>
+      </div>
+      <div class="net"><div class="k">Net pay</div><div class="v">₫10,963,500</div><span class="badge done"><span class="d"></span>Paid</span></div>
+    </div>
+  </div>
+
+  <!-- OPTION 3 -->
+  <div class="opt o3">
+    <div class="opt-cap"><span class="n">Option 3</span><span class="t">Lavender</span><span class="d">— warmer lavender solid (shade-tuned for AA). Friendlier, still calm.</span></div>
+    <div class="ab2">
+      <button class="b2 b3 primary"><svg class="ic"><use href="#i-check"/></svg> Confirm</button>
+      <button class="b2 b3 outline"><svg class="ic"><use href="#i-play"/></svg> Compute</button>
+      <div class="div"></div>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-printer"/></svg> Print</button>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-mail"/></svg> Email</button>
+      <div class="sp"></div>
+      <button class="b2 ghost"><svg class="ic"><use href="#i-undo"/></svg> Refund</button>
+      <button class="b2 ghost danger"><svg class="ic"><use href="#i-x"/></svg> Cancel</button>
+    </div>
+    <div class="hero3 h-o3">
+      <div class="av">NH</div>
+      <div class="id">
+        <div class="nm">Nguyễn Hồng Nhung</div><div class="jt">Kế toán viên · Ban kế toán</div>
+        <div class="chips"><span class="chip"><svg class="ic sm"><use href="#i-calendar"/></svg> 01 Apr – 30 Apr 2026</span><span class="chip"><svg class="ic sm"><use href="#i-layers"/></svg> Vietnam Standard Payroll</span><span class="chip"><svg class="ic sm"><use href="#i-hash"/></svg> SLIP/2026/04/001</span></div>
+        <div class="pl"><span class="pipe"><span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span><span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span><span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span><span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span></span></div>
+      </div>
+      <div class="net"><div class="k">Net pay</div><div class="v">₫10,963,500</div><span class="badge done"><span class="d"></span>Paid</span></div>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;">Money stays emerald; "Paid"/Done stays green. Whichever you pick becomes the primary + accent across landing, batch, statement, wizard &amp; report — then I apply it in the app.</p>
+</div>
+<script src="payrun-icons.js"></script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       B2's half of `/my/goals`, and the page a closed year opens on.
+
+       SAME FOUR RULES AS B1's FILE, all of them the hard kind:
+
+         * `t-attf-class`, NEVER a dict `t-att-class` (R42). In a server-side
+           template the dict form writes the Python repr into the attribute
+           AND drops the static class, with no error at all — a stepper
+           rendered as four lines of unstyled text is what that looks like.
+         * The icon name is passed with `t-value="'name'"` and NEVER as a
+           `t-set` BODY (W87): a body is rendered QWeb and on a `website=True`
+           page the editor's branding wraps it in markup, so every comparison
+           goes false and every icon falls through to the else branch.
+         * No `t-key` anywhere (R5) — that is an OWL directive and here it
+           only logs noise on every render. No render key called `request`
+           (R4) — it shadows the HTTP request and the page 500s.
+         * Section comments are ruled with `=` and never with hyphens (R35):
+           a doubled hyphen inside an XML comment is a parse error that takes
+           the whole file with it.
+
+       AND THE PHONE IS THE TEST (R187). A table that scrolls sideways on a
+       narrow screen hides the column that matters, and on this page that
+       column is the date. Everything below stacks rather than scrolls.
+       ================================================================== -->
+
+  <!-- ================================================================= -->
+  <!--  the year, on the employee's own page                             -->
+  <!-- ================================================================= -->
+  <template id="gl_year" name="My goals — the year">
+
+    <!-- ============ why their reviews are what they are ============
+         THE RULE IS TOLD ONCE IN AN EMAIL AND ASKED ABOUT IN MARCH, so it
+         lives on the page too, in exactly the words they were sent. -->
+    <div t-if="me.get('why_reviews')" class="pbgl-note pbgl-note--soft">
+      <t t-call="pb_goals.gl_icon">
+        <t t-set="icon" t-value="'calendar'"/>
+        <t t-set="isz" t-value="17"/>
+      </t>
+      <div>
+        <strong>How your year is reviewed</strong>
+        <p t-esc="me['why_reviews']"/>
+      </div>
+    </div>
+
+    <!-- ===================== this month's conversation =====================
+         EITHER SIDE MAY WRITE IT UP, so the box is here as well as on the
+         manager's board. A check-in the employee filled in is a better record
+         than one nobody filled in. -->
+    <!-- R42 — `t-attf-class` REPLACES the static `class`, so the base class
+         is written inside it and never beside it. A static `class` alongside
+         it is silently dropped, and the element loses every rule that was
+         written against it with no error anywhere. -->
+    <div t-if="me.get('checkin')"
+         t-attf-class="pbgl-ci-card #{me['checkin'].get('overdue') and 'pbgl-ci-card--late' or ''}">
+      <div class="pbgl-ci-card-top">
+        <t t-call="pb_goals.gl_icon">
+          <t t-set="icon" t-value="'calendar'"/>
+          <t t-set="isz" t-value="18"/>
+        </t>
+        <div>
+          <strong>Your <t t-esc="me['checkin']['month_word']"/> check-in</strong>
+          <p>
+            A short conversation with
+            <t t-esc="me['checkin']['manager'] or 'your manager'"/>
+            about what moved this month. Either of you can write it up.
+            <t t-if="me['checkin'].get('due_words')">
+              <span class="pbgl-ci-due" t-esc="me['checkin']['due_words']"/>
+            </t>
+          </p>
+        </div>
+      </div>
+      <form method="post" class="pbgl-form"
+            t-attf-action="/my/goals/checkin/#{me['checkin']['id']}">
+        <input type="hidden" name="csrf_token"
+               t-att-value="request.csrf_token()"/>
+        <label class="pbgl-f pbgl-f--wide">
+          <span>What moved this month</span>
+          <textarea name="note" rows="3" required="required"
+                    placeholder="A sentence or two. This is what your end-of-year conversation is built on."/>
+        </label>
+        <label class="pbgl-f pbgl-f--wide">
+          <span>Anything in the way</span>
+          <textarea name="blockers" rows="2"
+                    placeholder="Something somebody else has to unblock. Leave it empty if there is nothing."/>
+        </label>
+        <button type="submit" class="pbme-btn pbgl-btn--primary">
+          <t t-call="pb_goals.gl_icon">
+            <t t-set="icon" t-value="'check'"/>
+            <t t-set="isz" t-value="15"/>
+          </t>
+          Write it up
+        </button>
+      </form>
+    </div>
+
+    <!-- ===================== where the score has got to =====================
+         A SCORE THAT IS HALF IN IS NOT SHOWN AS A NUMBER. Somebody reading
+         "2.0" over a sheet where one goal of three has been marked would
+         spend the afternoon on a figure that is about to change. -->
+    <div t-if="me.get('scores') and me['scores'].get('sentence')"
+         class="pbgl-score-card">
+      <div class="pbgl-score-card-id">
+        <t t-if="me['scores'].get('shown') and me['scores'].get('scored')">
+          <span class="pbgl-score-big"><t t-esc="me['scores']['score']"/></span>
+          <span class="pbgl-score-of">out of 5</span>
+          <span t-if="me['scores'].get('band')" class="pbgl-chip"
+                t-esc="me['scores']['band']"/>
+        </t>
+        <t t-else="">
+          <t t-call="pb_goals.gl_icon">
+            <t t-set="icon" t-value="'trendingUp'"/>
+            <t t-set="isz" t-value="22"/>
+          </t>
+        </t>
+      </div>
+      <p t-esc="me['scores']['sentence']"/>
+    </div>
+
+    <!-- ============================ the reviews ============================ -->
+    <div t-if="me.get('reviews')" class="pbgl-reviews">
+      <h4>Your reviews</h4>
+      <t t-foreach="me['reviews']" t-as="rv">
+        <div class="pbgl-rv-card">
+          <div class="pbgl-rv-card-top">
+            <strong t-esc="rv['kind_word']"/>
+            <span class="pbgl-chip">due <t t-esc="rv['due']"/></span>
+            <span t-if="rv.get('due_words')" class="pbgl-chip"
+                  t-esc="rv['due_words']"/>
+            <span t-attf-class="pbgl-chip #{rv['state'] == 'done' and 'pbgl-chip--ok' or ''}"
+                  t-esc="rv['state_word']"/>
+          </div>
+          <p t-if="rv.get('manager_note')" class="pbgl-rv-card-note"
+             t-esc="rv['manager_note']"/>
+          <p t-if="rv.get('employee_note')" class="pbgl-rv-card-said">
+            <strong>You asked for this to be said:</strong>
+            <span t-esc="rv['employee_note']"/>
+          </p>
+          <details t-if="rv['state'] != 'done'" class="pbgl-edit">
+            <summary>
+              <t t-call="pb_goals.gl_icon">
+                <t t-set="icon" t-value="'pencil'"/>
+                <t t-set="isz" t-value="14"/>
+              </t>
+              Say what you would like said
+            </summary>
+            <form method="post" class="pbgl-form"
+                  t-attf-action="/my/goals/review/#{rv['id']}/say">
+              <input type="hidden" name="csrf_token"
+                     t-att-value="request.csrf_token()"/>
+              <label class="pbgl-f pbgl-f--wide">
+                <span>What you would like on the record</span>
+                <textarea name="note" rows="3" required="required"
+                          placeholder="Your manager reads this before they write the review up. It is not a score — how each key result went is their word."><t t-esc="rv.get('employee_note') or ''"/></textarea>
+              </label>
+              <button type="submit" class="pbme-btn pbgl-btn--primary">
+                Save it
+              </button>
+            </form>
+          </details>
+        </div>
+      </t>
+    </div>
+
+    <!-- ===================== the changes asked for ===================== -->
+    <div t-if="me.get('changes')" class="pbgl-changes">
+      <h4>Changes asked for</h4>
+      <t t-foreach="me['changes']" t-as="ch">
+        <div class="pbgl-ch-card">
+          <div class="pbgl-ch-card-top">
+            <strong t-esc="ch['summary']"/>
+            <span t-attf-class="pbgl-chip #{ch['agreed'] and 'pbgl-chip--ok' or (ch['refused'] and 'pbgl-chip--bad' or '')}"
+                  t-esc="ch['state_word']"/>
+          </div>
+          <p class="pbgl-ch-card-why" t-esc="ch['reason']"/>
+          <p t-if="ch.get('refuse_note')" class="pbgl-ch-card-refused"
+             t-esc="ch['refuse_note']"/>
+        </div>
+      </t>
+    </div>
+
+    <!-- ============ add a goal, once the sheet is agreed ============
+         THE FOURTH KIND OF CHANGE IS NOT OFFERED HERE. What each goal is
+         worth is the manager's word and always was, so asking for a reweight
+         from this page would be asking for something this page has never let
+         anybody type. -->
+    <details t-if="me.get('may_change')" class="pbgl-add-goal">
+      <summary>
+        <t t-call="pb_goals.gl_icon">
+          <t t-set="icon" t-value="'plus'"/>
+          <t t-set="isz" t-value="16"/>
+        </t>
+        Ask to add a goal
+      </summary>
+      <form method="post" class="pbgl-form" action="/my/goals/change">
+        <input type="hidden" name="csrf_token"
+               t-att-value="request.csrf_token()"/>
+        <input type="hidden" name="kind" value="add"/>
+        <label class="pbgl-f pbgl-f--wide">
+          <span>What you would be doing</span>
+          <input type="text" name="title" required="required" maxlength="200"
+                 placeholder="Bring the new depot up to speed"/>
+        </label>
+        <label class="pbgl-f pbgl-f--wide">
+          <span>Why it matters and what good looks like</span>
+          <textarea name="description" rows="3" required="required"/>
+        </label>
+        <label class="pbgl-f">
+          <span>Done by</span>
+          <input type="date" name="date_end" required="required"/>
+        </label>
+        <label class="pbgl-f pbgl-f--wide">
+          <span>Key results, one per line</span>
+          <textarea name="kr_titles" rows="3" required="required"
+                    placeholder="Staff trained&#10;Deliveries a week"/>
+        </label>
+        <label class="pbgl-f pbgl-f--wide">
+          <span>Why this has to be added now</span>
+          <textarea name="reason" rows="3" required="required"
+                    placeholder="What changed in the business."/>
+        </label>
+        <button type="submit" class="pbme-btn pbgl-btn--primary">
+          Ask for it
+        </button>
+      </form>
+    </details>
+
+    <!-- ====================== the months already written up ====================== -->
+    <div t-if="me.get('checkins_done')" class="pbgl-ci-done">
+      <h4>Every month so far</h4>
+      <t t-foreach="me['checkins_done']" t-as="cd">
+        <div t-attf-class="pbgl-ci-row #{cd['state'] == 'missed' and 'pbgl-ci-row--missed' or ''}">
+          <strong t-esc="cd['month_word']"/>
+          <span class="pbgl-chip" t-esc="cd['state_word']"/>
+          <p t-if="cd.get('note')" t-esc="cd['note']"/>
+          <p t-if="cd.get('blockers')" class="pbgl-ci-row-block">
+            <t t-esc="cd['blockers']"/>
+          </p>
+          <span t-if="cd.get('who')" class="pbgl-ci-row-who">
+            <t t-esc="cd['who']"/> · <t t-esc="cd['when']"/>
+          </span>
+        </div>
+      </t>
+    </div>
+
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  a year that has been closed                                      -->
+  <!-- ================================================================= -->
+  <template id="portal_goals_past_year" name="My goals — a past year">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbgl">
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">A year that is finished</t>
+          <t t-set="hero_sub">Exactly as it stood on the day it was put away. Nothing on this page changes.</t>
+        </t>
+
+        <div class="pbgl-past-head">
+          <a class="pbme-btn" href="/my/goals">
+            <t t-call="pb_goals.gl_icon">
+              <t t-set="icon" t-value="'undo'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            Back to my goals
+          </a>
+        </div>
+
+        <div t-if="year.get('live')" class="pbme-empty">
+          <div class="pbme-empty-ic">
+            <t t-call="pb_goals.gl_icon">
+              <t t-set="icon" t-value="'clock'"/>
+              <t t-set="isz" t-value="26"/>
+            </t>
+          </div>
+          <h3>That year is still running</h3>
+          <p t-esc="year.get('sentence') or ''"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbgl-past-hero">
+            <div>
+              <span class="pbgl-cycle" t-esc="year.get('cycle') or ''"/>
+              <p class="pbgl-headline">
+                <t t-if="year.get('score') is not None">
+                  You came out at
+                  <strong><t t-esc="year['score']"/> out of 5</strong><t t-if="year.get('band')">, <t t-esc="year['band']"/></t>.
+                </t>
+                <t t-else="">
+                  This year was closed without a score.
+                </t>
+              </p>
+            </div>
+            <div class="pbgl-past-dial">
+              <div class="pbgl-dial">
+                <div class="pbgl-dial-fill"
+                     t-attf-style="width: #{year.get('progress') or 0}%"/>
+              </div>
+              <div class="pbgl-dial-word">
+                <strong><t t-esc="year.get('progress') or 0"/>%</strong> of the way
+              </div>
+            </div>
+          </div>
+
+          <div class="pbgl-goals">
+            <t t-foreach="year.get('goals') or []" t-as="pg">
+              <div class="pbgl-goal pbgl-goal--locked">
+                <div class="pbgl-goal-top">
+                  <div class="pbgl-goal-id">
+                    <h3 t-esc="pg['title']"/>
+                  </div>
+                  <div class="pbgl-goal-meta">
+                    <span t-if="pg.get('weight')" class="pbgl-weight">
+                      <strong><t t-esc="pg['weight']"/>%</strong>
+                      <span>of the year</span>
+                    </span>
+                    <span t-if="pg.get('score') is not None" class="pbgl-chip">
+                      scored <t t-esc="pg['score']"/> out of 5
+                    </span>
+                    <span t-if="pg.get('done')" class="pbgl-chip pbgl-chip--ok">
+                      finished
+                    </span>
+                  </div>
+                </div>
+                <div class="pbgl-dial pbgl-dial--goal">
+                  <div class="pbgl-dial-fill"
+                       t-attf-style="width: #{pg.get('progress') or 0}%"/>
+                </div>
+                <div class="pbgl-krs">
+                  <t t-foreach="pg.get('krs') or []" t-as="pk">
+                    <div class="pbgl-kr pbgl-kr--past">
+                      <div class="pbgl-kr-id">
+                        <strong t-esc="pk['title']"/>
+                        <span class="pbgl-kr-target">
+                          <t t-esc="pk.get('current') or 0"/>
+                          <t t-if="pk.get('target')"> of <t t-esc="pk['target']"/></t>
+                          <t t-if="pk.get('measure')"> <t t-esc="pk['measure']"/></t>
+                        </span>
+                      </div>
+                      <div class="pbgl-dial pbgl-dial--kr">
+                        <div class="pbgl-dial-fill"
+                             t-attf-style="width: #{pk.get('progress') or 0}%"/>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </div>
+            </t>
+          </div>
+        </t>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

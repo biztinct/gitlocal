@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day surface
+         is the Contracts lens on the Lifecycle hub; these are the records
+         behind it, reached from the board, from the command bar and from a
+         decision's own chatter. -->
+
+    <!-- ================================================================ -->
+    <!--  Contract decisions                                              -->
+    <!-- ================================================================ -->
+    <record id="view_pb_contract_review_list" model="ir.ui.view">
+        <field name="name">pb.contract.review.list</field>
+        <field name="model">pb.contract.review</field>
+        <field name="arch" type="xml">
+            <list string="Contract decisions" create="0">
+                <field name="employee_id"/>
+                <field name="contract_id" optional="show"/>
+                <field name="end_date"/>
+                <field name="days_left" optional="show"/>
+                <field name="manager_user_id" optional="show"/>
+                <field name="trigger_date" optional="hide"/>
+                <field name="new_contract_id" optional="hide"/>
+                <field name="decision" optional="show" widget="badge"
+                       decoration-success="decision == 'convert'"
+                       decoration-info="decision == 'extend'"
+                       decoration-warning="decision == 'terminate'"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state in ('extension', 'conversion')"
+                       decoration-warning="state == 'decide'"
+                       decoration-danger="state == 'lapsed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_contract_review_form" model="ir.ui.view">
+        <field name="name">pb.contract.review.form</field>
+        <field name="model">pb.contract.review</field>
+        <field name="arch" type="xml">
+            <form string="Contract decision">
+                <header>
+                    <button name="notify_decision_needed" type="object"
+                            string="Ask them to decide"
+                            invisible="state not in ('upcoming', 'decide')"/>
+                    <button name="action_request_conversion" type="object"
+                            string="Evaluate for a permanent contract"
+                            class="btn-primary"
+                            invisible="state not in ('upcoming', 'decide')"
+                            confirm="Their manager is asked to name three to five colleagues, and each one gets a private link. Nothing is created until the evaluation is passed. Carry on?"/>
+                    <button name="action_terminate" type="object"
+                            string="Let it end"
+                            invisible="state not in ('upcoming', 'decide')"
+                            confirm="This opens their leaving checklist, dated the last day of the contract. The contract itself is not changed. Carry on?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="upcoming,decide,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Who and what">
+                            <field name="employee_id" readonly="1"/>
+                            <field name="contract_id" readonly="1"/>
+                            <field name="manager_user_id"/>
+                        </group>
+                        <group string="When">
+                            <field name="end_date" readonly="1"/>
+                            <field name="lead_days" readonly="1"/>
+                            <field name="trigger_date" readonly="1"/>
+                            <field name="days_left" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="What was decided">
+                        <group>
+                            <field name="decision" readonly="1"/>
+                            <field name="decided_by" readonly="1"/>
+                            <field name="decided_at" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="new_contract_id" readonly="1"/>
+                            <field name="review_id" readonly="1"/>
+                            <field name="exit_case_id" readonly="1"/>
+                            <field name="letter_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Why">
+                        <field name="decision_note" nolabel="1" colspan="2"
+                               placeholder="Somebody will read this before agreeing the next one…"/>
+                    </group>
+                    <notebook>
+                        <page string="Extension requests" name="extensions">
+                            <field name="extension_ids" readonly="1">
+                                <list>
+                                    <field name="months"/>
+                                    <field name="approver_user_id"/>
+                                    <field name="approve_by"/>
+                                    <field name="new_date_start"/>
+                                    <field name="new_date_end"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'approved'"
+                                           decoration-danger="state == 'refused'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_contract_review_search" model="ir.ui.view">
+        <field name="name">pb.contract.review.search</field>
+        <field name="model">pb.contract.review</field>
+        <field name="arch" type="xml">
+            <search string="Contract decisions">
+                <field name="employee_id"/>
+                <field name="contract_id"/>
+                <filter name="open" string="Still to decide"
+                        domain="[('state', 'in', ['upcoming', 'decide'])]"/>
+                <filter name="running" string="Being worked on"
+                        domain="[('state', 'in', ['extension', 'conversion'])]"/>
+                <filter name="lapsed" string="Ended undecided"
+                        domain="[('state', '=', 'lapsed')]"/>
+                <filter name="converted" string="Made permanent"
+                        domain="[('decision', '=', 'convert')]"/>
+                <group>
+                    <filter name="by_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="by_decision" string="Decision"
+                            context="{'group_by': 'decision'}"/>
+                    <filter name="by_end" string="Contract ends"
+                            context="{'group_by': 'end_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_contract_review" model="ir.actions.act_window">
+        <field name="name">Contract decisions</field>
+        <field name="res_model">pb.contract.review</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No contract needs a decision just now</p>
+            <p>Two months before a contract runs out, Payobook puts it in front
+               of the person's manager and the HR team with three choices: let
+               it end, extend it, or make it permanent. Nothing here means
+               nothing is running out — or that the nightly step has not been
+               switched on yet.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Extension requests                                              -->
+    <!-- ================================================================ -->
+    <record id="view_pb_contract_extension_list" model="ir.ui.view">
+        <field name="name">pb.contract.extension.list</field>
+        <field name="model">pb.contract.extension</field>
+        <field name="arch" type="xml">
+            <list string="Extension requests" create="0">
+                <field name="employee_id"/>
+                <field name="months"/>
+                <field name="new_date_start" optional="show"/>
+                <field name="new_date_end" optional="show"/>
+                <field name="approver_user_id"/>
+                <field name="approve_by"
+                       decoration-danger="approve_by &lt; current_date"/>
+                <field name="escalated" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'pending'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_contract_extension_form" model="ir.ui.view">
+        <field name="name">pb.contract.extension.form</field>
+        <field name="model">pb.contract.extension</field>
+        <field name="arch" type="xml">
+            <form string="Extension request">
+                <header>
+                    <button name="action_approve" type="object"
+                            string="Agree it" class="btn-primary"
+                            invisible="state != 'pending'"
+                            confirm="Agreeing this prepares a NEW contract on the same terms, starting the day after the current one ends. The contract running now is not changed. Carry on?"/>
+                    <button name="action_refuse" type="object"
+                            string="Turn it down"
+                            invisible="state not in ('draft', 'pending')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,pending,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="contract_id" readonly="1"/>
+                            <field name="review_id" readonly="1"/>
+                            <field name="months"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="approver_user_id"/>
+                            <field name="approve_by"/>
+                            <field name="escalated" readonly="1"/>
+                            <field name="new_date_start" readonly="1"/>
+                            <field name="new_date_end" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Why this contract should run for longer">
+                        <field name="reason" nolabel="1" colspan="2"
+                               readonly="state not in ('draft', 'pending')"
+                               placeholder="What the work is, and why it is not finished…"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_contract_extension" model="ir.actions.act_window">
+        <field name="name">Extension requests</field>
+        <field name="res_model">pb.contract.extension</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is waiting to be agreed</p>
+            <p>An extension is asked for from the Contracts board, with the
+               reason written down, and the person's own manager has a few days
+               to agree it. Once they do, a new contract is prepared on exactly
+               the same terms.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The Contracts lens itself                                       -->
+    <!-- ================================================================ -->
+    <!-- A RECORD and never a bare tag: a bare tag reaches the shell with no
+         action NAME, and anything returning through a breadcrumb reads
+         "Unnamed". -->
+    <record id="action_pb_contractlife" model="ir.actions.client">
+        <field name="name">Contracts</field>
+        <field name="tag">pb_contractlife_board</field>
+    </record>
+
+</odoo>

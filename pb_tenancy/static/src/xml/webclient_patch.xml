@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- The platform's bar sits directly under the top bar, above everything a
+         screen draws for itself.
+
+         AFTER //NavBar, NOT around //ActionContainer. Two modules on this build
+         (biz_theme and pb_sidebar) already REPLACE the action container with
+         wrappers of their own; a third one doing the same would be a race
+         between whichever loaded last. Inserting after the navigation bar
+         touches nothing either of them owns.
+
+         The bar therefore inherits the navigation bar's `t-if="!state.fullscreen"`,
+         which is the behaviour we want: a full-screen surface is a surface with
+         no chrome, and a platform notice is chrome. -->
+    <t t-name="web.WebClient" t-inherit="web.WebClient" t-inherit-mode="extension">
+        <xpath expr="//NavBar" position="after">
+            <PbTenancyBanner/>
+        </xpath>
+    </t>
+
+</templates>

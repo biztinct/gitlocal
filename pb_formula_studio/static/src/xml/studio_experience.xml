@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_formula_studio.Experience" t-inherit="pb_formula_studio.PbFormulaStudio" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbfs-id-right')]" position="replace">
+      <div class="pbfs-id-right"><button class="experience-issues" t-on-click="openReviewQueue" t-esc="issueSummary"/>
+        <button t-if="state.canEdit and ['draft','testing','validated'].includes(state.config.state)" class="pbfs-btn primary" t-on-click="advance" t-esc="nextLabel()"/>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfs-top-row2')]" position="replace">
+      <div class="pbfs-top-row2 experience-navigation">
+        <nav class="pbfs-seg" aria-label="Formula Studio">
+          <button t-att-class="buildView ? 'active' : ''" t-on-click="() => this.setView('table')">Build</button>
+          <button t-att-class="state.view === 'test' ? 'active' : ''" t-on-click="openTest">Validate</button>
+          <button t-att-class="state.view === 'compare' ? 'active' : ''" t-on-click="openCompare">Compare</button>
+          <button t-att-class="state.view === 'health' ? 'active' : ''" t-on-click="openHealth">Health</button>
+        </nav>
+        <div class="pbfs-top-actions">
+          <button class="pbfs-btn ghost" t-on-click="openSettings">Settings</button>
+          <button class="pbfs-btn soft" t-on-click="openCommand" title="Find every tool · Ctrl/Cmd K">Tools <kbd>⌘ K</kbd></button>
+          <button class="pbfs-btn primary" t-on-click="openReleases">Review changes</button>
+        </div>
+      </div>
+    </xpath>
+    <xpath expr="//header[hasclass('pbfs-top')]" position="after">
+      <div t-if="buildView" class="experience-buildbar">
+        <div class="pbfs-seg sm" aria-label="Build view">
+          <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">Cards</button>
+          <button t-att-class="state.view === 'table' ? 'active' : ''" t-on-click="() => this.setView('table')">Table</button>
+          <button t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')">Grid</button>
+        </div>
+        <label class="experience-sample">Preview for
+          <select aria-label="Preview sample" t-att-disabled="experience.sampleBusy or !state.samples.length" t-on-change="changePreviewSample">
+            <option t-if="!state.samples.length" value="">Add a sample in Validate</option>
+            <option t-if="state.personPayslipId" value="" selected="selected" t-esc="sampleName"/>
+            <option t-foreach="state.samples" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="!state.personPayslipId and s.id === state.preview.sample_id" t-esc="s.name"/>
+          </select>
+        </label>
+        <button class="pbfs-btn ghost sm" t-on-click="openActualPreview">Actual payslip</button>
+        <button class="pbfs-btn ghost sm" t-att-disabled="experience.typeBusy" t-on-click="reviewValueTypes">Review value types</button>
+        <button t-if="state.canEdit" class="pbfs-btn primary sm" t-on-click="addComponentQuick">+ Add component</button>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('pbfs-gridwrap')]" position="before">
+      <section t-elif="state.view === 'table'" class="experience-table-work">
+        <div class="experience-list">
+          <div class="experience-controls">
+            <input type="search" placeholder="Find a component…" aria-label="Find components" t-model="experience.query"/>
+            <select aria-label="Filter components" t-model="experience.filter"><option value="all">All components</option><option value="input">Inputs</option><option value="formula">Formulas</option><option value="constant">Constants</option><option value="issues">Needs review</option></select>
+            <label>Group by <select t-model="experience.group"><option value="">None</option><option value="type">Component type</option><option value="group">Treatment group</option></select></label>
+            <span class="experience-muted"><t t-esc="experienceRows.length"/> of <t t-esc="state.components.length"/></span>
+          </div>
+          <div class="experience-table-scroll">
+            <table class="experience-table" data-coach="sx-table"><thead><tr><th>Component</th><th>Source / calculation</th><th>Value type</th><th class="num">Preview value</th></tr></thead><tbody>
+              <t t-foreach="experienceRows" t-as="c" t-key="c.id">
+                <tr t-if="experience.group and (c_first or experienceGroup(c) !== experienceGroup(experienceRows[c_index-1]))" class="experience-group"><th colspan="4" t-esc="experienceGroup(c)"/></tr>
+                <tr t-att-class="c.id === state.selectedId ? 'selected' : ''" t-on-click="() => this.inspectComponent(c.id)">
+                  <td><button class="experience-component" t-on-click.stop="() => this.inspectComponent(c.id)"><span class="experience-letter" t-esc="c.col"/><span><b t-esc="c.name"/><small t-esc="c.code"/></span><span t-if="!c.is_valid" class="experience-error" title="Review this component">!</span></button></td>
+                  <td><span class="experience-type" t-esc="experienceType(c)"/><span class="experience-calculation" t-att-title="c.excel_formula || srcSentence(c)" t-esc="c.type === 'formula' ? (c.excel_formula || '—') : srcLabel(srcOf(c))"/></td>
+                  <td t-esc="kindLabel(c.value_kind)"/><td class="num" t-esc="previewVal(c.col)"/>
+                </tr>
+              </t>
+              <tr t-if="!experienceRows.length"><td colspan="4" class="experience-empty">No matching components. Try a different search or filter.</td></tr>
+            </tbody></table>
+          </div>
+          <div class="experience-outcomes">
+            <span class="experience-muted">Sample outcomes</span>
+            <div t-foreach="experienceOutcomes" t-as="o" t-key="o.id"><small t-esc="o.code === state.config.net_code ? 'Net pay' : o.name"/><b t-esc="previewVal(o.col)"/></div>
+            <span t-if="!experienceOutcomes.length" class="experience-muted">Set the Net pay component in Component treatment to show an outcome here.</span>
+          </div>
+        </div>
+        <aside t-if="selected" class="experience-inspector">
+          <div class="experience-inspector-head"><span class="experience-eyebrow">COMPONENT <t t-esc="selected.col"/></span><h2 t-esc="selected.name"/><small t-esc="selected.code"/>
+            <div class="experience-selected-value" t-esc="previewVal(selected.col)"/><span class="experience-muted" t-esc="sampleName"/>
+          </div>
+          <div class="pbfs-seg sm experience-inspector-tabs" aria-label="Component details">
+            <button t-att-class="experience.inspector === 'formula' ? 'active' : ''" t-on-click="() => this.experience.inspector = 'formula'">Calculation</button>
+            <button t-att-class="experience.inspector === 'source' ? 'active' : ''" t-on-click="() => this.experience.inspector = 'source'">Source</button>
+            <button t-att-class="experience.inspector === 'impact' ? 'active' : ''" t-on-click="() => this.experience.inspector = 'impact'">Impact</button>
+          </div>
+          <div class="experience-inspector-body">
+            <t t-if="experience.inspector === 'formula'">
+              <h3 t-esc="experienceType(selected)"/>
+              <pre t-if="selected.type === 'formula'" t-esc="selected.excel_formula || 'No formula yet'"/>
+              <p t-elif="selected.type === 'constant'">Fixed value: <b t-esc="fmtTyped(selected,selected.constant_value)"/></p>
+              <p t-else="" t-esc="srcSentence(selected)"/>
+              <p t-if="selected.type === 'formula' and selected.explain" t-esc="selected.explain"/><p t-if="!selected.is_valid" class="experience-error" t-esc="selected.validation_message"/>
+              <p t-if="selected.type === 'formula'" class="experience-muted">Select an input below to see the value behind this calculation.</p>
+              <button t-foreach="selectedImpact.up" t-as="u" t-key="u.id" class="experience-dependency" t-on-click="() => this.inspectComponent(u.id)"><span t-esc="u.col + ' · ' + u.name"/><b t-esc="previewVal(u.col)"/></button>
+              <p t-if="selected.note" t-esc="selected.note"/>
+              <button t-if="state.canEdit" class="pbfs-btn soft" t-on-click="editInspected">Edit component</button>
+            </t>
+            <t t-elif="experience.inspector === 'source'">
+              <h3>Where this value comes from</h3><p t-esc="srcSentence(selected)"/>
+              <button class="pbfs-btn soft" t-on-click="() => this.openMapping('journey', selected.id)">Open mapping</button>
+              <label class="experience-field">Value type<select t-att-disabled="!state.canEdit" t-on-change="changeComponentKind"><option t-foreach="valueKinds" t-as="k" t-key="k[0]" t-att-value="k[0]" t-att-selected="selected.value_kind === k[0]" t-esc="k[1]"/></select></label>
+              <p class="experience-muted">The value type controls how values are read and displayed across the scheme. Existing pay runs keep their stored results until recomputed.</p>
+            </t>
+            <t t-else="">
+              <h3>What uses this component?</h3><p><t t-esc="selectedImpact.down.length"/> dependent components · <t t-esc="selectedImpact.payvis.length"/> shown on payslips</p>
+              <button t-foreach="selectedImpact.down" t-as="d" t-key="d.id" class="experience-dependency" t-on-click="() => this.inspectComponent(d.id)"><span t-esc="d.col + ' · ' + d.name"/><b t-esc="previewVal(d.col)"/></button>
+              <p t-if="!selectedImpact.down.length" class="experience-muted">No formula dependents. Check mapping, reports, and payslip layout before removing it.</p>
+              <button class="pbfs-btn soft" t-on-click="openDepMap">Explore dependency map</button>
+            </t>
+          </div>
+          <div class="experience-inspector-foot"><button class="pbfs-btn ghost sm" t-on-click="openHistory">Version history</button></div>
+        </aside>
+      </section>
+    </xpath>
+    <xpath expr="//button[hasclass('tp-sel')]" position="replace">
+      <select class="tp-sel" aria-label="Preview sample" t-on-change="changePreviewSample" t-att-disabled="!state.samples.length or experience.sampleBusy">
+        <option t-if="state.personPayslipId" value="" selected="selected" t-esc="sampleName"/>
+        <option t-if="!state.samples.length" value="">No sample yet</option>
+        <option t-foreach="state.samples" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="!state.personPayslipId and s.id === state.preview.sample_id" t-esc="s.name"/>
+      </select>
+    </xpath>
+    <xpath expr="//div[hasclass('intel-unused')]/preceding-sibling::div[1]" position="replace"><div class="ce-sec-sub">No formula dependents or payslip placement were found. A component may still be needed by mapping, employee records, or reports. Review its use before removing it.</div></xpath>
+    <xpath expr="//div[hasclass('intel-un-row')]/button" position="replace"><button class="pbfs-btn soft sm" t-on-click="() => this.reviewUsage(u.id)">Review use</button></xpath>
+    <xpath expr="//div[hasclass('pbcov-title')]" position="replace"><div class="pbcov-title">Formula outputs checked by these samples</div><p class="experience-muted">This percentage shows which formulas have an expected result. It does not measure scenario variety or prove the payroll is correct. Add boundary scenarios to check more cases.</p></xpath>
+    <xpath expr="//input[@t-on-input='(ev) => this.onTestInput(r.code, ev)']" position="attributes"><attribute name="type"/><attribute name="t-att-type">testInputType(r)</attribute><attribute name="t-att-aria-label">r.name</attribute></xpath>
+    <xpath expr="//td[@t-esc='tcell(r.expected)']" position="attributes"><attribute name="t-esc">tcell(r.expected, r)</attribute></xpath>
+    <xpath expr="//td[@t-esc='tcell(r.computed)']" position="attributes"><attribute name="t-esc">tcell(r.computed, r)</attribute></xpath>
+    <xpath expr="//div[hasclass('pbcmp-pickers')][@t-if]" position="before"><label t-if="state.cmpMode === 'period'" class="experience-field experience-outcome-picker">Measure outcome<select t-model="experience.outcome"><option value="">Choose an outcome</option><option t-foreach="state.config.outcomes || []" t-as="o" t-key="o.id" t-att-value="o.code" t-esc="o.name"/></select></label></xpath>
+    <xpath expr="//div[hasclass('wi-controls')]" position="before">
+      <div class="experience-controls experience-whatif-scope"><label>Pay run<select t-model="experience.whatifRun" t-on-change="invalidateWhatif"><option value="">Choose a pay run</option><option t-foreach="experience.whatifRuns" t-as="r" t-key="r.id" t-att-value="r.id" t-esc="r.name"/></select></label><label>Measure outcome<select t-model="experience.outcome" t-on-change="invalidateWhatif"><option value="">Choose an outcome</option><option t-foreach="state.config.outcomes || []" t-as="o" t-key="o.id" t-att-value="o.code" t-esc="o.name"/></select></label></div>
+    </xpath>
+    <xpath expr="//div[hasclass('wi-controls')]" position="after"><div class="experience-controls"><button class="pbfs-btn primary" t-att-disabled="state.whatifBusy" t-on-click="whatifRunFull">Calculate impact</button><button t-if="state.whatifBusy" class="pbfs-btn ghost" t-on-click="cancelWhatif">Cancel</button><span t-if="state.whatifBusy" role="status">Calculating… <t t-esc="experience.whatifProgress"/>%</span><p t-if="experience.whatifError" role="alert" class="experience-error" t-esc="experience.whatifError"/></div></xpath>
+    <xpath expr="//div[hasclass('wi-cards')]/div[3]" position="replace"><div class="wi-card"><span class="wi-card-lbl">Pay run measured</span><span class="experience-run-name" t-esc="state.whatifResult.scope &amp;&amp; state.whatifResult.scope.run_name"/><small>One payslip per employee. No annual projection assumed.</small></div></xpath>
+    <xpath expr="//span[hasclass('wi-card-lbl') and text()='Employees affected']" position="replace"><span class="wi-card-lbl">Employees with a changed outcome</span></xpath>
+    <xpath expr="//div[hasclass('wi-title')]/div/small" position="replace"><small>Choose one pay run, vary a constant, and measure a named outcome</small></xpath>
+    <xpath expr="//div[hasclass('ps-body')]" position="before"><div t-if="state.psData and state.psData.ok and !payslipLayoutReady" class="experience-notice"><b>Payslip layout is not ready.</b> Place the components employees should see, then preview it. An empty layout does not mean computed net pay is zero.</div></xpath>
+    <xpath expr="//div[hasclass('lg-allgood')]" position="replace"><div t-if="!state.legisCoverage.summary.drift" class="lg-allgood"><span t-if="state.legisCoverage.summary.aligned">Applicable configurations are aligned</span><span t-else="">No applicable configurations have been checked against this pack</span></div></xpath>
+    <xpath expr="//div[hasclass('dp-toolbar')]" position="before"><label class="experience-controls">Focus a component<select aria-label="Focus dependency component" t-on-change="focusDependency"><option value="">Choose a component to read its connections</option><option t-foreach="state.depNodes" t-as="n" t-key="n.id" t-att-value="n.col" t-esc="n.col + ' · ' + n.name"/></select></label></xpath>
+    <xpath expr="//div[hasclass('pbcfg-rail-side')]/div[hasclass('pbfs-ring')]" position="replace"><button class="experience-issues" t-on-click="openReviewQueue" t-esc="issueSummary"/></xpath>
+    <xpath expr="//div[hasclass('cs-ring')][@t-else]" position="replace"><div t-else="" class="experience-config-verdict"><span t-if="c.problem_counts.error">Needs review</span><span t-elif="c.problem_counts.warning">Review warnings</span><span t-else="">No blocking issues</span></div></xpath>
+    <xpath expr="//b[@t-esc='state.config.score']/parent::div" position="replace"><div class="sub">Every tool for <b t-esc="state.config.name"/></div></xpath>
+    <xpath expr="//div[hasclass('intel-unused')]/preceding-sibling::div[2]" position="replace"><div class="ce-sec-h">No formula dependents</div></xpath>
+    <xpath expr="//div[hasclass('pbtest-inrow')]/span" position="inside"><small t-if="r.input_is_default" class="experience-default-label">Default</small></xpath>
+    <xpath expr="//div[hasclass('pbtest-inputs')]" position="before"><p t-if="state.testDetail.rows.some(r => r.input_is_default)" class="experience-muted">Inputs marked Default use the scheme default because this sample has no value for that component.</p></xpath>
+    <xpath expr="//tr[@t-foreach='cmpComponents']/td[1]" position="replace"><td class="s"><b t-esc="componentName(c.code)"/><small class="experience-component-code" t-esc="c.code"/></td></xpath>
+    <xpath expr="//t[@t-esc='state.cmpResult.headline']" position="attributes"><attribute name="t-esc">componentName(state.cmpResult.headline)</attribute></xpath>
+    <xpath expr="//span[@t-esc=&quot;state.whatifResult.employees_changed + ' / ' + state.whatifResult.employees_total&quot;]" position="attributes"><attribute name="t-esc">state.whatifResult.headline_changed + ' / ' + state.whatifResult.employees_total</attribute></xpath>
+    <xpath expr="//div[contains(@t-attf-class,'wi-scope')]" position="replace"><div class="wi-scope exact"><span>Measured <b t-esc="state.whatifResult.employees_total"/> of <b t-esc="state.whatifResult.scope.employees_in_run"/> employees in this pay run using stored inputs.</span><span t-if="state.whatifResult.scope.excluded_employees"><b t-esc="state.whatifResult.scope.excluded_employees"/> employees excluded because stored inputs are missing.</span><span t-if="state.whatifResult.scope.duplicate_records"><b t-esc="state.whatifResult.scope.duplicate_records"/> extra payslips ignored; the latest payslip per employee is used.</span></div></xpath>
+    <xpath expr="//div[hasclass('pbfs-main')]" position="inside">
+      <div t-if="experience.draft" class="experience-scrim" t-on-click="closeComponentDraft"><section class="experience-dialog" role="dialog" aria-modal="true" aria-labelledby="experience-add-title" t-on-click.stop="">
+        <div class="experience-dialog-head"><div><span class="experience-eyebrow">NEW COMPONENT</span><h2 id="experience-add-title">Add a component</h2></div><button class="pbfs-btn ghost" aria-label="Close component draft" t-on-click="closeComponentDraft">×</button></div>
+        <p class="experience-muted">Nothing is saved until you choose Add component.</p>
+        <label class="experience-field">Name<input autofocus="autofocus" t-model="experience.draft.name" placeholder="e.g. Overtime hours"/></label>
+        <div class="experience-dialog-grid"><label class="experience-field">Component type<select t-model="experience.draft.column_type"><option value="input">Input — from data</option><option value="formula">Formula — calculated</option><option value="constant">Constant — fixed value</option></select></label><label class="experience-field">Value type<select t-model="experience.draft.value_kind"><option value="">Choose value type</option><option t-foreach="valueKinds" t-as="k" t-key="k[0]" t-att-value="k[0]" t-esc="k[1]"/></select></label></div>
+        <label t-if="experience.draft.column_type === 'formula'" class="experience-field">Formula<textarea t-model="experience.draft.excel_formula" placeholder="=A1+B1"/></label>
+        <label t-if="experience.draft.column_type === 'constant'" class="experience-field">Fixed value<input type="number" step="any" t-model="experience.draft.constant_value"/></label>
+        <p t-if="experience.draftError" class="experience-error" role="alert" t-esc="experience.draftError"/>
+        <div class="experience-dialog-foot"><button class="pbfs-btn ghost" t-att-disabled="experience.draftBusy" t-on-click="closeComponentDraft">Cancel</button><button class="pbfs-btn primary" t-att-disabled="experience.draftBusy" t-on-click="createComponentDraft"><t t-if="experience.draftBusy">Adding…</t><t t-else="">Add component</t></button></div>
+      </section></div>
+      <div t-if="experience.typeReview !== null" class="experience-scrim" t-on-click="closeTypeReview"><section class="experience-dialog experience-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="experience-types-title" t-on-click.stop="">
+        <div class="experience-dialog-head"><h2 id="experience-types-title">Review value types</h2><button class="pbfs-btn ghost" aria-label="Close value type review" t-on-click="closeTypeReview">×</button></div>
+        <p>Select the corrections you agree with. Suggestions use labels, formulas, and sample values; they can be incomplete. Your manually chosen types are preserved.</p>
+        <p t-if="!experience.typeReview.length" class="experience-empty">No automatic type corrections suggested. You can change a component’s type in its Source tab.</p>
+        <div class="experience-type-review" t-foreach="experience.typeReview" t-as="r" t-key="r.code"><input type="checkbox" t-att-disabled="experience.typeBusy" t-model="r.selected" t-att-aria-label="r.name"/><div><b t-esc="r.name"/><p><t t-esc="kindLabel(r.current)"/> → <strong t-esc="kindLabel(r.proposed)"/></p><small t-esc="r.reason"/></div></div>
+        <p class="experience-muted">This changes how values are read and displayed. Recompute and validate affected pay runs before relying on new results.</p>
+        <div class="experience-dialog-foot"><button class="pbfs-btn ghost" t-on-click="closeTypeReview" t-att-disabled="experience.typeBusy">Cancel</button><button t-if="state.canEdit" class="pbfs-btn primary" t-att-disabled="experience.typeBusy or !experience.typeReview.some(r => r.selected)" t-on-click="applyValueTypes">Apply selected corrections</button></div>
+      </section></div>
+    </xpath>
+  </t>
+</templates>

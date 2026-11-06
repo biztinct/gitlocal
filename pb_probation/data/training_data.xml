@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         ONE EXAMPLE COURSE, AND IT IS BOUND TO NOTHING.
+
+         The case this feature exists for is an agronomist who may not sign
+         off a field report until they have done the company's own soil
+         course. This database has no Agronomist job, and inventing one to
+         hang an example off would put a job title in an org chart that
+         nobody hired for.
+
+         So the course ships UNBOUND: active, complete, and attached to no
+         job at all — which means nobody is required to do it and nothing
+         is blocked by it (`tracks_for` deliberately ignores a track with no
+         jobs). An HR administrator opens it, ticks the jobs that need it,
+         and from that moment every new joiner in one of those jobs gets the
+         rows, and their trial period cannot be passed until the required
+         ones are done.
+
+         COMPANY-LESS (R8), like every other seed in this programme.
+         ================================================================== -->
+
+    <record id="track_agronomist" model="pb.training.track">
+        <field name="name">Agronomist essentials</field>
+        <field name="sequence">10</field>
+        <field name="company_id" eval="False"/>
+        <field name="description">An example course, ready to use. Add the jobs that need it and every new joiner in one of those jobs is given these items automatically — and cannot be confirmed at the end of their trial period until the required ones are done.</field>
+    </record>
+
+    <record id="track_agronomist_item_1" model="pb.training.item">
+        <field name="track_id" ref="track_agronomist"/>
+        <field name="name">Soil sampling and handling</field>
+        <field name="sequence">10</field>
+        <field name="required" eval="True"/>
+        <field name="description">Taking a sample that means something, labelling it, and getting it to the lab intact.</field>
+    </record>
+
+    <record id="track_agronomist_item_2" model="pb.training.item">
+        <field name="track_id" ref="track_agronomist"/>
+        <field name="name">Reading a field report</field>
+        <field name="sequence">20</field>
+        <field name="required" eval="True"/>
+        <field name="description">What each figure on the report is, what a normal range looks like, and what to do when one is outside it.</field>
+    </record>
+
+    <record id="track_agronomist_item_3" model="pb.training.item">
+        <field name="track_id" ref="track_agronomist"/>
+        <field name="name">Safety on site</field>
+        <field name="sequence">30</field>
+        <field name="required" eval="False"/>
+        <field name="description">Worth doing, not worth blocking somebody's confirmation over — so this one is not required.</field>
+    </record>
+
+</odoo>

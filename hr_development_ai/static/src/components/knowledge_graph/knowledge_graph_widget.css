@@ -1,0 +1,165 @@
+/* Knowledge Graph Widget Styles */
+
+.knowledge-graph-widget {
+    background: white;
+    border-radius: var(--hr-dev-radius-lg);
+    box-shadow: var(--hr-dev-shadow-md);
+    padding: var(--hr-dev-space-lg);
+}
+
+/* Loading State */
+.knowledge-graph-widget .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--hr-dev-space-2xl);
+    color: var(--hr-dev-gray-500);
+}
+
+.knowledge-graph-widget .loading-state .hr-dev-spinner {
+    margin-bottom: var(--hr-dev-space-md);
+}
+
+/* Header */
+.knowledge-graph-widget .graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--hr-dev-space-lg);
+    padding-bottom: var(--hr-dev-space-md);
+    border-bottom: 2px solid var(--hr-dev-gray-200);
+}
+
+.knowledge-graph-widget .graph-header h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--hr-dev-gray-900);
+    margin: 0;
+}
+
+.knowledge-graph-widget .graph-controls {
+    display: flex;
+    gap: var(--hr-dev-space-sm);
+}
+
+/* Graph Container */
+.knowledge-graph-widget .graph-container {
+    position: relative;
+    background-color: var(--hr-dev-gray-50);
+    border-radius: var(--hr-dev-radius-md);
+    border: 2px solid var(--hr-dev-gray-200);
+    overflow: hidden;
+    margin-bottom: var(--hr-dev-space-lg);
+}
+
+.knowledge-graph-widget .graph-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Selected Node Info */
+.knowledge-graph-widget .selected-node-info {
+    background: linear-gradient(135deg, var(--hr-dev-primary-light) 0%, var(--hr-dev-primary) 100%);
+    color: white;
+    padding: var(--hr-dev-space-md);
+    border-radius: var(--hr-dev-radius-md);
+    margin-bottom: var(--hr-dev-space-lg);
+}
+
+.knowledge-graph-widget .selected-node-info h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--hr-dev-space-sm);
+}
+
+.knowledge-graph-widget .selected-node-info .node-type {
+    margin-bottom: var(--hr-dev-space-sm);
+}
+
+.knowledge-graph-widget .selected-node-info .hr-dev-badge {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.knowledge-graph-widget .selected-node-info .node-description {
+    font-size: 0.875rem;
+    opacity: 0.95;
+    margin: 0;
+}
+
+/* Legend */
+.knowledge-graph-widget .graph-legend {
+    background-color: var(--hr-dev-gray-50);
+    padding: var(--hr-dev-space-md);
+    border-radius: var(--hr-dev-radius-md);
+    border: 1px solid var(--hr-dev-gray-200);
+}
+
+.knowledge-graph-widget .graph-legend h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--hr-dev-gray-700);
+    margin-bottom: var(--hr-dev-space-sm);
+}
+
+.knowledge-graph-widget .legend-items {
+    display: flex;
+    gap: var(--hr-dev-space-lg);
+    flex-wrap: wrap;
+    margin-bottom: var(--hr-dev-space-sm);
+}
+
+.knowledge-graph-widget .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--hr-dev-space-sm);
+    font-size: 0.875rem;
+    color: var(--hr-dev-gray-600);
+}
+
+.knowledge-graph-widget .legend-color {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: var(--hr-dev-radius-full);
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--hr-dev-gray-300);
+}
+
+.knowledge-graph-widget .legend-color.concept {
+    background-color: #7C3AED;
+}
+
+.knowledge-graph-widget .legend-color.resource {
+    background-color: #3B82F6;
+}
+
+.knowledge-graph-widget .legend-color.skill_category {
+    background-color: #10B981;
+}
+
+.knowledge-graph-widget .legend-hint {
+    font-size: 0.75rem;
+    color: var(--hr-dev-gray-500);
+    margin: var(--hr-dev-space-sm) 0 0 0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .knowledge-graph-widget .graph-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--hr-dev-space-sm);
+    }
+
+    .knowledge-graph-widget .graph-container {
+        height: 400px;
+    }
+
+    .knowledge-graph-widget .legend-items {
+        flex-direction: column;
+        gap: var(--hr-dev-space-sm);
+    }
+}

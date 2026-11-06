@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+<t t-name="pb_hiring.PayrollCalendar"><div><div t-if="state.canPlan" class="pbcal-views" role="tablist" aria-label="Payroll calendar view"><button role="tab" t-att-aria-selected="!state.planning ? 'true' : 'false'" t-att-class="!state.planning ? 'on' : ''" t-on-click="() => { state.planning = false; }">Calendar</button><button role="tab" t-att-aria-selected="state.planning ? 'true' : 'false'" t-att-class="state.planning ? 'on' : ''" t-on-click="() => { state.planning = true; }">Payroll planning</button></div><PbPaycalBoard t-if="state.planning"/><SharedCalendar t-else="" payrollOnly="true"/></div></t>
+<t t-name="pb_hiring.CalendarGrid"><div class="pbcal-fullcalendar" t-ref="calendar"/></t>
+<t t-name="pb_hiring.CalendarHub"><HubShell config="config" action="props.action or {}"/></t>
+<t t-name="pb_hiring.FindInterviewTime">
+  <div class="pbcal">
+    <h1>Find a time</h1><h2>My Google calendar</h2>
+    <p>Check your connected primary calendar for a time that works. This check reads free and busy times, without retrieving event titles, attendees or descriptions.</p>
+    <div class="pbcal-availability-form">
+      <label>Date<input type="date" t-model="state.date" t-on-change="invalidate" t-att-disabled="state.busy"/></label>
+      <label>From<input type="time" t-model="state.start" t-on-change="invalidate" t-att-disabled="state.busy"/></label>
+      <label>Until<input type="time" t-model="state.end" t-on-change="invalidate" t-att-disabled="state.busy"/></label>
+      <label>Meeting length<select t-model="state.duration" t-on-change="invalidate" t-att-disabled="state.busy"><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">1 hour</option><option value="90">90 minutes</option><option value="120">2 hours</option></select></label>
+      <label>Timezone<select t-model="state.zone" t-on-change="invalidate" t-att-disabled="state.busy"><option t-foreach="zones" t-as="zone" t-key="zone" t-att-value="zone" t-esc="zone"/></select></label>
+    </div>
+    <button class="pbim-btn primary" t-on-click="check" t-att-disabled="state.busy"><t t-if="state.busy">Checking Google Calendar…</t><t t-else="">Check my availability</t></button>
+    <p t-if="state.error" class="alert alert-warning mt-3" role="alert" t-esc="state.error"/>
+    <div t-if="state.result" class="mt-3" aria-live="polite">
+      <p class="pbcal-note">Checked with Google at <t t-esc="time(state.result.checked_at)"/> · <t t-esc="state.zone"/>. Availability can change. This check does not book a meeting.</p>
+      <div class="pbcal-availability-results">
+        <section><h3>Available times · <t t-esc="state.result.duration"/> minutes</h3>
+          <ul t-if="state.result.slots.length" class="pbcal-time-list"><li t-foreach="state.result.slots" t-as="slot" t-key="slot.start"><t t-esc="time(slot.start)"/> – <t t-esc="time(slot.stop)"/></li></ul>
+          <p t-else="">No future times fit this meeting length in the selected window. Try another date or a shorter meeting.</p>
+        </section>
+        <section><h3>Busy times</h3>
+          <ul t-if="state.result.busy.length" class="pbcal-time-list"><li t-foreach="state.result.busy" t-as="period" t-key="period.start"><t t-esc="time(period.start)"/> – <t t-esc="time(period.stop)"/> · Busy</li></ul>
+          <p t-else="">Google reports no busy time in this window.</p>
+        </section>
+      </div>
+    </div>
+    <p class="pbcal-muted mt-3">Uses your connected Google account, which may differ from your Payobook email. Manage it under Calendar → Connect.</p>
+    <details t-if="state.canHire" class="pbcal-note mt-4"><summary>Scheduling a panel interview?</summary><p>Choose a candidate to check a panel’s shared availability.</p><button class="pbim-btn" t-on-click="open">Choose a candidate</button></details>
+  </div>
+</t>
+<t t-name="pb_hiring.CalendarAdmin"><div class="pbcal pbim"><h1>Calendar providers</h1><p>Configure Google and Microsoft application credentials at master Settings level. Employees grant access to their own accounts from Calendar → Connect.</p><p>Calendar access follows each source’s permissions. Payroll dates remain internal and are never published to an employee’s connected calendar.</p><button class="pbim-btn primary" t-on-click="open">Configure providers</button></div></t>
+<t t-name="pb_hiring.SharedCalendar">
+<div class="pbcal">
+  <div t-if="state.error" class="alert alert-danger" role="alert"><t t-esc="state.error"/> <button class="pbim-btn" t-on-click="load">Retry</button></div>
+  <p t-if="state.syncError" class="alert alert-warning" role="alert" t-esc="state.syncError"/>
+  <t t-if="props.connectionsOnly">
+    <h1>Your calendar connections</h1><p class="pbcal-muted">Connect your primary Google or Microsoft calendar. Only meetings you organise or are invited to appear here. Payroll deadlines stay inside Payobook.</p>
+    <div class="pbcal-connections"><article class="pbcal-provider" t-foreach="providers" t-as="p" t-key="p.key">
+      <span class="pbcal-provider-icon" t-esc="p.key === 'google' ? 'G' : 'M'"/><h2 t-esc="p.label"/><p t-esc="providerStatus(p)"/>
+      <p t-if="p.key === 'google' &amp;&amp; p.status === 'sync_active' &amp;&amp; state.caps.google_notifications?.enabled" class="pbcal-muted">
+        <t t-if="state.caps.google_notifications.retrying">Automatic sync is retrying. You can also use Sync now.</t>
+        <t t-elif="state.caps.google_notifications.active">Change notifications active · hourly recovery check. Updates usually appear within two minutes.</t>
+        <t t-else="">Preparing automatic change notifications…</t>
+      </p>
+      <p class="pbcal-muted">Your primary calendar · two-way sync</p>
+      <p t-if="syncTime(p.key)" class="pbcal-muted" role="status">Last synced: <t t-esc="syncTime(p.key)"/></p>
+      <t t-if="p.status === 'missing_credentials'"><p>Your administrator needs to configure this provider first.</p><button t-if="state.caps.admin" class="pbim-btn" t-on-click="settings">Open master settings</button></t>
+      <t t-elif="p.status === 'sync_active'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.sync(p)">Sync now</button><button class="pbim-btn" t-on-click="() => this.providerChange(p,'pause')">Pause</button></t>
+      <t t-elif="p.status !== 'sync_paused'"><button class="pbim-btn primary" t-att-disabled="!!state.syncing" t-on-click="() => this.connect(p)">Connect / reconnect</button><button t-if="p.key !== 'google' or state.caps.google_connection_saved" class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="() => this.providerChange(p,'resume')">Resume</button></t>
+      <t t-if="p.key === 'google'">
+        <div class="pbcal-actions mt-3" t-if="state.caps.google_connection_saved">
+          <button class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="checkGoogleConnection">Check connection</button>
+          <button class="pbim-btn" t-att-disabled="!!state.syncing" t-on-click="removeGoogleConnection">Remove connection</button>
+        </div>
+        <div t-if="state.googleConnection" class="pbcal-note mt-3" role="status">
+          <t t-if="state.googleConnection.status === 'connected'">
+            <strong>Google connection verified.</strong>
+            <p t-if="state.googleConnection.calendar_name">Primary calendar: <t t-esc="state.googleConnection.calendar_name"/></p>
+            <p t-else="">Your primary Google calendar is connected. Google did not return a calendar name.</p>
+            <p>You can keep using this connection. To start fresh, choose Remove connection first.</p>
+          </t>
+          <p t-elif="state.googleConnection.status === 'needs_auth'">Google sign-in is needed. Choose Connect / reconnect to restore access.</p>
+          <p t-elif="state.googleConnection.status === 'missing_credentials' or state.googleConnection.status === 'configuration_error'">Ask your administrator to check the Google Calendar application settings.</p>
+          <p t-else="">We could not verify access to Google right now. Your saved connection has been kept. Try again, or remove the connection to start fresh.</p>
+        </div>
+      </t>
+    </article></div>
+    <p class="pbcal-note">One active synchronisation per person prevents meetings being copied between Google and Microsoft. Shared or secondary external calendars are not imported by this connector. Pause keeps your saved connection. Remove connection stops Google synchronisation and forgets your connection in Payobook; existing meetings remain. You can also revoke the app's permission in your Google account.</p>
+  </t>
+  <t t-else="">
+    <div class="pbcal-heading"><div><h1 t-esc="props.interviewsOnly ? 'Interview calendar' : props.payrollOnly ? 'Payroll calendar' : 'Your calendar'"/><p class="pbcal-muted">Your work, in one place. Only events you are permitted to see.</p></div><div class="pbcal-actions"><button t-if="state.caps.payroll and !props.interviewsOnly" class="pbim-btn" t-on-click="payrollDates">Manage payroll dates</button><button t-if="!props.interviewsOnly and !props.payrollOnly" class="pbim-btn primary" t-on-click="newEvent">+ New meeting</button></div></div>
+    <div class="pbcal-toolbar">
+      <div class="pbcal-actions"><button class="pbim-btn" t-on-click="today">Today</button><button class="pbim-btn" aria-label="Previous period" t-on-click="() => this.move(-1)">‹</button><button class="pbim-btn" aria-label="Next period" t-on-click="() => this.move(1)">›</button><strong t-esc="heading"/></div>
+      <div class="pbcal-actions"><input type="date" aria-label="Calendar date" t-model="state.date" t-on-change="load"/><select aria-label="Calendar timezone" t-model="state.zone" t-on-change="load"><option t-foreach="zones" t-as="zone" t-key="zone" t-att-value="zone" t-esc="zone"/></select><button class="pbim-btn" t-att-disabled="state.busy || state.refreshing || !!state.syncing" t-on-click="refresh"><t t-if="state.refreshing || state.syncing">Refreshing…</t><t t-else="">Refresh</t></button></div>
+    </div>
+    <div t-if="!props.payrollOnly &amp;&amp; !props.interviewsOnly" aria-live="polite">
+      <t t-foreach="providers" t-as="p" t-key="p.key"><p t-if="p.status === 'sync_active'" class="pbcal-muted"><t t-esc="p.label"/> · <t t-if="syncTime(p.key)">Last synced: <t t-esc="syncTime(p.key)"/></t><t t-else="">Not synced yet. Choose Refresh to fetch your latest events.</t></p></t>
+    </div>
+    <div class="pbcal-toolbar"><input class="pbcal-search" type="search" aria-label="Search calendar" placeholder="Search your visible events…" t-model="state.query"/><div class="pbcal-views" role="tablist" aria-label="Calendar view"><button t-foreach="views" t-as="view" t-key="view.key" role="tab" t-att-aria-selected="state.view === view.key ? 'true' : 'false'" t-att-class="state.view === view.key ? 'on' : ''" t-on-click="() => this.setView(view.key)" t-esc="view.label"/></div></div>
+    <div class="pbcal-sources"><label t-foreach="sources" t-as="s" t-key="s.key" t-att-class="'pbcal-source ' + s.key"><input type="checkbox" t-att-checked="s.on" t-on-change="() => this.toggle(s.key)"/><span t-esc="s.label"/><small t-esc="s.count"/></label></div>
+    <p t-if="state.truncated" class="alert alert-warning">This range contains more than 1,000 items in a source. Choose a shorter date range to see all events.</p>
+    <p t-if="state.busy" role="status">Loading your calendar…</p>
+    <t t-elif="!state.error">
+      <div t-if="state.view === 'agenda'" class="pbcal-agenda"><p t-if="!visible.length" class="pbcal-empty">No events match this date range and your filters.</p><button t-foreach="visible" t-as="event" t-key="event.key" t-att-class="'pbcal-agenda-row ' + event.source" t-on-click="() => { state.selected = event; }"><span><b t-esc="dateLabel(event)"/><small t-esc="when(event)"/></span><span><b t-esc="event.title"/><small t-esc="event.subtitle"/></span><span t-esc="source(event)"/></button></div>
+      <CalendarGrid t-else="" t-key="state.date + state.view + state.zone" events="visible" date="state.date" zone="state.zone" view="state.view" isWeekendVisible="true" onSelect="(event) => { state.selected = event; }"/>
+      <p class="pbcal-note" t-if="state.caps.payroll and !props.interviewsOnly">Payroll shows the dates saved in Payroll planning and scheme calendar rules, plus deadlines shared with your payroll team. Add processing and approval dates using Manage payroll dates. A scheme without a saved calendar rule does not generate guessed dates.</p>
+    </t>
+  </t>
+  <div t-if="state.selected" class="pbcal-shade" t-on-click="() => { state.selected = null; }"><section class="pbcal-drawer" role="dialog" aria-modal="true" aria-label="Event details" t-on-click.stop="() => {}"><button class="pbcal-close pbim-btn" aria-label="Close event details" t-on-click="() => { state.selected = null; }">×</button><p class="pbcal-kicker" t-esc="source(state.selected)"/><h2 t-esc="state.selected.title"/><p t-esc="state.selected.subtitle"/><p><b t-esc="dateLabel(state.selected)"/><br/><t t-esc="when(state.selected)"/> · <t t-esc="state.zone"/></p><p t-if="state.selected.location" t-esc="state.selected.location"/><p t-if="state.selected.detail" class="pbcal-note" t-esc="state.selected.detail"/><p t-if="state.selected.source === 'payroll'" class="pbcal-note">Visible only to authorised payroll staff. Not synced to external calendars.</p><button class="pbim-btn primary" t-on-click="openSelected" t-esc="state.selected.source === 'interviews' ? 'Manage in Hiring' : state.selected.source === 'payroll' ? 'Open payroll source' : state.selected.editable ? 'Open / edit meeting' : 'View meeting'"/></section></div>
+</div>
+</t>
+<t t-inherit="pb_hiring.PbHiringBoard" t-inherit-mode="extension">
+  <!-- FILTER W3: the Interviews list sits in one wrapper (its filter panel and
+       the list); the calendar replaces the whole wrapper. -->
+  <xpath expr="//div[@class='pbhr-ivwrap']" position="before"><div class="pbcal-views" role="tablist" aria-label="Interviews view"><button role="tab" t-att-aria-selected="!state.interviewCalendar ? 'true' : 'false'" t-att-class="!state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = false; }">List</button><button role="tab" t-att-aria-selected="state.interviewCalendar ? 'true' : 'false'" t-att-class="state.interviewCalendar ? 'on' : ''" t-on-click="() => { state.interviewCalendar = true; }">Calendar</button></div><SharedCalendar t-if="state.interviewCalendar" interviewsOnly="true"/></xpath>
+  <xpath expr="//div[@class='pbhr-ivwrap']" position="attributes"><attribute name="t-if">!state.interviewCalendar</attribute></xpath>
+</t>
+</templates>

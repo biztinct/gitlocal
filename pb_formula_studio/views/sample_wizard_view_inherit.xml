@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Re-skin the Generate Sample Data wizard to the design system (.pbfs-iw)
+         and make its primary button return to the cockpit (act_window_close)
+         instead of navigating to the stock samples list view. -->
+    <record id="view_formula_sample_data_wizard_form_studio" model="ir.ui.view">
+        <field name="name">hr.formula.sample.data.wizard.form.studio</field>
+        <field name="model">hr.formula.sample.data.wizard</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_sample_data_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class">pbfs-iw</attribute>
+            </xpath>
+            <xpath expr="//footer/button[@name='action_generate_samples']" position="attributes">
+                <attribute name="name">action_generate_and_close</attribute>
+                <attribute name="string">Generate</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

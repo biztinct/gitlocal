@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- TIERS T3b — the notice board on My Payobook. The pages reuse
+       pb_me_portal's .pbme kit (tokens, buttons, empty state, ess_icon);
+       `.pbnb-*` is this module's thin layer (static/src/scss/notices.scss).
+       Every word a person sees is here; the controller and the facade pass
+       facts only. The body of a notice is pb_hr_comm's own Html field value,
+       already sanitized when HR saved it — nothing else is printed raw. -->
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_notices" name="Notices breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'notices'" class="breadcrumb-item active">Notices</li>
+      <li t-if="page_name == 'notice'" class="breadcrumb-item"><a href="/my/notices">Notices</a></li>
+      <li t-if="page_name == 'notice' and notice" class="breadcrumb-item active" t-out="notice['subject']"/>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile on the employee home                                 -->
+  <!-- ============================================================= -->
+  <!-- Always drawn for an employee (config_card): the board says what will
+       appear when it is empty. The count is the unread notices.
+       pb_me_portal's registry (`/my/notices`) gives it the People section
+       and its badge. -->
+  <template id="portal_my_home_notices" name="Notices home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="26">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Notices</t>
+        <t t-set="text">What the company announced</t>
+        <t t-set="url" t-value="'/my/notices'"/>
+        <t t-set="config_card" t-value="True"/>
+        <t t-set="placeholder_count" t-value="'notice_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <!-- "2 h ago" from the facade's {unit, n, date}. -->
+  <template id="pbnb_ago" name="Notices: how long ago">
+    <t t-if="ago['unit'] == 'now'">just now</t>
+    <t t-elif="ago['unit'] == 'min'"><t t-out="ago['n']"/> min ago</t>
+    <t t-elif="ago['unit'] == 'h'"><t t-out="ago['n']"/> h ago</t>
+    <t t-elif="ago['unit'] == 'd' and ago['n'] == 1">yesterday</t>
+    <t t-elif="ago['unit'] == 'd'"><t t-out="ago['n']"/> d ago</t>
+    <t t-else="" t-out="ago['date']" t-options="{'widget': 'date', 'format': 'd MMM'}"/>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The "Notices" card on the home (pb_me_portal's extra cards)   -->
+  <!-- ============================================================= -->
+  <!-- Full width under Needs you: the latest three side by side (a poster
+       thumbnail when there is one), an unread dot on what is new, the door
+       to the board. Empty, it says what will appear. `card` is in scope
+       (pbme_bento's loop). -->
+  <template id="pbme_card_notices" name="Employee home: notices card">
+    <t t-set="nb" t-value="card['data']"/>
+    <section class="pbme-b pbme-b-extra pbme-b-notices" data-pbme-slot="notices" aria-labelledby="pbme-notices-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbme-notices-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'megaphone'"/><t t-set="isz" t-value="15"/></t>Notices<span t-if="nb['unread']" class="pbnb-new"><t t-out="nb['unread']"/> new</span></h2>
+        <a t-if="nb['total']" class="pbme-lab-link" t-att-href="nb['url']">All notices</a>
+      </div>
+      <ol t-if="nb['rows']" class="pbnb-cards">
+        <li t-foreach="nb['rows']" t-as="r" class="pbnb-cards-li">
+          <a t-att-class="'pbnb-card%s' % ('' if r['read'] else ' is-unread')" t-att-href="r['url']">
+            <span t-if="r['poster_url']" class="pbnb-card-img" aria-hidden="true"><img t-att-src="r['poster_url']" alt="" loading="lazy"/></span>
+            <span class="pbnb-card-body">
+              <span class="pbnb-card-meta"><i t-if="not r['read']" class="pbnb-dot" aria-hidden="true"/><span t-if="not r['read']" class="visually-hidden">Unread</span><t t-if="r['ago']" t-call="pb_me_portal_comm.pbnb_ago"><t t-set="ago" t-value="r['ago']"/></t></span>
+              <b class="pbnb-card-t" t-out="r['subject']"/>
+              <span t-if="r['excerpt']" class="pbnb-card-x" t-out="r['excerpt']"/>
+            </span>
+          </a>
+        </li>
+      </ol>
+      <div t-else="" class="pbme-empty-card">
+        <span class="pbme-badge pbme-badge--slate" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'megaphone'"/></t></span>
+        <p class="pbme-empty-h">No notices yet</p>
+        <p class="pbme-empty-d">When HR posts one, it lands here.</p>
+      </div>
+    </section>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The board                                                     -->
+  <!-- ============================================================= -->
+  <!-- The newest notice is a full-width card with its poster; the rest are
+       a quiet list, newest first, an unread dot on each one not opened yet
+       (it is gone once the notice has been read). Arrow keys / j / k move
+       between rows. -->
+  <template id="portal_my_notices" name="Notices (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbnb">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Notices</t>
+          <t t-set="hero_sub">What the company announced, newest first.</t>
+        </t>
+
+        <div t-if="not first" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'megaphone'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>No notices yet</h3>
+          <p>When HR posts one, it lands here. You will also see it on your home page.</p>
+          <a class="pbme-btn pbme-btn--ghost" href="/my">Back to my home</a>
+        </div>
+
+        <t t-else="">
+          <p class="pbnb-strip" aria-live="polite">
+            <span t-att-class="'pbnb-stat is-new' if counts['unread'] else 'pbnb-stat'"><b t-out="counts['unread']"/> unread</span>
+            <span class="pbnb-stat"><b t-out="counts['total']"/> in all</span>
+          </p>
+
+          <div data-pbnb-rows="">
+            <a t-att-class="'pbnb-hero%s%s' % ('' if first['read'] else ' is-unread', ' has-img' if first['poster_url'] else '')" t-att-href="first['url']">
+              <span t-if="first['poster_url']" class="pbnb-hero-img"><img t-att-src="first['poster_url']" alt="" loading="lazy"/></span>
+              <span class="pbnb-hero-body">
+                <span class="pbnb-hero-meta">
+                  <span t-if="not first['read']" class="pbnb-newtag"><i class="pbnb-dot" aria-hidden="true"/>New</span>
+                  <span class="pbnb-hero-when"><t t-if="first['ago']" t-call="pb_me_portal_comm.pbnb_ago"><t t-set="ago" t-value="first['ago']"/></t></span>
+                </span>
+                <b class="pbnb-hero-t" t-out="first['subject']"/>
+                <span t-if="first['excerpt']" class="pbnb-hero-x" t-out="first['excerpt']"/>
+                <span class="pbnb-hero-go">Read the notice<t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></span>
+              </span>
+            </a>
+
+            <ol t-if="rest" class="pbnb-list">
+              <li t-foreach="rest" t-as="r" class="pbnb-li">
+                <a t-att-class="'pbnb-row%s' % ('' if r['read'] else ' is-unread')" t-att-href="r['url']">
+                  <span class="pbnb-row-dot" aria-hidden="true"><i class="pbnb-dot"/></span>
+                  <span t-if="not r['read']" class="visually-hidden">Unread</span>
+                  <span class="pbnb-row-body">
+                    <b class="pbnb-row-t" t-out="r['subject']"/>
+                    <span t-if="r['excerpt']" class="pbnb-row-x" t-out="r['excerpt']"/>
+                  </span>
+                  <span t-if="r['has_poster']" class="pbnb-row-clip" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="14"/></t></span>
+                  <span class="pbnb-row-when"><t t-if="r['ago']" t-call="pb_me_portal_comm.pbnb_ago"><t t-set="ago" t-value="r['ago']"/></t></span>
+                  <span class="pbnb-row-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t></span>
+                </a>
+              </li>
+            </ol>
+          </div>
+          <div t-if="more_url" class="pbnb-more">
+            <a class="pbme-btn pbme-btn--ghost" t-att-href="more_url">Show earlier</a>
+          </div>
+          <p t-if="rest" class="pbnb-keys" aria-hidden="true">Tip: use the arrow keys to move between notices, and Enter to open one.</p>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One notice                                                    -->
+  <!-- ============================================================= -->
+  <!-- As HR wrote it: the subject, when it was sent, the words, and the
+       posters (pictures drawn, files to open). If it was unread, its dot is
+       drawn once and fades — the page says "read" without a word. Newer /
+       Older walk the person's own board (also the left / right arrow
+       keys). -->
+  <template id="portal_my_notice" name="One notice (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbnb pbnb-one">
+        <a class="pbnb-back" href="/my/notices"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>All notices</a>
+        <article class="pbnb-article" aria-labelledby="pbnb-title">
+          <header class="pbnb-article-h">
+            <div class="pbnb-article-meta">
+              <i t-if="was_unread" class="pbnb-dot is-fading" aria-hidden="true"/>
+              <span class="pbme-eyebrow">Notice</span>
+              <span class="pbnb-article-when" t-if="notice['sent_on']">Sent <t t-out="notice['sent_on']" t-options="{'widget': 'date', 'format': 'EEEE d MMMM yyyy'}"/></span>
+            </div>
+            <h1 class="pbnb-article-t" id="pbnb-title" t-out="notice['subject']"/>
+          </header>
+          <div t-if="notice['body_html']" class="pbnb-article-body" t-out="notice['body_html']"/>
+          <p t-else="" class="pbnb-article-empty">This notice has no words, only what is attached below.</p>
+
+          <t t-set="pics" t-value="[p for p in notice['posters'] if p['is_image']]"/>
+          <t t-set="files" t-value="[p for p in notice['posters'] if not p['is_image']]"/>
+          <div t-if="pics" class="pbnb-posters">
+            <a t-foreach="pics" t-as="p" class="pbnb-poster" t-att-href="p['url']" target="_blank" rel="noopener">
+              <img t-att-src="p['url']" t-att-alt="p['name']" loading="lazy"/>
+            </a>
+          </div>
+          <ul t-if="files" class="pbnb-files">
+            <li t-foreach="files" t-as="p">
+              <a class="pbnb-file" t-att-href="p['download_url']">
+                <span class="pbnb-file-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="15"/></t></span>
+                <span class="pbnb-file-n" t-out="p['name']"/>
+                <span class="pbnb-file-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t></span>
+              </a>
+            </li>
+          </ul>
+        </article>
+
+        <nav class="pbnb-nav" aria-label="More notices" data-pbnb-nav="">
+          <a t-if="notice['newer_url']" class="pbme-btn pbme-btn--ghost" t-att-href="notice['newer_url']" data-pbnb-newer=""><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>Newer</a>
+          <span t-else=""/>
+          <a class="pbme-btn pbme-btn--ghost" href="/my/notices">All notices</a>
+          <a t-if="notice['older_url']" class="pbme-btn pbme-btn--ghost" t-att-href="notice['older_url']" data-pbnb-older="">Older<t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></a>
+          <span t-else=""/>
+        </nav>
+      </div>
+    </t>
+  </template>
+
+  <!-- A notice that is not the person's (never sent to them, not sent yet,
+       or gone): a styled 404 with the way back. -->
+  <template id="portal_notice_missing" name="Notice not found (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbnb">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'megaphone'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We could not find that notice</h3>
+          <p>It may have been taken down, or it was not sent to you. Your notices are all on the board.</p>
+          <a class="pbme-btn pbme-btn--primary" href="/my/notices">Open my notices</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

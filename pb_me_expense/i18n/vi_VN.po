@@ -1,0 +1,1082 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_me_expense
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 23:57+0000\n"
+"PO-Revision-Date: 2026-10-15 23:57+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "%s expense claims came back refused."
+msgstr "%s đề nghị hoàn chi phí đã bị từ chối."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "%s expense claims refused — fix and resend"
+msgstr "%s đề nghị hoàn chi phí bị từ chối — sửa và gửi lại"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "1 expense claim refused — fix and resend"
+msgstr "1 đề nghị hoàn chi phí bị từ chối — sửa và gửi lại"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "1 receipt"
+msgstr "1 hoá đơn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid ""
+"<b class=\"pbex-drop-t\">Snap or choose a receipt</b>\n"
+"            <span class=\"pbex-drop-s\">A photo or a PDF, up to 10 MB. You can drop it here.</span>"
+msgstr ""
+"<b class=\"pbex-drop-t\">Chụp hoặc chọn hoá đơn</b>\n"
+"            <span class=\"pbex-drop-s\">Ảnh hoặc tệp PDF, tối đa 10 MB. Bạn có thể kéo thả vào đây.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<b>It was not sent.</b>"
+msgstr "<b>Chưa gửi được.</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<b>Refused. Here is why:</b>"
+msgstr "<b>Bị từ chối. Lý do:</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<b>What to fix, from the last time:</b>"
+msgstr "<b>Cần sửa, theo lần trước:</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<option value=\"\">Not for a trip</option>"
+msgstr "<option value=\"\">Không thuộc chuyến công tác nào</option>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-kbd\">Ctrl + Enter sends</span>"
+msgstr "<span class=\"pbex-kbd\">Ctrl + Enter để gửi</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "<span class=\"pbex-label\">How much</span>"
+msgstr "<span class=\"pbex-label\">Số tiền</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "<span class=\"pbex-label\">When</span>"
+msgstr "<span class=\"pbex-label\">Ngày</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-next-n\">1</span><span><b>It goes to the people who approve expenses</b><span>Usually your manager first, then finance.</span></span>"
+msgstr "<span class=\"pbex-next-n\">1</span><span><b>Đề nghị được gửi tới người duyệt chi phí</b><span>Thường là quản lý của bạn trước, sau đó là bộ phận Tài chính.</span></span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-next-n\">2</span><span><b>You see every step here</b><span>If something needs fixing, you can change it and send it again.</span></span>"
+msgstr "<span class=\"pbex-next-n\">2</span><span><b>Bạn theo dõi từng bước tại đây</b><span>Nếu cần sửa, bạn có thể thay đổi rồi gửi lại.</span></span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-next-n\">3</span><span><b>Finance pays you back</b><span>The claim shows Paid once the money is on its way.</span></span>"
+msgstr "<span class=\"pbex-next-n\">3</span><span><b>Bộ phận Tài chính hoàn tiền cho bạn</b><span>Đề nghị hiện Đã thanh toán khi tiền đang được chuyển.</span></span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "<span class=\"visually-hidden\">Remove this receipt</span>"
+msgstr "<span class=\"visually-hidden\">Bỏ hoá đơn này</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_send
+msgid ""
+"<span data-pbex-say=\"ok\">Send for approval</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"file\">Add a receipt first</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"amount\">Type the amount first</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"cat\">Pick what it was first</span>"
+msgstr ""
+"<span data-pbex-say=\"ok\">Gửi duyệt</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"file\">Hãy thêm hoá đơn trước</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"amount\">Hãy nhập số tiền trước</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"cat\">Hãy chọn loại chi phí trước</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Change what is needed and send it again. Nothing is lost.</span>"
+msgstr "<span>Sửa những gì cần sửa rồi gửi lại. Không mất gì cả.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Finance pays it back with the next expense payments. It shows Paid once the money is on its way.</span>"
+msgstr "<span>Bộ phận Tài chính sẽ hoàn tiền trong đợt thanh toán chi phí tới. Đề nghị hiện Đã thanh toán khi tiền đang được chuyển.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Need to change something?</span>"
+msgstr "<span>Cần thay đổi gì không?</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Nothing more to do.</span>"
+msgstr "<span>Không cần làm gì thêm.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "<span>Take a photo</span>"
+msgstr "<span>Chụp ảnh</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid ""
+"<span>Total</span>\n"
+"            <b data-pbex-total=\"\">0</b>"
+msgstr ""
+"<span>Tổng cộng</span>\n"
+"            <b data-pbex-total=\"\">0</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>You see each step here as it happens. Need to change something? Take it back first.</span>"
+msgstr "<span>Bạn thấy từng bước tại đây ngay khi nó diễn ra. Cần thay đổi? Hãy rút lại trước.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Your claim is safe and waiting. As soon as HR sets up who approves it, it moves on by itself.</span>"
+msgstr "<span>Đề nghị của bạn vẫn được giữ nguyên và đang chờ. Ngay khi bộ phận Nhân sự chỉ định người duyệt, đề nghị sẽ tự đi tiếp.</span>"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "A claim can carry up to %s receipts. Send this one and start a new claim for the rest."
+msgstr "Mỗi đề nghị có tối đa %s hoá đơn. Hãy gửi đề nghị này và tạo đề nghị mới cho phần còn lại."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "A receipt can be a photo (JPG, PNG or WEBP) or a PDF. Choose another file."
+msgstr "Hoá đơn có thể là ảnh (JPG, PNG hoặc WEBP) hoặc tệp PDF. Hãy chọn tệp khác."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "A receipt is more than 30 days old"
+msgstr "Có hoá đơn cũ hơn 30 ngày"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Add a note"
+msgstr "Thêm ghi chú"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Add a photo or PDF of the receipt first."
+msgstr "Hãy thêm ảnh hoặc tệp PDF của hoá đơn trước."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Add a receipt"
+msgstr "Thêm hoá đơn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Add another receipt"
+msgstr "Thêm hoá đơn khác"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Add at least one receipt before you send the claim."
+msgstr "Hãy thêm ít nhất một hoá đơn trước khi gửi đề nghị."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Add this receipt"
+msgstr "Thêm hoá đơn này"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "All my claims"
+msgstr "Tất cả đề nghị của tôi"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "An expense claim came back refused."
+msgstr "Một đề nghị hoàn chi phí đã bị từ chối."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Anything that helps, for example: dinner with the Hanoi client"
+msgstr "Thông tin hữu ích, ví dụ: ăn tối với khách hàng ở Hà Nội"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form
+msgid "Approve"
+msgstr "Duyệt"
+
+#. module: pb_me_expense
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__approved model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "Approved — being paid"
+msgstr "Đã duyệt — đang chờ thanh toán"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Ask HR"
+msgstr "Hỏi Nhân sự"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được đề nghị quyết định"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_missing
+msgid "Back to Expenses"
+msgstr "Quay lại Chi phí"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form
+msgid "Before you press Refuse: why it is refused. The employee sees this."
+msgstr "Trước khi bấm Từ chối: ghi lý do từ chối. Nhân viên sẽ thấy lý do này."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Careful"
+msgstr "Lưu ý"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Choose another"
+msgstr "Chọn tệp khác"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Claim %s is sent, approved or paid, so it cannot be deleted."
+msgstr "Đề nghị %s đã được gửi, đã duyệt hoặc đã thanh toán nên không thể xoá."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Claim back what you paid"
+msgstr "Đề nghị hoàn lại khoản bạn đã chi"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_home_expenses
+msgid "Claim back what you paid for"
+msgstr "Yêu cầu hoàn lại khoản bạn đã chi"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Claim back what you paid for. Snap the receipt and send it in under a minute."
+msgstr "Đề nghị hoàn lại khoản bạn đã chi. Chụp hoá đơn và gửi đi trong chưa đầy một phút."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Company card"
+msgstr "Thẻ công ty"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__decided_on
+msgid "Decided on"
+msgstr "Ngày quyết định"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_hr_expense__display_name model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_me_expense.field_pb_me_expense__display_name model:ir.model.fields,field_description:pb_me_expense.field_pb_me_home__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Done"
+msgstr "Đã xong"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 code:addons/pb_me_expense/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__employee_id model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_me_expense
+#: model:ir.model,name:pb_me_expense.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Dữ liệu trang chủ nhân viên"
+
+#. module: pb_me_expense
+#: model_terms:ir.actions.act_window,help:pb_me_expense.pb_expense_claim_action
+msgid ""
+"Employees send their claims from their own pages. Each claim\n"
+"               holds one or more receipts and is decided from Approvals."
+msgstr ""
+"Nhân viên gửi đề nghị từ trang cá nhân của họ. Mỗi đề nghị\n"
+"               gồm một hoặc nhiều hoá đơn và được xử lý tại mục Phê duyệt."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Every receipt has its photo"
+msgstr "Mọi hoá đơn đều có ảnh"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Every receipt needs an amount above zero. Check \"%s\"."
+msgstr "Mỗi hoá đơn cần số tiền lớn hơn 0. Hãy kiểm tra \"%s\"."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Every receipt needs its photo or PDF. Add it to \"%s\", or remove that receipt."
+msgstr "Mỗi hoá đơn cần có ảnh hoặc tệp PDF. Hãy thêm vào \"%s\" hoặc bỏ hoá đơn đó."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Every receipt needs to say what it was for. Check \"%s\"."
+msgstr "Mỗi hoá đơn cần ghi rõ là chi cho việc gì. Hãy kiểm tra \"%s\"."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__seat_user_ids
+msgid "Everyone a published approval route has asked to decide this. Being here is not a permission to change anything."
+msgstr "Những người mà quy trình duyệt đã đề nghị quyết định việc này. Có tên ở đây không có nghĩa là được quyền thay đổi."
+
+#. module: pb_me_expense
+#: model:ir.model,name:pb_me_expense.model_hr_expense
+msgid "Expense"
+msgstr "Chi phí"
+
+#. module: pb_me_expense
+#: model:ir.model,name:pb_me_expense.model_pb_expense_claim model:ir.model.fields,field_description:pb_me_expense.field_hr_expense__pb_claim_id model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Expense claim"
+msgstr "Đề nghị hoàn chi phí"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "Expense claim · %(amount)s · %(n)s receipts"
+msgstr "Đề nghị hoàn chi phí · %(amount)s · %(n)s hoá đơn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Expense claim · %(who)s · %(n)s receipts"
+msgstr "Đề nghị hoàn chi phí · %(who)s · %(n)s hoá đơn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Expense claim · %(who)s · 1 receipt"
+msgstr "Đề nghị hoàn chi phí · %(who)s · 1 hoá đơn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "Expense claim · %s · 1 receipt"
+msgstr "Đề nghị hoàn chi phí · %s · 1 hoá đơn"
+
+#. module: pb_me_expense
+#: model:biz.approval.process,name:pb_me_expense.process_expense model:ir.actions.act_window,name:pb_me_expense.pb_expense_claim_action model:ir.ui.menu,name:pb_me_expense.menu_pb_expense_claims model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_list model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search
+msgid "Expense claims"
+msgstr "Đề nghị hoàn chi phí"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.portal_breadcrumbs_expenses model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_home_expenses
+msgid "Expenses"
+msgstr "Chi phí"
+
+#. module: pb_me_expense
+#: model:ir.model,name:pb_me_expense.model_pb_me_expense
+msgid "Expenses on the employee pages"
+msgstr "Chi phí trên trang nhân viên"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Finance approver"
+msgstr "Người duyệt bên Tài chính"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Fix and resend"
+msgstr "Sửa và gửi lại"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "How many receipts"
+msgstr "Số hoá đơn"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_hr_expense__id model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_me_expense.field_pb_me_expense__id model:ir.model.fields,field_description:pb_me_expense.field_pb_me_home__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__message_has_error model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "It is a draft again. Fix what is needed, then send it."
+msgstr "Đề nghị đã trở lại bản nháp. Sửa những gì cần sửa rồi gửi đi."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_missing
+msgid "It may have been removed, or the link belongs to somebody else."
+msgstr "Đề nghị có thể đã bị xoá, hoặc đường dẫn thuộc về người khác."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_breadcrumbs_expenses model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "New claim"
+msgstr "Đề nghị mới"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "No claims yet."
+msgstr "Chưa có đề nghị nào."
+
+#. module: pb_me_expense
+#: model_terms:ir.actions.act_window,help:pb_me_expense.pb_expense_claim_action
+msgid "No expense claims yet"
+msgstr "Chưa có đề nghị hoàn chi phí nào"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "No reason given"
+msgstr "Không có lý do"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "No reason was given. Ask your manager what to change."
+msgstr "Không có lý do. Hãy hỏi quản lý của bạn cần sửa gì."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "No receipts on this claim yet. Add one below."
+msgstr "Đề nghị này chưa có hoá đơn nào. Hãy thêm bên dưới."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Nobody is set up to approve this yet. HR can fix the route."
+msgstr "Chưa có ai được giao duyệt đề nghị này. Bộ phận Nhân sự có thể sửa quy trình duyệt."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Nobody set up yet"
+msgstr "Chưa có người duyệt"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Nothing can be claimed yet. HR sets up what expenses can be claimed for."
+msgstr "Chưa có loại chi phí nào được hoàn. Bộ phận Nhân sự sẽ thiết lập các loại chi phí được hoàn."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Nothing finished yet"
+msgstr "Chưa có đề nghị nào hoàn tất"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Nothing is waiting on you"
+msgstr "Không có gì đang chờ bạn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Nothing is with anyone right now"
+msgstr "Hiện không có đề nghị nào đang chờ người khác"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Nothing to do. That was already done."
+msgstr "Không cần làm gì. Việc này đã xong rồi."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số việc cần xử lý"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__receipt_count
+msgid "Number of receipts"
+msgstr "Số hoá đơn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Only a refused claim can be fixed and sent again."
+msgstr "Chỉ đề nghị bị từ chối mới có thể sửa và gửi lại."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Open the receipt"
+msgstr "Mở hoá đơn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 code:addons/pb_me_expense/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__paid model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Paid"
+msgstr "Đã thanh toán"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__paid_on
+msgid "Paid on"
+msgstr "Ngày thanh toán"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Paid with a company card"
+msgstr "Đã trả bằng thẻ công ty"
+
+#. module: pb_me_expense
+#: model:biz.approval.process,description:pb_me_expense.process_expense
+msgid "Paying somebody back for what they paid for themselves: the receipts, what they were for and the total."
+msgstr "Hoàn tiền cho người đã tự chi trả: các hoá đơn, chi cho việc gì và tổng số tiền."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Pick one of your own approved trips, or leave it empty."
+msgstr "Hãy chọn một chuyến công tác đã được duyệt của bạn, hoặc để trống."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Pick what the receipt was for."
+msgstr "Hãy chọn hoá đơn này chi cho việc gì."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_alert model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Receipt"
+msgstr "Hoá đơn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Receipt added."
+msgstr "Đã thêm hoá đơn."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Receipt removed."
+msgstr "Đã bỏ hoá đơn."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0 model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__expense_ids model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form
+msgid "Receipts"
+msgstr "Hoá đơn"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__name
+msgid "Reference"
+msgstr "Mã tham chiếu"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_me_expense
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__refused model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Refused here"
+msgstr "Bị từ chối ở bước này"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Refused — see why"
+msgstr "Bị từ chối — xem lý do"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "Refused — your turn"
+msgstr "Bị từ chối — đến lượt bạn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Remove this receipt"
+msgstr "Bỏ hoá đơn này"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Saved as a draft. Add the next receipt below."
+msgstr "Đã lưu bản nháp. Thêm hoá đơn tiếp theo bên dưới."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "See why, change what is needed, and send it again"
+msgstr "Xem lý do, sửa những gì cần sửa rồi gửi lại"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Sent for approval."
+msgstr "Đã gửi duyệt."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__submitted_on
+msgid "Sent on"
+msgstr "Ngày gửi"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Sent to"
+msgstr "Đã gửi tới"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Show all claims"
+msgstr "Xem tất cả đề nghị"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Snap a receipt"
+msgstr "Chụp hoá đơn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Snap a receipt and we take it from there."
+msgstr "Chụp hoá đơn, phần còn lại để chúng tôi lo."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Snap the receipt, type the amount, pick what it was. We take it from there."
+msgstr "Chụp hoá đơn, nhập số tiền, chọn loại chi phí. Phần còn lại để chúng tôi lo."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__state model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Take back"
+msgstr "Rút lại"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Taken back by %s"
+msgstr "Đã được %s rút lại"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Taken back. It is a draft again, so you can change it."
+msgstr "Đã rút lại. Đề nghị đã trở lại bản nháp để bạn thay đổi."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "That date could not be read. Pick the day on the receipt."
+msgstr "Không đọc được ngày này. Hãy chọn ngày ghi trên hoá đơn."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "That file is over 10 MB. Try a smaller photo, or a PDF of the page."
+msgstr "Tệp lớn hơn 10 MB. Hãy thử ảnh nhỏ hơn, hoặc một tệp PDF của trang đó."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "That is not your employee record."
+msgstr "Đây không phải hồ sơ nhân viên của bạn."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "That receipt is not on this claim."
+msgstr "Hoá đơn này không thuộc đề nghị này."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "The receipt date cannot be in the future."
+msgstr "Ngày trên hoá đơn không thể ở tương lai."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Their manager"
+msgstr "Quản lý trực tiếp"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim is already approved, so it cannot be taken back. If something is wrong, ask HR."
+msgstr "Đề nghị này đã được duyệt nên không thể rút lại. Nếu có gì sai, hãy hỏi bộ phận Nhân sự."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim is already sent. Take it back first to change it."
+msgstr "Đề nghị này đã được gửi. Hãy rút lại trước khi thay đổi."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim is already sent. You can see where it is below."
+msgstr "Đề nghị này đã được gửi. Bạn có thể xem tình trạng bên dưới."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim was refused. Use Fix and resend to change it."
+msgstr "Đề nghị này đã bị từ chối. Hãy dùng Sửa và gửi lại để thay đổi."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/hr_expense.py:0
+msgid "This receipt is part of claim %s. Decide it from Approvals."
+msgstr "Hoá đơn này thuộc đề nghị %s. Hãy xử lý tại mục Phê duyệt."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0 model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__total model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_list
+msgid "Total"
+msgstr "Tổng cộng"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Trip"
+msgstr "Chuyến công tác"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Type how much you paid. It has to be more than zero."
+msgstr "Hãy nhập số tiền bạn đã trả. Số tiền phải lớn hơn 0."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 code:addons/pb_me_expense/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__submitted model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_search model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Waiting approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Waiting on you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_missing
+msgid "We could not find that claim"
+msgstr "Không tìm thấy đề nghị đó"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "We could not find that claim."
+msgstr "Không tìm thấy đề nghị đó."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trên trang web"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang web"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "What happens next"
+msgstr "Tiếp theo sẽ thế nào"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "What it comes to"
+msgstr "Tổng số tiền"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "What it was"
+msgstr "Chi cho việc gì"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "What they paid for"
+msgstr "Những khoản họ đã chi"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "What they were for"
+msgstr "Chi cho việc gì"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Where it is"
+msgstr "Tình trạng"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Which trip was this for?"
+msgstr "Khoản chi này thuộc chuyến công tác nào?"
+
+#. module: pb_me_expense
+#: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__refusal_reason
+msgid "Why it was refused"
+msgstr "Lý do từ chối"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "With"
+msgstr "Đang ở chỗ"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "With someone"
+msgstr "Đang chờ người khác"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "Write why it is refused first. The employee sees it on their claim."
+msgstr "Hãy ghi lý do từ chối trước. Nhân viên sẽ thấy lý do trên đề nghị của họ."
+
+#. module: pb_me_expense
+#: model:ir.model.fields,help:pb_me_expense.field_pb_expense_claim__refusal_reason
+msgid "Written by the approver who refused or sent it back. The employee sees it on their claim."
+msgstr "Do người duyệt ghi khi từ chối hoặc trả lại. Nhân viên sẽ thấy trên đề nghị của họ."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Your other claims are under All."
+msgstr "Các đề nghị khác của bạn nằm trong mục Tất cả."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Your receipt"
+msgstr "Hoá đơn của bạn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Your receipts are kept as a draft."
+msgstr "Hoá đơn của bạn được giữ ở bản nháp."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0
+msgid "a receipt is more than 30 days old"
+msgstr "có hoá đơn cũ hơn 30 ngày"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "need you"
+msgstr "cần bạn xử lý"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "nothing paid yet this year"
+msgstr "năm nay chưa được thanh toán khoản nào"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "on"
+msgstr "ngày"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "paid this year"
+msgstr "đã thanh toán năm nay"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "receipts"
+msgstr "hoá đơn"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "waiting"
+msgstr "đang chờ"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "your HR team"
+msgstr "bộ phận Nhân sự"

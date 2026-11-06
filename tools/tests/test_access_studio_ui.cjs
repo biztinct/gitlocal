@@ -1,0 +1,71 @@
+const fs=require('fs'),assert=require('assert/strict'),{JSDOM}=require(process.env.STUDIO_NODE_MODULES ? process.env.STUDIO_NODE_MODULES + '/jsdom' : 'jsdom');
+const dom=new JSDOM('<html><body><div id="app"></div></body></html>',{runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;
+const read=p=>fs.readFileSync(p,'utf8');w.eval(read('web/static/lib/owl/owl.js'));const o=w.owl;
+const reg={category:()=>({add:()=>{},getAll:()=>[]})};
+const patch=w.Function(read('web/static/src/core/utils/patch.js').replaceAll('export ','')+';return patch;')();
+class Dummy extends o.Component{};Dummy.template=o.xml`<div/>`;Dummy.props=['*'];
+const user={id:2,name:'Review owner',login:'owner@example.invalid',in_module:true,in_company:true,kind:'staff',avatar:'/avatar',is_me:true,assignments:[{id:41,profile:'Recruiting team',review_date:'2027-01-25',revision:1,origin:'manual'}],extras:[{id:51,role:'Interviewer cover',date_end:'2026-11-15'}]};
+const data={workspace:'hiring',workspaces:[{key:'hiring',label:'Hiring'},{key:'people',label:'People'}],can_manage:true,central_owner:true,company:'Example company',focuses:[{key:'people.records',workspace:'people',label:'Employees & records'},{key:'people.lifecycle',workspace:'lifecycle',label:'Joiners & leavers'},{key:'people.planning',workspace:'money',label:'Pay & planning'}],profiles:[{id:10,name:'Recruiting team',active:true,role_ids:[5],roles:['Recruiter'],members:1,revision:1}],people:[user],owner_people:[user],due_reviews:[],roles:[{id:5,name:'Recruiter',workspace:'hiring',allowed:true},{id:6,name:'Payroll viewer',workspace:'payroll',allowed:true}],role_ids:[5],requests:[],history:[],resources:[{key:'hr.applicant',label:'Candidates',fields:[{key:'partner_name',label:'Name',required:true},{key:'salary_expected',label:'Salary expected',sensitive:true}],department:true,states:[],owner_label:'Recruiter'}],departments:[],owners:[]};
+const calls=[];const svc={call:async(m,method,args)=>{calls.push({method,args});if(method==='get_board')return{can_manage:true,me:user,profiles:[],areas:[],mine:[],delegations:[],kpis:{}};if(method==='studio_data')return structuredClone(data);if(method==='studio_person')return structuredClone({...user,id:args[1],is_me:args[1]===user.id});if(method==='passport')return{header:{...user,id:args[0],is_me:args[0]===user.id,role_count:1,sees_x:1,of_y:1,locked_n:0},roles:[],rail:[{key:'main',items:[{id:1,label:'Home',state:'on'}]}],equivalent_roles:[],can_manage:true,any_gated:true};if(method==='surface_access')return{};if(method==='studio_role_policy')return{id:5,name:'Recruiter',revision:1,people:[],profiles:[],policy:{}};if(method==='studio_explain')return{allowed:false,sources:[],company:'Example company',note:'Application rules apply'};if(method==='people')return[];if(method==='screens')return{sections:[],rows:[]};return{message:'Submitted',sections:[],rows:[]}},add:()=>{},doAction:()=>{}};
+const source=read('biz_access/static/src/js/access_board.js').replace(/^import .*;$/gm,'').replaceAll('export ','');
+const C=w.Function('Component','useState','onWillStart','useExternalListener','useService','registry','_t','deserializeDateTime','formatDateTime','ic','HubBackChip','hubBack','PbMiniRail','railIcon',source+';return PbAccessBoard;')(o.Component,o.useState,o.onWillStart,o.useExternalListener,()=>svc,reg,s=>s,s=>s,s=>s,()=>o.markup(''),Dummy,()=>null,Dummy,()=>o.markup(''));
+const extension=read('biz_access/static/src/js/access_studio.js').replace(/^import .*;$/gm,'');
+const navigation=[];
+w.Function('patch','registry','_t','PbAccessBoard','useEffect','onWillUnmount','openHub',extension)(patch,reg,s=>s,C,o.useEffect,o.onWillUnmount,(_,target)=>navigation.push(target));
+const merged=new w.DOMParser().parseFromString(read('biz_access/static/src/xml/access_board.xml'),'text/xml');
+const extensionDoc=new w.DOMParser().parseFromString(read('biz_access/static/src/xml/access_studio.xml'),'text/xml');
+for(const xp of extensionDoc.documentElement.children[0].children){
+ const result=merged.evaluate(xp.getAttribute('expr'),merged,null,w.XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+ assert.equal(result.snapshotLength,1,'Extension XPath must target exactly one node: '+xp.getAttribute('expr'));
+ for(let i=0;i<result.snapshotLength;i++){
+  const target=result.snapshotItem(i),position=xp.getAttribute('position');
+  if(position==='attributes'){for(const a of xp.children)target.setAttribute(a.getAttribute('name'),a.textContent);continue;}
+  for(const child of xp.children){const copy=merged.importNode(child,true);if(position==='inside')target.appendChild(copy);else if(position==='after')target.parentNode.insertBefore(copy,target.nextSibling);else target.parentNode.insertBefore(copy,target);}
+  if(position==='replace')target.remove();
+ }
+}
+for(const t of [...extensionDoc.documentElement.children].slice(1))merged.documentElement.appendChild(merged.importNode(t,true));
+const dummy=merged.createElement('t');dummy.setAttribute('t-name','pb_import_kit.QuietGlance');dummy.appendChild(merged.createElement('div'));merged.documentElement.appendChild(dummy);
+const templates=new w.XMLSerializer().serializeToString(merged);
+const app=new o.App(C,{templates,props:{},env:{bus:{trigger:()=>{}}}});
+const tick=()=>new Promise(r=>setTimeout(r,50));
+const button=text=>[...w.document.querySelectorAll('button')].find(b=>b.textContent.trim()===text);
+(async()=>{const c=await app.mount(w.document.getElementById('app'));assert(w.document.body.textContent.includes('Access Studio'));assert(button('Explain access'));assert.equal(c.state.lens,'people');assert(w.document.querySelector('.pbva-passport'));assert(button('Review assignment'));assert(button('Revoke grant'));assert(button('Their history'));assert(button('Give a role'));assert(button('Manage screen visibility'));assert(!button('People & full menu passports'));c.state.workspace='people';await tick();assert.equal(w.document.querySelector('[aria-label="Access category"]').value,'people');c.state.workspace='hiring';await tick();
+button('Explain access').click();await tick();assert(w.document.querySelector('[role=dialog]'));assert(w.document.body.textContent.includes('Not allowed by current access'));button('See their full menu').click();await tick();assert.equal(c.state.lens,'people');assert.equal(c.state.personId,user.id);assert(!w.document.querySelector('[role=dialog]'));
+button('Review assignment').click();await tick();assert.equal(c.state.studioDialog.form.id,41);button('Close').click();await tick();
+const assign=[...w.document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Assign profile'&&!b.disabled);assign.click();await tick();assert.deepEqual(Array.from(c.state.studioDialog.form.users),[user.id]);button('Close').click();await tick();
+button('Manage screen visibility').click();await tick();assert.equal(c.state.lens,'screens');assert(button('Back to Review owner’s access'));button('Back to Review owner’s access').click();await tick();assert.equal(c.state.lens,'people');assert.equal(c.state.personId,user.id);
+c.state.studio.people=[];c.state.studio.due_reviews=[{id:41,user:user.name,user_id:user.id,profile:'Recruiting team',review_date:'2026-01-01'}];await tick();assert.equal(c.studioDue.length,1);c.studioOwners();await tick();assert.equal(c.state.studioDialog.form.user_id,user.id);assert(w.document.querySelector('[role=dialog] option').textContent.includes(user.name));button('Close').click();await tick();button('Profiles').click();await tick();button('New profile').click();await tick();assert(button('Submit for review').disabled);assert(w.document.body.textContent.includes('Roles in this profile'));assert(w.document.querySelector('[role=dialog] option').textContent.includes(user.name));assert(!w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));
+c.state.studioDialog.includeOtherModules=true;await tick();assert(w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));
+c.state.studioDialog.roleSearch='Recruiter';await tick();assert(!w.document.querySelector('[role=dialog]').textContent.includes('Payroll viewer'));button('Close').click();await tick();
+await c.studioOpenPolicy({id:5});await tick();assert(w.document.querySelector('[aria-label="Candidates View scope"]'));assert(!button('Manage roles'));assert(button('Abilities & menu preview'));assert(!w.document.querySelector('[placeholder="Search a role, or what it lets someone do"]'));
+button('Form fields').click();await tick();button('Add a policy').click();await tick();assert.equal(w.document.querySelector('[aria-label="Name permission"]').value,'view');assert.equal(w.document.querySelector('[aria-label="Salary expected permission"]').value,'view');
+c.state.studioPolicy.policy['hr.applicant'].fields.salary_expected='edit';await tick();assert.equal(w.document.querySelector('[aria-label="Salary expected permission"]').value,'edit');
+const field=w.document.querySelector('[aria-label="Salary expected permission"]');field.value='masked';field.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(c.state.studioPolicy.policy['hr.applicant'].fields.salary_expected,'masked');
+button('Actions & records').click();await tick();assert.equal(w.document.querySelector('[aria-label="Candidates View scope"]').value,'all');assert.equal(w.document.querySelector('[aria-label="Candidates Edit scope"]').value,'none');
+const scope=w.document.querySelector('[aria-label="Candidates Edit scope"]');scope.value='own';scope.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();assert.equal(c.state.studioPolicy.policy['hr.applicant'].write,'own');
+c.state.studioRoleSearch='Missing';await tick();assert(w.document.body.textContent.includes('No roles match'));c.state.studioRoleSearch='';
+button('Review & submit').click();await tick();assert(w.document.body.textContent.includes('Review policy changes'));button('Close').click();await tick();
+c.setLens('reviews');await tick();assert(w.document.body.textContent.includes('No requests in this view'));c.setLens('studio_history');await tick();assert(w.document.body.textContent.includes('No Studio changes yet'));c.setLens('screens');await tick();assert(w.document.body.textContent.includes('See it as'));c.toggleSim();await tick();assert(w.document.querySelector('[placeholder="Start typing a name"]'));c.toggleSim();await tick();
+c.setLens('studio_people');await tick();assert.equal(c.state.lens,'people');
+const originalCall=svc.call;let releaseOld;svc.call=async(m,method,args)=>method==='studio_person'&&args[1]===7?new Promise(resolve=>{releaseOld=resolve;}):originalCall(m,method,args);const oldRead=c.loadPassport(7);await c.loadPassport(8);releaseOld({...user,id:7});await oldRead;assert.equal(c.state.personId,8);assert.equal(c.state.studioPerson.id,8);svc.call=originalCall;
+c.state.board.can_manage=false;await c.loadPassport(user.id+1);await tick();assert(c.passport.restricted_preview);assert(button('Assign profile'));assert(!button('Give a role'));assert(!button('Manage screen visibility'));
+app.destroy();const embedded=new o.App(C,{templates,props:{embedded:true,workspace:'hiring'},env:{bus:{trigger:()=>{}}}});await embedded.mount(w.document.getElementById('app'));assert(w.document.querySelector('.pbva-passport'));assert(!w.document.querySelector('h2.pbva-h'));assert(button('Review assignment'));assert(button('Assign profile'));embedded.destroy();
+const focused=new o.App(C,{templates,props:{embedded:true,workspace:'people',focus:'people.records',hub:{label:'People',xmlid:'pb_people_hub.action_pb_people_hub'}},env:{bus:{trigger:()=>{}}}});
+const local=await focused.mount(w.document.getElementById('app'));
+assert(button('Joiners & leavers'));assert(button('Pay & planning'));assert(!w.document.querySelector('[aria-label="Access category"]'));
+assert(button('Open Access Studio'));assert(!button('Give a role'));assert(!button('Add a person'));assert(!button('Who holds what'));
+assert(!w.document.querySelector('[role=tab][data-key=screens]'));
+button('Pay & planning').click();await tick();
+assert.equal(local.state.workspace,'money');assert.equal(local.state.studioFocus,'people.planning');
+assert(calls.some(call=>call.method==='studio_data'&&call.args[0]==='money'&&call.args[3]==='people.planning'));
+assert(calls.some(call=>call.method==='studio_person'&&call.args[0]==='money'&&call.args[2]==='people.planning'));
+button('Roles').click();await tick();assert(button('View in Access Studio'));assert(!button('Review & submit'));
+button('View in Access Studio').click();await tick();assert.equal(navigation.at(-1).context.pb_studio_role,5);assert.equal(navigation.at(-1).back.lens,'access');
+button('Profiles').click();await tick();assert(!button('New profile'));assert(!button('Edit'));assert(button('Manage in Access Studio'));
+local.studioAssign(user);await tick();assert(w.document.body.textContent.includes('This profile grants all of these roles:'));assert(w.document.querySelector('[role=dialog]').textContent.includes('Recruiter'));local.closeStudio();
+local.setLens('reviews');assert.equal(navigation.at(-1).lens,'reviews');assert.equal(navigation.at(-1).context.pb_access_workspace,'money');
+focused.destroy();
+const centralReview=new o.App(C,{templates,props:{action:{context:{pb_lens:'reviews',pb_access_workspace:'money'}}},env:{bus:{trigger:()=>{}}}});
+const review=await centralReview.mount(w.document.getElementById('app'));assert.equal(review.state.lens,'reviews');assert.equal(review.state.workspace,'money');centralReview.destroy();
+w.close();console.log('PASS mounted full inherited Access Studio: people, explain drawer, profile editor, policy fields, review, history, preserved screens and preview control');})().catch(e=>{console.error(e);process.exitCode=1});

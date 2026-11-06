@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_statutory.PbPolicyDetail">
+    <div class="pbim sta pbim-page ppl-detail sta-detail">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading policy…</span></div>
+      <div t-elif="d.error" class="pbim-wrap"><div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+        <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back</button></div></div></div>
+
+      <div t-else="" class="pbim-wrap ppl-d-wrap">
+        <div class="ppl-d-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Statutory</button>
+          <div class="sp"/>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <div class="pbim-hero ppl-d-hero">
+          <div class="pbim-hero-av"><t t-out="ic('checkCircle',24)"/></div>
+          <div class="pbim-hero-id">
+            <div class="nm" t-esc="d.name"/>
+            <div class="mt" t-esc="d.code"/>
+            <div class="pbim-hero-chips">
+              <span t-if="d.effective" class="pbim-chip"><t t-out="ic('calendar',13)"/> From <t t-esc="d.effective"/><t t-if="d.end"> → <t t-esc="d.end"/></t></span>
+            </div>
+          </div>
+          <div class="ppl-d-state"><span t-attf-class="pbim-badge {{ d.active ? 'ok' : 'muted' }}"><t t-esc="d.active ? 'Active' : 'Archived'"/></span></div>
+        </div>
+
+        <div class="ppl-d-stats" style="grid-template-columns:repeat(2,1fr)">
+          <div class="pbim-stat new"><span class="n" t-esc="d.total_employee + '%'"/><span class="l">Employee total</span></div>
+          <div class="pbim-stat new"><span class="n" t-esc="d.total_employer + '%'"/><span class="l">Employer total</span></div>
+        </div>
+
+        <div class="pbim-panel">
+          <div class="pbim-panel-h"><h2 class="pbim-h2">Scheme rates &amp; ceilings</h2></div>
+          <div class="pbim-tablewrap">
+            <table class="pbim-table">
+              <thead><tr><th>Scheme</th><th>Employee</th><th>Employer</th><th>Monthly ceiling</th></tr></thead>
+              <tbody>
+                <tr t-foreach="d.rows" t-as="r" t-key="r.key">
+                  <td t-esc="r.label"/>
+                  <td><span class="sta-rate" t-esc="r.employee + '%'"/></td>
+                  <td><span class="sta-rate" t-esc="r.employer + '%'"/></td>
+                  <td class="money" t-esc="money(r.ceiling)"/>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div t-if="d.waivers.length" class="sta-waivers">
+            <span class="sta-wlabel">Waivers:</span>
+            <span t-foreach="d.waivers" t-as="w" t-key="w_index" class="pbim-badge warn"><t t-esc="w"/></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <t t-name="pb_statutory.PbTaxDetail">
+    <div class="pbim sta pbim-page ppl-detail sta-detail">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading tax table…</span></div>
+      <div t-elif="d.error" class="pbim-wrap"><div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+        <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back</button></div></div></div>
+
+      <div t-else="" class="pbim-wrap ppl-d-wrap">
+        <div class="ppl-d-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Statutory</button>
+          <div class="sp"/>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <div class="pbim-hero ppl-d-hero">
+          <div class="pbim-hero-av"><t t-out="ic('sigma',24)"/></div>
+          <div class="pbim-hero-id">
+            <div class="nm" t-esc="d.name"/>
+            <div class="mt"><t t-esc="d.code"/></div>
+            <div class="pbim-hero-chips"><span class="pbim-chip"><t t-out="ic('calendar',13)"/> Tax year <t t-esc="d.year"/></span></div>
+          </div>
+          <div class="ppl-d-state"><span t-attf-class="pbim-badge {{ d.active ? 'ok' : 'muted' }}"><t t-esc="d.active ? 'Active' : 'Archived'"/></span></div>
+        </div>
+
+        <div class="ppl-d-stats" style="grid-template-columns:repeat(3,1fr)">
+          <div class="pbim-stat"><span class="n" t-esc="d.slab_count"/><span class="l">Brackets</span></div>
+          <div class="pbim-stat new"><span class="n money" t-esc="money(d.personal)"/><span class="l">Personal relief</span></div>
+          <div class="pbim-stat new"><span class="n money" t-esc="money(d.dependent)"/><span class="l">Per dependent</span></div>
+        </div>
+
+        <div class="pbim-panel">
+          <div class="pbim-panel-h"><h2 class="pbim-h2">Progressive brackets</h2></div>
+          <div class="pbim-tablewrap">
+            <table class="pbim-table">
+              <thead><tr><th>From</th><th>To</th><th>Rate</th><th>Cumulative fixed</th></tr></thead>
+              <tbody>
+                <tr t-foreach="d.slabs" t-as="s" t-key="s_index">
+                  <td class="money" t-esc="money(s.from)"/>
+                  <td class="money" t-esc="s.to ? money(s.to) : '∞'"/>
+                  <td><span class="sta-rate" t-esc="s.rate + '%'"/></td>
+                  <td class="money" t-esc="money(s.fixed)"/>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

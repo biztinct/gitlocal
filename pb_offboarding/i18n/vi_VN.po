@@ -1,0 +1,735 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Clearances still open"
+msgstr "Xác nhận bàn giao còn mở"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Gone, sign-offs or items still open"
+msgstr "Đã nghỉ, còn chờ xác nhận hoặc tài sản"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Items not back yet"
+msgstr "Tài sản chưa trả lại"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Last day has passed"
+msgstr "Đã qua ngày làm việc cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Last day still ahead"
+msgstr "Chưa đến ngày làm việc cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Leaving this month"
+msgstr "Nghỉ việc trong tháng này"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Ready to settle"
+msgstr "Sẵn sàng quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Settled"
+msgstr "Đã quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement closed"
+msgstr "Đã đóng quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlements held up"
+msgstr "Quyết toán bị vướng"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing %s of %s people leaving"
+msgstr "Đang hiển thị %s trên %s người nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing %s of %s people leaving at %s"
+msgstr "Đang hiển thị %s trên %s người nghỉ việc ở bước %s"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing all %s people leaving · press a step or a number to narrow it"
+msgstr ""
+"Đang hiển thị tất cả %s người nghỉ việc · bấm một bước hoặc một con số để "
+"thu hẹp"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing all 1 person leaving · press a step or a number to narrow it"
+msgstr ""
+"Đang hiển thị 1 người nghỉ việc · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Showing nobody leaving yet"
+msgstr "Chưa có ai nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Signing off"
+msgstr "Đang xác nhận bàn giao"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Step %s of %s"
+msgstr "Bước %s / %s"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "The last payment can go out"
+msgstr "Có thể chi khoản thanh toán cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Working their notice"
+msgstr "Đang trong thời gian báo trước"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "Exits"
+msgstr "Nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:62
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:196
+msgid "Signed off by"
+msgstr "Được ký tắt bởi"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:263
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:324
+msgid "Close settlement"
+msgstr "Chốt quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:328
+msgid "Open the settlement"
+msgstr "Mở quyết toán"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:333
+msgid "Open the resignation"
+msgstr "Mở đơn nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:337
+msgid "Open the checklist"
+msgstr "Mở danh mục việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:228
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:362
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Handover"
+msgstr "Bàn giao công việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:366
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:425
+msgid "Change the wording"
+msgstr "Sửa câu chữ"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "There is no final settlement for this person yet."
+msgstr "Người này chưa có khoản quyết toán nào."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Could not be worked out:"
+msgstr "Không tính được:"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Its figures are worked out. Check them, then send it for approval."
+msgstr "Các con số đã được tính. Hãy kiểm tra, rồi gửi duyệt."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlements to check"
+msgstr "Quyết toán cần kiểm tra"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement could not be worked out"
+msgstr "Quyết toán không tính được"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement ready to check"
+msgstr "Quyết toán cần kiểm tra"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement waiting for approval"
+msgstr "Quyết toán đang chờ duyệt"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Settlement sent for approval."
+msgstr "Đã gửi duyệt khoản quyết toán."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "Resignations"
+msgstr "Đơn nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "Exit clearances"
+msgstr "Xác nhận bàn giao khi nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "Handover items"
+msgstr "Hạng mục bàn giao công việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "Notice policies"
+msgstr "Chính sách báo trước"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_palette.js:0
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "A step is overdue"
+msgstr "Có bước quá hạn"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Admin"
+msgstr "Hành chính"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "All handed over"
+msgstr "Đã bàn giao hết"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "All leaving"
+msgstr "Tất cả người nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Checklist status"
+msgstr "Trạng thái danh sách việc"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Checklist used"
+msgstr "Danh sách việc đã dùng"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Clearances"
+msgstr "Xác nhận bàn giao"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: model:ir.model.fields.selection,name:pb_probation.selection__pb_probation_review__state__closed
+#: model_terms:ir.ui.view,arch_db:pb_offboarding.view_full_and_final_search_gate
+#: model_terms:ir.ui.view,arch_db:pb_offboarding.view_full_and_final_tree_gate
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: model:ir.model.fields,field_description:pb_contract_lifecycle.field_pb_contract_extension__company_id
+#: model:ir.model.fields,field_description:pb_contract_lifecycle.field_pb_contract_review__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_exit_clearance__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_kt_item__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_notice_policy__company_id
+#: model:ir.model.fields,field_description:pb_offboarding.field_pb_resignation__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_probation_policy__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_probation_review__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_training_item__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_training_status__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_training_track__company_id
+#: model:ir.model.fields,field_description:pb_probation.field_pb_verdict_proposal__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Desk still open"
+msgstr "Bộ phận chưa xác nhận"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Exits are looked after by the HR team."
+msgstr "Việc nghỉ việc do bộ phận nhân sự phụ trách."
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Final settlement"
+msgstr "Quyết toán cuối cùng"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Finance"
+msgstr "Tài chính"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/models/resignation.py:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Held up"
+msgstr "Đang bị vướng"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "IT"
+msgstr "IT"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Items not back"
+msgstr "Tài sản chưa trả"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid ""
+"Items not back, a clearance open, a step overdue or a handover item open."
+msgstr ""
+"Còn tài sản chưa trả, một xác nhận còn mở, một bước quá hạn hoặc một mục bàn"
+" giao còn mở."
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Items still to hand over"
+msgstr "Còn mục cần bàn giao"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Last day"
+msgstr "Ngày làm cuối"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Last day, latest first"
+msgstr "Ngày làm cuối, muộn nhất trước"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Last day, soonest first"
+msgstr "Ngày làm cuối, sớm nhất trước"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Least done first"
+msgstr "Ít việc xong nhất trước"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/models/resignation.py:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Name, A to Z"
+msgstr "Tên, từ A đến Z"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "No checklist"
+msgstr "Không có danh sách việc"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "No handover items"
+msgstr "Không có mục bàn giao"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "No last day set"
+msgstr "Chưa có ngày làm cuối"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "No settlement yet"
+msgstr "Chưa có quyết toán"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "No team"
+msgstr "Chưa có nhóm"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Nobody matches these filters"
+msgstr "Không có ai khớp với các bộ lọc này"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Nobody matches “%s”. Check the spelling, or search by job or team."
+msgstr ""
+"Không có ai khớp với “%s”. Hãy kiểm tra chính tả, hoặc tìm theo công việc "
+"hay nhóm."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Nobody named"
+msgstr "Chưa chỉ định ai"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "Nothing could be listed just now. Show everybody to start again."
+msgstr "Hiện chưa liệt kê được gì. Hãy hiển thị mọi người để bắt đầu lại."
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Nothing in the way"
+msgstr "Không có gì cản trở"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Nothing open"
+msgstr "Không còn mục mở"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Nothing overdue"
+msgstr "Không có gì quá hạn"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Nothing to hand back"
+msgstr "Không có gì phải trả"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: model:ir.model.fields.selection,name:pb_offboarding.selection__pb_resignation__pb_interview_status__scheduled
+#: model:ir.model.fields.selection,name:pb_probation.selection__pb_probation_review__state__scheduled
+msgid "Scheduled"
+msgstr "Đã lên lịch"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Show everybody leaving"
+msgstr "Hiển thị mọi người nghỉ việc"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "Something is holding it up"
+msgstr "Có điều đang cản trở"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Started by"
+msgstr "Khởi tạo bởi"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Steps overdue"
+msgstr "Bước quá hạn"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Still holding something"
+msgstr "Vẫn đang giữ tài sản"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Still open"
+msgstr "Còn mở"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "The last payment, and whether anything still stands in front of it."
+msgstr "Khoản thanh toán cuối cùng, và liệu còn điều gì cản trở nó."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "The leavers could not be loaded. Try again in a moment."
+msgstr ""
+"Không tải được danh sách người nghỉ việc. Vui lòng thử lại sau giây lát."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid ""
+"There are %s people leaving, but none of them fits every filter you have "
+"set. Remove a filter above, or start again from everybody."
+msgstr ""
+"Có %s người nghỉ việc, nhưng không ai khớp với tất cả bộ lọc bạn đã chọn. "
+"Hãy bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại với mọi người."
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid ""
+"There is 1 person leaving, but they do not fit every filter you have set. "
+"Remove a filter above, or start again from everybody."
+msgstr ""
+"Có 1 người nghỉ việc, nhưng người này không khớp với tất cả bộ lọc bạn đã "
+"chọn. Hãy bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại với mọi người."
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Where they are"
+msgstr "Đang ở bước nào"
+
+#. module: pb_offboarding
+#. odoo-python
+#: code:addons/pb_offboarding/models/pb_exits.py:0
+msgid "Worked out, to check"
+msgstr "Đã tính, cần kiểm tra"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/xml/exits_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_offboarding
+#. odoo-javascript
+#: code:addons/pb_offboarding/static/src/js/exits_board.js:0
+msgid "people leaving"
+msgstr "người nghỉ việc"

@@ -8,7 +8,7 @@
         <field name="type">form</field>
         <field name="priority">16</field>
         <field name="arch" type="xml">
-            <form string="HR Analytics Dashboard" create="false" delete="false" js_class="hr_analytics_dashboard">
+            <form string="HR Analytics Dashboard" create="false" delete="false">
                 <header>
                     <span class="badge badge-success" style="padding: 8px 12px; font-size: 12px; font-weight: bold;">READY FOR APPROVAL</span>
                     <div style="flex: 1;"></div>
@@ -321,12 +321,12 @@
         <field name="name">HR Analytics Dashboard List</field>
         <field name="model">hr.analytics.dashboard</field>
         <field name="arch" type="xml">
-            <tree string="HR Analytics Dashboards">
+            <list string="HR Analytics Dashboards">
                 <field name="name"/>
                 <field name="selected_country"/>
                 <field name="active_tab"/>
                 <field name="last_refresh"/>
-            </tree>
+            </list>
         </field>
     </record>
 

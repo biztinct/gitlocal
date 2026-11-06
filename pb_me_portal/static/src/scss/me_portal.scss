@@ -1,0 +1,781 @@
+// Employee Self-Service portal — a branded "My Payobook" surface over the pbim
+// design tokens (imported into this frontend bundle). Scoped to .pbme so the
+// public /my/payslips/<token> path and other portal pages are never affected.
+// White + rail, no gradients on chrome, mobile-first (this is the phone surface).
+
+.pbme {
+    @include pbim-root-vars;
+    color: var(--pbim-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    // ---------- hero ----------
+    .pbme-hero {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh);
+        padding: 22px 24px; margin: 4px 0 20px;
+    }
+    .pbme-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+    .pbme-h1 { font-size: 25px; font-weight: 800; letter-spacing: -.01em; margin: 3px 0 0; }
+    .pbme-hero-sub { color: var(--pbim-muted); font-size: 13.5px; margin: 5px 0 0; }
+    .pbme-hero-actions { display: flex; gap: 10px; }
+
+    // ---------- hub home ----------
+    &.pbme-hub { margin-bottom: 6px; }
+    .pbme-hub-hero {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 26px 26px 22px; margin-bottom: 6px;
+    }
+    .pbme-hub-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+    .pbme-hub-title { font-size: 26px; font-weight: 800; margin: 4px 0 2px; }
+    .pbme-hub-sub { color: var(--pbim-muted); font-size: 14px; margin: 0; }
+
+    // ---------- shared card ----------
+    .pbme-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); padding: 20px;
+    }
+    .pbme-card-title { font-size: 15px; font-weight: 800; margin: 0 0 4px; }
+    .pbme-muted { color: var(--pbim-muted); font-size: 13px; }
+    .pbme-mt { margin-top: 16px; display: flex; gap: 10px; }
+
+    // ---------- buttons ----------
+    .pbme-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        border-radius: var(--pbim-r-sm); padding: 9px 16px; font-size: 13.5px; font-weight: 700;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface); color: var(--pbim-text);
+        text-decoration: none; cursor: pointer; transition: all .15s;
+        &:hover { text-decoration: none; }
+        &--primary { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; &:hover { background: var(--pbim-primary-hover); color: #fff; } }
+        &--ghost:hover { background: var(--pbim-bg); border-color: var(--pbim-primary-light); }
+        &--block { display: flex; width: 100%; margin-top: 8px; }
+    }
+    .pbme-icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--pbim-line); color: var(--pbim-muted); text-decoration: none; &:hover { background: var(--pbim-bg); color: var(--pbim-primary-strong); } }
+
+    // ---------- badges ----------
+    .pbme-badge { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; text-transform: capitalize; }
+    .pbme-badge--done, .pbme-badge--approved { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbme-badge--draft { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbme-badge--hr_review { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbme-badge--refused, .pbme-badge--cancel { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+
+    // ---------- payslip cards ----------
+    .pbme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+    .pbme-pay-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); padding: 18px; display: flex; flex-direction: column; gap: 6px;
+        transition: box-shadow .15s, transform .15s;
+        &:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-2px); }
+    }
+    .pbme-pay-top { display: flex; align-items: center; justify-content: space-between; }
+    .pbme-pay-period { font-size: 16px; font-weight: 800; }
+    .pbme-pay-range { font-size: 12px; color: var(--pbim-muted); }
+    .pbme-pay-net { display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--pbim-line-2); }
+    .pbme-pay-net-l { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); }
+    .pbme-pay-net-v { font-size: 19px; font-weight: 800; color: var(--pbim-green); }
+    .pbme-pay-act { display: flex; gap: 8px; margin-top: 12px; .pbme-btn { flex: 1; } }
+    .pbme-pager { margin-top: 22px; display: flex; justify-content: center; }
+
+    // ---------- detail layout ----------
+    .pbme-detail { display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start; }
+    .pbme-detail-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .pbme-detail-side { display: flex; flex-direction: column; gap: 14px; }
+
+    .pbme-lines { width: 100%; border-collapse: collapse; }
+    .pbme-lines th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); padding: 0 0 10px; border-bottom: 1px solid var(--pbim-line); }
+    .pbme-lines td { padding: 9px 0; border-bottom: 1px solid var(--pbim-line-2); font-size: 13.5px; }
+    .pbme-num { text-align: right; font-variant-numeric: tabular-nums; }
+    .pbme-line--NET td { font-weight: 800; color: var(--pbim-green); border-top: 2px solid var(--pbim-line); }
+    .pbme-line--GROSS td { font-weight: 700; }
+
+    .pbme-netcard { text-align: center; background: var(--pbim-primary-dark); border-color: var(--pbim-primary-dark); color: #fff; }
+    .pbme-netcard-l { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; opacity: .8; }
+    .pbme-netcard-v { font-size: 30px; font-weight: 800; margin: 4px 0; }
+    .pbme-netcard-p { font-size: 12px; opacity: .8; }
+
+    // ---------- profile ----------
+    .pbme-profile-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .pbme-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--pbim-soft); }
+    .pbme-profile-name { font-size: 18px; font-weight: 800; }
+    .pbme-profile-job { font-size: 13px; color: var(--pbim-muted); }
+    .pbme-kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+    .pbme-kv { display: flex; flex-direction: column; gap: 2px; span { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); font-weight: 700; } b { font-size: 13.5px; } }
+
+    .pbme-reqform { }
+    .pbme-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin: 14px 0 16px; }
+    .pbme-form-grid label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--pbim-muted); }
+    .pbme-form-wide { grid-column: 1 / -1; }
+    .pbme-form-grid input, .pbme-form-grid textarea, .pbme-flabel input, .pbme-flabel select {
+        border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px; font-size: 13.5px;
+        font-family: inherit; color: var(--pbim-text); background: #fff; width: 100%;
+        &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbme-flabel { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--pbim-muted); margin-bottom: 12px; }
+
+    .pbme-req-list { display: flex; flex-direction: column; gap: 2px; }
+    .pbme-req-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px; border-top: 1px solid var(--pbim-line-2); text-decoration: none; color: var(--pbim-text); &:first-child { border-top: none; } &:hover { color: var(--pbim-primary-strong); } }
+    .pbme-req-name { font-weight: 700; font-size: 13px; }
+    .pbme-req-note { margin-top: 12px; font-size: 13px; background: var(--pbim-bg); padding: 10px 12px; border-radius: 9px; }
+
+    // ---------- diff ----------
+    .pbme-diff { width: 100%; border-collapse: collapse; }
+    .pbme-diff th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--pbim-muted); padding: 0 10px 10px 0; border-bottom: 1px solid var(--pbim-line); }
+    .pbme-diff td { padding: 11px 10px 11px 0; border-bottom: 1px solid var(--pbim-line-2); font-size: 13.5px; vertical-align: top; }
+    .pbme-diff tr.is-changed { background: var(--pbim-soft); }
+    .pbme-diff-f { font-weight: 700; }
+    .pbme-diff-cur { color: var(--pbim-muted); }
+    .pbme-diff-arrow { color: var(--pbim-primary-strong); font-weight: 800; }
+
+    // ---------- stepper ----------
+    .pbme-stepper { display: flex; flex-direction: column; gap: 0; }
+    .pbme-step { display: flex; align-items: center; gap: 11px; padding: 7px 0; position: relative; }
+    .pbme-step:not(:last-child)::after { content: ""; position: absolute; left: 6px; top: 26px; bottom: -7px; width: 2px; background: var(--pbim-line); }
+    .pbme-step-dot { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--pbim-line); flex: 0 0 auto; z-index: 1; }
+    .pbme-step-lab { font-size: 13px; font-weight: 700; color: var(--pbim-muted); }
+    .pbme-step--done .pbme-step-dot { background: var(--pbim-green); border-color: var(--pbim-green); }
+    .pbme-step--done .pbme-step-lab { color: var(--pbim-text); }
+    .pbme-step--current .pbme-step-dot { background: var(--pbim-primary); border-color: var(--pbim-primary); box-shadow: 0 0 0 4px var(--pbim-ring); }
+    .pbme-step--current .pbme-step-lab { color: var(--pbim-primary-strong); }
+    .pbme-step--refused .pbme-step-dot { background: var(--pbim-rose); border-color: var(--pbim-rose); }
+    .pbme-step--refused .pbme-step-lab { color: var(--pbim-rose); }
+
+    // ---------- documents ----------
+    .pbme-doc-list { display: flex; flex-direction: column; }
+    .pbme-doc-row { display: flex; align-items: center; gap: 13px; padding: 12px 2px; border-top: 1px solid var(--pbim-line-2); &:first-child { border-top: none; } }
+    .pbme-doc-ic { width: 40px; height: 40px; border-radius: 10px; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-size: 17px; flex: 0 0 auto; }
+    .pbme-doc-main { flex: 1; min-width: 0; }
+    .pbme-doc-name { font-weight: 700; font-size: 13.5px; }
+    .pbme-doc-meta { display: flex; gap: 10px; align-items: center; margin-top: 3px; font-size: 12px; }
+    .pbme-doc-cat { color: var(--pbim-muted); }
+    .pbme-exp { font-weight: 700; }
+    .pbme-exp--expired { color: var(--pbim-rose); }
+    .pbme-exp--soon { color: var(--pbim-amber); }
+    .pbme-exp--valid { color: var(--pbim-green); }
+    .pbme-doc-side { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+    .pbme-verified { font-size: 12px; font-weight: 800; color: var(--pbim-green); }
+    .pbme-pending { font-size: 12px; font-weight: 700; color: var(--pbim-muted); }
+
+    // ---------- tax sheet ----------
+    .pbme-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .pbme-tile { background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r); box-shadow: var(--pbim-sh); padding: 14px 16px; }
+    .pbme-tile-l { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); font-weight: 700; }
+    .pbme-tile-v { font-size: 19px; font-weight: 800; margin: 4px 0 1px; font-variant-numeric: tabular-nums; }
+    .pbme-tile-y { font-size: 11px; color: var(--pbim-muted); }
+    .pbme-tablewrap { overflow-x: auto; padding: 12px; }
+    .pbme-taxtable { width: 100%; border-collapse: collapse; min-width: 520px; }
+    .pbme-taxtable th { text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); padding: 8px 10px; border-bottom: 1px solid var(--pbim-line); white-space: nowrap; &:first-child { text-align: left; } }
+    .pbme-taxtable td { padding: 9px 10px; border-bottom: 1px solid var(--pbim-line-2); font-size: 13px; }
+
+    // ---------- empty ----------
+    .pbme-empty { text-align: center; padding: 50px 20px; background: var(--pbim-surface); border: 1px dashed var(--pbim-line); border-radius: var(--pbim-r-lg); }
+    .pbme-empty-ic { width: 66px; height: 66px; border-radius: 50%; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-size: 26px; margin: 0 auto 14px; }
+    .pbme-empty-ic--err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbme-empty h3 { font-size: 17px; font-weight: 800; }
+    .pbme-empty p { color: var(--pbim-muted); margin-top: 5px; max-width: 54ch; margin-left: auto; margin-right: auto; }
+    .pbme-empty .pbme-btn { margin-top: 14px; }
+
+    // ---------- My requests (TIERS T3a) ----------
+    // One timeline grouped by month. Quiet-board palette: grey at rest, the
+    // one coloured pill is the request that waits on the person (`act`); a
+    // request with somebody else carries a quiet amber dot (`wait`).
+    &.pbme-rq { max-width: 920px; margin-left: auto; margin-right: auto; }
+    .pbme-rq-strip {
+        display: flex; flex-wrap: wrap; align-items: baseline; margin: 0 2px 12px;
+        font-size: 14px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); font-weight: 800; font-variant-numeric: tabular-nums; margin-right: 4px; }
+        .pbme-rq-stat + .pbme-rq-stat::before { content: "\00b7"; margin: 0 10px; color: var(--pbim-slate); }
+        .pbme-rq-stat.is-act { color: var(--pbim-primary-strong); font-weight: 700; b { color: var(--pbim-primary); } }
+    }
+    .pbme-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 20px; }
+    .pbme-chip {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 36px;
+        padding: 6px 8px 6px 13px; border-radius: 999px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface); color: var(--pbim-text);
+        font-size: 13px; font-weight: 700; text-decoration: none;
+        transition: background-color .15s, border-color .15s, color .15s;
+        &:hover { border-color: var(--pbim-primary-light); color: var(--pbim-primary-strong); text-decoration: none; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+        &.is-on { background: var(--pbim-soft); border-color: var(--pbim-primary-light); color: var(--pbim-primary); }
+    }
+    .pbme-chip-n {
+        min-width: 22px; padding: 2px 7px; border-radius: 999px; text-align: center;
+        background: var(--pbim-bg); color: var(--pbim-muted);
+        font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    .pbme-chip.is-on .pbme-chip-n { background: var(--pbim-surface); color: var(--pbim-primary); }
+    .pbme-rq-month { margin-bottom: 22px; animation: pbme-rq-in 320ms cubic-bezier(.2, .7, .3, 1) both; }
+    .pbme-rq-month:nth-child(2) { animation-delay: 60ms; }
+    .pbme-rq-month:nth-child(3) { animation-delay: 120ms; }
+    .pbme-rq-month:nth-child(n+4) { animation-delay: 160ms; }
+    .pbme-rq-month-h {
+        font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-muted); margin: 0 6px 8px;
+    }
+    .pbme-rq-list {
+        list-style: none; margin: 0; padding: 4px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+    }
+    .pbme-rq-li + .pbme-rq-li { border-top: 1px solid var(--pbim-line-2); }
+    .pbme-rq-row {
+        display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+        border-radius: 10px; color: var(--pbim-text); text-decoration: none;
+        transition: background-color .15s;
+        &:not(.is-static):hover { background: var(--pbim-bg); color: var(--pbim-text); text-decoration: none; }
+        &:not(.is-static):hover .pbme-rq-go { color: var(--pbim-primary); transform: translateX(2px); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: -2px; }
+    }
+    .pbme-rq-ic {
+        width: 34px; height: 34px; border-radius: 10px; flex: none;
+        display: inline-grid; place-items: center;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        &.is-act { background: var(--pbim-soft); color: var(--pbim-primary); }
+        .pbme-ic { width: 16px; height: 16px; }
+    }
+    .pbme-rq-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbme-rq-title {
+        font-size: 14px; font-weight: 700; color: var(--pbim-ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pbme-rq-meta { font-size: 12px; color: var(--pbim-muted); }
+    .pbme-rq-date::before { content: "\00b7"; margin: 0 6px; }
+    .pbme-rq-pill {
+        display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap;
+        padding: 4px 10px; border-radius: 999px; border: 1px solid transparent;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        font-size: 12px; font-weight: 700;
+    }
+    .pbme-rq-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .5; flex: none; }
+    .pbme-rq-pill--act {
+        background: var(--pbim-primary); color: #fff;
+        .pbme-rq-dot { background: #fff; opacity: 1; }
+    }
+    .pbme-rq-pill--wait {
+        background: var(--pbim-surface); border-color: var(--pbim-line); color: var(--pbim-text);
+        .pbme-rq-dot { background: var(--pbim-amber); opacity: 1; }
+    }
+    .pbme-rq-pill--no .pbme-rq-dot { background: var(--pbim-rose); opacity: .85; }
+    .pbme-rq-go { color: var(--pbim-primary-light); display: inline-grid; flex: none; transition: color .15s, transform .15s; }
+    .pbme-rq-more { display: flex; justify-content: center; margin-top: 4px; }
+    .pbme-rq-keys { text-align: center; font-size: 12px; color: var(--pbim-muted); margin: 14px 0 0; }
+    @media (hover: none) { .pbme-rq-keys { display: none; } }
+    @media (max-width: 560px) {
+        .pbme-rq-row { flex-wrap: wrap; gap: 8px 12px; }
+        .pbme-rq-body { flex-basis: calc(100% - 50px); }
+        .pbme-rq-pill { margin-left: 46px; }
+        .pbme-rq-go { display: none; }
+    }
+
+    // ---------- mobile (this is the phone surface) ----------
+    @media (max-width: 768px) {
+        .pbme-detail { grid-template-columns: 1fr; }
+        .pbme-detail-side { order: -1; }
+        .pbme-kv-grid, .pbme-form-grid { grid-template-columns: 1fr; }
+        .pbme-h1 { font-size: 21px; }
+        .pbme-hero { padding: 18px; }
+    }
+}
+
+// An employee-only person's My Payobook: the stock customer cards (invoices,
+// projects, tasks, timesheets) are not theirs. Flag set by the controller.
+.pbme-home.pbme-employee .o_portal_index_card:has(> a[href^="/my/invoices"], > a[href^="/my/projects"],
+                                                  > a[href^="/my/tasks"], > a[href^="/my/timesheets"]) {
+    display: none !important;
+}
+
+// =====================================================================
+//  MEHOME — the employee home (/my). Scoped to `.pbme-home`, which the
+//  template sets only for a person with an employee record; the stock page
+//  everyone else sees is untouched. Build target: the "Bento" mock-up.
+//  Tokens only (--pbim-*), flat colours (the leave ring is the one
+//  two-tone, a chart), Lucide badges, quiet colour.
+// =====================================================================
+
+// the tinted canvas the white cards sit on (page-wide, this page only)
+#wrap.o_portal_wrap:has(.pbme-home) { background: $pbim-bg; }
+
+.pbme-home {
+    @include pbim-root-vars;
+    container-type: inline-size;
+    color: var(--pbim-text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: 12px;
+    // a column, so the stock tile grid can sit at the end while it loads
+    // (see "the stock tile grid while the scripts load" below)
+    display: flex; flex-direction: column;
+
+    // the stock spinner and the emptied stock category rows (the tiles have
+    // moved into their sections)
+    .o_portal_doc_spinner { display: none !important; }
+    &.pbme-ready .o_portal_docs > .o_portal_category:not(:has(.o_portal_index_card)) { display: none; }
+    &.pbme-ready .o_portal_docs { margin: 0; }
+    [data-pbme-hidden] { display: none !important; }
+
+    // ---------- top line ----------
+    .pbme-top {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        gap: 18px; flex-wrap: wrap; padding: 10px 4px 22px;
+    }
+    .pbme-top-main { min-width: 0; flex: 1 1 420px; }
+    .pbme-eyebrow {
+        font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+        color: var(--pbim-primary);
+    }
+    .pbme-eyebrow-date::before { content: "\00b7"; margin: 0 7px; }
+    .pbme-greet {
+        font-size: 38px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05;
+        margin: 8px 0 0; color: var(--pbim-ink);
+        em { font-style: normal; color: var(--pbim-primary); }
+        em::after { content: "."; }
+    }
+    .pbme-line {
+        font-size: 15px; color: var(--pbim-muted); margin: 10px 0 0; max-width: 62ch; line-height: 1.5;
+        b { color: var(--pbim-ink); font-weight: 700; }
+    }
+    .pbme-who {
+        display: flex; align-items: center; gap: 12px; min-width: 0; max-width: 100%;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 999px;
+        padding: 6px 18px 6px 6px; box-shadow: var(--pbim-sh);
+    }
+    .pbme-who-av { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--pbim-soft); flex: none; }
+    .pbme-who-txt { min-width: 0; }
+    .pbme-who-n { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbme-who-r { font-size: 11.5px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbme-who-job + .pbme-who-co::before { content: "\00b7"; margin: 0 5px; }
+
+    // ---------- badges (tiles + needs rows) ----------
+    .pbme-badge {
+        display: inline-grid; place-items: center; flex: none; align-self: center;
+        width: 38px; height: 38px; border-radius: 11px;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        // the status-pill look .pbme gives the same class elsewhere never
+        // applies here (different scope), but be explicit
+        padding: 0; font-size: inherit; text-transform: none;
+        .pbme-ic { width: 18px; height: 18px; }
+    }
+    .pbme-badge--indigo { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbme-badge--green  { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbme-badge--blue   { background: var(--pbim-cyan-soft); color: var(--pbim-cyan); }
+    .pbme-badge--amber  { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbme-badge--rose   { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbme-badge--teal   { background: var(--pbim-teal-soft); color: var(--pbim-teal); }
+    .pbme-badge--pink   { background: var(--pbim-pink-soft); color: var(--pbim-pink); }
+    .pbme-badge--slate  { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+
+    // ---------- the tile itself (the platform's markup, restyled) ----------
+    .o_portal_index_card > a {
+        display: flex; align-items: center; gap: 12px !important;
+        color: var(--pbim-text); text-decoration: none;
+        transition: background-color .15s, box-shadow .15s, transform .15s;
+        > div:last-child { min-width: 0; flex: 1; }
+        .fs-5 {
+            font-size: 13.5px !important; font-weight: 700 !important; line-height: 1.3 !important;
+            color: var(--pbim-ink); margin-bottom: 2px !important;
+        }
+        .opacity-75 {
+            opacity: 1 !important; font-size: 12px; color: var(--pbim-muted); line-height: 1.4;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+
+    // ---------- bento ----------
+    // Placement is explicit (grid-column + grid-row per slot) at desktop
+    // width, so auto-placement can never leave a hole; the base below is the
+    // 700–1000 px layout (two equal columns, the Me strip full width).
+    .pbme-bento {
+        display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-auto-rows: minmax(84px, auto);
+        gap: 14px; align-items: stretch;
+    }
+    .pbme-b {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: 20px; box-shadow: var(--pbim-sh); padding: 18px 20px;
+        min-width: 0; display: flex; flex-direction: column;
+        grid-column: span 6;
+    }
+    .pbme-b-me { grid-column: 1 / -1; }
+    .pbme-lab {
+        display: flex; align-items: center; gap: 8px; margin: 0; min-width: 0;
+        font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--pbim-muted);
+        .pbme-ic { width: 15px; height: 15px; }
+    }
+    .pbme-lab-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .pbme-lab-sub::before { content: "\00b7"; margin: 0 6px 0 -2px; }
+    .pbme-lab-link {
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary); text-decoration: none;
+        white-space: nowrap; border-radius: 6px;
+        &:hover { color: var(--pbim-primary-hover); text-decoration: underline; text-underline-offset: 3px; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbme-count {
+        margin-left: auto; min-width: 22px; padding: 2px 8px; border-radius: 999px;
+        font-size: 11px; font-weight: 800; letter-spacing: 0; text-align: center;
+        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+    }
+    .pbme-pill {
+        margin-left: auto; display: inline-flex; align-items: center; white-space: nowrap;
+        padding: 3px 9px; border-radius: 999px;
+        font-size: 11px; font-weight: 800; letter-spacing: 0; text-transform: none;
+    }
+    .pbme-pill--amber { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbme-num { font-variant-numeric: tabular-nums; }
+
+    // buttons on the home cards (one solid primary per card)
+    .pbme-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        min-height: 38px; padding: 8px 14px; border-radius: 10px;
+        font-size: 13px; font-weight: 700; line-height: 1.2; white-space: nowrap;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface); color: var(--pbim-ink);
+        text-decoration: none; cursor: pointer;
+        transition: background-color .15s, border-color .15s, color .15s;
+        .pbme-ic { width: 15px; height: 15px; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbme-btn--pri {
+        background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff;
+        &:hover { background: var(--pbim-primary-hover); border-color: var(--pbim-primary-hover); color: #fff; }
+    }
+    .pbme-btn--out {
+        color: var(--pbim-primary); border-color: var(--pbim-primary-light);
+        &:hover { background: var(--pbim-soft); color: var(--pbim-primary); }
+    }
+
+    // a card with nothing in it yet says what will appear (never a blank box)
+    .pbme-empty-card {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 16px;
+        > .pbme-empty-h { margin: 8px 0 0; font-size: 15px; font-weight: 700; color: var(--pbim-ink); }
+        > .pbme-empty-d { margin: 0; font-size: 13px; color: var(--pbim-muted); line-height: 1.45; max-width: 36ch; }
+        > .pbme-lab-link { margin-top: 10px; }
+    }
+
+    // Pay — the light-tint hero card
+    .pbme-b-pay {
+        background: var(--pbim-soft); border-color: var(--pbim-primary-light); padding: 20px 22px;
+        .pbme-lab { color: var(--pbim-primary); }
+        .pbme-empty-card .pbme-badge { background: var(--pbim-surface); }
+    }
+    .pbme-pay-big {
+        margin-top: 14px; line-height: 1; white-space: nowrap;
+        font-size: 18px; font-weight: 700; color: var(--pbim-primary);
+        font-variant-numeric: tabular-nums;
+        .oe_currency_value {
+            font-size: 40px; font-weight: 800; letter-spacing: -.03em; color: var(--pbim-primary-dark);
+        }
+    }
+    .pbme-pay-delta {
+        margin: 10px 0 0; font-size: 13px; font-weight: 600; color: var(--pbim-muted);
+        .pbme-num { color: var(--pbim-ink); font-weight: 700; }
+    }
+    // the bars take the room the tall card has (72–200 px), so the trend
+    // reads as a chart rather than a strip with a blank card under it
+    .pbme-bars {
+        display: flex; align-items: flex-end; gap: 8px; margin-top: 20px;
+        flex: 1 1 72px; min-height: 72px; max-height: 200px;
+    }
+    .pbme-bar {
+        display: block; flex: 1 1 0; max-width: 64px; min-height: 4px; height: var(--pbme-h, 0%);
+        background: var(--pbim-surface); border: 1px solid var(--pbim-primary-light);
+        border-radius: 6px 6px 3px 3px; transform-origin: 50% 100%;
+        &.is-cur { background: var(--pbim-primary); border-color: var(--pbim-primary); }
+    }
+    .pbme-bars-x {
+        display: flex; gap: 8px; margin-top: 6px;
+        > span {
+            flex: 1 1 0; max-width: 64px; min-width: 0; text-align: center;
+            font-size: 10.5px; font-weight: 700; color: var(--pbim-primary); text-transform: capitalize;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+    }
+    .pbme-pay-foot {
+        display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap;
+        gap: 12px; margin-top: auto; padding-top: 20px;
+    }
+    .pbme-pay-next {
+        font-size: 12.5px; color: var(--pbim-primary-dark); min-width: 0;
+        b { display: block; margin-top: 2px; font-size: 14px; font-weight: 700; text-transform: capitalize; }
+    }
+    .pbme-pay-act { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+
+    // Leave — the ring (the page's one two-tone: a chart, M-R1)
+    .pbme-b-leave { text-align: center; }
+    .pbme-b-leave.is-empty { text-align: left; }
+    .pbme-ring {
+        --c: var(--pbim-green); --c-soft: var(--pbim-green-soft);
+        width: 96px; height: 96px; border-radius: 50%; flex: none;
+        margin: 14px auto 8px; display: grid; place-items: center;
+        background: conic-gradient(var(--c) 0 var(--pbme-pct), var(--c-soft) var(--pbme-pct) 360deg);
+        &.is-low { --c: var(--pbim-amber); --c-soft: var(--pbim-amber-soft); }
+    }
+    .pbme-ring-in {
+        width: 74px; height: 74px; border-radius: 50%; background: var(--pbim-surface);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;
+        b { font-size: 22px; font-weight: 800; color: var(--c); }
+        small { margin-top: 4px; font-size: 10.5px; font-weight: 700; color: var(--pbim-muted); }
+    }
+    .pbme-leave-cap { margin: 0 0 14px; font-size: 12.5px; color: var(--pbim-muted); line-height: 1.45; }
+    .pbme-leave-wait::before { content: "\00b7"; margin: 0 6px; }
+    .pbme-leave-go { margin: auto auto 0; }
+
+    // This week — seven day cells
+    .pbme-week {
+        list-style: none; margin: 14px 0 0; padding: 0;
+        display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px;
+    }
+    .pbme-day {
+        min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
+        padding: 8px 2px 7px; border: 1px solid var(--pbim-line-2); border-radius: 10px; text-align: center;
+        &.is-today { border-color: var(--pbim-primary); box-shadow: inset 0 0 0 1px var(--pbim-primary); }
+    }
+    .pbme-day-d {
+        max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        font-size: 10px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .pbme-day-n { font-size: 14px; font-weight: 800; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbme-day-s {
+        align-self: stretch; margin-top: 3px; padding: 2px 1px; border-radius: 5px;
+        font-size: 9.5px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25;
+        // a long shift ("22–23:30") wraps to a second line rather than being cut
+        // (owner 2026-10-15); the cell grows with it
+        white-space: normal; overflow-wrap: anywhere;
+    }
+    .pbme-day.is-acked .pbme-day-s   { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbme-day.is-pending .pbme-day-s { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbme-day.is-leave .pbme-day-s   { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbme-day.is-off .pbme-day-s     { color: var(--pbim-muted); opacity: .55; }
+    .pbme-week-foot {
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+        gap: 8px 10px; margin-top: auto; padding-top: 14px;
+    }
+    .pbme-week-h { font-size: 12.5px; color: var(--pbim-muted); }
+    .pbme-week-worked::before { content: "\00b7"; margin: 0 6px; }
+
+    // (T3b) the clock line: the same state as the Clock page, one tap away.
+    // Clocked in = a green dot that breathes and a live "3 h 12 m"; out = a
+    // quiet grey dot. The button is the card's primary only when nothing
+    // else (shifts to confirm) is.
+    .pbme-clock {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px;
+        margin-top: 12px; padding: 9px 10px 9px 12px; border-radius: 12px;
+        background: var(--pbim-bg); border: 1px solid var(--pbim-line-2);
+        &.is-in { background: var(--pbim-green-soft); border-color: transparent; }
+    }
+    .pbme-clock-dot {
+        position: relative; width: 9px; height: 9px; border-radius: 50%; flex: none;
+        background: var(--pbim-slate); opacity: .55;
+    }
+    .pbme-clock.is-in .pbme-clock-dot {
+        background: var(--pbim-green); opacity: 1;
+        &::after {
+            content: ""; position: absolute; inset: -4px; border-radius: 50%;
+            background: var(--pbim-green); opacity: .25;
+            animation: pbme-breathe 4.8s ease-in-out infinite;
+        }
+    }
+    .pbme-clock-txt {
+        flex: 1 1 140px; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px;
+        font-size: 12.5px; color: var(--pbim-muted);
+        b { font-size: 13px; font-weight: 700; color: var(--pbim-ink); }
+    }
+    .pbme-clock-el { font-variant-numeric: tabular-nums; }
+    .pbme-clock-el::before { content: "\00b7"; margin-right: 6px; }
+    .pbme-clock.is-in .pbme-clock-el { color: var(--pbim-green); font-weight: 700; }
+    .pbme-clock-form { margin: 0; }
+    .pbme-clock-btn { min-height: 34px; padding: 6px 12px; }
+    .pbme-clock-btn.is-pressing { opacity: .7; }
+
+    // (T3b) cards other modules add (`_pbme_extra_cards`): full width under
+    // Needs you, before the Me strip
+    .pbme-b-extra { grid-column: 1 / -1; }
+
+    // Needs you
+    .pbme-needs { display: flex; flex-direction: column; margin-top: 8px; }
+    .pbme-need {
+        display: flex; align-items: center; gap: 12px; padding: 9px 6px; margin: 0 -6px;
+        border-radius: 12px; text-decoration: none; color: var(--pbim-text);
+        border-bottom: 1px solid var(--pbim-line-2);
+        transition: background-color .15s;
+        &:last-child { border-bottom: 0; }
+        &:hover { background: var(--pbim-bg); color: var(--pbim-text); }
+        &:hover .pbme-need-go { color: var(--pbim-primary); transform: translateX(2px); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 1px; }
+        .pbme-badge { width: 32px; height: 32px; border-radius: 10px; .pbme-ic { width: 16px; height: 16px; } }
+    }
+    .pbme-need-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .pbme-need-body b { font-size: 13.5px; font-weight: 700; color: var(--pbim-ink); }
+    .pbme-need-d { font-size: 12px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbme-need-go { color: var(--pbim-primary-light); display: inline-grid; transition: color .15s, transform .15s; }
+    .pbme-quiet {
+        display: flex; align-items: center; gap: 8px; margin: 14px 0 2px;
+        font-size: 13px; color: var(--pbim-muted);
+        .pbme-ic { color: var(--pbim-slate); }
+    }
+
+    // Me strip — a full-width row under the bento: five tiles across, a
+    // second row when there are more
+    .pbme-b-me { padding: 10px 12px; justify-content: center; }
+    // (T3a) a grid that fills the row whatever the tile count — six tiles
+    // sit six across, never five plus one stretched across a second row
+    .pbme-me-body {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 4px 6px;
+        > .o_portal_index_card {
+            width: auto; max-width: none; min-width: 0; padding: 0; margin: 0;
+        }
+        > .o_portal_index_card > a {
+            background: transparent !important; padding: 10px 12px !important; border-radius: 14px !important;
+            &:hover { background: var(--pbim-bg) !important; }
+            // a short line, allowed to wrap: "Details and cha…" reads worse
+            // than two lines
+            .opacity-75 { white-space: normal; }
+        }
+    }
+
+    // Sections below
+    .pbme-sec { margin-top: 28px; }
+    .pbme-sec-h {
+        font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+        color: var(--pbim-muted); margin: 0 4px 10px;
+    }
+    .pbme-sec-body {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 18px;
+        > .o_portal_index_card { width: auto; max-width: none; padding: 0; margin: 0; }
+        > .o_portal_index_card > a {
+            background: transparent !important; padding: 10px 8px !important; border-radius: 12px !important;
+            .pbme-badge { width: 34px; height: 34px; border-radius: 10px; .pbme-ic { width: 16px; height: 16px; } }
+            &:hover { background: var(--pbim-surface) !important; box-shadow: var(--pbim-sh); }
+        }
+    }
+
+    // Sections and the Me strip appear once the tiles are in them; a section
+    // with no tile, or only hidden / not-yet-counted ones, is not drawn.
+    .pbme-sec, .pbme-b-me { display: none; }
+    &.pbme-ready {
+        .pbme-sec { display: block; }
+        .pbme-b-me { display: flex; }
+        .pbme-sec.is-empty, .pbme-b-me.is-empty { display: none; }
+        .pbme-sec:not(:has(.o_portal_index_card:not(.d-none):not([data-pbme-hidden]))) { display: none; }
+        .pbme-b-me:not(:has(.o_portal_index_card:not(.d-none):not([data-pbme-hidden]))) { display: none; }
+    }
+
+    // ---------- the stock tile grid while the scripts load (M2) ----------
+    // The tiles are drawn by the platform in one stock grid and moved into
+    // their sections by the Interaction. Until then the grid is invisible AND
+    // sits at the end of the page (order), so neither the tiles nor the bento
+    // jump; if the scripts never run, it shows itself after two seconds.
+    > .o_portal_docs { order: 1; }
+    &:not(.pbme-ready) .o_portal_docs { visibility: hidden; animation: pbme-reveal 0s 2s forwards; }
+
+    // ---------- motion with purpose (M2; all off under reduced motion) ----
+    // the cards settle in once, one after the other; then the bars grow and
+    // the ring fills. No count-up on money.
+    .pbme-bento > .pbme-b { animation: pbme-enter 320ms cubic-bezier(.2, .7, .3, 1) both; }
+    .pbme-bento > .pbme-b:nth-child(2) { animation-delay: 60ms; }
+    .pbme-bento > .pbme-b:nth-child(3) { animation-delay: 120ms; }
+    .pbme-bento > .pbme-b:nth-child(4) { animation-delay: 180ms; }
+    .pbme-bento > .pbme-b:nth-child(5) { animation-delay: 240ms; }
+    .pbme-bento > .pbme-b:nth-child(n+6) { animation-delay: 300ms; }
+    .pbme-bar { animation: pbme-bar-grow 480ms cubic-bezier(.2, .7, .3, 1) 340ms both; }
+    .pbme-ring { animation: pbme-ring-fill 600ms cubic-bezier(.3, .7, .3, 1) 400ms both; }
+}
+
+// The ring's share is a registered property so it can be animated from 0
+// to the server's value; a browser without @property shows the final ring.
+@property --pbme-pct {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
+}
+@keyframes pbme-enter { from { opacity: 0; transform: translateY(8px); } }
+@keyframes pbme-bar-grow { from { transform: scaleY(0); } }
+@keyframes pbme-ring-fill { from { --pbme-pct: 0%; } }
+@keyframes pbme-reveal { to { visibility: visible; } }
+@keyframes pbme-rq-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pbme-breathe { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.6); opacity: 0; } }
+
+// desktop (≥ 1000 px): Pay 1–5 × rows 1–3, Leave 6–8 and This week 9–12 ×
+// rows 1–2, Needs you 6–12 × row 3, the Me strip full width under it
+@container (min-width: 1000px) {
+    .pbme-home .pbme-b-pay   { grid-column: 1 / 6;  grid-row: 1 / 4; }
+    .pbme-home .pbme-b-leave { grid-column: 6 / 9;  grid-row: 1 / 3; }
+    .pbme-home .pbme-b-week  { grid-column: 9 / 13; grid-row: 1 / 3; }
+    .pbme-home .pbme-b-needs { grid-column: 6 / 13; grid-row: 3 / 4; }
+    .pbme-home .pbme-b-me    { grid-column: 1 / 13; grid-row: 4 / 5; }
+    // one of Leave / This week absent: the other takes cols 6–12 × rows 1–2
+    .pbme-home .pbme-bento--no-leave .pbme-b-week,
+    .pbme-home .pbme-bento--no-week .pbme-b-leave { grid-column: 6 / 13; grid-row: 1 / 3; }
+    // both absent: Pay and Needs you side by side in row 1
+    .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-pay   { grid-column: 1 / 6;  grid-row: 1 / 2; }
+    .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-needs { grid-column: 6 / 13; grid-row: 1 / 2; }
+    .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-me    { grid-column: 1 / 13; grid-row: 2 / 3; }
+    // (T3b) extra cards take the row(s) after Needs you; the Me strip then
+    // follows them instead of holding row 4 (auto-placement in DOM order)
+    .pbme-home .pbme-b-extra { grid-column: 1 / 13; }
+    .pbme-home .pbme-bento.pbme-bento--extra .pbme-b-me,
+    .pbme-home .pbme-bento--no-leave.pbme-bento--no-week.pbme-bento--extra .pbme-b-me { grid-row: auto; }
+}
+// 700–1000 px with one of Leave / This week absent: Needs you takes the
+// whole row rather than leave a hole beside it
+@container (max-width: 999.98px) {
+    .pbme-home .pbme-bento--no-leave .pbme-b-needs,
+    .pbme-home .pbme-bento--no-week .pbme-b-needs { grid-column: 1 / -1; }
+    .pbme-home .pbme-bento--no-leave.pbme-bento--no-week .pbme-b-needs { grid-column: span 6; }
+}
+// phone (≤ 700 px): one column in the order Pay, Needs you, This week,
+// Leave, Me; smaller greeting; buttons full-width and tappable
+@container (max-width: 700px) {
+    .pbme-home .pbme-greet { font-size: 30px; }
+    .pbme-home .pbme-top { padding: 4px 0 16px; }
+    .pbme-home .pbme-bento { display: flex; flex-direction: column; }
+    .pbme-home .pbme-b-pay { order: 1; }
+    .pbme-home .pbme-b-needs { order: 2; }
+    .pbme-home .pbme-b-week { order: 3; }
+    .pbme-home .pbme-b-leave { order: 4; }
+    .pbme-home .pbme-b-me { order: 5; }
+    .pbme-home .pbme-b-extra { order: 5; }
+    .pbme-home .pbme-pay-big .oe_currency_value { font-size: 34px; }
+    .pbme-home .pbme-pay-act, .pbme-home .pbme-pay-act .pbme-btn,
+    .pbme-home .pbme-week-foot .pbme-btn { flex: 1 1 auto; min-height: 44px; }
+    .pbme-home .pbme-leave-go { align-self: stretch; margin: auto 0 0; min-height: 44px; }
+    .pbme-home .pbme-week { gap: 3px; }
+    .pbme-home .pbme-day { padding: 7px 1px 6px; }
+    .pbme-home .pbme-day-s { font-size: 9px; padding: 2px 1px; }
+    .pbme-home .pbme-clock-btn { min-height: 44px; }
+}
+@media (max-width: 700px) {
+    .pbme-home .pbme-greet { font-size: 30px; }
+    .pbme-home .pbme-top { padding: 4px 0 16px; }
+    .pbme-home .pbme-bento { display: flex; flex-direction: column; }
+    .pbme-home .pbme-b-pay { order: 1; }
+    .pbme-home .pbme-b-needs { order: 2; }
+    .pbme-home .pbme-b-week { order: 3; }
+    .pbme-home .pbme-b-leave { order: 4; }
+    .pbme-home .pbme-b-me { order: 5; }
+    .pbme-home .pbme-b-extra { order: 5; }
+    .pbme-home .pbme-pay-big .oe_currency_value { font-size: 34px; }
+    .pbme-home .pbme-pay-act, .pbme-home .pbme-pay-act .pbme-btn,
+    .pbme-home .pbme-week-foot .pbme-btn { flex: 1 1 auto; min-height: 44px; }
+    .pbme-home .pbme-leave-go { align-self: stretch; margin: auto 0 0; min-height: 44px; }
+    .pbme-home .pbme-week { gap: 3px; }
+    .pbme-home .pbme-day { padding: 7px 1px 6px; }
+    .pbme-home .pbme-day-s { font-size: 9px; padding: 2px 1px; }
+    .pbme-home .pbme-clock-btn { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbme-home .o_portal_index_card > a,
+    .pbme-home .pbme-need,
+    .pbme-home .pbme-need-go,
+    .pbme-home .pbme-btn { transition: none; }
+    .pbme-home .pbme-need:hover .pbme-need-go { transform: none; }
+    // the enter, bar and ring animations (pbme-enter, pbme-bar-grow,
+    // pbme-ring-fill); pbme-reveal is NOT motion and stays — it is what
+    // shows the tiles when the scripts fail
+    .pbme-home .pbme-bento > .pbme-b,
+    .pbme-home .pbme-bar,
+    .pbme-home .pbme-ring,
+    .pbme-home .pbme-clock-dot::after { animation: none; }
+    .pbme .pbme-rq-month { animation: none; }
+    .pbme .pbme-rq-row, .pbme .pbme-rq-go, .pbme .pbme-chip { transition: none; }
+}

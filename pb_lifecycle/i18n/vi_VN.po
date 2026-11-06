@@ -1,0 +1,968 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "%(what)s for %(who)s"
+msgstr "%(what)s cho %(who)s"
+
+#. module: pb_lifecycle
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_lifecycle
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_lifecycle
+msgid "Country director"
+msgstr "Giám đốc quốc gia"
+
+#. module: pb_lifecycle
+msgid "Finance approver"
+msgstr "Người duyệt tài chính"
+
+#. module: pb_lifecycle
+msgid "Finance controller"
+msgstr "Kiểm soát tài chính"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "HR lead"
+msgstr "Trưởng nhân sự"
+
+#. module: pb_lifecycle
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_lifecycle
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương thưởng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Kind of letter"
+msgstr "Loại thư"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+#: model:ir.actions.report,name:pb_lifecycle.action_report_hr_letter
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_hr_letter__rendered_html
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_task__letter_template_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_template_step__letter_template_id
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_task__step_kind__letter
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__step_kind__letter
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_hr_letter_form
+msgid "Letter"
+msgstr "Thư"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "No email on record"
+msgstr "Hồ sơ không có email"
+
+#. module: pb_lifecycle
+msgid "Payroll manager"
+msgstr "Trưởng bộ phận tiền lương"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/data/pb_sidebar.xml:0
+msgid "People"
+msgstr "Số người"
+
+#. module: pb_lifecycle
+msgid "Platform owner"
+msgstr "Chủ sở hữu nền tảng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Quotes pay"
+msgstr "Có nêu mức lương"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Quotes what they are paid"
+msgstr "Có nêu mức lương của họ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+msgid "Sent for approval — %s"
+msgstr "Đã gửi phê duyệt — %s"
+
+#. module: pb_lifecycle
+msgid "Sent for approval."
+msgstr "Đã gửi phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_hr_letter__subject
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_letter_template__subject
+msgid "Subject"
+msgstr "Tiêu đề"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "The PDF is ready"
+msgstr "Tệp PDF đã sẵn sàng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_hr_letter_form
+msgid "The letter"
+msgstr "Nội dung thư"
+
+#. module: pb_lifecycle
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "This letter has already been sent."
+msgstr "Thư này đã được gửi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "To"
+msgstr "Gửi tới"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Whole company"
+msgstr "Toàn công ty"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter_approval.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_lifecycle
+msgid "its approver"
+msgstr "người phê duyệt của nó"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/letter.py:0
+msgid "your approver"
+msgstr "người phê duyệt của bạn"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "%s journeys"
+msgstr "%s hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "%s with steps overdue"
+msgstr "%s có bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "1 journey"
+msgstr "1 hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "1 with steps overdue"
+msgstr "1 có bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Due in 7 days"
+msgstr "Đến hạn trong 7 ngày"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Every step settled, ready to close"
+msgstr "Mọi bước đã xong, sẵn sàng đóng"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Letters this month"
+msgstr "Thư trong tháng này"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Need attention"
+msgstr "Cần chú ý"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Nothing left to do"
+msgstr "Không còn việc gì"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Running now"
+msgstr "Đang chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Set up, not running yet"
+msgstr "Đã thiết lập, chưa chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing %s of %s journeys"
+msgstr "Đang hiển thị %s trên %s hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing %s of %s journeys at %s"
+msgstr "Đang hiển thị %s trên %s hành trình ở bước %s"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing all %s journeys · press a step or a number to narrow it"
+msgstr ""
+"Đang hiển thị tất cả %s hành trình · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing all 1 journey · press a step or a number to narrow it"
+msgstr "Đang hiển thị 1 hành trình · bấm một bước hoặc một con số để thu hẹp"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Showing no journeys yet"
+msgstr "Chưa có hành trình nào"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Steps overdue"
+msgstr "Bước quá hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Steps still to do"
+msgstr "Còn bước phải làm"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Under way"
+msgstr "Đang tiến hành"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+# ===================================================================
+#  Checklists for Probation, Performance plan, Conversion and Other.
+# ===================================================================
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_probation
+msgid "Probation — the review"
+msgstr "Thử việc — đánh giá"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_plan
+msgid "Plan the review"
+msgstr "Lên lịch buổi đánh giá"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_feedback
+msgid "Gather feedback"
+msgstr "Thu thập nhận xét"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_meeting
+msgid "Probation review meeting"
+msgstr "Họp đánh giá thử việc"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_decision
+msgid "Decide: pass, extend or end"
+msgstr "Quyết định: đạt, gia hạn hay kết thúc"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_letter
+msgid "Confirmation letter"
+msgstr "Thư xác nhận"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_record
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_record
+msgid "Update the employee record"
+msgstr "Cập nhật hồ sơ nhân viên"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_payroll
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_prob_payroll
+msgid "Tell payroll"
+msgstr "Báo cho bộ phận lương"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_pip
+msgid "Performance plan — standard"
+msgstr "Kế hoạch cải thiện hiệu suất — tiêu chuẩn"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_write
+msgid "Write the plan"
+msgstr "Soạn kế hoạch"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_check
+msgid "Check the plan with HR"
+msgstr "Rà soát kế hoạch với nhân sự"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_share
+msgid "Share the plan with the employee"
+msgstr "Trao đổi kế hoạch với nhân viên"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_mid
+msgid "Mid-point check-in"
+msgstr "Trao đổi giữa kỳ"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_final
+msgid "Final review meeting"
+msgstr "Họp đánh giá cuối kỳ"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_pip_outcome
+msgid "Record the outcome"
+msgstr "Ghi nhận kết quả"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_conversion
+msgid "Conversion — to a permanent contract"
+msgstr "Chuyển đổi — sang hợp đồng không xác định thời hạn"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_terms
+msgid "Confirm the new terms"
+msgstr "Xác nhận điều khoản mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_contract
+msgid "Prepare the new contract"
+msgstr "Soạn hợp đồng mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_pay
+msgid "Update pay and components"
+msgstr "Cập nhật lương và các khoản"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_sign
+msgid "Sign the new contract"
+msgstr "Ký hợp đồng mới"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_letter
+msgid "Send the confirmation letter"
+msgstr "Gửi thư xác nhận"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_conv_access
+msgid "Update system access and benefits"
+msgstr "Cập nhật quyền truy cập hệ thống và phúc lợi"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template,name:pb_lifecycle.journey_template_other
+msgid "General — basic"
+msgstr "Chung — cơ bản"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_agree
+msgid "Agree what needs to happen"
+msgstr "Thống nhất việc cần làm"
+
+#. module: pb_lifecycle
+#: model:pb.journey.template.step,name:pb_lifecycle.journey_step_oth_done
+msgid "Confirm it is done"
+msgstr "Xác nhận đã hoàn tất"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__anchor__key_date
+msgid "The date on the journey"
+msgstr "Ngày ghi trên hành trình"
+
+#. module: pb_lifecycle
+#: model:ir.actions.client,name:pb_lifecycle.action_pb_lifecycle_hub
+#: model:pb.sidebar.item,name:pb_lifecycle.item_lifecycle
+msgid "Lifecycle"
+msgstr "Vòng đời nhân sự"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+#: model:ir.actions.act_window,name:pb_lifecycle.action_journey_case
+#: model:ir.actions.client,name:pb_lifecycle.action_pb_journeys
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_list
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_search
+msgid "Journeys"
+msgstr "Hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Start a journey"
+msgstr "Bắt đầu một hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+#: model:ir.actions.act_window,name:pb_lifecycle.action_journey_template
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_template_list
+msgid "Journey checklists"
+msgstr "Danh sách việc của hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+#: model:ir.actions.act_window,name:pb_lifecycle.action_hr_letter
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__letter_ids
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_hr_letter_list
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_form
+msgid "Letters"
+msgstr "Thư"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+msgid "Settings › HR"
+msgstr "Cài đặt › Nhân sự"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+msgid ""
+"Everything that has to happen when somebody joins, leaves or finishes "
+"probation."
+msgstr ""
+"Mọi việc cần làm khi có người gia nhập, nghỉ việc hoặc kết thúc thử việc."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/lifecycle_palette.js:0
+msgid "Each person's steps, with a date and a name beside every one."
+msgstr "Các bước của từng người, mỗi bước có ngày và người phụ trách."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "A journey is late when one of its open steps is past its due date."
+msgstr "Một hành trình bị trễ khi có bước chưa xong đã quá hạn."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid ""
+"A journey is the checklist around one person — the laptop before\n"
+"               day one, the clearances before the last day, the check-in at\n"
+"               thirty days. Start one here, or let them open by themselves when\n"
+"               the connected system announces a joiner."
+msgstr ""
+"Hành trình là danh sách công việc xoay quanh một người — chiếc máy tính "
+"trước ngày đầu tiên, các thủ tục bàn giao trước ngày cuối cùng, buổi trao "
+"đổi sau ba mươi ngày. Hãy bắt đầu một hành trình ở đây, hoặc để chúng tự mở "
+"khi hệ thống kết nối báo có người mới."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "All journeys"
+msgstr "Tất cả hành trình"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_hr_letter__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Ask the HR team to start one for you."
+msgstr "Hãy nhờ bộ phận nhân sự bắt đầu một hành trình cho bạn."
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_task__assignee_rule__buddy
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__assignee_rule__buddy
+msgid "Buddy"
+msgstr "Người đồng hành"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__template_id
+msgid "Checklist used"
+msgstr "Danh sách công việc đã dùng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_employee_checkin__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_feedback_request__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_hr_letter__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_task__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_template__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_template_step__company_id
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_letter_template__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_template__country_id
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__progress
+msgid "Done (%)"
+msgstr "Hoàn thành (%)"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_hr_letter__state__draft
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Earliest key date first"
+msgstr "Ngày mốc sớm nhất trước"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_task__assignee_rule__hr
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__assignee_rule__hr
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Job position"
+msgstr "Chức danh"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__case_type
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_template__case_type
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_search
+msgid "Journey type"
+msgstr "Loại hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Journeys are looked after by the HR team"
+msgstr "Hành trình do bộ phận nhân sự phụ trách"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Journeys are looked after by the HR team."
+msgstr "Hành trình do bộ phận nhân sự phụ trách."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__anchor_date
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_form
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_list
+msgid "Key date"
+msgstr "Ngày mốc"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_employee_checkin__kind
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_feedback_request__kind
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_task__step_kind
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_template_step__step_kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Latest key date first"
+msgstr "Ngày mốc gần nhất trước"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Least done first"
+msgstr "Ít hoàn thành nhất trước"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Loading journeys"
+msgstr "Đang tải hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_task__assignee_rule__manager
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template_step__assignee_rule__manager
+#: model:res.groups,name:pb_lifecycle.group_lifecycle_manager
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "No checklist"
+msgstr "Không có danh sách công việc"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "No department"
+msgstr "Chưa có phòng ban"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "No job position"
+msgstr "Chưa có chức danh"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "No journeys match these filters"
+msgstr "Không có hành trình nào khớp với các bộ lọc này"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+#: model_terms:ir.actions.act_window,help:pb_lifecycle.action_journey_case
+msgid "No journeys yet"
+msgstr "Chưa có hành trình nào"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "No key date"
+msgstr "Chưa có ngày mốc"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả nào khớp với “"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "On time"
+msgstr "Đúng hạn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Opened most recently"
+msgstr "Mở gần đây nhất trước"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__date_opened
+msgid "Opened on"
+msgstr "Ngày mở"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Person, A to Z"
+msgstr "Người, A đến Z"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Read the board again"
+msgstr "Đọc lại bảng"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__state__active
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_search
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Running late"
+msgstr "Đang trễ hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "Search by name, team, job or checklist…"
+msgstr "Tìm theo tên, nhóm, công việc hoặc danh sách công việc…"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__source
+msgid "Started by"
+msgstr "Bắt đầu bởi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_employee_checkin__state
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_feedback_request__state
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_hr_letter__state
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_case__state
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_journey_task__state
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_search
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối đã bị gián đoạn. Bộ lọc của bạn vẫn được giữ nguyên."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "The joining date, the last working day or the probation end."
+msgstr "Ngày vào làm, ngày làm việc cuối cùng hoặc ngày kết thúc thử việc."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "The journeys could not load"
+msgstr "Không tải được các hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid ""
+"The journeys could not load. Check your connection, then press Try again."
+msgstr "Không tải được các hành trình. Hãy kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "The steps above the board."
+msgstr "Các bước phía trên bảng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/pb_journeys.py:0
+msgid "Where it is"
+msgstr "Đang ở bước nào"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/journeys.js:0
+msgid "journeys"
+msgstr "hành trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+msgid ""
+"”. Check the\n"
+"               spelling, or search by team, job or checklist."
+msgstr ""
+"”. Hãy kiểm tra chính tả, hoặc tìm theo nhóm, công việc hoặc danh sách công "
+"việc."
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_employee_checkin__state__cancelled
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__state__cancelled
+msgid "Cancelled"
+msgstr "Đã huỷ"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+#: model:ir.model.fields,field_description:pb_lifecycle.field_pb_employee_checkin__red_flag
+msgid "Needs attention"
+msgstr "Cần chú ý"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__source__zoho
+msgid "Connected system"
+msgstr "Hệ thống kết nối"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__conversion
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__conversion
+msgid "Conversion"
+msgstr "Chuyển đổi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__state__done
+msgid "Finished"
+msgstr "Đã xong"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__source__manual
+msgid "Manual"
+msgstr "Thủ công"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__offboarding
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__offboarding
+msgid "Offboarding"
+msgstr "Nghỉ việc"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__state__on_hold
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_search
+msgid "On hold"
+msgstr "Tạm dừng"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__onboarding
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__onboarding
+msgid "Onboarding"
+msgstr "Tiếp nhận nhân viên mới"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_employee_checkin__kind__other
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_feedback_request__kind__other
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__other
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__other
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__pip
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__pip
+msgid "Performance improvement"
+msgstr "Cải thiện hiệu suất"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__source__portal
+msgid "Portal"
+msgstr "Cổng nhân viên"
+
+#. module: pb_lifecycle
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__probation
+#: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__probation
+msgid "Probation"
+msgstr "Thử việc"

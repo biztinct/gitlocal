@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Payroll Analytics Report -->
+    <record id="action_report_payroll_analytics" model="ir.actions.report">
+        <field name="name">Payroll Analytics Report</field>
+        <field name="model">payroll.analytics</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">payroll_analytics_approval.report_payroll_analytics</field>
+        <field name="report_file">payroll_analytics_approval.report_payroll_analytics</field>
+        <field name="print_report_name">'Payroll Analytics - %s' % (object.period_name)</field>
+        <field name="binding_model_id" ref="model_payroll_analytics"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Bank Export Report -->
+    <record id="action_report_bank_export" model="ir.actions.report">
+        <field name="name">Bank Export Summary</field>
+        <field name="model">bank.export.log</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">payroll_analytics_approval.report_bank_export</field>
+        <field name="report_file">payroll_analytics_approval.report_bank_export</field>
+        <field name="print_report_name">'Bank Export - %s' % (object.period_name)</field>
+        <field name="binding_model_id" ref="model_bank_export_log"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Payroll Comparison Report -->
+    <record id="action_report_payroll_comparison" model="ir.actions.report">
+        <field name="name">Payroll Comparison Report</field>
+        <field name="model">payroll.comparison</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">payroll_analytics_approval.report_payroll_comparison</field>
+        <field name="report_file">payroll_analytics_approval.report_payroll_comparison</field>
+        <field name="print_report_name">'Payroll Comparison - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_payroll_comparison"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Report Templates -->
+    
+    <!-- Payroll Analytics Report Template -->
+    <template id="report_payroll_analytics">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h1 class="text-center mb-4">
+                                    <span t-field="o.period_name"/> - Payroll Analytics Report
+                                </h1>
+                                <h3 class="text-center text-muted mb-5">
+                                    <span t-field="o.country"/> • <span t-field="o.date_from"/> to <span t-field="o.date_to"/>
+                                </h3>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h3>Executive Summary</h3>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td><strong>Total Employees</strong></td>
+                                        <td><span t-field="o.total_employees"/></td>
+                                        <td><strong>Total Payroll</strong></td>
+                                        <td><span t-field="o.total_payroll" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Average Salary</strong></td>
+                                        <td><span t-field="o.average_salary" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                        <td><strong>Variance</strong></td>
+                                        <td><span t-field="o.variance_percentage"/>%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Status</strong></td>
+                                        <td><span t-field="o.state"/></td>
+                                        <td><strong>Generated Date</strong></td>
+                                        <td><span t-field="o.create_date" t-options="{'widget': 'datetime'}"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Component Analysis -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h3>Salary Components Analysis</h3>
+                                <div class="alert alert-info">
+                                    <p><strong>Note:</strong> Detailed component breakdown and variance analysis.</p>
+                                </div>
+                                <pre t-field="o.salary_components"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Variance Analysis -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h3>Variance Analysis</h3>
+                                <t t-if="o.variance_percentage &lt; 5">
+                                    <div class="alert alert-success">
+                                        <h5><i class="fa fa-check-circle"/> Normal Variance</h5>
+                                        <p>Payroll variance is within acceptable range (&lt; 5%).</p>
+                                    </div>
+                                </t>
+                                <t t-elif="o.variance_percentage &lt; 15">
+                                    <div class="alert alert-warning">
+                                        <h5><i class="fa fa-exclamation-triangle"/> Moderate Variance</h5>
+                                        <p>Payroll variance requires review (5% - 15%).</p>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="alert alert-danger">
+                                        <h5><i class="fa fa-exclamation-triangle"/> High Variance</h5>
+                                        <p>Significant variance detected (&gt; 15%). Requires immediate attention.</p>
+                                    </div>
+                                </t>
+                                <pre t-field="o.comparison_data"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Anomaly Alerts -->
+                        <div class="row mb-4" t-if="o.anomaly_alerts">
+                            <div class="col-12">
+                                <h3>Anomaly Alerts</h3>
+                                <pre t-field="o.anomaly_alerts"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Approval Information -->
+                        <div class="row" t-if="o.state == 'approved'">
+                            <div class="col-12">
+                                <h3>Approval Information</h3>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td><strong>Approved By</strong></td>
+                                        <td><span t-field="o.approved_by"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Approval Date</strong></td>
+                                        <td><span t-field="o.approval_date" t-options="{'widget': 'datetime'}"/></td>
+                                    </tr>
+                                    <tr t-if="o.approval_notes">
+                                        <td><strong>Notes</strong></td>
+                                        <td><span t-field="o.approval_notes"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Bank Export Report Template -->
+    <template id="report_bank_export">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h1 class="text-center mb-4">
+                                    Bank Export Summary Report
+                                </h1>
+                                <h3 class="text-center text-muted mb-5">
+                                    <span t-field="o.period_name"/> • <span t-field="o.country"/>
+                                </h3>
+                            </div>
+                        </div>
+                        
+                        <!-- Export Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h3>Export Information</h3>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td><strong>Export Date</strong></td>
+                                        <td><span t-field="o.export_date" t-options="{'widget': 'datetime'}"/></td>
+                                        <td><strong>Country</strong></td>
+                                        <td><span t-field="o.country"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Records</strong></td>
+                                        <td><span t-field="o.total_records"/></td>
+                                        <td><strong>Total Amount</strong></td>
+                                        <td><span t-field="o.total_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Export Format</strong></td>
+                                        <td><span t-field="o.export_format"/></td>
+                                        <td><strong>Generated By</strong></td>
+                                        <td><span t-field="o.created_by"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>File Name</strong></td>
+                                        <td colspan="3"><span t-field="o.filename"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Export Details -->
+                        <div class="row mb-4" t-if="o.export_details">
+                            <div class="col-12">
+                                <h3>Export Details</h3>
+                                <pre t-field="o.export_details"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Bank Transfer Instructions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h3>Bank Transfer Instructions</h3>
+                                <div class="alert alert-info">
+                                    <h5><i class="fa fa-info-circle"/> Important Notes</h5>
+                                    <ul>
+                                        <li>Verify all bank account details before processing transfers</li>
+                                        <li>Total amount: <strong><span t-field="o.total_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong></li>
+                                        <li>Number of beneficiaries: <strong><span t-field="o.total_records"/></strong></li>
+                                        <li>Recommended to process transfers in batches if volume is high</li>
+                                        <li>Keep this report for audit trail purposes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Payroll Comparison Report Template -->
+    <template id="report_payroll_comparison">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h1 class="text-center mb-4">
+                                    Payroll Comparison Analysis Report
+                                </h1>
+                                <h3 class="text-center text-muted mb-5">
+                                    <span t-field="o.name"/>
+                                </h3>
+                            </div>
+                        </div>
+                        
+                        <!-- Comparison Summary -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h3>Comparison Summary</h3>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h5>Current Period</h5>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><strong>Period</strong></td>
+                                                <td><span t-field="o.current_period_from"/> to <span t-field="o.current_period_to"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Employees</strong></td>
+                                                <td><span t-field="o.current_total_employees"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total Payroll</strong></td>
+                                                <td><span t-field="o.current_total_payroll" t-options="{'widget': 'monetary'}"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-6">
+                                        <h5>Previous Period</h5>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><strong>Period</strong></td>
+                                                <td><span t-field="o.previous_period_from"/> to <span t-field="o.previous_period_to"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Employees</strong></td>
+                                                <td><span t-field="o.previous_total_employees"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total Payroll</strong></td>
+                                                <td><span t-field="o.previous_total_payroll" t-options="{'widget': 'monetary'}"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Variance Analysis -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h3>Variance Analysis</h3>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td><strong>Employee Count Variance</strong></td>
+                                        <td><span t-field="o.employee_variance"/>%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Payroll Variance</strong></td>
+                                        <td><span t-field="o.payroll_variance"/>%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Average Salary Variance</strong></td>
+                                        <td><span t-field="o.average_salary_variance"/>%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Analysis -->
+                        <div class="row mb-4" t-if="o.component_analysis">
+                            <div class="col-12">
+                                <h3>Component Analysis</h3>
+                                <pre t-field="o.component_analysis"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Recommendations -->
+                        <div class="row mb-4" t-if="o.recommendations">
+                            <div class="col-12">
+                                <h3>Recommendations</h3>
+                                <pre t-field="o.recommendations"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Alerts -->
+                        <div class="row" t-if="o.alerts">
+                            <div class="col-12">
+                                <h3>Alerts</h3>
+                                <pre t-field="o.alerts"/>
+                            </div>
+                        </div>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>

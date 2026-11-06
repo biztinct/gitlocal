@@ -1,0 +1,122 @@
+[
+  {
+    "name": "National and Festival Holidays",
+    "Singapore": "As per labour department of each country",
+    "Indonesia": "As per labour department of each country",
+    "Vietnam": "As per labour department of each country",
+    "India": "As per labour department of each country",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Previlege Leave/Annual Leave",
+    "Singapore": "20 days",
+    "Indonesia": "20 days",
+    "Vietnam": "20 days",
+    "India": "20 days",
+    "rule": "To be carry forwarded as per policy"
+  },
+  {
+    "name": "Sick Leave/Wellness Leave",
+    "Singapore": "14 days of outpatient sick leave and 60 days of paid hospitalization leave",
+    "Indonesia": "No cap but employers should oblige based on the doctor's certificate",
+    "Vietnam": "10 days",
+    "India": "12 days",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Maternity Leave",
+    "Singapore": "16 weeks",
+    "Indonesia": "3 months (1.5 months before and 1.5 after delivery)",
+    "Vietnam": "6 months for 1 child and one additional month for every extra child",
+    "India": "26 week",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Paternity Leave",
+    "Singapore": "14 days",
+    "Indonesia": "14 days",
+    "Vietnam": "14 days",
+    "India": "14 days",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Miscarriage Leave",
+    "Singapore": "NA",
+    "Indonesia": "1.5 months/45 days",
+    "Vietnam": "NA",
+    "India": "6 weeks/45 days",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Adoption leave (female)",
+    "Singapore": "12 weeks/84 days",
+    "Indonesia": "NA",
+    "Vietnam": "NA",
+    "India": "12 weeks/84 days",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Childcare Leave",
+    "Singapore": "6 days",
+    "Indonesia": "NA",
+    "Vietnam": "NA",
+    "India": "NA",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Bereavement Leave",
+    "Singapore": "3 days",
+    "Indonesia": "NA",
+    "Vietnam": "3 days",
+    "India": "3 days",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Marriage Leave",
+    "Singapore": "3 days",
+    "Indonesia": "3 days",
+    "Vietnam": "3 days",
+    "India": "3 days",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Menstrual Leave",
+    "Singapore": "1 day/month",
+    "Indonesia": "2 days/month",
+    "Vietnam": "1 day/month",
+    "India": "1 day/month",
+    "rule": "No carry forward. Can't be clubbed in one month. To be taken monthly only."
+  },
+  {
+    "name": "Child's Marriage",
+    "Singapore": "NA",
+    "Indonesia": "2 days",
+    "Vietnam": "NA",
+    "India": "NA",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Death of Family member",
+    "Singapore": "NA",
+    "Indonesia": "2 days",
+    "Vietnam": "NA",
+    "India": "NA",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Death of Household Member within 1 house",
+    "Singapore": "NA",
+    "Indonesia": "1 day",
+    "Vietnam": "NA",
+    "India": "NA",
+    "rule": "No carry forward."
+  },
+  {
+    "name": "Child Baptism/Khitan",
+    "Singapore": "NA",
+    "Indonesia": "2 days",
+    "Vietnam": "NA",
+    "India": "NA",
+    "rule": "No carry forward."
+  }
+]

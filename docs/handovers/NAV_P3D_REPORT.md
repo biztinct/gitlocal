@@ -1,0 +1,195 @@
+# NAV P3d — Home › Ask HR as a Payobook board — report
+
+Implementer: Opus, 2026-10-21. Spec: `docs/handovers/NAV_P3D_ASK_HR_BOARD.md` §1–6. Ledger: seven new P3d rows in
+`docs/handovers/NAV_LEDGER.md`. **Deployed 2026-10-21 03:43–03:47 UTC on all four databases, normal tier, under the shared lock — see §9.**
+
+## 0. Exact deploy lists
+
+```
+-u pb_ask_hr,pb_learn
+```
+Rsync (scoped `--delete` per module): `pb_ask_hr`, `pb_learn`. No `-i`, no new table (`pb.ask.hr` is an
+AbstractModel), no ACL, no record rule, no data file, no sidebar change. **One migration**:
+`pb_ask_hr/migrations/19.0.1.2.0/post-nav_p3d_reload_terms.py` — a TARGETED in-place update of the two changed
+words where the stored vi_VN is still the old word (the `with_hr` status choice and pb_ask_hr's own views); no
+overwrite reload (coordinator stop, LEARNREV LR20/LR29 — see §5.4). Log line to look for: "updated in place". Versions: pb_ask_hr
+19.0.1.1.0 → **19.0.1.2.0**, pb_learn 19.0.20.5.15 → **19.0.20.5.16**. PO gate files: `pb_ask_hr/i18n/vi_VN.po`
+(changed: 87 new entries, 13 shared entries gain markers/occurrences, 3 msgstr changed); `pb_learn/i18n/vi_VN.po`
+byte-identical to HEAD. JS/SCSS changed → asset purge + `web.assets.version` bump + `orm_signaling_assets` + warm-up
+per DB. Served-asset checks after deploy: JS contains `"pb.ask.hr","get_board"` (or `pbhub.askhr.filters.v1`), CSS
+contains `.pbah-board`. Tree hashes of the committed modules (`git archive HEAD`, same script as P3c), equal to the
+locally tested tree: **pb_ask_hr `7ff132218b68` (after the targeted-migration fix; `2db6bf0b8fe2` before it), pb_learn `64194a1bc11f`**.
+
+Staging note (ledger P3b): the local tree was P3c's (HEAD at `34e3565d2` with the seven `7a2deccb4` modules pinned to
+`3f4ff7be4`) with my two modules + `docs/tutorial_poc` over it. Commits since then on HEAD (ChatGPT's mapping fixes,
+VIFIX tools) touch neither module. For the box, stage `git archive HEAD pb_ask_hr pb_learn` only.
+
+## 1. What changed, per file
+
+| File | What |
+|---|---|
+| `pb_ask_hr/models/askhr_board.py` (new) | `pb.ask.hr` facade, everything AS THE READER (no `sudo(` in the file — a test pins it). `get_board()`: exact step counts (`_read_group`), open questions (cap 500) + 60 newest closed, cards (number, subject, one line of the question unless it repeats the subject, category + label, person name + department via `hr.employee.public`, owner, `mine`, age words, `late` = new and > 2 working days, `answered_week`, new-reply dot: for HR "the person wrote last" on new/with HR, for others "HR answered" on answered), glance figures, "Last question answered X ago", and for HR only the median first reply over questions asked in the last 30 days (§5.5). `get_owners()`: active internal users in HR or admin, in the companies being looked at, "you" first. `act(verb, payload)`: `take` / `hand` / `close`, refuses anybody without write access before touching anything, reads the ids through the rules, skips closed ones and says so. Words in the reader's language and decimal mark ("1,5 ngày"). |
+| `pb_ask_hr/models/ticket.py` | `_pb_set_owner(user, remind)` — the one way a question changes hands (owner, new → with HR, follower, the open to-do moves; a hand-over to someone else schedules one when there was none; no second "assigned" mail). `action_take` now calls it (same outcome as before + the to-do follows). New `action_hand_to(user_id)` (only somebody in the HR team or an admin, else "Pick somebody in the HR team.") and `action_close_with_note(note, tell_person)` (public reply or private note, then the existing `action_close`). |
+| `pb_ask_hr/static/src/js/askhr_lens.js`, `xml/askhr_lens.xml`, `scss/askhr_lens.scss` (new scss) | The board: head (title, refresh, "Open as a list" for HR, "Ask a new question" for others), QuietGlance (`ah-glance`), QuietSteps (`ah-steps`), filter chips (Mine, Nobody has it yet with its count, categories in use) + search with `/`, "N questions at <step>" / "Showing x of y" + Clear, "Select all here", cards (`ah-card`, Take it `ah-take`, Hand to…), keyboard line, bulk bar (Take it / Hand to… / Close with a note / clear), Hand-to sheet (search, arrow keys), close sheet (note + "Tell the person" / "Keep it inside HR"), empty states, skeleton, failure with Try again, phone layout, reduced motion. Filters remembered per person under `pbhub.askhr.filters.v1`. Lens key/seq/groups and the ⌘K row unchanged. |
+| `pb_ask_hr/static/src/scss/ask_hr_backend.scss` | The P2 `.pbah-lens` View wrapper block removed (unused); the native kanban styles stay. |
+| `pb_ask_hr/controllers/portal.py` | `_render_new` → `_ask_hr_render_new` (live 403 bug, §5.2). |
+| `pb_ask_hr/i18n/vi_VN.po` | See §0; owner's words as given. |
+| `pb_ask_hr/migrations/19.0.1.2.0/post-nav_p3d_reload_terms.py` (new) | §5.4: targeted update (1 selection row + pb_ask_hr's own views, old word only). |
+| `pb_ask_hr/__manifest__.py` | 19.0.1.2.0, the new scss, description paragraph. No new depends. |
+| `pb_ask_hr/tests/test_board_p3d.py` (new), `tests/__init__.py`, `tests/test_ask_hr.py` | 18 tests (§2); the P2 "mounts the real kanban" test now checks the registration only. |
+| `docs/tutorial_poc/author/data.js`, `practice-data.js` | Home's Ask HR tab line (what HR can do, others see only their own), Home `next` sentence (HR: the ones nobody has yet), `PRACTICE.askhr`, practice menu Ask HR → screen `askhr`. EN + VI. |
+| `pb_learn/static/src/engine/screens.js` | Small `askhr` replica: numbers + median, four steps, Mine / Nobody has it yet chips, three cards, Take it on the late one nobody has. |
+| `pb_learn/static/src/anchors.json` | `ah-glance`, `ah-steps`, `ah-card`, `ah-take` reserved, file `pb_ask_hr/static/src/xml/askhr_lens.xml`, added to the scanned templates. |
+| `pb_learn/static/content/learn_content.json`, `engine/fixture.js`, `__manifest__.py` | Regenerated; 19.0.20.5.16. |
+| `docs/handovers/vifix/tools/vifix_replica_drift.py` | One mapping line for the new `askhr` replica (it reported "real screen not found"). |
+
+## 2. Tests
+
+Local runtime `/Users/adity/odoo19`, test DB `am_nav_p3d_t` (copy of `am_nav_p3c_t`), baseline `am_nav_p3d_base`
+(same copy, HEAD code). The committed trees are hash-identical to the tested tree (§0).
+
+| Run | Result |
+|---|---|
+| `test_board_p3d` (18) | **18 passed**: counts add up to every question and match each state; `late` only for new questions older than 2 working days; `answered_week`; card fields (number, person, department, category, nobody, line); **an employee sees only their own questions — another person's subject, answer and name appear nowhere in the JSON**; an employee who asked nothing gets an empty board with the Ask door; an employee cannot `take`/`hand`/`close`/`get_owners` (AccessError, nothing changed); no `sudo(` in the facade; Take it via the board = Take it on the form (state, owner, follower); Hand to: owner, state, follower, the to-do goes to the receiver, handed on again it moves (not doubled), never to a non-HR user, "you" first in the picker; Close told (public reply on the person's page) vs kept (internal note), closed_by HR, already-closed skipped and said; unknown verb / unreadable ids refused; **median over the 30-day window = 4 days** for replies at 2/4/6 days (the 6-day one had the person's own reply first; a 40-day-old one and an unanswered one excluded; "Mark answered" counted); first reply stays the first when `answered_on` moves later; new-reply dot for whoever is next; filter fields + category order + the storage key; the tab is the board (no `@web/views/view`), anchors, quiet board templates, no vendor name, native views still there; the owner's Vietnamese words in the .po; the new-question page helper is not shadowed; decimal mark "1.5 days" / "1,5 ngày". |
+| Full `-u pb_ask_hr,pb_learn`, `--test-tags /pb_ask_hr,/pb_learn` (451 tests) | 7 failed / 8 errors — **exactly the baseline's 15 names** (433 tests on HEAD): TestStatutoryRightNow ×7 + its setUpClass, TestGuideTruth.test_01, TestLearnrevP5.test_f2, and five pb_ask_hr tests that already fail on HEAD on this copy because the users read Vietnamese (`TestAskHrModel.test_t3_1_lifecycle` expects an English error; `TestAskHrPages.test_t3_3/3b/3c/4` expect English page text). Nothing fails only with P3d. TestAnchorRegistry and the rest of TestGuideTruth (guide_truth.py) pass; the first (overwrite) draft of the migration ran in this run; see the row below for the targeted one. |
+| Targeted migration on a fresh copy of `am_nav_p3c` (`am_nav_p3d_mig`), `-u pb_ask_hr,pb_learn` | EXIT=0; "1 status choice(s), 4 view(s)"; old words 0 left, new words present; **every pre-existing `ir_model_fields` label + help (md5 over 20,254 rows) and every `ir_model` name identical before/after**; `display_name` labels unchanged (725 × "Tên hiển thị", 87 × "Hiển thị Tên" before and after); a 20-field snapshot identical. `TestAskHrBoardP3d` 19/19 (test_17 pins: no overwrite call, own views only, old-word guard). |
+| Learn JS `library` / `guide_panel` / `lesson_panel` | **111 / 117 / 113 passed, 0 failed** |
+| `gen_learn_data.py --check` | "generated data is up to date (6 files)" |
+| `check_contract.py` | 73 checks passed |
+| `vifix_replica_drift.py` | askhr: 27 labels checked, 0 Vietnamese drift; the 6 "gone" items are practice data (the three questions and departments), as on every other replica. |
+| PO gate (Odoo `PoFileReader`) | pb_ask_hr 317 rows (113 code, 0 without a value or marker), pb_learn 240 (77 code, 0 bad); no vendor name in any msgstr. |
+| `get_board` cost (HR, 7 questions, warm) | median **45 ms, 20 queries**. |
+
+## 3. Chrome walk (local `localhost:8069`, DB `am_nav_p3d`, seeded)
+
+Seed (local only, `odoo shell`, passwords in the scratchpad only): HR officers "DEMO Phạm Thu Hà" (Vietnamese) and
+"DEMO Lý Minh Tâm"; askers "DEMO Đinh Thị Yến" and "DEMO Võ Quang Huy" (English, made a department head so he is
+staff, not employee-only — §5.3), "DEMO Trương Thị Mai" (department head, asked nothing). Seven questions: 2 new (one
+5 days old), 2 with HR (one where the person replied after HR's answer), 1 answered, 2 closed.
+
+| # | Check | Result |
+|---|---|---|
+| 1 | HR board, Vietnamese | **Pass.** "2 mới (amber) · 2 nhân sự đang xử lý · 1 đang chờ người hỏi · 4 đã trả lời tuần này · 6.5 ngày …" (decimal fixed afterwards to the reader's mark, unit-tested "1,5 ngày"); steps Mới / Nhân sự đang xử lý / Đã trả lời / Đã đóng with "1 câu hỏi chờ quá 2 ngày làm việc" on Mới; cards with person · department, category chip, age (amber 5 ngày), "Chưa ai nhận" amber, Nhận xử lý / Chuyển cho…. |
+| 2 | Keyboard Take it | **Pass.** Focus a card, ↓ moves, **T** → toast "Câu hỏi này giờ là của bạn.", With HR 3, "3 câu hỏi là của bạn". |
+| 3 | Hand to… | **Pass.** **H** opens the sheet (focus in the search after the fix, ↓ into the list, Esc closes); picking Lý Minh Tâm → "Đã chuyển cho DEMO Lý Minh Tâm.", card shows her avatar. "Người hỏi vừa phản hồi" dot on the question where the person wrote last. |
+| 4 | Filters persist | **Pass.** "Của tôi" on → form → breadcrumb back → still on; reload → still on. (Found: a colleague on the same browser inherited it invisibly — fixed, per-person storage.) |
+| 5 | Bulk close with a note | **Pass.** Select all here → untick one → Đóng kèm ghi chú → note → "Báo cho người hỏi" → "Đã đóng 2 câu hỏi."; DB: both public replies, closed by HR. Again with "Chỉ lưu trong Nhân sự" → internal notes (subtype internal). Space selects the focused card. |
+| 6 | Card → form → back | **Pass.** Native form (status bar "Nhân sự đang xử lý" — the migration's stored word), chatter present; breadcrumb "Trang chủ" lands back on HỎI NHÂN SỰ, not on the first tab. Same from "Mở dạng danh sách" (now the list view). |
+| 7 | Calm empty state | **Pass.** All open closed → "Không có gì đang chờ. Câu hỏi gần nhất được trả lời cách đây chưa đến một giờ." + "Xem câu hỏi đã đóng". |
+| 8 | Non-HR reader, English | **Pass.** "Your questions to HR · Ask a new question"; glance "1 waiting for HR · 1 answered, your turn (amber) · 1 closed"; only his three questions; no checkboxes, no Take it, owner shown; "HR replied" dot; Enter opens his own `/my/ask-hr/24` page with the reply box. |
+| 9 | Ask a new question | **Fail → fixed.** `/my/ask-hr/new` answered **403** (§5.2, also from the portal's own list); after the rename the page renders. |
+| 10 | Never asked | **Pass.** Mai (Vietnamese): "Bạn chưa hỏi Nhân sự điều gì." + Đặt câu hỏi mới. |
+| 11 | Nobody matches | **Pass** (seen during #4's bug): "Nobody matches" + Clear. |
+| 12 | Console | **Clean** on every screen walked (error filter). |
+| — | Not walked | Phone width (CSS written, not seen); a plain employee-only login (they never reach Home — §5.3); Access › Screens (no sidebar item changed — R8 not affected). |
+
+## 4. Learn (R7) and Access (R8)
+
+Home's Ask HR tab line, the Home `next` sentence, `PRACTICE.askhr` and the practice menu entry (EN + VI), the
+`askhr` replica, four reserved anchors, regenerated, `.po` unchanged, pb_learn bumped. No lesson step points at the
+board yet (reserved). No screen guide is owned by pb_ask_hr (no `learn_manifest.py`). Access: no sidebar entry or lens
+added, moved or renamed — nothing new for the Screens lens.
+
+## 5. Deviations (spec vs code) and decisions
+
+1. **Form in the main screen, not a side sheet.** Odoo draws no chatter inside a dialog and the chatter is the answer
+   box; the board makes the breadcrumb return to the Ask HR tab (`rememberHere`). Ledger row.
+2. **Live bug fixed in passing:** `/my/ask-hr/new` was 403 wherever Expenses is installed (method name shared with
+   pb_me_expense's portal controller). Every "Ask a new question" link on the employee pages was a dead end. Ledger.
+3. **"Employee view" = non-HR staff.** An employee-only person is sent to `/my` for every backend URL, so the board's
+   own-questions view serves department heads and other staff; their card opens their own `/my/ask-hr/<id>` page (the
+   backend form is read-only for them). The Ask button opens `/my/ask-hr/new` (the asking page) rather than the list.
+4. **Two shared Vietnamese words changed everywhere** ("With HR" / "with HR" → "Nhân sự đang xử lý", "Nobody has it
+   yet" → "Chưa ai nhận"). Code words follow the .po; the stored ones (status choice, portal pill, portal counter,
+   search filters) are updated in place by the migration only where they still hold the old word. The first draft
+   used an overwrite reload of pb_ask_hr's terms; the coordinator stopped it before any live upgrade because that
+   also rewrites shared records other modules translated better (the `display_name` label). Ledger.
+5. **Median = first public HR answer**, not `answered_on − create_date` (`answered_on` is the last answer). HR only.
+6. **"Answered this week" is a filter across steps** (steps unlit), counted over every question the reader can see.
+7. **Filters per person** in `pbhub.askhr.filters.v1` (`{uid: …}`); the step is not remembered (lands on the first
+   step with something in it).
+8. **Close with a note defaults to "Tell the person"** — closing without telling leaves the person with a closed
+   question and no reason; "Keep it inside HR" is one click.
+9. Commit trailer: the session's attribution rule (`Co-Authored-By: Claude Opus 5.5`), as P3a–P3c.
+
+## 6. Commits (pushed to origin/19.1)
+
+`52d9041db` feat(nav-p3d): Home › Ask HR as a Payobook board · `455ad535a` feat(nav-p3d): Learn knows the Ask HR board
+(also carries the one-line VIFIX drift-tool mapping) · `6ed7a5b12` docs(nav-p3d): report and seven ledger rows · `e90a318a6` docs · `a3b9ccecc` fix(nav-p3d): targeted Vietnamese word update instead of an overwrite reload (coordinator stop before any upgrade) · (this deploy record). The push also carried `ea7344ee1` (ChatGPT, docs) as it was.
+
+## 7. Deploy plan (as written at the gate; carried out in §9)
+
+R14 START line in `/opt/deploy-notes.md` + `flock /tmp/payobook-studio-deploy.lock`, no other `odoo-bin -c` running,
+cron snapshot, clean `/tmp/deployP3D` from `git archive HEAD pb_ask_hr pb_learn`, checksum dry run (expect only this
+phase's files; `pb_ask_hr/static/src/scss/askhr_lens.scss`, `models/askhr_board.py`, `migrations/19.0.1.2.0/`,
+`tests/test_board_p3d.py` new), stop, per-module scoped `rsync -a --delete`, tree hashes (§0), PO gate on the box,
+`-u pb_ask_hr,pb_learn` on p0clone → payobook → payobook_template → rize (never abm), check the log for "updated in
+place", asset signal + purge + version bump, start, warm each bundle with one login curl per DB, crons back to the
+snapshot, versions, DONE line. Live checks: served JS has `pbhub.askhr.filters.v1`, CSS has `.pbah-board`;
+`/my/ask-hr/new` answers 200 for a signed-in employee (curl with a session is an owner step); payobook.com browser
+walk with an HR login is an owner step (an agent may not type the QA password).
+
+## 8. R11 self-score
+
+1. Hero moment: "Nobody has it yet" in amber turns into your face with one key (T), the card slides to With HR and
+   the step says "3 are yours" — the queue is worked from the keyboard.
+2. Zero dead ends: every card opens something the reader can act on (HR: the form with its answer box, back to this
+   tab; others: their own conversation page); found and fixed the 403 on the asking page; every empty state has a door.
+3. Plain language both ways, the owner's Vietnamese, numbers in the reader's decimal mark, no vendor name.
+4. Motion with purpose: 120 ms slide on a step change, the bulk bar rises once, nothing else; off under reduced motion.
+5. Keyboard: arrows, Enter, Space, T, H, /, Esc, arrow keys in the picker, focus lands in each sheet. Weakest: phone
+   width not walked, and the Back button from a person's portal page lands on Home's first tab (full-page navigation).
+
+## 9. Deploy record (normal tier, 2026-10-21 03:43–03:47 UTC, Payobook19v2)
+
+### 9.1 Before the go: the migration was changed (coordinator's stop)
+
+The coordinator stopped the deploy before any upgrade: the first migration called `_update_translations(overwrite=True)`,
+which also rewrites shared records other modules translated better (LEARNREV LR20/LR29). Nothing had been stopped or
+upgraded. The migration became a targeted in-place update of the two words, only where the stored vi_VN is still the
+old word (`a3b9ccecc`, test_17, ledger row rewritten). Checked first on a fresh copy of `am_nav_p3c`: 1 status choice +
+4 views updated, every pre-existing field label/help and model name md5-identical, display_name labels unchanged. Then
+re-staged from `git archive HEAD pb_ask_hr pb_learn` (149 files).
+
+Staged `learn_content.json` before copying (coordinator's four facts): payruns `action_tags` = **"pb_payruns"**,
+**0** "These figures do not add up", **1** "gõ DUYỆT", **297** lesson steps. The same four facts were read again from
+the live payobook.com file after the deploy (§9.3).
+
+### 9.2 Lock and notes
+
+`/opt/deploy-notes.md` at 03:43: last lines ChatGPT START 02:25 / DONE 02:32, no open START; lock free (`flock -n`
+succeeded on the first poll). Ran as one systemd unit `navp3d-deploy` under `flock -n
+/tmp/payobook-studio-deploy.lock` (script: START line → no other `odoo-bin -c` → cron snapshot → checksum dry run →
+p0clone label snapshot → stop → copy → hash → PO gate → four upgrades, p0clone first, each checked for EXIT, CRITICAL,
+traceback and the migration line; p0clone labels compared right after its upgrade → asset steps → start → warm-up →
+crons → versions, stored words, Learn content → DONE line). Service down **2 min 52 s** (stop 03:43:30, port 8069 back
+03:46:16). START 03:43 and DONE 03:47 lines in the notes file; lock free afterwards; `odoo-server` active.
+
+| Step | Result |
+|---|---|
+| Staging | `/tmp/deployP3D` from `git archive HEAD` at `a3b9ccecc`; tree hashes on the box = local stage = locally tested tree: pb_ask_hr `7ff132218b68`, pb_learn `64194a1bc11f`. |
+| PO gate on the staged files (box, Odoo `PoFileReader`) | pb_ask_hr 317 rows, pb_learn 240 rows — 0 code rows without a value or marker. |
+| Overwrite check | `rsync --dry-run --checksum`: exactly this phase's files (pb_ask_hr: manifest, portal.py, vi_VN.po, new migration, models/__init__, new askhr_board.py, ticket.py, askhr_lens.js/.xml, ask_hr_backend.scss, new askhr_lens.scss, tests; pb_learn: manifest, learn_content.json, anchors.json, fixture.js, screens.js). No deletions. |
+| Crons before | p0clone 26, payobook 37, payobook_template 0, rize 69. |
+| p0clone labels before | 20-field snapshot (18 rows match the query), all 22,308 field labels + help md5 `22ddac42…`, model names md5, display_name: "Tên hiển thị" 798, "Hiển thị Tên" 84, "Bảng điều khiển Tên" 1, none 258. |
+| Copy + hashes + PO gate after copy | Per-module scoped `rsync -a --delete`; live hash = staged for both; PO gate 0 failures. |
+| Upgrades `-u pb_ask_hr,pb_learn` | p0clone EXIT=0 42 s · payobook EXIT=0 44 s · payobook_template EXIT=0 39 s · rize EXIT=0 38 s; 0 CRITICAL, 0 ERROR, 0 tracebacks (only the docstring RST warning from another module, as in P3b/P3c). Migration line on every DB: "updated in place (NAV P3d): 1 status choice(s), 4 view(s)". |
+| p0clone labels after | **Identical**: the 20-field snapshot, all pre-existing field labels + help (md5 `22ddac42…`), model names, display_name counts (798 / 84 / 1 / 258). |
+| Assets | Per DB `INSERT INTO orm_signaling_assets`, `/web/assets/%` attachments deleted, `web.assets.version` = 1792554373935. |
+| Start | Port 8069 up, `/web/health` 200, "Registry loaded" ×3 since the stop, **0 ERROR/CRITICAL since start**. |
+| Warm-up (one at a time) | payobook.com, rize.payobook.com, p0clone.payobook.com: login 200; CSS 3.79 / 3.70 / 3.70 MB, JS 13.75 / 13.51 / 13.50 MB — none empty; served JS has `pbhub.askhr.filters.v1`, served CSS has `.pbah-board`, on all three. payobook_template has no hostname (files identical, versions current). |
+| `/my/ask-hr/new` without a cookie | **303 → `/web/login?redirect=/my/ask-hr/new`** on all three hosts (a redirect to sign-in, not a 403). A signed-in check needs a session; the fix itself is covered by test_15 and the local walk (§3 #9). |
+| Crons after | The upgrade switched on 18 jobs in payobook_template (43, 44, 51, 54–58, 60, 62, 63, 67, 68, 71–75), as in P2–P3c; switched off again. **Final: payobook 37, rize 69, p0clone 26, payobook_template 0** (expected 37 / 69 / 26 / 0). |
+| Versions | pb_ask_hr 19.0.1.2.0, pb_learn 19.0.20.5.16 on all four databases. |
+| Stored Vietnamese words | Every DB: `with_hr` status = "Nhân sự đang xử lý"; views still holding an old word = 0; the Ask HR search view holds both new words ("Nhân sự đang xử lý", "Chưa ai nhận"). |
+
+### 9.3 Live Learn content (payobook.com)
+
+`learn_content.json` 1.61 MB: "gõ DUYỆT" = **1**, "These figures do not add up" = **0**, payruns `action_tags` =
+**pb_payruns**, lesson steps = **297**, Home's Ask HR line ("Close with a note") present.
+
+### 9.4 Not done
+
+The payobook.com browser walk (coordinator's instruction; an agent may not type the QA password). Owner step: sign in
+as an HR officer → Home › Ask HR (numbers, steps, Take it with T); as an employee → My Payobook › Ask HR › "Ask a new
+question" opens the form (it answered 403 before this deploy wherever Expenses is installed).

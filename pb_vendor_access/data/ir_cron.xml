@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         THE HAND-OVER REVERT JOB MOVED TO `biz_access` (ACCESS P6). It was
+         always a separate record from this one, so that switching the vendor
+         reminder mails off could never switch off the thing that closes a
+         security hole; it now lives in a separate MODULE, which is the same
+         rule with a stronger wall.
+
+         `pb.vendor.alerts` is ABSTRACT, and an ir.cron pointing at an
+         abstract model is a trap the framework gives no warning for — so
+         the first job is anchored on the agreement (a concrete model) and
+         calls the service by name, the shape `pb_budget`'s own actuals cron
+         uses. The second is anchored on its own model, which is concrete.
+
+         IT IS IDEMPOTENT BY CONSTRUCTION, not by a stamp: it searches for
+         an already-open activity before raising one, and only stamps a date
+         once it has. -->
+
+    <record id="cron_vendor_alerts" model="ir.cron">
+        <field name="name">Vendors: which agreements are running out</field>
+        <field name="model_id" ref="model_pb_vendor_agreement"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.vendor.alerts'].cron_alerts()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+
+</odoo>

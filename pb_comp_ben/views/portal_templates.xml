@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       `/my/compensation` reuses `pb_me_portal`'s .pbme kit — the same hero,
+       the same cards — so it looks like it was always part of the employee's
+       own area rather than bolted on. Everything specific to it is under
+       .pbcp.
+
+       THE VOCABULARY IS THE FEATURE. "Your pay package". Not "compensation
+       structure", not "CTC", not "component", not "snapshot".
+
+       ICONS: the backend's ic() registry is a JS module and cannot be called
+       from QWeb, so the handful of glyphs this page uses are inlined here,
+       exactly as pb_lifecycle's token pages, pb_me_portal's ess_icon,
+       pb_onboarding's ob_icon, pb_offboarding's of_icon and pb_pip's pg_icon
+       do. W87: the name is passed with t-value="'name'" and NEVER as a t-set
+       BODY — a body is rendered QWeb and on a website=True page the editor's
+       branding wraps it in markup, so every comparison silently goes false.
+
+       R42: `t-att-class` with a DICT is an OWL thing and this is NOT OWL. In
+       a server-side template the dict is written into the attribute as its
+       Python repr AND it replaces the static class. Every conditional class
+       on this page is `t-attf-class` with a #{...} interpolation. (And this
+       comment is ruled with `=`, because a doubled hyphen inside an XML
+       comment is a parse error that takes the whole file with it.)
+
+       R39: the portal has no dark mode at all — the website frontend is
+       light-only by design. "Check both themes" is satisfied by every colour
+       resolving, which is why every rule in portal_comp.scss carries a
+       literal fallback beside its token.
+       ================================================================== -->
+  <template id="cp_icon" name="Pay package page icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbcp-ic">
+      <t t-if="icon == 'wallet'"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/><path d="M18 12h.01"/></t>
+      <t t-elif="icon == 'shield'"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></t>
+      <t t-elif="icon == 'award'"><circle cx="12" cy="8" r="6"/><path d="m8.21 13.89-1.2 7.11L12 18.5l4.99 2.5-1.2-7.11"/></t>
+      <t t-elif="icon == 'umbrella'"><path d="M12 12v7a2 2 0 0 0 4 0"/><path d="M2 12a10 10 0 0 1 20 0Z"/></t>
+      <t t-elif="icon == 'external'"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></t>
+      <t t-elif="icon == 'file'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8M16 17H8"/></t>
+      <t t-elif="icon == 'receipt'"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1V2l-2 1-2-1-2 1-2-1-2 1-2-1Z"/><path d="M16 8H8M16 12H8"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================ breadcrumbs ============================ -->
+  <template id="portal_breadcrumbs_compensation" name="Pay package portal menu"
+            inherit_id="portal.portal_breadcrumbs" priority="41">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'compensation'" class="breadcrumb-item active">My Pay Package</li>
+    </xpath>
+  </template>
+
+  <!-- ============================= home card =============================
+       Shown only when there IS a package to read. A permanent tile on
+       everybody's home page pointing at an empty screen is a promise the
+       product cannot keep. -->
+  <template id="portal_my_home_compensation" name="Pay package home card"
+            inherit_id="portal.portal_my_home" customize_show="True"
+            priority="31">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="has_pay_package">
+        <t t-call="portal.portal_docs_entry">
+          <t t-set="title">My Pay Package</t>
+          <t t-set="text">What you are paid, what you are covered by, and what you have been awarded</t>
+          <t t-set="url" t-value="'/my/compensation'"/>
+          <t t-set="config_card" t-value="True"/>
+          <t t-set="placeholder_count" t-value="'compensation_count'"/>
+        </t>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/compensation                                                 -->
+  <!-- ================================================================= -->
+  <template id="portal_my_compensation" name="My Pay Package (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbcp">
+
+        <!-- ========================= the hero =========================
+             ONE number, and it is the one people mean when they ask what
+             they are paid: a month. The year is beside it because that is
+             the number an offer letter used. -->
+        <div class="pbcp-hero" t-if="package">
+          <div class="pbcp-hero-ic">
+            <t t-call="pb_comp_ben.cp_icon">
+              <t t-set="icon" t-value="'wallet'"/>
+              <t t-set="isz" t-value="28"/>
+            </t>
+          </div>
+          <div class="pbcp-hero-tx">
+            <div class="pbcp-hero-eyebrow">Your pay package</div>
+            <div class="pbcp-hero-n">
+              <span t-esc="package.monthly_total"
+                    t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+              <span class="pbcp-hero-u">a month</span>
+            </div>
+            <div class="pbcp-hero-s">
+              <span t-esc="package.annual_total"
+                    t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+              over a year · in force from <t t-esc="effective_label"/>
+            </div>
+          </div>
+          <a class="pbcp-hero-link" href="/my/payslips">
+            <t t-call="pb_comp_ben.cp_icon">
+              <t t-set="icon" t-value="'receipt'"/>
+              <t t-set="isz" t-value="15"/>
+            </t>
+            <span>My payslips</span>
+          </a>
+        </div>
+
+        <!-- ======================= no package yet ======================= -->
+        <div class="pbcp-empty" t-if="not package">
+          <div class="pbcp-empty-ic">
+            <t t-call="pb_comp_ben.cp_icon">
+              <t t-set="icon" t-value="'wallet'"/>
+              <t t-set="isz" t-value="30"/>
+            </t>
+          </div>
+          <h3>Your package summary is being prepared</h3>
+          <p>
+            Your pay is being written up so you can see the whole of it in one
+            place. Until then, your payslips show what you have been paid each
+            month.
+          </p>
+          <a class="pbcp-btn" href="/my/payslips">See my payslips</a>
+        </div>
+
+        <!-- ======================== what it is made of ================== -->
+        <t t-if="package">
+          <div class="pbcp-sec" t-foreach="groups" t-as="grp">
+            <div class="pbcp-sec-h">
+              <h3 t-esc="grp['label']"/>
+              <span class="pbcp-sec-tot">
+                <span t-esc="grp['annual']"
+                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                a year
+              </span>
+            </div>
+            <div class="pbcp-tablewrap">
+              <table class="pbcp-table">
+                <thead>
+                  <tr>
+                    <th>What</th>
+                    <th class="num">Amount</th>
+                    <th>How often</th>
+                    <th class="num">Over a year</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="grp['rows']" t-as="row">
+                    <td>
+                      <span t-esc="row['name']"/>
+                      <small t-if="row['note']" class="pbcp-note"
+                             t-esc="row['note']"/>
+                    </td>
+                    <td class="num">
+                      <span t-esc="row['amount']"
+                            t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                    </td>
+                    <td t-esc="row['period']"/>
+                    <td class="num">
+                      <span t-esc="row['annual']"
+                            t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </t>
+
+        <!-- =========================== benefits ========================== -->
+        <div class="pbcp-sec" t-if="benefits">
+          <div class="pbcp-sec-h">
+            <h3>What you are covered by</h3>
+          </div>
+          <div class="pbcp-cards">
+            <div class="pbcp-card" t-foreach="benefits" t-as="ben">
+              <div class="pbcp-card-h">
+                <span class="pbcp-card-ic">
+                  <t t-call="pb_comp_ben.cp_icon">
+                    <t t-set="icon" t-value="ben['kind'] == 'health' and 'shield' or 'umbrella'"/>
+                    <t t-set="isz" t-value="17"/>
+                  </t>
+                </span>
+                <div>
+                  <div class="pbcp-card-t" t-esc="ben['plan']"/>
+                  <div class="pbcp-card-s" t-if="ben['provider']">
+                    with <t t-esc="ben['provider']"/>
+                  </div>
+                </div>
+              </div>
+              <div class="pbcp-card-b" t-if="ben['coverage']">
+                <t t-out="ben['coverage']"/>
+              </div>
+              <div class="pbcp-card-meta">
+                <span t-if="ben['member_ref']">
+                  Membership number <b t-esc="ben['member_ref']"/>
+                </span>
+                <span t-if="ben['from_label']">
+                  Covered from <t t-esc="ben['from_label']"/>
+                </span>
+              </div>
+              <div class="pbcp-family" t-if="ben['family']">
+                <span class="pbcp-family-l">Family covered</span>
+                <span class="pbcp-chip" t-foreach="ben['family']" t-as="dep">
+                  <t t-esc="dep['name']"/>
+                  <small t-if="dep['relation']" t-esc="dep['relation']"/>
+                </span>
+              </div>
+              <a t-if="ben['url']" class="pbcp-btn pbcp-btn--out"
+                 t-att-href="ben['url']" target="_blank" rel="noopener noreferrer">
+                <t t-call="pb_comp_ben.cp_icon">
+                  <t t-set="icon" t-value="'external'"/>
+                  <t t-set="isz" t-value="14"/>
+                </t>
+                <span>Open provider site</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ awards =========================== -->
+        <div class="pbcp-sec" t-if="awards">
+          <div class="pbcp-sec-h">
+            <h3>What you have been awarded</h3>
+          </div>
+          <div class="pbcp-tablewrap">
+            <table class="pbcp-table">
+              <thead>
+                <tr>
+                  <th>What</th>
+                  <th class="num">Amount</th>
+                  <th>Paid with</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="awards" t-as="aw">
+                  <td>
+                    <span class="pbcp-awk">
+                      <t t-call="pb_comp_ben.cp_icon">
+                        <t t-set="icon" t-value="'award'"/>
+                        <t t-set="isz" t-value="15"/>
+                      </t>
+                      <t t-esc="aw['kind'] == 'spot' and 'Spot award' or (aw['kind'] == 'incentive' and 'Incentive' or 'Bonus')"/>
+                    </span>
+                    <small t-if="aw['reason']" class="pbcp-note" t-esc="aw['reason']"/>
+                  </td>
+                  <td class="num">
+                    <span t-esc="aw['amount']"
+                          t-options="{'widget': 'monetary', 'display_currency': aw['currency']}"/>
+                  </td>
+                  <td t-esc="aw['month']"/>
+                  <td class="num">
+                    <a t-if="aw['has_letter']" class="pbcp-link"
+                       t-attf-href="/my/compensation/letter/#{aw['id']}">
+                      <t t-call="pb_comp_ben.cp_icon">
+                        <t t-set="icon" t-value="'file'"/>
+                        <t t-set="isz" t-value="14"/>
+                      </t>
+                      <span>Letter</span>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

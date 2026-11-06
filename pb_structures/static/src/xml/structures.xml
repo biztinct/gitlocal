@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_structures.PbStructures">
+    <div class="pbim sal pbim-page ppl-people sal-board">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading structures…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head">
+          <div>
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1">Salary Structures</h1>
+            <p class="pbim-sub">Pay structures, their rules and category make-up across countries.</p>
+          </div>
+          <button class="pbim-btn primary" data-coach="sr-new" t-on-click="newStructure"><t t-out="ic('plus',16)"/> New structure</button>
+        </div>
+
+        <!-- the numbers: one quiet line (was five big tiles). Structures
+             are settings, not a workflow, so there is no step strip; the
+             Active / Draft / Deprecated figures tick the filter panel
+             (FILTER wave 5); pressing the lit one again shows them all. -->
+        <div data-coach="sr-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+        </div>
+
+        <!-- The shared filter panel (pb_filter_kit, FILTER wave 5): views,
+             search, the left panel with counts, chips. The catalogue is its
+             slot. Learn anchor: data-coach="sr-filters" (given to the layout's
+             bar through `coach`, kept literal here for the anchor test). -->
+        <PbFilterLayout kit="kit" coach="'sr-filters'" searchPlaceholder="searchHint">
+          <div t-if="state.rows.length" class="ppl-roster" data-coach="sr-roster">
+            <div t-foreach="state.rows" t-as="s" t-key="s.id" class="ppl-card" t-on-click="() => this.openStructure(s.id)">
+              <div class="ppl-av"><t t-out="ic('layers',20)"/></div>
+              <div class="ppl-id">
+                <div class="nm"><t t-esc="s.name"/> <span t-if="s.is_base" class="sal-base">base</span></div>
+                <div class="jb"><t t-esc="s.code"/> · <t t-esc="s.country"/> · <t t-esc="s.schedule"/></div>
+              </div>
+              <div class="ppl-period sal-counts"><t t-esc="s.rules"/> rules · <t t-esc="s.employees"/> employees</div>
+              <div class="ppl-meta">
+                <span t-attf-class="pbim-badge {{ stateCls(s.state) }}"><span class="d"/><t t-esc="s.state_label"/></span>
+              </div>
+              <div class="ppl-wage"><span class="v" t-esc="s.updated"/><span class="k">updated</span></div>
+            </div>
+          </div>
+          <div t-elif="!state.listLoaded" class="ppl-roster sal-skeleton" aria-label="Loading structures">
+            <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="ppl-card sal-card--ghost"/>
+          </div>
+          <div t-elif="!kit.total" class="pbim-panel sal-empty">
+            <div class="sal-empty-ic"><t t-out="ic('layers',22)"/></div>
+            <b>No salary structures yet</b>
+            <span>A structure is the set of pay rules a group of people is paid by. Start with one for your main payroll.</span>
+            <button class="pbim-btn primary pbim-btn-sm" t-on-click="newStructure"><t t-out="ic('plus',14)"/> New structure</button>
+          </div>
+          <div t-else="" class="pbim-panel sal-empty">
+            <div class="sal-empty-ic"><t t-out="ic('search',22)"/></div>
+            <b>No structures match these filters</b>
+            <span t-esc="emptyHint"/>
+            <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => kit.home()">Show all structures</button>
+          </div>
+
+          <div class="ppl-foot sal-foot">
+            <t t-if="state.rows.length">
+              Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.total)"/>
+              <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                <t t-if="state.loadingMore">Loading…</t>
+                <t t-else="">Show <t t-esc="nextPage"/> more</t>
+              </button>
+              <span class="sal-foot-sep">·</span>
+            </t>
+            <button class="ppl-link" data-coach="sr-openall" t-on-click="openAll">Open full structures list →</button>
+          </div>
+        </PbFilterLayout>
+      </div>
+    </div>
+  </t>
+
+</templates>

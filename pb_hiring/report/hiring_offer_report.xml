@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         The offer letter, printed.
+
+         ITS OWN REPORT AND NOT THE LETTER ENGINE'S, for one reason:
+         `pb.hr.letter` requires an `hr.employee` and reads the employee for
+         every placeholder, and a candidate has no employee record — that is
+         the whole point of a candidate. The TEMPLATE side of the letter
+         engine is reused (one library, one place a company rewords its
+         letters) and this prints what it rendered.
+
+         The `<report>` shortcut tag is gone from the Odoo 19 data-file RNG —
+         an explicit `ir.actions.report` record is the only way to declare
+         one. Cloned from pb_lifecycle/report/hr_letter_report.xml.
+
+         The company header and footer come from the standard external
+         layout, so a tenant that has set its logo and its address once has
+         set them here too.
+         ================================================================== -->
+
+    <record id="action_report_hiring_offer" model="ir.actions.report">
+        <field name="name">Offer letter</field>
+        <field name="model">pb.hiring.offer</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hiring.report_hiring_offer_document</field>
+        <field name="report_file">pb_hiring.report_hiring_offer_document</field>
+        <field name="print_report_name">'Offer - %s' % (object.candidate_name or '')</field>
+        <field name="binding_model_id" ref="model_pb_hiring_offer"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_hiring_offer_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 13px; line-height: 1.6;">
+
+                        <div style="text-align: right; color: #64748B; font-size: 12px;">
+                            <span t-esc="o.name or ''"/>
+                        </div>
+
+                        <h3 style="margin: 14px 0 18px; font-weight: 700;">
+                            <span t-esc="o.letter_template_id.subject or o.letter_template_id.name or 'Offer'"/>
+                        </h3>
+
+                        <div t-out="o.rendered_html"/>
+
+                        <div style="margin-top: 42px;">
+                            <div style="height: 46px;"/>
+                            <div style="border-top: 1px solid #94A3B8; width: 240px; padding-top: 6px;">
+                                <strong t-esc="o.company_id.name or ''"/><br/>
+                                <span style="color: #64748B;">Authorised signatory</span>
+                            </div>
+                        </div>
+
+                        <!-- The candidate signs the copy they send back. The
+                             line is here because a letter with nowhere to
+                             sign is a letter somebody has to reformat before
+                             they can return it. -->
+                        <div style="margin-top: 34px;">
+                            <div style="height: 46px;"/>
+                            <div style="border-top: 1px solid #94A3B8; width: 240px; padding-top: 6px;">
+                                <strong t-esc="o.candidate_name or ''"/><br/>
+                                <span style="color: #64748B;">Signature and date</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

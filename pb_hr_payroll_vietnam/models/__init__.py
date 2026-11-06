@@ -9,5 +9,7 @@ from . import vietnam_insurance_policy
 from . import vietnam_insurance_adjustment
 from . import vietnam_tax_table
 from . import vietnam_employee_dependent
+from . import dependent_count_source
 from . import hr_formula_config_vietnam
 from . import hr_formula_config_analytics_vietnam
+from . import statutory_gates

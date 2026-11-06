@@ -1,0 +1,488 @@
+// =============================================================================
+// PAYAI P1 — the cards PayAI answers commands with.
+// Locked indigo palette, no gradients, Lucide icons. Tokens come from the
+// helper drawer's --vuf-* set when the card sits there, with the design
+// system's values as fallbacks (the floating pill has no --vuf-* scope).
+// Built for 300–456 px (the drawer) and a phone at 400 px.
+// =============================================================================
+.payai-card {
+    --pc-brand: var(--vuf-primary, #5A4BB0);
+    --pc-brand-dark: #4A3D96;
+    --pc-brand-soft: var(--vuf-primary-soft, #EDEAF8);
+    --pc-brand-light: var(--vuf-primary-light, #CBC2EE);
+    --pc-ink: var(--vuf-ink, #1E1B2E);
+    --pc-muted: var(--vuf-muted, #5B5E73);
+    --pc-line: var(--vuf-line, #E2E8F0);
+    --pc-card: var(--vuf-surface, #FFFFFF);
+    --pc-bg: #F7F7FB;
+    --pc-ok: #2E7D4F;    --pc-ok-soft: #E6F3EB;
+    --pc-warn: #D97706;  --pc-warn-soft: #FBF0DC;
+    // P3: the Red tier's header is the design system's rose (locked palette).
+    --pc-bad: #DC2668;   --pc-bad-soft: var(--pbim-rose-soft, #FCE7EF);
+    --pc-info: #2563EB;  --pc-info-soft: #E8EFFD;
+    --pc-neutral: #64748B; --pc-neutral-soft: #EEF1F5;
+    // Darker "ink" shades for text on the -soft tints (AA contrast).
+    --pc-warn-ink: var(--vuf-warn-ink, #8A4B05);
+    --pc-bad-ink: var(--vuf-bad-ink, #A3164B);
+    --pc-info-ink: var(--vuf-info-ink, #1D4FC4);
+
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    // P2 design-8: the card answers to its OWN width, not the window's — the
+    // helper drawer is 300–456 px wide on any screen (see @container below).
+    container-type: inline-size;
+    container-name: payai-card;
+    background: var(--pc-card);
+    color: var(--pc-ink);
+    border: 1px solid var(--pc-line);
+    border-radius: 14px;
+    overflow: hidden;
+    font-size: 13.5px;
+    line-height: 1.45;
+    text-align: left;
+    animation: payai-card-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    .payai-ic {
+        width: 16px;
+        height: 16px;
+        flex: none;
+    }
+}
+
+@keyframes payai-card-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes payai-badge-pop {
+    0%   { transform: scale(0.6); opacity: 0; }
+    70%  { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .payai-card, .payai-card__badge { animation: none !important; }
+}
+
+// ── head ────────────────────────────────────────────────────────────────
+.payai-card__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--pc-line);
+}
+.payai-tier--look .payai-card__head    { background: var(--pc-ok-soft); }
+.payai-tier--prepare .payai-card__head { background: var(--pc-warn-soft); }
+.payai-tier--decide .payai-card__head  { background: var(--pc-bad-soft); }
+.payai-tier--never .payai-card__head   { background: var(--pc-neutral-soft); }
+.payai-card--clarify .payai-card__head { background: var(--pc-brand-soft); }
+.payai-card--blocked .payai-card__head { background: var(--pc-warn-soft); }
+
+.payai-card__badge {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    flex: none;
+    animation: payai-badge-pop 0.32s ease-out both 0.06s;
+    background: var(--pc-card);
+}
+.payai-card__badge.payai-tone--ok      { color: var(--pc-ok); }
+.payai-card__badge.payai-tone--warn    { color: var(--pc-warn); }
+.payai-card__badge.payai-tone--bad     { color: var(--pc-bad); }
+.payai-card__badge.payai-tone--neutral { color: var(--pc-neutral); }
+.payai-card__badge.payai-tone--brand   { color: var(--pc-brand); }
+
+.payai-card__ht { flex: 1; min-width: 0; }
+.payai-card__title {
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    overflow-wrap: anywhere;
+}
+.payai-card__sub {
+    font-size: 12px;
+    color: var(--pc-muted);
+    overflow-wrap: anywhere;
+}
+
+// The one-line Green card: no body, a small door on the right.
+.payai-card.is-compact .payai-card__head { border-bottom: 0; }
+.payai-card__mini {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    border: 1px solid var(--pc-brand-light);
+    background: var(--pc-card);
+    color: var(--pc-brand);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    &:hover { background: var(--pc-brand-soft); }
+}
+
+// ── body ────────────────────────────────────────────────────────────────
+.payai-card__body {
+    padding: 11px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.payai-card__slots {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px 12px;
+    align-items: baseline;
+}
+.payai-card__k { color: var(--pc-muted); font-size: 12.5px; }
+.payai-card__v { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.payai-src {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 999px;
+}
+.payai-src--said    { background: var(--pc-ok-soft); color: var(--pc-ok); }
+.payai-src--chose   { background: var(--pc-info-soft); color: var(--pc-info); }
+.payai-src--assumed { background: var(--pc-warn-soft); color: var(--pc-warn); }
+.payai-src--default { background: var(--pc-neutral-soft); color: var(--pc-neutral); }
+.payai-card__edit {
+    color: var(--pc-brand);
+    background: none;
+    border: 0;
+    padding: 0;
+    display: inline-flex;
+    cursor: pointer;
+    .payai-ic { width: 14px; height: 14px; }
+    &:focus-visible { outline: 2px solid var(--pc-brand); outline-offset: 2px; border-radius: 4px; }
+}
+
+.payai-card__tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+.payai-card__tile {
+    background: var(--pc-bg);
+    border: 1px solid var(--pc-line);
+    border-radius: 10px;
+    padding: 8px 10px;
+    min-width: 0;
+    b {
+        display: block;
+        font-weight: 800;
+        font-size: 15px;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+    }
+    small { color: var(--pc-muted); font-size: 11.5px; }
+}
+
+.payai-card__note {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    .payai-ic { margin-top: 2px; width: 15px; height: 15px; }
+}
+.payai-card__note.payai-tone--ok      { background: var(--pc-ok-soft);      color: var(--pc-ok); }
+.payai-card__note.payai-tone--warn    { background: var(--pc-warn-soft);    color: var(--pc-warn-ink); }
+.payai-card__note.payai-tone--bad     { background: var(--pc-bad-soft);     color: var(--pc-bad-ink); }
+.payai-card__note.payai-tone--info    { background: var(--pc-info-soft);    color: var(--pc-info-ink); }
+.payai-card__note.payai-tone--neutral { background: var(--pc-neutral-soft); color: var(--pc-muted); }
+
+// "What can you do?" — groups by colour.
+.payai-card__group { display: flex; flex-direction: column; gap: 4px; }
+.payai-card__glabel {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pc-muted);
+}
+.payai-card__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pc-neutral); }
+.payai-card__group.payai-tone--ok .payai-card__dot { background: var(--pc-ok); }
+.payai-card__gitem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--pc-line);
+    border-radius: 10px;
+    background: var(--pc-card);
+    color: var(--pc-ink);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    &:hover:not([disabled]) { border-color: var(--pc-brand-light); background: var(--pc-brand-soft); }
+    &[disabled] { cursor: default; opacity: 0.7; }
+}
+.payai-card__gname { font-weight: 600; }
+.payai-card__gex { font-size: 12px; color: var(--pc-muted); }
+
+// Clarify chips.
+.payai-card__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.payai-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    max-width: 100%;
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--pc-line);
+    background: var(--pc-card);
+    color: var(--pc-ink);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    span { overflow-wrap: anywhere; }
+    small { color: var(--pc-muted); font-weight: 400; font-size: 11.5px; }
+    &:hover:not([disabled]) { border-color: var(--pc-brand-light); background: var(--pc-brand-soft); }
+    &.is-on { border-color: var(--pc-brand); background: var(--pc-brand-soft); color: var(--pc-brand); }
+    &[disabled]:not(.is-on) { opacity: 0.5; cursor: default; }
+}
+
+// Buttons — the design's primary / outline / ghost.
+.payai-card__actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.payai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.1;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.15s ease;
+    &:active { transform: translateY(1px); }
+    &:focus-visible { outline: 2px solid var(--pc-brand); outline-offset: 2px; }
+    .payai-ic { width: 15px; height: 15px; }
+}
+.payai-btn--primary { background: var(--pc-brand); color: #fff; &:hover { background: var(--pc-brand-dark); } }
+.payai-btn--outline { background: transparent; color: var(--pc-brand); border-color: var(--pc-brand-light);
+                      &:hover { background: var(--pc-brand-soft); } }
+.payai-btn--ghost   { background: var(--pc-neutral-soft); color: var(--pc-ink); }
+
+.payai-card__audit {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--pc-muted);
+    .payai-ic { width: 13px; height: 13px; }
+    &.is-compact { padding: 0 12px 9px 52px; }
+}
+
+// ── P2: the plan card, one card in three states ───────────────────────
+.payai-card--cancelled .payai-card__head { background: var(--pc-neutral-soft); }
+.payai-card--plan.is-done .payai-card__head    { background: var(--pc-ok-soft); }
+.payai-card--plan.is-failed .payai-card__head  { background: var(--pc-bad-soft); }
+.payai-card--plan.is-undone .payai-card__head  { background: var(--pc-neutral-soft); }
+.payai-card--plan .payai-card__head { transition: background-color 0.4s ease; }
+.payai-card.is-running .payai-card__badge .payai-ic { animation: payai-spin 0.9s linear infinite; }
+.payai-card.is-superseded { opacity: 0.62; }
+.payai-card.is-busy .payai-btn { cursor: progress; }
+.payai-card.is-busy .payai-btn--do .payai-ic { animation: payai-spin 0.9s linear infinite; }
+@keyframes payai-spin { to { transform: rotate(360deg); } }
+
+.payai-card__spacer { flex: 1 1 auto; }
+.payai-btn[disabled] { opacity: 0.6; }
+
+.payai-card__prog { display: flex; flex-direction: column; gap: 6px; }
+.payai-card__progtext {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--pc-muted);
+    span:first-child { color: var(--pc-ink); font-weight: 600; }
+}
+.payai-card__progn { font-variant-numeric: tabular-nums; }
+.payai-card__bar {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--pc-brand-soft);
+    overflow: hidden;
+    i {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--pc-brand);
+        transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+}
+.payai-card.is-done .payai-card__bar i { background: var(--pc-ok); }
+.payai-card.is-failed .payai-card__bar i { background: var(--pc-warn); }
+
+.payai-card__undo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 8px 8px 11px;
+    border-radius: 10px;
+    background: var(--pc-brand-soft);
+    color: var(--pc-brand-dark);
+    font-size: 12.5px;
+    animation: payai-card-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    .payai-ic { width: 15px; height: 15px; }
+    &.is-off { background: var(--pc-neutral-soft); color: var(--pc-muted); }
+    .payai-btn { padding: 6px 11px; margin-left: auto; }
+}
+.payai-card__undotext { flex: 1 1 auto; min-width: 0; }
+.payai-card__clock {
+    margin-left: 4px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .payai-card__bar i, .payai-card__undo { transition: none !important; animation: none !important; }
+    .payai-card.is-running .payai-card__badge .payai-ic,
+    .payai-card.is-busy .payai-btn--do .payai-ic { animation: none !important; }
+    .payai-card--plan .payai-card__head, .payai-btn, .payai-chip,
+    .payai-card__gitem, .payai-card__mini { transition: none !important; }
+    .payai-btn:active { transform: none !important; }
+}
+
+// ── P3: the typed-word confirm (Red) ─────────────────────────────────────
+// Deliberate, not bureaucratic: one calm box, the word in the hint, the
+// button lights the instant the word matches. Sits above the other buttons.
+.payai-typed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 11px;
+    border-radius: 12px;
+    border: 1px solid var(--pc-bad-soft);
+    background: var(--pc-card);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    &.is-ok { border-color: var(--pc-brand-light); box-shadow: 0 0 0 3px var(--pc-brand-soft); }
+}
+.payai-typed__notefield { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.payai-typed__k { font-size: 12px; color: var(--pc-muted); font-weight: 600; }
+.payai-typed__note {
+    width: 100%;
+    min-width: 0;
+    font-size: 13.5px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--pc-line);
+    background: var(--pc-bg);
+    color: var(--pc-ink);
+    &:focus { outline: 2px solid var(--pc-brand-light); outline-offset: 0; border-color: var(--pc-brand); }
+}
+.payai-typed__hint {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--pc-bad-ink);
+    .payai-ic { margin-top: 1px; width: 15px; height: 15px; }
+}
+.payai-typed__row { display: flex; gap: 8px; align-items: center; }
+.payai-typed__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 220px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--pc-line);
+    background: var(--pc-bg);
+    color: var(--pc-ink);
+    transition: border-color 0.15s ease;
+    &::placeholder { color: var(--pc-muted); opacity: 0.55; letter-spacing: 0.08em; }
+    &:focus { outline: 2px solid var(--pc-brand-light); outline-offset: 0; border-color: var(--pc-brand); }
+}
+.payai-typed.is-ok .payai-typed__input { border-color: var(--pc-ok); }
+.payai-typed.is-bad .payai-typed__input { border-color: var(--pc-bad); }
+.payai-btn--typed { flex: none; transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease; }
+.payai-typed.is-ok .payai-btn--typed:not([disabled]) { animation: payai-badge-pop 0.24s ease-out both; }
+.payai-typed__error {
+    display: flex;
+    gap: 7px;
+    align-items: flex-start;
+    font-size: 12.5px;
+    color: var(--pc-bad-ink);
+    .payai-ic { margin-top: 1px; width: 14px; height: 14px; }
+}
+.payai-card.is-busy .payai-btn--typed .payai-ic { animation: payai-spin 0.9s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+    .payai-typed, .payai-typed__input, .payai-btn--typed { transition: none !important; }
+    .payai-typed.is-ok .payai-btn--typed, .payai-card.is-busy .payai-btn--typed .payai-ic { animation: none !important; }
+}
+
+// A narrow card — the drawer at its narrowest, or a phone: tiles two across,
+// the plan card's buttons one full row each (no spacer). Written flat, with no
+// nesting inside the at-rule, so the asset compiler passes it through as is.
+@container payai-card (max-width: 340px) {
+    .payai-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .payai-card__actions .payai-btn { flex: 1 1 100%; justify-content: center; }
+    .payai-card__actions .payai-card__spacer { display: none; }
+    .payai-card__audit.is-compact { padding-left: 12px; }
+    .payai-typed__row { flex-wrap: wrap; }
+    .payai-typed__input { max-width: none; flex: 1 1 100%; }
+    .payai-btn--typed { flex: 1 1 100%; justify-content: center; }
+}
+// Browsers without container queries keep the old window rule.
+@supports not (container-type: inline-size) {
+    @media (max-width: 420px) {
+        .payai-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .payai-card__audit.is-compact { padding-left: 12px; }
+    }
+}
+
+// ── the bubble steps aside when it holds a card ─────────────────────────
+.payai-message.payai-has-card {
+    max-width: 100%;
+    // The card is a size container, so it no longer gives the bubble a width
+    // of its own: the row takes the full width of the chat instead.
+    width: 100%;
+    .payai-msg-content {
+        max-width: 100%;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+}
+.payai-embed-msg.ai.payai-has-card {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+// ── P3: the Audit console's "Typed confirmation" badge on PayAI rows ─────
+.pbau-typedchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--pbim-rose-soft, #FCE7EF);
+    color: var(--vuf-bad-ink, #A3164B);
+}

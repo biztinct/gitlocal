@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="biz_approval_chain.ApprovalStepper">
+    <div class="bac-stepper">
+      <t t-foreach="steps" t-as="step" t-key="step.state">
+        <div t-attf-class="bac-step bac-step--{{ step.status }}">
+          <div class="bac-step__rail">
+            <div class="bac-node">
+              <t t-if="step.status === 'done'">
+                <svg class="bac-node__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </t>
+              <t t-elif="step.status === 'current'">
+                <span class="bac-node__pulse"/>
+              </t>
+              <t t-else="">
+                <span class="bac-node__dot"/>
+              </t>
+            </div>
+            <div class="bac-connector" t-if="!step_last"/>
+          </div>
+
+          <div class="bac-step__body">
+            <div class="bac-step__label" t-esc="step.label"/>
+            <div class="bac-step__group" t-if="step.group_label" t-esc="step.group_label"/>
+            <div class="bac-actor" t-if="step.actor">
+              <img class="bac-actor__avatar" t-att-src="step.actor.avatar" alt=""/>
+              <div class="bac-actor__meta">
+                <span class="bac-actor__name" t-esc="step.actor.user"/>
+                <span class="bac-actor__stamp" t-esc="fmtStamp(step.actor.stamp)"/>
+              </div>
+            </div>
+            <div class="bac-actor__note" t-if="step.actor and step.actor.note" t-esc="step.actor.note"/>
+          </div>
+        </div>
+      </t>
+
+      <div class="bac-refusal" t-if="isRefused">
+        <svg class="bac-refusal__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+        </svg>
+        <div class="bac-refusal__body">
+          <span class="bac-refusal__title" t-esc="refusalTitle"/>
+          <span class="bac-refusal__meta" t-if="refusal and refusal.user">
+            <t t-esc="refusal.user"/> · <t t-esc="fmtStamp(refusal.stamp)"/>
+          </span>
+          <span class="bac-refusal__note" t-if="refusal and refusal.note" t-esc="refusal.note"/>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

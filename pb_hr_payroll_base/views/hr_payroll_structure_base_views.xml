@@ -42,13 +42,13 @@
                 </page>
                 <page string="Contract Types" name="contract_types">
                     <field name="contract_type_ids">
-                        <tree>
+                        <list>
                             <field name="name"/>
                             <field name="country_id"/>
                             <field name="payroll_schedule"/>
                             <field name="wage_calculation"/>
                             <field name="is_payroll_enabled"/>
-                        </tree>
+                        </list>
                     </field>
                 </page>
                 <page string="Compliance Notes" name="compliance">
@@ -64,7 +64,7 @@
         <field name="model">hr.payroll.structure</field>
         <field name="inherit_id" ref="om_hr_payroll.view_hr_payroll_structure_list_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
+            <xpath expr="//list" position="attributes">
                 <attribute name="decoration-info">is_base_structure==True</attribute>
             </xpath>
             <xpath expr="//field[@name='code']" position="after">
@@ -78,7 +78,7 @@
         </field>
     </record>
 
-    <!-- Payroll Structure Search View -->
+    <!-- Enhanced Search View for Payroll Structures -->
     <record id="view_hr_payroll_structure_search_base" model="ir.ui.view">
         <field name="name">hr.payroll.structure.search.base</field>
         <field name="model">hr.payroll.structure</field>
@@ -86,30 +86,25 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="payroll_country_code"/>
-                <field name="currency_id"/>
-                <field name="schedule_pay"/>
             </xpath>
             <xpath expr="//search" position="inside">
                 <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                 <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
-                <filter string="Base Structures" name="base_structures" domain="[('is_base_structure', '=', True)]"/>
-                <separator/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Country" name="group_country" context="{'group_by': 'payroll_country_code'}"/>
                     <filter string="Schedule" name="group_schedule" context="{'group_by': 'schedule_pay'}"/>
-                    <filter string="Currency" name="group_currency" context="{'group_by': 'currency_id'}"/>
-                    <filter string="State" name="group_state" context="{'group_by': 'structure_state'}"/>
                 </group>
             </xpath>
         </field>
     </record>
 
+
     <!-- Enhanced Payroll Structure Action -->
     <record id="action_hr_payroll_structure_base" model="ir.actions.act_window">
         <field name="name">Payroll Structures</field>
         <field name="res_model">hr.payroll.structure</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_hr_payroll_structure_tree_base"/>
         <field name="search_view_id" ref="view_hr_payroll_structure_search_base"/>
         <field name="context">{'search_default_active': 1}</field>
@@ -164,7 +159,7 @@
         <field name="model">hr.salary.rule</field>
         <field name="inherit_id" ref="om_hr_payroll.hr_salary_rule_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
+            <xpath expr="//list" position="attributes">
                 <attribute name="decoration-info">is_country_specific==True</attribute>
             </xpath>
             <xpath expr="//field[@name='code']" position="after">
@@ -174,7 +169,7 @@
         </field>
     </record>
 
-    <!-- Salary Rule Search View Enhancement -->
+    <!-- Enhanced Search View for Salary Rules -->
     <record id="view_hr_salary_rule_search_base" model="ir.ui.view">
         <field name="name">hr.salary.rule.search.base</field>
         <field name="model">hr.salary.rule</field>
@@ -187,18 +182,19 @@
             <xpath expr="//search" position="inside">
                 <filter string="Country Specific" name="country_specific" domain="[('is_country_specific', '=', True)]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Country" name="group_country" context="{'group_by': 'payroll_country_code'}"/>
                 </group>
             </xpath>
         </field>
     </record>
 
+
     <!-- Enhanced Salary Rules Action -->
     <record id="action_hr_salary_rule_base" model="ir.actions.act_window">
         <field name="name">Salary Rules</field>
         <field name="res_model">hr.salary.rule</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_hr_salary_rule_tree_base"/>
         <field name="search_view_id" ref="view_hr_salary_rule_search_base"/>
         <field name="context">{'search_default_active': 1}</field>
@@ -219,7 +215,7 @@
         <field name="model">hr.salary.rule.category</field>
         <field name="inherit_id" ref="om_hr_payroll.hr_salary_rule_category_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
+            <xpath expr="//list" position="attributes">
                 <attribute name="decoration-info">country_specific==True</attribute>
             </xpath>
             <xpath expr="//field[@name='code']" position="after">
@@ -248,7 +244,7 @@
                 <group>
                     <group string="Country Configuration">
                         <field name="country_specific"/>
-                        <field name="payroll_country_code" attrs="{'invisible': [('country_specific', '=', False)], 'required': [('country_specific', '=', True)]}"/>
+                        <field name="payroll_country_code" invisible="not country_specific" required="country_specific"/>
                     </group>
                     <group string="Calculation Settings">
                         <field name="is_taxable"/>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CLOCK-3: ONE door to Workforce › Time › Time clocks for every surface
+         that is not the Time hub itself — the Integrations row, the Home
+         chip and the link in the alert emails (/odoo/action-pb_clock.action_pb_clock_lens;
+         /bizapp on this server, biz_deroute). It is the Mission Control shell
+         (tag pb_workforce) arriving with the W26 deep-link context, so there
+         is no second screen. No menu: it is a door, not a destination. -->
+    <record id="action_pb_clock_lens" model="ir.actions.client">
+        <field name="name">Time clocks</field>
+        <field name="tag">pb_workforce</field>
+        <field name="context">{'pb_shell_lens': 'time', 'pb_lens': 'clocks'}</field>
+    </record>
+</odoo>
