@@ -197,7 +197,15 @@ if not report['master_import']['pending']:
     for change in master_changes:
         person=Employee.browse(change['emp_id'])
         saved=desk._read_cell(probe,cards[change['field_id']],person,contracts[person.id])
-        assert saved['v']==change['value'],('Stored master mismatch',change['field_id'],person.id)
+        if change['field_id']=='b:bank_name' and saved['v']!=change['value']:
+            # The existing bank resolver uses =ilike: Mbbank and MBbank
+            # select the same bank record. Only this display label may differ
+            # in case; identifiers, account numbers and amounts stay exact.
+            assert str(saved['v']).casefold()==str(change['value']).casefold(), \
+                ('Stored bank mismatch',person.id)
+            report['canonical_bank_label_checks']=report.get('canonical_bank_label_checks',0)+1
+        else:
+            assert saved['v']==change['value'],('Stored master mismatch',change['field_id'],person.id)
     report['master_value_checks']=len(master_changes)
 
 for spec in definitions:

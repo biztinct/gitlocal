@@ -46,6 +46,10 @@ saved scenarios. Check that payroll, attendance and assignment tables did
 not change and that no historical monthly inputs became defaults.
 Verify the deployed draft and employee records in Chrome. Remove only images
 and screenshots created by this test run after inspection.
+The existing bank resolver matches names case-insensitively. The verifier
+accepts that canonical bank display-name casing only (two source Mbbank
+labels resolve to MBbank), and reports the count. All account numbers,
+government IDs, salary values and other master values remain exact checks.
 
 This is a historical base-payroll review, not certification of unattended
 attendance-to-payroll automation. Raw punches, confirmed shifts/breaks,
