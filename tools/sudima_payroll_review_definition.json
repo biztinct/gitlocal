@@ -555,7 +555,7 @@
         "required": false
       },
       {
-        "code": "VNTAX",
+        "code": "PIT",
         "name": "Income tax",
         "kind": "money",
         "formula": "ROUND(IF({VNTAXABLE}<=10000000,{VNTAXABLE}*0.05,IF({VNTAXABLE}<=30000000,{VNTAXABLE}*0.1-500000,IF({VNTAXABLE}<=60000000,{VNTAXABLE}*0.2-3500000,IF({VNTAXABLE}<=100000000,{VNTAXABLE}*0.3-9500000,{VNTAXABLE}*0.35-14500000)))),-3)",
@@ -580,7 +580,7 @@
         "code": "VNNETRAW",
         "name": "Net pay before rounding",
         "kind": "money",
-        "formula": "{VNGROSS}-{VNRECOVERY}*{VNRECOVERYUSED}-{VNUNION}-{VNPERSONAL}-{VNOTHERDED}-{VNINS}-{VNTAX}-{VNADVANCE}-{VNBANKFEE}+{VNNETADJUST}",
+        "formula": "{VNGROSS}-{VNRECOVERY}*{VNRECOVERYUSED}-{VNUNION}-{VNPERSONAL}-{VNOTHERDED}-{VNINS}-{PIT}-{VNADVANCE}-{VNBANKFEE}+{VNNETADJUST}",
         "role": "info",
         "lane": "adjustments",
         "destination": "",

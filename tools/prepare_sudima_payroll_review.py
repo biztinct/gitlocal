@@ -170,6 +170,15 @@ for code,row in br.items():
         attendance_code=str(value(attendance,'C',tr[code])).strip(),
         actual_present=code in ar))
 
+# The guided pay preview recognises PIT as its income-tax component.
+# This is a template code choice; the tax formula and all values are unchanged.
+for spec in definitions:
+    for rule in spec['rules']:
+        if rule['code']=='VNTAX': rule['code']='PIT'
+        if rule['formula']: rule['formula']=rule['formula'].replace('{VNTAX}','{PIT}')
+for fixtures in private['views'].values():
+    for fixture in fixtures:
+        fixture['expected']['PIT']=fixture['expected'].pop('VNTAX')
 (args.output_dir/'definition.json').write_text(json.dumps(definitions,ensure_ascii=False,indent=2))
 (args.output_dir/'private-fixtures.json').write_text(json.dumps(private,ensure_ascii=False,indent=2))
 print(json.dumps({'rules':{d['view']:len(d['rules']) for d in definitions},'fixtures':{k:len(v) for k,v in private['views'].items()},'employees':len(private['employees'])}))
