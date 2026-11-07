@@ -40,7 +40,7 @@
     <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
       <li t-if="page_name == 'journey'" class="breadcrumb-item active">My Journey</li>
       <li t-if="page_name == 'buddy'" class="breadcrumb-item active">My Buddy</li>
-      <li t-if="page_name == 'orgchart'" class="breadcrumb-item active">Who's Who</li>
+      <li t-if="page_name == 'orgchart'" class="breadcrumb-item active">Organisation chart</li>
     </xpath>
   </template>
 
@@ -63,7 +63,7 @@
         <t t-set="placeholder_count" t-value="'buddy_count'"/>
       </t>
       <t t-call="portal.portal_docs_entry">
-        <t t-set="title">Who's Who</t>
+        <t t-set="title">Organisation chart</t>
         <t t-set="text">Find anyone and see how the teams fit together</t>
         <t t-set="url" t-value="'/my/orgchart'"/>
         <t t-set="config_card" t-value="True"/>
@@ -433,106 +433,39 @@
   <!-- ================================================================= -->
   <!--  /my/orgchart                                                      -->
   <!-- ================================================================= -->
-  <template id="portal_my_orgchart" name="Who's Who (ESS)">
+  <template id="orgchart_home_shortcut" inherit_id="pb_me_portal.pbme_top" name="Organisation chart shortcut">
+    <xpath expr="//div[hasclass('pbme-top-main')]" position="inside">
+      <a class="pborg-home-link" href="/my/orgchart"><t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'network'"/></t> Organisation chart <span aria-hidden="true">↗</span></a>
+    </xpath>
+  </template>
+  <template id="portal_my_orgchart" name="Organisation chart (ESS)">
     <t t-call="portal.portal_layout">
-      <div class="pbme pbob">
-
-        <t t-call="pb_me_portal.ess_hero">
-          <t t-set="hero_title">Who's Who</t>
-          <t t-set="hero_sub">Click anyone to see the team around them.</t>
-        </t>
-
-        <form class="pbob-search" method="get" action="/my/orgchart">
-          <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'search'"/><t t-set="isz" t-value="16"/></t>
-          <input type="text" name="q" t-att-value="term"
-                 placeholder="Search for anyone by name…"/>
-          <button type="submit" class="pbme-btn pbme-btn--primary">Search</button>
-        </form>
-
-        <div t-if="term" class="pbme-card pbob-results">
-          <div class="pbme-card-title">
-            <t t-if="results"><t t-esc="result_count"/> match<t t-if="result_count != 1">es</t> for “<t t-esc="term"/>”</t>
-            <t t-else="">Nobody called “<t t-esc="term"/>” in <t t-esc="company_name"/></t>
-          </div>
-          <div class="pbob-team">
-            <a t-foreach="results" t-as="r" t-key="r['id']" class="pbob-face"
-               t-attf-href="/my/orgchart?focus=#{r['id']}">
-              <img t-att-src="r['avatar']" t-att-alt="r['name']"/>
-              <span class="pbob-face-n" t-esc="r['name']"/>
-              <span class="pbob-face-r" t-esc="r['job']"/>
-            </a>
-          </div>
+      <div class="pbme pborg" t-att-data-orgchart="chart_json">
+        <header class="pborg-heading">
+          <div><a href="/my" class="pborg-back">← My workspace</a><h1>Organisation chart<span class="pborg-readonly">View only</span></h1><p>Meet the people. See how everyone connects.</p></div>
+          <div class="pborg-company"><t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'network'"/><t t-set="isz" t-value="24"/></t><span t-out="company_name"/></div>
+        </header>
+        <div class="pborg-toolbar">
+          <label class="pborg-search"><span>Find a person</span><input type="search" data-control="search" placeholder="Name, role or department…" autocomplete="off"/></label>
+          <label><span>Team / department</span><select data-control="department"><option value="all">All teams</option></select></label>
+          <label><span>Levels from top</span><select data-control="levels"><option value="custom" disabled="disabled">Custom view</option><option value="2">2 levels</option><option value="3">3 levels</option><option value="4">4 levels</option><option value="all">All levels</option></select></label>
+          <button type="button" class="pborg-btn" data-action="reset">Reset view</button>
         </div>
-
-        <!-- ================ the path to the top ================ -->
-        <div t-if="chain" class="pbob-chain">
-          <t t-foreach="chain" t-as="up">
-            <a class="pbob-chain-node" t-attf-href="/my/orgchart?focus=#{up['id']}">
-              <img t-att-src="up['avatar']" t-att-alt="up['name']"/>
-              <span t-esc="up['name']"/>
-            </a>
-            <span class="pbob-chain-sep">
-              <t t-call="pb_onboarding.ob_icon"><t t-set="icon" t-value="'up'"/><t t-set="isz" t-value="14"/></t>
-            </span>
-          </t>
+        <div class="pborg-search-results" hidden="hidden" aria-label="Search results"/>
+        <div class="pborg-viewbar">
+          <div class="pborg-tabs" role="group" aria-label="Chart view"><button type="button" data-action="organisation" aria-pressed="true">Organisation</button><button type="button" data-action="my-team" aria-pressed="false">My team</button></div>
+          <div class="pborg-tools"><button type="button" data-action="find-me">Find me</button><button type="button" data-action="expand">Expand all</button><button type="button" data-action="collapse">Collapse all</button></div>
         </div>
-
-        <!-- ================== the person in the middle ================== -->
-        <div class="pbme-card pbob-focus" t-att-data-focus="focus['id']">
-          <img class="pbob-focus-av" t-att-src="focus['avatar']" t-att-alt="focus['name']"/>
-          <div class="pbob-focus-tx">
-            <h2>
-              <t t-esc="focus['name']"/>
-              <span t-if="focus['id'] == me_id" class="pbme-badge pbme-badge--approved">That's you</span>
-            </h2>
-            <p t-if="focus['job']" t-esc="focus['job']"/>
-            <p t-if="focus['dept']" class="pbme-muted" t-esc="focus['dept']"/>
-            <a t-if="focus['email']" t-attf-href="mailto:#{focus['email']}" t-esc="focus['email']"/>
-          </div>
-          <a t-if="focus['id'] != me_id" class="pbme-btn pbme-btn--ghost"
-             t-attf-href="/my/orgchart?focus=#{me_id}">Back to me</a>
+        <div class="pborg-context"><nav class="pborg-path" aria-label="Reporting path"/><span class="pborg-status" role="status" aria-live="polite"/></div>
+        <div class="pborg-workspace">
+          <section class="pborg-canvas-wrap" aria-label="Reporting structure">
+            <div class="pborg-canvas" tabindex="0" aria-label="Organisation chart. Scroll to explore reporting lines."><div class="pborg-tree"/></div>
+            <div class="pborg-canvas-footer"><span>Click for details · Double-click to focus a team · Scroll to explore</span><div class="pborg-zoom"><button type="button" data-action="zoom-out" aria-label="Zoom out">−</button><button type="button" data-action="zoom-reset" aria-label="Reset zoom" class="pborg-zoom-value">100%</button><button type="button" data-action="zoom-in" aria-label="Zoom in">+</button></div></div>
+          </section>
+          <aside class="pborg-detail" aria-label="Person details"/>
         </div>
-
-        <!-- ======================== the sides ======================== -->
-        <div class="pbob-cols">
-          <div class="pbme-card">
-            <div class="pbme-card-title">
-              Reports to <t t-esc="focus['name']"/>
-              <t t-if="more_children"> (first <t t-esc="max_children"/>)</t>
-            </div>
-            <div t-if="children" class="pbob-team">
-              <a t-foreach="children" t-as="c" t-key="c['id']" class="pbob-face"
-                 t-attf-href="/my/orgchart?focus=#{c['id']}">
-                <img t-att-src="c['avatar']" t-att-alt="c['name']"/>
-                <span class="pbob-face-n" t-esc="c['name']"/>
-                <span class="pbob-face-r" t-esc="c['job']"/>
-              </a>
-            </div>
-            <p t-else="" class="pbme-muted">Nobody reports to them.</p>
-            <p t-if="more_children" class="pbme-muted">There are more than
-               <t t-esc="max_children"/> — search by name to reach the rest.</p>
-          </div>
-
-          <div class="pbme-card">
-            <div class="pbme-card-title">
-              <t t-if="manager">Alongside <t t-esc="focus['name']"/>, under <t t-esc="manager['name']"/></t>
-              <t t-else="">Alongside <t t-esc="focus['name']"/></t>
-            </div>
-            <div t-if="siblings" class="pbob-team">
-              <a t-foreach="siblings" t-as="s" t-key="s['id']" class="pbob-face"
-                 t-attf-href="/my/orgchart?focus=#{s['id']}">
-                <img t-att-src="s['avatar']" t-att-alt="s['name']"/>
-                <span class="pbob-face-n" t-esc="s['name']"/>
-                <span class="pbob-face-r" t-esc="s['job']"/>
-              </a>
-            </div>
-            <p t-else="" class="pbme-muted">
-              <t t-if="manager">Nobody else reports to <t t-esc="manager['name']"/>.</t>
-              <t t-else="">They are at the top of the chart.</t>
-            </p>
-          </div>
-        </div>
-
+        <p class="pborg-footnote">Active colleagues in your company. Connecting cards stay visible when you filter a team. Reporting lines reflect the employee directory.</p>
+        <noscript><div class="pbme-card">Enable JavaScript to explore the organisation chart.</div></noscript>
       </div>
     </t>
   </template>

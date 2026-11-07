@@ -22,6 +22,7 @@ one that needs its own rules rather than the route boundary:
 """
 
 import logging
+import json
 from datetime import date, timedelta
 
 from urllib.parse import quote
@@ -31,15 +32,6 @@ from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
 _logger = logging.getLogger(__name__)
-
-#: The org chart's ceilings. Breadth first: a manager with three hundred
-#: reports is shown the first slice and TOLD there are more, which is honest;
-#: silently truncating is what makes somebody believe their team is smaller
-#: than it is.
-ORG_MAX_CHILDREN = 60
-ORG_MAX_SIBLINGS = 40
-ORG_MAX_DEPTH = 12
-ORG_MAX_SEARCH = 20
 
 _OPEN_STATES = ('pending', 'in_progress', 'blocked')
 _MAX_NOTE = 2000
@@ -358,73 +350,18 @@ class PbOnboardingPortal(CustomerPortal):
         emp = self._ob_employee()
         if not emp:
             return request.redirect('/my')
-        Emp = request.env['hr.employee'].sudo()
-        company = emp.company_id or request.env.company
-        focus = emp
-        raw_focus = kw.get('focus')
-        if raw_focus:
-            try:
-                candidate = Emp.browse(int(raw_focus)).exists()
-            except (TypeError, ValueError):
-                candidate = Emp.browse()
-            # COMPANY SCOPE. A focus id from anywhere else answers with the
-            # caller's own node rather than with somebody else's people.
-            if candidate and candidate.active \
-                    and candidate.company_id.id == company.id:
-                focus = candidate
-        term = (kw.get('q') or '').strip()
-        results = []
-        if term:
-            results = [self._ob_card(e) for e in Emp.search(
-                [('active', '=', True), ('company_id', '=', company.id),
-                 ('name', 'ilike', term)], order='name',
-                limit=ORG_MAX_SEARCH)]
-
-        # ---- the path up to the top, capped so a cycle cannot hang a page ----
-        chain, seen, node = [], set(), focus.parent_id
-        while node and node.id not in seen and len(chain) < ORG_MAX_DEPTH:
-            seen.add(node.id)
-            chain.append(self._ob_card(node))
-            node = node.parent_id
-        chain.reverse()
-
-        children = Emp.search(
-            [('parent_id', '=', focus.id), ('active', '=', True),
-             ('company_id', '=', company.id)],
-            order='name', limit=ORG_MAX_CHILDREN + 1)
-        more_children = len(children) > ORG_MAX_CHILDREN
-        children = children[:ORG_MAX_CHILDREN]
-
-        siblings = Emp.browse()
-        more_siblings = False
-        if focus.parent_id:
-            siblings = Emp.search(
-                [('parent_id', '=', focus.parent_id.id),
-                 ('id', '!=', focus.id), ('active', '=', True),
-                 ('company_id', '=', company.id)],
-                order='name', limit=ORG_MAX_SIBLINGS + 1)
-            more_siblings = len(siblings) > ORG_MAX_SIBLINGS
-            siblings = siblings[:ORG_MAX_SIBLINGS]
-
+        chart = request.env['pb.me.home']._orgchart_data(emp)
+        ids = {node['id'] for node in chart['people']}
+        try:
+            focus = int(kw.get('focus', 0))
+        except (ValueError, TypeError):
+            focus = 0
+        chart['focus'] = focus if focus in ids else 0
+        chart['query'] = str(kw.get('q') or '')[:200]
         return request.render('pb_onboarding.portal_my_orgchart', {
-            'page_name': 'orgchart',
-            'employee': emp,
-            'me_id': emp.id,
-            'focus': self._ob_card(focus),
-            'manager': self._ob_card(focus.parent_id),
-            'chain': chain,
-            'children': [self._ob_card(e) for e in children],
-            'siblings': [self._ob_card(e) for e in siblings],
-            'more_children': more_children,
-            'more_siblings': more_siblings,
-            'max_children': ORG_MAX_CHILDREN,
-            'term': term,
-            'results': results,
-            # The count is computed HERE, not in the template: QWeb's eval
-            # context is not Python's and a builtin that happens to work today
-            # is a page that breaks on an upgrade.
-            'result_count': len(results),
-            'company_name': company.name or '',
+            'page_name': 'orgchart', 'employee': emp,
+            'company_name': emp.company_id.name,
+            'chart_json': json.dumps(chart),
         })
 
     # ------------------------------------------------------------- the cards

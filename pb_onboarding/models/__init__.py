@@ -13,3 +13,5 @@ from . import journey_case_ext
 from . import onboarding_automation
 from . import zoho_pipeline_ext
 from . import pb_onboarding
+
+from . import orgchart

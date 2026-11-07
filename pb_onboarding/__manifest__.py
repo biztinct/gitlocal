@@ -61,7 +61,7 @@ additive `_inherit` extensions declared inside this module, and the lens
 arrives through P0's soft registry, which is what lets the dependency run one
 way only.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -103,6 +103,8 @@ way only.
         # this module's block. No backend asset is leaked in.
         'web.assets_frontend': [
             'pb_onboarding/static/src/scss/portal_onboarding.scss',
+            'pb_onboarding/static/src/scss/orgchart.scss',
+            'pb_onboarding/static/src/interactions/orgchart.js',
         ],
     },
     'installable': True,
