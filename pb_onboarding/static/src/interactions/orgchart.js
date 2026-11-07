@@ -142,7 +142,12 @@ export class OrganisationChart extends Interaction {
         }
         host.append(rootList);
         if (!count) host.append(el("p", "pborg-empty", _t("No people in this view. Try All teams or Organisation.")));
-        if (truncated) host.append(button(_t("Show more people (showing %s)", count), "more"));
+        this.$(".pborg-overflow")?.remove();
+        if (truncated) {
+            const overflow = el("div", "pborg-overflow");
+            overflow.append(button(_t("Show more people (showing %s)", count), "more"));
+            this.$(".pborg-canvas-footer").before(overflow);
+        }
         this.$(".pborg-status").textContent = _t("%s shown · %s people in company", count, this.people.size);
         this.$("[data-action=organisation]").setAttribute("aria-pressed", String(!this.focus));
         this.$("[data-action=my-team]").setAttribute("aria-pressed", String(this.focus === this.data.me));
@@ -180,7 +185,7 @@ export class OrganisationChart extends Interaction {
         }
     }
     scrollTo(id) {
-        const node = this.$(`[data-node="${id}"]`), canvas = this.$(".pborg-canvas");
+        const node = this.$(`[data-node="${id}"]`) || this.$(".pborg-node"), canvas = this.$(".pborg-canvas");
         if (node) {
             const a = node.getBoundingClientRect(), b = canvas.getBoundingClientRect();
             canvas.scrollLeft += a.left - b.left - (b.width - a.width) / 2;
@@ -226,7 +231,10 @@ export class OrganisationChart extends Interaction {
         }
         if (["toggle", "collapse"].includes(action)) this.$("[data-control=levels]").value = "custom";
         this.render();
-        if (["reveal", "find-me", "focus", "my-team"].includes(action)) this.scrollTo(this.selected);
+        if (["reveal", "find-me", "focus", "my-team", "organisation", "reset", "expand", "collapse"].includes(action)) {
+            this.scrollTo(this.selected);
+            if (window.matchMedia("(max-width: 900px)").matches) this.$(".pborg-canvas-wrap").scrollIntoView({ block: "start" });
+        }
         // Retain keyboard position after rebuilding a branch.
         if (action === "toggle") this.$(`[data-action=toggle][data-id="${id}"]`)?.focus({ preventScroll: true });
         if (action === "reset") { this.zoom = 1; this.$(".pborg-tree").style.zoom = 1; this.$(".pborg-zoom-value").textContent = "100%"; }
@@ -246,7 +254,7 @@ export class OrganisationChart extends Interaction {
             }
         } else if (control === "levels") this.setLevels(ev.target.value);
         else return;
-        this.render();
+        this.render(); this.scrollTo(this.selected);
     }
     onKeydown(ev) {
         if (ev.key === "Escape" && this.query) { this.query = ""; this.$("[data-control=search]").value = ""; this.renderSearch(); }

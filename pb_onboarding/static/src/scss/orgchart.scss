@@ -64,6 +64,8 @@
     .pborg-dept { font-size: 10px; color: var(--org-purple); }
     .pborg-node-meta { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #edf0f6; padding: 8px 12px; color: var(--org-muted); font-size: 10px; min-height: 38px; }
     .pborg-disclosure { background: #f0ecfb; border: 0; color: var(--org-purple); border-radius: 6px; font-size: 11px; padding: 5px 7px; font-weight: 650; }
+    .pborg-canvas-wrap { scroll-margin-top: 85px; }
+    .pborg-overflow { padding: 10px 14px; background: #fff; border-top: 1px solid #e1e5ef; }
     .pborg-canvas-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #e1e5ef; background: #fff; padding: 10px 14px; font-size: 10px; color: var(--org-muted); }
     .pborg-zoom { display: flex; align-items: center; flex-shrink: 0; gap: 3px; }
     .pborg-zoom button { border: 1px solid #e5e7ef; background: #fff; border-radius: 5px; color: var(--org-purple); height: 30px; min-width: 29px; }
