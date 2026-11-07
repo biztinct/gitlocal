@@ -10,12 +10,19 @@ extracts. Keep private-fixtures.json outside git. It holds employee identity,
 bank and salary data. definition.json contains only the reviewed schema.
 Build the formula workbook with tools/build_sudima_payroll_review.mjs and the
 bundled artifact-tool runtime. It contains fictional examples only.
+Keep the colour-coded import rows: amber component types in row 2, yellow
+names in row 3 and the first green data/formula row in row 4. Red names mark
+contract components. This works with the existing default importer; do not
+change the shared importer. Initial workbook import requires an Administrator.
 
 Install using tools/install_sudima_payroll_review.py through Odoo shell on
 Payobook19v2. SUDIMA_REVIEW_DIR selects the owner-only private staging folder.
 Default execution rehearses and rolls back. SUDIMA_REVIEW_APPLY=1 commits
 only after all controls pass; SUDIMA_REVIEW_VERIFY=1 verifies an existing
 installation and never reimports or overwrites customer changes.
+The presentation finalizer uses the existing Rename component service to
+name the tax component PIT for the guided preview. The workbook publisher
+uses the existing mapping-board file-upload service; it reads headers only.
 
 Before applying, recheck the latest combined repository state, preserve other
 sessions' changes, and back up the Sudima database and filestore. Verify

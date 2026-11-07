@@ -10,27 +10,32 @@ for(const spec of definitions){
   const sheet=wb.worksheets.add(spec.view==='actual'?'Actual':'Audit');
   sheet.showGridLines=false;
   const last=letter(spec.rules.length), map=Object.fromEntries(spec.rules.map((r,i)=>[r.code,letter(i+1)]));
-  sheet.getRange(`A1:${last}3`).format.font={name:'Arial',size:10};
-  sheet.getRange(`A1:${last}1`).values=[spec.rules.map(r=>r.name)];
-  sheet.getRange(`A1:${last}1`).format={fill:'#35286F',font:{name:'Arial',size:10,color:'#FFFFFF',bold:true},wrapText:true,rowHeight:65,verticalAlignment:'center',horizontalAlignment:'center'};
-  sheet.getRange(`A1:${last}3`).format.columnWidth=20;
-  sheet.getRange('B1:B3').format.columnWidth=27;
-  for(let row=2;row<=3;row++){
-    const example={VNID:`EXAMPLE${row-1}`,VNNAME:`Example ${row===2?'monthly':'daily'} employee`,VNBASIS:row===2?1:2,
-      VNBASE:row===2?8000000:300000,VNPAIDDAYS:26,VNDIVISOR:26,VNHOURSDAY:8,
+  sheet.getRange(`A2:${last}5`).format.font={name:'Arial',size:10,color:'#202332'};
+  sheet.getRange(`A2:${last}2`).values=[spec.rules.map(r=>({earning:'Earning',deduction:'Deduction',net:'Net'}[r.role]||'Information'))];
+  sheet.getRange(`A2:${last}2`).format={fill:'#EBC16C',rowHeight:24,horizontalAlignment:'center'};
+  sheet.getRange(`A3:${last}3`).values=[spec.rules.map(r=>r.name)];
+  sheet.getRange(`A3:${last}3`).format={fill:'#F8EB8D',font:{name:'Arial',size:10,color:'#202332',bold:true},wrapText:true,rowHeight:65,verticalAlignment:'center',horizontalAlignment:'center'};
+  sheet.getRange(`A2:${last}5`).format.columnWidth=20;
+  sheet.getRange('B2:B5').format.columnWidth=27;
+  for(const [i,r] of spec.rules.entries())if(r.destination==='c:amount')sheet.getRange(`${letter(i+1)}3`).format.font.color='#C0392B';
+  for(let row=4;row<=5;row++){
+    const example={VNID:`EXAMPLE${row-3}`,VNNAME:`Example ${row===4?'monthly':'daily'} employee`,VNBASIS:row===4?1:2,
+      VNBASE:row===4?8000000:300000,VNPAIDDAYS:26,VNDIVISOR:26,VNHOURSDAY:8,
       VNLEAVERATE:spec.view==='actual'?190000:50000,VNRELIEF:15500000,VNRECOVERYUSED:1};
     sheet.getRange(`A${row}:${last}${row}`).values=[spec.rules.map(r=>r.formula?null:example[r.code]??0)];
     for(const [i,r] of spec.rules.entries()){
       const cell=sheet.getRange(`${letter(i+1)}${row}`);
       if(r.formula)cell.formulas=[['='+r.formula.replace(/\{([A-Z]+)\}/g,(_,code)=>map[code]+row)]];
-      else cell.format.fill='#FFF3CF';
+      else cell.format.fill='#F3F3F8';
       if(r.kind==='money')cell.setNumberFormat('#,##0;[Red](#,##0);–');
       else if(['quantity','rate','decimal'].includes(r.kind))cell.setNumberFormat('0.00');
       if(r.role==='net')cell.format={fill:'#EEEAF8',font:{name:'Arial',size:10,bold:true}};
     }
   }
-  sheet.freezePanes.freezeRows(1);
-  sheet.getRange(`${map.VNBASIS}2:${map.VNBASIS}3`).dataValidation={rule:{type:'list',values:['1','2']}};
+  // Payobook's existing colour-coded reader uses this first green data row.
+  sheet.getRange(`A4:${last}4`).format.fill='#B4D7B0';
+  sheet.freezePanes.freezeRows(3);
+  sheet.getRange(`${map.VNBASIS}4:${map.VNBASIS}5`).dataValidation={rule:{type:'list',values:['1','2']}};
 }
 const readme=wb.worksheets.add('ReadMe');readme.showGridLines=false;
 const notes=[
@@ -38,7 +43,7 @@ const notes=[
  ['All amounts are VND. The original payroll uses thousands of VND.'],
  ['Import the Audit calculation sheet. Examples are fictional.'],
  ['Print-Audit is the draft base payroll. Actual Pay extras are excluded by owner instruction.'],
- ['Monthly and daily workers use one formula with the Pay basis field. Blue-purple headers are components; pale yellow cells are inputs.'],
+ ['Keep the amber type row, yellow name row and green first data row: these support Payobook’s default colour-coded import. Red headings are saved contract components.'],
  ['The application stores basic, responsibility and position rates on draft contracts. Historical time and variable amounts exist only in Test.'],
  ['Actual Pay differences are documented separately for a later decision. No extra-pay or bonus rule from Actual is installed.'],
  ['Salary divisor 26 and eight hours per salary day reproduce the source. They do not establish Sudima’s attendance calendar or break rules.'],
@@ -56,10 +61,10 @@ wb.recalculate();
 for(const spec of definitions){
  const name=spec.view==='actual'?'Actual':'Audit', sheet=wb.worksheets.getItem(name);
  const map=Object.fromEntries(spec.rules.map((r,i)=>[r.code,letter(i+1)]));
- const net=sheet.getRange(`${map.VNNET}2:${map.VNNET}3`).values.flat();
+ const net=sheet.getRange(`${map.VNNET}4:${map.VNNET}5`).values.flat();
  if(net[0]!==8000000||net[1]!==7800000)throw new Error(`${name} example net mismatch ${net}`);
- console.log((await wb.inspect({kind:'table',range:`${name}!${map.VNNETRAW}1:${map.VNROUNDING}3`,include:'values,formulas',tableMaxRows:3,tableMaxCols:3})).ndjson);
- for(const [suffix,range] of [['inputs','A1:H3'],['outputs',`${map.VNGROSS}1:${map.VNROUNDING}3`]]){
+ console.log((await wb.inspect({kind:'table',range:`${name}!${map.VNNETRAW}3:${map.VNROUNDING}5`,include:'values,formulas',tableMaxRows:3,tableMaxCols:3})).ndjson);
+ for(const [suffix,range] of [['inputs','A2:H5'],['outputs',`${map.VNGROSS}2:${map.VNROUNDING}5`]]){
    const blob=await wb.render({sheetName:name,range,scale:1.5});
    await fs.writeFile(`${outputDir}/${name}-${suffix}.png`,new Uint8Array(await blob.arrayBuffer()));
  }
