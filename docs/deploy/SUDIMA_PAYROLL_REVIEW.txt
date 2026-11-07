@@ -52,3 +52,26 @@ eligibility and automatic allowance sources are outstanding. Do not activate
 the review configuration or claim automatic payroll readiness on the basis
 of historical reconciliation alone. Detailed customer runbook and findings
 belong in the ignored SUDIMA directory.
+
+Owner-authorized Records approval configuration (7 November 2026)
+The owner explicitly selected HR submission and approval alone, with no
+separate Finance step, for Sudima Records only. Use the existing Approval
+Matrix builder: Records Desk changes > People > one named-person approval
+for hr@sudima.local; Safeguards > No independence rule; review and publish.
+This retains an explicit approval action and audit trail. Do not change
+company-wide responsibility holders, user groups or other process routes.
+
+tools/configure_sudima_records_approval.py reproduces that configuration
+through the same Matrix and Records UI services. Default is rollback;
+SUDIMA_RECORDS_APPLY=1 applies after backing up Sudima and checking the
+combined repository. It withdraws RD00185/RD00186 and proposes identical
+values under the newly published route, because existing requests preserve
+their original version. It updates the private deployment receipt to the
+replacement references and archives the original receipt. Complete approval
+as HR through the Approval Inbox, then rerun the existing installer in
+VERIFY mode to check every stored master and salary component value.
+
+Known existing UI limitation: withdrawing a Records request closes it in
+the Approval Inbox, but Records History can retain its old pending label.
+The old requests' cancelled state and replacement references are the audit
+evidence; do not treat those old history labels as additional live imports.
