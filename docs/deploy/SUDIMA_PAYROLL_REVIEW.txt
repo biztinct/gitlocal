@@ -1,7 +1,8 @@
 Sudima September payroll review installation
 
-Scope: customer configuration and records in sudima only. No shared addon
-code changes, module installs/upgrades, payroll assignments or issued wages.
+Initial setup scope: customer configuration and records in sudima only. No
+payroll assignments or issued wages. The later owner-approved shared Records
+performance fix is documented in RECORDS_BULK_PERFORMANCE.txt.
 The Actual Pay extras are explicitly excluded from installation by the owner.
 
 Preparation

@@ -1612,6 +1612,15 @@ class PbRecordsDesk(models.AbstractModel):
         probe = self._probe(config_id)
         written, people, late_refusals = 0, set(), []
         for step in plan:
+            # Evaluation prefetches the whole roster for efficient reads.
+            # Keep that batch out of each individual write: tracked computed
+            # employee fields otherwise recompute the roster after successive
+            # contract/version changes invalidate them (quadratic bulk work).
+            # This changes only the prefetch cohort, not access or tracking.
+            step = dict(step)
+            for key in ('employee', 'contract'):
+                if key in step:
+                    step[key] = step[key].with_prefetch(step[key].ids)
             if step.get('bank'):
                 why = self._write_bank(probe, step, apply_rec)
                 if why:

@@ -18,6 +18,7 @@ import hashlib
 import json
 import os
 import re
+from unittest.mock import patch
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.modules.module import get_module_path
@@ -192,6 +193,53 @@ class TestRecordsR2Desk(TransactionCase):
     # =====================================================================
     # 1 — the catalogue offers what the scheme maps, and nothing else
     # =====================================================================
+    def test_bulk_writes_do_not_recompute_the_whole_roster_per_person(self):
+        """Tracked derived fields must stay linear when writes invalidate them.
+
+        Contract/version hooks invalidate employee fields during real imports.
+        Force that invalidation here so this test measures compute work, not
+        machine speed, while retaining ordinary chatter and Records audits.
+        """
+        people = self.Employee.create([
+            {'name': 'RD Bulk %s' % i, 'company_id': self.company.id,
+             'location': 'Before'} for i in range(8)])
+        self.env.flush_all()
+        self.env.cr.precommit.run()
+        computed = []
+        employee_type = type(self.Employee)
+        original_compute = employee_type._compute_work_location_type
+        original_write = employee_type.write
+
+        def count_compute(records):
+            computed.extend(records.ids)
+            return original_compute(records)
+
+        def invalidate_then_write(records, values):
+            if 'location' in values:
+                records.env['hr.employee'].invalidate_model(['work_location_type'])
+            return original_write(records, values)
+
+        with patch.object(employee_type, '_compute_work_location_type', count_compute), \
+                patch.object(employee_type, 'write', invalidate_then_write):
+            result = self.Desk.apply_changes(self.cfg.id, [
+                {'emp_id': person.id, 'field_id': 'f:hr.employee:location',
+                 'value': 'After'} for person in people], note='Bulk regression')
+            self.env.flush_all()
+            self.env.cr.precommit.run()
+        self.assertTrue(result['ok'])
+        self.assertFalse(result['pending'])
+        self.assertEqual(result['written'], len(people))
+        self.assertEqual(set(people.mapped('location')), {'After'})
+        self.assertEqual(self.e4.location, 'Control')
+        self.assertTrue(computed, 'The regression must exercise tracked computation')
+        self.assertLessEqual(len(computed), 3 * len(people),
+                             'Each write recomputed the whole imported roster')
+        applied = self.env['pb.records.apply'].browse(result['apply_id'])
+        self.assertEqual(len(applied.change_ids), len(people))
+        self.assertTrue(all(json.loads(c.old_json) == 'Before'
+                            and json.loads(c.new_json) == 'After'
+                            for c in applied.change_ids))
+
     def test_01a_get_fields_returns_mapped_and_standard_record_destinations(self):
         data = self._cards()
         ids = self._card_ids(data)
