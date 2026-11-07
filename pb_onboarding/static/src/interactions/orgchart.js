@@ -89,7 +89,6 @@ export class OrganisationChart extends Interaction {
     onPanMove(ev) {
         const pan = this.pan;
         if (!pan || ev.pointerId !== pan.id) return;
-        if (!(ev.buttons & 1)) { this.onPanEnd(ev); return; }
         const dx = ev.clientX - pan.x, dy = ev.clientY - pan.y;
         if (!pan.moved && Math.hypot(dx, dy) < 5) return;
         if (!pan.moved) {
