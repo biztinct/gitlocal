@@ -157,7 +157,12 @@ for view,sheet,rows in [('actual',actual,ar),('audit',audit,br)]:
                       VNNETADJUST=adjust(net_formula),VNROUNDADJUST=adjust(round_formula))
         if view=='actual': inputs['VNAUDITTAXABLE']=number(audit,'AV',br[code])*1000
         assert set(inputs)=={r['code'] for r in spec['rules'] if r['formula'] is None}
-        fixtures.append(dict(key=code,source_row=row,inputs=inputs,expected={c:number(sheet,col,row)*1000 for c,col in expected_map.items()}))
+        expected={c:number(sheet,col,row)*1000 for c,col in expected_map.items()}
+        expected['VNROUNDING']=expected['VNNET']-expected['VNNETRAW']-inputs['VNROUNDADJUST']
+        # Every recovery omitted in the source net formula is explicitly zero.
+        assert inputs['VNRECOVERYUSED'] or inputs['VNRECOVERY']==0
+        expected['VNRECOVERYADJUST']=0
+        fixtures.append(dict(key=code,source_row=row,inputs=inputs,expected=expected))
     private['views'][view]=fixtures
 for code,row in br.items():
     sr=ar.get(code); sheet=actual if sr else audit; r=sr or row

@@ -5,6 +5,7 @@ SUDIMA_PRESENTATION_APPLY=1 to commit after saved scenarios and preview pass.
 """
 import json
 import os
+from pathlib import Path
 
 assert env.cr.dbname=='sudima'
 e=env(user=2,context=dict(env.context,allowed_company_ids=[1],lang='en_US'))
@@ -16,6 +17,14 @@ if old:
     assert renamed.get('ok'),renamed
 else:
     assert len(cfg.rule_ids.filtered(lambda r:r.code=='PIT'))==1
+root=Path(os.environ['SUDIMA_REVIEW_DIR'])
+fixtures=json.loads((root/'private-fixtures.json').read_text())['views']['audit']
+samples={s.name:s for s in cfg.sample_data_ids}
+for fixture in fixtures:
+    sample=samples['September source row %s'%fixture['source_row']]
+    # Expectations are independently extracted from source workbook results,
+    # never snapshotted from the engine output under test.
+    sample.set_expected_values(fixture['expected'])
 tests=cfg.run_sample_tests()
 assert tests['total']==tests['passed']==650 and tests['failed']==0,tests
 sample=next(s for s in cfg.sample_data_ids if json.loads(s.expected_values_json or '{}').get('PIT',0)>0)
