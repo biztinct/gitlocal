@@ -12,7 +12,7 @@
     a, button, input, select { &:focus-visible { outline: 3px solid var(--sd-olive); outline-offset: 5px; } }
     h1, h2, h3, p { margin: 0; }
     h1, h2, h3 { color: inherit; font-family: inherit; }
-    .sd-shell { width: min(1320px, calc(100% - 96px)); margin-inline: auto; }
+    .sd-shell { width: calc(100% - 96px); max-width: 1320px; margin-inline: auto; }
     .sd-skip { position: fixed; top: 10px; left: 16px; z-index: 2000; background: white; padding: 12px 20px; transform: translateY(-160%); &:focus { transform: none; } }
     .sd-brand { display: inline-flex; flex-shrink: 0; img { width: 214px; height: auto; max-width: 100%; } }
     .sd-header { display: flex; align-items: center; gap: 28px; min-height: 112px; }
@@ -51,7 +51,7 @@
     .sd-login-panel { display: flex; flex-direction: column; padding: 43px 56px 26px; min-width: 0; }
     .sd-login-panel-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; .sd-brand img { width: 190px; } .sd-header-label { font-size: 8px; padding-left: 18px; white-space: nowrap; } }
     .sd-mobile-home { display: none; }
-    .sd-login-form { width: min(100%, 390px); margin: auto; padding: 54px 0 36px; > .sd-eyebrow { font-size: 9px; letter-spacing: 1.6px; } > h2 { font-size: clamp(28px, 2.6vw, 37px); font-weight: 500; letter-spacing: -1.3px; margin-top: 13px; } }
+    .sd-login-form { width: 100%; max-width: 390px; margin: auto; padding: 54px 0 36px; > .sd-eyebrow { font-size: 9px; letter-spacing: 1.6px; } > h2 { font-size: clamp(28px, 2.6vw, 37px); font-weight: 500; letter-spacing: -1.3px; margin-top: 13px; } }
     .sd-login-intro { color: #747568; font-size: 13px; margin: 13px 0 29px; }
     .oe_website_login_container { padding: 0 !important; }
     .oe_login_form, .oe_signup_form, .oe_reset_password_form { max-width: none; margin: 0; padding: 0; font-size: 13px; }

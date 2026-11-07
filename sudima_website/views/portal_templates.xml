@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+  <template id="surface_icon" inherit_id="website.layout" name="Sudima portal browser icon">
+    <xpath expr="//t[@t-set='x_icon']" position="after">
+      <t t-if="sd_surface" t-set="x_icon">/sudima_website/static/src/img/favicon.png</t>
+    </xpath>
+  </template>
   <template id="brand" name="Sudima Panels wordmark">
     <a class="sd-brand" href="/" aria-label="Sudima Panels home">
       <img src="/sudima_website/static/src/img/sudima-logo.png" alt="Sudima Panels" width="238" height="53"/>
@@ -12,11 +17,18 @@
   </template>
 
   <template id="homepage" inherit_id="website.homepage" name="Sudima Panels — People and work" priority="95">
+    <xpath expr="//t[@t-call='website.layout']" position="attributes">
+      <attribute name="no_header">True</attribute>
+      <attribute name="no_footer">True</attribute>
+      <attribute name="sd_surface">True</attribute>
+      <attribute name="title.f">Sudima Panels — People and work</attribute>
+    </xpath>
     <xpath expr="//t[@t-call='website.layout']/div[@id='wrap']" position="before">
       <t t-set="no_header" t-value="True"/>
       <t t-set="no_footer" t-value="True"/>
-      <t t-set="additional_title">Sudima Panels — People and work</t>
-      <t t-set="meta_description">Welcome to the Sudima Panels staff portal. Sign in to your people and payroll workspace.</t>
+      <t t-set="sd_surface" t-value="True"/>
+      <t t-set="title">Sudima Panels — People and work</t>
+      <t t-set="website_meta_description">Welcome to the Sudima Panels staff portal. Sign in to your people and payroll workspace.</t>
     </xpath>
     <xpath expr="//div[@id='wrap']" position="replace">
       <div id="wrap" class="sd-portal">
@@ -65,7 +77,8 @@
     <xpath expr="//div[hasclass('oe_website_login_container')]" position="before">
       <t t-set="no_header" t-value="True"/>
       <t t-set="no_footer" t-value="True"/>
-      <t t-set="additional_title">Sudima Panels — Your workspace</t>
+      <t t-set="sd_surface" t-value="True"/>
+      <t t-set="title">Sudima Panels — Your workspace</t>
     </xpath>
     <xpath expr="//div[hasclass('oe_website_login_container')]" position="replace">
       <div class="sd-portal sd-login">

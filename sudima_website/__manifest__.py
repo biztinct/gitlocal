@@ -1,6 +1,6 @@
 {
     'name': 'Sudima Website',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Website',
     'summary': 'Sudima Panels staff welcome and sign-in screens',
     'author': 'Payobook',

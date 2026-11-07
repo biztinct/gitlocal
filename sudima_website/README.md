@@ -14,6 +14,7 @@ Images are served locally; no remote image or font requests are needed.
 Brand assets sourced on 7 November 2026 from the owner-specified reference:
 
 - `https://sudimapanels.com/images/logo.png` → `sudima-logo.png`
+- `https://sudimapanels.com/images/favicon.png` → `favicon.png`
 - `https://sudimapanels.com/images/main-slider/slide1.jpg` → `cabinetry.jpg`
 - `https://sudimapanels.com/images/main-slider/slide2.jpg` → `sudima-workplace.jpg`
 
