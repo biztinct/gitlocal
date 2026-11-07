@@ -1,0 +1,47 @@
+Sudima September payroll review installation
+
+Scope: customer configuration and records in sudima only. No shared addon
+code changes, module installs/upgrades, payroll assignments or issued wages.
+The Actual Pay extras are explicitly excluded from installation by the owner.
+
+Preparation
+Run tools/prepare_sudima_payroll_review.py against the private audited cell
+extracts. Keep private-fixtures.json outside git. It holds employee identity,
+bank and salary data. definition.json contains only the reviewed schema.
+Build the formula workbook with tools/build_sudima_payroll_review.mjs and the
+bundled artifact-tool runtime. It contains fictional examples only.
+
+Install using tools/install_sudima_payroll_review.py through Odoo shell on
+Payobook19v2. SUDIMA_REVIEW_DIR selects the owner-only private staging folder.
+Default execution rehearses and rolls back. SUDIMA_REVIEW_APPLY=1 commits
+only after all controls pass; SUDIMA_REVIEW_VERIFY=1 verifies an existing
+installation and never reimports or overwrites customer changes.
+
+Before applying, recheck the latest combined repository state, preserve other
+sessions' changes, and back up the Sudima database and filestore. Verify
+shared custom addon files and installed versions in payobook,
+payobook_template, p0clone, rize and sudima. Preserve standard addons and the
+retired ABM archive. Do not deploy Sudima client records to another database.
+
+The installer uses existing guided-setup/component/mapping services and the
+Records approval route. Native Employee/Contract forms expose record creation.
+It deliberately does not populate the private draft-preview roster, since
+that setting has no equivalent public UI writer. Payroll eligibility remains
+empty until the reviewed configuration is assigned and activated by its
+normal workflow. Test cases remain inspectable through the Test screen.
+
+Validation
+Independent expected workbook values are compared with live formula-engine
+outputs for each employee and all reviewed calculated components. Verify
+the pay-role rollup, saved salary component values and master values. Run the
+saved scenarios. Check that payroll, attendance and assignment tables did
+not change and that no historical monthly inputs became defaults.
+Verify the deployed draft and employee records in Chrome. Remove only images
+and screenshots created by this test run after inspection.
+
+This is a historical base-payroll review, not certification of unattended
+attendance-to-payroll automation. Raw punches, confirmed shifts/breaks,
+eligibility and automatic allowance sources are outstanding. Do not activate
+the review configuration or claim automatic payroll readiness on the basis
+of historical reconciliation alone. Detailed customer runbook and findings
+belong in the ignored SUDIMA directory.
