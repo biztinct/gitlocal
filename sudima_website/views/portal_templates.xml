@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="brand" name="Sudima Panels wordmark">
+    <a class="sd-brand" href="/" aria-label="Sudima Panels home">
+      <img src="/sudima_website/static/src/img/sudima-logo.png" alt="Sudima Panels" width="238" height="53"/>
+    </a>
+  </template>
+
+  <template id="credit" name="Tenant platform credit">
+    <t t-set="sd_powered" t-value="request.env['ir.config_parameter'].sudo().get_param('biz_debrand.powered_by') or ''"/>
+    <span t-if="sd_powered" data-biz-brand="keep">Powered by <t t-out="sd_powered"/></span>
+  </template>
+
+  <template id="homepage" inherit_id="website.homepage" name="Sudima Panels — People and work" priority="95">
+    <xpath expr="//t[@t-call='website.layout']/div[@id='wrap']" position="before">
+      <t t-set="no_header" t-value="True"/>
+      <t t-set="no_footer" t-value="True"/>
+      <t t-set="additional_title">Sudima Panels — People and work</t>
+      <t t-set="meta_description">Welcome to the Sudima Panels staff portal. Sign in to your people and payroll workspace.</t>
+    </xpath>
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <div id="wrap" class="sd-portal">
+        <a class="sd-skip" href="#sd-content">Skip to content</a>
+        <header class="sd-header sd-shell">
+          <t t-call="sudima_website.brand"/>
+          <span class="sd-header-label">PEOPLE &amp; PAYROLL</span>
+          <nav aria-label="Main navigation">
+            <a class="sd-company-link" href="https://sudimapanels.com/" target="_blank" rel="noopener noreferrer">Company website <span aria-hidden="true">↗</span></a>
+            <a class="sd-button sd-button-small" href="/sudima/sign-in">Sign in <span aria-hidden="true">→</span></a>
+          </nav>
+        </header>
+        <main id="sd-content">
+          <section class="sd-hero sd-shell" aria-labelledby="sd-hero-title">
+            <div class="sd-hero-copy">
+              <p class="sd-eyebrow"><span></span> WELCOME TO SUDIMA PANELS</p>
+              <h1 id="sd-hero-title">Good work.<br/>Great people.<br/><em>One place.</em></h1>
+              <p class="sd-intro">The people behind our quality deserve a workspace that feels just as considered. Welcome to your people and payroll portal.</p>
+              <a class="sd-button" href="/sudima/sign-in">Enter your workspace <span aria-hidden="true">↗</span></a>
+              <p class="sd-staff-note"><i class="fa fa-lock" aria-hidden="true"></i> For the Sudima Panels team</p>
+            </div>
+            <div class="sd-hero-image">
+              <img src="/sudima_website/static/src/img/cabinetry.jpg" alt="Warm wood cabinetry crafted by Sudima Panels" width="1920" height="700" fetchpriority="high"/>
+              <div class="sd-image-caption"><span>CRAFTED WITH CARE.</span><strong>Built on quality.<br/>Made possible by people.</strong><span class="sd-caption-line" aria-hidden="true"></span></div>
+              <span class="sd-image-index" aria-hidden="true">SUDIMA / VIETNAM</span>
+            </div>
+          </section>
+          <section class="sd-workspace sd-shell" aria-labelledby="sd-workspace-title">
+            <div class="sd-section-heading"><p class="sd-eyebrow">YOUR EVERYDAY, CONNECTED</p><h2 id="sd-workspace-title">A place for every part of your work.</h2><p>Sign in to access the tools available to your role.</p></div>
+            <div class="sd-cards">
+              <a class="sd-card" href="/sudima/sign-in"><span class="sd-card-top"><i class="fa fa-user-o" aria-hidden="true"></i><span>01</span></span><h3>Your employee space</h3><p>Keep your work information close, with one familiar place to start your day.</p><span class="sd-card-action">Open your workspace <span aria-hidden="true">↗</span></span></a>
+              <a class="sd-card" href="/sudima/sign-in"><span class="sd-card-top"><i class="fa fa-calendar-check-o" aria-hidden="true"></i><span>02</span></span><h3>People &amp; time</h3><p>Bring the everyday details of your team and working time together.</p><span class="sd-card-action">Go to your tools <span aria-hidden="true">↗</span></span></a>
+              <a class="sd-card" href="/sudima/sign-in"><span class="sd-card-top"><i class="fa fa-file-text-o" aria-hidden="true"></i><span>03</span></span><h3>Payroll &amp; review</h3><p>A connected workspace for the people who prepare, review and manage payroll.</p><span class="sd-card-action">Access your workspace <span aria-hidden="true">↗</span></span></a>
+            </div>
+          </section>
+          <section class="sd-help sd-shell" aria-labelledby="sd-help-title"><div><p class="sd-eyebrow">A LITTLE HELP TO GET STARTED</p><h2 id="sd-help-title">New here, or need a hand?</h2></div><p>Use the account provided by your team.<br/>For access or account help, contact your HR administrator.</p><a href="/web/login">Go to sign in <span aria-hidden="true">→</span></a></section>
+        </main>
+        <footer class="sd-footer sd-shell"><span>© <t t-out="datetime.datetime.now().year"/> Sudima Panels</span><span>Quality in everything we do.</span><t t-call="sudima_website.credit"/></footer>
+      </div>
+    </xpath>
+  </template>
+
+  <!-- Wrap the native form after website.login_layout. Keep CSRF, MFA,
+       passkeys, password reset, errors, language and redirect handling intact. -->
+  <template id="login_layout" inherit_id="web.login_layout" name="Sudima Panels — Sign in" priority="95">
+    <xpath expr="//div[hasclass('oe_website_login_container')]" position="before">
+      <t t-set="no_header" t-value="True"/>
+      <t t-set="no_footer" t-value="True"/>
+      <t t-set="additional_title">Sudima Panels — Your workspace</t>
+    </xpath>
+    <xpath expr="//div[hasclass('oe_website_login_container')]" position="replace">
+      <div class="sd-portal sd-login">
+        <a class="sd-skip" href="#sd-login-form">Skip to sign in</a>
+        <aside class="sd-login-story" aria-label="Sudima Panels workplace">
+          <img class="sd-login-photo" src="/sudima_website/static/src/img/sudima-workplace.jpg" alt="The entrance to the Sudima Panels workplace in Vietnam" width="1920" height="700"/>
+          <a class="sd-login-home" href="/"><span aria-hidden="true">←</span> Back to home</a>
+          <div class="sd-login-story-copy"><p class="sd-eyebrow">THE PEOPLE BEHIND THE QUALITY</p><h1>Made with care.<br/><em>Built together.</em></h1><p>Our quality starts with our people.<br/>Welcome to your Sudima workspace.</p><span class="sd-story-rule" aria-hidden="true"></span><span class="sd-story-location">SUDIMA PANELS · VIETNAM</span></div>
+        </aside>
+        <section class="sd-login-panel" aria-label="Account access">
+          <div class="sd-login-panel-top"><t t-call="sudima_website.brand"/><a class="sd-mobile-home" href="/">← Home</a><span class="sd-header-label">STAFF PORTAL</span></div>
+          <div class="sd-login-form" id="sd-login-form">
+            <p class="sd-eyebrow">YOUR PEOPLE &amp; PAYROLL WORKSPACE</p>
+            <h2>Welcome to Sudima.</h2>
+            <p class="sd-login-intro">Continue with your company account.</p>
+            <div class="oe_website_login_container" t-out="0"/>
+            <div class="sd-login-help"><i class="fa fa-life-ring" aria-hidden="true"></i><p>Need help with your account?<br/><strong>Contact your HR administrator.</strong></p></div>
+          </div>
+          <footer class="sd-login-footer"><span>© <t t-out="datetime.datetime.now().year"/> Sudima Panels</span><t t-call="sudima_website.credit"/></footer>
+        </section>
+      </div>
+    </xpath>
+  </template>
+</odoo>
