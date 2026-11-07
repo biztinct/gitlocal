@@ -21,6 +21,7 @@ private = json.loads((root/'private-fixtures.json').read_text())
 verify = os.getenv('SUDIMA_REVIEW_VERIFY') == '1'
 apply = os.getenv('SUDIMA_REVIEW_APPLY') == '1'
 assert not (apply and verify)
+previous=json.loads((root/'applied.json').read_text()) if verify else {}
 e = env(user=2, context=dict(env.context, allowed_company_ids=[1], lang='en_US'))
 assert e.company.name == 'Sudima Panels Vietnam'
 studio = e['pb.formula.studio']
@@ -185,7 +186,11 @@ if not verify:
     assert result.get('ok') and not result.get('refused'), result.get('refused')
     report['master_import']={k:result.get(k) for k in ('reference','written','pending','people','with_whom')}
     print('SUDIMA_MASTER_IMPORT',json.dumps(report['master_import']),flush=True)
-if verify or not result.get('pending'):
+else:
+    proposal=e['pb.records.apply'].sudo().search([('name','=',previous['master_import']['reference'])])
+    assert len(proposal)==1
+    report['master_import']=dict(reference=proposal.name,pending=not proposal.applied,with_whom=proposal._waiting_for())
+if not report['master_import']['pending']:
     cards=desk._cards(0)
     probe=desk._probe(0)
     contracts=desk._io_contracts(Employee.browse(roster))
@@ -219,7 +224,12 @@ for spec in definitions:
             lane='records' if col.get('record_eligible') else rule['lane'] if rule and not rule['formula'] else 'available'
             layout[lane].append(col['id'])
         assert facade.save_layout(cfg.id,layout)['ok']
-    if verify or not result.get('pending'):
+    else:
+        prior=next(c for c in previous['configuration'] if c['code']==cfg.code)
+        proposal=e['pb.records.apply'].sudo().search([('name','=',prior['records']['reference'])])
+        assert len(proposal)==1
+        report['configuration'][definitions.index(spec)]['records']=dict(reference=proposal.name,pending=not proposal.applied,with_whom=proposal._waiting_for())
+    if not report['configuration'][definitions.index(spec)]['records']['pending']:
         cards=desk._cards(cfg.id)
         probe=desk._probe(cfg.id)
         saved_contracts=desk._io_contracts(Employee.browse(selected))
