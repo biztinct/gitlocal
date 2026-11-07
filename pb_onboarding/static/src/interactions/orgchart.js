@@ -22,7 +22,11 @@ export class OrganisationChart extends Interaction {
     static selector = "[data-orgchart]";
     dynamicContent = {
         _root: { "t-on-click": this.onClick, "t-on-dblclick": this.onDoubleClick,
-            "t-on-input": this.onInput, "t-on-change": this.onChange, "t-on-keydown": this.onKeydown },
+            "t-on-input": this.onInput, "t-on-change": this.onChange, "t-on-keydown": this.onKeydown,
+            "t-on-pointerdown": this.onPanStart,
+            "t-on-lostpointercapture": this.onPanEnd, "t-on-dragstart": this.onNativeDrag },
+        _window: { "t-on-pointermove": this.onPanMove, "t-on-pointerup": this.onPanEnd,
+            "t-on-pointercancel": this.onPanEnd, "t-on-blur": this.onPanEnd },
     };
     setup() {
         this.data = JSON.parse(this.el.dataset.orgchart);
@@ -49,8 +53,15 @@ export class OrganisationChart extends Interaction {
         this.zoom = 1;
         this.department = "all";
         this.query = this.data.query;
+        this.pan = null;
+        this.suppressClick = false;
+        this.suppressDoubleClickUntil = 0;
     }
     start() {
+        const canvas = this.$(".pborg-canvas");
+        this.addListener(canvas, "wheel", this.onWheel.bind(this), { passive: false });
+        canvas.setAttribute("aria-label", _t("Organisation chart. Drag to move, scroll to zoom, or use arrow keys to explore."));
+        this.$(".pborg-canvas-footer > span").textContent = _t("Drag to move · Scroll to zoom · Double-click to focus a team");
         const departments = new Map(this.data.people.map(p => [p.department_id, p.department || _t("No department")]));
         const select = this.$("[data-control=department]");
         for (const [id, name] of [...departments].sort((a, b) => a[1].localeCompare(b[1]))) {
@@ -63,6 +74,68 @@ export class OrganisationChart extends Interaction {
         this.render();
         this.renderSearch();
         this.scrollTo(this.selected);
+    }
+    destroy() { this.onPanEnd(); }
+    onPanStart(ev) {
+        if (this.pan || ev.button !== 0 || ev.pointerType !== "mouse") return;
+        this.suppressClick = false;
+        const canvas = ev.target.closest(".pborg-canvas");
+        if (!canvas) return;
+        // A small movement remains a normal click. Capture only once dragging
+        // starts, so click and double-click still target the original card.
+        this.pan = { canvas, id: ev.pointerId, x: ev.clientX, y: ev.clientY,
+            left: canvas.scrollLeft, top: canvas.scrollTop, moved: false };
+    }
+    onPanMove(ev) {
+        const pan = this.pan;
+        if (!pan || ev.pointerId !== pan.id) return;
+        if (!(ev.buttons & 1)) { this.onPanEnd(ev); return; }
+        const dx = ev.clientX - pan.x, dy = ev.clientY - pan.y;
+        if (!pan.moved && Math.hypot(dx, dy) < 5) return;
+        if (!pan.moved) {
+            pan.moved = true;
+            pan.canvas.setPointerCapture(pan.id);
+            pan.canvas.classList.add("is-panning");
+        }
+        ev.preventDefault();
+        pan.canvas.scrollLeft = pan.left - dx;
+        pan.canvas.scrollTop = pan.top - dy;
+    }
+    onPanEnd(ev) {
+        const pan = this.pan;
+        if (!pan || (ev?.pointerId !== undefined && ev.pointerId !== pan.id)) return;
+        this.pan = null;
+        if (pan.moved) {
+            this.suppressClick = true;
+            this.suppressDoubleClickUntil = Date.now() + 500;
+        }
+        pan.canvas.classList.remove("is-panning");
+        if (pan.canvas.hasPointerCapture(pan.id)) pan.canvas.releasePointerCapture(pan.id);
+    }
+    onNativeDrag(ev) {
+        // Images and text must move the chart instead of starting browser drags.
+        if (ev.target.closest(".pborg-canvas")) ev.preventDefault();
+    }
+    applyZoom(value, clientX, clientY) {
+        const canvas = this.$(".pborg-canvas"), rect = canvas.getBoundingClientRect();
+        const x = clientX === undefined ? canvas.clientWidth / 2 : clientX - rect.left - canvas.clientLeft;
+        const y = clientY === undefined ? canvas.clientHeight / 2 : clientY - rect.top - canvas.clientTop;
+        const next = Math.min(2, Math.max(.3, value));
+        const left = (canvas.scrollLeft + x) * next / this.zoom - x;
+        const top = (canvas.scrollTop + y) * next / this.zoom - y;
+        this.zoom = next;
+        this.$(".pborg-tree").style.zoom = next;
+        canvas.scrollLeft = left; canvas.scrollTop = top;
+        this.$(".pborg-zoom-value").textContent = `${Math.round(next * 100)}%`;
+    }
+    onWheel(ev) {
+        if (!ev.deltaY) return; // Keep horizontal trackpad scrolling available.
+        ev.preventDefault();
+        if (this.pan) return;
+        const canvas = this.$(".pborg-canvas");
+        const units = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? canvas.clientHeight : 1;
+        const delta = Math.max(-125, Math.min(125, ev.deltaY * units));
+        this.applyZoom(this.zoom * Math.exp(-delta * .002), ev.clientX, ev.clientY);
     }
     $(selector) { return this.el.querySelector(selector); }
     ancestors(id) {
@@ -200,6 +273,9 @@ export class OrganisationChart extends Interaction {
         this.setLevels(2); this.renderSearch();
     }
     onClick(ev) {
+        if (this.suppressClick && ev.detail !== 0 && ev.target.closest(".pborg-canvas")) {
+            this.suppressClick = false; ev.preventDefault(); ev.stopPropagation(); return;
+        }
         const target = ev.target.closest("[data-action]"); if (!target) return;
         const action = target.dataset.action, id = Number(target.dataset.id);
         const previous = this.selected;
@@ -216,9 +292,7 @@ export class OrganisationChart extends Interaction {
         else if (action === "collapse") { this.expanded.clear(); }
         else if (action === "more") { this.limit += 300; }
         else if (action.startsWith("zoom")) {
-            this.zoom = action === "zoom-reset" ? 1 : Math.min(1.3, Math.max(.6, this.zoom + (action === "zoom-in" ? .1 : -.1)));
-            this.$(".pborg-tree").style.zoom = this.zoom;
-            this.$(".pborg-zoom-value").textContent = `${Math.round(this.zoom * 100)}%`; return;
+            this.applyZoom(action === "zoom-reset" ? 1 : this.zoom + (action === "zoom-in" ? .1 : -.1)); return;
         } else return;
         // Do not replace the clicked card: its native dblclick must still fire.
         if (action === "select") {
@@ -240,6 +314,7 @@ export class OrganisationChart extends Interaction {
         if (action === "reset") { this.zoom = 1; this.$(".pborg-tree").style.zoom = 1; this.$(".pborg-zoom-value").textContent = "100%"; }
     }
     onDoubleClick(ev) {
+        if (Date.now() < this.suppressDoubleClickUntil) return;
         const person = ev.target.closest("[data-action=select]");
         if (person) { this.selected = Number(person.dataset.id); this.reset(this.selected); this.render(); this.scrollTo(this.selected); }
     }

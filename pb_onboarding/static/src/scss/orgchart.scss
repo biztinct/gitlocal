@@ -42,6 +42,9 @@
     .pborg-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: start; gap: 16px; }
     .pborg-canvas-wrap { border: 1px solid #dfe3ef; border-radius: 17px; overflow: hidden; background: #f8f9fc; }
     .pborg-canvas { height: 570px; overflow: auto; background-image: radial-gradient(#d6dbe8 .8px, transparent .8px); background-size: 18px 18px; overscroll-behavior: contain; }
+    .pborg-canvas { cursor: grab; user-select: none; -webkit-user-select: none; }
+    .pborg-canvas img { -webkit-user-drag: none; }
+    .pborg-canvas.is-panning, .pborg-canvas.is-panning * { cursor: grabbing !important; }
     .pborg-tree { width: max-content; min-width: 100%; padding: 35px 28px 50px; }
     .pborg-branches { display: flex; justify-content: center; list-style: none; padding: 0; margin: 0; }
     .pborg-branch { display: flex; flex-direction: column; align-items: center; position: relative; padding: 28px 10px 0; }
