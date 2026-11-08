@@ -18,7 +18,7 @@ for path in paths + sources:
                                capture_output=True, check=True).stdout
     if committed != path.read_bytes():
         raise SystemExit("Commit the latest preview before deploying: " + rel)
-expected = (HERE / 'shell.html').read_text().replace('/* STYLES */', (HERE / 'style.css').read_text()).replace('/* SCRIPT */', (HERE / 'app.js').read_text())
+expected = (HERE / 'shell.html').read_text().replace('/* STYLES */', (HERE / 'style.css').read_text()).replace('/* SCRIPT */', '\n'.join((HERE / name).read_text() for name in ('model.js', 'research.js', 'app.js')))
 if expected != paths[0].read_text():
     raise SystemExit("Rebuild the standalone HTML before committing and deploying")
 import importlib.util
