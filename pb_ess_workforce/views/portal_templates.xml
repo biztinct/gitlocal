@@ -526,7 +526,7 @@
               <input type="hidden" name="lng" value=""/>
               <input type="hidden" name="accuracy" value=""/>
               <input type="hidden" name="action" t-att-value="'out' if is_in else 'in'"/>
-              <input type="hidden" name="attendance_id" t-att-value="clock.get('attendance_id', 0)"/>
+              <input type="hidden" name="attendance_id" t-att-value="str(clock.get('attendance_id', 0))"/>
               <button type="submit"
                       t-att-class="'pbew-clockbtn is-%s%s' % (clock['state'], ' is-just-in' if done == 'in' else (' is-just-out' if done == 'out' else ''))"
                       t-att-aria-describedby="'pbew-clock-status'">

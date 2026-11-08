@@ -301,7 +301,10 @@ class TestT3bClockPages(HttpCase):
 
     def _clock_form(self, response):
         form = html.fromstring(response.content).xpath('//form[@data-pbew-clock-form]')[0]
-        return {i.get('name'): i.get('value', '') for i in form.xpath('.//input[@name]')}
+        values = {i.get('name'): i.get('value', '') for i in form.xpath('.//input[@name]')}
+        self.assertIn(values['action'], ('in', 'out'))
+        self.assertTrue(values['attendance_id'].isdigit(), 'The initial zero id must render as a form value')
+        return values
 
     def _text(self, response):
         return (response.text or '').replace('&#39;', "'")
