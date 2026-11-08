@@ -225,7 +225,7 @@ class TestT3bNoticesPages(HttpCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('&lt;script&gt;', response.text)
         self.assertNotIn('<script>alert("x")</script>', response.text)
-        self.assertIn('1 comments', response.text)
+        self.assertIn('1 comment', response.text)
         response = self.url_open(url, data={'action': 'like', 'return_home': '1', 'csrf_token': http.Request.csrf_token(self)}, timeout=60)
         self.assertEqual(response.status_code, 200)
         self.assertIn('aria-pressed="true"', response.text)

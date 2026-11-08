@@ -92,7 +92,7 @@
 
   <template id="social_thread" name="Announcement reactions and comments">
     <div class="pbnb-social">
-      <div class="pbnb-social-counts"><span><t t-out="r['like_count']"/> likes</span><a t-att-href="r['url'] + '#comments'" ><t t-out="r['comment_count']"/> comments</a></div>
+      <div class="pbnb-social-counts"><span><t t-out="r['like_count']"/> <t t-if="r['like_count'] == 1">like</t><t t-else="">likes</t></span><a t-att-href="r['url'] + '#comments'" ><t t-out="r['comment_count']"/> <t t-if="r['comment_count'] == 1">comment</t><t t-else="">comments</t></a></div>
       <div class="pbnb-social-actions">
         <form method="post" t-att-action="r['url'] + '/interact'">
           <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
