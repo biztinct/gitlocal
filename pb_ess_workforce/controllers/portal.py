@@ -164,7 +164,7 @@ class PbEssWorkforcePortal(CustomerPortal):
     # big round button is a plain form POST, the toggle answers with a
     # redirect, and the page says what happened (`?done=in|out|already`).
     # The script adds the live timer, the ring and the location ask.
-    _CLOCK_DONE = ('in', 'out', 'already')
+    _CLOCK_DONE = ('in', 'out', 'already', 'changed')
 
     def _clock_page(self, clock, done=None, error=None):
         stale = ''
@@ -195,8 +195,9 @@ class PbEssWorkforcePortal(CustomerPortal):
                 website=True, methods=['POST'])
     def portal_my_work_clock_toggle(self, **post):
         """Clock the session's own employee in or out. No employee id is read
-        from the form (there is none to read); `lat` / `lng` / `accuracy` /
-        `nonce` are the only fields, and the facade decides what is kept.
+        from the form. The action and attendance id describe the displayed
+        state, not an arbitrary attendance to write. The facade checks them
+        against the caller's own attendance and decides what GPS is kept.
 
         Never raises past the route: a refusal (switched off, a closed day, a
         missing check-in) renders the Clock page with the reason and the next
@@ -207,7 +208,8 @@ class PbEssWorkforcePortal(CustomerPortal):
             with request.env.cr.savepoint():
                 res = self._ess().clock_toggle(
                     post.get('lat'), post.get('lng'), post.get('accuracy'),
-                    post.get('nonce'),
+                    action=post.get('action'),
+                    attendance_id=post.get('attendance_id'),
                     ip_address=httpreq.remote_addr,
                     browser=(httpreq.user_agent.browser
                              if httpreq.user_agent else None))
@@ -218,7 +220,8 @@ class PbEssWorkforcePortal(CustomerPortal):
             except UserError:
                 return self._no_employee_page('work_clock')
             return self._clock_page(clock, error=message)
-        done = 'already' if res.get('already') else (res.get('punched') or 'already')
+        done = ('changed' if res.get('changed') else
+                'already' if res.get('already') else res['punched'])
         return request.redirect('/my/work/clock?done=%s' % done)
 
     @http.route(['/my/work/clock/state'], type='jsonrpc', auth='user')

@@ -387,7 +387,8 @@
           <input type="hidden" name="lat" value=""/>
           <input type="hidden" name="lng" value=""/>
           <input type="hidden" name="accuracy" value=""/>
-          <input type="hidden" name="nonce" value=""/>
+          <input type="hidden" name="action" t-att-value="'out' if pbme_clock['state'] == 'in' else 'in'"/>
+          <input type="hidden" name="attendance_id" t-att-value="pbme_clock.get('attendance_id', 0)"/>
           <button t-if="pbme_clock['state'] == 'in'" type="submit" class="pbme-btn pbme-btn--out pbme-clock-btn"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-out'"/><t t-set="isz" t-value="15"/></t>Clock out</button>
           <button t-else="" type="submit" t-att-class="'pbme-btn pbme-clock-btn %s' % ('pbme-btn--out' if pbme_wk['pending'] else 'pbme-btn--pri')"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-in'"/><t t-set="isz" t-value="15"/></t>Clock in</button>
         </form>

@@ -488,7 +488,9 @@
           <span class="pbew-toast__ic"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
           <span t-if="done == 'in'">You are clocked in. Have a good day.</span>
           <span t-elif="done == 'out'">You are clocked out. Your hours are on your timesheet.</span>
-          <span t-else="">That was already done a moment ago, so nothing changed.</span>
+          <span t-elif="done == 'changed'">Your clock changed since this page opened. Check the current status below and try again.</span>
+          <span t-elif="clock['state'] == 'in'">You are already clocked in.</span>
+          <span t-else="">You are already clocked out.</span>
         </div>
 
         <div t-if="error" class="pbew-alert" role="alert">
@@ -496,7 +498,7 @@
           <div class="pbew-alert__body">
             <b>That did not go through.</b>
             <span class="pbew-alert__why" t-out="error"/>
-            <span>Try again in a minute. If it keeps happening, ask your manager for a fix on your timesheet.</span>
+            <span>If it keeps happening, ask your manager for a fix on your timesheet.</span>
             <a class="pbme-lab-link" href="/my/work/timesheet">Open my timesheet</a>
           </div>
         </div>
@@ -523,7 +525,8 @@
               <input type="hidden" name="lat" value=""/>
               <input type="hidden" name="lng" value=""/>
               <input type="hidden" name="accuracy" value=""/>
-              <input type="hidden" name="nonce" value=""/>
+              <input type="hidden" name="action" t-att-value="'out' if is_in else 'in'"/>
+              <input type="hidden" name="attendance_id" t-att-value="clock.get('attendance_id', 0)"/>
               <button type="submit"
                       t-att-class="'pbew-clockbtn is-%s%s' % (clock['state'], ' is-just-in' if done == 'in' else (' is-just-out' if done == 'out' else ''))"
                       t-att-aria-describedby="'pbew-clock-status'">

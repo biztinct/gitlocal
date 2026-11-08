@@ -10,12 +10,12 @@ import { rpc } from "@web/core/network/rpc";
  * time as it was when the page was made. This file adds what a good clock app
  * does, and holds no words (every word is in the QWeb templates):
  *
- *  - the live timer: the hours and minutes count up from the clock-in
+ *  - the live timer: the hours, minutes and seconds count up from the clock-in
  *    (`data-since-ms`), corrected for the gap between this device's clock and
  *    the server's (`data-server-now-ms`), and today's total with it;
  *  - the press: the ring starts closing the moment the button is pressed, and
- *    a second press is ignored (the server also ignores a second punch inside
- *    a minute);
+ *    a second press is ignored (the server also checks the requested action
+ *    against the displayed attendance session);
  *  - the location: only when the company keeps it (`data-tracking="1"`), the
  *    browser is asked ONCE; the punch never waits more than 4 seconds and goes
  *    through without coordinates when the person says no;
@@ -138,10 +138,6 @@ export class PbEwClockForm extends Interaction {
         if (this.sent) {
             ev.preventDefault();
             return;
-        }
-        const nonce = this.field("nonce");
-        if (nonce && !nonce.value) {
-            nonce.value = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
         }
         const button = this.el.querySelector("button[type=submit]");
         if (button) {

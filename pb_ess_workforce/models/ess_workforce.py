@@ -36,8 +36,9 @@ THE ONE PUNCH (TIERS T3b)
 -------------------------
 ``clock_toggle`` is the single place this module creates a punch: stock's own
 ``_attendance_action_change`` on the sudo own-employee, after
-``_require_own_employee`` (ledger T-R11), behind a per-company switch and a
-60-second debounce. The row it creates is tagged ``pb_entry_source='portal'``.
+``_require_own_employee`` (ledger T-R11), behind a per-company switch and
+an explicit action tied to the displayed attendance session. The row it creates
+is tagged ``pb_entry_source='portal'``.
 """
 
 import logging
@@ -66,9 +67,6 @@ _LIST_CAP = 120
 #: Per-company switch (D3): '1' = on, '0' = off; UNSET = ON. A parameter, never
 #: a column on res.company (no new stored field on an existing model).
 CLOCK_PARAM = 'pb_ess_workforce.portal_clock.%s'
-#: A second press inside this window never creates a second row: it answers
-#: "already" with the current state (a double tap, a double submit, a reload).
-CLOCK_DEBOUNCE_SECONDS = 60
 #: The strip under the button: today and the six days before it.
 CLOCK_WEEK_DAYS = 7
 
@@ -776,6 +774,7 @@ class PbEssWorkforce(models.AbstractModel):
             'since_ms': since_ms,
             'since_days_ago': since_days_ago,
             'open_attendance_id': open_att.id or False,
+            'attendance_id': session.id or 0,
             'open_minutes': open_minutes,
             'open_seconds': max(0, int((now - open_att.check_in).total_seconds())) if open_att else 0,
             'session': {
@@ -815,11 +814,13 @@ class PbEssWorkforce(models.AbstractModel):
 
     @api.model
     def clock_toggle(self, lat=None, lng=None, accuracy=None, nonce=None,
-                     ip_address=None, browser=None):
-        """Clock the CALLER in, or out — whichever they are not.
+                     ip_address=None, browser=None, action=None,
+                     attendance_id=None):
+        """Apply the CALLER's explicit in/out action to the displayed session.
 
-        ``nonce`` is accepted from the form and not stored: the debounce below
-        is what makes a double submit harmless. ``accuracy`` has no stock
+        The action and attendance id make repeated or stale forms harmless
+        without blocking a legitimate immediate checkout. ``nonce`` is retained
+        for call compatibility but unused. ``accuracy`` has no stock
         field and is not stored either. ``ip_address`` / ``browser`` come from
         the route (never from the form) and, like the coordinates, are kept
         only when the company's "Device & Location Tracking" is on — stock's
@@ -830,15 +831,33 @@ class PbEssWorkforce(models.AbstractModel):
             raise UserError(_(
                 "Clocking in from these pages is switched off for your "
                 "company. Use your usual device."))
-        now = fields.Datetime.now()
+        try:
+            expected_id = int(attendance_id)
+        except (TypeError, ValueError, OverflowError):
+            expected_id = -1
+        if action not in ('in', 'out') or expected_id < 0:
+            raise UserError(_(
+                "Your clock page has been updated. Check the current status "
+                "below and try again."))
+
+        # Serialize portal punches for this employee. An UPDATE (even with
+        # an unchanged value) also makes an overlapping repeatable-read
+        # transaction retry with a fresh snapshot; a row lock alone does not.
+        emp.flush_recordset(['write_date'])
+        self.env.cr.execute(
+            'UPDATE hr_employee SET write_date = write_date WHERE id = %s',
+            [emp.id])
         Att = self.env['hr.attendance'].sudo()
+        Att.invalidate_model(['check_in', 'check_out'])
+        emp.invalidate_recordset(['attendance_state', 'last_attendance_id'])
         last = Att.search([('employee_id', '=', emp.id)],
                           order='check_in desc', limit=1)
-        if last:
-            last_at = max(last.check_in, last.check_out or last.check_in)
-            if (now - last_at).total_seconds() < CLOCK_DEBOUNCE_SECONDS:
-                return dict(self.get_my_clock(now=now), already=True,
-                            punched=False)
+        was_in = emp.sudo().attendance_state == 'checked_in'
+        if action == ('in' if was_in else 'out'):
+            return dict(self.get_my_clock(), already=True, punched=False)
+        if expected_id != (last.id or 0):
+            return dict(self.get_my_clock(), changed=True, already=False,
+                        punched=False)
 
         geo = {'mode': 'systray'}
         company = emp.company_id
@@ -852,7 +871,6 @@ class PbEssWorkforce(models.AbstractModel):
             if browser:
                 geo['browser'] = str(browser)[:64]
 
-        was_in = emp.sudo().attendance_state == 'checked_in'
         att = emp.sudo()._attendance_action_change(geo)
         punched = 'out' if was_in else 'in'
         # Tag the row WE created. A check-out closes whatever row is open —
