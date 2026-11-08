@@ -41,7 +41,8 @@ function migrate(old){
 }
 function makeNode(type,stage,id=uid('step')){
  const n=nodeDefaults(initialNode(id,type,TYPES[type].name,stage));
- if(type==='input')n.owner='Employee';
+ if(type==='input'){n.owner='Employee';n.form={id:uid('form'),version:1,title:'Tell us a little more',description:'Complete the details below.',fields:[newFormField('text')]};}
+ if(type==='matrix'){n.owner='Approval Matrix';n.matrixProcess='connected';}
  if(type==='branch')n.branches=[{id:uid('route'),label:'Above the limit',condition:{field:'amount',op:'gt',value:1000},steps:[]},{id:uid('route'),label:'Otherwise',condition:null,steps:[]}];
  if(type==='parallel'){n.join='all';n.branches=[{id:uid('route'),label:'HR',steps:[]},{id:uid('route'),label:'IT',steps:[]}];}
  if(type==='subprocess'){n.steps=[];n.component={name:'Local subprocess',version:1};}
@@ -49,11 +50,12 @@ function makeNode(type,stage,id=uid('step')){
  return n;
 }
 function freshDraft(key){
+ if(TEMPLATES[key].integrated)return integratedDraft(key);
  const t=TEMPLATES[key],d=migrate({template:key,name:t.name,event:t.event,scope:{company:'Demo company',match:'all',rules:[]},stages:clone(t.stages),nodes:clone(t.nodes),revision:0});
  d.nodes.filter(n=>n.type==='email').forEach(n=>{n.body='Hi {{employee.name}}, your request for {{request.amount}} has reached {{request.status}}. View the next steps in Payobook.'});
  if(key==='expense'){
   const rule=d.nodes.find(n=>n.type==='branch');rule.title='Choose the right review';rule.branches[0].label='Above AUD 1,000';rule.branches[1].label='Standard claim';
-  const evidence=makeNode('input',1,'evidence');evidence.title='Collect supporting details';evidence.fieldLabel='Business purpose';evidence.prompt='Tell Finance why this expense was needed.';rule.branches[0].steps.unshift(evidence.id);d.nodes.push(evidence);
+  const evidence=makeNode('input',1,'evidence');evidence.title='Collect supporting details';delete evidence.form;evidence.fieldLabel='Business purpose';evidence.prompt='Tell Finance why this expense was needed.';rule.branches[0].steps.unshift(evidence.id);d.nodes.push(evidence);
  }
  if(key==='onboarding'||key==='offboarding'){
   const ids=key==='onboarding'?['manager','it']:['manager','it'];
@@ -74,7 +76,7 @@ function descendants(d,id){const n=byId(d,id);if(!n)return[];return [id,...(n.br
 function ordered(d){const result=[];const walk=ids=>ids.forEach(id=>{const n=byId(d,id);if(!n)return;result.push(n);if(n.branches)n.branches.forEach(b=>walk(b.steps));if(n.steps)walk(n.steps)});walk(d.order);return result;}
 function ancestors(d,id){let c=containerFor(d,id),out=[];while(c?.parent){out.unshift(c.parent);c=containerFor(d,c.parent.id)}return out;}
 function previousIds(d,id){const c=containerFor(d,id);if(!c)return[];return [...(c.parent?previousIds(d,c.parent.id):[]),...c.ids.slice(0,c.ids.indexOf(id))];}
-function availableTokens(d,id){return [...TOKENS,...previousIds(d,id).filter(k=>byId(d,k)?.type!=='trigger').map(k=>({key:`step.${k}.result`,label:byId(d,k).title+' · result',type:'text',value:'Sample result',source:k}))];}
+function availableTokens(d,id){return [...TOKENS,...previousIds(d,id).filter(k=>byId(d,k)?.type!=='trigger').flatMap(k=>{const n=byId(d,k);return n.form?n.form.fields.filter(f=>f.type!=='section'&&!f.visibility).map(f=>({key:`step.${k}.field.${f.id}`,label:f.label,type:f.type,value:sampleFormAnswers(n.form,SAMPLE)[f.id],source:k})):[{key:`step.${k}.result`,label:n.title+' · result',type:'text',value:'Sample result',source:k}]})];}
 function routeText(r,key='expense'){
  if(!r)return'Otherwise';const labels={gt:'>',gte:'≥',lt:'<',eq:'is',ne:'is not'};
  return `${r.field==='amount'?TEMPLATES[key].numeric:r.field==='department'?'Department':'Country'} ${labels[r.op]} ${r.value}`;
@@ -96,7 +98,7 @@ function issues(d){
  if(!d.name.trim()||!d.event.trim())add('trigger','Name the process and its start event.');
  if(!d.scope.company.trim())add('trigger','Choose a company boundary.');
  if(d.order[0]!=='trigger'||d.nodes.filter(n=>n.type==='trigger').length!==1)add('trigger','Keep one start event at the beginning.');
- if(!d.nodes.some(n=>n.type==='state'))add('trigger','Add a business action to define the final record status.');
+ if(!d.nodes.some(n=>['state','matrix'].includes(n.type)))add('trigger','Add a business action to define the final record status.');
  const visiting=new Set(),done=new Set();function walk(id){if(visiting.has(id)){add(id,'Recursive groups are not supported.');return}if(done.has(id))return;visiting.add(id);const n=byId(d,id);if(n){for(const b of n.branches||[])b.steps.forEach(walk);(n.steps||[]).forEach(walk)}visiting.delete(id);done.add(id)}d.nodes.forEach(n=>walk(n.id));
  if(out.some(i=>i.text==='Recursive groups are not supported.'))return out;
  const counts={};containers(d).forEach(c=>c.ids.forEach(id=>{counts[id]=(counts[id]||0)+1;if(!byId(d,id))add(c.parent?.id||'trigger','A step reference is missing.')}));
@@ -110,7 +112,7 @@ function issues(d){
    if(n.type==='approval'&&!n.delegate)add(n.id,'No approval cover is enabled.','warning');
    if(n.owner==='Policy result'&&!previousIds(d,n.id).some(k=>byId(d,k).type==='policy'))add(n.id,'Place a decision table before this policy-based assignment.');
   }
-  if(n.type==='input'&&!n.fieldLabel.trim())add(n.id,'Name the information you need.');
+  if(n.type==='input'){if(n.form)formDefinitionErrors(n.form).forEach(message=>add(n.id,message));else if(!n.fieldLabel.trim())add(n.id,'Name the information you need.');}
   if(n.type==='email'){
    if(!n.body.trim())add(n.id,'Write the email message.');
    const keys=availableTokens(d,n.id).map(t=>t.key);for(const token of n.body.matchAll(/\{\{([^}]+)\}\}/g))if(!keys.includes(token[1].trim()))add(n.id,'Unknown or unavailable token: '+token[1]);
@@ -128,9 +130,9 @@ function issues(d){
   }
  }
  for(const r of d.scope.rules)if(r.value===''||r.field==='amount'&&!Number.isFinite(+r.value)||['gt','lt','gte'].includes(r.op)&&r.field!=='amount')add('trigger','Complete eligibility filters with compatible values.');
- return out;
+ return out.concat(integrationIssues(d));
 }
-function tokenValue(key,run){const map={'employee.name':run.facts.employee,'employee.email':run.facts.email,'request.amount':run.facts.amount,'request.department':run.facts.department,'request.country':run.facts.country,'request.status':run.recordState};if(Object.hasOwn(map,key))return map[key];const m=key.match(/^step\.(.+)\.result$/);return m?run.outputs[m[1]]:undefined;}
+function tokenValue(key,run){const map={'employee.name':run.facts.employee,'employee.email':run.facts.email,'request.amount':run.facts.amount,'request.department':run.facts.department,'request.country':run.facts.country,'request.status':run.recordState};if(Object.hasOwn(map,key))return map[key];const fm=key.match(/^step\.([^.]+)\.field\.([^.]+)$/);if(fm){const v=run.outputs[fm[1]]?.[fm[2]];return v===undefined?undefined:displayAnswer(v);}const m=key.match(/^step\.(.+)\.result$/);return m?run.outputs[m[1]]:undefined;}
 function expandMessage(body,run){return body.replace(/\{\{([^}]+)\}\}/g,(_,key)=>{const v=tokenValue(key.trim(),run);if(v===undefined)throw Error('No value is available for '+key.trim());return String(v)});}
 function createRun(d,facts={}){
  const run={id:uid('run'),draft:clone(d),facts:{...SAMPLE,...facts},status:'running',states:{},outputs:{},choices:{},trace:[],answers:{},attempts:{},failures:{},returns:{},recordState:d.stages[0].state,clock:0,at:new Date().toISOString()};
@@ -138,13 +140,14 @@ function createRun(d,facts={}){
  const matched=d.scope.rules.map(r=>matches(r,run.facts));if(matched.length&&!(d.scope.match==='all'?matched.every(Boolean):matched.some(Boolean))){run.status='excluded';run.trace.push({id:'trigger',title:'Record excluded',text:'The example does not match the eligibility filters.',status:'skipped'});return run;}advanceRun(run);return run;
 }
 function logRun(run,n,text,status='done'){run.trace.push({id:n.id,title:n.title,text,status});}
-function actorFor(n,run){let role=n.owner==='Policy result'?run.facts.policyReviewer:n.owner;if(role==='Their manager'&&run.facts.manager==='away'&&n.delegate)return {name:'Alex Lee',role,cover:'Valid cover for Maya Chen'};return {name:PERSONS[role]||'Unresolved person',role,cover:null};}
+function actorFor(n,run){if(n.type==='matrix')return actorFor(matrixActorNode(n,run),run);let role=n.owner==='Policy result'?run.facts.policyReviewer:n.owner;if(role==='Their manager'&&run.facts.manager==='away'&&n.delegate)return {name:'Alex Lee',role,cover:'Valid cover for Maya Chen'};return {name:PERSONS[role]||'Unresolved person',role,cover:null};}
 function skipTree(run,id){descendants(run.draft,id).forEach(k=>{if(run.states[k]!=='done')run.states[k]='skipped'});}
 function advanceRun(run){
  if(['rejected','returned','complete','excluded','invalid'].includes(run.status))return;run.status='running';
  const d=run.draft;
  function seq(ids){for(const id of ids){if(!visit(id))return false;if(run.status==='blocked'||run.status==='rejected')return false;}return true;}
  function visit(id){const n=byId(d,id),status=run.states[id];if(['done','skipped'].includes(status))return true;if(['waiting','returned','failed','blocked'].includes(status)){if(['failed','blocked'].includes(status))run.status='blocked';return false;}
+  if(n.optional&&!n.enabled){run.states[id]='skipped';logRun(run,n,'Additional message is off. Existing approval notifications remain the owner.','skipped');return true;}
   if(n.type==='branch'){
    if(!run.choices[id]){const b=n.branches.find(b=>!b.condition||matches(b.condition,run.facts));run.choices[id]=b.id;run.states[id]='active';n.branches.filter(x=>x!==b).forEach(x=>x.steps.forEach(k=>skipTree(run,k)));logRun(run,n,`Selected “${b.label}”. Other routes are skipped.`, 'active');}
    const branch=n.branches.find(b=>b.id===run.choices[id]);if(seq(branch.steps)){run.states[id]='done';run.outputs[id]=branch.label;logRun(run,n,'Chosen route finished; rejoin released.');return true}return false;
@@ -155,6 +158,7 @@ function advanceRun(run){
    if(n.join==='any'?count>0:count===n.branches.length){run.states[id]='done';run.outputs[id]=n.join==='any'?'First route completed; remaining work cancelled':'All routes completed';logRun(run,n,run.outputs[id]+'; join released.');return true;}return false;
   }
   if(n.type==='subprocess'){run.states[id]='active';if(seq(n.steps)){run.states[id]='done';run.outputs[id]='Completed '+n.component.name+' v'+n.component.version;logRun(run,n,run.outputs[id]);return true}return false;}
+  if(n.type==='matrix')return advanceMatrix(run,n);
   if(HUMAN.includes(n.type)){
    let why='';if(run.facts.access==='denied')why='The assigned person cannot read or act on this record.';else if(n.independent&&run.facts.actor==='self'&&n.type==='approval')why='The approver is also the requester. An independent person is required.';else if(n.owner==='Their manager'&&run.facts.manager!=='available'&&(!n.delegate||run.facts.manager==='expired'))why=n.delegate?'Approval cover has expired.':'The manager is away and cover is disabled.';else if(n.owner==='Policy result'&&!run.facts.policyReviewer)why='No decision table result is available.';
    if(why){run.states[id]='blocked';run.status='blocked';logRun(run,n,why,'blocked');return false;}
@@ -175,15 +179,17 @@ function advanceRun(run){
 }
 function respond(run,id,outcome,answer=''){
  const n=byId(run.draft,id);if(run.states[id]!=='waiting'||!['waiting','running'].includes(run.status))return {error:'This step is not available.'};
+ if(n.type==='matrix')return respondMatrix(run,n,outcome,answer);
+ if(n.type==='input'&&n.form){const result=validateForm(n.form,answer&&typeof answer==='object'?answer:{},run.facts);if(Object.keys(result.errors).length)return {error:'Complete the highlighted fields.',fields:result.errors};run.states[id]='done';run.outputs[id]=result.answers;run.answers[id]=result.answers;run.formDrafts??={};delete run.formDrafts[id];logRun(run,n,'Form submitted: '+Object.keys(result.answers).length+' typed answers.');advanceRun(run);return {};}
  if(n.type==='input'&&n.required&&!answer.trim())return{error:`Enter ${n.fieldLabel.toLowerCase()} to continue.`};
  if(outcome==='reject'){run.status='rejected';run.states[id]='rejected';logRun(run,n,'Rejected. Downstream actions will not run.','rejected');return{};}
  if(outcome==='return'){if(!answer.trim())return{error:'Explain what needs to change.'};run.states[id]='returned';run.status='returned';run.answers[id]=answer;logRun(run,n,'Sent back for changes: '+answer,'returned');return{};}
  run.states[id]='done';run.outputs[id]=n.type==='input'?answer:n.type==='wait'?`Waited ${n.hours} hours`:outcome==='approve'?'Approved':'Completed';run.answers[id]=answer;
  if(n.type==='wait')run.clock+=+n.hours;logRun(run,n,run.outputs[id]+(answer&&n.type!=='input'?' · '+answer:''));advanceRun(run);return{};
 }
-function resubmitRun(run){const id=Object.keys(run.states).find(k=>run.states[k]==='returned');if(!id)return;run.returns[id]=(run.returns[id]||0)+1;if(run.returns[id]>3){run.status='blocked';run.states[id]='blocked';logRun(run,byId(run.draft,id),'Rework limit reached; process owner intervention required.','blocked');return;}run.states[id]='todo';run.status='running';logRun(run,byId(run.draft,id),'Requester corrected the example and resubmitted.');advanceRun(run);}
+function resubmitRun(run){const id=Object.keys(run.states).find(k=>run.states[k]==='returned');if(!id)return;run.returns[id]=(run.returns[id]||0)+1;if(run.returns[id]>3){run.status='blocked';run.states[id]='blocked';logRun(run,byId(run.draft,id),'Rework limit reached; process owner intervention required.','blocked');return;}if(byId(run.draft,id).type==='matrix'){run.matrix[id].index=0;run.matrix[id].attempt++;for(const input of run.draft.nodes.filter(n=>n.type==='input')){run.states[input.id]='todo';run.formDrafts??={};run.formDrafts[input.id]=clone(run.answers[input.id]||{});delete run.outputs[input.id];}}run.states[id]='todo';run.status='running';logRun(run,byId(run.draft,id),'Requester corrected the example and resubmitted.');advanceRun(run);}
 function retryRun(run,id){const n=byId(run.draft,id);if(run.states[id]!=='failed')return;run.attempts[id]=(run.attempts[id]||0)+1;if(run.attempts[id]>n.retry){logRun(run,n,'Retry limit exhausted. Escalate to the process owner.','failed');return;}run.states[id]='todo';run.status='running';logRun(run,n,'Retry '+run.attempts[id]+' of '+n.retry+' · example fault cleared.');advanceRun(run);}
-function autoRun(d,facts={}){const run=createRun(d,facts);let first=true;for(let i=0;i<120&&run.status==='waiting';i++){const id=Object.keys(run.states).find(k=>run.states[k]==='waiting');if(!id)break;const n=byId(d,id);let outcome=n.type==='approval'?'approve':'complete';if(n.type==='approval'&&first){outcome=run.facts.decision;first=false;}respond(run,id,outcome,'Example evidence supplied');}return run;}
+function autoRun(d,facts={}){const run=createRun(d,facts);let first=true;for(let i=0;i<120&&run.status==='waiting';i++){const id=Object.keys(run.states).find(k=>run.states[k]==='waiting');if(!id)break;const n=byId(d,id);let outcome=['approval','matrix'].includes(n.type)?'approve':'complete';if(['approval','matrix'].includes(n.type)&&first){outcome=run.facts.decision;first=false;}respond(run,id,outcome,n.type==='input'&&n.form?sampleFormAnswers(n.form,run.facts):'Example evidence supplied');}return run;}
 function outcomeSignature(run){return JSON.stringify({status:run.status,recordState:run.recordState,steps:Object.entries(run.states).filter(([,s])=>s==='done').map(([id])=>id).sort()});}
 function diffDraft(before,after){const changes=[],old=Object.fromEntries(before.nodes.map(n=>[n.id,n])),now=Object.fromEntries(after.nodes.map(n=>[n.id,n]));const strip=n=>{const c=clone(n);delete c.pos;delete c.collapsed;return c};
  for(const n of after.nodes){if(!old[n.id])changes.push({id:n.id,kind:'added',title:n.title,text:TYPES[n.type].name+' added'});else{const keys=Object.keys(strip(n)).filter(k=>JSON.stringify(strip(n)[k])!==JSON.stringify(strip(old[n.id])[k]));if(keys.length)changes.push({id:n.id,kind:'changed',title:n.title,text:keys.map(k=>k==='branches'?'Routes changed':k==='rows'?'Policy rules changed':`${k}: ${typeof old[n.id][k]==='object'?'configured':String(old[n.id][k]??'—')} → ${typeof n[k]==='object'?'configured':String(n[k]??'—')}`).join(' · ')})}}

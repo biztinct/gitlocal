@@ -1,4 +1,4 @@
-Payobook Workflow Studio — interactive design POC v2
+Payobook Workflow Studio — interactive design POC — forms and shared ownership revision
 
 Deliverable: ../workflow-studio-poc.html (self-contained; also works offline).
 Hosted preview: https://payobook.com/preview/workflow-studio/
@@ -82,3 +82,54 @@ Product UX checks: node docs/design/workflow-studio/test-ux.cjs
 Uses the same PLAYWRIGHT_MODULE, WORKFLOW_TEST_URL and WORKFLOW_SCREENSHOT_DIR
 settings as test-ui.cjs. Checks type sizes, key contrast pairs, keyboard focus,
 progressive disclosure, laptop/mobile layouts and reduced motion.
+
+
+Multi-field forms and no-double-ups revision (8 November 2026)
+
+Default example: Expense reimbursement (connected). Also try Pay run and Full
+and final settlement. Workflows -> building-pattern playground retains all
+previous examples and browser drafts; these are explicitly not Matrix config.
+
+Try: Collect expense details -> Edit form -> add/reorder/configure fields ->
+Preview form -> Use this form. Try it out opens the dedicated participant screen.
+Save draft retains a resumable task across browser reloads. Submit validates
+all visible fields, stores typed answers, then invokes a sample Matrix route.
+Return for changes reopens collection and restarts the approval decisions.
+
+Forms support short/long text, dropdown, multiple choice, Yes/No, number, date,
+email, sample record lookup, attachment metadata, repeatable description/amount
+rows and section headings. Required rules, conditional visibility, minimum
+number values, read-only existing-record prefills, reordering, keyboard
+alternatives, reusable local versions and immutable run snapshots are working.
+File bytes are NOT uploaded or persisted: only names/size/type are simulated.
+
+One approval owner: connected examples reference a sample Approval Matrix route.
+Scope/people/backups/safeguards stay in Matrix; local approver chains, approval
+policy tables, a second Matrix step, bypass filters and duplicate status writes
+are rejected. Approval application runs once; additional email is off by default.
+No-approval still uses the engine to apply/log, not a bypass of that engine.
+
+Broader recommendation: extend pb_lifecycle templates/cases/tasks/questions and
+participant pages; reuse existing task/inbox surfaces, ApprovalSchemePanel,
+biz_access permissions, distinct approval cover/access delegation, outbox,
+mail.template/mail.activity, ir.cron, pb_audit.console, pb_filter_kit and
+ir.attachment / employee vault. Generalise lifecycle to other business domains
+only through explicit adapters. Workflow-only questions do not automatically
+create model fields or approval facts. Before activation, inventory live event,
+action, scope and recipient overlaps; select one executor per effect.
+
+Odoo capability audit: Community base_automation exists in the server checkout,
+but is uninstalled in payobook, payobook_template, p0clone and rize. mail,
+biz_approval_workflow and pb_approval_config are installed in all four. Native
+server actions and ir.cron are useful execution primitives; the Enterprise
+Studio UI is not available. No live automation/module/schema is changed here.
+
+Design notes -> No double-ups / top-bar How it fits records evidence, service
+ownership, native Odoo reuse, completed prototype behaviours and remaining
+implementation work. Architecture, feature status and roadmap agree with it.
+
+Additional checks:
+  node docs/design/workflow-studio/test-forms.cjs
+  node docs/design/workflow-studio/test-forms-ui.cjs
+The latter uses the same Chrome/environment settings as the existing UI checks.
+Source additions: forms-model.js, integration-model.js, forms-ui.js.
