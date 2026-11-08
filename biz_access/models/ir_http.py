@@ -27,6 +27,8 @@ OPEN_PREFIXES = (
     '/web/binary/',
     '/web/webclient/',
     '/websocket',
+    # Public UI strings are needed by the website-backed password form.
+    '/website/translations',
     '/favicon',
     '/pb_tenancy/',
     '/iclock/',

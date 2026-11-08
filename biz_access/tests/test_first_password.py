@@ -42,6 +42,11 @@ class TestFirstPassword(HttpCase):
     def test_staff_and_portal_can_render_the_form(self):
         for user in (self.staff, self.portal):
             self._open_form(user)
+            if 'website' in self.env:
+                translations = self.url_open(
+                    '/website/translations?lang=en_US', allow_redirects=False)
+                self.assertEqual(translations.status_code, 200)
+                self.assertIsInstance(translations.json(), dict)
 
     def test_mismatched_passwords_render_error_without_changing_credentials(self):
         token = self._open_form(self.staff)
