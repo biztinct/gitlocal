@@ -754,6 +754,19 @@ class PbEssWorkforce(models.AbstractModel):
         company = emp.company_id
         tracking = bool(company and 'attendance_device_tracking' in company._fields
                         and company.attendance_device_tracking)
+        session = open_att or last
+
+        def location(prefix):
+            if not session:
+                return None
+            lat = session['%s_latitude' % prefix]
+            lng = session['%s_longitude' % prefix]
+            coords = self._clock_coords(lat, lng)
+            if not coords:
+                return None
+            label = '%.6f, %.6f' % coords
+            return {'label': label, 'url': 'https://www.google.com/maps?q=%s' % label.replace(' ', '')}
+
         return {
             'enabled': self.portal_clock_enabled(company),
             'state': 'in' if open_att else 'out',
@@ -764,6 +777,13 @@ class PbEssWorkforce(models.AbstractModel):
             'since_days_ago': since_days_ago,
             'open_attendance_id': open_att.id or False,
             'open_minutes': open_minutes,
+            'open_seconds': max(0, int((now - open_att.check_in).total_seconds())) if open_att else 0,
+            'session': {
+                'started': local(session.check_in).strftime('%d %b %Y, %H:%M:%S'),
+                'ended': local(session.check_out).strftime('%d %b %Y, %H:%M:%S') if session.check_out else '',
+                'start_location': location('in'),
+                'end_location': location('out') if session.check_out else None,
+            } if session else None,
             'today_minutes': today_minutes,
             # today's closed rows only — the browser adds the live part
             'today_closed_minutes': today_minutes - (

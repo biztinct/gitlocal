@@ -65,6 +65,30 @@ class TestT3bClockModel(TransactionCase):
     def _rows(self, emp=None):
         return self.Att.search([('employee_id', '=', (emp or self.share_emp).id)])
 
+    def test_clock_seconds_and_both_punch_locations(self):
+        now = fields.Datetime.now()
+        row = self.Att.create({'employee_id': self.share_emp.id,
+            'check_in': now - timedelta(hours=5, minutes=37, seconds=42),
+            'in_latitude': -33.8688, 'in_longitude': 151.2093})
+        clock = self._ess().get_my_clock(now=now)
+        self.assertEqual(clock['open_seconds'], 20262)
+        self.assertEqual(clock['session']['start_location']['label'], '-33.868800, 151.209300')
+        self.assertFalse(clock['session']['ended'])
+        self.assertIsNone(clock['session']['end_location'])
+        row.write({'check_out': now, 'out_latitude': -33.86, 'out_longitude': 151.21})
+        clock = self._ess().get_my_clock(now=now)
+        self.assertEqual(clock['state'], 'out')
+        self.assertEqual(clock['session']['end_location']['label'], '-33.860000, 151.210000')
+        self.assertTrue(clock['session']['ended'])
+        self.assertIsNone(self._ess(self.share2).get_my_clock(now=now)['session'])
+
+    def test_clock_missing_gps_and_zero_coordinate(self):
+        now = fields.Datetime.now()
+        row = self.Att.create({'employee_id': self.share_emp.id, 'check_in': now - timedelta(minutes=1)})
+        self.assertIsNone(self._ess().get_my_clock(now=now)['session']['start_location'])
+        row.write({'in_latitude': 0, 'in_longitude': 20})
+        self.assertEqual(self._ess().get_my_clock(now=now)['session']['start_location']['label'], '0.000000, 20.000000')
+
     # T3b.1
     def test_t3b_1_punch_debounce_and_tag(self):
         Ess = self._ess()

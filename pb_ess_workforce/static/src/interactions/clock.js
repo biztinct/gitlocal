@@ -27,7 +27,7 @@ const RESYNC_AFTER_MS = 60 * 1000;
 
 function splitMinutes(total) {
     const minutes = Math.max(0, Math.floor(total));
-    return [Math.floor(minutes / 60), minutes % 60];
+    return [Math.floor(minutes / 60), minutes % 60, Math.max(0, Math.floor(total * 60)) % 60];
 }
 
 export class PbEwClockLive extends Interaction {
@@ -49,7 +49,7 @@ export class PbEwClockLive extends Interaction {
     start() {
         if (this.state === "in" && this.sinceMs) {
             this.tick();
-            const every = window.setInterval(() => this.tick(), 15000);
+            const every = window.setInterval(() => this.tick(), 1000);
             this.registerCleanup(() => window.clearInterval(every));
         }
         this.addListener(document, "visibilitychange", this.onVisibility);
@@ -60,15 +60,19 @@ export class PbEwClockLive extends Interaction {
     }
 
     paint(prefix, total) {
-        const [h, m] = splitMinutes(total);
+        const [h, m, s] = splitMinutes(total);
         const hEl = this.el.querySelector(`[data-${prefix}-h]`);
         const mEl = this.el.querySelector(`[data-${prefix}-m]`);
+        const sEl = this.el.querySelector(`[data-${prefix}-s]`);
         const wrap = this.el.querySelector(`[data-${prefix}-hwrap]`);
         if (hEl) {
             hEl.textContent = String(h);
         }
         if (mEl) {
             mEl.textContent = String(m);
+        }
+        if (sEl) {
+            sEl.textContent = String(s).padStart(2, "0");
         }
         if (wrap) {
             wrap.classList.toggle("d-none", h === 0);
@@ -96,8 +100,11 @@ export class PbEwClockLive extends Interaction {
         }
         this.hiddenAt = 0;
         this.waitFor(rpc("/my/work/clock/state", {})).then((res) => {
-            if (res && res.state && res.state !== this.state) {
+            if (res && res.state && (res.state !== this.state || Number(res.since_ms) !== this.sinceMs)) {
                 window.location.reload();
+            } else if (res && res.server_now_ms) {
+                this.skew = res.server_now_ms - Date.now();
+                if (this.state === "in") this.tick();
             }
         }).catch(() => {});
     }
@@ -178,7 +185,7 @@ export class PbEwClockForm extends Interaction {
                     window.clearTimeout(timer);
                     send();
                 },
-                { enableHighAccuracy: false, timeout: GEO_TIMEOUT_MS, maximumAge: 120000 }
+                { enableHighAccuracy: true, timeout: GEO_TIMEOUT_MS, maximumAge: 0 }
             );
         } catch {
             window.clearTimeout(timer);

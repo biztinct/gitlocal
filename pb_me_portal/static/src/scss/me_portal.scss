@@ -779,3 +779,54 @@
     .pbme .pbme-rq-month { animation: none; }
     .pbme .pbme-rq-row, .pbme .pbme-rq-go, .pbme .pbme-chip { transition: none; }
 }
+
+// A reading column beside the employee's daily essentials.
+.pbme-home .pbme-social {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 390px);
+    gap: 24px; align-items: start;
+    .pbme-social-main, .pbme-social-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .pbme-b { min-width: 0; margin: 0; }
+    .pbme-b-pay { min-height: 0; }
+    .pbme-b-leave { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+    .pbme-b-leave .pbme-lab { grid-column: 1 / -1; }
+    .pbme-ring { width: 76px; height: 76px; }
+    .pbme-clock { flex-wrap: wrap; gap: 10px; }
+    .pbme-clock-txt { flex: 1; min-width: 145px; }
+    .pbme-clock-el { display: block; margin-top: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .pbme-clock-el::before { content: none; }
+    .pbme-clock-btn { min-height: 40px; }
+}
+.pbme-home .pbme-social-me { margin-top: 20px; }
+.pbme-clock-locations {
+    margin: 12px 0 16px; padding: 10px 12px; border: 1px solid var(--pbim-line, #dfe4ee);
+    border-radius: 12px; background: var(--pbim-surface, #fff); font-size: 12px; color: var(--pbim-muted, #5b6e8f);
+    summary { cursor: pointer; font-weight: 700; color: var(--pbim-ink, #201c3b); }
+    summary span { font-weight: 400; float: right; font-size: 11px; }
+    dl { display: grid; grid-template-columns: 65px 1fr; gap: 8px; margin: 12px 0 0; }
+    dt { font-weight: 700; }
+    dd { margin: 0; min-width: 0; }
+    time, a, dd span { display: block; overflow-wrap: anywhere; }
+    a { color: var(--pbim-primary, #6048bd); }
+}
+@container (max-width: 850px) {
+    .pbme-home .pbme-social { display: flex; flex-direction: column; }
+    .pbme-home .pbme-social-main, .pbme-home .pbme-social-side { display: contents; }
+    .pbme-home .pbme-social > *, .pbme-home .pbme-social .pbme-b { width: 100%; }
+    .pbme-home .pbme-social .pbme-b-week { order: 0; }
+    .pbme-home .pbme-social .pbme-b-needs { order: 1; }
+    .pbme-home .pbme-social .pbme-b-extra { order: 3; }
+    .pbme-home .pbme-social .pbme-b-notices { order: 2; }
+    .pbme-home .pbme-social .pbme-b-leave { order: 4; }
+    .pbme-home .pbme-social .pbme-b-pay { order: 5; }
+}
+@media (max-width: 850px) {
+    .pbme-home .pbme-social { display: flex; flex-direction: column; }
+    .pbme-home .pbme-social-main, .pbme-home .pbme-social-side { display: contents; }
+    .pbme-home .pbme-social .pbme-b, .pbme-home .pbme-social .pbme-b-notices { width: 100%; }
+    .pbme-home .pbme-social .pbme-b-week { order: 0; }
+    .pbme-home .pbme-social .pbme-b-needs { order: 1; }
+    .pbme-home .pbme-social .pbme-b-extra { order: 3; }
+    .pbme-home .pbme-social .pbme-b-notices { order: 2; }
+    .pbme-home .pbme-social .pbme-b-leave { order: 4; }
+    .pbme-home .pbme-social .pbme-b-pay { order: 5; }
+}

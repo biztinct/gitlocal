@@ -456,3 +456,6 @@
     .pbme.pbew .pbew-clockbtn .pbew-clockbtn__face,
     .pbme.pbew .pbew-strip__bar i { animation: none !important; transition: none !important; }
 }
+
+.pbew-clockbtn__timer { font-variant-numeric: tabular-nums; gap: 7px !important; }
+.pbew-clockbtn__timer .pbew-clockbtn__part b { font-size: clamp(24px, 3vw, 34px); }

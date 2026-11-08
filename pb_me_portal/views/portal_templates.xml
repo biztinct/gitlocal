@@ -179,13 +179,7 @@
        fallback placement to use, so auto-placement can never leave a hole.
        Section bodies start empty: the Interaction moves each tile in by its
        data-pbme-group, and an empty section is never drawn. -->
-  <template id="pbme_bento" name="Employee home: cards and sections">
-    <t t-set="pbme_needs" t-value="pbme_home.get('needs_you') or []"/>
-    <t t-set="pbme_extra" t-value="pbme_home.get('extra_cards') or []"/>
-    <div t-att-class="' '.join(c for c in ('pbme-bento', not pbme_home.get('leave') and 'pbme-bento--no-leave', not pbme_home.get('week') and 'pbme-bento--no-week', pbme_extra and 'pbme-bento--extra') if c)">
-      <t t-call="pb_me_portal.pbme_card_pay"/>
-      <t t-call="pb_me_portal.pbme_card_leave"/>
-      <t t-call="pb_me_portal.pbme_card_week"/>
+  <template id="pbme_card_needs" name="Employee home: needs you">
       <section class="pbme-b pbme-b-needs" data-pbme-slot="needs" aria-labelledby="pbme-needs-h">
         <h2 class="pbme-lab" id="pbme-needs-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="15"/></t>Needs you<span t-if="pbme_needs" class="pbme-count" t-out="len(pbme_needs)"/></h2>
         <div t-if="pbme_needs" class="pbme-needs">
@@ -198,6 +192,33 @@
         </div>
         <p t-else="" class="pbme-quiet"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>Nothing needs you right now</p>
       </section>
+  </template>
+
+  <template id="pbme_bento" name="Employee home: cards and sections">
+    <t t-set="pbme_needs" t-value="pbme_home.get('needs_you') or []"/>
+    <t t-set="pbme_extra" t-value="pbme_home.get('extra_cards') or []"/>
+    <t t-set="pbme_feed" t-value="[c for c in pbme_extra if c['key'] == 'notices']"/>
+    <div t-if="pbme_feed" class="pbme-social">
+      <div class="pbme-social-main">
+        <t t-call="pb_me_portal.pbme_card_needs"/>
+        <t t-foreach="pbme_feed" t-as="card"><t t-call="{{ card['template'] }}"/></t>
+        <t t-foreach="[c for c in pbme_extra if c['key'] != 'notices']" t-as="card"><t t-call="{{ card['template'] }}"/></t>
+      </div>
+      <aside class="pbme-social-side" aria-label="Your working day">
+        <t t-call="pb_me_portal.pbme_card_week"/>
+        <t t-call="pb_me_portal.pbme_card_leave"/>
+        <t t-call="pb_me_portal.pbme_card_pay"/>
+      </aside>
+    </div>
+    <section t-if="pbme_feed" class="pbme-b pbme-b-me pbme-social-me" data-pbme-slot="me" aria-labelledby="pbme-social-me-h">
+      <h2 class="visually-hidden" id="pbme-social-me-h">Me</h2>
+      <div class="pbme-me-body" data-pbme-section="me"/>
+    </section>
+    <div t-if="not pbme_feed" t-att-class="' '.join(c for c in ('pbme-bento', not pbme_home.get('leave') and 'pbme-bento--no-leave', not pbme_home.get('week') and 'pbme-bento--no-week', pbme_extra and 'pbme-bento--extra') if c)">
+      <t t-call="pb_me_portal.pbme_card_pay"/>
+      <t t-call="pb_me_portal.pbme_card_leave"/>
+      <t t-call="pb_me_portal.pbme_card_week"/>
+      <t t-call="pb_me_portal.pbme_card_needs"/>
       <t t-foreach="pbme_extra" t-as="card"><t t-call="{{ card['template'] }}"/></t>
       <section class="pbme-b pbme-b-me" data-pbme-slot="me" aria-labelledby="pbme-me-h">
         <h2 class="visually-hidden" id="pbme-me-h">Me</h2>
@@ -318,6 +339,24 @@
        formatted from the date in the reader's language (the facade's own
        label is an English abbreviation). Not drawn when the workforce module
        is absent (`week` is None). -->
+  <template id="pbme_clock_locations" name="Clock punch locations">
+    <details t-if="clock.get('session')" class="pbme-clock-locations" open="open">
+      <summary>Clock-in / out GPS <span>View locations</span></summary>
+      <dl>
+        <t t-foreach="[('start', 'Clock-in'), ('end', 'Clock-out')]" t-as="punch">
+          <t t-set="loc" t-value="clock['session'].get(punch[0] + '_location')"/>
+          <dt t-out="punch[1]"/>
+          <dd>
+            <time t-out="clock['session']['started' if punch[0] == 'start' else 'ended']"/>
+            <a t-if="loc" t-att-href="loc['url']" target="_blank" rel="noopener noreferrer" t-att-aria-label="punch[1] + ' GPS ' + loc['label'] + ', open map'"><t t-out="loc['label']"/> ↗</a>
+            <span t-elif="punch[0] == 'end' and not clock['session']['ended']">Available after clock-out</span>
+            <span t-else="">Not recorded</span>
+          </dd>
+        </t>
+      </dl>
+    </details>
+  </template>
+
   <template id="pbme_card_week" name="Employee home: this week card">
     <t t-set="pbme_wk" t-value="pbme_home.get('week')"/>
     <section t-if="pbme_wk" class="pbme-b pbme-b-week" data-pbme-slot="week" aria-labelledby="pbme-week-h">
@@ -334,7 +373,7 @@
         <span class="pbme-clock-txt">
           <t t-if="pbme_clock['state'] == 'in'">
             <b>Clocked in since <t t-out="pbme_clock.get('since_label')"/></b>
-            <span class="pbme-clock-el"><span t-att-class="'' if pbme_open_m &gt;= 60 else 'd-none'" data-pbew-hwrap=""><span data-pbew-h="" t-out="pbme_open_m // 60"/> h </span><span data-pbew-m="" t-out="pbme_open_m % 60"/> m</span>
+            <span class="pbme-clock-el"><span t-att-class="'' if pbme_open_m &gt;= 60 else 'd-none'" data-pbew-hwrap=""><span data-pbew-h="" t-out="pbme_open_m // 60"/> h </span><span data-pbew-m="" t-out="pbme_open_m % 60"/> m <span data-pbew-s="" t-out="'%02d' % (pbme_clock.get('open_seconds', 0) % 60)"/> s</span>
           </t>
           <t t-else="">
             <b>Not clocked in</b>
@@ -353,6 +392,7 @@
           <button t-else="" type="submit" t-att-class="'pbme-btn pbme-clock-btn %s' % ('pbme-btn--out' if pbme_wk['pending'] else 'pbme-btn--pri')"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'log-in'"/><t t-set="isz" t-value="15"/></t>Clock in</button>
         </form>
       </div>
+      <t t-if="pbme_clock" t-call="pb_me_portal.pbme_clock_locations"><t t-set="clock" t-value="pbme_clock"/></t>
       <ol class="pbme-week">
         <t t-foreach="pbme_wk['days']" t-as="d">
           <li t-att-class="'pbme-day is-%s%s' % (d['state'], ' is-today' if d['is_today'] else '')" t-att-title="d.get('shift') or None">

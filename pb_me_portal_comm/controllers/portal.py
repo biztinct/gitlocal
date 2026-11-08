@@ -11,6 +11,7 @@ notice records the read under sudo after that guard.
 
 from odoo import http
 from odoo.http import request
+from odoo.exceptions import AccessError, ValidationError
 
 from odoo.addons.pb_me_portal.controllers.portal import PbMePortal
 
@@ -19,6 +20,20 @@ NOTICES_PAGE = 30
 
 
 class PbMeNoticesPortal(PbMePortal):
+
+    @http.route('/my/notices/<int:post_id>/interact', type='http', auth='user',
+                methods=['POST'], website=True)
+    def portal_notice_interact(self, post_id, action='', body='', comment_id=0, return_home='', **kw):
+        try:
+            self._notices().interact(self._ess_employee(), post_id, action, body, comment_id)
+        except AccessError:
+            return request.render('pb_me_portal_comm.portal_notice_missing', {'page_name': 'notices'}, status=404)
+        except ValidationError as exc:
+            return request.render('pb_me_portal_comm.portal_notice_action_error', {
+                'page_name': 'notices', 'error': str(exc), 'post_id': post_id,
+            }, status=400)
+        target = '/my' if return_home == '1' else '/my/notices/%s' % post_id
+        return request.redirect(target + '#notice-%s' % post_id, code=303)
 
     def _notices(self):
         return request.env['pb.me.notices']
@@ -63,7 +78,7 @@ class PbMeNoticesPortal(PbMePortal):
         if not emp:
             return request.redirect('/my')
         Notices = self._notices()
-        notice = Notices.get_my_notice(emp, post_id)
+        notice = Notices.get_my_notice(emp, post_id, comments_page=kw.get('comments_page', 1))
         if not notice:
             return request.render('pb_me_portal_comm.portal_notice_missing',
                                   {'page_name': 'notices'}, status=404)

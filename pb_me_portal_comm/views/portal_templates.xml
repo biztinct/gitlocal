@@ -60,31 +60,72 @@
        thumbnail when there is one), an unread dot on what is new, the door
        to the board. Empty, it says what will appear. `card` is in scope
        (pbme_bento's loop). -->
-  <template id="pbme_card_notices" name="Employee home: notices card">
+  <template id="pbme_card_notices" name="Employee home: announcement feed">
     <t t-set="nb" t-value="card['data']"/>
-    <section class="pbme-b pbme-b-extra pbme-b-notices" data-pbme-slot="notices" aria-labelledby="pbme-notices-h">
-      <div class="pbme-lab-row">
-        <h2 class="pbme-lab" id="pbme-notices-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'megaphone'"/><t t-set="isz" t-value="15"/></t>Notices<span t-if="nb['unread']" class="pbnb-new"><t t-out="nb['unread']"/> new</span></h2>
-        <a t-if="nb['total']" class="pbme-lab-link" t-att-href="nb['url']">All notices</a>
+    <section class="pbme-b-extra pbme-b-notices" data-pbme-slot="notices" aria-labelledby="pbme-notices-h">
+      <header class="pbnb-feed-heading">
+        <div><span class="pbme-eyebrow">Together at work</span><h2 id="pbme-notices-h">Company feed <span t-if="nb['unread']" class="pbnb-new"><t t-out="nb['unread']"/> new</span></h2><p>Announcements, conversations and the moments that connect us.</p></div>
+        <a class="pbme-btn pbme-btn--ghost" t-att-href="nb['url']">All notices</a>
+      </header>
+      <div class="pbnb-feed-guide"><span class="pbnb-avatar" aria-hidden="true">✦</span><div><b>Your company, in the loop</b><span>Read the latest updates, add a comment or show your support.</span></div></div>
+      <div t-if="nb['rows']" class="pbnb-feed">
+        <t t-foreach="nb['rows']" t-as="r"><t t-call="pb_me_portal_comm.feed_post"/></t>
       </div>
-      <ol t-if="nb['rows']" class="pbnb-cards">
-        <li t-foreach="nb['rows']" t-as="r" class="pbnb-cards-li">
-          <a t-att-class="'pbnb-card%s' % ('' if r['read'] else ' is-unread')" t-att-href="r['url']">
-            <span t-if="r['poster_url']" class="pbnb-card-img" aria-hidden="true"><img t-att-src="r['poster_url']" alt="" loading="lazy"/></span>
-            <span class="pbnb-card-body">
-              <span class="pbnb-card-meta"><i t-if="not r['read']" class="pbnb-dot" aria-hidden="true"/><span t-if="not r['read']" class="visually-hidden">Unread</span><t t-if="r['ago']" t-call="pb_me_portal_comm.pbnb_ago"><t t-set="ago" t-value="r['ago']"/></t></span>
-              <b class="pbnb-card-t" t-out="r['subject']"/>
-              <span t-if="r['excerpt']" class="pbnb-card-x" t-out="r['excerpt']"/>
-            </span>
-          </a>
-        </li>
-      </ol>
-      <div t-else="" class="pbme-empty-card">
-        <span class="pbme-badge pbme-badge--slate" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'megaphone'"/></t></span>
-        <p class="pbme-empty-h">No notices yet</p>
-        <p class="pbme-empty-d">When HR posts one, it lands here.</p>
+      <div t-else="" class="pbnb-feed-empty">
+        <span class="pbnb-empty-mark" aria-hidden="true">✦</span>
+        <h3>A place to stay connected</h3>
+        <p>Company announcements will appear here when they are shared with you. Join the conversation with likes and comments.</p>
+        <div class="pbnb-topics"><span>Company news</span><span>Team celebrations</span><span>Events and reminders</span></div>
+        <a class="pbme-btn pbme-btn--ghost" href="/my/notices">Open notice board</a>
       </div>
     </section>
+  </template>
+
+  <template id="feed_post" name="Announcement feed post">
+    <article class="pbnb-feed-post" t-att-id="'notice-%s' % r['post_id']">
+      <header><span class="pbnb-avatar" aria-hidden="true" t-out="(r['author'] or r['company'])[:1]"/><div><b t-out="r['author']"/><span><t t-out="r['company']"/> · <t t-if="r['ago']" t-call="pb_me_portal_comm.pbnb_ago"><t t-set="ago" t-value="r['ago']"/></t></span></div><span class="pbnb-post-tag">Announcement</span></header>
+      <div class="pbnb-feed-content"><h3><a t-att-href="r['url']" t-out="r['subject']"/></h3><p t-out="r['excerpt']"/><a t-att-href="r['url']" class="pbme-lab-link">Read full announcement <span t-if="not r['read']" class="pbnb-dot" aria-label="Unread"/></a></div>
+      <a t-if="r['poster_url']" t-att-href="r['url']" class="pbnb-feed-media"><img t-att-src="r['poster_url']" t-att-alt="r['subject']" loading="lazy"/></a>
+      <t t-call="pb_me_portal_comm.social_thread"><t t-set="return_home" t-value="True"/></t>
+    </article>
+  </template>
+
+  <template id="social_thread" name="Announcement reactions and comments">
+    <div class="pbnb-social">
+      <div class="pbnb-social-counts"><span><t t-out="r['like_count']"/> likes</span><a t-att-href="r['url'] + '#comments'" ><t t-out="r['comment_count']"/> comments</a></div>
+      <div class="pbnb-social-actions">
+        <form method="post" t-att-action="r['url'] + '/interact'">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <input type="hidden" name="return_home" t-att-value="'1' if return_home else ''"/>
+          <input type="hidden" name="action" t-att-value="'unlike' if r['liked'] else 'like'"/>
+          <button type="submit" t-att-class="'pbnb-action is-liked' if r['liked'] else 'pbnb-action'" t-att-aria-pressed="'true' if r['liked'] else 'false'"><span aria-hidden="true">♡</span> <t t-if="r['liked']">Liked</t><t t-else="">Like</t></button>
+        </form>
+        <a class="pbnb-action" t-att-href="'#comment-input-%s' % r['post_id']">Comment</a>
+      </div>
+      <p class="pbnb-audience-note">Comments are visible to people who received this announcement.</p>
+      <ol t-if="r['comments']" class="pbnb-comments">
+        <li t-foreach="r['comments']" t-as="comment">
+          <span class="pbnb-avatar pbnb-avatar--small" aria-hidden="true" t-out="comment['author'][:1]"/>
+          <div class="pbnb-comment"><b t-out="comment['author']"/><p t-out="comment['body']"/><div class="pbnb-comment-meta"><span><t t-call="pb_me_portal_comm.pbnb_ago"><t t-set="ago" t-value="comment['ago']"/></t></span>
+            <form t-if="comment['can_remove']" method="post" t-att-action="r['url'] + '/interact'">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><input type="hidden" name="action" value="remove_comment"/><input type="hidden" name="comment_id" t-att-value="comment['id']"/><input type="hidden" name="return_home" t-att-value="'1' if return_home else ''"/>
+              <button class="pbnb-remove" type="submit" aria-label="Remove comment">Remove</button>
+            </form>
+          </div></div>
+        </li>
+      </ol>
+      <a t-if="r.get('comments_more_url') or (return_home and r['comment_count'] &gt; len(r['comments']))" class="pbme-lab-link" t-att-href="r.get('comments_more_url') or (r['url'] + '#comments')">View more comments</a>
+      <form class="pbnb-composer" method="post" t-att-action="r['url'] + '/interact'">
+        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><input type="hidden" name="action" value="comment"/><input type="hidden" name="return_home" t-att-value="'1' if return_home else ''"/>
+        <label class="visually-hidden" t-att-for="'comment-input-%s' % r['post_id']">Write a comment</label>
+        <textarea t-att-id="'comment-input-%s' % r['post_id']" name="body" rows="2" maxlength="2000" required="required" placeholder="Add to the conversation…"/>
+        <button class="pbme-btn pbme-btn--primary" type="submit">Post comment</button>
+      </form>
+    </div>
+  </template>
+
+  <template id="portal_notice_action_error" name="Announcement action error">
+    <t t-call="portal.portal_layout"><div class="pbme pbnb"><div class="pbme-empty"><h2>Comment could not be saved</h2><p role="alert" t-out="error"/><a class="pbme-btn pbme-btn--ghost" t-att-href="'/my/notices/%s' % post_id">Back to announcement</a></div></div></t>
   </template>
 
   <!-- ============================================================= -->
@@ -166,7 +207,7 @@
     <t t-call="portal.portal_layout">
       <div class="pbme pbnb pbnb-one">
         <a class="pbnb-back" href="/my/notices"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>All notices</a>
-        <article class="pbnb-article" aria-labelledby="pbnb-title">
+        <article class="pbnb-article" aria-labelledby="pbnb-title" t-att-id="'notice-%s' % notice['post_id']">
           <header class="pbnb-article-h">
             <div class="pbnb-article-meta">
               <i t-if="was_unread" class="pbnb-dot is-fading" aria-hidden="true"/>
@@ -196,6 +237,9 @@
           </ul>
         </article>
 
+        <section class="pbnb-feed-post" id="comments" aria-label="Comments">
+          <t t-call="pb_me_portal_comm.social_thread"><t t-set="r" t-value="notice"/><t t-set="return_home" t-value="False"/></t>
+        </section>
         <nav class="pbnb-nav" aria-label="More notices" data-pbnb-nav="">
           <a t-if="notice['newer_url']" class="pbme-btn pbme-btn--ghost" t-att-href="notice['newer_url']" data-pbnb-newer=""><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>Newer</a>
           <span t-else=""/>

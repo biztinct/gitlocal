@@ -18,7 +18,7 @@ import re
 from psycopg2 import IntegrityError
 
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tools.mail import html_to_inner_content
 
 _logger = logging.getLogger(__name__)
@@ -127,6 +127,8 @@ class PbMeNotices(models.AbstractModel):
             'sent_on': sent_on,
             'ago': self._ago(sent_on),
             'excerpt': self._excerpt(post.body_html),
+            'author': post.create_uid.name,
+            'company': post.company_id.name,
             'has_poster': bool(posters),
             'poster_url': image['url'] if image else '',
             'poster_count': len(posters),
@@ -149,10 +151,13 @@ class PbMeNotices(models.AbstractModel):
             deliveries = deliveries.filtered(lambda d: d.post_id.id not in read_ids)
         if limit:
             deliveries = deliveries[:int(limit)]
-        return [self._row(d, read_ids) for d in deliveries]
+        rows = [self._row(d, read_ids) for d in deliveries]
+        for row in rows:
+            row.update(self._social(emp, row['post_id'], limit=2))
+        return rows
 
     @api.model
-    def get_my_notice(self, emp, post_id):
+    def get_my_notice(self, emp, post_id, comments_page=1):
         """One notice for ``emp`` — the row plus the body and every poster —
         or ``None`` when there is no delivery row for them (the ownership
         guard: a notice the person was never sent does not exist for them)."""
@@ -174,6 +179,13 @@ class PbMeNotices(models.AbstractModel):
             'body_html': post.body_html or '',
             'posters': self._posters(post),
         })
+        try:
+            comments_page = max(1, min(1000, int(comments_page)))
+        except (TypeError, ValueError):
+            comments_page = 1
+        row.update(self._social(emp, post_id, limit=100, offset=(comments_page - 1) * 100))
+        row['comments_more_url'] = ('/my/notices/%s?comments_page=%s#comments' % (post_id, comments_page + 1)
+                                    if row['comment_count'] > comments_page * 100 else None)
         # older and newer neighbours on the person's own board
         ids = self._deliveries(emp).post_id.ids
         at = ids.index(post_id) if post_id in ids else -1
@@ -181,6 +193,63 @@ class PbMeNotices(models.AbstractModel):
         row['older_url'] = ('/my/notices/%s' % ids[at + 1]
                             if 0 <= at < len(ids) - 1 else None)
         return row
+
+    def _social(self, emp, post_id, limit=2, offset=0):
+        """Only called after a delivery check; no mail.thread/email side effects."""
+        domain = [('post_id', '=', post_id)]
+        Comment = self.env['pb.me.notice.comment'].sudo()
+        comments = Comment.search(domain, order='create_date desc, id desc', limit=limit, offset=offset)
+        Reaction = self.env['pb.me.notice.reaction'].sudo()
+        moderator = self.env.user.has_group('hr.group_hr_manager') and (
+            self.env['pb.hr.comm.post'].sudo().browse(post_id).company_id in self.env.companies)
+        return {
+            'comment_count': Comment.search_count(domain),
+            'like_count': Reaction.search_count(domain),
+            'liked': bool(Reaction.search_count(domain + [('employee_id', '=', emp.id)])),
+            'comments': [{
+                'id': c.id, 'author': c.employee_id.name, 'body': c.body,
+                'ago': self._ago(c.create_date),
+                'can_remove': c.employee_id == emp or moderator,
+            } for c in reversed(comments)],
+        }
+
+    def interact(self, emp, post_id, action, body='', comment_id=0):
+        """Audience-checked, session-owned interactions; never accept an author."""
+        emp = self._own(emp)
+        try:
+            post_id = int(post_id)
+            comment_id = int(comment_id or 0)
+        except (TypeError, ValueError):
+            raise AccessError(self.env._('Announcement unavailable.'))
+        if not emp or post_id <= 0 or not self._deliveries(emp, post_id):
+            raise AccessError(self.env._('Announcement unavailable.'))
+        # Serialize each person's submissions, including repeated likes.
+        self.env.cr.execute('SELECT id FROM hr_employee WHERE id = %s FOR UPDATE', [emp.id])
+        if action == 'comment':
+            body = str(body or '').strip()
+            if not body or len(body) > 2000:
+                raise ValidationError(self.env._('Write a comment of 1 to 2,000 characters.'))
+            Comment = self.env['pb.me.notice.comment'].sudo()
+            previous = Comment.search([('employee_id', '=', emp.id), ('post_id', '=', post_id)], order='id desc', limit=1)
+            if previous and previous.body == body and (fields.Datetime.now() - previous.create_date).total_seconds() < 60:
+                return True
+            Comment.create({'post_id': post_id, 'employee_id': emp.id, 'body': body})
+        elif action in ('like', 'unlike'):
+            Reaction = self.env['pb.me.notice.reaction'].sudo()
+            existing = Reaction.search([('post_id', '=', post_id), ('employee_id', '=', emp.id)])
+            if action == 'like' and not existing:
+                Reaction.create({'post_id': post_id, 'employee_id': emp.id})
+            elif action == 'unlike':
+                existing.unlink()
+        elif action == 'remove_comment':
+            comment = self.env['pb.me.notice.comment'].sudo().search([('id', '=', comment_id), ('post_id', '=', post_id)])
+            moderator = self.env.user.has_group('hr.group_hr_manager') and comment.company_id in self.env.companies
+            if not comment or (comment.employee_id != emp and not moderator):
+                raise AccessError(self.env._('You cannot remove this comment.'))
+            comment.write({'active': False})
+        else:
+            raise ValidationError(self.env._('Choose a valid action.'))
+        return True
 
     @api.model
     def notice_counts(self, emp):

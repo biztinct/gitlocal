@@ -431,10 +431,14 @@ class TestMeHomeCardsPage(HttpCase):
             self.assertIn('No shifts scheduled this week', page)
         doc = lxml_html.fromstring(page)
         slots = doc.xpath('//*[@data-pbme-slot]/@data-pbme-slot')
-        self.assertEqual(slots[0], 'pay')
+        self.assertEqual(slots[0], 'needs' if 'notices' in slots else 'pay')
         # TIERS T3b: cards other modules add (`_pbme_extra_cards`, e.g. the
         # notice board's) sit between Needs you and the Me strip
         self.assertEqual(slots[-1], 'me')
         extra = len(self.env['pb.me.home'].with_user(user)._pbme_extra_cards_safe(
             self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)))
-        self.assertEqual(slots[-2 - extra], 'needs')
+        if 'notices' in slots:
+            self.assertLess(slots.index('needs'), slots.index('notices'))
+            self.assertLess(slots.index('notices'), slots.index('week'))
+        else:
+            self.assertEqual(slots[-2 - extra], 'needs')

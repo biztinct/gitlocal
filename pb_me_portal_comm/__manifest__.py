@@ -28,7 +28,7 @@ READ RECEIPTS are this module's one table, `pb.me.notice.read` (announcement,
 employee, when). No field is added to pb_hr_comm. Portal seams are sudo after
 an ownership guard (ledger T-R11): no portal ACL row exists.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Hidden/Tools',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

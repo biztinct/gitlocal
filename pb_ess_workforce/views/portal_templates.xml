@@ -537,6 +537,7 @@
                     <span class="pbew-clockbtn__timer" data-pbew-elapsed="">
                       <span t-att-class="'pbew-clockbtn__part%s' % ('' if open_m &gt;= 60 else ' d-none')" data-pbew-hwrap=""><b data-pbew-h="" t-out="open_m // 60"/> h</span>
                       <span class="pbew-clockbtn__part"><b data-pbew-m="" t-out="open_m % 60"/> m</span>
+                      <span class="pbew-clockbtn__part"><b data-pbew-s="" t-out="'%02d' % (clock.get('open_seconds', 0) % 60)"/> s</span>
                     </span>
                     <span class="pbew-clockbtn__since">since <t t-out="clock.get('since_label')"/></span>
                     <span class="pbew-clockbtn__cta"><t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'log-out'"/><t t-set="isz" t-value="15"/></t>Clock out</span>
@@ -569,6 +570,7 @@
           </div>
 
           <div class="pbew-clock__side">
+            <t t-call="pb_me_portal.pbme_clock_locations"/>
             <div class="pbme-card pbew-today">
               <div class="pbew-today__l">Today</div>
               <div class="pbew-today__v" data-pbew-today="">

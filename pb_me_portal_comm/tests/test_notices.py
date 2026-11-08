@@ -10,7 +10,9 @@ import base64
 import logging
 from datetime import datetime, timedelta
 
+from odoo import http
 from odoo.tests import HttpCase, TransactionCase, tagged
+from odoo.exceptions import AccessError, ValidationError
 
 from odoo.addons.pb_me_portal.tests.test_portal_accounts import (
     _make_share, _pin_dbfilter,
@@ -67,6 +69,49 @@ class TestT3bNoticesModel(TransactionCase):
         cls.other, cls.other_emp = _make_share(
             cls.env, 'test_t3b_notice_other', 'Rowan Notice Other')
         cls.Notices = cls.env['pb.me.notices'].with_user(cls.share)
+
+    def test_social_audience_identity_and_safe_text(self):
+        mine = _post(self.env, 'Social audience test')
+        _deliver(self.env, mine, self.share_emp)
+        self.Notices.interact(self.share_emp, mine.id, 'comment', '<script>alert(1)</script>')
+        comment = self.env['pb.me.notice.comment'].sudo().search([('post_id', '=', mine.id)])
+        self.assertEqual(comment.employee_id, self.share_emp)
+        self.assertEqual(comment.create_uid, self.share)
+        self.assertEqual(self.Notices.get_my_notice(self.share_emp, mine.id)['comment_count'], 1)
+        with self.assertRaises(AccessError):
+            self.Notices.interact(self.other_emp, mine.id, 'comment', 'Forged author')
+        with self.assertRaises(AccessError):
+            self.env['pb.me.notices'].with_user(self.other).interact(self.other_emp, mine.id, 'like')
+        with self.assertRaises(AccessError):
+            self.env['pb.me.notice.comment'].with_user(self.share).search([])
+        with self.assertRaises(ValidationError):
+            self.Notices.interact(self.share_emp, mine.id, 'comment', ' ')
+        with self.assertRaises(ValidationError):
+            self.Notices.interact(self.share_emp, mine.id, 'comment', 'x' * 2001)
+
+    def test_social_idempotency_and_remove_own_only(self):
+        post = _post(self.env, 'Social interactions')
+        _deliver(self.env, post, self.share_emp)
+        _deliver(self.env, post, self.other_emp)
+        for unused in range(2):
+            self.Notices.interact(self.share_emp, post.id, 'like')
+            self.Notices.interact(self.share_emp, post.id, 'comment', 'Thanks for the update')
+        row = self.Notices.get_my_notice(self.share_emp, post.id)
+        self.assertEqual((row['like_count'], row['comment_count'], row['liked']), (1, 1, True))
+        comment_id = row['comments'][0]['id']
+        with self.assertRaises(AccessError):
+            self.env['pb.me.notices'].with_user(self.other).interact(self.other_emp, post.id, 'remove_comment', comment_id=comment_id)
+        self.Notices.interact(self.share_emp, post.id, 'remove_comment', comment_id=comment_id)
+        self.Notices.interact(self.share_emp, post.id, 'unlike')
+        row = self.Notices.get_my_notice(self.share_emp, post.id)
+        self.assertEqual((row['like_count'], row['comment_count']), (0, 0))
+        self.assertFalse(self.env['pb.me.notice.comment'].sudo().browse(comment_id).active)
+
+    def test_social_drafts_and_archived_posts_are_inaccessible(self):
+        post = _post(self.env, 'Still scheduled', sent=False)
+        _deliver(self.env, post, self.share_emp)
+        with self.assertRaises(AccessError):
+            self.Notices.interact(self.share_emp, post.id, 'like')
 
     # T3b.6
     def test_t3b_6_own_sent_rows_and_read_receipts(self):
@@ -171,6 +216,23 @@ class TestT3bNoticesPages(HttpCase):
     def _text(self, response):
         return (response.text or '').replace('&#39;', "'")
 
+    def test_social_post_rendering_and_permission(self):
+        post = _post(self.env, 'Conversation HTTP test')
+        _deliver(self.env, post, self.share_emp)
+        self.authenticate(self.share.login, PASSWORD)
+        url = '/my/notices/%s/interact' % post.id
+        response = self.url_open(url, data={'action': 'comment', 'body': '<script>alert("x")</script>', 'csrf_token': http.Request.csrf_token(self)}, timeout=60)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('&lt;script&gt;', response.text)
+        self.assertNotIn('<script>alert("x")</script>', response.text)
+        self.assertIn('1 comments', response.text)
+        response = self.url_open(url, data={'action': 'like', 'return_home': '1', 'csrf_token': http.Request.csrf_token(self)}, timeout=60)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('aria-pressed="true"', response.text)
+        self.authenticate(self.other.login, PASSWORD)
+        response = self.url_open(url, data={'action': 'comment', 'body': 'Not a recipient', 'csrf_token': http.Request.csrf_token(self)}, timeout=60)
+        self.assertEqual(response.status_code, 404)
+
     # T3b.7
     def test_t3b_7_board_notice_and_home(self):
         self.authenticate(self.share.login, PASSWORD)
@@ -180,7 +242,7 @@ class TestT3bNoticesPages(HttpCase):
         self.assertIn('When HR posts one, it lands here.', empty.text)
         home = self.url_open('/my', timeout=60)
         self.assertIn('pbme-b-notices', home.text)
-        self.assertIn('When HR posts one, it lands here.', home.text)
+        self.assertIn('A place to stay connected', home.text)
         self.assertIn('href="/my/notices"', home.text, 'the Notices tile')
 
         post = _post(self.env, 'T3b Canteen reopens', poster=True)
@@ -198,7 +260,8 @@ class TestT3bNoticesPages(HttpCase):
         home = self.url_open('/my', timeout=60)
         self.assertIn('T3b Canteen reopens', home.text, 'the Notices card')
         self.assertIn('1 unread notice', home.text, 'the needs-you row')
-        self.assertIn('pbnb-card is-unread', home.text)
+        self.assertIn('pbnb-feed-post', home.text)
+        self.assertIn('Company feed', home.text)
 
         page = self.url_open('/my/notices/%s' % post.id, timeout=60)
         self.assertEqual(page.status_code, 200)
