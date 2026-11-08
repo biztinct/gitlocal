@@ -15,7 +15,9 @@ MIN_LENGTH = 8
 
 class FirstPassword(http.Controller):
 
-    @http.route('/biz_access/first-password', type='http', auth='user',
+    # web.login_layout becomes website.layout when Website is installed.
+    # Resolve its website/context before rendering, including after validation.
+    @http.route('/biz_access/first-password', type='http', auth='user', website=True,
                 methods=['GET', 'POST'], sitemap=False)
     def first_password(self, new1=None, new2=None, **_kw):
         user = request.env.user

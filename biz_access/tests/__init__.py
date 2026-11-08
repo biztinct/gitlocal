@@ -11,3 +11,4 @@ from . import test_access_studio
 from . import test_pdr_attribute_hook
 from . import test_account_password
 from . import test_account_desk
+from . import test_first_password
