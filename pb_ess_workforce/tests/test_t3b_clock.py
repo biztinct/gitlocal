@@ -356,10 +356,12 @@ class TestT3bClockPages(HttpCase):
         self.assertIn('pbew-clockbtn is-out is-just-out', out.text)
         att.invalidate_recordset()
         self.assertTrue(att.check_out)
-        sheet = self.url_open('/my/work/timesheet', timeout=60)
+        self.assertAlmostEqual(att.worked_hours, 1.5, places=2)
+        # Select the punch's employee-local week explicitly: the server can
+        # still be on Sunday when this employee's Monday has already begun.
+        punch_day = att._pb_local_day({}).isoformat()
+        sheet = self.url_open('/my/work/timesheet?week=%s' % punch_day, timeout=60)
         self.assertEqual(sheet.status_code, 200)
-        # the day of the punch (today, or yesterday when the run sits in the
-        # first 90 minutes after midnight) reads 1.5 h worked
         self.assertRegex(sheet.text, r'<td class="pbme-num">1\.5</td>',
                          'the punch reached the timesheet')
         home = self.url_open('/my', timeout=60)
