@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const c=vm.createContext({console,assert});vm.runInContext(['forms-model.js','model.js','integration-model.js'].map(f=>fs.readFileSync(path.join(__dirname,f),'utf8')).join('\n'),c);
+const c=vm.createContext({console,assert});vm.runInContext(['forms-model.js','model.js','integration-model.js','modules-model.js'].map(f=>fs.readFileSync(path.join(__dirname,f),'utf8')).join('\n'),c);
 let count=0;function test(name,code){vm.runInContext(`(()=>{${code}})()`,c);console.log('PASS',name);count++}
 test('Required fields stop submission before Matrix opens',`const r=createRun(freshDraft('connected'));assert.equal(r.states.details,'waiting');const result=respond(r,'details','complete',{});assert(result.fields.purpose);assert(result.fields.category);assert(result.fields.billable);assert.equal(r.states.matrix,undefined);assert.equal(r.outputs.details,undefined);`);
 test('Boolean false is an answer; hidden required lookup is omitted',`const form=expenseForm(),a=sampleFormAnswers(form,SAMPLE);a.billable=false;a.customer='Not allowed';const result=validateForm(form,a,SAMPLE);assert.deepEqual(Object.keys(result.errors),[]);assert.equal(result.answers.billable,false);assert(!Object.hasOwn(result.answers,'customer'));`);

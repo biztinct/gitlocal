@@ -1,6 +1,6 @@
 /* Semantic checks for the POC graph and side-effect-free rehearsal runtime. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const c=vm.createContext({console});vm.runInContext(['forms-model.js','model.js','integration-model.js'].map(f=>fs.readFileSync(path.join(__dirname,f),'utf8')).join('\n'),c);
+const c=vm.createContext({console});vm.runInContext(['forms-model.js','model.js','integration-model.js','modules-model.js'].map(f=>fs.readFileSync(path.join(__dirname,f),'utf8')).join('\n'),c);
 let count=0;function test(name,code){vm.runInContext(`(()=>{${code}})()`,c);console.log('PASS',name);count++}c.assert=assert;
 test('Every template validates and completes',`for(const key of Object.keys(TEMPLATES)){const d=freshDraft(key);assert.equal(issues(d).filter(i=>i.severity==='error').length,0,key);assert.equal(autoRun(d,{amount:TEMPLATES[key].value}).status,'complete',key);assert.equal(diffDraft(d,freshDraft(key)).length,0,key)}`);
 test('High-value branch has two dependent steps; low-value skips both',`const d=freshDraft('expense'),high=autoRun(d,{amount:2400}),low=autoRun(d,{amount:500});assert.equal(high.states.evidence,'done');assert.equal(high.states.finance,'done');assert.equal(low.states.evidence,'skipped');assert.equal(low.states.finance,'skipped');assert.equal(low.states.email,'done');assert(high.trace.findIndex(t=>t.id==='email')>high.trace.findIndex(t=>t.id==='finish'));`);

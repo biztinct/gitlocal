@@ -1,4 +1,4 @@
-Payobook Workflow Studio — interactive design POC — forms and shared ownership revision
+Payobook Workflow Studio — interactive design POC — stages and shared module settings revision
 
 Deliverable: ../workflow-studio-poc.html (self-contained; also works offline).
 Hosted preview: https://payobook.com/preview/workflow-studio/
@@ -133,3 +133,56 @@ Additional checks:
   node docs/design/workflow-studio/test-forms-ui.cjs
 The latter uses the same Chrome/environment settings as the existing UI checks.
 Source additions: forms-model.js, integration-model.js, forms-ui.js.
+
+
+Stages and shared module settings revision (9 November 2026)
+
+Try Workflows -> Hiring · candidate journey -> Stages / Messages & settings.
+One shared contextual workspace is recommended, with mature module components
+and execution owners underneath. Design notes -> Stages & module settings
+compares rebuilding all settings, navigating existing screens, and this hybrid.
+
+Working POC features:
+- Create, describe, reorder and remove workflow-only stage groups; preserve
+  membership and validate approval dependencies when moving groups.
+- Link native Hiring stages and edit a shared sample name/meaning. Both workflow
+  and Hiring settings entry points resolve the same browser-local source.
+- Native Hiring stage creation is a labelled proposal: current pb_key choices
+  are fixed. Production requires extending keys/families, presets, guards,
+  visibility and event handling. No live native stages are created by this POC.
+- Show existing stage-entry behaviour before users add another action. Reuse the
+  existing rule and sender; choosing an owned message adds a reference only.
+- Shared company email editor with actual Hiring-style tokens, candidate preview,
+  English/Vietnamese/Bahasa tabs, English fallback, validation and impact scope.
+- Global email switch, existing sample rule toggle, source-labelled settings and
+  specialist navigation boundary with return context. Sample source edits persist
+  locally; no live Hiring records are fetched or changed.
+- Rehearsal uses a guarded stage move, one existing phone invitation, typed
+  candidate follow-up, Matrix offer approval, and an offer-preparation task.
+  Offer approval is not offer sending. Joined is protected by its native action.
+
+Preserved source semantics and implementation boundaries:
+- pb_hiring owns pipeline stages, role-specific stage choices/presets, candidate
+  visibility, event automations, queued work and candidate delivery. Reuse its
+  existing facades; do not add competing base_automation or native template_id
+  email triggers for events Hiring already dispatches.
+- Candidate emails are mutable pb.hiring.message.template company/key records.
+  Future sends use shared edits; they are not pinned to workflow versions.
+  Internal mail.template remains distinct with its existing administrator editor.
+- Hiring application form starters are copied per role. Reuse/extract the richer
+  existing typed form editor; workflow collection is for additional information.
+  Application-form and role-policy controls in this HTML are ownership previews,
+  not a replacement editor. Specialist calendars/integrations retain their screen.
+- This POC freezes fictional source records per rehearsal for repeatable examples.
+  Live permissions, shared audit, cross-tab/server concurrency, component extraction
+  and adapters remain production implementation work.
+- Duplicate-check demos cover this sample catalogue. Production needs a complete
+  event/action/scope/recipient inventory, including built-ins and delayed jobs.
+
+Code evidence: pb_hiring/models/journey.py, board_p1.py, comms_p8.py,
+automation_p8.py, hooks_p8.py, forms_p2.py; existing Hiring setup/form JS panels.
+Source additions: modules-model.js, modules-ui.js.
+Additional checks:
+  node docs/design/workflow-studio/test-modules.cjs
+  node docs/design/workflow-studio/test-modules-ui.cjs
+The Chrome suite uses the same URL, Playwright and screenshot settings above.

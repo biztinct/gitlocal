@@ -7,7 +7,7 @@ HERE = Path(__file__).resolve().parent
 def render():
     style = (HERE / 'style.css').read_text().replace('/* FONT */', base64.b64encode((HERE / 'InterVariable.woff2').read_bytes()).decode())
     style = '/* Embedded Inter font licence:\n' + (HERE / 'Inter-OFL.txt').read_text().replace('*/', '* /') + '\n*/\n' + style
-    script = '\n'.join((HERE / name).read_text() for name in ('ui.js', 'forms-model.js', 'model.js', 'integration-model.js', 'research.js', 'forms-ui.js', 'app.js'))
+    script = '\n'.join((HERE / name).read_text() for name in ('ui.js', 'forms-model.js', 'model.js', 'integration-model.js', 'modules-model.js', 'research.js', 'forms-ui.js', 'modules-ui.js', 'app.js'))
     return (HERE / 'shell.html').read_text().replace('/* STYLES */', style).replace('/* SCRIPT */', script)
 
 if __name__ == '__main__':

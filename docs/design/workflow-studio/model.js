@@ -50,6 +50,7 @@ function makeNode(type,stage,id=uid('step')){
  return n;
 }
 function freshDraft(key){
+ if(key==='connected_hiring')return hiringDraft();
  if(TEMPLATES[key].integrated)return integratedDraft(key);
  const t=TEMPLATES[key],d=migrate({template:key,name:t.name,event:t.event,scope:{company:'Demo company',match:'all',rules:[]},stages:clone(t.stages),nodes:clone(t.nodes),revision:0});
  d.nodes.filter(n=>n.type==='email').forEach(n=>{n.body='Hi {{employee.name}}, your request for {{request.amount}} has reached {{request.status}}. View the next steps in Payobook.'});
@@ -94,6 +95,7 @@ function compile(d){
  }}seq(d.order,null);return {nodes:visual,edges};
 }
 function issues(d){
+ d=materializeSources(d);
  const out=[],add=(id,text,severity='error')=>out.push({id,text,severity});
  if(!d.name.trim()||!d.event.trim())add('trigger','Name the process and its start event.');
  if(!d.scope.company.trim())add('trigger','Choose a company boundary.');
@@ -106,6 +108,7 @@ function issues(d){
   if(counts[n.id]!==1)add(n.id,'Each step must belong to exactly one route.');
   if(!n.title.trim())add(n.id,'Give this step a name.');
   if(n.stage<0||n.stage>=d.stages.length)add(n.id,'Select a valid phase.');
+  if(['module_move','module_rule'].includes(n.type)&&d.module!=='hiring')add(n.id,'Hiring-owned steps require a Hiring process.');
   if(HUMAN.includes(n.type)){
    if(!n.owner||n.owner==='System')add(n.id,'Choose a person or responsibility.');
    if(!Number.isFinite(+n.due)||+n.due<1)add(n.id,'Set a positive working-day deadline.');
@@ -130,11 +133,12 @@ function issues(d){
   }
  }
  for(const r of d.scope.rules)if(r.value===''||r.field==='amount'&&!Number.isFinite(+r.value)||['gt','lt','gte'].includes(r.op)&&r.field!=='amount')add('trigger','Complete eligibility filters with compatible values.');
- return out.concat(integrationIssues(d));
+ return out.concat(integrationIssues(d),sourceIssues(d));
 }
 function tokenValue(key,run){const map={'employee.name':run.facts.employee,'employee.email':run.facts.email,'request.amount':run.facts.amount,'request.department':run.facts.department,'request.country':run.facts.country,'request.status':run.recordState};if(Object.hasOwn(map,key))return map[key];const fm=key.match(/^step\.([^.]+)\.field\.([^.]+)$/);if(fm){const v=run.outputs[fm[1]]?.[fm[2]];return v===undefined?undefined:displayAnswer(v);}const m=key.match(/^step\.(.+)\.result$/);return m?run.outputs[m[1]]:undefined;}
 function expandMessage(body,run){return body.replace(/\{\{([^}]+)\}\}/g,(_,key)=>{const v=tokenValue(key.trim(),run);if(v===undefined)throw Error('No value is available for '+key.trim());return String(v)});}
 function createRun(d,facts={}){
+ d=materializeSources(d);
  const run={id:uid('run'),draft:clone(d),facts:{...SAMPLE,...facts},status:'running',states:{},outputs:{},choices:{},trace:[],answers:{},attempts:{},failures:{},returns:{},recordState:d.stages[0].state,clock:0,at:new Date().toISOString()};
  const errors=issues(d).filter(x=>x.severity==='error');if(errors.length){run.status='invalid';run.trace.push({id:'trigger',title:'Definition needs attention',text:errors.map(e=>e.text).join(' '),status:'blocked'});return run;}
  const matched=d.scope.rules.map(r=>matches(r,run.facts));if(matched.length&&!(d.scope.match==='all'?matched.every(Boolean):matched.some(Boolean))){run.status='excluded';run.trace.push({id:'trigger',title:'Record excluded',text:'The example does not match the eligibility filters.',status:'skipped'});return run;}advanceRun(run);return run;
@@ -158,6 +162,8 @@ function advanceRun(run){
    if(n.join==='any'?count>0:count===n.branches.length){run.states[id]='done';run.outputs[id]=n.join==='any'?'First route completed; remaining work cancelled':'All routes completed';logRun(run,n,run.outputs[id]+'; join released.');return true;}return false;
   }
   if(n.type==='subprocess'){run.states[id]='active';if(seq(n.steps)){run.states[id]='done';run.outputs[id]='Completed '+n.component.name+' v'+n.component.version;logRun(run,n,run.outputs[id]);return true}return false;}
+  if(n.type==='module_rule'){run.states[id]='done';run.outputs[id]='Existing Hiring event owns this message';logRun(run,n,'Reference only. The existing Hiring event and sender own delivery; no additional message was sent.');return true;}
+  if(n.type==='module_move')return moveHiringStage(run,n);
   if(n.type==='matrix')return advanceMatrix(run,n);
   if(HUMAN.includes(n.type)){
    let why='';if(run.facts.access==='denied')why='The assigned person cannot read or act on this record.';else if(n.independent&&run.facts.actor==='self'&&n.type==='approval')why='The approver is also the requester. An independent person is required.';else if(n.owner==='Their manager'&&run.facts.manager!=='available'&&(!n.delegate||run.facts.manager==='expired'))why=n.delegate?'Approval cover has expired.':'The manager is away and cover is disabled.';else if(n.owner==='Policy result'&&!run.facts.policyReviewer)why='No decision table result is available.';
