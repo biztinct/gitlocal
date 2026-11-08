@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Build one self-contained HTML file, usable offline or on the preview host."""
+"""Build the product UI as one offline-capable HTML artifact."""
+import base64
 from pathlib import Path
-here = Path(__file__).resolve().parent
-html = (here / 'shell.html').read_text()
-html = html.replace('/* STYLES */', (here / 'style.css').read_text())
-html = html.replace('/* SCRIPT */', '\n'.join((here / name).read_text() for name in ('model.js', 'research.js', 'app.js')))
-(here.parent / 'workflow-studio-poc.html').write_text(html)
-print('Built docs/design/workflow-studio-poc.html')
+HERE = Path(__file__).resolve().parent
+
+def render():
+    style = (HERE / 'style.css').read_text().replace('/* FONT */', base64.b64encode((HERE / 'InterVariable.woff2').read_bytes()).decode())
+    style = '/* Embedded Inter font licence:\n' + (HERE / 'Inter-OFL.txt').read_text().replace('*/', '* /') + '\n*/\n' + style
+    script = '\n'.join((HERE / name).read_text() for name in ('ui.js', 'model.js', 'research.js', 'app.js'))
+    return (HERE / 'shell.html').read_text().replace('/* STYLES */', style).replace('/* SCRIPT */', script)
+
+if __name__ == '__main__':
+    (HERE.parent / 'workflow-studio-poc.html').write_text(render())
+    print('Built docs/design/workflow-studio-poc.html')

@@ -11,17 +11,20 @@ HOST = "Payobook19v2"
 head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
                       capture_output=True, text=True, check=True).stdout.strip()
 paths = [HERE.parent / "workflow-studio-poc.html", HERE / "nginx-location.conf"]
-sources = [p for p in HERE.iterdir() if p.is_file() and p.suffix in ('.js', '.css', '.html', '.py', '.cjs', '.txt')]
+sources = [p for p in HERE.iterdir() if p.is_file() and p.suffix in ('.js', '.css', '.html', '.py', '.cjs', '.txt', '.woff2')]
 for path in paths + sources:
     rel = str(path.relative_to(ROOT))
     committed = subprocess.run(["git", "-C", str(ROOT), "show", head + ":" + rel],
                                capture_output=True, check=True).stdout
     if committed != path.read_bytes():
         raise SystemExit("Commit the latest preview before deploying: " + rel)
-expected = (HERE / 'shell.html').read_text().replace('/* STYLES */', (HERE / 'style.css').read_text()).replace('/* SCRIPT */', '\n'.join((HERE / name).read_text() for name in ('model.js', 'research.js', 'app.js')))
+import importlib.util
+build_spec = importlib.util.spec_from_file_location('workflow_build', HERE / 'build.py')
+build = importlib.util.module_from_spec(build_spec)
+build_spec.loader.exec_module(build)
+expected = build.render()
 if expected != paths[0].read_text():
     raise SystemExit("Rebuild the standalone HTML before committing and deploying")
-import importlib.util
 spec = importlib.util.spec_from_file_location('verify_live', HERE / 'verify-live.py')
 audit = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(audit)

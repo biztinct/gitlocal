@@ -53,3 +53,32 @@ It verifies committed source/build consistency and the latest combined custom
 module content and installed versions across payobook, payobook_template,
 p0clone and rize. Unchanged modules/databases need no upgrade. Standard server
 addons, retired ABM, customer assets and concurrent-session work are preserved.
+
+Product UI revision — implementation reference
+
+This POC is the visual and interaction specification for the end-product UI.
+The live implementation should reuse its design tokens, components, type scale,
+icons, spacing and disclosure patterns. Connect real adapters and data underneath
+this interface when implementing the orchestration services. Keep implementation
+notes in Design notes; they are not part of the primary end-user workflow.
+
+Product contract:
+- Inter variable font embedded offline with its SIL Open Font License.
+- 16 px step titles, 14-16 px form text, 12-13 px supporting metadata.
+- Neutral work surface, restrained borders, purposeful action colours and
+  selected-step emphasis; primary controls at least 44 px high.
+- Six everyday actions first; advanced actions under More possibilities/search.
+- Open the step inspector on selection. Preserve field focus, scroll context
+  and expanded advanced sections while editing. Escape returns to the step.
+- Grouped paths are summarised until expanded. One model across Journey,
+  Flowchart and People. Focus view hides side panels.
+- Build / Try it out / Review / Activity are the product navigation.
+- 150 ms feedback and 220 ms panel transitions, with reduced-motion support.
+- Desktop inline configuration, tablet/mobile drawers, independently scrolling
+  work areas. Mobile fields retain 16 px text.
+- UI blueprint in Design notes records the same contract and benchmark sources.
+
+Product UX checks: node docs/design/workflow-studio/test-ux.cjs
+Uses the same PLAYWRIGHT_MODULE, WORKFLOW_TEST_URL and WORKFLOW_SCREENSHOT_DIR
+settings as test-ui.cjs. Checks type sizes, key contrast pairs, keyboard focus,
+progressive disclosure, laptop/mobile layouts and reduced motion.
