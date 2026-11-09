@@ -20,9 +20,10 @@ def entry(state,text):
 active={}
 for line in notes.read_text().splitlines():
  p=[x.strip() for x in line.split('|')]
- if len(p)!=7:continue
- if p[2]=='START':active[p[1]]=line
- elif p[2] in ('DONE','FAILED'):active.pop(p[1],None)
+ if len(p)<3:continue
+ name=p[1].split(' (',1)[0]
+ if p[2]=='START':active[name]=line
+ elif p[2].endswith(('DONE','FAILED')):active.pop(name,None)
 assert not active,active
 assert run(['systemctl','is-active','odoo-server'],capture_output=True,text=True).stdout.strip()=='active'
 tracked=run(['git','-c','safe.directory=/odoo/odoo-server','-C','/odoo/odoo-server','ls-files','--','addons'],capture_output=True,text=True).stdout.splitlines()
