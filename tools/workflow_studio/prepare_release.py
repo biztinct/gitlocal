@@ -18,10 +18,10 @@ modules={}
 for p in base.iterdir():
  if p.name in standard or not (p/'__manifest__.py').is_file():continue
  files={}
- for f in sorted(p.rglob('*')):
+ for f in sorted(p.rglob('*'),key=lambda f:str(f.relative_to(p))):
   if f.is_file() and not f.is_symlink() and '__pycache__' not in f.parts and f.suffix not in ('.pyc','.pyo') and f.name!='.DS_Store':files[str(f.relative_to(p))]=hashlib.sha256(f.read_bytes()).hexdigest()
  h=hashlib.sha256()
- for f in sorted(p.rglob('*')):
+ for f in sorted(p.rglob('*'),key=lambda f:str(f.relative_to(p))):
   if str(f.relative_to(p)) in files:h.update(str(f.relative_to(p)).encode()+b'\0'+f.read_bytes()+b'\0')
  modules[p.name]={'files':files,'tree':h.hexdigest()}
 print(json.dumps({'standard':sorted(standard),'modules':modules}))
@@ -51,6 +51,7 @@ for name in modules:
                           'version':ast.literal_eval(files['__manifest__.py'].decode())['version']}
  if observed!=expected:plan['replace'].append(name)
 assert not conflicts, 'Unknown concurrent server changes: '+repr(conflicts)
+assert all(v['before_sha256']==v['sha256'] for n,v in plan['all_custom'].items() if n not in plan['replace']), 'Unchanged module hashes must agree'
 assert 'pb_lifecycle' in plan['replace'], 'No Workflow Studio change to deploy'
 assert not set(plan['replace'])&set(live['standard'])
 (STAGE/'release.json').write_text(json.dumps(plan,indent=2))

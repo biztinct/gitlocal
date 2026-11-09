@@ -11,7 +11,7 @@ def sql(db,q):return run(['sudo','-u','postgres','psql','-X','-v','ON_ERROR_STOP
 def norm(v):return v[5:] if v.startswith('19.0.') else v
 def tree(folder):
  h=hashlib.sha256()
- for p in sorted(folder.rglob('*')):
+ for p in sorted(folder.rglob('*'),key=lambda p:str(p.relative_to(folder))):
   if p.is_symlink() or not p.is_file() or p.name=='.DS_Store' or '__pycache__' in p.parts or p.suffix in ('.pyc','.pyo'):continue
   h.update(str(p.relative_to(folder)).encode()+b'\0'+p.read_bytes()+b'\0')
  return h.hexdigest()
