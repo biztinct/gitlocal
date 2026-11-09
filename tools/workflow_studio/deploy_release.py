@@ -63,7 +63,9 @@ try:
   for item in t.getmembers():assert not item.name.startswith('/') and '..' not in Path(item.name).parts and Path(item.name).parts[0] in plan['replace'] and not item.issym() and not item.islnk()
   t.extractall(extracted,filter='data')
  for n in plan['replace']:
-  run(['rsync','-a','--delete',str(extracted/n)+'/',str(addons/n)+'/']);run(['chown','-R','odoo:odoo',str(addons/n)])
+  # Release archives have reproducible timestamps. Equal size/mtime does not
+  # imply equal content (a version bump commonly keeps the manifest size).
+  run(['rsync','-ac','--delete',str(extracted/n)+'/',str(addons/n)+'/']);run(['chown','-R','odoo:odoo',str(addons/n)])
  for n,v in plan['all_custom'].items():assert tree(addons/n)==v['sha256'],n
  for db in dbs:
   info=receipt['databases'][db];mods=info['upgrade_modules']
@@ -112,7 +114,7 @@ finally:
    restore=stage/'restore-before';restore.mkdir(exist_ok=True)
    with tarfile.open(backup/'custom-before.tar.gz') as t:t.extractall(restore,filter='data')
    for n in plan['replace']:
-    run(['rsync','-a','--delete',str(restore/n)+'/',str(addons/n)+'/']);run(['chown','-R','odoo:odoo',str(addons/n)])
+    run(['rsync','-ac','--delete',str(restore/n)+'/',str(addons/n)+'/']);run(['chown','-R','odoo:odoo',str(addons/n)])
    receipt['code_restored']=True
   for db in dbs:
    ids=receipt['databases'][db]['prior_crons'];sql(db,'UPDATE ir_cron SET active=false WHERE active')
