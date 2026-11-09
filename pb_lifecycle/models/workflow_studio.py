@@ -1,8 +1,10 @@
 """System-wide Studio facade. All business authority stays in existing services."""
 import base64
+import copy
 import hashlib
 import json
 import logging
+import math
 import uuid
 
 from odoo import api, fields, models, _
@@ -50,6 +52,8 @@ class WorkflowStudio(models.AbstractModel):
         rec = self.env['pb.workflow'].sudo().browse(int(ident)).exists()
         if not rec or rec.company_id not in self.env.companies:
             raise AccessError(_('This workflow is not available in your current company.'))
+        if not design and not self._can_design() and not ((rec.published_id.starter_group_ids if rec.published_id else rec.starter_group_ids) & self.env.user.group_ids):
+            raise AccessError(_('You do not have permission to start this workflow.'))
         return rec
 
     def _source(self, model, ident):
@@ -63,7 +67,7 @@ class WorkflowStudio(models.AbstractModel):
             raise AccessError(_('Choose a record from this company.'))
         return rec
 
-    def _fields(self, model):
+    def _source_fields(self, model):
         if not model:
             return [{'key': 'amount', 'label': _('Amount'), 'type': 'float'},
                     {'key': 'urgent', 'label': _('Urgent'), 'type': 'boolean'}]
@@ -73,11 +77,12 @@ class WorkflowStudio(models.AbstractModel):
                  'options': value.get('selection', [])}
                 for key, value in metadata.items()
                 if key in obj._fields and obj._fields[key].store and
-                not key.startswith(('message_', 'activity_', 'password', 'token', 'secret', 'api_key')) and
+                not key.startswith(('message_', 'activity_')) and
+                not any(part in key.lower() for part in ('password', 'token', 'secret', 'api_key', 'credential')) and
                 value['type'] in ('char', 'text', 'integer', 'float', 'monetary', 'boolean', 'date', 'datetime', 'selection')]
 
     def _facts(self, record):
-        names = [f['key'] for f in self._fields(record._name)]
+        names = [f['key'] for f in self._source_fields(record._name)]
         vals = record.read(names)[0]
         vals.pop('id', None)
         for key, value in list(vals.items()):
@@ -125,6 +130,18 @@ class WorkflowStudio(models.AbstractModel):
         if (model or '').startswith(('hr.leave', 'pb.clock', 'pb.timesheet')):
             rows.append({'key': 'time', 'label': _('Time policies and attendance rules'),
                          'owner': 'Time', 'action': 'pb_time_hub.action_pb_time_hub'})
+        owned = [
+            (('pb.expense', 'hr.expense', 'pb.travel'), 'expenses', 'Expenses', 'pb_expenses_hub.action_pb_expenses_hub', 'Expense policies, receipts and payment steps'),
+            (('pb.asset', 'maintenance.equipment'), 'assets', 'Assets', 'pb_assets.action_pb_assets', 'Asset custody, returns and handovers'),
+            (('pb.learn', 'slide.'), 'learning', 'Learning', 'pb_learning_hub.action_pb_learning_hub', 'Enrolments, learning journeys and course messages'),
+            (('hr.integration', 'pb.integration'), 'integrations', 'Integrations', 'pb_integrations.action_pb_integrations', 'Connections, credentials and incoming records'),
+            (('hr.attendance', 'pb.attendance'), 'attendance', 'Attendance', 'pb_attendance_flow.action_pb_attendance_flow', 'Clock rules, exceptions and corrections'),
+        ]
+        for prefixes, key, owner, action, label in owned:
+            if (model or '').startswith(prefixes):
+                rows.append({'key': key, 'label': _(label), 'owner': _(owner), 'action': action})
+        rows.append({'key': 'settings', 'label': _('Existing module settings and templates'),
+                     'owner': _('Settings'), 'action': 'pb_settings.action_pb_settings_hub'})
         if model and hasattr(self.env[model], '_workflow_capabilities'):
             rows += self.env[model]._workflow_capabilities().get('owners', [])
         return [r for r in rows if self.env.ref(r['action'], raise_if_not_found=False)]
@@ -143,7 +160,8 @@ class WorkflowStudio(models.AbstractModel):
             result.update(models=self._models(), workflows=self.list_workflows())
         else:
             result['workflows'] = [self._row(w) for w in self.env['pb.workflow'].sudo().search([
-                ('company_id', '=', company.id), ('enabled', '=', True), ('component', '=', False)])]
+                ('company_id', '=', company.id), ('enabled', '=', True), ('component', '=', False),
+                ('published_id.starter_group_ids', 'in', self.env.user.group_ids.ids)])]
         return result
 
     def _row(self, w):
@@ -178,7 +196,7 @@ class WorkflowStudio(models.AbstractModel):
         w = self._workflow(workflow_id)
         data = self._row(w)
         data.update(definition=w.draft, process_id=w.process_id.id or None,
-                    execution_user_id=w.execution_user_id.id,
+                    execution_user_id=w.execution_user_id.id, starter_group_ids=w.starter_group_ids.ids,
                     versions=[{'id': v.id, 'number': v.number, 'date': str(v.published_at),
                                'note': v.note or '', 'by': v.published_by.name} for v in w.version_ids],
                     metadata=self.metadata(w.source_model, workflow_id=w.id))
@@ -199,11 +217,13 @@ class WorkflowStudio(models.AbstractModel):
             ('model_id.model', '=', model), ('active', '=', True)]) if model else self.env['base.automation']
         if workflow_id:
             rules -= self._workflow(workflow_id).automation_id
-        result = {'fields': self._fields(model), 'actions': self._actions(model),
+        result = {'fields': self._source_fields(model), 'actions': self._actions(model),
                   'owners': self._ownership(model),
                   'processes': [{'id': p.id, 'name': p.name, 'key': p.key} for p in processes],
                   'templates': [{'id': t.id, 'name': t.name} for t in templates],
                   'users': [{'id': u.id, 'name': u.name} for u in users],
+                  'roles': [{'id': r.id, 'name': r.name} for r in self.env['biz.approval.role'].sudo().search([('is_pool', '=', False)])],
+                  'starter_groups': [{'id': g.id, 'name': g.name} for g in self.env['res.groups'].sudo().search([('id', '!=', self.env.ref('base.group_public').id), ('id', '!=', self.env.ref('base.group_portal').id)])],
                   'automations': [{'id': a.id, 'name': a.name, 'trigger': a.trigger} for a in rules],
                   'components': [self._row(c) for c in self.env['pb.workflow'].sudo().search([
                       ('company_id', '=', company.id), ('component', '=', True), ('published_id', '!=', False)])]}
@@ -214,15 +234,18 @@ class WorkflowStudio(models.AbstractModel):
         return result
 
     def _validate(self, w, definition):
-        fields_meta = {f['key']: f for f in self._fields(w.source_model)}
-        after = definition.get('trigger', {}).get('kind') == 'approval_applied'
+        fields_meta = {f['key']: f for f in self._source_fields(w.source_model)}
+        after = isinstance(definition, dict) and isinstance(definition.get('trigger'), dict) and definition['trigger'].get('kind') == 'approval_applied'
+        native_processes = self.env['biz.approval.process'].sudo().search([('model_name', '=', w.source_model)]).filtered('connected') if w.source_model else self.env['biz.approval.process']
         errors = D.validate(definition, fields_meta, self._actions(w.source_model),
-                            approval=bool(w.source_model and w.process_id and not after))
+                            approval=bool(native_processes and not after))
         if errors:
             return errors
         def error(key, text):
             errors.append({'id': key, 'text': text, 'severity': 'error'})
         trigger = definition['trigger']
+        if native_processes and not w.process_id:
+            error('trigger', _('Choose the existing approval process for this record.'))
         if trigger['kind'] != 'manual' and not w.source_model:
             error('trigger', _('Choose an existing record for an automatic start.'))
         if trigger['kind'] == 'approval_applied' and not w.process_id:
@@ -237,8 +260,20 @@ class WorkflowStudio(models.AbstractModel):
                 error('trigger', _('Use a delay from 0 to 365.'))
             if trigger.get('unit') not in ('minutes', 'hour', 'day', 'month') or trigger.get('mode', 'after') not in ('before', 'after'):
                 error('trigger', _('Choose a valid date offset.'))
-        effects = set()
+        effects, bindings = set(), set()
         for n in definition['nodes']:
+            if n['type'] == 'input':
+                for field in n['form']['fields']:
+                    if field.get('type') == 'lookup' and field.get('lookup_model') not in {r['key'] for r in self._models()}:
+                        error(n['id'], _('Choose an accessible record type for the lookup.'))
+                    if field.get('bind'):
+                        if field['bind'] in bindings:
+                            error(n['id'], _('Map each approval value from one form field only.'))
+                        bindings.add(field['bind'])
+            if n['type'] in ('task', 'input') and n.get('owner', {}).get('kind') == 'role':
+                role = self.env['biz.approval.role'].sudo().browse(n['owner'].get('id', 0)).exists()
+                if not role or role.is_pool:
+                    error(n['id'], _('Choose an existing single-person responsibility.'))
             if n['type'] == 'email':
                 try:
                     self._mail_template(n['template_id'], w.source_model or 'pb.workflow.run')
@@ -261,27 +296,37 @@ class WorkflowStudio(models.AbstractModel):
         return errors
 
     @api.model
-    def save_draft(self, workflow_id, revision, definition, process_id=None, execution_user_id=None):
+    def save_draft(self, workflow_id, revision, definition, process_id=None, execution_user_id=None, starter_group_ids=None):
         w = self._workflow(workflow_id)
         w._lock()
         if type(revision) is not int or revision != w.revision:
             raise UserError(_('Someone saved a newer draft. Reload before applying your changes.'))
-        if not isinstance(definition, dict) or len(json.dumps(definition)) > 1000000:
+        if not isinstance(definition, dict) or not D.safe_json(definition):
             raise UserError(_('This workflow is too large.'))
-        structural = D.validate(definition, {f['key'] for f in self._fields(w.source_model)}, self._actions(w.source_model))
+        structural = D.validate(definition, {f['key'] for f in self._source_fields(w.source_model)}, self._actions(w.source_model))
         # Drafts may be unfinished, but never structurally corrupt.
-        forbidden = ('identifier', 'reference is missing', 'exactly one path', 'contain itself', 'stage order', 'format is not supported', '1–40')
+        forbidden = ('identifier', 'reference is missing', 'exactly one path', 'contain itself', 'stage order', 'format is not supported', '1–40', 'invalid format', 'invalid or oversized', 'Only path', 'Only a saved', 'Keep one start')
         if any(any(s in i['text'] for s in forbidden) for i in structural):
             raise UserError('\n'.join(i['text'] for i in structural))
         vals = {'draft': definition, 'name': str(definition.get('name', '')).strip()[:120] or w.name,
                 'revision': w.revision+1}
+        if starter_group_ids is not None:
+            self._publish()
+            if not isinstance(starter_group_ids, list) or any(type(i) is not int for i in starter_group_ids):
+                raise UserError(_('Choose who can start this workflow.'))
+            groups = self.env['res.groups'].sudo().browse(starter_group_ids).exists()
+            if len(groups) != len(set(starter_group_ids)):
+                raise UserError(_('A selected role no longer exists.'))
+            vals['starter_group_ids'] = [(6, 0, groups.ids)]
         if process_id:
             p = self.env['biz.approval.process'].sudo().browse(int(process_id)).exists()
             if not p or p.model_name != w.source_model or not p.connected:
                 raise UserError(_('Choose an approval process belonging to this record.'))
             vals['process_id'] = p.id
-        if execution_user_id:
+        if execution_user_id and int(execution_user_id) != w.execution_user_id.id:
             self._publish()
+            if int(execution_user_id) != self.env.uid and not self.env.user.has_group('base.group_system'):
+                raise AccessError(_('Only a system administrator can choose another execution account.'))
             u = self.env['res.users'].sudo().browse(int(execution_user_id)).exists()
             if not u or not u.active or u.share or w.company_id not in u.company_ids:
                 raise UserError(_('Choose an active execution user in this company.'))
@@ -319,7 +364,9 @@ class WorkflowStudio(models.AbstractModel):
             internal(w).write({'process_id': p.id})
         version = internal(self.env['pb.workflow.version']).create({
             'workflow_id': w.id, 'number': max(w.version_ids.mapped('number') or [0])+1,
-            'definition': w.draft, 'process_id': w.process_id.id,
+            'definition': copy.deepcopy(w.draft), 'process_id': w.process_id.id,
+            'execution_user_id': w.execution_user_id.id,
+            'starter_group_ids': [(6, 0, w.starter_group_ids.ids)],
             'published_by': self.env.uid, 'note': str(note)[:240]})
         # A newly published definition is reviewed before automatic activation.
         internal(w).write({'published_id': version.id, 'enabled': False})
@@ -402,10 +449,16 @@ class WorkflowStudio(models.AbstractModel):
         old = Event.search([('key', '=', key)], limit=1)
         if old:
             return old
+        if source_id:
+            self.env.cr.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ['workflow-record:%s:%s' % (w.id, source_id)])
+            active = Event.search([('workflow_id', '=', w.id), ('source_id', '=', source_id),
+                '|', ('state', '=', 'pending'), ('run_id.state', 'in', ['running', 'waiting', 'failed', 'held'])], limit=1)
+            if active:
+                return active
         return Event.create({'workflow_id': w.id, 'version_id': w.published_id.id,
             'company_id': w.company_id.id, 'source_model': w.source_model,
             'source_id': source_id or 0, 'initiator_id': initiator,
-            'execution_user_id': w.execution_user_id.id, 'key': key,
+            'execution_user_id': (w.published_id.execution_user_id or w.execution_user_id).id, 'key': key,
             'initial_values': initial or {}, 'approval_request_id': request_id or False})
 
     @api.model
@@ -415,18 +468,16 @@ class WorkflowStudio(models.AbstractModel):
             raise UserError(_('This workflow is not active.'))
         if w.published_id.definition['trigger']['kind'] != 'manual':
             raise UserError(_('This workflow starts from its configured event.'))
+        try:
+            token = str(uuid.UUID(str(token)))
+        except (ValueError, TypeError, AttributeError):
+            raise UserError(_('Reload the start dialog and try again.'))
         if w.source_model:
             self._source(w.source_model, source_id).check_access('write')
-            key = 'manual:%s:%s' % (w.id, int(source_id))
-        else:
-            try:
-                token = str(uuid.UUID(str(token)))
-            except (ValueError, TypeError, AttributeError):
-                raise UserError(_('Reload the start dialog and try again.'))
-            key = 'manual:%s:%s:%s' % (w.id, self.env.uid, token)
+        key = 'manual:%s:%s:%s' % (w.id, self.env.uid, token)
         initial = initial or {}
         if (not isinstance(initial, dict) or set(initial) - {'amount', 'urgent'} or
-                type(initial.get('amount', 0)) not in (int, float) or type(initial.get('urgent', False)) is not bool):
+                type(initial.get('amount', 0)) not in (int, float) or not math.isfinite(initial.get('amount', 0)) or type(initial.get('urgent', False)) is not bool):
             raise UserError(_('Enter a valid amount and urgency.'))
         event = self._enqueue(w, source_id, self.env.uid, key, initial)
         event._process()
@@ -436,6 +487,8 @@ class WorkflowStudio(models.AbstractModel):
     def _capture(self, workflow_id, records):
         """Fixed generated server-action entry. Private: never callable by RPC."""
         w = self.env['pb.workflow'].sudo().browse(int(workflow_id)).exists()
+        if self.env.context.get('_pb_workflow_internal') is INTERNAL and self.env.context.get('_pb_workflow_origin') == w.id:
+            return
         if not w or not w.enabled or records._name != w.source_model:
             return
         for rec in records:
@@ -465,7 +518,9 @@ class WorkflowStudio(models.AbstractModel):
         if key not in self._actions(source._name):
             raise UserError(_('This business action is no longer available.'))
         if key == 'hiring.stage':
-            result = self.env['pb.hiring'].act('journey_stage', {'ids': source.ids, 'key': node.get('stage_key')})
+            if source.stage_id.pb_key == node.get('stage_key'):
+                return {'already_done': True}
+            result = self.env['pb.hiring'].act('journey_stage', {'applicant_ids': source.ids, 'key': node.get('stage_key')})
             if not result.get('moved'):
                 raise UserError(result.get('warning') or result.get('note') or _('Hiring did not move this candidate.'))
             return result
@@ -485,20 +540,27 @@ class WorkflowStudio(models.AbstractModel):
             self._source(run.source_model, run.source_id)
         return run
 
+    def _readable_run(self, run):
+        try:
+            self._run(run.id)
+            return True
+        except (AccessError, UserError):
+            return False
+
     @api.model
     def runs(self, workflow_id=None):
-        self._staff()
+        self._progress_permission()
         domain = [('company_id', '=', self._company().id)]
         if workflow_id:
             domain.append(('workflow_id', '=', int(workflow_id)))
         return [{'id': r.id, 'name': r.name, 'state': r.state,
                  'version': r.sudo().version_id.number, 'started': str(r.create_date),
-                 'initiator': r.initiator_id.name} for r in self.env['pb.workflow.run'].search(domain, limit=100)]
+                 'initiator': r.initiator_id.name} for r in self.env['pb.workflow.run'].search(domain, limit=100) if self._readable_run(r)]
 
     @api.model
     def run_detail(self, run_id):
         run = self._run(run_id)
-        can_manage = self._can_design() or run.initiator_id.id == self.env.uid
+        can_manage = self._can_design()
         if not can_manage:
             return {'id': run.id, 'name': run.name, 'state': run.state, 'tasks': self.tasks(run_id=run.id)}
         srun = run.sudo()
@@ -521,7 +583,7 @@ class WorkflowStudio(models.AbstractModel):
         return [{'id': s.id, 'name': s.name, 'workflow': s.run_id.name,
                  'run_id': s.run_id.id, 'kind': s.kind,
                  'due': str(s.activity_id.date_deadline) if s.activity_id else ''}
-                for s in self.env['pb.workflow.step'].search(domain, limit=200)]
+                for s in self.env['pb.workflow.step'].search(domain, limit=200) if self._readable_run(s.run_id)]
 
     def _task(self, task_id):
         self._staff()
@@ -550,6 +612,8 @@ class WorkflowStudio(models.AbstractModel):
         return {'id': task.id, 'name': task.name, 'workflow': task.run_id.name,
                 'form': form, 'answers': {**(task.answers or {}), **prefills},
                 'readonly': list(prefills), 'instructions': task.config.get('notes', ''),
+                'file_names': {a.id: a.name for a in self.env['ir.attachment'].search([('res_model', '=', 'pb.workflow.step'), ('res_id', '=', task.id), ('create_uid', '=', self.env.uid)])},
+                'lookup_names': {f['id']: self._source(f['lookup_model'], task.answers[f['id']]).display_name for f in form.get('fields', []) if f['type'] == 'lookup' and (task.answers or {}).get(f['id'])},
                 'kind': task.kind}
 
     @api.model
@@ -565,6 +629,8 @@ class WorkflowStudio(models.AbstractModel):
         if errors:
             return {'ok': False, 'errors': errors}
         for f in task.config.get('form', {}).get('fields', []):
+            if f['type'] == 'lookup' and cleaned.get(f['id']):
+                self._source(f['lookup_model'], cleaned[f['id']])
             if f['type'] == 'file':
                 for ident in cleaned.get(f['id'], []):
                     att = self.env['ir.attachment'].browse(ident).exists()
@@ -624,6 +690,12 @@ class WorkflowStudio(models.AbstractModel):
     @api.model
     def open_resource(self, workflow_id, key, record_id=None):
         w = self._workflow(workflow_id)
+        if key == 'new_template':
+            model = self.env['ir.model']._get(w.source_model or 'pb.workflow.run')
+            self.env['mail.template'].check_access('create')
+            return {'type': 'ir.actions.act_window', 'res_model': 'mail.template',
+                    'name': _('New email template'), 'views': [[False, 'form']],
+                    'context': {'default_model_id': model.id}, 'target': 'current'}
         if key == 'template':
             t = self._mail_template(record_id, w.source_model or 'pb.workflow.run')
             return {'type': 'ir.actions.act_window', 'res_model': 'mail.template', 'res_id': t.id,
@@ -646,21 +718,29 @@ class WorkflowStudio(models.AbstractModel):
             events = self.env['biz.approval.event'].sudo().search([
                 ('id', '>', w.last_approval_event_id), ('kind', '=', 'applied'),
                 ('company_id', '=', w.company_id.id),
-                ('request_id.process_id', '=', w.process_id.id)], order='id', limit=100)
+                ('request_id.process_id', '=', w.published_id.process_id.id)], order='id', limit=100)
             for event in events:
                 self._enqueue(w, event.res_id, event.request_id.submitter_uid.id,
                               'approval:%s:%s' % (w.id, event.id), request_id=event.request_id.id)
                 internal(w).write({'last_approval_event_id': event.id})
         for event in self.env['pb.workflow.event'].sudo().search([('state', '=', 'pending')], order='id', limit=100):
             event._process()
-        runs = self.env['pb.workflow.run'].sudo().search([('state', 'in', ['running', 'waiting'])], order='id', limit=300)
+        runs = self.env['pb.workflow.run'].sudo().search([('state', 'in', ['running', 'waiting'])], order='checked_at, id', limit=300)
         for run in runs:
             try:
                 with self.env.cr.savepoint():
                     run._lock()
+                    internal(run).write({'checked_at': fields.Datetime.now()})
                     for step in run.step_ids.filtered(lambda s: s.state == 'waiting'):
                         if step.kind == 'wait' and step.wake_at <= fields.Datetime.now():
                             step._finish()
+                        elif step.kind == 'email':
+                            if not step.mail_id:
+                                internal(step).write({'state': 'failed', 'error': _('The queued message is missing. Check the mail service before retrying.')})
+                            elif step.mail_id.state == 'sent':
+                                step._finish()
+                            elif step.mail_id.state in ('exception', 'cancel'):
+                                internal(step).write({'state': 'failed', 'error': _('The mail service could not send this message. Fix delivery settings, then retry.')})
                         elif step.kind == 'matrix' and step.approval_id:
                             req = step.approval_id
                             if req.state == 'applied':

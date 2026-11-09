@@ -1,5 +1,7 @@
 /** @odoo-module **/
-import { Component, xml, onWillUnmount, useRef } from "@odoo/owl";
+import { Component, xml, onWillUnmount, useRef, useState, useEffect } from "@odoo/owl";
+import { FormController } from "@web/views/form/form_controller";
+import { patch } from "@web/core/utils/patch";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
@@ -13,7 +15,12 @@ export class WorkflowStudio extends Component {
         this.action = useService("action");
         this.frame = useRef("frame");
         const q = new URLSearchParams({company: (user.context.allowed_company_ids || [])[0] || "",
-            workflow: this.props.action?.context?.pb_workflow_id || ""});
+            workflow: this.props.action?.context?.pb_workflow_id || "",
+            record_model: this.props.action?.context?.pb_workflow_record_model || "",
+            record_id: this.props.action?.context?.pb_workflow_record_id || "",
+            run: this.props.action?.context?.pb_workflow_run_id || "",
+            task: this.props.action?.context?.pb_workflow_task_id || "",
+            submission: this.props.action?.context?.pb_workflow_submission_id || ""});
         this.url = "/pb_lifecycle/static/workflow/index.html?" + q;
         const receive = e => {
             if (e.origin !== location.origin || e.source !== this.frame.el?.contentWindow || e.data?.type !== "pb.workflow.open") return;
@@ -25,6 +32,40 @@ export class WorkflowStudio extends Component {
     }
 }
 registry.category("actions").add("pb_workflow_studio", WorkflowStudio);
+// One common entry on native forms, including Expenses, Pay, Time and future
+// modules. The server checks record and progress-view permissions every time.
+patch(FormController.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.workflowProgress = useState({ available: false });
+        useEffect(() => {
+            let live = true;
+            this.workflowProgress.available = false;
+            const record = this.model.root;
+            if (record.resId && !record.resModel.startsWith("pb.workflow.")) {
+                this.orm.call("pb.workflow.studio", "record_runs", [record.resModel, record.resId])
+                    .then(data => { if (live) this.workflowProgress.available = !!(data.runs.length || data.approvals.length); })
+                    .catch(() => { if (live) this.workflowProgress.available = false; });
+            }
+            return () => { live = false; };
+        }, () => [this.model.root.resModel, this.model.root.resId]);
+    },
+    async openWorkflowProgress() {
+        if (!(await this.model.root.save())) return;
+        return this.actionService.doAction({ type: "ir.actions.client", tag: "pb_workflow_studio",
+            name: _t("Workflow progress"), context: {
+                pb_workflow_record_model: this.model.root.resModel,
+                pb_workflow_record_id: this.model.root.resId,
+            }});
+    },
+    getStaticActionMenuItems() {
+        return { ...super.getStaticActionMenuItems(), workflowProgress: {
+            description: _t("View workflow"), icon: "fa fa-code-fork", sequence: 95,
+            isAvailable: () => this.workflowProgress.available,
+            callback: () => this.openWorkflowProgress(),
+        }};
+    },
+});
 registry.category(SETTINGS_CATEGORIES).add("workflow_studio", {
     key: "workflow_studio", group: "workflows", icon: "workflow", label: _t("Workflow Studio"),
     blurb: _t("Steps, forms and tasks across your business. Existing approvals and settings stay connected."),

@@ -10,7 +10,7 @@ GROUPS = ('branch', 'parallel', 'subprocess')
 TYPES = ('trigger', 'task', 'input', 'matrix', 'email', 'wait', 'branch',
          'parallel', 'subprocess', 'action', 'reference')
 FORM_TYPES = ('text', 'textarea', 'number', 'date', 'email', 'select',
-              'multiselect', 'boolean', 'file', 'rows', 'section')
+              'multiselect', 'boolean', 'file', 'rows', 'section', 'lookup')
 OPS = ('eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'set')
 IDENT = re.compile(r'^[a-zA-Z][a-zA-Z0-9_-]{0,79}$')
 MAX_NODES, MAX_FIELDS = 200, 80
@@ -70,7 +70,15 @@ def matches(rule, values):
         return (isinstance(value, (str, list)) and
                 isinstance(expected, str) and expected in value)
     if type(value) not in (int, float) or type(expected) not in (int, float):
-        return False
+        if not isinstance(value, str) or not isinstance(expected, str):
+            return False
+        try:
+            value = datetime.datetime.fromisoformat(value)
+            expected = datetime.datetime.fromisoformat(expected)
+            value = value.astimezone(datetime.timezone.utc).replace(tzinfo=None) if value.tzinfo else value
+            expected = expected.astimezone(datetime.timezone.utc).replace(tzinfo=None) if expected.tzinfo else expected
+        except ValueError:
+            return False
     return {'gt': value > expected, 'gte': value >= expected,
             'lt': value < expected, 'lte': value <= expected}.get(op, False)
 
@@ -81,6 +89,8 @@ def visible(field, answers):
 
 
 def form_errors(form):
+    if not isinstance(form, dict):
+        return ['Add a form with at least one field.']
     errors, known = [], set()
     fields = form.get('fields', []) if isinstance(form, dict) else []
     if not isinstance(fields, list) or len(fields) > MAX_FIELDS:
@@ -91,7 +101,7 @@ def form_errors(form):
         if not isinstance(f, dict):
             return ['A form field is not valid.']
         key = f.get('id', '')
-        if not IDENT.fullmatch(key) or key in known:
+        if not isinstance(key, str) or not IDENT.fullmatch(key) or key in known:
             errors.append('Give each field a unique identifier.')
         if not str(f.get('label', '')).strip():
             errors.append('Give each field a label.')
@@ -109,12 +119,19 @@ def form_errors(form):
                 errors.append('Add distinct choices to the dropdown.')
         if f.get('min') is not None and type(f['min']) not in (int, float):
             errors.append('Use a number for the minimum.')
-        known.add(key)
+        if isinstance(key, str):
+            known.add(key)
+        if f.get('type') == 'lookup' and not isinstance(f.get('lookup_model'), str):
+            errors.append('Choose the record type for this field.')
+        if f.get('bind') and f['bind'] not in ('amount', 'urgent'):
+            errors.append('Choose an available approval value.')
+        if f.get('bind') == 'amount' and f.get('type') != 'number' or f.get('bind') == 'urgent' and f.get('type') != 'boolean':
+            errors.append('Use a number for Amount and a Yes/No field for Urgent.')
     return errors
 
 
 def validate_answers(form, values, prefills=None, partial=False):
-    if not isinstance(values, dict) or len(json.dumps(values)) > 500000:
+    if not isinstance(values, dict) or not safe_json(values, 500000):
         return {}, {'_form': 'These answers are too large or not valid.'}
     cleaned, errors = {}, {}
     source = {**values, **(prefills or {})}
@@ -152,6 +169,8 @@ def validate_answers(form, values, prefills=None, partial=False):
             if (not isinstance(value, list) or len(value) > 100 or
                     any(v not in f.get('options', []) for v in value)):
                 problem = 'Choose from the listed options.'
+        elif kind == 'lookup' and (type(value) is not int or value < 1):
+            problem = 'Choose an available record.'
         elif kind == 'file':
             if (not isinstance(value, list) or len(value) > 10 or
                     any(type(v) is not int or v < 1 for v in value)):
@@ -161,7 +180,7 @@ def validate_answers(form, values, prefills=None, partial=False):
                 problem = 'Use up to 100 line items.'
             elif any(not isinstance(v, dict) or
                      not isinstance(v.get('description'), str) or
-                     not v['description'].strip() or
+                     not v['description'].strip() or len(v['description']) > 1000 or
                      type(v.get('amount')) not in (int, float) or
                      not math.isfinite(v['amount']) or v['amount'] < 0
                      for v in value):
@@ -173,12 +192,12 @@ def validate_answers(form, values, prefills=None, partial=False):
     return cleaned, errors
 
 
-def validate(d, source_fields=None, actions=None, approval=False):
+def _validate(d, source_fields=None, actions=None, approval=False):
     """Return user-facing issues. Shape is checked before any recursive walk."""
     out = []
     def error(node, text):
         out.append({'id': node, 'text': text, 'severity': 'error'})
-    if not isinstance(d, dict) or len(json.dumps(d)) > 1000000:
+    if not isinstance(d, dict) or not safe_json(d, 1000000):
         return [{'id': 'trigger', 'text': 'This workflow is too large.', 'severity': 'error'}]
     if d.get('schema') != SCHEMA:
         error('trigger', 'This workflow format is not supported.')
@@ -209,11 +228,18 @@ def validate(d, source_fields=None, actions=None, approval=False):
                 return out
             for b in bs:
                 if (not isinstance(b, dict) or not IDENT.fullmatch(str(b.get('id', '')))
-                        or b['id'] in branch_ids or not isinstance(b.get('steps'), list)):
+                        or b['id'] in branch_ids or not isinstance(b.get('steps'), list)
+                        or not isinstance(b.get('label'), str) or not b['label'].strip()):
                     error(n['id'], 'Each path needs its own identifier and steps.')
                     return out
                 branch_ids.add(b['id'])
                 groups[b['id']] = (n, b['steps'])
+        if n.get('type') not in ('branch', 'parallel') and n.get('branches'):
+            error(n['id'], 'Only path groups can contain branches.')
+            return out
+        if n.get('type') != 'subprocess' and n.get('steps'):
+            error(n['id'], 'Only a saved group can contain a step list.')
+            return out
         if n.get('type') == 'subprocess' and not isinstance(n.get('steps'), list):
             error(n['id'], 'A saved group needs a list of steps.')
             return out
@@ -221,6 +247,9 @@ def validate(d, source_fields=None, actions=None, approval=False):
         return out
     if branch_ids.intersection(nodes):
         error('trigger', 'A path and a step cannot share an identifier.')
+    if not nodes.get('trigger') or nodes['trigger']['type'] != 'trigger':
+        error('trigger', 'Keep one start at the beginning.')
+        return out
     if order[:1] != ['trigger'] or sum(n['type'] == 'trigger' for n in raw) != 1:
         error('trigger', 'Keep one start at the beginning.')
     counts, parents = {}, {}
@@ -258,7 +287,7 @@ def validate(d, source_fields=None, actions=None, approval=False):
         return out
     if any(nodes[a]['stage'] > nodes[b]['stage'] for a, b in zip(order, order[1:])):
         error('trigger', 'Keep steps in their stage order.')
-    base = set(source_fields or ()) | {'amount', 'urgent'}
+    base = set(source_fields) if source_fields is not None else {'amount', 'urgent'}
     def condition(rule, available, ident):
         if (not isinstance(rule, dict) or rule.get('field') not in available
                 or rule.get('op') not in OPS):
@@ -270,15 +299,18 @@ def validate(d, source_fields=None, actions=None, approval=False):
             kind = n['type']
             if kind in ('task', 'input'):
                 owner = n.get('owner', {})
-                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user') or (
+                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user', 'role', 'manager') or (
                         owner.get('kind') == 'user' and type(owner.get('id')) is not int):
                     error(key, 'Choose who does this step.')
                 if type(n.get('due', 2)) is not int or not 1 <= n.get('due', 2) <= 365:
                     error(key, 'Choose a deadline from 1 to 365 days.')
             if kind == 'input':
-                for text in form_errors(n.get('form')):
+                problems = form_errors(n.get('form'))
+                for text in problems:
                     error(key, text)
-                for f in n.get('form', {}).get('fields', []):
+                if problems:
+                    continue
+                for f in n['form']['fields']:
                     if f.get('prefill') and f['prefill'] not in base:
                         error(key, 'Choose an available record field for the prefill.')
                     available.add('step.%s.%s' % (key, f.get('id')))
@@ -333,7 +365,7 @@ def validate(d, source_fields=None, actions=None, approval=False):
     trigger = d.get('trigger', {})
     if not isinstance(trigger, dict) or trigger.get('kind') not in ('manual', 'created', 'changed', 'date', 'approval_applied'):
         error('trigger', 'Choose when this workflow starts.')
-    elif trigger['kind'] == 'changed' and (not trigger.get('fields') or any(f not in base for f in trigger['fields'])):
+    elif trigger['kind'] == 'changed' and (not isinstance(trigger.get('fields'), list) or not trigger['fields'] or any(not isinstance(f, str) or f not in base for f in trigger['fields'])):
         error('trigger', 'Choose the specific fields that start this workflow.')
     return out
 
@@ -356,3 +388,21 @@ def route_preview(d, values):
                 visit(n['steps'], n['title'])
     visit(d['order'])
     return rows
+
+
+def safe_json(value, limit=1000000):
+    try:
+        return len(json.dumps(value, allow_nan=False)) <= limit
+    except (ValueError, TypeError, RecursionError):
+        return False
+
+
+def validate(d, source_fields=None, actions=None, approval=False):
+    # Invalid drafts are user input, not server errors. The deep JSON check
+    # rejects non-finite numbers, cycles and oversized payloads before walking.
+    if not safe_json(d):
+        return [{'id': 'trigger', 'text': 'The workflow contains invalid or oversized values.', 'severity': 'error'}]
+    try:
+        return _validate(d, source_fields, actions, approval)
+    except (KeyError, TypeError, AttributeError, IndexError, ValueError, RecursionError):
+        return [{'id': 'trigger', 'text': 'A workflow setting has an invalid format. Check its fields and paths.', 'severity': 'error'}]

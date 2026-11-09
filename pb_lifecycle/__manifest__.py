@@ -64,6 +64,7 @@ that has closed expires itself. The whole job is behind
         'web',
         'hr',
         'mail',
+        'biz_access',             # existing role/ability catalogue, no duplicate grants
         'base_automation',       # Community triggers; the server's standard module
         'pb_hub',               # the hub shell + the global palette registry
         'pb_settings',          # the command bar's cog opens the Settings hub
@@ -78,7 +79,8 @@ that has closed expires itself. The whole job is behind
         'security/ir.model.access.csv',
         'security/letter_approval_rules.xml',
         'security/workflow_security.xml',
-        'security/workflow_access.csv',
+        'security/workflow/ir.model.access.csv',
+        'data/workflow_abilities.xml',
         'report/hr_letter_report.xml',
         'views/journey_template_views.xml',
         'views/letter_views.xml',
@@ -103,6 +105,7 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/js/lifecycle_palette.js',
             'pb_lifecycle/static/src/js/workflow_studio.js',
             'pb_lifecycle/static/src/xml/journeys.xml',
+            'pb_lifecycle/static/src/xml/workflow_record.xml',
         ],
         # A LEAN frontend bundle for the two login-less pages: the kit's tokens
         # and this module's page block. No backend asset is leaked into them.

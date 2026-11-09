@@ -84,12 +84,15 @@ Rize backup is permanent. Install base_automation and missing standard
 dependencies; upgrade changed custom modules only where already installed.
 Validate on p0clone before the other databases. Preserve cron enablement and
 activate only the new worker needed for explicitly activated workflows.
-Verify code/version parity, migrations, permissions, existing-flow regressions,
-end-to-end Chrome create/edit/publish/start/task/branch/retry across modules.
+Verify code/version parity, migrations, permissions and existing record counts.
+Transactional tests cover branches, retries, forms, native approvals and
+automation. Chrome covers expense record progress and a complete new process.
 Remove all current-run screenshots. ABM remains retired and untouched.
 
 Record-level visual progress — added at the user's pause, 9 November 2026
-Status: accepted requirement, NOT YET IMPLEMENTED.
+Status: implemented through the shared native record-form action, with a
+read-only flowchart and permission-checked progress facade. Bespoke module
+canvases can open the same client action; they are not all individually patched.
 - Every supported module record, including expenses, offers a consistent
   "View workflow" button/icon when the user can inspect a linked run. This
   opens a read-only flowchart for that record, with a return link to it.
@@ -123,3 +126,57 @@ Status: accepted requirement, NOT YET IMPLEMENTED.
   advances; parallel active steps; returned/blocked/rejected/finished paths;
   immutable old-version run; multiple runs; no-run state; restricted users,
   direct URL/RPC denial and cross-company isolation; no edit rights implied.
+
+
+Implemented integration boundaries on resume
+- All accessible, installed company-scoped business models are selectable.
+  Generic forms, tasks, stages, waits, decisions, parallel work, reusable groups,
+  saved mail templates and native approvals share the same service. A new process
+  needs no new module or database model. No example runs are seeded in production.
+- Native Approval Matrix is required for approval-capable sources. Existing
+  pending requests are adopted; native approved/applied/returned/rejected states
+  are read directly. New custom processes get a catalog entry, not a second
+  route editor. Frozen submission details are available to the submitter and
+  authorized native approval participants, not every progress viewer.
+- Native Hiring transitions use the existing Hiring facade. Additional native
+  business mutations need explicit module capability adapters; a generic flow
+  cannot write arbitrary model fields or bypass native transition safeguards.
+  Existing native statuses remain separate from user-defined workflow stages.
+- Ordinary saved emails use mail.template and the native queue. Hiring-specific
+  messages continue through Hiring settings/actions, preserving their delivery
+  rules. Template edits retain native shared-template semantics across workflows.
+- Access Studio contains separate view-progress, design and publish abilities.
+  Current source/company permissions are rechecked. Start permissions and the
+  execution account are pinned per published version. Assignment grants no rights.
+- Native activities are reused, with server validation preventing the standard
+  activity-completion path from skipping a required information form.
+- Settings links reuse Approvals, Access, Hiring, Journeys, Pay, Time, Expenses,
+  Assets, Learning, Attendance and Integrations. No extra settings/template store
+  is introduced. Existing birthdays, broadcasts, payroll and lifecycle generators
+  keep their current owner. A reference block explains existing work; it does not
+  execute or monitor that external work.
+- Duplicate native triggers and same-template sends within a graph are checked.
+  Existing automation is surfaced before activation. Semantic duplication across
+  unrelated templates or bespoke module code still requires the designer's review;
+  the product does not claim to infer every existing side effect automatically.
+- Simple returned custom submissions can be corrected and resubmitted. Complex
+  paths with prior effects require a new corrected request, avoiding a replay of
+  already completed work. Editing Undo never reverses a business effect.
+
+User experience and operational checks
+Journey is the default. Flowchart and People use the same saved definition.
+Drag changes execution order, including positions in stages/branches; Move is
+available without dragging; Undo restores the previous definition. Multi-field
+forms use a dedicated screen with typed answers, save/resume, required/conditional
+questions, uploads, line items and permitted-record lookups. Validation reserves
+space so correcting an answer cannot move a clicked action. Progress uses the
+run's pinned graph, highlights active leaves and updates every fifteen seconds.
+Parallel active leaves may be highlighted together. A view never edits a run.
+
+Release tools in tools/workflow_studio prepare a committed combined release,
+refuse unknown server edits, preserve stock addons, back up all active databases,
+upgrade custom modules only where installed, preserve cron settings, and verify
+custom tree/version parity across payobook, payobook_template, p0clone and rize.
+The backend suite is transactional and rolls back its fixtures. Browser fixtures
+are allowed only in the isolated test database or p0clone, and are explicitly
+removed after verification. PNGs/screenshots generated by testing are removed.

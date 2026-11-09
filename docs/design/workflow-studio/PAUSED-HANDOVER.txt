@@ -1,3 +1,8 @@
+HISTORICAL HANDOVER — SUPERSEDED ON RESUME
+The owner explicitly resumed implementation on 9 November 2026. The unfinished
+state below is retained as history, not the current implementation status.
+See IMPLEMENTATION.txt and the release receipt for current scope and checks.
+
 WORKFLOW STUDIO — PAUSED WIP, NOT READY TO DEPLOY
 9 November 2026
 

@@ -2,9 +2,14 @@
 <odoo>
   <record id="workflow_category" model="ir.module.category"><field name="name">Workflow Studio</field></record>
   <record id="workflow_privilege" model="res.groups.privilege"><field name="name">Workflow Studio</field><field name="category_id" ref="workflow_category"/></record>
+  <record id="group_workflow_viewer" model="res.groups">
+    <field name="name">View progress</field><field name="privilege_id" ref="workflow_privilege"/>
+    <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    <field name="comment">See the live flowchart for records you can access. Does not grant workflow editing or access to form answers.</field>
+  </record>
   <record id="group_workflow_designer" model="res.groups">
     <field name="name">Designer</field><field name="privilege_id" ref="workflow_privilege"/>
-    <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    <field name="implied_ids" eval="[(4, ref('group_workflow_viewer'))]"/>
     <field name="comment">Design processes across modules. Business-record access remains separate.</field>
   </record>
   <record id="group_workflow_publisher" model="res.groups">
@@ -19,10 +24,11 @@
   <record id="workflow_run_company" model="ir.rule"><field name="name">Workflow run company</field><field name="model_id" ref="model_pb_workflow_run"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
   <record id="workflow_step_company" model="ir.rule"><field name="name">Workflow step company</field><field name="model_id" ref="model_pb_workflow_step"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
   <record id="workflow_log_company" model="ir.rule"><field name="name">Workflow history company</field><field name="model_id" ref="model_pb_workflow_log"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
-  <record id="workflow_run_participant" model="ir.rule"><field name="name">My workflow runs</field><field name="model_id" ref="model_pb_workflow_run"/><field name="groups" eval="[(4, ref('base.group_user'))]"/><field name="domain_force">['|', '|', ('initiator_id', '=', user.id), ('execution_user_id', '=', user.id), ('step_ids.assignee_id', '=', user.id)]</field></record>
+  <record id="workflow_run_participant" model="ir.rule"><field name="name">My workflow runs</field><field name="model_id" ref="model_pb_workflow_run"/><field name="groups" eval="[(4, ref('base.group_user'))]"/><field name="domain_force">['|', '|', '|', ('initiator_id', '=', user.id), ('execution_user_id', '=', user.id), ('step_ids.assignee_id', '=', user.id), ('step_ids.approval_id.seat_ids.acting_user_id', '=', user.id)]</field></record>
   <record id="workflow_run_designer" model="ir.rule"><field name="name">Workflow designer run overview</field><field name="model_id" ref="model_pb_workflow_run"/><field name="groups" eval="[(4, ref('group_workflow_designer'))]"/><field name="domain_force">[(1, '=', 1)]</field></record>
-  <record id="workflow_step_participant" model="ir.rule"><field name="name">My workflow steps</field><field name="model_id" ref="model_pb_workflow_step"/><field name="groups" eval="[(4, ref('base.group_user'))]"/><field name="domain_force">['|', ('assignee_id', '=', user.id), ('run_id.initiator_id', '=', user.id)]</field></record>
+  <record id="workflow_step_participant" model="ir.rule"><field name="name">My workflow steps</field><field name="model_id" ref="model_pb_workflow_step"/><field name="groups" eval="[(4, ref('base.group_user'))]"/><field name="domain_force">['|', '|', ('assignee_id', '=', user.id), ('run_id.initiator_id', '=', user.id), ('run_id.step_ids.approval_id.seat_ids.acting_user_id', '=', user.id)]</field></record>
   <record id="workflow_step_designer" model="ir.rule"><field name="name">Workflow designer step overview</field><field name="model_id" ref="model_pb_workflow_step"/><field name="groups" eval="[(4, ref('group_workflow_designer'))]"/><field name="domain_force">[(1, '=', 1)]</field></record>
   <record id="workflow_log_participant" model="ir.rule"><field name="name">My workflow history</field><field name="model_id" ref="model_pb_workflow_log"/><field name="groups" eval="[(4, ref('base.group_user'))]"/><field name="domain_force">['|', ('run_id.initiator_id', '=', user.id), ('run_id.execution_user_id', '=', user.id)]</field></record>
   <record id="workflow_log_designer" model="ir.rule"><field name="name">Workflow designer history</field><field name="model_id" ref="model_pb_workflow_log"/><field name="groups" eval="[(4, ref('group_workflow_designer'))]"/><field name="domain_force">[(1, '=', 1)]</field></record>
+  <record id="workflow_run_viewer" model="ir.rule"><field name="name">Workflow progress overview</field><field name="model_id" ref="model_pb_workflow_run"/><field name="groups" eval="[(4, ref('group_workflow_viewer'))]"/><field name="domain_force">[(1, '=', 1)]</field></record>
 </odoo>
