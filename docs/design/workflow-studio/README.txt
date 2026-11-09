@@ -1,4 +1,4 @@
-Payobook Workflow Studio — interactive design POC — stages and shared module settings revision
+Payobook Workflow Studio — interactive design POC — readable flow and semantic drag revision
 
 Deliverable: ../workflow-studio-poc.html (self-contained; also works offline).
 Hosted preview: https://payobook.com/preview/workflow-studio/
@@ -186,3 +186,35 @@ Additional checks:
   node docs/design/workflow-studio/test-modules.cjs
   node docs/design/workflow-studio/test-modules-ui.cjs
 The Chrome suite uses the same URL, Playwright and screenshot settings above.
+
+
+Readable flow and semantic dragging revision (9 November 2026)
+
+Recommendation: keep Journey as the everyday starting point. Flowchart should
+edit the same process directly, using clear insertion positions, automatic
+connections, short labels and details on demand. It is not a separate definition.
+
+Working POC changes:
+- 100% default canvas, 320 px cards, 16 px titles, 14 px summaries, visible
+  stages and a shorter toolbar/header. Advanced help opens under How to.
+- Plain labels: Collect details, Add a task, Get approval, Wait, Run together.
+- Drag cards onto + positions to reorder across stages or into/out of paths.
+  Pointer dragging scrolls near canvas edges. The graph and rehearsal follow
+  the new sequence; Journey and People show the same definition.
+- Dragging a group carries its children and preserves its branch joins.
+- Palette drag and clicking + insert at the exact chosen position.
+- Move… offers valid destinations for keyboard/touch users. Earlier/Later and
+  stage selection use the same validation as canvas and Journey movement.
+- Keep start first, prevent group nesting cycles, preserve required information
+  before Matrix, enforce earlier-output dependencies, and keep parallel tasks.
+  Invalid moves explain the problem without changing the draft or Undo history.
+- One Undo reverses each successful move; Redo, local persistence and export
+  use the updated graph. Escape, outside drop or pointer cancellation do nothing.
+- Optional Arrange view moves only the drawing. Tidy restores its automatic
+  layout and can be undone. Semantic flow edits return to automatic layout.
+
+Source additions: flow-model.js, flow-ui.js. No Odoo/module/database changes.
+Checks:
+  node docs/design/workflow-studio/test-flow.cjs
+  node docs/design/workflow-studio/test-flow-ui.cjs
+The latter uses Google Chrome and the same environment settings as test-ui.cjs.

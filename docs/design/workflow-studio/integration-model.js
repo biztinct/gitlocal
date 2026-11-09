@@ -1,5 +1,5 @@
 /* References model ownership; these are sample Matrix routes, never live configuration. */
-TYPES.matrix={name:'Use Approval Matrix',icon:'♧',description:'Follow the existing approval route'};
+TYPES.matrix={name:'Get approval',icon:'♧',description:'Follow the existing approval route'};
 const MATRIX_SAMPLES={
  connected:{process:'Expense reimbursement',version:2,scope:'Demo company · all departments',route:'Manager → Finance above AUD 1,000',finalState:'Approved',people:['Their manager','Finance approver']},
  connected_payroll:{process:'Pay run',version:2,scope:'Demo company · all departments',route:'Payroll manager → HR lead → Finance approver',finalState:'Applied',people:['Payroll manager','HR lead','Finance approver']},
@@ -11,7 +11,7 @@ for(const [key,source] of Object.entries({connected:'expense',connected_payroll:
 }
 function integratedDraft(key){const t=TEMPLATES[key],form=expenseForm();if(key!=='connected'){form.id=key+'-details';form.title=key==='settlement'?'Complete the settlement details':'Prepare the payrun handover';form.description='Confirm the missing information before submitting this request.';form.fields=[{id:'department',type:'text',label:'Department',source:'department',access:'readonly'},{id:'notes',type:'textarea',label:key==='settlement'?'Handover notes':'Variance explanation',required:true},{id:'checked',type:'boolean',label:key==='settlement'?'Company assets returned?':'Checks completed?',required:true},{id:'evidence',type:'file',label:'Supporting document',required:false}];}
  const collect=nodeDefaults(initialNode('details','input',key==='connected'?'Collect expense details':'Collect supporting details',0,{owner:'Employee',form}));
- const matrix=nodeDefaults(initialNode('matrix','matrix','Follow Approval Matrix',1,{owner:'Approval Matrix',matrixProcess:key}));
+ const matrix=nodeDefaults(initialNode('matrix','matrix','Get approval',1,{owner:'Approval Matrix',matrixProcess:key}));
  const email=nodeDefaults(initialNode('email','email','Optional follow-up message',2,{optional:true,enabled:false,body:'Hi {{employee.name}}, here is the guide for your next steps. Contact the team if you need help.'}));
  return {schema:SCHEMA,template:key,name:t.name,event:t.event,scope:{company:'Demo company',match:'all',rules:[]},stages:clone(t.stages),nodes:[nodeDefaults(initialNode('trigger','trigger',t.event,0)),collect,matrix,email],order:['trigger','details','matrix','email'],revision:0,integration:'approval-matrix'};
 }
