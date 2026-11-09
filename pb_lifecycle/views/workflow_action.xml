@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="action_pb_workflow_studio" model="ir.actions.client">
+    <field name="name">Workflow Studio</field><field name="tag">pb_workflow_studio</field>
+  </record>
+</odoo>

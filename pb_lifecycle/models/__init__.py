@@ -11,3 +11,5 @@ from . import lifecycle_reminders
 from . import pb_journeys
 # Approval Matrix P7 — sending a letter is the act.
 from . import letter_approval
+from . import workflow_models
+from . import workflow_studio

@@ -55,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -64,6 +64,7 @@ that has closed expires itself. The whole job is behind
         'web',
         'hr',
         'mail',
+        'base_automation',       # Community triggers; the server's standard module
         'pb_hub',               # the hub shell + the global palette registry
         'pb_settings',          # the command bar's cog opens the Settings hub
         'pb_sidebar',           # this module ships a rail item
@@ -76,6 +77,8 @@ that has closed expires itself. The whole job is behind
         'security/pb_lifecycle_security.xml',
         'security/ir.model.access.csv',
         'security/letter_approval_rules.xml',
+        'security/workflow_security.xml',
+        'security/workflow_access.csv',
         'report/hr_letter_report.xml',
         'views/journey_template_views.xml',
         'views/letter_views.xml',
@@ -87,6 +90,8 @@ that has closed expires itself. The whole job is behind
         'data/letter_template_data.xml',
         'data/journey_template_data.xml',
         'data/pb_sidebar.xml',
+        'views/workflow_action.xml',
+        'data/workflow_cron.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -96,6 +101,7 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/js/journeys.js',
             'pb_lifecycle/static/src/js/lifecycle_hub.js',
             'pb_lifecycle/static/src/js/lifecycle_palette.js',
+            'pb_lifecycle/static/src/js/workflow_studio.js',
             'pb_lifecycle/static/src/xml/journeys.xml',
         ],
         # A LEAN frontend bundle for the two login-less pages: the kit's tokens

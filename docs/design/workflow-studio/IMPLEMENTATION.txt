@@ -1,0 +1,125 @@
+Workflow Studio — system-wide implementation
+9 November 2026
+
+Product decision
+One Studio coordinates processes across installed business modules. Hiring is
+one adapter, not the foundation. New processes can have their own forms, stages,
+tasks and approval route without creating an Odoo model. New business modules
+join through the same capability contract. The approved POC is the UI reference:
+Journey first; Flowchart and People are views of the same definition; readable
+cards, short labels, contextual settings, real drag reordering and Undo.
+
+Ownership and reuse
+- base_automation owns record-change/date triggers and their Odoo domains.
+  Install the server's standard Community module; never replace its checkout.
+  A generated server action only captures a workflow event. It does not execute
+  an entire long-running process inside the original record transaction.
+- pb_lifecycle hosts the additive, module-neutral workflow service. Existing
+  employee journey templates/cases/tasks and their generators remain intact.
+- mail.activity owns human to-dos and reminders. Workflow step records track
+  orchestration state; they are not a second independent task assignment.
+- biz.approval.engine owns approval routes, scopes, people, cover, safeguards,
+  decision deadlines, return/rejection and application. Studio references it.
+- Business adapters own permitted state transitions, payroll locks, settlement
+  blockers, Hiring stage events, learning enrolments and other effects.
+- mail.template and the mail queue own ordinary messages. Hiring's company/key
+  templates, language fallback, sender and delivery ledger remain distinct.
+- Existing settings screens remain authoritative. Studio provides contextual
+  entry and return paths rather than copying settings into each workflow.
+- ir.attachment owns uploaded files. Record/field permissions still apply.
+- Access Studio owns access and access delegation. Assignment never grants it.
+- Existing integrations retain credentials, mapping and inbox idempotency.
+  No arbitrary Python, raw SQL, URLs or method names are accepted from a flow.
+
+Application-wide reconciliation
+Inventory includes the Approval Matrix and legacy bridges; Lifecycle and its
+onboarding/offboarding/probation/PIP/contract generators; Hiring; expenses,
+travel and final settlements; pay runs, pay-data loads and Records Desk; leave,
+attendance and timesheets; learning and goals; assets; HR letters and vault;
+announcements and birthday/anniversary senders; integration arrival rules;
+shared filters, calendars, settings/navigation and PayAI action ownership.
+Existing behaviour is shown as owned behaviour, not silently recreated.
+Generated Studio rules carry explicit ownership links. Publishing checks other
+Studio bindings and existing native automations for overlapping triggers.
+
+Definition and versions
+A company-scoped workflow has a draft, optimistic revision and immutable
+published versions. A graph contains ordered stage groups, nested branches,
+parallel groups, reusable groups, forms and service references. Stages organise
+work; they do not create or write native state values. A version freezes the
+graph and form schema. Shared module settings and mail templates retain their
+existing semantics; their live identity is referenced, not copied.
+
+Execution
+A captured event is durable and deduplicated. The worker starts one run on a
+pinned version, under the configured execution user's current permissions.
+Every run is locked while advancing. Each step has one durable identity and
+one activity/approval/mail reference. Completed steps never repeat on retry.
+Only the failing step retries. Forms validate on the server and can be saved
+partially. Waits survive restarts. Branches use typed, declared values. Parallel
+groups have explicit joins; first-finished groups cannot contain irreversible
+automatic effects. Logs explain selected paths, owners, waits and failures.
+
+Security and change controls
+Separate designer and publisher roles; company-scoped records; participants
+see their own tasks and permitted source data. Editing configuration grants no
+business-record rights. Automatic work rechecks its execution user's access.
+Source facts are read through that actor's field permissions. Native approval
+application revalidates the business record. Direct RPC cannot forge runtime
+state, complete another person's task, change an immutable version or bypass
+required form validation. Optimistic revision checks prevent lost edits.
+
+Rollout
+No example workflow is activated on installation. Existing flows and in-flight
+requests keep their current owner/version. Publish validates and snapshots;
+activation is a separate explicit action. Pause stops new starts while existing
+runs continue; a run can separately be held or cancelled. Native approval and
+already-queued mail retain their own cancellation rules. Definition Undo never
+pretends to undo an email or an applied business action.
+
+Deployment
+Commit only this work, recheck combined HEAD and custom trees, preserve concurrent
+changes and standard addons. Back up all four active databases and filestores;
+Rize backup is permanent. Install base_automation and missing standard
+dependencies; upgrade changed custom modules only where already installed.
+Validate on p0clone before the other databases. Preserve cron enablement and
+activate only the new worker needed for explicitly activated workflows.
+Verify code/version parity, migrations, permissions, existing-flow regressions,
+end-to-end Chrome create/edit/publish/start/task/branch/retry across modules.
+Remove all current-run screenshots. ABM remains retired and untouched.
+
+Record-level visual progress — added at the user's pause, 9 November 2026
+Status: accepted requirement, NOT YET IMPLEMENTED.
+- Every supported module record, including expenses, offers a consistent
+  "View workflow" button/icon when the user can inspect a linked run. This
+  opens a read-only flowchart for that record, with a return link to it.
+- Show the actual run's immutable version, not the latest design. Highlight
+  "You are here" on every active step, including concurrent parallel paths.
+  Clearly mark completed, waiting, blocked, failed, cancelled, skipped and
+  upcoming steps using text/icons as well as colour. Unchosen branches stay
+  conditional until a decision is known; do not imply predicted execution.
+- Selecting a step shows only permitted details: owner, elapsed time, due
+  date, reason for waiting/blocking and relevant activity/history. Sensitive
+  form answers, recipients and restricted approval information are not
+  automatically visible just because someone can see progress.
+- A separate progress-view capability, integrated with existing Access Studio,
+  requires current company and source-record access plus workflow visibility.
+  It never grants designer/publisher rights. Enforce the same checks in RPC,
+  direct links, record pickers, run listings and refresh requests.
+- Reuse the designer's graph renderer with runtime overlays; disable moving,
+  adding, editing, publishing and execution controls in this view. Opening a
+  chart must never start a run or change the record. Preserve readable zoom,
+  fit-to-current, keyboard navigation and reduced-motion preferences.
+- If a record has multiple permitted runs, show a clear chooser with process,
+  status, start date and current/history distinction; never pick an unrelated
+  or completed run silently. Show an honest empty state when no run exists.
+- Expand or link the Approval Matrix step to the existing approval engine's
+  permitted route progress. Read its actual steps, people and decisions; do
+  not create another approval status store. Refresh progress without losing
+  the selected step; show freshness and disconnected/loading states.
+- Legacy/native flows can appear only through explicit adapters exposing real
+  progress. Do not invent run history or silently migrate existing records.
+- Acceptance: expense -> chart at correct step; complete form/approve -> chart
+  advances; parallel active steps; returned/blocked/rejected/finished paths;
+  immutable old-version run; multiple runs; no-run state; restricted users,
+  direct URL/RPC denial and cross-company isolation; no edit rights implied.
