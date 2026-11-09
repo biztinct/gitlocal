@@ -7,6 +7,7 @@ import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
+import { openHub } from "@pb_hub/js/hub_nav";
 
 export class WorkflowStudio extends Component {
     static props = ["*"];
@@ -14,8 +15,10 @@ export class WorkflowStudio extends Component {
     setup() {
         this.action = useService("action");
         this.frame = useRef("frame");
-        const q = new URLSearchParams({v: "review-layout-2", company: (user.context.allowed_company_ids || [])[0] || "",
+        const q = new URLSearchParams({v: "studio-premium-3", company: (user.context.allowed_company_ids || [])[0] || "",
+            origin: this.props.action?.context?.pb_workflow_origin ? JSON.stringify(this.props.action.context.pb_workflow_origin) : "",
             workflow: this.props.action?.context?.pb_workflow_id || "",
+            template: this.props.action?.context?.pb_workflow_template_id || "",
             record_model: this.props.action?.context?.pb_workflow_record_model || "",
             record_id: this.props.action?.context?.pb_workflow_record_id || "",
             run: this.props.action?.context?.pb_workflow_run_id || "",
@@ -25,7 +28,18 @@ export class WorkflowStudio extends Component {
         const receive = e => {
             if (e.origin !== location.origin || e.source !== this.frame.el?.contentWindow || e.data?.type !== "pb.workflow.open") return;
             const action = e.data.action;
-            if (action && ["ir.actions.act_window", "ir.actions.client"].includes(action.type)) this.action.doAction(action);
+            if (!action || !["ir.actions.act_window", "ir.actions.client"].includes(action.type)) return;
+            const origin = e.data.origin;
+            if (origin && action.type === "ir.actions.client") {
+                // Both the live controller and the fallback carry the exact workflow,
+                // selected step and view. Never infer an origin from the last workflow opened.
+                this.props.action.context = {...this.props.action.context, pb_workflow_origin: origin};
+                this.url = "/pb_lifecycle/static/workflow/index.html?" + new URLSearchParams({...Object.fromEntries(q), origin: JSON.stringify(origin)});
+                return openHub(this.action, {tag: action.tag, context: action.context || {},
+                    clearBreadcrumbs: false, back: {tag: "pb_workflow_studio", label: _t("Workflow Studio"),
+                    context: {pb_workflow_id: origin.workflow, pb_workflow_origin: origin}}});
+            }
+            this.action.doAction(action);
         };
         window.addEventListener("message", receive);
         onWillUnmount(() => window.removeEventListener("message", receive));

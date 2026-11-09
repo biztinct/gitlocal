@@ -32,6 +32,11 @@ class WorkflowProgress(models.AbstractModel):
         if kind == 'initiator':
             return run.initiator_id.id
         source = run._source()
+        if kind == 'field':
+            field = next((f for f in self._source_fields(run.source_model) if f['key'] == owner.get('field')), {})
+            if field.get('type') != 'many2one' or field.get('relation') != 'res.users':
+                raise UserError(_('Choose an available person field on this record.'))
+            return source[owner['field']].id
         if kind == 'manager':
             employee = source if source._name == 'hr.employee' else source.employee_id if 'employee_id' in source._fields else self.env['hr.employee'].search([
                 ('user_id', '=', run.initiator_id.id), ('company_id', '=', run.company_id.id)], limit=1)
@@ -96,6 +101,10 @@ class WorkflowProgress(models.AbstractModel):
                           'wait': _('Waiting until the set time')}.get(step.kind, _('Waiting'))
             if step.state == 'failed':
                 reason = step.error if self._can_design() else _('This step needs attention from the workflow owner.')
+            if step.state == 'skipped':
+                reason = step.error or _('Another path was selected.')
+            if step.state == 'waiting' and step.kind == 'wait' and step.config.get('wait_for'):
+                reason = _('Waiting for matching conditions; the shown time is the deadline.')
             approval = None
             if step.approval_id:
                 try:

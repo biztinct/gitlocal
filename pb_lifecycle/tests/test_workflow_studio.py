@@ -14,6 +14,11 @@ class TestWorkflowStudio(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Cron tests must never advance pre-existing tenant runs. These changes
+        # live only in the test transaction and roll back with the fixtures.
+        cls.env['pb.workflow'].sudo().search([('enabled', '=', True)]).write({'enabled': False})
+        internal(cls.env['pb.workflow.event'].search([('state', '=', 'pending')])).write({'state': 'excluded'})
+        internal(cls.env['pb.workflow.run'].search([('state', 'in', ['running', 'waiting'])])).write({'state': 'held'})
         cls.company = cls.env.company
         cls.admin = cls.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'Workflow test publisher', 'login': 'wf-publisher-'+str(uuid.uuid4()),
@@ -301,3 +306,136 @@ class TestWorkflowStudio(TransactionCase):
         result = self.service.record_runs('res.partner', source.id)
         self.assertEqual([row['id'] for row in result['runs']], run.ids)
         self.assertEqual(self.service.with_user(self.staff).record_runs('res.partner', source.id)['runs'], [])
+
+    def rule(self, field, value, op='eq'):
+        return {'match': 'all', 'rules': [{'field': field, 'op': op, 'value': value}]}
+
+    def todo(self, ident, stage=0, **kw):
+        return {'id': ident, 'type': 'task', 'title': ident, 'stage': stage,
+                'owner': {'kind': 'initiator'}, 'due': 2, **kw}
+
+    def test_conditional_task_skips_without_activity(self):
+        w, d = self.workflow([self.todo('skip', when=self.rule('person.user_id', self.staff.id)), self.todo('do')])
+        self.publish(w, d); run = self.start(w)
+        skipped = run.step_ids.filtered(lambda s: s.key == 'skip')
+        self.assertEqual(skipped.state, 'skipped'); self.assertFalse(skipped.activity_id)
+        self.assertEqual(run.step_ids.filtered(lambda s: s.key == 'do').state, 'waiting')
+        self.assertIn('Filters', self.service.progress(run.id)['steps'][1]['reason'])
+
+    def test_nested_filters_and_roles(self):
+        task = self.todo('do', when={'match': 'any', 'rules': [self.rule('person.user_id', self.staff.id),
+            {'match': 'all', 'rules': [{'field': 'person.group_ids', 'op': 'contains', 'value': self.env.ref('base.group_system').id},
+                                     {'field': 'workflow.stage', 'op': 'eq', 'value': 0}]}]})
+        w, d = self.workflow([task]); self.publish(w, d); run = self.start(w)
+        self.assertEqual(run.step_ids.filtered(lambda s: s.key == 'do').state, 'waiting')
+
+    def test_filtered_parallel_any_waits_for_eligible_work(self):
+        group={'id':'both','type':'parallel','title':'Parallel','stage':0,'join':'any','branches':[
+            {'id':'excluded','label':'Excluded','condition':self.rule('person.user_id',self.staff.id),'steps':['a']},
+            {'id':'included','label':'Included','condition':self.rule('person.user_id',self.admin.id),'steps':['b']}]}
+        w,d=self.workflow([group,self.todo('a'),self.todo('b'),self.todo('after')]);d['order']=['trigger','both','after']
+        self.publish(w,d);run=self.start(w)
+        steps={s.key:s for s in run.step_ids}
+        self.assertEqual(steps['a'].state,'skipped');self.assertEqual(steps['b'].state,'waiting')
+        self.assertEqual(steps['after'].state,'pending')
+        self.service.answer(steps['b'].id,{})
+        self.assertEqual(steps['after'].state,'waiting')
+
+    def test_parallel_with_no_matches_continues(self):
+        no=self.rule('person.user_id',self.staff.id)
+        group={'id':'both','type':'parallel','title':'Parallel','stage':0,'join':'all','branches':[
+            {'id':'a_path','label':'First','condition':no,'steps':['a']},
+            {'id':'b_path','label':'Second','condition':no,'steps':['b']}]}
+        w,d=self.workflow([group,self.todo('a'),self.todo('b')]);d['order']=['trigger','both']
+        self.publish(w,d);run=self.start(w)
+        self.assertEqual(run.state,'done');self.assertEqual(len(run.step_ids.filtered(lambda s:s.state=='skipped')),2)
+        preview=self.service.preview(w.id,{'person.user_id':self.admin.id})
+        self.assertEqual(sum(bool(x.get('skipped')) for x in preview['steps']),2)
+
+    def test_wait_conditions_use_live_record_and_timeout(self):
+        wait={'id':'wait','type':'wait','title':'Wait for readiness','stage':0,'hours':1,'wait_for':self.rule('name','Ready')}
+        w,d=self.workflow([wait],model='res.partner');self.publish(w,d)
+        source=self.env['res.partner'].create({'name':'Not yet','company_id':self.company.id})
+        run=self.start(w,source);self.assertEqual(run.state,'waiting')
+        source.name='Ready';self.service._cron_workflows();self.assertEqual(run.state,'done')
+        source.name='Not yet';later=self.start(w,source)
+        step=later.step_ids.filtered(lambda s:s.key=='wait');internal(step).write({'wake_at':fields.Datetime.now()-timedelta(hours=1)})
+        self.service._cron_workflows();self.assertEqual(step.state,'failed');self.assertIn('deadline',step.error)
+
+    def test_new_conditions_read_live_old_branches_keep_snapshot(self):
+        w,d=self.workflow([self.todo('first'),self.todo('after',when=self.rule('name','New'))],model='res.partner')
+        self.publish(w,d);source=self.env['res.partner'].create({'name':'Old','company_id':self.company.id})
+        run=self.start(w,source);source.name='New'
+        self.service.answer(run.step_ids.filtered(lambda s:s.key=='first').id,{})
+        self.assertEqual(run.step_ids.filtered(lambda s:s.key=='after').state,'waiting')
+        self.assertEqual(run._values()['name'],'Old')
+
+    def test_native_before_and_after_domains(self):
+        w,d=self.workflow([self.todo('do')],model='res.partner',trigger='changed')
+        d['trigger'].update(fields=['name'],before=self.rule('name','Before'))
+        d['scope']=self.rule('name','After');self.publish(w,d)
+        source=self.env['res.partner'].with_user(self.admin).create({'name':'Wrong','company_id':self.company.id})
+        events=lambda:self.env['pb.workflow.event'].search_count([('workflow_id','=',w.id)])
+        source.name='After';self.assertEqual(events(),0)
+        source.name='Before';source.name='After';self.assertEqual(events(),1)
+        self.assertIn('Before',w.automation_id.filter_pre_domain);self.assertIn('After',w.automation_id.filter_domain)
+        preview=self.service.preview(w.id,{'name':'After'},{'name':'Before'})
+        self.assertTrue(preview['included'])
+        self.assertFalse(self.service.preview(w.id,{'name':'After'},{'name':'Wrong'})['included'])
+
+    def test_native_negative_before_filter_does_not_match_missing_value(self):
+        w,d=self.workflow([self.todo('do')],model='res.partner',trigger='changed')
+        d['trigger'].update(fields=['name'],before=self.rule('email','excluded@example.invalid','ne'))
+        self.publish(w,d)
+        source=self.env['res.partner'].with_user(self.admin).create({'name':'Empty email','company_id':self.company.id})
+        source.name='Changed with no email'
+        self.assertFalse(self.env['pb.workflow.event'].search([('workflow_id','=',w.id)]))
+        source.email='included@example.invalid';source.name='Changed with an email'
+        self.assertEqual(self.env['pb.workflow.event'].search_count([('workflow_id','=',w.id)]),1)
+
+    def test_existing_record_stage_is_available_without_creating_stages(self):
+        self.admin.write({'group_ids': [(4, self.env.ref('hr_recruitment.group_hr_recruitment_manager').id)]})
+        meta=self.service.metadata('hr.applicant')
+        stage=next(f for f in meta['fields'] if f['key']=='stage_id')
+        self.assertEqual(stage['relation'],'hr.recruitment.stage')
+        count=self.env['hr.recruitment.stage'].search_count([])
+        w,d=self.workflow([self.todo('do')],model='hr.applicant')
+        d['stages'].append({'name':'Workflow-only stage'})
+        self.service.save_draft(w.id,w.revision,d)
+        self.assertEqual(self.env['hr.recruitment.stage'].search_count([]),count)
+
+    def test_native_activity_type_and_record_owner_reused(self):
+        activity=self.env['mail.activity.type'].create({'name':'Workflow check','category':'default'})
+        task=self.todo('do',owner={'kind':'field','field':'user_id'},activity_type_id=activity.id)
+        w,d=self.workflow([task],model='res.partner');self.publish(w,d)
+        source=self.env['res.partner'].create({'name':'Assigned','company_id':self.company.id,'user_id':self.admin.id})
+        run=self.start(w,source);step=run.step_ids.filtered(lambda s:s.key=='do')
+        self.assertEqual(step.assignee_id,self.admin);self.assertEqual(step.activity_id.activity_type_id,activity)
+
+    def test_shared_template_editor_native_preview_and_concurrency(self):
+        w,d=self.workflow(model='res.partner')
+        payload={'name':'Native shared message','subject':'Hello {{ object.name }}','body_html':'<p>Hello <t t-out="object.name"/></p>','email_to':'preview@example.invalid'}
+        created=self.service.save_template(w.id,payload)
+        template=self.env['mail.template'].browse(created['id'])
+        self.assertEqual(template.model,'res.partner');self.assertIn('t-out',template.body_html)
+        source=self.env['res.partner'].create({'name':'Preview Person','company_id':self.company.id})
+        count=self.env['mail.mail'].search_count([])
+        preview=self.service.template_preview(w.id,payload,source.id)
+        self.assertEqual(preview['subject'],'Hello Preview Person');self.assertIn('Preview Person',preview['body_html'])
+        self.assertEqual(self.env['mail.mail'].search_count([]),count)
+        changed=self.service.save_template(w.id,{**payload,'subject':'Updated'},template.id,created['revision'])
+        self.assertEqual(changed['id'],template.id)
+        with self.assertRaises(UserError):self.service.save_template(w.id,payload,template.id,'stale')
+        with self.assertRaises(AccessError):self.service.with_user(self.staff).template_detail(w.id,template.id)
+        other,_=self.workflow(model='hr.employee')
+        with self.assertRaises(UserError):self.service.template_detail(other.id,template.id)
+
+    def test_filters_cannot_bypass_required_approval(self):
+        w,d=self.workflow([{'id':'approve','type':'matrix','title':'Approval','stage':0,'when':self.rule('amount',0)}])
+        self.assertTrue(any('Approval decisions' in x['text'] for x in self.service._validate(w,d)))
+
+    def test_filter_validation_rejects_wrong_types_and_forward_answers(self):
+        task=self.todo('first',when=self.rule('step.details.amount',5));w,d=self.workflow([task,self.form()])
+        self.assertTrue(self.service._validate(w,d))
+        d['nodes'][1]['when']=self.rule('amount','five')
+        self.assertTrue(self.service._validate(w,d))

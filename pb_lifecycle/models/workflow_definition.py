@@ -11,7 +11,8 @@ TYPES = ('trigger', 'task', 'input', 'matrix', 'email', 'wait', 'branch',
          'parallel', 'subprocess', 'action', 'reference')
 FORM_TYPES = ('text', 'textarea', 'number', 'date', 'email', 'select',
               'multiselect', 'boolean', 'file', 'rows', 'section', 'lookup')
-OPS = ('eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'set')
+OPS = ('eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'icontains', 'not_contains', 'set', 'unset', 'in', 'not_in')
+CONTEXT_FIELDS = {'person.user_id', 'person.group_ids', 'workflow.stage', 'workflow.completed_stages'}
 IDENT = re.compile(r'^[a-zA-Z][a-zA-Z0-9_-]{0,79}$')
 MAX_NODES, MAX_FIELDS = 200, 80
 
@@ -54,21 +55,32 @@ def descendants(d, ident):
 
 
 def matches(rule, values):
+    if not rule:
+        return True
+    if 'rules' in rule:
+        checks = [matches(r, values) for r in rule['rules']]
+        return not checks or (all(checks) if rule.get('match') == 'all' else any(checks))
     value, expected = values.get(rule.get('field')), rule.get('value')
     op = rule.get('op')
-    if op == 'set':
-        return value is not None and value != '' and value != []
+    if op in ('set', 'unset'):
+        filled = value is not None and value != '' and value != []
+        return filled if op == 'set' else not filled
     if value is None:
         return False
+    if op in ('in', 'not_in'):
+        found = isinstance(expected, list) and any(matches(dict(rule, op='eq', value=v), values) for v in expected)
+        return found if op == 'in' else not found
     if op == 'eq':
         return type(value) is type(expected) and value == expected or (
             type(value) in (int, float) and type(expected) in (int, float)
             and value == expected)
     if op == 'ne':
         return not matches(dict(rule, op='eq'), values)
-    if op == 'contains':
-        return (isinstance(value, (str, list)) and
-                isinstance(expected, str) and expected in value)
+    if op in ('contains', 'icontains', 'not_contains'):
+        found = (isinstance(value, str) and isinstance(expected, str) and
+                 (expected in value if op == 'contains' else expected.casefold() in value.casefold()) or
+                 isinstance(value, list) and expected in value)
+        return not found if op == 'not_contains' else bool(found)
     if type(value) not in (int, float) or type(expected) not in (int, float):
         if not isinstance(value, str) or not isinstance(expected, str):
             return False
@@ -81,6 +93,34 @@ def matches(rule, values):
             return False
     return {'gt': value > expected, 'gte': value >= expected,
             'lt': value < expected, 'lte': value <= expected}.get(op, False)
+
+
+def leaves(rule):
+    if not rule:
+        return []
+    return [r for child in rule.get('rules', []) for r in leaves(child)] if 'rules' in rule else [rule]
+
+
+def native_domain(rule, types=None):
+    """Compile only validated source filters to Odoo's domain language."""
+    if not rule or not rule.get('rules', [True]):
+        return []
+    if 'rules' in rule:
+        parts = [native_domain(r, types) for r in rule['rules']]
+        return (['&' if rule['match'] == 'all' else '|'] * (len(parts)-1) +
+                [term for part in parts for term in part])
+    op, value = rule['op'], rule.get('value')
+    operator = {'eq': '=', 'ne': '!=', 'gt': '>', 'gte': '>=', 'lt': '<', 'lte': '<=',
+                'contains': 'like', 'icontains': 'ilike', 'not_contains': 'not ilike', 'in': 'in', 'not_in': 'not in',
+                'set': '!=', 'unset': '='}[op]
+    if op in ('contains', 'icontains', 'not_contains'):
+        value = value.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+    leaf = [(rule['field'], operator, False if op in ('set', 'unset') else value)]
+    # The interpreter treats absent values as non-matches, even for "is not".
+    # Native negative domains otherwise also include NULL. Keep both paths equal.
+    if op not in ('set', 'unset') and (types or {}).get(rule['field']) in ('char', 'text', 'selection', 'many2one', 'date', 'datetime'):
+        return ['&', (rule['field'], '!=', False)] + leaf
+    return leaf
 
 
 def visible(field, answers):
@@ -288,18 +328,37 @@ def _validate(d, source_fields=None, actions=None, approval=False):
     if any(nodes[a]['stage'] > nodes[b]['stage'] for a, b in zip(order, order[1:])):
         error('trigger', 'Keep steps in their stage order.')
     base = set(source_fields) if source_fields is not None else {'amount', 'urgent'}
-    def condition(rule, available, ident):
+    def condition(rule, available, ident, depth=0):
+        if isinstance(rule, dict) and 'rules' in rule:
+            if (depth >= 4 or rule.get('match') not in ('all', 'any') or
+                    not isinstance(rule['rules'], list) or not 1 <= len(rule['rules']) <= 20):
+                error(ident, 'Use up to four levels and 20 filters in a group. Remove an empty group.')
+                return
+            for child in rule['rules']:
+                condition(child, available, ident, depth+1)
+            return
         if (not isinstance(rule, dict) or rule.get('field') not in available
                 or rule.get('op') not in OPS):
             error(ident, 'Choose an available value and comparison.')
+            return
+        if rule['op'] in ('in', 'not_in') and (not isinstance(rule.get('value'), list) or not 1 <= len(rule['value']) <= 100):
+            error(ident, 'Choose one or more values for this filter.')
     def walk(ids, available):
         available = set(available)
         for key in ids:
             n = nodes[key]
             kind = n['type']
+            if n.get('when'):
+                condition(n['when'], available, key)
+                if kind in ('trigger', 'matrix'):
+                    error(key, 'Start filters belong on Start. Approval decisions belong in the Approval Matrix.')
+            if n.get('wait_for'):
+                condition(n['wait_for'], available, key)
+                if kind != 'wait':
+                    error(key, 'Only a wait step can wait for a condition.')
             if kind in ('task', 'input'):
                 owner = n.get('owner', {})
-                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user', 'role', 'manager') or (
+                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user', 'role', 'manager', 'field') or (
                         owner.get('kind') == 'user' and type(owner.get('id')) is not int):
                     error(key, 'Choose who does this step.')
                 if type(n.get('due', 2)) is not int or not 1 <= n.get('due', 2) <= 365:
@@ -346,7 +405,7 @@ def _validate(d, source_fields=None, actions=None, approval=False):
                     error(key, 'Add a step to this saved group.')
                 available = walk(n['steps'], available)
         return available
-    walk(order, base)
+    walk(order, base | CONTEXT_FIELDS)
     matrix = [n for n in raw if n['type'] == 'matrix']
     if len(matrix) > 1:
         error('trigger', 'Use one Approval Matrix step.')
@@ -367,6 +426,10 @@ def _validate(d, source_fields=None, actions=None, approval=False):
         error('trigger', 'Choose when this workflow starts.')
     elif trigger['kind'] == 'changed' and (not isinstance(trigger.get('fields'), list) or not trigger['fields'] or any(not isinstance(f, str) or f not in base for f in trigger['fields'])):
         error('trigger', 'Choose the specific fields that start this workflow.')
+    if trigger.get('before'):
+        condition(trigger['before'], base, 'trigger')
+        if trigger.get('kind') != 'changed':
+            error('trigger', 'Before-change filters need a field-change trigger.')
     return out
 
 
@@ -376,14 +439,23 @@ def route_preview(d, values):
     def visit(ids, path='Main path'):
         for key in ids:
             n = nodes[key]
+            stage_values = {**values, 'workflow.stage': n['stage']}
+            if n.get('when') and not matches(n['when'], stage_values):
+                rows.append({'id': key, 'title': n['title'], 'type': n['type'], 'path': path,
+                             'reason': 'Skipped · filters do not match', 'skipped': True})
+                continue
             rows.append({'id': key, 'title': n['title'], 'type': n['type'], 'path': path})
             if n['type'] == 'branch':
-                selected = next(b for b in n['branches'] if not b.get('condition') or matches(b['condition'], values))
+                selected = next(b for b in n['branches'] if not b.get('condition') or matches(b['condition'], stage_values))
                 rows[-1]['reason'] = selected['label']
                 visit(selected['steps'], selected['label'])
             elif n['type'] == 'parallel':
                 for b in n['branches']:
-                    visit(b['steps'], b['label'])
+                    if matches(b.get('condition'), stage_values):
+                        visit(b['steps'], b['label'])
+                    else:
+                        rows.append({'id': key, 'title': b['label'], 'type': 'path', 'path': path,
+                                     'reason': 'Skipped · path filters do not match', 'skipped': True})
             elif n['type'] == 'subprocess':
                 visit(n['steps'], n['title'])
     visit(d['order'])

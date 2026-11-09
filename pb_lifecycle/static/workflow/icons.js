@@ -1,5 +1,6 @@
 /* Shared product icons. No external icon/font requests in the standalone preview. */
 const UI_ICONS={
+ horizontal:'<path d="M3 5h15a3 3 0 0 1 0 6H6a3 3 0 0 0 0 6h15m-3-3 3 3-3 3M6 2 3 5l3 3"/>',
  trigger:'<path d="m13 2-9 12h7l-1 8 10-12h-7z"/>',
  approval:'<circle cx="9" cy="7" r="3"/><path d="M3 20v-3a6 6 0 0 1 10-4m2 4 2 2 4-5"/>',
  task:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 12 3 3 5-6"/>',

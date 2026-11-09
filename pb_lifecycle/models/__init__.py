@@ -14,3 +14,4 @@ from . import letter_approval
 from . import workflow_models
 from . import workflow_studio
 from . import workflow_progress
+from . import workflow_configuration

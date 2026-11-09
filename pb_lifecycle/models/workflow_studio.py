@@ -72,14 +72,16 @@ class WorkflowStudio(models.AbstractModel):
             return [{'key': 'amount', 'label': _('Amount'), 'type': 'float'},
                     {'key': 'urgent', 'label': _('Urgent'), 'type': 'boolean'}]
         obj = self.env[model]
-        metadata = obj.fields_get(attributes=['string', 'type', 'selection'])
+        metadata = obj.fields_get(attributes=['string', 'type', 'selection', 'relation'])
         return [{'key': key, 'label': value['string'], 'type': value['type'],
-                 'options': value.get('selection', [])}
+                 'options': value.get('selection', []), 'relation': value.get('relation')}
                 for key, value in metadata.items()
                 if key in obj._fields and obj._fields[key].store and
                 not key.startswith(('message_', 'activity_')) and
                 not any(part in key.lower() for part in ('password', 'token', 'secret', 'api_key', 'credential')) and
-                value['type'] in ('char', 'text', 'integer', 'float', 'monetary', 'boolean', 'date', 'datetime', 'selection')]
+                (value['type'] in ('char', 'text', 'integer', 'float', 'monetary', 'boolean', 'date', 'datetime', 'selection') or
+                 value['type'] == 'many2one' and value.get('relation') in self.env and
+                 self.env[value['relation']].has_access('read'))]
 
     def _facts(self, record):
         names = [f['key'] for f in self._source_fields(record._name)]
@@ -89,6 +91,8 @@ class WorkflowStudio(models.AbstractModel):
             field = record._fields[key]
             if value is False and field.type != 'boolean':
                 vals[key] = None
+            elif field.type == 'many2one':
+                vals[key] = value[0] if value else None
         return vals
 
     def _models(self):
@@ -221,6 +225,10 @@ class WorkflowStudio(models.AbstractModel):
                   'owners': self._ownership(model),
                   'processes': [{'id': p.id, 'name': p.name, 'key': p.key} for p in processes],
                   'templates': [{'id': t.id, 'name': t.name} for t in templates],
+                  'can_edit_templates': self.env['mail.template'].has_access('create') and
+                                        (self.env.is_admin() or self.env.user.has_group('mail.group_mail_template_editor')),
+                  'activity_types': [{'id': t.id, 'name': t.name} for t in self.env['mail.activity.type'].search([
+                      ('res_model', 'in', [False, 'pb.workflow.run']), ('category', '=', 'default')])],
                   'users': [{'id': u.id, 'name': u.name} for u in users],
                   'roles': [{'id': r.id, 'name': r.name} for r in self.env['biz.approval.role'].sudo().search([('is_pool', '=', False)])],
                   'starter_groups': [{'id': g.id, 'name': g.name} for g in self.env['res.groups'].sudo().search([('id', '!=', self.env.ref('base.group_public').id), ('id', '!=', self.env.ref('base.group_portal').id)])],
@@ -274,6 +282,13 @@ class WorkflowStudio(models.AbstractModel):
                 role = self.env['biz.approval.role'].sudo().browse(n['owner'].get('id', 0)).exists()
                 if not role or role.is_pool:
                     error(n['id'], _('Choose an existing single-person responsibility.'))
+            if n['type'] in ('task', 'input'):
+                if n.get('owner', {}).get('kind') == 'field':
+                    f = fields_meta.get(n['owner'].get('field'), {})
+                    if f.get('type') != 'many2one' or f.get('relation') != 'res.users':
+                        error(n['id'], _('Choose a person field from this record.'))
+                if n.get('activity_type_id') and n['activity_type_id'] not in {t['id'] for t in self.metadata(w.source_model)['activity_types']}:
+                    error(n['id'], _('Choose a supported task type.'))
             if n['type'] == 'email':
                 try:
                     self._mail_template(n['template_id'], w.source_model or 'pb.workflow.run')
@@ -420,7 +435,7 @@ class WorkflowStudio(models.AbstractModel):
                 'definition': w.published_id.definition}
 
     @api.model
-    def preview(self, workflow_id, values=None):
+    def preview(self, workflow_id, values=None, before_values=None):
         w = self._workflow(workflow_id)
         issues = self._validate(w, w.draft)
         if issues:
@@ -428,8 +443,11 @@ class WorkflowStudio(models.AbstractModel):
         values = values or {}
         if not isinstance(values, dict) or len(json.dumps(values)) > 100000:
             raise UserError(_('The example values are not valid.'))
-        checks = [D.matches(r, values) for r in w.draft['scope']['rules']]
-        included = not checks or (all(checks) if w.draft['scope']['match'] == 'all' else any(checks))
+        included = D.matches(w.draft['scope'], values)
+        if w.draft['trigger'].get('before'):
+            if not isinstance(before_values, dict) or not D.safe_json(before_values, 100000):
+                return {'issues': [{'id': 'trigger', 'text': _('Add example values from before the change.')}], 'steps': []}
+            included = included and D.matches(w.draft['trigger']['before'], before_values)
         return {'issues': [], 'included': included,
                 'steps': D.route_preview(w.draft, values) if included else [],
                 'notice': _('Preview only. No tasks, approvals or messages are created.')}
@@ -690,16 +708,11 @@ class WorkflowStudio(models.AbstractModel):
     @api.model
     def open_resource(self, workflow_id, key, record_id=None):
         w = self._workflow(workflow_id)
-        if key == 'new_template':
-            model = self.env['ir.model']._get(w.source_model or 'pb.workflow.run')
-            self.env['mail.template'].check_access('create')
-            return {'type': 'ir.actions.act_window', 'res_model': 'mail.template',
-                    'name': _('New email template'), 'views': [[False, 'form']],
-                    'context': {'default_model_id': model.id}, 'target': 'current'}
-        if key == 'template':
-            t = self._mail_template(record_id, w.source_model or 'pb.workflow.run')
-            return {'type': 'ir.actions.act_window', 'res_model': 'mail.template', 'res_id': t.id,
-                    'name': t.name, 'views': [[False, 'form']], 'target': 'current'}
+        if key in ('template', 'new_template'):
+            self._template_editor()
+            t = self._mail_template(record_id, w.source_model or 'pb.workflow.run') if key == 'template' else None
+            return {'type': 'ir.actions.client', 'tag': 'pb_workflow_studio', 'name': _('Email template'),
+                    'context': {'pb_workflow_id': w.id, 'pb_workflow_template_id': t.id if t else 'new'}}
         owner = next((r for r in self._ownership(w.source_model) if r['key'] == key), None)
         if not owner:
             raise UserError(_('This settings screen is not available.'))
@@ -732,8 +745,14 @@ class WorkflowStudio(models.AbstractModel):
                     run._lock()
                     internal(run).write({'checked_at': fields.Datetime.now()})
                     for step in run.step_ids.filtered(lambda s: s.state == 'waiting'):
-                        if step.kind == 'wait' and step.wake_at <= fields.Datetime.now():
-                            step._finish()
+                        if step.kind == 'wait':
+                            if step.config.get('wait_for'):
+                                if D.matches(step.config['wait_for'], run._condition_values(step.config)):
+                                    step._finish()
+                                elif step.wake_at <= fields.Datetime.now():
+                                    internal(step).write({'state': 'failed', 'error': _('The wait reached its deadline before the conditions matched. Check the record, then retry.')})
+                            elif step.wake_at <= fields.Datetime.now():
+                                step._finish()
                         elif step.kind == 'email':
                             if not step.mail_id:
                                 internal(step).write({'state': 'failed', 'error': _('The queued message is missing. Check the mail service before retrying.')})

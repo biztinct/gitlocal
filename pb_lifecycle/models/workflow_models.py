@@ -106,15 +106,17 @@ class Workflow(models.Model):
         if not model:
             raise UserError(_('Choose the record this workflow follows.'))
         trigger = {'created': 'on_create', 'changed': 'on_write', 'date': 'on_time'}[kind]
+        field_types = {key: f.type for key, f in self.env[self.source_model]._fields.items()}
         vals = {'name': 'Workflow Studio · %s' % self.name, 'model_id': model.id,
                 'trigger': trigger, 'active': True,
-                'filter_domain': repr([('company_id', '=', self.company_id.id)])}
+                'filter_domain': repr([('company_id', '=', self.company_id.id)] + D.native_domain(d['scope'], field_types)),
+                'filter_pre_domain': False}
         F = self.env['ir.model.fields'].sudo()
         if kind == 'changed':
             vals['trigger_field_ids'] = [(6, 0, F.search([
                 ('model_id', '=', model.id), ('name', 'in', t['fields'])]).ids)]
             # Exclude creation: a changed-field workflow starts on edits only.
-            vals['filter_pre_domain'] = repr([('id', '!=', False)])
+            vals['filter_pre_domain'] = repr([('id', '!=', False)] + D.native_domain(t.get('before'), field_types))
         if kind == 'date':
             f = F.search([('model_id', '=', model.id), ('name', '=', t['date_field'])], limit=1)
             vals.update(trg_date_id=f.id, trg_date_range=t.get('delay', 0),
@@ -288,22 +290,40 @@ class WorkflowRun(models.Model):
                     result[field['bind']] = s.answers[field['id']]
         return result
 
+    def _condition_values(self, node):
+        """New step filters use current record facts. Old branch rules keep their snapshot."""
+        result = self._values()
+        if self.source_model:
+            result.update(self._service()._facts(self._source()))
+        result['person.user_id'] = self.initiator_id.id
+        result['person.group_ids'] = self.initiator_id.sudo().group_ids.ids
+        result['workflow.stage'] = node['stage']
+        result['workflow.completed_stages'] = [i for i in range(len(self.version_id.definition['stages']))
+            if self.step_ids.filtered(lambda s: s.config['stage'] == i) and
+            all(s.state in ('done', 'skipped') for s in self.step_ids.filtered(lambda s: s.config['stage'] == i))]
+        return result
+
     def _advance(self):
         self.ensure_one()
         self._lock()
         if self.state in ('held', 'done', 'cancelled', 'rejected'):
             return
         d, steps = self.version_id.definition, {s.key: s for s in self.sudo().step_ids}
-        def skip(ids):
+        def skip(ids, reason='Another path was selected.'):
             for key in ids:
                 for child in D.descendants(d, key):
                     s = steps[child]
                     if s.state not in ('done', 'skipped'):
                         s._cancel_activity()
-                        internal(s).write({'state': 'skipped'})
+                        internal(s).write({'state': 'skipped', 'error': reason})
         def sequence(ids):
             for key in ids:
-                if not visit(key):
+                try:
+                    complete = visit(key)
+                except (AccessError, UserError) as exc:
+                    internal(steps[key]).write({'state': 'failed', 'error': str(exc)[:1000]})
+                    complete = False
+                if not complete:
                     return False
             return True
         def visit(key):
@@ -312,9 +332,20 @@ class WorkflowRun(models.Model):
                 return True
             if s.state in ('waiting', 'failed'):
                 return False
+            if s.state == 'pending' and n.get('when'):
+                try:
+                    included = D.matches(n['when'], self._condition_values(n))
+                except (AccessError, UserError) as exc:
+                    internal(s).write({'state': 'failed', 'error': str(exc)})
+                    return False
+                if not included:
+                    skip([key], _('Filters did not match when this step was reached.'))
+                    self._log(_('Skipped %s: filters did not match.', s.name), s)
+                    return True
             if n['type'] == 'branch':
                 if not s.choice:
-                    b = next(b for b in n['branches'] if not b.get('condition') or D.matches(b['condition'], self._values()))
+                    values = self._condition_values(n) if any('rules' in b.get('condition', {}) for b in n['branches']) else self._values()
+                    b = next(b for b in n['branches'] if not b.get('condition') or D.matches(b['condition'], values))
                     internal(s).write({'choice': b['id'], 'state': 'active'})
                     skip([x for other in n['branches'] if other['id'] != b['id'] for x in other['steps']])
                     self._log(_('Path: %s.', b['label']), s)
@@ -324,9 +355,16 @@ class WorkflowRun(models.Model):
                     return True
                 return False
             if n['type'] == 'parallel':
-                internal(s).write({'state': 'active'})
+                if not s.choice:
+                    values = self._condition_values(n)
+                    selected = [b['id'] for b in n['branches'] if D.matches(b.get('condition'), values)]
+                    internal(s).write({'state': 'active', 'choice': json.dumps(selected)})
+                    skip([x for b in n['branches'] if b['id'] not in selected for x in b['steps']],
+                         _('This path’s filters did not match when parallel work started.'))
+                    self._log(_('Parallel paths: %s.', ', '.join(b['label'] for b in n['branches'] if b['id'] in selected) or _('none matched')), s)
+                selected = json.loads(s.choice)
                 done = []
-                for b in n['branches']:
+                for b in (b for b in n['branches'] if b['id'] in selected):
                     done.append(sequence(b['steps']))
                     if n.get('join') == 'any' and done[-1]:
                         skip([x for other in n['branches'] if other['id'] != b['id'] for x in other['steps']])
@@ -487,7 +525,7 @@ class WorkflowStep(models.Model):
                     deadline = planned.astimezone(pytz.timezone(calendar.tz or 'UTC')).date()
                 activity = internal(self.env['mail.activity']).create({
                     'res_model_id': self.env['ir.model']._get_id('pb.workflow.run'),
-                    'res_id': run.id, 'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                    'res_id': run.id, 'activity_type_id': n.get('activity_type_id') or self.env.ref('mail.mail_activity_data_todo').id,
                     'user_id': uid, 'summary': n['title'],
                     'note': _('Open Workflow Studio → My tasks to complete this step.'),
                     'date_deadline': deadline,
@@ -495,8 +533,11 @@ class WorkflowStep(models.Model):
             internal(self).write({'state': 'waiting', 'assignee_id': uid, 'activity_id': activity.id})
             run._log(_('Waiting for %s.', user.name), self)
         elif self.kind == 'wait':
+            if n.get('wait_for') and D.matches(n['wait_for'], run._condition_values(n)):
+                self._finish()
+                return
             internal(self).write({'state': 'waiting', 'wake_at': fields.Datetime.now() + timedelta(hours=n['hours'])})
-            run._log(_('Waiting for the set time.'), self)
+            run._log(_('Waiting for matching conditions.') if n.get('wait_for') else _('Waiting for the set time.'), self)
         elif self.kind == 'matrix':
             if self.approval_id:
                 request = self.approval_id
