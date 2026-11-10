@@ -16,3 +16,6 @@ from . import holiday_journey
 from . import rize_policy
 
 from . import policy_year_opening
+
+# WF2 P2: what Time off tells Workflow Studio (read-only declarations).
+from . import workflow_contract
