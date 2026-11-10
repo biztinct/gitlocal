@@ -25,6 +25,10 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | D2 | Late work | **Reuse the approval engine's reminder → escalation → backup** (and People & backups cover) for workflow tasks. No second reminder system. |
 | D3 | Hiring Automations | **Hiring keeps its own.** Studio shows them as "already happens" and warns/refuses a repeat. Nothing is moved. |
 | D4 | Form builders | **Studio's form builder is the general one** for workflows and, later, joiner/leaver checklists. Hiring's public application forms stay as they are. |
+| D5 | Approvers told twice (pay change, overtime, contract extension, resignation, goals, time off, probation) | **Only the approval engine tells approvers when a route is live.** Each area's older duplicate message is switched off in that case. Work outside Studio; schedule as its own phase (P2b). |
+| D6 | Requester told twice or never | **Fix the gaps, one owner per message.** Each area owns the one message to the requester; missing ones are added (e.g. expense claim approved / paid) and must reach employee-home (portal) logins. Same phase as D5. |
+| D7 | New joiner preparation split between Hiring "Before they join" and the joining checklist | **Open** — owner asked for a clearer explanation; ask again. |
+| D8 | In-app notices, letters, one-step sign-offs, self-running checklist steps | **Reuse all four**: notice step → announcement; letter step → letters library (its sending approval stays); one-step sign-offs stay in "Other request"; self-running checklist steps shown as "already happens" with a warning before a repeat. |
 
 ## 2. Phases
 
