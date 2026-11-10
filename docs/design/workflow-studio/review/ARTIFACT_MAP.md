@@ -7,7 +7,7 @@ All relative links resolve from this file in either the repository or the extrac
 | Artifact | Purpose |
 | --- | --- |
 | [START_HERE.md](START_HERE.md) | Reading order, scope, version, source authority and access instructions. |
-| [SECOND_OPINION_PROMPT.md](SECOND_OPINION_PROMPT.md) | Copy into the review session and attach the ZIP or give repository access. |
+| [SECOND_OPINION_PROMPT.md](SECOND_OPINION_PROMPT.md) | Copy into a session with access to the same workspace; uses absolute paths and requires no attachment. |
 | [DESIGN_REVIEW.md](DESIGN_REVIEW.md) | Requirements, views, user journeys, architecture, service ownership, security and execution semantics. |
 | [DECISIONS_AND_GAPS.md](DECISIONS_AND_GAPS.md) | Alternatives, evolution, prototype/current comparison and questions that need independent judgment. |
 | [VERIFICATION.md](VERIFICATION.md) | Recorded tests, release chronology, limits and safe review walkthrough. |

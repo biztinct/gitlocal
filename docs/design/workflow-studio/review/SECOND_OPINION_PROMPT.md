@@ -1,6 +1,6 @@
 # Independent review prompt — Payobook Workflow Studio
 
-Copy the prompt below into the other session. Give that session access to this repository, or attach and extract `workflow-studio-review-2026-11-10.zip`. Links below are relative to `docs/design/workflow-studio/review/`; if your chat client does not resolve them, open those paths from the extracted bundle. The ZIP's root README and `FILE_MANIFEST.json` identify the contents and source revision. Do not assume local file links are publicly accessible.
+Copy the prompt below into another session with access to the same local workspace. Every local artifact reference uses its full absolute filesystem path. No attachment or ZIP is needed. These paths require filesystem access to this computer; they are not public URLs.
 
 ---
 
@@ -10,7 +10,7 @@ This is a review request, not permission to implement, deploy, activate workflow
 
 ## Access and baseline
 
-If you share the original workspace, the repository root is `/Users/adity/Documents/GitHub/gitlocal`. Otherwise use the attached source-review ZIP, which preserves repository paths. It is a selected source snapshot, not a runnable distribution of every application dependency.
+Read the artifacts directly from `/Users/adity/Documents/GitHub/gitlocal`. I will not attach files. Use your filesystem tools to open the absolute paths below, then follow the source map for additional implementation files. If this workspace is inaccessible, report that specific access limitation; do not claim to have read the files or require an attachment as the default workflow.
 
 Review implementation commit `f68945ecc39b2845f00f09a77e3fa2941ffe640c`, branch `19.1`, `pb_lifecycle` version `19.0.1.9.0`, as documented on 10 November 2026. If the repository has later changes, identify them and distinguish them from this baseline. Source is authoritative for actual behavior; the POC is earlier interaction exploration.
 
@@ -28,18 +28,18 @@ Existing processes must keep working. New definitions start as drafts; publicati
 
 ## Read these artifacts first
 
-1. [Start here](START_HERE.md) — scope, reading order, authority and stale-document warnings.
-2. [Design and implementation brief](DESIGN_REVIEW.md) — complete current design, journeys, diagrams, models, permissions and semantics.
-3. [Decisions and gaps](DECISIONS_AND_GAPS.md) — requirements history, alternatives and prototype/current comparison. Challenge its conclusions.
-4. [Artifact/source map](ARTIFACT_MAP.md) — all major design elements and implementation paths, plus adjacent services and research references.
-5. [Verification](VERIFICATION.md), [release summary](evidence/RELEASE_SUMMARY.json) and [42-test log](evidence/BACKEND_TEST_RESULTS.txt) — recorded evidence and limits, not newly rerun checks.
-6. [Original Workflow Studio HTML POC](../../workflow-studio-poc.html) — open offline with fictional data. Explore the three original views, multi-field collection, branches, rehearsal, review and Design notes.
-7. [Approval Matrix HTML POC](../../approval-matrix-poc.html), [Matrix design](../../../handovers/APPROVAL_MATRIX_DESIGN.md), [approval design handover](../../../handovers/APPROVAL_WORKFLOWS_DESIGN_HANDOVER.md), [Matrix ledger](../../../handovers/APPROVAL_MATRIX_LEDGER.md) and [closeout](../../../handovers/APPROVAL_MATRIX_CLOSEOUT.md) — understand what Studio must complement and reuse.
-8. [Implementation narrative](../IMPLEMENTATION.txt), [original README](../README.txt) and [benchmark/design source](../research.js) — historical rationale. Later dated implementation notes supersede earlier POC claims.
+1. Start here: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/START_HERE.md` — scope, reading order, authority and stale-document warnings.
+2. Design and implementation brief: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/DESIGN_REVIEW.md` — complete current design, journeys, diagrams, models, permissions and semantics.
+3. Decisions and gaps: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/DECISIONS_AND_GAPS.md` — requirements history, alternatives and prototype/current comparison. Challenge its conclusions.
+4. Artifact/source map: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/ARTIFACT_MAP.md` — all major design elements and implementation paths, plus adjacent services and research references.
+5. Verification: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/VERIFICATION.md`, release summary: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/evidence/RELEASE_SUMMARY.json` and 42-test log: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/evidence/BACKEND_TEST_RESULTS.txt` — recorded evidence and limits, not newly rerun checks.
+6. Original Workflow Studio HTML POC: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio-poc.html` — open offline with fictional data. Explore the three original views, multi-field collection, branches, rehearsal, review and Design notes.
+7. Approval Matrix HTML POC: `/Users/adity/Documents/GitHub/gitlocal/docs/design/approval-matrix-poc.html`, Matrix design: `/Users/adity/Documents/GitHub/gitlocal/docs/handovers/APPROVAL_MATRIX_DESIGN.md`, approval design handover: `/Users/adity/Documents/GitHub/gitlocal/docs/handovers/APPROVAL_WORKFLOWS_DESIGN_HANDOVER.md`, Matrix ledger: `/Users/adity/Documents/GitHub/gitlocal/docs/handovers/APPROVAL_MATRIX_LEDGER.md` and closeout: `/Users/adity/Documents/GitHub/gitlocal/docs/handovers/APPROVAL_MATRIX_CLOSEOUT.md` — understand what Studio must complement and reuse.
+8. Implementation narrative: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/IMPLEMENTATION.txt`, original README: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/README.txt` and benchmark/design source: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/research.js` — historical rationale. Later dated implementation notes supersede earlier POC claims.
 
 The POC is useful but is **not the latest deployed UI**. It contains richer simulated rehearsal, decision tables, sample multilingual Hiring templates and other ideas that have not all shipped. Its initial statement that `base_automation` was uninstalled is obsolete. Its “workflow stages” are now called **Sections**. The paused handover is historical. Older approval documents mention retired environments; they are not current deployment instructions.
 
-The [current HTML](../../../../pb_lifecycle/static/workflow/index.html) requires the authenticated Odoo application and backend, so do not assess it by opening it as a standalone file. If authorized access is available, use Settings → Workflows → Workflow Studio, or a supported saved record's **View workflow** / **Set up workflow**. The public [preview](https://payobook.com/preview/workflow-studio/) is the historical POC. Do not assume access to private application URLs or fetch customer records to perform this review.
+The current HTML: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/index.html` requires the authenticated Odoo application and backend, so do not assess it by opening it as a standalone file. If authorized access is available, use Settings → Workflows → Workflow Studio, or a supported saved record's **View workflow** / **Set up workflow**. The public [preview](https://payobook.com/preview/workflow-studio/) is the historical POC. Do not assume access to private application URLs or fetch customer records to perform this review.
 
 ## Current design in brief
 
@@ -63,11 +63,11 @@ Typed nested filters cover start scope, before-change conditions, optional steps
 
 ## Inspect source, not only this description
 
-Start with [definition/validation](../../../../pb_lifecycle/models/workflow_definition.py), [models](../../../../pb_lifecycle/models/workflow_models.py), [facade/worker](../../../../pb_lifecycle/models/workflow_studio.py), [progress/security projection](../../../../pb_lifecycle/models/workflow_progress.py), [configuration/templates](../../../../pb_lifecycle/models/workflow_configuration.py), [record stages/setup](../../../../pb_lifecycle/models/workflow_record_context.py) and [backend tests](../../../../pb_lifecycle/tests/test_workflow_studio.py).
+Start with definition/validation: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/models/workflow_definition.py`, models: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/models/workflow_models.py`, facade/worker: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/models/workflow_studio.py`, progress/security projection: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/models/workflow_progress.py`, configuration/templates: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/models/workflow_configuration.py`, record stages/setup: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/models/workflow_record_context.py` and backend tests: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/tests/test_workflow_studio.py`.
 
-For UI, inspect [app.js](../../../../pb_lifecycle/static/workflow/app.js), [graph.js](../../../../pb_lifecycle/static/workflow/graph.js), [forms.js](../../../../pb_lifecycle/static/workflow/forms.js), [conditions.js](../../../../pb_lifecycle/static/workflow/conditions.js), [templates.js](../../../../pb_lifecycle/static/workflow/templates.js), [record-context.js](../../../../pb_lifecycle/static/workflow/record-context.js), [CSS](../../../../pb_lifecycle/static/workflow/style.css) and [OWL wrapper/navigation](../../../../pb_lifecycle/static/src/js/workflow_studio.js). The workbench is predominantly plain JavaScript within an iframe; assess component reuse, accessibility and maintainability rather than assuming it uses all existing premium components.
+For UI, inspect app.js: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/app.js`, graph.js: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/graph.js`, forms.js: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/forms.js`, conditions.js: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/conditions.js`, templates.js: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/templates.js`, record-context.js: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/record-context.js`, CSS: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/workflow/style.css` and OWL wrapper/navigation: `/Users/adity/Documents/GitHub/gitlocal/pb_lifecycle/static/src/js/workflow_studio.js`. The workbench is predominantly plain JavaScript within an iframe; assess component reuse, accessibility and maintainability rather than assuming it uses all existing premium components.
 
-Use the [integration source map](ARTIFACT_MAP.md) to compare existing Lifecycle cases/tasks, Hiring forms/automations, `pb_filter_kit`, Approval Matrix, `biz_approval_workflow`, `biz_access`, Expense states and shared navigation. These are the strongest places to find avoidable duplication.
+Use the integration source map: `/Users/adity/Documents/GitHub/gitlocal/docs/design/workflow-studio/review/ARTIFACT_MAP.md` to compare existing Lifecycle cases/tasks, Hiring forms/automations, `pb_filter_kit`, Approval Matrix, `biz_approval_workflow`, `biz_access`, Expense states and shared navigation. These are the strongest places to find avoidable duplication.
 
 ## Questions I need you to answer
 
