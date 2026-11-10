@@ -439,3 +439,72 @@ class TestWorkflowStudio(TransactionCase):
         self.assertTrue(self.service._validate(w,d))
         d['nodes'][1]['when']=self.rule('amount','five')
         self.assertTrue(self.service._validate(w,d))
+
+    def test_record_setup_reuses_workflows_and_enforces_design_permission(self):
+        source = self.env['res.partner'].create({'name': 'Setup source', 'company_id': self.company.id})
+        w, _d = self.workflow(model='res.partner')
+        result = self.service.record_setup('res.partner', source.id)
+        self.assertIn(w.id, [row['id'] for row in result['workflows']])
+        self.assertEqual(result['record_id'], source.id)
+        self.assertTrue(self.service.record_runs('res.partner', source.id)['can_design'])
+        with self.assertRaises(AccessError):
+            self.service.with_user(self.staff).record_setup('res.partner', source.id)
+        with self.assertRaises(AccessError):
+            self.service.record_setup('ir.config_parameter')
+        other = self.env['res.company'].create({'name': 'Other setup company'})
+        source.company_id = other
+        with self.assertRaises(AccessError):
+            self.service.record_setup('res.partner', source.id)
+
+    def test_record_only_scope_excludes_other_records_and_native_triggers(self):
+        source = self.env['res.partner'].create({'name': 'Only this one', 'company_id': self.company.id})
+        other = self.env['res.partner'].create({'name': 'Another one', 'company_id': self.company.id})
+        result = self.service.create_for_record('res.partner', source.id, 'One record workflow', True)
+        w = self.env['pb.workflow'].browse(result['id'])
+        self.assertFalse(w.enabled)
+        self.assertFalse(w.version_ids)
+        d = copy.deepcopy(w.draft)
+        d['trigger'].update(kind='changed', fields=['name'])
+        d['nodes'].append(self.todo('check')); d['order'].append('check')
+        self.publish(w, d)
+        other.name = 'Other changed'
+        source.name = 'Selected changed'
+        events = self.env['pb.workflow.event'].search([('workflow_id', '=', w.id)])
+        self.assertEqual(events.mapped('source_id'), source.ids)
+        self.assertEqual(self.service._facts(source)['id'], source.id)
+        self.assertFalse(D.matches(d['scope'], self.service._facts(other)))
+        self.assertTrue(D.matches(d['scope'], self.service._facts(source)))
+
+    def test_record_stages_reuse_native_statusbar_and_do_not_imply_history(self):
+        if 'pb.expense.claim' not in self.env: self.skipTest('Expenses not installed')
+        employee = self.env['hr.employee'].create({'name': 'Stage context employee', 'company_id': self.company.id})
+        claim = self.env['pb.expense.claim'].create({'employee_id': employee.id})
+        service = self.service.sudo()
+        before = self.env['pb.expense.claim'].search_count([])
+        tracks = service._record_stages('pb.expense.claim', claim)
+        track = next(t for t in tracks if t['field'] == 'state')
+        self.assertEqual(track['current'], 'draft')
+        self.assertEqual(track['visible'], ['draft', 'submitted', 'approved', 'paid'])
+        self.assertEqual(track['approval_value'], 'submitted')
+        self.assertTrue(track['fixed'])
+        self.assertIn('refused', [o['key'] for o in track['options']])
+        self.assertFalse(any('completed' in o for o in track['options']))
+        self.assertEqual(self.env['pb.expense.claim'].search_count([]), before)
+        self.assertEqual(claim.state, 'draft')
+
+    def test_shared_stage_rename_uses_hiring_authority_and_same_record(self):
+        if 'pb.hiring' not in self.env: self.skipTest('Hiring not installed')
+        self.admin.write({'group_ids': [(4, self.env.ref('hr_recruitment.group_hr_recruitment_manager').id)]})
+        w, _d = self.workflow(model='hr.applicant')
+        stage = self.env['hr.recruitment.stage'].search([('pb_key', '!=', False)], limit=1)
+        with self.assertRaises(AccessError):
+            self.service.rename_record_stage(w.id, 'stage_id', stage.id, 'Renamed', str(stage.write_date))
+        self.admin.write({'group_ids': [(4, self.env.ref('pb_hiring.group_hiring_admin').id)]})
+        original_count = self.env['hr.recruitment.stage'].search_count([])
+        self.service.rename_record_stage(w.id, 'stage_id', stage.id, 'Shared renamed stage', str(stage.write_date))
+        self.assertEqual(stage.name, 'Shared renamed stage')
+        self.assertEqual(self.env['hr.recruitment.stage'].search_count([]), original_count)
+        with self.assertRaises(UserError):
+            self.service.rename_record_stage(w.id, 'stage_id', stage.id, 'Stale edit', 'old')
+        with self.assertRaises(UserError):
+            self.service.rename_record_stage(w.id, 'state', stage.id, 'Status', str(stage.write_date))

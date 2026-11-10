@@ -15,12 +15,14 @@ export class WorkflowStudio extends Component {
     setup() {
         this.action = useService("action");
         this.frame = useRef("frame");
-        const q = new URLSearchParams({v: "studio-premium-3", company: (user.context.allowed_company_ids || [])[0] || "",
+        const q = new URLSearchParams({v: "record-stages-1", company: (user.context.allowed_company_ids || [])[0] || "",
             origin: this.props.action?.context?.pb_workflow_origin ? JSON.stringify(this.props.action.context.pb_workflow_origin) : "",
             workflow: this.props.action?.context?.pb_workflow_id || "",
             template: this.props.action?.context?.pb_workflow_template_id || "",
             record_model: this.props.action?.context?.pb_workflow_record_model || "",
             record_id: this.props.action?.context?.pb_workflow_record_id || "",
+            setup_model: this.props.action?.context?.pb_workflow_setup_model || "",
+            setup_id: this.props.action?.context?.pb_workflow_setup_id || "",
             run: this.props.action?.context?.pb_workflow_run_id || "",
             task: this.props.action?.context?.pb_workflow_task_id || "",
             submission: this.props.action?.context?.pb_workflow_submission_id || ""});
@@ -51,14 +53,18 @@ registry.category("actions").add("pb_workflow_studio", WorkflowStudio);
 patch(FormController.prototype, {
     setup() {
         super.setup(...arguments);
-        this.workflowProgress = useState({ available: false });
+        this.workflowProgress = useState({ available: false, canDesign: false });
         useEffect(() => {
             let live = true;
             this.workflowProgress.available = false;
+            this.workflowProgress.canDesign = false;
             const record = this.model.root;
             if (record.resId && !record.resModel.startsWith("pb.workflow.")) {
                 this.orm.call("pb.workflow.studio", "record_runs", [record.resModel, record.resId])
-                    .then(data => { if (live) this.workflowProgress.available = !!(data.runs.length || data.approvals.length); })
+                    .then(data => { if (live) {
+                        this.workflowProgress.available = !!(data.runs.length || data.approvals.length || data.record_stages?.length);
+                        this.workflowProgress.canDesign = !!data.can_design;
+                    } })
                     .catch(() => { if (live) this.workflowProgress.available = false; });
             }
             return () => { live = false; };
@@ -72,8 +78,20 @@ patch(FormController.prototype, {
                 pb_workflow_record_id: this.model.root.resId,
             }});
     },
+    async setupRecordWorkflow() {
+        if (!(await this.model.root.save())) return;
+        return this.actionService.doAction({ type: "ir.actions.client", tag: "pb_workflow_studio",
+            name: _t("Workflow setup"), context: {
+                pb_workflow_setup_model: this.model.root.resModel,
+                pb_workflow_setup_id: this.model.root.resId,
+            }});
+    },
     getStaticActionMenuItems() {
-        return { ...super.getStaticActionMenuItems(), workflowProgress: {
+        return { ...super.getStaticActionMenuItems(), workflowSetup: {
+            description: _t("Set up workflow"), icon: "fa fa-pencil", sequence: 96,
+            isAvailable: () => this.workflowProgress.canDesign,
+            callback: () => this.setupRecordWorkflow(),
+        }, workflowProgress: {
             description: _t("View workflow"), icon: "fa fa-code-fork", sequence: 95,
             isAvailable: () => this.workflowProgress.available,
             callback: () => this.openWorkflowProgress(),

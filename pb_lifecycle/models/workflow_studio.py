@@ -86,7 +86,6 @@ class WorkflowStudio(models.AbstractModel):
     def _facts(self, record):
         names = [f['key'] for f in self._source_fields(record._name)]
         vals = record.read(names)[0]
-        vals.pop('id', None)
         for key, value in list(vals.items()):
             field = record._fields[key]
             if value is False and field.type != 'boolean':

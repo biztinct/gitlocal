@@ -246,7 +246,7 @@ def _validate(d, source_fields=None, actions=None, approval=False):
             not isinstance(stages, list) or not 1 <= len(stages) <= 40 or
             any(not isinstance(s, dict) or not str(s.get('name', '')).strip() for s in stages) or
             not isinstance(order, list)):
-        error('trigger', 'Use 1–40 stages and at most 200 steps.')
+        error('trigger', 'Use 1–40 sections and at most 200 steps.')
         return out
     if not str(d.get('name', '')).strip():
         error('trigger', 'Give the workflow a name.')
@@ -260,7 +260,7 @@ def _validate(d, source_fields=None, actions=None, approval=False):
         nodes[n['id']] = n
         if (type(n.get('stage')) is not int or not 0 <= n['stage'] < len(stages)
                 or not str(n.get('title', '')).strip()):
-            error(n['id'], 'Give the step a name and a stage.')
+            error(n['id'], 'Give the step a name and a section.')
         if n.get('type') in ('branch', 'parallel'):
             bs = n.get('branches')
             if not isinstance(bs, list) or not 2 <= len(bs) <= 10:
@@ -302,7 +302,7 @@ def _validate(d, source_fields=None, actions=None, approval=False):
             if c.get('parent'):
                 parents[key] = c['parent']['id']
                 if nodes[key]['stage'] != c['parent']['stage']:
-                    error(key, 'Keep grouped work in its group’s stage.')
+                    error(key, 'Keep grouped work in its group’s section.')
     for key in nodes:
         if counts.get(key) != 1:
             error(key, 'Each step must belong to exactly one path.')
@@ -326,7 +326,7 @@ def _validate(d, source_fields=None, actions=None, approval=False):
         error('trigger', 'A group cannot contain itself. Use at most twelve nested groups.')
         return out
     if any(nodes[a]['stage'] > nodes[b]['stage'] for a, b in zip(order, order[1:])):
-        error('trigger', 'Keep steps in their stage order.')
+        error('trigger', 'Keep steps in their section order.')
     base = set(source_fields) if source_fields is not None else {'amount', 'urgent'}
     def condition(rule, available, ident, depth=0):
         if isinstance(rule, dict) and 'rules' in rule:

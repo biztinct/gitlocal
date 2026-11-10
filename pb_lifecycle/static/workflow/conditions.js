@@ -4,8 +4,8 @@ function availableFields(){
  for(const n of S.w.definition.nodes)for(const f of n.form?.fields||[])if(f.type!=='section')fields.push({...f,key:`step.${n.id}.${f.id}`,label:n.title+' · '+f.label});
  return [...fields,{key:'person.user_id',label:'Started by · person',type:'many2one',options:S.w.metadata.users.map(u=>[u.id,u.name])},
   {key:'person.group_ids',label:'Started by · access role',type:'ids',options:S.w.metadata.starter_groups.map(g=>[g.id,g.name])},
-  {key:'workflow.stage',label:'This workflow · current stage',type:'integer',options:S.w.definition.stages.map((s,i)=>[i,s.name])},
-  {key:'workflow.completed_stages',label:'This workflow · completed stage',type:'ids',options:S.w.definition.stages.map((s,i)=>[i,s.name])}];
+  {key:'workflow.stage',label:'This workflow · current section',type:'integer',options:S.w.definition.stages.map((s,i)=>[i,s.name])},
+  {key:'workflow.completed_stages',label:'This workflow · completed section',type:'ids',options:S.w.definition.stages.map((s,i)=>[i,s.name])}];
 }
 function conditionLeaves(rule){return !rule?[]:rule.rules?rule.rules.flatMap(conditionLeaves):[rule];}
 function editRoot(path){return /^(scope|trigger)\./.test(path)||path==='scope'?S.w.definition:byId(S.w.definition,S.selected);}

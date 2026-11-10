@@ -271,3 +271,76 @@ https://github.com/odoo/odoo/blob/19.0/addons/mail/models/mail_render_mixin.py
 Odoo's automation documentation for interaction patterns (its Studio UI is not a
 Community dependency):
 https://www.odoo.com/documentation/19.0/applications/studio/automated_actions.html
+
+Record stages, workflow sections and entry from any module — 10 November 2026
+
+The record's status is the source of truth. The former “workflow stages” were
+versioned groups of steps, not record statuses; naming both “stages” implied a
+connection that did not exist. The UI now calls those groups Sections. Existing
+stored definitions, section filters and running versions keep their old keys.
+There is no data migration, automatic activation or source status write.
+
+Implemented in 19.0.1.9.0
+- Record progress shows the native stage/status choices and highlights the actual
+  current value. It does not infer completion or history from their ordering.
+  Native statusbar visibility is reused when unambiguous; exceptional states such
+  as Refused appear if current. Conditional variants show all choices instead of
+  guessing the current form's branch. Shared relational stages use normal read
+  permissions; Hiring scopes them to the candidate's job when a record is known.
+- Approval progress explains which native status owns its checks by reading the
+  existing approval-chain adapter, including the adapter's state_field. For an
+  Expense claim, the manager and finance checks belong to Waiting approval.
+  An older approval attempt can be viewed alongside the record's CURRENT status;
+  the UI explicitly says if the record has since moved. This is not a historical
+  snapshot of the source record.
+- Stages opens Record stages; Sections opens step grouping. Native fields can be
+  used by the existing filter builder and a “Wait for this” shortcut configures an
+  ordinary live-value wait. Completing a section never moves a native status.
+- Hiring stage renaming uses the existing pb.hiring.act('stage_rename') service,
+  checks its own configuration permission, locks/checks write_date, and edits the
+  SAME stage. It warns that the name changes wherever that stage is used. There
+  is no second stage catalogue. Other module settings open via the existing hub
+  return protocol. A Designer alone cannot alter a module's shared configuration.
+- Fixed selection statuses (Expense Draft/Waiting approval/Approved/Paid and
+  similar Pay/Time states) are shown, not made editable. Adding/renaming their
+  underlying keys requires module implementation: transition guards, reports,
+  payment/approval effects and tests. An extra business task normally belongs in
+  a workflow section, not in a new financial status.
+- Saved business record forms expose Set up workflow to Workflow Designers, even
+  when no run exists. The setup page lists existing workflows for the same module
+  and company before offering a new draft. View progress and Design are distinct.
+  Editing from a run opens the latest draft and explains that the run stays pinned.
+- New drafts can apply to matching module records or to this one record. The latter
+  uses an ordinary typed id equality scope, which is enforced in native automation
+  domains and runtime evaluation. The record ID now remains in source facts.
+  It is not a separate override workflow engine. Creating a draft does not publish,
+  activate or start it. Other active workflows are still flagged during review.
+- The entry is generic for Studio-supported business models, including future
+  installed modules: persistent, readable models with company_id. Technical,
+  transient, inaccessible and company-unscoped models are not silently granted
+  execution support. The existing source-record company and access checks apply.
+  Bespoke module screens can use the same record_setup/record_runs API and client
+  action context as native record forms; they do not need their own builder.
+
+Recommendation and tradeoffs
+Keep record stage configuration with its owner. A unified premium editor should
+expose a capability only when a module supplies its business operation: catalogue,
+rename/create, applicable scope, permitted transitions and previewed side effects.
+Hiring's existing service currently supports renaming/reordering a controlled
+catalogue; arbitrary new candidate stages are NOT implemented by this release.
+New configurable stage creation for other modules must reuse that module's own
+create-stage service, with its normal permissions and scope. Do not implement a
+generic sudo create/write or add values to a Selection field at runtime.
+
+Pros: one set of stages, real progress, stable reporting and safeguards; no duplicate
+approval routes, templates, tasks or triggers. Cost: modules with different stage
+semantics need a small adapter for mutation. This is preferable to a universal
+stage editor that appears easy but can mark unpaid claims Paid or skip sign-off.
+For new standalone processes with no source model, sections already give complete
+control of the journey. For a new module, registering its native transitions is
+separate from being able to design tasks/forms/filters around its records.
+
+Validation: transactional tests cover record-only trigger isolation, designer and
+company boundaries, native expense statusbar context, and shared Hiring rename
+permissions/concurrency. Deployed Chrome verification covers record setup, real
+approval progress, both stage/section panels and responsive layouts.

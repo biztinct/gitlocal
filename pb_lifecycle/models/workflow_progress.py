@@ -62,8 +62,8 @@ class WorkflowProgress(models.AbstractModel):
         """Cheap form hook: empty for users without permission, never a grant."""
         self._staff()
         if not self._can_view_progress():
-            return {'runs': [], 'approvals': []}
-        self._source(model, record_id)
+            return {'runs': [], 'approvals': [], 'can_design': False, 'record_stages': []}
+        source = self._source(model, record_id)
         domain = [('source_model', '=', model), ('source_id', '=', int(record_id)),
                   ('company_id', '=', self.env.company.id)]
         runs = self.env['pb.workflow.run'].search(domain, limit=50)
@@ -72,7 +72,10 @@ class WorkflowProgress(models.AbstractModel):
             ('res_model', '=', model), ('res_id', '=', int(record_id)),
             ('company_id', '=', self.env.company.id)], order='id desc', limit=50)
         approvals -= runs.sudo().mapped('step_ids.approval_id').with_env(self.env)
-        return {'runs': [{'id': r.id, 'name': r.name, 'state': r.state,
+        return {'can_design': self._can_design() and model in {row['key'] for row in self._models()},
+                'record_stages': self._record_stages(model, source),
+                'record_name': source.display_name,
+                'runs': [{'id': r.id, 'name': r.name, 'state': r.state,
                           'started': str(r.create_date)} for r in runs],
                 'approvals': [{'id': a.id, 'name': a.title, 'state': a.state,
                                'started': str(a.submitted_at or a.create_date)} for a in approvals]}
@@ -123,6 +126,8 @@ class WorkflowProgress(models.AbstractModel):
                 'source_model': run.source_model or '', 'source_id': run.source_id,
                 'started': str(run.create_date), 'refreshed': str(fields.Datetime.now()),
                 'can_manage': self._can_design(),
+                'workflow_id': srun.workflow_id.id if self._can_design() else None,
+                'record_stages': self._record_stages(run.source_model, self._source(run.source_model, run.source_id)) if run.source_model else [],
                 'can_read_submission': self._can_design() or run.initiator_id.id == self.env.uid or self.env.uid in srun.step_ids.mapped('approval_id.seat_ids.acting_user_id').ids,
                 'tasks': self.tasks(run_id=run.id)}
 
@@ -133,9 +138,12 @@ class WorkflowProgress(models.AbstractModel):
         if not request:
             raise UserError(_('This approval is not available.'))
         request.check_access('read')
-        self._source(request.res_model, request.res_id)
+        source = self._source(request.res_model, request.res_id)
         data = self.env['biz.approval.engine'].get_request(request.id)
         return {'id': request.id, 'name': data['title'], 'state': data['state'],
+                'source_model': request.res_model, 'source_id': request.res_id,
+                'can_manage': self._can_design(),
+                'record_stages': self._record_stages(request.res_model, source),
                 'version': data['version'], 'current': data['current_step_key'],
                 'reason': data.get('block_reason', ''),
                 'steps': [{'key': s['key'], 'name': s['title'], 'state': s['status'],
