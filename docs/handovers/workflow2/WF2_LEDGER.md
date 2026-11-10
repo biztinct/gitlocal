@@ -27,8 +27,9 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | D4 | Form builders | **Studio's form builder is the general one** for workflows and, later, joiner/leaver checklists. Hiring's public application forms stay as they are. |
 | D5 | Approvers told twice (pay change, overtime, contract extension, resignation, goals, time off, probation) | **Only the approval engine tells approvers when a route is live.** Each area's older duplicate message is switched off in that case. Work outside Studio; schedule as its own phase (P2b). |
 | D6 | Requester told twice or never | **Fix the gaps, one owner per message.** Each area owns the one message to the requester; missing ones are added (e.g. expense claim approved / paid) and must reach employee-home (portal) logins. Same phase as D5. |
-| D7 | New joiner preparation split between Hiring "Before they join" and the joining checklist | **Open** — owner asked for a clearer explanation; ask again. |
+| D7 | New joiner preparation split between Hiring "Before they join" and the joining checklist | **Split by date.** Hiring's list owns everything before the start date (buddy, laptop preferences, meet-the-team). The joining checklist owns day one onward (day-one invite, raising the laptop request from the answer already given). The buddy chosen in Hiring is carried over, never asked twice. Work in Hiring/onboarding, same phase as D5/D6. |
 | D8 | In-app notices, letters, one-step sign-offs, self-running checklist steps | **Reuse all four**: notice step → announcement; letter step → letters library (its sending approval stays); one-step sign-offs stay in "Other request"; self-running checklist steps shown as "already happens" with a warning before a repeat. |
+| D9 | Databases | **`sudima` joins the deploy set for this programme** (owner, 11 Nov: "update sudima only"); it is a live client site (80 active jobs) whose `pb_lifecycle` was at 19.0.1.6.0. Back it up first. **`pbf_preview` and `recruit_connect_20261023` are never touched**: both are 2.1 GB copies of `payobook` with jobs and mail off, left over from earlier work. Deleting them is the owner's call. |
 
 ## 2. Phases
 
@@ -36,7 +37,8 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 |---|---|---|---|
 | P0 | Inventory of what every module already does (stages, approvals, messages, automations) | brief in agent prompt → `EXISTING_BEHAVIOUR_INVENTORY.md` | done 11 Nov (uncommitted; 17 overlaps listed) |
 | P1 | Backend unblock: system-level execution, approval step follows instead of forcing, coexistence, one timing rule, error codes | `WF2_P1_HANDOVER.md` → `WF2_P1_REPORT.md` | done (see report) |
-| P2 | Module contract (stages, transitions, existing effects, subject person) for Expense, Leave, Hiring + workflow stage layer + in-place double-up data | — | — |
+| P2 | Module contract (stages, transitions, existing effects, subject person) for Expense, Leave, Hiring + workflow stage layer + "already happens" data and double-up warnings + sudima brought up to date | `WF2_P2_HANDOVER.md` | running |
+| P2b | Message clean-up in the areas themselves (D5 approvers told once, D6 requester gaps incl. employee-home logins, D7 new-joiner split by date) — after P4 | — | — |
 | P3 | Screens on the existing workbench: "When…" sentence, By stage view, Stages screen, stage headers and "already happens" rows on every view incl. the canvas, new step types, lateness choices, touch drag | — | — |
 | P4 | Progress on the record, one "My work" list, portal employees and token links, where time goes | — | — |
 | P5 | Vietnamese and Indonesian, schedule trigger, consolidation, closeout | — | — |
