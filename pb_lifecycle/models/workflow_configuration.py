@@ -61,7 +61,7 @@ class WorkflowConfiguration(models.AbstractModel):
                 if rule['field'] in ('workflow.stage', 'workflow.completed_stages') and op not in ('set', 'unset'):
                     problem |= any(type(v) is not int or not 0 <= v < len(definition['stages']) for v in choices)
                 if problem:
-                    errors.append({'id': key, 'text': _('Choose a comparison and value that match the field type.'), 'severity': 'error'})
+                    errors.append({'id': key, 'code': 'bad_comparison', 'text': _('Choose a comparison and value that match the field type.'), 'severity': 'error'})
         return errors
 
     def _template_editor(self):

@@ -1,8 +1,10 @@
 """Workflow contracts: real ORM, permissions, durable execution and native hooks."""
 import copy
+import os
+import re
 import uuid
 from datetime import timedelta
-from odoo import fields
+from odoo import SUPERUSER_ID, fields
 from odoo.tests.common import TransactionCase, tagged
 from odoo.exceptions import AccessError, UserError
 from odoo.addons.pb_lifecycle.models import workflow_definition as D
@@ -18,7 +20,9 @@ class TestWorkflowStudio(TransactionCase):
         # live only in the test transaction and roll back with the fixtures.
         cls.env['pb.workflow'].sudo().search([('enabled', '=', True)]).write({'enabled': False})
         internal(cls.env['pb.workflow.event'].search([('state', '=', 'pending')])).write({'state': 'excluded'})
-        internal(cls.env['pb.workflow.run'].search([('state', 'in', ['running', 'waiting'])])).write({'state': 'held'})
+        # The worker also resumes "needs attention" runs that still have a
+        # waiting step (WF2 P1), so those are held too.
+        internal(cls.env['pb.workflow.run'].search([('state', 'in', ['running', 'waiting', 'failed'])])).write({'state': 'held'})
         cls.company = cls.env.company
         cls.admin = cls.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'Workflow test publisher', 'login': 'wf-publisher-'+str(uuid.uuid4()),
@@ -223,29 +227,49 @@ class TestWorkflowStudio(TransactionCase):
         d = D.fresh(); d['nodes'].append({'id': 'group', 'type': 'subprocess', 'title': 'Group', 'stage': 0, 'steps': ['group']}); d['order'].append('group')
         self.assertTrue(D.validate(d))
 
-    def test_native_approval_cannot_be_omitted(self):
-        if 'pb.expense.claim' not in self.env: self.skipTest('Expenses not installed')
-        w, d = self.workflow(model='pb.expense.claim')
-        self.assertTrue(self.service._validate(w, d))
-        with self.assertRaises(UserError): self.publish(w, d)
+    def test_t5_approval_capable_model_runs_without_approval_step(self):
+        # Rewritten from test_native_approval_cannot_be_omitted (WF2 P1, F1):
+        # the record's own module keeps its approval; Studio no longer forces
+        # an approval step on it.
+        process = self.generic_process()
+        self.assertTrue(process.connected)
+        w, d = self.workflow([self.todo('do')], model=self.GENERIC)
+        self.assertEqual(self.service._validate(w, d), [])
+        self.publish(w, d)
+        self.assertTrue(w.enabled)
+        self.assertFalse(w.process_id)
+        run = self.start(w, self.generic())
+        self.assertEqual(run.step_ids.filtered(lambda s: s.key == 'do').state, 'waiting')
 
-    def approval_route(self, w, fast=False):
+    def approval_route(self, w=None, fast=False, process=None):
         from odoo.addons.biz_approval_workflow.tests.common import build, fast_step, people_step
+        process = process or w.process_id
+        # A tenant's own route for this process would make the test's route
+        # ambiguous; switched off inside the test transaction only.
+        self.env['biz.approval.binding'].search([('company_id', '=', self.company.id),
+            ('process_id', '=', process.id)]).write({'active': False})
         route = self.env['biz.approval.workflow'].create({'name': 'Workflow test approval route',
-            'company_id': self.company.id, 'process_id': w.process_id.id, 'owner_user_id': self.admin.id})
+            'company_id': self.company.id, 'process_id': process.id, 'owner_user_id': self.admin.id})
         version = self.env['biz.approval.workflow.version'].create({'workflow_id': route.id, 'revision': 1,
             'definition': build([fast_step()] if fast else [people_step('signoff', [self.staff.id])])})
         engine = self.env['biz.approval.engine']
         checks = engine.validate_for_publish(version.id)
         engine.publish(version.id, version.draft_revision, None, 'Test route', [x['code'] for x in checks['warnings']])
-        self.env['biz.approval.binding'].create({'company_id': self.company.id, 'process_id': w.process_id.id,
+        self.env['biz.approval.binding'].create({'company_id': self.company.id, 'process_id': process.id,
             'scope_key': '', 'kind_key': 'any', 'workflow_id': route.id, 'mode': 'follow'})
         return route
 
+    def publish_with_route(self, w, d, fast=False):
+        # A new process with an approval step needs its route before it can
+        # be turned on (WF2 P1, F14): publish, set the route, then activate.
+        self.publish(w, d, False)
+        self.approval_route(w, fast=fast)
+        self.service.activate(w.id, True)
+        w.invalidate_recordset()
+
     def test_custom_process_uses_native_matrix_and_frozen_answers(self):
         matrix = {'id': 'approval', 'type': 'matrix', 'title': 'Sign off', 'stage': 0}
-        w, d = self.workflow([self.form(), matrix]); self.publish(w, d)
-        self.approval_route(w)
+        w, d = self.workflow([self.form(), matrix]); self.publish_with_route(w, d)
         run = self.start(w); task = run.step_ids.filtered(lambda s: s.kind == 'input')
         self.service.answer(task.id, {'purpose': 'Train ticket', 'amount': 50, 'urgent': False})
         step = run.step_ids.filtered(lambda s: s.kind == 'matrix')
@@ -263,7 +287,7 @@ class TestWorkflowStudio(TransactionCase):
 
     def test_no_approval_route_reuses_native_fast_path(self):
         w, d = self.workflow([{'id': 'approval', 'type': 'matrix', 'title': 'Check policy', 'stage': 0}])
-        self.publish(w, d); self.approval_route(w, fast=True)
+        self.publish_with_route(w, d, fast=True)
         run = self.start(w)
         step = run.step_ids.filtered(lambda s: s.kind == 'matrix')
         self.assertEqual(run.state, 'done', step.error)
@@ -271,7 +295,7 @@ class TestWorkflowStudio(TransactionCase):
 
     def test_returned_approval_reopens_information_without_repeating_steps(self):
         w, d = self.workflow([self.form(), {'id': 'approval', 'type': 'matrix', 'title': 'Sign off', 'stage': 0}])
-        self.publish(w, d); self.approval_route(w)
+        self.publish_with_route(w, d)
         run = self.start(w); task = run.step_ids.filtered(lambda s: s.kind == 'input')
         self.service.answer(task.id, {'purpose': 'First answer', 'amount': 50, 'urgent': False})
         step = run.step_ids.filtered(lambda s: s.kind == 'matrix'); old = step.approval_id
@@ -508,3 +532,330 @@ class TestWorkflowStudio(TransactionCase):
             self.service.rename_record_stage(w.id, 'stage_id', stage.id, 'Stale edit', 'old')
         with self.assertRaises(UserError):
             self.service.rename_record_stage(w.id, 'state', stage.id, 'Status', str(stage.write_date))
+
+    # ------------------------------------------------------------------
+    # WORKFLOW-2 phase 1: system-level execution, optional and following
+    # approval steps, coexistence, one timing rule, error codes, worker.
+    # ------------------------------------------------------------------
+    GENERIC = 'biz.approval.generic.request'
+
+    def generic_process(self):
+        return self.env['biz.approval.process']._by_key('generic')
+
+    def generic(self, name='Workflow generic source', company=None):
+        return self.env[self.GENERIC].create({'name': name, 'company_id': (company or self.company).id})
+
+    def person(self, name, groups):
+        return self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': name, 'login': 'wf2-%s-%s' % (name.lower().replace(' ', '-'), uuid.uuid4()),
+            'company_id': self.company.id, 'company_ids': [(6, 0, self.company.ids)],
+            'group_ids': [(6, 0, [self.env.ref(g).id for g in groups])]})
+
+    def approval_workflow(self, mode=None, route=True, fast=False):
+        """A workflow on an existing approval-capable record with one approval step."""
+        matrix = {'id': 'approval', 'type': 'matrix', 'title': 'Approval', 'stage': 0}
+        if mode:
+            matrix['mode'] = mode
+        w, d = self.workflow([matrix], model=self.GENERIC)
+        self.service.save_draft(w.id, w.revision, d, process_id=self.generic_process().id)
+        if route:
+            self.approval_route(process=self.generic_process(), fast=fast)
+        self.publish(w, d)
+        return w, d
+
+    def wake(self, run, key):
+        step = run.step_ids.filtered(lambda s: s.key == key)
+        internal(step).write({'wake_at': fields.Datetime.now() - timedelta(hours=2)})
+        return step
+
+    def test_t1_run_keeps_advancing_after_creator_and_publisher_leave(self):
+        owner = self.person('Workflow T1 owner', ['base.group_system', 'pb_lifecycle.group_workflow_publisher'])
+        service = self.env['pb.workflow.studio'].with_user(owner).with_company(self.company)
+        row = service.create_workflow('Owner leaves', '', 'Test')
+        w = self.env['pb.workflow'].browse(row['id'])
+        d = D.fresh('Owner leaves')
+        for node in [{'id': 'pause', 'type': 'wait', 'title': 'Pause', 'stage': 0, 'hours': 1}, self.todo('after')]:
+            d['nodes'].append(node); d['order'].append(node['id'])
+        service.save_draft(w.id, w.revision, d); service.publish(w.id, w.revision); service.activate(w.id, True)
+        run = self.start(w)
+        self.assertEqual(run.execution_user_id, owner)  # column still filled, never read
+        owner.write({'active': False})
+        self.wake(run, 'pause')
+        self.service._cron_workflows()
+        after = run.step_ids.filtered(lambda s: s.key == 'after')
+        self.assertEqual(after.state, 'waiting', after.error)
+        self.assertEqual(after.assignee_id, self.admin)
+        # A start after they left is processed too.
+        self.assertEqual(self.start(w).state, 'waiting')
+
+    def test_t2_system_execution_stays_inside_the_runs_company(self):
+        other = self.env['res.company'].create({'name': 'Workflow T2 second company'})
+        w, d = self.workflow([{'id': 'pause', 'type': 'wait', 'title': 'Pause', 'stage': 0, 'hours': 1},
+                              self.todo('after')], model='res.partner')
+        self.publish(w, d)
+        source = self.env['res.partner'].create({'name': 'T2 record', 'company_id': self.company.id})
+        run = self.start(w, source)
+        service = run._service()
+        self.assertEqual(service.env.company, self.company)
+        self.assertTrue(service.env.su)
+        self.assertEqual(service.env.uid, SUPERUSER_ID)
+        foreign = self.env['res.partner'].create({'name': 'T2 other company', 'company_id': other.id})
+        with self.assertRaises(AccessError):
+            service._source('res.partner', foreign.id)
+        # The record moves to the other company: the run stops, nothing is assigned.
+        source.company_id = other
+        self.wake(run, 'pause')
+        self.service._cron_workflows()
+        after = run.step_ids.filtered(lambda s: s.key == 'after')
+        self.assertEqual(after.state, 'failed')
+        self.assertFalse(after.activity_id)
+        # A company-A trigger ignores a company-B record.
+        auto, d2 = self.workflow([self.todo('do')], model='res.partner', trigger='created')
+        self.publish(auto, d2)
+        self.service._capture(auto.id, foreign)
+        self.assertFalse(self.env['pb.workflow.event'].search([('workflow_id', '=', auto.id)]))
+        # Following an approval never adopts another company's request.
+        fw, _d = self.approval_workflow('follow')
+        mine = self.generic('T2 follow')
+        self.env['biz.approval.request'].sudo().create({
+            'title': 'Other company request', 'process_id': self.generic_process().id,
+            'company_id': other.id, 'res_model': self.GENERIC, 'res_id': mine.id, 'state': 'pending'})
+        frun = self.start(fw, mine)
+        self.service._cron_workflows()
+        step = frun.step_ids.filtered(lambda s: s.kind == 'matrix')
+        self.assertEqual(step.state, 'waiting')
+        self.assertFalse(step.approval_id)
+
+    def test_t3_design_time_access_stays_with_the_designer(self):
+        designer = self.person('Workflow T3 designer', ['base.group_user', 'pb_lifecycle.group_workflow_designer'])
+        service = self.env['pb.workflow.studio'].with_user(designer).with_company(self.company)
+        offered = {r['key'] for r in service._models()}
+        admin_models = [r['key'] for r in self.service._models()]
+        hidden_model = next((name for name in admin_models
+                             if name not in offered and not self.env[name].with_user(designer).has_access('read')), None)
+        self.assertTrue(hidden_model, 'Expected a record type the designer cannot read.')
+        with self.assertRaises(AccessError):
+            service.create_workflow('Not allowed', hidden_model, 'Test')
+        supported = ('char', 'text', 'integer', 'float', 'monetary', 'boolean', 'date', 'datetime', 'selection')
+        found = None
+        for model in sorted(offered):
+            obj = self.env[model]
+            for key, field in obj._fields.items():
+                if (field.store and field.groups and field.type in supported and
+                        key not in obj.with_user(designer).fields_get(attributes=['type'])):
+                    found = (model, key)
+                    break
+            if found:
+                break
+        if not found:
+            self.skipTest('No field on an offered record type is hidden from this designer.')
+        model, key = found
+        self.assertNotIn(key, {f['key'] for f in service._source_fields(model)})
+        row = service.create_workflow('Hidden field', model, 'Test')
+        w = self.env['pb.workflow'].browse(row['id'])
+        d = D.fresh('Hidden field')
+        d['scope'] = {'match': 'all', 'rules': [{'field': key, 'op': 'set'}]}
+        issues = service._validate(w, d)
+        self.assertIn('bad_filter', [i['code'] for i in issues])
+
+    def test_t4_assignee_who_cannot_read_the_record_is_not_assigned(self):
+        if 'hr.applicant' not in self.env: self.skipTest('Recruitment not installed')
+        self.admin.write({'group_ids': [(4, self.env.ref('hr_recruitment.group_hr_recruitment_manager').id)]})
+        self.assertFalse(self.env['hr.applicant'].with_user(self.staff).has_access('read'))
+        w, d = self.workflow([self.todo('do', owner={'kind': 'user', 'id': self.staff.id})], model='hr.applicant')
+        self.publish(w, d)
+        applicant = self.env['hr.applicant'].create({'partner_name': 'Workflow T4 candidate', 'company_id': self.company.id})
+        result = self.service.start(w.id, applicant.id, str(uuid.uuid4()))
+        run = self.env['pb.workflow.run'].browse(result['run_id'])
+        step = run.step_ids.filtered(lambda s: s.key == 'do')
+        self.assertEqual(step.state, 'failed')
+        self.assertTrue(step.error)
+        self.assertFalse(step.activity_id)
+        self.assertEqual(run.state, 'failed')
+
+    def test_t6_studio_never_writes_a_records_status(self):
+        root = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models')
+        offenders = []
+        for name in sorted(os.listdir(root)):
+            if not name.startswith('workflow_') or not name.endswith('.py'):
+                continue
+            text = open(os.path.join(root, name), encoding='utf-8').read()
+            # The one sanctioned path: a registered module operation.
+            text = re.sub(r'\n    def _execute_action\(.*?(?=\n    (?:@|def ))', '\n', text, flags=re.S)
+            for number, line in enumerate(text.splitlines(), 1):
+                if re.search(r'\b(source|record|records|rec)\b\.(state|stage_id)\s*=[^=]', line) or \
+                        re.search(r'\b(source|record|records|rec)\b(\.\w+\([^)]*\))*\.write\(', line):
+                    offenders.append('%s:%s %s' % (name, number, line.strip()))
+        self.assertEqual(offenders, [])
+
+    def test_t7_follow_waits_adopts_and_finishes_without_submitting(self):
+        w, _d = self.approval_workflow('follow')
+        record = self.generic('T7 follow')
+        Request = self.env['biz.approval.request'].sudo()
+        run = self.start(w, record)
+        step = run.step_ids.filtered(lambda s: s.kind == 'matrix')
+        self.assertEqual(step.state, 'waiting')
+        self.assertFalse(step.approval_id)
+        self.assertFalse(Request.search([('res_model', '=', self.GENERIC), ('res_id', '=', record.id)]))
+        self.assertEqual(self.service.progress(run.id)['steps'][1]['reason'], 'Waiting for this record to be sent for approval.')
+        self.service._cron_workflows()
+        self.assertFalse(Request.search([('res_model', '=', self.GENERIC), ('res_id', '=', record.id)]))
+        sent = self.env['biz.approval.engine'].with_user(self.admin).submit(record.with_user(self.admin))
+        self.service._cron_workflows()
+        self.assertEqual(step.approval_id.id, sent['id'])
+        self.env['biz.approval.engine'].with_user(self.staff).decide(step.approval_id.id, 'signoff', 'approve')
+        self.service._cron_workflows()
+        self.assertEqual(step.approval_id.state, 'applied')
+        self.assertEqual(step.state, 'done')
+        self.assertEqual(run.state, 'done')
+        self.assertEqual(Request.search_count([('res_model', '=', self.GENERIC), ('res_id', '=', record.id)]), 1)
+
+    def test_t8_follow_finishes_when_the_record_is_already_approved(self):
+        w, _d = self.approval_workflow('follow', fast=True)
+        record = self.generic('T8 already approved')
+        self.env['biz.approval.engine'].with_user(self.admin).submit(record.with_user(self.admin))
+        Request = self.env['biz.approval.request'].sudo()
+        before = Request.search([('res_model', '=', self.GENERIC), ('res_id', '=', record.id)])
+        self.assertEqual(before.state, 'applied')
+        run = self.start(w, record)
+        self.assertEqual(run.step_ids.filtered(lambda s: s.kind == 'matrix').state, 'done')
+        self.assertEqual(run.state, 'done')
+        self.assertEqual(Request.search([('res_model', '=', self.GENERIC), ('res_id', '=', record.id)]), before)
+
+    def test_t9_submit_is_sent_by_the_person_who_started(self):
+        w, _d = self.approval_workflow('submit')
+        run = self.start(w, self.generic('T9 valid'))
+        request = run.step_ids.filtered(lambda s: s.kind == 'matrix').approval_id
+        self.assertTrue(request)
+        self.assertEqual(request.submitter_uid.id if hasattr(request.submitter_uid, 'id') else request.submitter_uid, self.admin.id)
+        # Nobody usable recorded as the starter: the step stops with a plain message.
+        matrix = {'id': 'approval', 'type': 'matrix', 'title': 'Approval', 'stage': 0, 'mode': 'submit'}
+        pause = {'id': 'pause', 'type': 'wait', 'title': 'Pause', 'stage': 0, 'hours': 1}
+        w2, d2 = self.workflow([pause, matrix], model=self.GENERIC)
+        self.service.save_draft(w2.id, w2.revision, d2, process_id=self.generic_process().id)
+        self.publish(w2, d2)
+        starter = self.person('Workflow T9 starter', ['base.group_system', 'pb_lifecycle.group_workflow_publisher'])
+        gone = self.env['pb.workflow.studio'].with_user(starter).with_company(self.company).start(
+            w2.id, self.generic('T9 starter left').id, str(uuid.uuid4()))
+        system_run = self.start(w2, self.generic('T9 system'))
+        internal(system_run).write({'initiator_id': SUPERUSER_ID})
+        starter.write({'active': False})
+        for r in (self.env['pb.workflow.run'].browse(gone['run_id']), system_run):
+            self.wake(r, 'pause')
+        self.service._cron_workflows()
+        for r in (self.env['pb.workflow.run'].browse(gone['run_id']), system_run):
+            step = r.step_ids.filtered(lambda s: s.kind == 'matrix')
+            self.assertEqual(step.state, 'failed')
+            self.assertIn('Nobody is recorded as having started this', step.error)
+            self.assertFalse(step.approval_id)
+
+    def test_t10_version_without_mode_still_submits(self):
+        w, _d = self.approval_workflow(None)
+        self.assertNotIn('mode', w.published_id.definition['nodes'][1])
+        record = self.generic('T10 old version')
+        run = self.start(w, record)
+        step = run.step_ids.filtered(lambda s: s.kind == 'matrix')
+        self.assertTrue(step.approval_id)
+        self.assertEqual(step.approval_id.res_id, record.id)
+        self.assertEqual(step.state, 'waiting')
+
+    def test_t11_several_automatic_workflows_share_a_record_type(self):
+        first, d1 = self.workflow([self.todo('do')], model='res.partner', trigger='created')
+        d1['scope'] = self.rule('name', 'Workflow T11 Alpha'); self.publish(first, d1)
+        second, d2 = self.workflow([self.todo('do')], model='res.partner', trigger='created')
+        d2['scope'] = self.rule('name', 'Workflow T11 Beta'); self.publish(second, d2, False)
+        with self.assertRaises(UserError) as caught:
+            self.service.activate(second.id, True)
+        self.assertIn('Other workflows also start', str(caught.exception))
+        review = self.service.review(second.id)['other_workflows']
+        row = next(r for r in review if r['id'] == first.id)
+        self.assertEqual(row['trigger_label'], 'When a record is created')
+        self.assertIn('Workflow T11 Alpha', row['scope_summary'])
+        self.service.activate(second.id, True, True)
+        self.assertTrue(second.enabled)
+        events = lambda w: self.env['pb.workflow.event'].search([('workflow_id', '=', w.id)])
+        alpha = self.env['res.partner'].with_user(self.admin).create({'name': 'Workflow T11 Alpha', 'company_id': self.company.id})
+        beta = self.env['res.partner'].with_user(self.admin).create({'name': 'Workflow T11 Beta', 'company_id': self.company.id})
+        self.assertEqual(events(first).mapped('source_id'), alpha.ids)
+        self.assertEqual(events(second).mapped('source_id'), beta.ids)
+        copy_, d3 = self.workflow([self.todo('other')], model='res.partner', trigger='created')
+        d3['scope'] = self.rule('name', 'Workflow T11 Alpha'); self.publish(copy_, d3, False)
+        with self.assertRaises(UserError) as caught:
+            self.service.activate(copy_.id, True, True)
+        self.assertIn('exactly the same records and event', str(caught.exception))
+
+    def timing_workflow(self, grouped):
+        leaf = {'field': 'name', 'op': 'eq', 'value': 'New'}
+        pick = {'id': 'pick', 'type': 'branch', 'title': 'Pick', 'stage': 0, 'branches': [
+            {'id': 'p_new', 'label': 'New name', 'condition': {'match': 'all', 'rules': [leaf]} if grouped else leaf, 'steps': ['a']},
+            {'id': 'p_other', 'label': 'Otherwise', 'steps': ['b']}]}
+        w, d = self.workflow([self.todo('first')], model='res.partner')
+        d['nodes'] += [pick, self.todo('a'), self.todo('b')]
+        d['order'].append('pick')
+        self.publish(w, d)
+        return w
+
+    def path_after_change(self, w):
+        source = self.env['res.partner'].create({'name': 'Old', 'company_id': self.company.id})
+        run = self.start(w, source)
+        source.name = 'New'
+        self.service.answer(run.step_ids.filtered(lambda s: s.key == 'first').id, {})
+        return run.step_ids.filtered(lambda s: s.key == 'pick').choice
+
+    def test_t12_one_timing_rule_for_path_decisions(self):
+        flat, grouped = self.timing_workflow(False), self.timing_workflow(True)
+        self.assertEqual(flat.published_id.definition['timing'], 'live')
+        self.assertEqual(self.path_after_change(flat), 'p_new')
+        self.assertEqual(self.path_after_change(grouped), 'p_new')
+        # A version published before the rule existed keeps its start snapshot.
+        old = self.timing_workflow(False)
+        self.env.cr.execute("UPDATE pb_workflow_version SET definition = definition - 'timing' WHERE id = %s", [old.published_id.id])
+        old.published_id.invalidate_recordset()
+        self.assertNotIn('timing', old.published_id.definition)
+        self.assertEqual(self.path_after_change(old), 'p_other')
+
+    def test_t13_drafts_are_refused_by_code_not_wording(self):
+        w, d = self.workflow([self.todo('late', stage=1), self.todo('early', stage=0)])
+        self.assertIn('section_order', [i['code'] for i in D.validate(d)])
+        with self.assertRaises(UserError):
+            self.service.save_draft(w.id, w.revision, d)
+        unfinished = self.form()
+        unfinished['form']['fields'] = []
+        email = {'id': 'message', 'type': 'email', 'title': 'Message', 'stage': 0, 'purpose': 'Later'}
+        w2, d2 = self.workflow([unfinished, email])
+        result = self.service.save_draft(w2.id, w2.revision, d2)
+        codes = [i['code'] for i in result['issues']]
+        self.assertIn('form_empty', codes)
+        self.assertIn('email_needs_template', codes)
+        self.assertEqual(w2.draft['timing'], 'live')
+        self.assertTrue(all(i.get('code') for i in result['issues']))
+
+    def test_t14_healthy_path_keeps_moving_beside_a_failed_one(self):
+        leaver = self.person('Workflow T14 owner', ['base.group_user'])
+        group = {'id': 'both', 'type': 'parallel', 'title': 'Together', 'stage': 0, 'join': 'all', 'branches': [
+            {'id': 'p_task', 'label': 'Task', 'steps': ['task']},
+            {'id': 'p_wait', 'label': 'Wait', 'steps': ['pause']}]}
+        w, d = self.workflow([group])
+        d['nodes'] += [self.todo('task', owner={'kind': 'user', 'id': leaver.id}),
+                       {'id': 'pause', 'type': 'wait', 'title': 'Pause', 'stage': 0, 'hours': 1}]
+        self.publish(w, d)
+        leaver.write({'active': False})
+        run = self.start(w)
+        self.assertEqual(run.state, 'failed')
+        self.assertEqual(run.step_ids.filtered(lambda s: s.key == 'task').state, 'failed')
+        pause = self.wake(run, 'pause')
+        self.assertEqual(pause.state, 'waiting')
+        self.service._cron_workflows()
+        self.assertEqual(pause.state, 'done')
+        self.assertEqual(run.state, 'failed')
+
+    def test_t15_new_process_approval_needs_a_route_before_activation(self):
+        w, d = self.workflow([{'id': 'approval', 'type': 'matrix', 'title': 'Sign off', 'stage': 0}])
+        self.publish(w, d, False)
+        with self.assertRaises(UserError) as caught:
+            self.service.activate(w.id, True)
+        self.assertIn('Set up who approves this in Approval Matrix', str(caught.exception))
+        self.assertFalse(w.enabled)
+        self.approval_route(w)
+        self.service.activate(w.id, True)
+        self.assertTrue(w.enabled)

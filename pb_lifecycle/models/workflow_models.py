@@ -6,7 +6,7 @@ import logging
 from datetime import timedelta
 import pytz
 
-from odoo import api, fields, models, _
+from odoo import SUPERUSER_ID, api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
 from . import workflow_definition as D
@@ -21,6 +21,20 @@ def internal(records):
 
 def is_internal(records):
     return records.env.su or records.env.context.get('_pb_workflow_internal') is INTERNAL
+
+
+def system(env, company):
+    """The worker's environment: the system account, pinned to one company.
+
+    Workflows run at system level, the way native automation does (R3). This
+    is the superuser environment and deliberately not `sudo()`: sudo keeps
+    the caller's uid, so module code asking `env.user.has_group(...)` would
+    see whoever happened to trigger the step (ledger G1). Record rules do not
+    apply here, so `env.company` (the workflow's company) is the boundary
+    every worker-side check compares against.
+    """
+    return env(user=SUPERUSER_ID, su=True, context=dict(
+        env.context, allowed_company_ids=[company.id], _pb_workflow_internal=INTERNAL))
 
 
 class WorkflowProtected(models.AbstractModel):
@@ -194,11 +208,8 @@ class WorkflowEvent(models.Model):
             return self.run_id
         try:
             with self.env.cr.savepoint():
-                actor = self.execution_user_id
-                if not actor.active or self.company_id not in actor.company_ids:
-                    raise AccessError(_('The execution user no longer has access to this company.'))
-                service = self.env['pb.workflow.studio'].with_user(actor).with_context(
-                    allowed_company_ids=[self.company_id.id])
+                service = system(self.env, self.sudo().company_id)['pb.workflow.studio'].with_context(
+                    _pb_workflow_origin=self.sudo().workflow_id.id)
                 source = service._source(self.source_model, self.source_id) if self.source_model else None
                 facts = service._facts(source) if source is not None else dict(self.initial_values or {})
                 d = self.version_id.definition
@@ -211,7 +222,8 @@ class WorkflowEvent(models.Model):
                     'workflow_id': self.workflow_id.id, 'version_id': self.version_id.id,
                     'company_id': self.company_id.id, 'source_model': self.source_model,
                     'source_id': self.source_id, 'initiator_id': self.initiator_id.id,
-                    'execution_user_id': actor.id, 'facts': facts,
+                    # Kept only to fill the stored column; nothing reads it.
+                    'execution_user_id': self.execution_user_id.id, 'facts': facts,
                     'source_approval_id': self.approval_request_id.id})
                 internal(self).write({'state': 'done', 'run_id': run.id, 'error': False})
                 run._initialize()
@@ -262,11 +274,9 @@ class WorkflowRun(models.Model):
             'actor_id': self.env.uid})
 
     def _service(self):
-        if not self.execution_user_id.active or self.company_id not in self.execution_user_id.company_ids:
-            raise AccessError(_('The execution user no longer has access to this company.'))
-        return self.env['pb.workflow.studio'].with_user(self.execution_user_id).with_context(
-            allowed_company_ids=[self.company_id.id], _pb_workflow_internal=INTERNAL,
-            _pb_workflow_origin=self.workflow_id.id)
+        run = self.sudo()
+        return system(self.env, run.company_id)['pb.workflow.studio'].with_context(
+            _pb_workflow_origin=run.workflow_id.id)
 
     def _source(self):
         return self._service()._source(self.source_model, self.source_id) if self.source_model else self._service().env['pb.workflow.run'].browse(self.id)
@@ -344,7 +354,11 @@ class WorkflowRun(models.Model):
                     return True
             if n['type'] == 'branch':
                 if not s.choice:
-                    values = self._condition_values(n) if any('rules' in b.get('condition', {}) for b in n['branches']) else self._values()
+                    # One timing rule (F11): versions saved since it exists
+                    # decide on the record as it is now. Older versions keep
+                    # the start snapshot unless they used grouped rules.
+                    live = d.get('timing') == 'live' or any('rules' in b.get('condition', {}) for b in n['branches'])
+                    values = self._condition_values(n) if live else self._values()
                     b = next(b for b in n['branches'] if not b.get('condition') or D.matches(b['condition'], values))
                     internal(s).write({'choice': b['id'], 'state': 'active'})
                     skip([x for other in n['branches'] if other['id'] != b['id'] for x in other['steps']])
@@ -495,6 +509,28 @@ class WorkflowStep(models.Model):
                              'error': False, **({'answers': answers} if answers is not None else {})})
         self.run_id._log(_('%s — done.', self.name), self)
 
+    def _follow(self, source):
+        """Follow the approval the record's own module runs; never submit.
+
+        Adopts the record's open request, finishes when its latest request is
+        already done, and otherwise waits for the module to send it in. The
+        worker calls this again on every pass until a request appears.
+        """
+        self.ensure_one()
+        run = self.run_id.sudo()
+        latest = self.env['biz.approval.request'].sudo().search([
+            ('res_model', '=', source._name), ('res_id', '=', source.id),
+            ('company_id', '=', run.company_id.id),
+            ('process_id', '=', run.version_id.process_id.id)], order='attempt desc, id desc', limit=1)
+        if latest.state in ('pending', 'blocked', 'approved'):
+            internal(self).write({'approval_id': latest.id, 'state': 'waiting'})
+            run._log(_('Following the approval already open for this record.'), self)
+        elif latest.state == 'applied':
+            self._finish()
+        elif self.state != 'waiting':
+            internal(self).write({'state': 'waiting'})
+            run._log(_('Waiting for this record to be sent for approval.'), self)
+
     def _execute(self):
         self.ensure_one()
         n, run = self.sudo().config, self.run_id.sudo()
@@ -544,14 +580,27 @@ class WorkflowStep(models.Model):
             else:
                 if source._approval_process().id != run.version_id.process_id.id:
                     raise UserError(_('This record uses a different approval process. Check the workflow’s selected process.'))
+                # A version saved before the mode existed submits, as it did.
+                if n.get('mode', 'submit') == 'follow':
+                    self._follow(source)
+                    return
                 existing = source.approval_request_id
                 if existing and existing.state in ('pending', 'blocked', 'approved'):
-                    existing.check_access('read')
                     internal(self).write({'approval_id': existing.id, 'state': 'waiting'})
                     run._log(_('Following the approval already open for this record.'), self)
                     return
-                engine = service.env['biz.approval.engine'].with_context(_pb_workflow_internal=INTERNAL)
-                result = engine.submit(source.with_context(_pb_workflow_internal=INTERNAL),
+                # Sent in by the person who started the run, never by the
+                # system: the approval route and its history name a person.
+                initiator = run.initiator_id
+                if (initiator.id == SUPERUSER_ID or not initiator.active or initiator.share
+                        or run.company_id not in initiator.company_ids):
+                    raise UserError(_('Nobody is recorded as having started this, so there is no one to send it for approval. Send it from the record instead.')
+                                    if run.source_model else
+                                    _('Nobody is recorded as having started this, so there is no one to send it for approval.'))
+                record = source.with_user(initiator).with_context(
+                    allowed_company_ids=[run.company_id.id], _pb_workflow_internal=INTERNAL,
+                    _pb_workflow_origin=run.workflow_id.id)
+                result = record.env['biz.approval.engine'].submit(record,
                     idempotency_key='workflow:%s:%s:%s' % (run.id, self.key, self.approval_attempt))
                 request = self.env['biz.approval.request'].sudo().browse(result['id'])
                 internal(self).write({'approval_id': request.id})

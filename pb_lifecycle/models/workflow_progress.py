@@ -102,6 +102,8 @@ class WorkflowProgress(models.AbstractModel):
                 reason = {'task': _('Waiting for the assigned person'), 'input': _('Waiting for information'),
                           'matrix': _('Waiting for approval'), 'email': _('Waiting for the mail service'),
                           'wait': _('Waiting until the set time')}.get(step.kind, _('Waiting'))
+            if step.state == 'waiting' and step.kind == 'matrix' and not step.approval_id:
+                reason = _('Waiting for this record to be sent for approval.')
             if step.state == 'failed':
                 reason = step.error if self._can_design() else _('This step needs attention from the workflow owner.')
             if step.state == 'skipped':

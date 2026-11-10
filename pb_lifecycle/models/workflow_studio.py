@@ -199,7 +199,7 @@ class WorkflowStudio(models.AbstractModel):
         w = self._workflow(workflow_id)
         data = self._row(w)
         data.update(definition=w.draft, process_id=w.process_id.id or None,
-                    execution_user_id=w.execution_user_id.id, starter_group_ids=w.starter_group_ids.ids,
+                    starter_group_ids=w.starter_group_ids.ids,
                     versions=[{'id': v.id, 'number': v.number, 'date': str(v.published_at),
                                'note': v.note or '', 'by': v.published_by.name} for v in w.version_ids],
                     metadata=self.metadata(w.source_model, workflow_id=w.id))
@@ -243,85 +243,94 @@ class WorkflowStudio(models.AbstractModel):
     def _validate(self, w, definition):
         fields_meta = {f['key']: f for f in self._source_fields(w.source_model)}
         after = isinstance(definition, dict) and isinstance(definition.get('trigger'), dict) and definition['trigger'].get('kind') == 'approval_applied'
-        native_processes = self.env['biz.approval.process'].sudo().search([('model_name', '=', w.source_model)]).filtered('connected') if w.source_model else self.env['biz.approval.process']
-        errors = D.validate(definition, fields_meta, self._actions(w.source_model),
-                            approval=bool(native_processes and not after))
+        errors = D.validate(definition, fields_meta, self._actions(w.source_model))
         if errors:
             return errors
-        def error(key, text):
-            errors.append({'id': key, 'text': text, 'severity': 'error'})
+        def error(key, code, text):
+            errors.append({'id': key, 'code': code, 'text': text, 'severity': 'error'})
         trigger = definition['trigger']
-        if native_processes and not w.process_id:
-            error('trigger', _('Choose the existing approval process for this record.'))
+        matrix = [n for n in definition['nodes'] if n['type'] == 'matrix']
+        # An approval step is optional (R2): the record's own module keeps its
+        # approval. A process is needed only when this workflow refers to one.
+        if w.source_model and matrix and not w.process_id:
+            error('trigger', 'approval_process_missing', _('Choose the existing approval process for this record.'))
+        if not w.source_model and any(n.get('mode') == 'follow' for n in matrix):
+            error(matrix[0]['id'], 'follow_needs_record', _('A new process has no record of its own to follow. Choose “Send it for approval”.'))
         if trigger['kind'] != 'manual' and not w.source_model:
-            error('trigger', _('Choose an existing record for an automatic start.'))
+            error('trigger', 'automatic_needs_record', _('Choose an existing record for an automatic start.'))
         if trigger['kind'] == 'approval_applied' and not w.process_id:
-            error('trigger', _('Choose the approval process this follows.'))
-        if after and any(n['type'] == 'matrix' for n in definition['nodes']):
-            error('trigger', _('Approval is already complete for this trigger. Do not request it again.'))
+            error('trigger', 'trigger_process_missing', _('Choose the approval process this follows.'))
+        if after and matrix:
+            error('trigger', 'approval_already_done', _('Approval is already complete for this trigger. Do not request it again.'))
         if trigger['kind'] == 'date':
             f = fields_meta.get(trigger.get('date_field'), {})
             if f.get('type') not in ('date', 'datetime'):
-                error('trigger', _('Choose a date field.'))
+                error('trigger', 'date_field', _('Choose a date field.'))
             if type(trigger.get('delay', 0)) is not int or not 0 <= trigger.get('delay', 0) <= 365:
-                error('trigger', _('Use a delay from 0 to 365.'))
+                error('trigger', 'date_delay', _('Use a delay from 0 to 365.'))
             if trigger.get('unit') not in ('minutes', 'hour', 'day', 'month') or trigger.get('mode', 'after') not in ('before', 'after'):
-                error('trigger', _('Choose a valid date offset.'))
+                error('trigger', 'date_offset', _('Choose a valid date offset.'))
         effects, bindings = set(), set()
         for n in definition['nodes']:
             if n['type'] == 'input':
                 for field in n['form']['fields']:
                     if field.get('type') == 'lookup' and field.get('lookup_model') not in {r['key'] for r in self._models()}:
-                        error(n['id'], _('Choose an accessible record type for the lookup.'))
+                        error(n['id'], 'lookup_model', _('Choose an accessible record type for the lookup.'))
                     if field.get('bind'):
                         if field['bind'] in bindings:
-                            error(n['id'], _('Map each approval value from one form field only.'))
+                            error(n['id'], 'duplicate_binding', _('Map each approval value from one form field only.'))
                         bindings.add(field['bind'])
             if n['type'] in ('task', 'input') and n.get('owner', {}).get('kind') == 'role':
                 role = self.env['biz.approval.role'].sudo().browse(n['owner'].get('id', 0)).exists()
                 if not role or role.is_pool:
-                    error(n['id'], _('Choose an existing single-person responsibility.'))
+                    error(n['id'], 'bad_role', _('Choose an existing single-person responsibility.'))
             if n['type'] in ('task', 'input'):
                 if n.get('owner', {}).get('kind') == 'field':
                     f = fields_meta.get(n['owner'].get('field'), {})
                     if f.get('type') != 'many2one' or f.get('relation') != 'res.users':
-                        error(n['id'], _('Choose a person field from this record.'))
+                        error(n['id'], 'bad_owner_field', _('Choose a person field from this record.'))
                 if n.get('activity_type_id') and n['activity_type_id'] not in {t['id'] for t in self.metadata(w.source_model)['activity_types']}:
-                    error(n['id'], _('Choose a supported task type.'))
+                    error(n['id'], 'bad_task_type', _('Choose a supported task type.'))
             if n['type'] == 'email':
                 try:
                     self._mail_template(n['template_id'], w.source_model or 'pb.workflow.run')
                 except (AccessError, UserError) as exc:
-                    error(n['id'], str(exc))
+                    error(n['id'], 'email_template', str(exc))
                 if n['template_id'] in effects:
-                    error(n['id'], _('This template is already sent by another step.'))
+                    error(n['id'], 'duplicate_email', _('This template is already sent by another step.'))
                 effects.add(n['template_id'])
                 if not n.get('purpose', '').strip():
-                    error(n['id'], _('Say why this message is additional to existing notifications.'))
+                    error(n['id'], 'email_purpose', _('Say why this message is additional to existing notifications.'))
             if n['type'] in ('task', 'input') and n.get('owner', {}).get('kind') == 'user':
                 user = self.env['res.users'].sudo().browse(n['owner']['id']).exists()
                 if not user or not user.active or user.share or w.company_id not in user.company_ids:
-                    error(n['id'], _('Choose an active person in this company.'))
+                    error(n['id'], 'inactive_owner', _('Choose an active person in this company.'))
             if n['type'] == 'action' and n.get('action_key') == 'hiring.stage':
                 if n.get('stage_key') not in {s['key'] for s in self.metadata('hr.applicant')['stages']}:
-                    error(n['id'], _('Choose a permitted Hiring stage. Joined stays with its native action.'))
+                    error(n['id'], 'bad_hiring_stage', _('Choose a permitted Hiring stage. Joined stays with its own action.'))
             if n['type'] == 'reference' and n.get('owner_key') not in {r['key'] for r in self._ownership(w.source_model)}:
-                error(n['id'], _('Choose an existing owner from the list.'))
+                error(n['id'], 'bad_reference_owner', _('Choose an existing owner from the list.'))
         return errors
 
     @api.model
     def save_draft(self, workflow_id, revision, definition, process_id=None, execution_user_id=None, starter_group_ids=None):
+        # `execution_user_id` is still accepted from older screens and ignored:
+        # workflows run at system level (R3), never as a chosen person.
         w = self._workflow(workflow_id)
         w._lock()
         if type(revision) is not int or revision != w.revision:
             raise UserError(_('Someone saved a newer draft. Reload before applying your changes.'))
         if not isinstance(definition, dict) or not D.safe_json(definition):
             raise UserError(_('This workflow is too large.'))
+        # Every saved draft decides paths on the record as it is when the path
+        # is reached. Published versions keep whatever they were saved with.
+        definition = dict(definition, timing='live')
         structural = D.validate(definition, {f['key'] for f in self._source_fields(w.source_model)}, self._actions(w.source_model))
-        # Drafts may be unfinished, but never structurally corrupt.
-        forbidden = ('identifier', 'reference is missing', 'exactly one path', 'contain itself', 'stage order', 'format is not supported', '1–40', 'invalid format', 'invalid or oversized', 'Only path', 'Only a saved', 'Keep one start')
-        if any(any(s in i['text'] for s in forbidden) for i in structural):
-            raise UserError('\n'.join(i['text'] for i in structural))
+        # Drafts may be unfinished, but never structurally corrupt. Decided by
+        # code, never by wording (ledger G2).
+        blocking = [i for i in structural if i.get('code') in D.STRUCTURAL]
+        if blocking:
+            raise UserError('\n'.join(i['text'] for i in blocking))
         vals = {'draft': definition, 'name': str(definition.get('name', '')).strip()[:120] or w.name,
                 'revision': w.revision+1}
         if starter_group_ids is not None:
@@ -337,16 +346,53 @@ class WorkflowStudio(models.AbstractModel):
             if not p or p.model_name != w.source_model or not p.connected:
                 raise UserError(_('Choose an approval process belonging to this record.'))
             vals['process_id'] = p.id
-        if execution_user_id and int(execution_user_id) != w.execution_user_id.id:
-            self._publish()
-            if int(execution_user_id) != self.env.uid and not self.env.user.has_group('base.group_system'):
-                raise AccessError(_('Only a system administrator can choose another execution account.'))
-            u = self.env['res.users'].sudo().browse(int(execution_user_id)).exists()
-            if not u or not u.active or u.share or w.company_id not in u.company_ids:
-                raise UserError(_('Choose an active execution user in this company.'))
-            vals['execution_user_id'] = u.id
         internal(w).write(vals)
         return {'revision': w.revision, 'issues': self._validate(w, definition)}
+
+    TRIGGER_LABELS = {'manual': 'Started by a person', 'created': 'When a record is created',
+                      'changed': 'When selected fields change', 'date': 'Based on a record date',
+                      'approval_applied': 'After approval is applied'}
+    OP_WORDS = {'eq': 'is', 'ne': 'is not', 'gt': 'is more than', 'gte': 'is at least',
+                'lt': 'is less than', 'lte': 'is at most', 'contains': 'contains',
+                'icontains': 'contains', 'not_contains': 'does not contain',
+                'set': 'is filled in', 'unset': 'is empty', 'in': 'is one of', 'not_in': 'is not one of'}
+
+    def _scope_summary(self, model, scope):
+        """A short plain sentence naming which records a workflow starts for."""
+        rules = D.leaves(scope) if isinstance(scope, dict) and scope.get('rules') else []
+        if not rules:
+            return _('Every record')
+        meta = {f['key']: f for f in self._source_fields(model)}
+        def value(rule):
+            f, v = meta.get(rule.get('field'), {}), rule.get('value')
+            values = v if isinstance(v, list) else [v]
+            if f.get('type') == 'selection':
+                labels = dict(f.get('options') or [])
+                values = [labels.get(x, x) for x in values]
+            elif f.get('type') == 'many2one' and f.get('relation') in self.env:
+                found = self.env[f['relation']].browse([x for x in values if type(x) is int]).exists()
+                values = [r.display_name for r in found] or values
+            elif f.get('type') == 'boolean':
+                values = [_('Yes') if x else _('No') for x in values]
+            return ', '.join(str(x) for x in values)
+        parts = []
+        for rule in rules[:2]:
+            label = meta.get(rule.get('field'), {}).get('label') or _('a value')
+            words = _(self.OP_WORDS.get(rule.get('op'), 'is'))
+            parts.append('%s %s' % (label, words) if rule.get('op') in ('set', 'unset') else '%s %s %s' % (label, words, value(rule)))
+        joiner = _(' and ') if scope.get('match') == 'all' else _(' or ')
+        text = _('Records where %s', joiner.join(parts))
+        if len(rules) > 2:
+            text = _('%(text)s, plus %(count)s more filters', text=text, count=len(rules) - 2)
+        return text
+
+    def _other_row(self, w):
+        row = self._row(w)
+        d = w.published_id.definition if w.published_id else (w.draft or {})
+        kind = (d.get('trigger') or {}).get('kind', 'manual')
+        row.update(trigger=kind, trigger_label=_(self.TRIGGER_LABELS.get(kind, 'Started by a person')),
+                   scope_summary=self._scope_summary(w.source_model, d.get('scope') or {}))
+        return row
 
     @api.model
     def review(self, workflow_id):
@@ -355,7 +401,7 @@ class WorkflowStudio(models.AbstractModel):
         others = self.env['pb.workflow'].sudo().search([
             ('company_id', '=', w.company_id.id), ('source_model', '=', w.source_model),
             ('enabled', '=', True), ('id', '!=', w.id)])
-        return {'issues': issues, 'other_workflows': [self._row(x) for x in others],
+        return {'issues': issues, 'other_workflows': [self._other_row(x) for x in others],
                 'automations': self.metadata(w.source_model, w.id)['automations'],
                 'impact': _('Existing runs keep their version. Publishing does not activate this workflow.'),
                 'changed': w.published_id.definition != w.draft if w.published_id else True}
@@ -398,18 +444,36 @@ class WorkflowStudio(models.AbstractModel):
             issues = self._validate(w, w.published_id.definition)
             if issues:
                 raise UserError('\n'.join(i['text'] for i in issues))
-            kind = w.published_id.definition['trigger']['kind']
+            definition = w.published_id.definition
+            kind = definition['trigger']['kind']
             if kind != 'manual':
-                # Deliberately conservative. Two independent owners of the same
-                # source trigger need reconciliation, not silent priority.
+                # Several workflows may start for the same kind of record
+                # (F2). Only an exact copy is refused; any other overlap is a
+                # deliberate choice the publisher confirms on Review.
                 peers = self.env['pb.workflow'].sudo().search([
                     ('company_id', '=', w.company_id.id), ('source_model', '=', w.source_model),
-                    ('enabled', '=', True), ('id', '!=', w.id)])
-                if any(p.published_id.definition['trigger']['kind'] == kind for p in peers):
-                    raise UserError(_('Another active workflow already owns this record trigger. Extend it or pause it first.'))
+                    ('enabled', '=', True), ('id', '!=', w.id), ('published_id', '!=', False)])
+                canon = lambda value: json.dumps(value or {}, sort_keys=True)
+                same_kind = peers.filtered(lambda p: p.published_id.definition['trigger']['kind'] == kind)
+                if any(canon(p.published_id.definition['trigger']) == canon(definition['trigger']) and
+                       canon(p.published_id.definition.get('scope')) == canon(definition.get('scope'))
+                       for p in same_kind):
+                    raise UserError(_('Another active workflow starts on exactly the same records and event. Change the filters or pause the other one.'))
+                if same_kind and not acknowledge_existing:
+                    raise UserError(_('Other workflows also start for these records. Review them and confirm this one does different work.'))
                 existing = self.metadata(w.source_model, w.id)['automations']
                 if existing and not acknowledge_existing:
                     raise UserError(_('Review existing automation rules and confirm that this workflow has a different purpose.'))
+            if not w.source_model and any(n['type'] == 'matrix' for n in definition['nodes']):
+                # A new process sends its own approvals, so its route must
+                # exist first. Resolution is the engine's, never re-implemented.
+                found = self.env['biz.approval.engine'].resolve_binding(
+                    w.company_id.id, w.process_id.key, [''], 'any') if w.process_id else {'error': {'code': 'no_route'}}
+                problem = found.get('error') or {}
+                if problem.get('code') in ('no_route', 'no_version'):
+                    raise UserError(_('Set up who approves this in Approval Matrix before turning it on.'))
+                if problem.get('code') == 'ambiguous_route':
+                    raise UserError(problem['message'])
             if kind == 'approval_applied':
                 last = self.env['biz.approval.event'].sudo().search([], order='id desc', limit=1)
                 internal(w).write({'last_approval_event_id': last.id or 0})
@@ -445,7 +509,7 @@ class WorkflowStudio(models.AbstractModel):
         included = D.matches(w.draft['scope'], values)
         if w.draft['trigger'].get('before'):
             if not isinstance(before_values, dict) or not D.safe_json(before_values, 100000):
-                return {'issues': [{'id': 'trigger', 'text': _('Add example values from before the change.')}], 'steps': []}
+                return {'issues': [{'id': 'trigger', 'code': 'preview_needs_before', 'text': _('Add example values from before the change.')}], 'steps': []}
             included = included and D.matches(w.draft['trigger']['before'], before_values)
         return {'issues': [], 'included': included,
                 'steps': D.route_preview(w.draft, values) if included else [],
@@ -468,7 +532,7 @@ class WorkflowStudio(models.AbstractModel):
             return old
         if source_id:
             self.env.cr.execute('SELECT pg_advisory_xact_lock(hashtext(%s))', ['workflow-record:%s:%s' % (w.id, source_id)])
-            active = Event.search([('workflow_id', '=', w.id), ('source_id', '=', source_id),
+            active = Event.search([('workflow_id', '=', w.id), ('company_id', '=', w.company_id.id), ('source_id', '=', source_id),
                 '|', ('state', '=', 'pending'), ('run_id.state', 'in', ['running', 'waiting', 'failed', 'held'])], limit=1)
             if active:
                 return active
@@ -530,6 +594,8 @@ class WorkflowStudio(models.AbstractModel):
         return template
 
     def _execute_action(self, source, node):
+        # Under system execution this check always passes; the guard below and
+        # the module's own facade decide whether the action may happen.
         source.check_access('write')
         key = node['action_key']
         if key not in self._actions(source._name):
@@ -737,43 +803,67 @@ class WorkflowStudio(models.AbstractModel):
                 internal(w).write({'last_approval_event_id': event.id})
         for event in self.env['pb.workflow.event'].sudo().search([('state', '=', 'pending')], order='id', limit=100):
             event._process()
-        runs = self.env['pb.workflow.run'].sudo().search([('state', 'in', ['running', 'waiting'])], order='checked_at, id', limit=300)
+        # A run marked "needs attention" may still have healthy steps waiting
+        # on other paths (F4); those keep moving. The scan spans every company
+        # on purpose: each run is then worked in its own company (`_service`).
+        runs = self.env['pb.workflow.run'].sudo().search([
+            '|', ('state', 'in', ['running', 'waiting']),
+            '&', ('state', '=', 'failed'), ('step_ids.state', '=', 'waiting')], order='checked_at, id', limit=300)
         for run in runs:
+            # A run already marked "needs attention" is scanned every pass
+            # now; its history records a worker error once, not every minute.
+            noted = run.state == 'failed'
             try:
                 with self.env.cr.savepoint():
                     run._lock()
                     internal(run).write({'checked_at': fields.Datetime.now()})
                     for step in run.step_ids.filtered(lambda s: s.state == 'waiting'):
-                        if step.kind == 'wait':
-                            if step.config.get('wait_for'):
-                                if D.matches(step.config['wait_for'], run._condition_values(step.config)):
-                                    step._finish()
-                                elif step.wake_at <= fields.Datetime.now():
-                                    internal(step).write({'state': 'failed', 'error': _('The wait reached its deadline before the conditions matched. Check the record, then retry.')})
-                            elif step.wake_at <= fields.Datetime.now():
-                                step._finish()
-                        elif step.kind == 'email':
-                            if not step.mail_id:
-                                internal(step).write({'state': 'failed', 'error': _('The queued message is missing. Check the mail service before retrying.')})
-                            elif step.mail_id.state == 'sent':
-                                step._finish()
-                            elif step.mail_id.state in ('exception', 'cancel'):
-                                internal(step).write({'state': 'failed', 'error': _('The mail service could not send this message. Fix delivery settings, then retry.')})
-                        elif step.kind == 'matrix' and step.approval_id:
-                            req = step.approval_id
-                            if req.state == 'applied':
-                                step._finish()
-                            elif req.state in ('rejected', 'cancelled'):
-                                for s in run.step_ids:
-                                    s._cancel_activity()
-                                internal(run).write({'state': 'rejected' if req.state == 'rejected' else 'cancelled'})
-                                run._log(_('The approval request was %s.', req.state), step)
-                            elif req.state == 'returned':
-                                internal(step).write({'state': 'failed', 'error': _('Approval was returned. Correct the source record, then retry this step.'),
-                                                      'approval_id': False, 'approval_attempt': step.approval_attempt+1})
-                                internal(run).write({'state': 'failed'})
+                        try:
+                            with self.env.cr.savepoint():
+                                self._check_waiting_step(run, step)
+                        except (AccessError, UserError) as exc:
+                            # One step's problem (record gone, moved company)
+                            # stops that step, never its healthy siblings.
+                            internal(step).write({'state': 'failed', 'error': str(exc)[:1000]})
+                            run._log(_('Needs attention: %s', str(exc)[:400]), step)
                     run._advance()
             except Exception as exc:
                 _logger.exception('Workflow run %s needs attention', run.id)
                 internal(run).write({'state': 'failed'})
-                run._log(str(exc)[:500])
+                if not noted:
+                    run._log(str(exc)[:500])
+
+    def _check_waiting_step(self, run, step):
+        """The worker's look at one waiting step. Private: never callable by RPC."""
+        if step.kind == 'wait':
+            if step.config.get('wait_for'):
+                if D.matches(step.config['wait_for'], run._condition_values(step.config)):
+                    step._finish()
+                elif step.wake_at <= fields.Datetime.now():
+                    internal(step).write({'state': 'failed', 'error': _('The wait reached its deadline before the conditions matched. Check the record, then retry.')})
+            elif step.wake_at <= fields.Datetime.now():
+                step._finish()
+        elif step.kind == 'email':
+            if not step.mail_id:
+                internal(step).write({'state': 'failed', 'error': _('The queued message is missing. Check the mail service before retrying.')})
+            elif step.mail_id.state == 'sent':
+                step._finish()
+            elif step.mail_id.state in ('exception', 'cancel'):
+                internal(step).write({'state': 'failed', 'error': _('The mail service could not send this message. Fix delivery settings, then retry.')})
+        elif step.kind == 'matrix' and not step.approval_id and step.config.get('mode') == 'follow':
+            # "Follow" mode: wait until the record's own module sends it for
+            # approval, then adopt that request. Never submits.
+            step._follow(run._source())
+        elif step.kind == 'matrix' and step.approval_id:
+            req = step.approval_id
+            if req.state == 'applied':
+                step._finish()
+            elif req.state in ('rejected', 'cancelled'):
+                for s in run.step_ids:
+                    s._cancel_activity()
+                internal(run).write({'state': 'rejected' if req.state == 'rejected' else 'cancelled'})
+                run._log(_('The approval request was %s.', req.state), step)
+            elif req.state == 'returned':
+                internal(step).write({'state': 'failed', 'error': _('Approval was returned. Correct the source record, then retry this step.'),
+                                      'approval_id': False, 'approval_attempt': step.approval_attempt+1})
+                internal(run).write({'state': 'failed'})
