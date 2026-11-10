@@ -7,7 +7,7 @@ import logging
 import math
 import uuid
 
-from odoo import api, fields, models, _
+from odoo import SUPERUSER_ID, api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
 from . import workflow_definition as D
@@ -108,20 +108,32 @@ class WorkflowStudio(models.AbstractModel):
             rows.append({'key': 'biz.approval.generic.request', 'label': _('Other approval request')})
         return sorted(rows, key=lambda x: x['label'].lower())
 
+    def _declared(self, model):
+        """The module's own contract (`_workflow_capabilities`), or {}.
+
+        Duck-typed on purpose: the business modules never depend on this
+        one. WF2 P2 routes every former per-module special case through it."""
+        if model and model in self.env and hasattr(self.env[model], '_workflow_capabilities'):
+            return self.env[model]._workflow_capabilities() or {}
+        return {}
+
     def _actions(self, model):
-        result = {}
-        if model and hasattr(self.env[model], '_workflow_capabilities'):
-            result.update(self.env[model]._workflow_capabilities().get('actions', {}))
-        if model == 'hr.applicant' and 'pb.hiring' in self.env:
-            result['hiring.stage'] = {'label': _('Move to a Hiring stage'), 'owner': 'pb_hiring'}
-        return result
+        return dict(self._declared(model).get('actions', {}))
 
     def _ownership(self, model):
         rows = [{'key': 'approvals', 'label': _('Approval routes, people and backups'),
                  'owner': 'Approval Matrix', 'action': 'pb_approval_config.action_pb_approval_matrix'},
                 {'key': 'access', 'label': _('Permissions and access delegation'),
                  'owner': 'Access Studio', 'action': 'biz_access.action_pb_access_board'}]
-        if model == 'hr.applicant' or (model or '').startswith('pb.hiring'):
+        declared = self._declared(model).get('owners')
+        if declared:
+            # The module names its own settings screens; the prefix table
+            # below is only the fallback for record types without a contract.
+            rows += [dict(r) for r in declared]
+            rows.append({'key': 'settings', 'label': _('Existing module settings and templates'),
+                         'owner': _('Settings'), 'action': 'pb_settings.action_pb_settings_hub'})
+            return [r for r in rows if self.env.ref(r['action'], raise_if_not_found=False)]
+        if (model or '').startswith('pb.hiring'):
             rows.append({'key': 'hiring', 'label': _('Stages, candidate messages and automations'),
                          'owner': 'Hiring settings', 'action': 'pb_hiring.action_pb_hiring_hub', 'lens': 'setup'})
         if (model or '').startswith(('pb.journey', 'pb.onboarding', 'pb.offboarding', 'pb.probation', 'pb.pip')) or model == 'hr.employee':
@@ -145,9 +157,20 @@ class WorkflowStudio(models.AbstractModel):
                 rows.append({'key': key, 'label': _(label), 'owner': _(owner), 'action': action})
         rows.append({'key': 'settings', 'label': _('Existing module settings and templates'),
                      'owner': _('Settings'), 'action': 'pb_settings.action_pb_settings_hub'})
-        if model and hasattr(self.env[model], '_workflow_capabilities'):
-            rows += self.env[model]._workflow_capabilities().get('owners', [])
         return [r for r in rows if self.env.ref(r['action'], raise_if_not_found=False)]
+
+    def _studio_rules(self):
+        """Automation rules Studio generated for its own workflows (G8).
+
+        They are already listed as workflows, so they never count as
+        "existing automation" a designer has to review a second time."""
+        return self.env['pb.workflow'].sudo().with_context(active_test=False).search(
+            [('automation_id', '!=', False)]).mapped('automation_id')
+
+    def _blocking(self, issues):
+        """Errors always block; a "repeats existing" warning blocks until the
+        designer keeps the step on purpose (`ack_repeat`)."""
+        return [i for i in issues if i.get('severity') != 'warning' or not i.get('acknowledged')]
 
     @api.model
     def bootstrap(self):
@@ -218,8 +241,7 @@ class WorkflowStudio(models.AbstractModel):
             ('active', '=', True), ('share', '=', False), ('company_ids', 'in', company.id)], limit=600)
         rules = self.env['base.automation'].sudo().search([
             ('model_id.model', '=', model), ('active', '=', True)]) if model else self.env['base.automation']
-        if workflow_id:
-            rules -= self._workflow(workflow_id).automation_id
+        rules -= self._studio_rules()
         result = {'fields': self._source_fields(model), 'actions': self._actions(model),
                   'owners': self._ownership(model),
                   'processes': [{'id': p.id, 'name': p.name, 'key': p.key} for p in processes],
@@ -234,10 +256,12 @@ class WorkflowStudio(models.AbstractModel):
                   'automations': [{'id': a.id, 'name': a.name, 'trigger': a.trigger} for a in rules],
                   'components': [self._row(c) for c in self.env['pb.workflow'].sudo().search([
                       ('company_id', '=', company.id), ('component', '=', True), ('published_id', '!=', False)])]}
-        if model == 'hr.applicant' and 'pb.hiring' in self.env:
-            stages = self.env['hr.recruitment.stage'].search([('pb_key', '!=', False)])
-            result['stages'] = [{'key': s.pb_key, 'name': s.name} for s in stages
-                                if s.pb_key not in ('joined', 'offer_accepted', 'offer_rejected')]
+        # Kept for screens cached before WF2 P2: the module action's stage
+        # choices, now read from the module's contract.
+        for spec in result['actions'].values():
+            for param in spec.get('params', []):
+                if param.get('key') == 'stage_key' and param.get('type') == 'choice':
+                    result['stages'] = list(param.get('options', []))
         return result
 
     def _validate(self, w, definition):
@@ -270,7 +294,8 @@ class WorkflowStudio(models.AbstractModel):
                 error('trigger', 'date_delay', _('Use a delay from 0 to 365.'))
             if trigger.get('unit') not in ('minutes', 'hour', 'day', 'month') or trigger.get('mode', 'after') not in ('before', 'after'):
                 error('trigger', 'date_offset', _('Choose a valid date offset.'))
-        effects, bindings = set(), set()
+        bindings = set()
+        actions = self._actions(w.source_model)
         for n in definition['nodes']:
             if n['type'] == 'input':
                 for field in n['form']['fields']:
@@ -289,25 +314,36 @@ class WorkflowStudio(models.AbstractModel):
                     f = fields_meta.get(n['owner'].get('field'), {})
                     if f.get('type') != 'many2one' or f.get('relation') != 'res.users':
                         error(n['id'], 'bad_owner_field', _('Choose a person field from this record.'))
-                if n.get('activity_type_id') and n['activity_type_id'] not in {t['id'] for t in self.metadata(w.source_model)['activity_types']}:
+                if n.get('activity_type_id') and n['activity_type_id'] not in self._activity_types().ids:
                     error(n['id'], 'bad_task_type', _('Choose a supported task type.'))
+                if n.get('owner', {}).get('kind') == 'subject' and not (
+                        w.source_model and hasattr(self.env[w.source_model], '_workflow_subject')):
+                    error(n['id'], 'subject_not_available', _('This kind of record does not say who it is about. Choose someone else.'))
             if n['type'] == 'email':
                 try:
                     self._mail_template(n['template_id'], w.source_model or 'pb.workflow.run')
                 except (AccessError, UserError) as exc:
                     error(n['id'], 'email_template', str(exc))
-                if n['template_id'] in effects:
-                    error(n['id'], 'duplicate_email', _('This template is already sent by another step.'))
-                effects.add(n['template_id'])
+                # The same template twice is checked per path (WF2 P2,
+                # `workflow_contract._validate`): exclusive branches may each
+                # send it.
                 if not n.get('purpose', '').strip():
                     error(n['id'], 'email_purpose', _('Say why this message is additional to existing notifications.'))
             if n['type'] in ('task', 'input') and n.get('owner', {}).get('kind') == 'user':
                 user = self.env['res.users'].sudo().browse(n['owner']['id']).exists()
                 if not user or not user.active or user.share or w.company_id not in user.company_ids:
                     error(n['id'], 'inactive_owner', _('Choose an active person in this company.'))
-            if n['type'] == 'action' and n.get('action_key') == 'hiring.stage':
-                if n.get('stage_key') not in {s['key'] for s in self.metadata('hr.applicant')['stages']}:
-                    error(n['id'], 'bad_hiring_stage', _('Choose a permitted Hiring stage. Joined stays with its own action.'))
+            if n['type'] == 'action' and n.get('action_key') in actions:
+                # Choices the module declares for its own operation (e.g.
+                # which Hiring stage). Read from the node itself or from
+                # `parameters`, so versions saved before the contract work.
+                values = self._action_params(n, actions[n['action_key']])
+                for param in actions[n['action_key']].get('params', []):
+                    # Choice keys are compared as text: a screen sends them so.
+                    if param.get('type') == 'choice' and str(values.get(param['key'])) not in {
+                            str(o['key']) for o in param.get('options', [])}:
+                        error(n['id'], param.get('code') or 'bad_action_choice',
+                              param.get('error') or _('Choose one of the listed options for “%s”.', param.get('label', '')))
             if n['type'] == 'reference' and n.get('owner_key') not in {r['key'] for r in self._ownership(w.source_model)}:
                 error(n['id'], 'bad_reference_owner', _('Choose an existing owner from the list.'))
         return errors
@@ -359,9 +395,14 @@ class WorkflowStudio(models.AbstractModel):
 
     def _scope_summary(self, model, scope):
         """A short plain sentence naming which records a workflow starts for."""
+        words = self._rule_words(model, scope)
+        return _('Records where %s', words) if words else _('Every record')
+
+    def _rule_words(self, model, scope):
+        """The filters of a rule in words ("Urgent is Yes and …"), or ''."""
         rules = D.leaves(scope) if isinstance(scope, dict) and scope.get('rules') else []
         if not rules:
-            return _('Every record')
+            return ''
         meta = {f['key']: f for f in self._source_fields(model)}
         def value(rule):
             f, v = meta.get(rule.get('field'), {}), rule.get('value')
@@ -381,7 +422,7 @@ class WorkflowStudio(models.AbstractModel):
             words = _(self.OP_WORDS.get(rule.get('op'), 'is'))
             parts.append('%s %s' % (label, words) if rule.get('op') in ('set', 'unset') else '%s %s %s' % (label, words, value(rule)))
         joiner = _(' and ') if scope.get('match') == 'all' else _(' or ')
-        text = _('Records where %s', joiner.join(parts))
+        text = joiner.join(parts)
         if len(rules) > 2:
             text = _('%(text)s, plus %(count)s more filters', text=text, count=len(rules) - 2)
         return text
@@ -401,7 +442,8 @@ class WorkflowStudio(models.AbstractModel):
         others = self.env['pb.workflow'].sudo().search([
             ('company_id', '=', w.company_id.id), ('source_model', '=', w.source_model),
             ('enabled', '=', True), ('id', '!=', w.id)])
-        return {'issues': issues, 'other_workflows': [self._other_row(x) for x in others],
+        return {'issues': issues, 'blocking': len(self._blocking(issues)),
+                'other_workflows': [self._other_row(x) for x in others],
                 'automations': self.metadata(w.source_model, w.id)['automations'],
                 'impact': _('Existing runs keep their version. Publishing does not activate this workflow.'),
                 'changed': w.published_id.definition != w.draft if w.published_id else True}
@@ -413,7 +455,7 @@ class WorkflowStudio(models.AbstractModel):
         w._lock()
         if w.revision != revision:
             raise UserError(_('Reload the latest draft before publishing.'))
-        issues = self._validate(w, w.draft)
+        issues = self._blocking(self._validate(w, w.draft))
         if issues:
             raise UserError('\n'.join(i['text'] for i in issues))
         if not w.source_model and any(n['type'] == 'matrix' for n in w.draft['nodes']) and not w.process_id:
@@ -441,7 +483,7 @@ class WorkflowStudio(models.AbstractModel):
         if enabled:
             if not w.published_id or w.component:
                 raise UserError(_('Publish a process before activating it.'))
-            issues = self._validate(w, w.published_id.definition)
+            issues = self._blocking(self._validate(w, w.published_id.definition))
             if issues:
                 raise UserError('\n'.join(i['text'] for i in issues))
             definition = w.published_id.definition
@@ -472,6 +514,10 @@ class WorkflowStudio(models.AbstractModel):
                 problem = found.get('error') or {}
                 if problem.get('code') in ('no_route', 'no_version'):
                     raise UserError(_('Set up who approves this in Approval Matrix before turning it on.'))
+                if problem.get('code') == 'paused':
+                    # WF2 P2 (P1 deviation 3 reversed by the handover): a new
+                    # process cannot start while its own route is paused.
+                    raise UserError(_('The approval route for this is paused. Switch it back on in Approval Matrix first.'))
                 if problem.get('code') == 'ambiguous_route':
                     raise UserError(problem['message'])
             if kind == 'approval_applied':
@@ -500,7 +546,7 @@ class WorkflowStudio(models.AbstractModel):
     @api.model
     def preview(self, workflow_id, values=None, before_values=None):
         w = self._workflow(workflow_id)
-        issues = self._validate(w, w.draft)
+        issues = self._blocking(self._validate(w, w.draft))
         if issues:
             return {'issues': issues, 'steps': []}
         values = values or {}
@@ -580,7 +626,25 @@ class WorkflowStudio(models.AbstractModel):
             selected = {k: str(rec[k]) for k in t.get('fields', []) if k in rec._fields}
             digest = hashlib.sha256(json.dumps([stamp, selected], sort_keys=True).encode()).hexdigest()
             key = 'native:%s:%s:%s:%s' % (w.id, w.published_id.id, rec.id, digest)
-            self._enqueue(w, rec.id, self.env.uid, key)
+            self._enqueue(w, rec.id, self._capture_initiator(w, rec), key)
+
+    def _capture_initiator(self, w, rec):
+        """Who a system-triggered start is recorded as (WF2 P2, F10).
+
+        A date rule or a background job runs as the system account. When the
+        record's module says who the record is about and that person has an
+        active staff login in the workflow's company, the run is theirs;
+        otherwise it stays the system's, as before."""
+        if self.env.uid != SUPERUSER_ID or not hasattr(rec, '_workflow_subject'):
+            return self.env.uid
+        try:
+            user = (rec.sudo()._workflow_subject() or {}).get('user')
+        except (AccessError, UserError):
+            return self.env.uid
+        user = user.sudo().exists() if user else None
+        if user and len(user) == 1 and user.active and not user.share and w.company_id in user.company_ids:
+            return user.id
+        return self.env.uid
 
     def _mail_template(self, ident, model):
         template = self.env['mail.template'].browse(int(ident)).exists()
@@ -598,18 +662,20 @@ class WorkflowStudio(models.AbstractModel):
         # the module's own facade decide whether the action may happen.
         source.check_access('write')
         key = node['action_key']
-        if key not in self._actions(source._name):
+        actions = self._actions(source._name)
+        if key not in actions:
             raise UserError(_('This business action is no longer available.'))
-        if key == 'hiring.stage':
-            if source.stage_id.pb_key == node.get('stage_key'):
-                return {'already_done': True}
-            result = self.env['pb.hiring'].act('journey_stage', {'applicant_ids': source.ids, 'key': node.get('stage_key')})
-            if not result.get('moved'):
-                raise UserError(result.get('warning') or result.get('note') or _('Hiring did not move this candidate.'))
-            return result
+        # The module's own operation and safeguards decide (WF2 P2): Studio
+        # no longer knows any module's verbs (Hiring's stage move included).
         if hasattr(source, '_workflow_execute'):
-            return source._workflow_execute(key, node.get('parameters', {}))
+            return source._workflow_execute(key, self._action_params(node, actions[key]))
         raise UserError(_('The module has not registered this action.'))
+
+    def _action_params(self, node, spec):
+        """A module action's parameters: from `parameters`, else from the node
+        itself (where versions saved before the contract keep them)."""
+        given = node.get('parameters') if isinstance(node.get('parameters'), dict) else {}
+        return {p['key']: given.get(p['key'], node.get(p['key'])) for p in spec.get('params', []) if p.get('key')}
 
     def _run(self, ident):
         self._staff()

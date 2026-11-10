@@ -51,6 +51,7 @@ async function action(name,el){const id=el?.dataset.id;
  if(name==='end-preview'){S.page='editor';S.formPreview=false;render();return;}
  if(name==='simulate'){await save();const values=Object.fromEntries($$('[data-sample]').map(e=>[e.dataset.sample,e.multiple?[...e.selectedOptions].map(o=>typed(o.value,'integer')):typed(e.value,e.dataset.kind)]));const before=Object.fromEntries($$('[data-before-sample]').map(e=>[e.dataset.beforeSample,e.multiple?[...e.selectedOptions].map(o=>typed(o.value,e.dataset.kind)):typed(e.value,e.dataset.kind)]));S.preview=await rpc('preview',[S.w.id,values,before]);render();return;}
  if(name==='fix'){S.tab='build';S.selected=id;render();return;}
+ if(name==='ack-repeat'){const n=byId(S.w.definition,id);if(!n)return;mutate(()=>{if(el.dataset.keep==='true')n.ack_repeat=true;else delete n.ack_repeat;},false);await save();S.review=await rpc('review',[S.w.id]);render();return;}
  if(name==='publish'){await save();const note=$('#version-note').value;S.w=await rpc('publish',[S.w.id,S.w.revision,note]);S.review=await rpc('review',[S.w.id]);render();notify('Version published. Activate it when you’re ready.');return;}
  if(name==='activate'){const on=el.dataset.enabled==='true';S.w=await rpc('activate',[S.w.id,on,!!$('#ack-automation')?.checked]);render();notify(on?'Workflow activated.':'New starts paused. Existing runs continue.');return;}
  if(name==='restore'){S.w=await rpc('restore',[S.w.id,Number(id),S.w.revision]).then(()=>rpc('get_workflow',[S.w.id]));S.review=await rpc('review',[S.w.id]);S.dirty=false;render();return;}

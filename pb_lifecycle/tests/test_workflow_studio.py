@@ -859,3 +859,584 @@ class TestWorkflowStudio(TransactionCase):
         self.approval_route(w)
         self.service.activate(w.id, True)
         self.assertTrue(w.enabled)
+
+    # ------------------------------------------------------------------
+    # WORKFLOW-2 phase 2: the module contract, "already happens" and its
+    # double-up warnings, user-made stages, gates and the person a record
+    # is about.
+    # ------------------------------------------------------------------
+    CLAIM = 'pb.expense.claim'
+    # A user-visible sentence never names the framework, a model or a field.
+    BANNED = re.compile(r'odoo|\bhr\.|\bpb\.|\bres\.|\w+_id\b|\bstate\b|\bmodel\b', re.I)
+
+    def need(self, *models):
+        for model in models:
+            if model not in self.env:
+                self.skipTest('%s is not installed' % model)
+
+    def recruiter(self, admin=False):
+        groups = [self.env.ref('hr_recruitment.group_hr_recruitment_manager').id]
+        if admin:
+            groups.append(self.env.ref('pb_hiring.group_hiring_admin').id)
+        self.admin.write({'group_ids': [(4, g) for g in groups]})
+
+    def expense_access(self, *users):
+        group = self.env.ref('hr_expense.group_hr_expense_user')
+        for user in users or (self.admin,):
+            user.write({'group_ids': [(4, group.id)]})
+
+    def employee(self, name, user=None, **vals):
+        return self.env['hr.employee'].create(dict(
+            {'name': name, 'company_id': self.company.id, 'user_id': user.id if user else False}, **vals))
+
+    def claim(self, state='draft', employee=None, **vals):
+        """A claim at a status, moved the way the approval route moves it
+        (test fixture only; Studio code never does this)."""
+        record = self.env[self.CLAIM].create(dict(
+            {'employee_id': (employee or self.employee('WF2 P2 claimant')).id, 'company_id': self.company.id}, **vals))
+        path = {'draft': [], 'submitted': ['submitted'], 'approved': ['submitted', 'approved'],
+                'paid': ['submitted', 'approved', 'paid'], 'refused': ['submitted', 'refused']}[state]
+        for step in path:
+            record._chain_engine_write(step)
+        return record
+
+    def staged(self, model, sections, nodes, trigger='manual'):
+        """A workflow whose sections after "Start" are (name, bind or None)."""
+        w, d = self.workflow([], model=model, trigger=trigger)
+        d['stages'] = [{'name': 'Start'}] + [dict({'name': name}, **({'bind': bind} if bind else {}))
+                                             for name, bind in sections]
+        for node in nodes:
+            d['nodes'].append(node)
+            d['order'].append(node['id'])
+        return w, d
+
+    def user_stage(self, name, anchor='approved', model=None, workflow=None, **values):
+        model = self.CLAIM if model is None else model
+        catalogue = self.service.stage_create(model, workflow.id if workflow else None,
+                                              dict({'name': name, 'anchor_value': anchor if model else False}, **values))
+        key = next(s['key'] for s in catalogue['stages'] if s['kind'] == 'yours' and s['name'] == name)
+        return self.env['pb.workflow.stage'].browse(key)
+
+    def yours(self, stage):
+        return {'kind': 'yours', 'id': stage.id}
+
+    def core(self, value):
+        return {'kind': 'core', 'value': value}
+
+    def positions(self, model, record_id):
+        return self.env['pb.workflow.record.stage'].search([('res_model', '=', model), ('res_id', '=', record_id)])
+
+    def test_wf2p2_t1_contracts_load_in_plain_words(self):
+        self.need(self.CLAIM, 'hr.leave', 'pb.hiring')
+        self.recruiter()
+        expected = {self.CLAIM: {'refused'}, 'hr.leave': {'refuse', 'cancel'}}
+        for model in (self.CLAIM, 'hr.leave', 'hr.applicant'):
+            contract = self.service._contract(model)
+            self.assertEqual(contract['source'], 'declared', model)
+            self.assertTrue(contract['stages'], model)
+            for stage in contract['stages']:
+                self.assertTrue(stage['name'].strip(), stage)
+                self.assertTrue(stage['enters'].strip(), stage)
+            exits = [s['exit'] for s in contract['stages']]
+            self.assertEqual(exits, sorted(exits), 'exits come last')
+            found = {str(s['key']) for s in contract['stages'] if s['exit']}
+            if model in expected:
+                self.assertEqual(found, expected[model])
+            else:
+                self.assertIn('cv_reject', found)
+                self.assertNotIn('joined', found)
+            texts = [contract['label'], contract['area']] + [s['name'] for s in contract['stages']] + \
+                [s['enters'] for s in contract['stages']]
+            for row in self.service.existing_behaviour(model):
+                if row['source'] in ('area', 'approvals'):
+                    texts += [row['text'], row['owner'], row.get('detail', '')]
+            for spec in self.service._actions(model).values():
+                texts += [spec['label']] + [p.get('label', '') + ' ' + p.get('error', '') for p in spec.get('params', [])]
+            for text in texts:
+                self.assertFalse(self.BANNED.search(text or ''), '%s: %s' % (model, text))
+        self.assertEqual([s['key'] for s in self.service._contract(self.CLAIM)['stages']],
+                         ['draft', 'submitted', 'approved', 'paid', 'refused'])
+        self.assertTrue(self.service._contract('hr.leave')['submits_itself'])
+        meta = self.service.metadata(self.CLAIM)
+        self.assertTrue(meta['contract']['has_subject'])
+        self.assertEqual(meta['contract']['stage_field'], 'state')
+        self.assertTrue(meta['stage_catalogue']['stages'])
+        self.assertTrue(meta['record_stages'], 'the shipped key stays')
+
+    def test_wf2p2_t2_record_type_without_contract_is_discovered(self):
+        contract = self.service._contract(self.GENERIC)
+        self.assertEqual(contract['source'], 'discovered')
+        self.assertEqual(contract['stage_field'], 'state')
+        self.assertIn('draft', [s['key'] for s in contract['stages']])
+        self.assertTrue(all(not s['enters'] for s in contract['stages']))
+        partner = self.service._contract('res.partner')
+        self.assertEqual((partner['source'], partner['stages']), ('discovered', []))
+        catalogue = self.service.stage_catalogue(self.GENERIC)
+        self.assertTrue(catalogue['stages'])
+        self.assertTrue(all(s['kind'] == 'core' and s['locked'] for s in catalogue['stages']))
+        self.assertEqual(self.service._actions('res.partner'), {})
+
+    def test_wf2p2_t3_hiring_move_through_the_contract(self):
+        self.need('pb.hiring')
+        from unittest.mock import patch
+        self.recruiter()
+        Stage = self.env['hr.recruitment.stage']
+        screening, shortlist = Stage._pb_stage('screening'), Stage._pb_stage('shortlist')
+        applicant = self.env['hr.applicant'].create({'partner_name': 'WF2 P2 T3 candidate',
+                                                     'company_id': self.company.id, 'stage_id': screening.id})
+        move = {'id': 'move', 'type': 'action', 'title': 'Shortlist', 'stage': 0,
+                'action_key': 'hiring.stage', 'stage_key': 'shortlist'}
+        w, d = self.workflow([move], model='hr.applicant')
+        self.publish(w, d)
+        # Hiring's own rule dispatcher (the board's "enters a stage" hook).
+        Rule = type(self.env['pb.hiring.automation.rule'])
+        fired, real = [], Rule._fire
+
+        def spy(rules, event, *args, **kwargs):
+            fired.append(event)
+            return real(rules, event, *args, **kwargs)
+        with patch.object(Rule, '_fire', spy):
+            run = self.start(w, applicant)
+        self.assertEqual(run.state, 'done', run.step_ids.mapped('error'))
+        self.assertEqual(applicant.stage_id, shortlist)
+        self.assertEqual(fired.count('stage_entered'), 1)
+        self.assertEqual(run.step_ids.filtered(lambda s: s.key == 'move').state, 'done')
+        joined = dict(move, stage_key='joined')
+        w2, d2 = self.workflow([joined], model='hr.applicant')
+        self.assertIn('bad_hiring_stage', [i['code'] for i in self.service._validate(w2, d2)])
+        with self.assertRaises(UserError):
+            applicant.with_env(run._service().env)._workflow_execute('hiring.stage', {'stage_key': 'joined'})
+        choices = [o['key'] for o in self.service.metadata('hr.applicant')['actions']['hiring.stage']['params'][0]['options']]
+        self.assertIn('shortlist', choices)
+        self.assertNotIn('joined', choices)
+
+    def test_wf2p2_t4_shared_stage_rename_keeps_lock_revision_and_permission(self):
+        self.need('pb.hiring')
+        self.recruiter()
+        stage = self.env['hr.recruitment.stage'].search([('pb_key', '!=', False)], limit=1)
+        with self.assertRaises(AccessError):
+            self.service.stage_rename_shared('hr.applicant', stage.pb_key, 'Renamed', str(stage.write_date))
+        self.recruiter(admin=True)
+        count = self.env['hr.recruitment.stage'].search_count([])
+        catalogue = self.service.stage_rename_shared('hr.applicant', stage.pb_key, 'Contract renamed stage', str(stage.write_date))
+        self.assertEqual(stage.name, 'Contract renamed stage')
+        self.assertEqual(self.env['hr.recruitment.stage'].search_count([]), count)
+        self.assertIn('Contract renamed stage', [s['name'] for s in catalogue['stages']])
+        with self.assertRaises(UserError):
+            self.service.stage_rename_shared('hr.applicant', stage.pb_key, 'Stale edit', 'old')
+        with self.assertRaises(AccessError):
+            self.service.with_user(self.staff).stage_rename_shared('hr.applicant', stage.pb_key, 'No', str(stage.write_date))
+        self.need(self.CLAIM)
+        with self.assertRaises(UserError):
+            self.service.stage_rename_shared(self.CLAIM, 'draft', 'Not ours', '')
+
+    def test_wf2p2_t5_existing_behaviour_for_leave_and_expense(self):
+        self.need(self.CLAIM, 'hr.leave')
+        area = [e for e in self.service.existing_behaviour('hr.leave') if e['source'] == 'area']
+        shapes = {(e['stage'], e['kind'], e['audience']) for e in area}
+        for shape in (('confirm', 'todo', 'approver'), ('validate', 'message', 'requester'),
+                      ('refuse', 'message', 'requester'), ('validate', 'change', 'requester')):
+            self.assertIn(shape, shapes)
+        process = self.env['biz.approval.process']._by_key('expense')
+        self.approval_route(process=process)
+        rows = [e for e in self.service.existing_behaviour(self.CLAIM) if e['source'] == 'approvals']
+        route = next(e for e in rows if e['kind'] == 'change')
+        self.assertEqual(route['stage'], 'submitted')
+        self.assertIn('Workflow test approval route', route['text'])
+        self.assertIn(self.staff.name, route['text'])
+        self.assertTrue(route.get('detail'))
+        self.assertEqual((route['settings'] or {}).get('action'), 'pb_approval_config.action_pb_approval_matrix')
+        shapes = {(e['stage'], e['kind'], e['audience']) for e in rows}
+        for shape in (('submitted', 'message', 'approver'), ('submitted', 'reminder', 'approver'),
+                      ('approved', 'message', 'requester'), ('draft', 'message', 'requester'),
+                      ('refused', 'message', 'requester')):
+            self.assertIn(shape, shapes)
+        self.env['biz.approval.binding'].search([('company_id', '=', self.company.id),
+                                                 ('process_id', '=', process.id)]).write({'active': False})
+        rows = [e for e in self.service.existing_behaviour(self.CLAIM) if e['source'] == 'approvals']
+        self.assertEqual([e['text'] for e in rows], ['No approval route is set up for this yet.'])
+
+    def test_wf2p2_t6_hiring_rules_are_listed_while_switched_on(self):
+        self.need('pb.hiring')
+        self.recruiter()
+        shortlist = self.env['hr.recruitment.stage']._pb_stage('shortlist')
+        rule = self.env['pb.hiring.automation.rule'].create({
+            'company_id': self.company.id, 'event': 'stage_entered', 'stage_id': shortlist.id,
+            'action': 'todo', 'recipient': 'recruiter', 'todo_text': 'WF2 P2 first look'})
+        ref = 'hiring_rule:%s' % rule.id
+        hit = [e for e in self.service.existing_behaviour('hr.applicant') if e.get('ref') == ref]
+        self.assertEqual(len(hit), 1)
+        self.assertEqual((hit[0]['stage'], hit[0]['kind'], hit[0]['source']), ('shortlist', 'todo', 'area'))
+        self.assertIn('WF2 P2 first look', hit[0]['text'])
+        rule.active = False
+        self.assertFalse([e for e in self.service.existing_behaviour('hr.applicant') if e.get('ref') == ref])
+
+    def test_wf2p2_t7_studio_rules_are_not_existing_automation(self):
+        first, d1 = self.workflow([self.todo('do')], model='res.partner', trigger='created')
+        self.publish(first, d1)
+        generated = first.automation_id
+        self.assertTrue(generated)
+        second, d2 = self.workflow([self.todo('do')], model='res.partner', trigger='created')
+        self.service.save_draft(second.id, second.revision, d2)
+        review = self.service.review(second.id)
+        self.assertNotIn(generated.id, [a['id'] for a in review['automations']])
+        self.assertIn(first.id, [w['id'] for w in review['other_workflows']])
+        self.assertNotIn(generated.id, [a['id'] for a in self.service.metadata('res.partner')['automations']])
+        rows = self.service.existing_behaviour('res.partner')
+        self.assertNotIn('rule:%s' % generated.id, [e.get('ref') for e in rows])
+        self.assertTrue(any(e['source'] == 'workflow' and (e['settings'] or {}).get('workflow_id') == first.id for e in rows))
+
+    def test_wf2p2_t8_repeat_warning_and_same_path_templates(self):
+        self.need('hr.leave')
+        template = self.env['mail.template'].create({
+            'name': 'WF2 leave note', 'model_id': self.env['ir.model']._get_id('hr.leave'),
+            'subject': 'Leave', 'body_html': '<p>Leave</p>'})
+        tell = {'id': 'tell', 'type': 'email', 'title': 'Tell them', 'stage': 1,
+                'template_id': template.id, 'purpose': 'A friendly extra note'}
+        w, d = self.staged('hr.leave', [('Approved', self.core('validate'))], [tell])
+        issues = self.service._validate(w, d)
+        warnings = [i for i in issues if i['code'] == 'repeats_existing']
+        self.assertEqual(len(warnings), 1, issues)
+        self.assertEqual((warnings[0]['id'], warnings[0]['severity'], warnings[0]['acknowledged']), ('tell', 'warning', False))
+        self.assertIn('Time off', warnings[0]['text'])
+        self.assertFalse([i for i in issues if i['severity'] == 'error'], issues)
+        self.service.save_draft(w.id, w.revision, d)
+        self.assertEqual(self.service.review(w.id)['blocking'], 1)
+        with self.assertRaises(UserError) as caught:
+            self.service.publish(w.id, w.revision)
+        self.assertIn('already does this here', str(caught.exception))
+        d['nodes'][1]['ack_repeat'] = True
+        self.service.save_draft(w.id, w.revision, d)
+        review = self.service.review(w.id)
+        self.assertEqual(review['blocking'], 0)
+        self.assertTrue(next(i for i in review['issues'] if i['code'] == 'repeats_existing')['acknowledged'])
+        self.service.publish(w.id, w.revision)
+        self.assertTrue(w.published_id)
+        # The same message on two exclusive paths is fine; twice on one path is not.
+        message = self.env['mail.template'].create({
+            'name': 'WF2 partner note', 'model_id': self.env['ir.model']._get_id('res.partner'),
+            'subject': 'Hi', 'body_html': '<p>Hi</p>'})
+        mail = lambda ident: {'id': ident, 'type': 'email', 'title': ident, 'stage': 0,
+                              'template_id': message.id, 'purpose': 'Extra'}
+        pick = {'id': 'pick', 'type': 'branch', 'title': 'Pick', 'stage': 0, 'branches': [
+            {'id': 'p_a', 'label': 'Named', 'condition': self.rule('name', 'X'), 'steps': ['a']},
+            {'id': 'p_b', 'label': 'Otherwise', 'steps': ['b']}]}
+        wb, db = self.workflow([pick], model='res.partner')
+        db['nodes'] += [mail('a'), mail('b')]
+        self.assertNotIn('duplicate_email', [i['code'] for i in self.service._validate(wb, db)])
+        ws, ds = self.workflow([mail('a'), mail('b')], model='res.partner')
+        self.assertIn('duplicate_email', [i['code'] for i in self.service._validate(ws, ds)])
+        both = {'id': 'both', 'type': 'parallel', 'title': 'Both', 'stage': 0, 'join': 'all', 'branches': [
+            {'id': 'q_a', 'label': 'One', 'steps': ['a']}, {'id': 'q_b', 'label': 'Two', 'steps': ['b']}]}
+        wp, dp = self.workflow([both], model='res.partner')
+        dp['nodes'] += [mail('a'), mail('b')]
+        self.assertIn('duplicate_email', [i['code'] for i in self.service._validate(wp, dp)])
+
+    def test_wf2p2_t9_user_made_stages_lifecycle_permission_and_company(self):
+        self.need(self.CLAIM)
+        stage = self.user_stage('Payment scheduled')
+        catalogue = self.service.stage_catalogue(self.CLAIM)
+        order = [s['key'] for s in catalogue['stages']]
+        self.assertEqual(order, ['draft', 'submitted', 'approved', stage.id, 'paid', 'refused'])
+        row = next(s for s in catalogue['stages'] if s['kind'] == 'yours')
+        self.assertEqual((row['counts_as'], row['count'], row['locked']), ('Approved', 0, False))
+        self.assertTrue(row['enters'])
+        self.service.stage_update(stage.id, {'name': 'Payment booked', 'target_hours': 24})
+        self.assertEqual((stage.name, stage.target_hours), ('Payment booked', 24))
+        catalogue = self.service.stage_reorder(self.CLAIM, None, ['draft', 'submitted', stage.id, 'approved', 'paid'])
+        self.assertEqual(stage.anchor_value, 'submitted')
+        with self.assertRaises(UserError):
+            self.service.stage_reorder(self.CLAIM, None, ['submitted', 'draft', stage.id, 'approved', 'paid'])
+        self.service.stage_reorder(self.CLAIM, None, ['draft', 'submitted', 'approved', stage.id, 'paid'])
+        with self.assertRaises(UserError):
+            self.service.stage_create(self.CLAIM, None, {'name': 'After refusal', 'anchor_value': 'refused'})
+        with self.assertRaises(UserError):
+            self.service.stage_create(self.CLAIM, None, {'name': 'Payment booked', 'anchor_value': 'approved'})
+        with self.assertRaises(AccessError):
+            self.service.with_user(self.staff).stage_create(self.CLAIM, None, {'name': 'Mine', 'anchor_value': 'approved'})
+        with self.assertRaises(AccessError):
+            stage.with_user(self.admin).write({'name': 'Direct'})
+        # Not removable while a record is in it, nor while a workflow waits for it.
+        claim = self.claim('approved')
+        self.service._set_position(self.CLAIM, claim.id, stage, self.company)
+        with self.assertRaises(UserError):
+            self.service.stage_delete(stage.id)
+        claim._chain_engine_write('paid')
+        w, d = self.staged(self.CLAIM, [('Booked', self.yours(stage))], [self.todo('pay', stage=1)])
+        self.publish(w, d)
+        with self.assertRaises(UserError) as caught:
+            self.service.stage_delete(stage.id)
+        self.assertIn(w.name, str(caught.exception))
+        self.service.activate(w.id, False)
+        self.service.stage_delete(stage.id)
+        self.assertFalse(stage.active)
+        # Another company neither sees nor uses it.
+        kept = self.user_stage('Kept here')
+        other = self.env['res.company'].create({'name': 'WF2 P2 other company'})
+        self.admin.write({'company_ids': [(4, other.id)]})
+        elsewhere = self.service.with_company(other)
+        with self.assertRaises(AccessError):
+            elsewhere.stage_update(kept.id, {'name': 'Taken over'})
+        self.assertNotIn(kept.id, [s['key'] for s in elsewhere.stage_catalogue(self.CLAIM)['stages']])
+        self.assertFalse(self.env['pb.workflow.stage'].with_user(self.admin).with_context(
+            allowed_company_ids=[other.id]).search([('id', '=', kept.id)]))
+
+    def test_wf2p2_t10_section_bindings_are_checked_by_code(self):
+        self.need(self.CLAIM)
+        stage = self.user_stage('Payment scheduled')
+
+        def codes(sections):
+            w, d = self.staged(self.CLAIM, sections, [])
+            return [i['code'] for i in self.service._validate(w, d)]
+        self.assertIn('bind_unknown', codes([('Nowhere', self.core('nope'))]))
+        self.assertIn('bind_unknown', codes([('Gone', {'kind': 'yours', 'id': 999999999})]))
+        self.assertIn('bind_unknown', codes([('Bad', 'approved')]))
+        self.assertIn('bind_exit', codes([('Refused', self.core('refused'))]))
+        self.assertIn('bind_order', codes([('Approved', self.core('approved')), ('Waiting', self.core('submitted'))]))
+        self.assertIn('bind_order', codes([('Scheduled', self.yours(stage)), ('Approved', self.core('approved'))]))
+        self.assertIn('bind_duplicate', codes([('A', self.core('approved')), ('B', self.core('approved'))]))
+        self.assertEqual(codes([('Heading', None), ('Approved', self.core('approved')), ('Another heading', None),
+                                ('Scheduled', self.yours(stage)), ('Paid', self.core('paid'))]), [])
+        w, d = self.staged('', [('Wrong', self.core('approved'))], [])
+        self.assertIn('bind_unknown', [i['code'] for i in self.service._validate(w, d)])
+
+    def test_wf2p2_t11_core_gate_waits_proceeds_and_stops(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        w, d = self.staged(self.CLAIM, [('Waiting approval', self.core('submitted'))], [self.todo('check', stage=1)])
+        self.publish(w, d)
+        claim = self.claim('draft')
+        run = self.start(w, claim)
+        check = run.step_ids.filtered(lambda s: s.key == 'check')
+        self.assertEqual((run.state, check.state), ('waiting', 'pending'))
+        self.assertEqual(run.gate.get('section'), 1)
+        self.assertIn('Waiting for this to reach', self.service.progress(run.id)['gate']['reason'])
+        self.service._cron_workflows()
+        self.service._cron_workflows()
+        self.assertEqual(len(run.log_ids.filtered(lambda l: 'Waiting for this to reach' in l.message)), 1)
+        claim._chain_engine_write('submitted')
+        self.service._cron_workflows()
+        self.assertEqual(check.state, 'waiting', check.error)
+        early = self.start(w, self.claim('approved'))
+        self.assertEqual(early.step_ids.filtered(lambda s: s.key == 'check').state, 'waiting')
+        w2, d2 = self.staged(self.CLAIM, [('Approved', self.core('approved'))], [self.todo('pay', stage=1)])
+        self.publish(w2, d2)
+        pending = self.claim('submitted')
+        stopped = self.start(w2, pending)
+        self.assertEqual(stopped.state, 'waiting')
+        pending._chain_engine_write('refused')
+        self.service._cron_workflows()
+        self.assertEqual(stopped.state, 'cancelled')
+        self.assertTrue(any('Stopped: the record is now' in l.message for l in stopped.log_ids))
+        self.assertEqual(pending.state, 'refused')
+
+    def test_wf2p2_t12_auto_stage_writes_only_its_own_position(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        stage = self.user_stage('Payment scheduled')
+        w, d = self.staged(self.CLAIM, [('Scheduled', self.yours(stage))], [self.todo('pay', stage=1)])
+        self.publish(w, d)
+        claim = self.claim('approved')
+        run = self.start(w, claim)
+        self.assertEqual(run.step_ids.filtered(lambda s: s.key == 'pay').state, 'waiting')
+        self.assertEqual(self.positions(self.CLAIM, claim.id).stage_id, stage)
+        current = self.service.record_stage(self.CLAIM, claim.id)['current']
+        self.assertEqual((current['kind'], current['key']), ('yours', stage.id))
+        self.assertEqual(claim.state, 'approved')
+        self.assertTrue(run.log_ids.filtered(lambda l: l.stage_id == stage))
+        # No workflow code writes a record's status: Studio's files and the
+        # three areas' contract files (P1's guard, extended).
+        from odoo.modules.module import get_module_path
+        files = [os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', name)
+                 for name in ('workflow_contract.py', 'workflow_stage.py', 'workflow_models.py', 'workflow_studio.py',
+                              'workflow_progress.py', 'workflow_record_context.py')]
+        for module in ('pb_me_expense', 'pb_timeoff', 'pb_hiring'):
+            path = get_module_path(module)
+            if path:
+                files.append(os.path.join(path, 'models', 'workflow_contract.py'))
+        offenders = []
+        for path in files:
+            text = open(path, encoding='utf-8').read()
+            text = re.sub(r'\n    def _execute_action\(.*?(?=\n    (?:@|def ))', '\n', text, flags=re.S)
+            for number, line in enumerate(text.splitlines(), 1):
+                if re.search(r'\b(source|record|records|rec|self)\b\.(state|stage_id)\s*=[^=]', line) or \
+                        re.search(r'\b(source|record|records|rec)\b(\.\w+\([^)]*\))*\.write\(', line) or \
+                        re.search(r'_chain_(engine|state)_write|_advance_state\(|action_approve\(|action_refuse\(', line):
+                    offenders.append('%s:%s %s' % (os.path.basename(path), number, line.strip()))
+        self.assertEqual(offenders, [])
+
+    def test_wf2p2_t13_person_stage_right_person_designer_and_status(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        owner = self.staff
+        stage = self.user_stage('Ready to pay', enter='person', enter_owner={'kind': 'user', 'id': owner.id})
+        w, d = self.staged(self.CLAIM, [('Ready', self.yours(stage))], [self.todo('pay', stage=1)])
+        self.publish(w, d)
+        claim = self.claim('approved', employee=self.employee('WF2 T13 claimant', user=owner))
+        run = self.start(w, claim)
+        pay = run.step_ids.filtered(lambda s: s.key == 'pay')
+        self.assertEqual((run.state, pay.state), ('waiting', 'pending'))
+        self.assertIn(owner.name, run.gate['reason'])
+        wrong = self.person('Workflow T13 wrong', ['base.group_user'])
+        self.expense_access(wrong)
+        with self.assertRaises(AccessError):
+            self.service.with_user(wrong).move_record_stage(self.CLAIM, claim.id, stage.id)
+        self.assertFalse(self.positions(self.CLAIM, claim.id))
+        result = self.service.with_user(owner).move_record_stage(self.CLAIM, claim.id, stage.id)
+        self.assertEqual((result['current']['key'], result['current']['by']), (stage.id, owner.name))
+        self.assertEqual(pay.state, 'waiting', pay.error)
+        designer = self.person('Workflow T13 designer', ['base.group_user', 'pb_lifecycle.group_workflow_designer'])
+        self.expense_access(designer)
+        other = self.claim('approved')
+        self.service.with_user(designer).move_record_stage(self.CLAIM, other.id, stage.id)
+        self.assertEqual(self.positions(self.CLAIM, other.id).stage_id, stage)
+        early = self.claim('submitted')
+        with self.assertRaises(UserError):
+            self.service.move_record_stage(self.CLAIM, early.id, stage.id)
+        auto = self.user_stage('Booked automatically')
+        with self.assertRaises(UserError):
+            self.service.move_record_stage(self.CLAIM, self.claim('approved').id, auto.id)
+
+    def test_wf2p2_t14_rule_stage_waits_until_the_rule_is_true(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        stage = self.user_stage('Noted', enter='rule', enter_rule={'match': 'all', 'rules': [{'field': 'note', 'op': 'set'}]})
+        with self.assertRaises(UserError):
+            self.user_stage('Broken rule', enter='rule', enter_rule={'match': 'all', 'rules': [{'field': 'no_such_field', 'op': 'set'}]})
+        w, d = self.staged(self.CLAIM, [('Noted', self.yours(stage))], [self.todo('after', stage=1)])
+        self.publish(w, d)
+        claim = self.claim('approved')
+        run = self.start(w, claim)
+        after = run.step_ids.filtered(lambda s: s.key == 'after')
+        self.assertEqual(after.state, 'pending')
+        self.service._cron_workflows()
+        self.assertEqual(after.state, 'pending')
+        self.assertFalse(self.positions(self.CLAIM, claim.id))
+        claim.note = 'Paid by bank transfer'
+        self.service._cron_workflows()
+        self.assertEqual(after.state, 'waiting', after.error)
+        self.assertEqual(self.positions(self.CLAIM, claim.id).stage_id, stage)
+
+    def test_wf2p2_t15_position_is_dropped_when_the_status_moves_on(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        stage = self.user_stage('Payment scheduled')
+        w, d = self.staged(self.CLAIM, [('Scheduled', self.yours(stage))], [self.todo('pay', stage=1)])
+        self.publish(w, d)
+        claim = self.claim('approved')
+        run = self.start(w, claim)
+        self.assertEqual(len(self.positions(self.CLAIM, claim.id)), 1)
+        claim._chain_engine_write('paid')
+        current = self.service.record_stage(self.CLAIM, claim.id)['current']
+        self.assertEqual((current['kind'], current['key']), ('core', 'paid'))
+        self.assertFalse(self.positions(self.CLAIM, claim.id))
+        self.assertTrue(any('moved on' in l.message for l in run.log_ids))
+
+    def test_wf2p2_t16_record_stage_track_never_invents_history(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        stage = self.user_stage('Payment scheduled')
+        w, d = self.staged(self.CLAIM, [('Scheduled', self.yours(stage))], [self.todo('pay', stage=1)])
+        self.publish(w, d)
+        track = lambda claim: [(r['key'], r['state']) for r in self.service.record_stage(self.CLAIM, claim.id)['track']]
+        entered = self.claim('approved')
+        self.start(w, entered)
+        self.assertEqual(track(entered), [('draft', 'done'), ('submitted', 'done'), ('approved', 'done'),
+                                          (stage.id, 'here'), ('paid', 'later')])
+        data = self.service.record_stage(self.CLAIM, entered.id)
+        self.assertEqual(([e['key'] for e in data['exits']], data['exits'][0]['here'], data['approval_at']),
+                         (['refused'], False, 'submitted'))
+        entered._chain_engine_write('paid')
+        self.assertEqual(track(entered)[3:], [(stage.id, 'done'), ('paid', 'here')])
+        skipped = self.claim('paid')
+        self.assertEqual(track(skipped)[3:], [(stage.id, 'passed'), ('paid', 'here')])
+        refused = self.claim('refused')
+        data = self.service.record_stage(self.CLAIM, refused.id)
+        self.assertEqual({r['state'] for r in data['track']}, {'stopped'})
+        self.assertEqual([e['here'] for e in data['exits']], [True])
+        self.assertTrue(data['current']['exit'])
+        self.need('hr.leave')
+        leave_track = self.service._contract('hr.leave')['stages']
+        self.assertTrue(next(s for s in leave_track if s['key'] == 'validate1')['optional'])
+
+    def test_wf2p2_t17_subject_owner_and_the_areas_own_manager(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        line_user = self.person('Workflow T17 line manager', ['base.group_user'])
+        expense_user = self.person('Workflow T17 expense approver', ['base.group_user'])
+        self.expense_access(line_user, expense_user)
+        line = self.employee('WF2 T17 line', user=line_user)
+        claimant = self.employee('WF2 T17 claimant', user=self.staff, parent_id=line.id, expense_manager_id=expense_user.id)
+        w, d = self.workflow([self.todo('boss', owner={'kind': 'manager'}), self.todo('mine', owner={'kind': 'subject'})], model=self.CLAIM)
+        self.publish(w, d)
+        run = self.start(w, self.claim(employee=claimant))
+        boss = run.step_ids.filtered(lambda s: s.key == 'boss')
+        self.assertEqual(boss.assignee_id, expense_user, boss.error)
+        self.service.with_user(expense_user).answer(boss.id, {})
+        mine = run.step_ids.filtered(lambda s: s.key == 'mine')
+        self.assertEqual((mine.state, mine.assignee_id), ('waiting', self.staff), mine.error)
+        no_expense_approver = self.employee('WF2 T17 second', parent_id=line.id)
+        run2 = self.start(w, self.claim(employee=no_expense_approver))
+        self.assertEqual(run2.step_ids.filtered(lambda s: s.key == 'boss').assignee_id, line_user)
+        w3, d3 = self.workflow([self.todo('mine', owner={'kind': 'subject'})], model=self.CLAIM)
+        self.publish(w3, d3)
+        nobody = self.employee('WF2 T17 no login')
+        step = self.start(w3, self.claim(employee=nobody)).step_ids.filtered(lambda s: s.key == 'mine')
+        self.assertEqual(step.state, 'failed')
+        self.assertEqual(step.error, 'WF2 T17 no login has no staff login yet, so this task cannot be given to them.')
+        w4, d4 = self.workflow([self.todo('mine', owner={'kind': 'subject'})], model='res.partner')
+        self.assertIn('subject_not_available', [i['code'] for i in self.service._validate(w4, d4)])
+
+    def test_wf2p2_t18_date_start_is_recorded_as_the_person_it_is_about(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        w, d = self.workflow([self.todo('do')], model=self.CLAIM, trigger='date')
+        d['trigger'].update(date_field='submitted_on', delay=1, unit='day', mode='after')
+        self.publish(w, d)
+        self.assertEqual(w.automation_id.trigger, 'on_time')
+        system_service = self.env['pb.workflow.studio'].with_user(SUPERUSER_ID).with_company(self.company)
+        events = lambda claim: self.env['pb.workflow.event'].search([('workflow_id', '=', w.id), ('source_id', '=', claim.id)])
+        theirs = self.claim('submitted', employee=self.employee('WF2 T18 claimant', user=self.staff))
+        system_service._capture(w.id, theirs)
+        self.assertEqual(events(theirs).initiator_id, self.staff)
+        nobody = self.claim('submitted', employee=self.employee('WF2 T18 no login'))
+        system_service._capture(w.id, nobody)
+        self.assertEqual(events(nobody).initiator_id.id, SUPERUSER_ID)
+        person = self.claim('submitted', employee=self.employee('WF2 T18 by a person', user=self.person('Workflow T18 owner', ['base.group_user'])))
+        self.service._capture(w.id, person)
+        self.assertEqual(events(person).initiator_id, self.admin)
+
+    def test_wf2p2_t19_new_process_stages_live_on_the_run(self):
+        w, d = self.staged('', [], [])
+        checked = self.user_stage('Checked', model='', workflow=w)
+        signed = self.user_stage('Signed off', model='', workflow=w, enter='person',
+                                 enter_owner={'kind': 'user', 'id': self.staff.id})
+        d['stages'] += [{'name': 'Checked', 'bind': self.yours(checked)}, {'name': 'Signed off', 'bind': self.yours(signed)}]
+        for node in (self.todo('check', stage=1, owner={'kind': 'user', 'id': self.staff.id}), self.todo('close', stage=2)):
+            d['nodes'].append(node)
+            d['order'].append(node['id'])
+        self.publish(w, d)
+        run = self.start(w)
+        steps = {s.key: s for s in run.step_ids}
+        self.assertEqual(steps['check'].state, 'waiting', steps['check'].error)
+        self.assertEqual(self.positions('pb.workflow.run', run.id).stage_id, checked)
+        staff = self.service.with_user(self.staff)
+        staff.answer(steps['check'].id, {})
+        self.assertEqual((run.state, steps['close'].state), ('waiting', 'pending'))
+        result = staff.move_record_stage('pb.workflow.run', run.id, signed.id)
+        self.assertEqual(result['current']['key'], signed.id)
+        self.assertEqual([r['state'] for r in result['track']], ['done', 'here'])
+        self.assertEqual(steps['close'].state, 'waiting', steps['close'].error)
+        self.service.answer(steps['close'].id, {})
+        self.assertEqual(run.state, 'done')
+
+    def test_wf2p2_t20_paused_route_blocks_activation_of_a_new_process(self):
+        w, d = self.workflow([{'id': 'approval', 'type': 'matrix', 'title': 'Sign off', 'stage': 0}])
+        self.publish(w, d, False)
+        self.approval_route(w)
+        self.env['biz.approval.binding'].search([('company_id', '=', self.company.id), ('process_id', '=', w.process_id.id),
+                                                 ('active', '=', True)]).write({'mode': 'paused'})
+        with self.assertRaises(UserError) as caught:
+            self.service.activate(w.id, True)
+        self.assertIn('The approval route for this is paused', str(caught.exception))
+        self.assertFalse(w.enabled)

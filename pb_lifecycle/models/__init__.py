@@ -16,3 +16,6 @@ from . import workflow_studio
 from . import workflow_progress
 from . import workflow_configuration
 from . import workflow_record_context
+# WORKFLOW-2 P2: the module contract ("already happens") and user-made stages.
+from . import workflow_contract
+from . import workflow_stage

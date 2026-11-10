@@ -260,6 +260,10 @@ class WorkflowRun(models.Model):
     source_approval_id = fields.Many2one('biz.approval.request', ondelete='restrict')
     ended_at = fields.Datetime()
     checked_at = fields.Datetime(default=fields.Datetime.now, index=True)
+    # WF2 P2: sections bound to a stage this run has already been let into
+    # (`passed`), and where it waits now (`section`, `reason`). Only gates
+    # are kept here; steps store nothing new.
+    gate = fields.Json(default=dict)
 
     def _lock(self):
         self.ensure_one()
@@ -402,8 +406,55 @@ class WorkflowRun(models.Model):
                 internal(s).write({'state': 'failed', 'error': str(exc)[:1000], 'attempts': s.attempts+1})
                 self._log(_('Needs attention: %s', str(exc)[:400]), s)
             return s.state == 'done'
-        complete = sequence(d['order'])
-        state = 'done' if complete else 'failed' if any(s.state == 'failed' for s in steps.values()) else 'waiting'
+        bound = [i for i, s in enumerate(d['stages']) if isinstance(s, dict) and s.get('bind')]
+        gate = dict(self.gate or {})
+        passed = set(gate.get('passed') or [])
+        outcome = {}
+        def enter(upto):
+            """Let the run into every bound section up to `upto` (WF2 P2).
+
+            A section bound to a stage waits for the record to be there; once
+            let in, a section is never asked again, so a record moving on
+            while its work is under way does not stop that work."""
+            for i in bound:
+                if i > upto or i in passed:
+                    continue
+                try:
+                    verdict, text = self._service()._gate(self, i, d)
+                except (AccessError, UserError) as exc:
+                    verdict, text = 'problem', str(exc)[:400]
+                if verdict == 'pass':
+                    passed.add(i)
+                    continue
+                outcome.update(verdict=verdict, section=i, reason=text)
+                return False
+            return True
+        def main():
+            for key in d['order']:
+                if bound and not enter(steps[key].config['stage']):
+                    return False
+                if not sequence([key]):
+                    return False
+            return enter(len(d['stages'])) if bound else True
+        complete = main()
+        if bound:
+            fresh = {'passed': sorted(passed)}
+            if outcome.get('verdict') in ('wait', 'problem'):
+                fresh.update(section=outcome['section'], reason=outcome['reason'])
+            if fresh != gate:
+                internal(self).write({'gate': fresh})
+                # History notes a gate once per change, never every minute (G6).
+                if fresh.get('reason') and fresh.get('reason') != gate.get('reason'):
+                    self._log(outcome['reason'] if outcome['verdict'] == 'wait' else
+                              _('Needs attention: %s', outcome['reason']))
+        if outcome.get('verdict') == 'closed':
+            for s in steps.values():
+                s._cancel_activity()
+            internal(self).write({'state': 'cancelled', 'ended_at': fields.Datetime.now()})
+            self._log(_('Stopped: the record is now %s.', outcome['reason']))
+            return
+        state = 'done' if complete else 'failed' if outcome.get('verdict') == 'problem' or any(
+            s.state == 'failed' for s in steps.values()) else 'waiting'
         internal(self).write({'state': state, 'ended_at': fields.Datetime.now() if complete else False})
         if complete:
             self._log(_('Workflow finished.'))
@@ -633,6 +684,9 @@ class WorkflowLog(models.Model):
     step_key = fields.Char()
     message = fields.Char(required=True)
     actor_id = fields.Many2one('res.users', required=True)
+    # WF2 P2: set on "moved into a user-made stage" rows, so a record's stage
+    # track can say a stage was really entered (never invented).
+    stage_id = fields.Many2one('pb.workflow.stage', ondelete='set null', index=True)
 
     def write(self, vals):
         raise UserError(_('Workflow history cannot be changed.'))

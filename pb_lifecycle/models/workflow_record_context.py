@@ -38,6 +38,18 @@ class WorkflowRecordContext(models.AbstractModel):
                 options = [{'key': value, 'name': label} for value, label in info['selection']]
                 # Conditional statusbars can differ. Do not guess which applies.
                 shown = variants[0] if all(v == variants[0] for v in variants) else []
+            elif hasattr(obj, '_workflow_stage_options') and self._declared(model).get('stage_field') == key:
+                # Stages that are rows the module owns (Hiring): the module
+                # says which apply to this record and who may rename them.
+                if current:
+                    current.check_access('read')
+                design = self._can_design()
+                options = [{'key': s['id'], 'name': s['name'],
+                            'can_rename': bool(design and s.get('renamable')),
+                            'revision': s.get('revision') if design and s.get('renamable') else None}
+                           for s in obj._workflow_stage_options(record) if s.get('id')]
+                current = current.id if current else None
+                shown = []
             else:
                 stages = self.env[info['relation']]
                 if not stages.has_access('read'):
@@ -45,18 +57,12 @@ class WorkflowRecordContext(models.AbstractModel):
                 domain = []
                 if 'company_id' in stages._fields:
                     domain += [('company_id', 'in', [False, self.env.company.id])]
-                # Native recruiting stages may belong to particular jobs.
-                if model == 'hr.applicant' and key == 'stage_id' and record is not None:
-                    domain += ['|', ('job_ids', '=', False), ('job_ids', 'in', record.job_id.ids)]
                 available = stages.search(domain, limit=100)
                 if current:
                     current.check_access('read')
                     available |= current
-                hiring = model == 'hr.applicant' and key == 'stage_id' and 'pb.hiring' in self.env
-                rename = hiring and self._can_design() and self.env['pb.hiring']._can_write()
                 options = [{'key': s.id, 'name': s.display_name,
-                            'can_rename': bool(rename and s.pb_key),
-                            'revision': str(s.write_date) if rename else None} for s in available]
+                            'can_rename': False, 'revision': None} for s in available]
                 current = current.id if current else None
                 shown = []
             waiting = spec.get('submit_state') if spec and spec.get('state_field', 'state') == key else None
@@ -68,19 +74,12 @@ class WorkflowRecordContext(models.AbstractModel):
 
     @api.model
     def rename_record_stage(self, workflow_id, field, stage_id, name, revision):
+        """Kept for the shipped Stages dialog: an alias of
+        `stage_rename_shared`, which asks the module that owns the stages."""
         w = self._workflow(workflow_id)
-        if w.source_model != 'hr.applicant' or field != 'stage_id' or 'pb.hiring' not in self.env:
+        if not w.source_model or field != self._declared(w.source_model).get('stage_field'):
             raise UserError(_('Manage these stages through the module that owns them.'))
-        self.env['pb.hiring']._require_write()
-        stage = self.env['hr.recruitment.stage'].browse(int(stage_id)).exists()
-        if not stage:
-            raise UserError(_('This stage no longer exists.'))
-        stage.check_access('read')
-        self.env.cr.execute('SELECT id FROM hr_recruitment_stage WHERE id=%s FOR UPDATE', [stage.id])
-        stage.invalidate_recordset()
-        if str(stage.write_date) != revision:
-            raise UserError(_('This stage changed. Reopen Stages before editing it.'))
-        self.env['pb.hiring'].act('stage_rename', {'stage_id': stage.id, 'name': str(name or '')})
+        self.stage_rename_shared(w.source_model, stage_id, name, revision)
         return self.metadata(w.source_model, w.id)
 
     @api.model

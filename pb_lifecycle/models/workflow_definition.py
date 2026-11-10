@@ -367,7 +367,7 @@ def _validate(d, source_fields=None, actions=None):
                     error(key, 'wait_condition_misplaced', 'Only a wait step can wait for a condition.')
             if kind in ('task', 'input'):
                 owner = n.get('owner', {})
-                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user', 'role', 'manager', 'field') or (
+                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user', 'role', 'manager', 'field', 'subject') or (
                         owner.get('kind') == 'user' and type(owner.get('id')) is not int):
                     error(key, 'missing_owner', 'Choose who does this step.')
                 if type(n.get('due', 2)) is not int or not 1 <= n.get('due', 2) <= 365:

@@ -31,25 +31,58 @@ class WorkflowProgress(models.AbstractModel):
             return owner.get('id')
         if kind == 'initiator':
             return run.initiator_id.id
-        source = run._source()
+        return self._resolve_owner_on(run._source(), run.company_id, owner, run.initiator_id)
+
+    def _subject(self, source):
+        """Who the record is about, by the module's own rule (WF2 P2), or {}."""
+        if source is None or not hasattr(source, '_workflow_subject'):
+            return {}
+        return source.sudo()._workflow_subject() or {}
+
+    def _resolve_owner_on(self, source, company, owner, initiator=None):
+        """An owner rule that needs the record, without a run (also used to
+        check who may move a record into a user-made stage)."""
+        kind = owner.get('kind')
+        if kind == 'user':
+            return owner.get('id')
+        if kind == 'initiator':
+            if not initiator:
+                raise UserError(_('Choose who does this step.'))
+            return initiator.id
         if kind == 'field':
-            field = next((f for f in self._source_fields(run.source_model) if f['key'] == owner.get('field')), {})
+            field = next((f for f in self._source_fields(source._name) if f['key'] == owner.get('field')), {})
             if field.get('type') != 'many2one' or field.get('relation') != 'res.users':
                 raise UserError(_('Choose an available person field on this record.'))
             return source[owner['field']].id
+        if kind == 'subject':
+            subject = self._subject(source)
+            if not hasattr(source, '_workflow_subject'):
+                raise UserError(_('This kind of record does not say who it is about. Choose someone else.'))
+            # Not `user`: `_()` reads a local of that name (ledger G12).
+            login = subject.get('user') or self.env['res.users']
+            employee = subject.get('employee') or self.env['hr.employee']
+            if not login or not login.active or login.share:
+                name = employee[:1].name or login[:1].name or _('The person this is about')
+                raise UserError(_('%s has no staff login yet, so this task cannot be given to them.', name))
+            return login[:1].id
         if kind == 'manager':
-            employee = source if source._name == 'hr.employee' else source.employee_id if 'employee_id' in source._fields else self.env['hr.employee'].search([
-                ('user_id', '=', run.initiator_id.id), ('company_id', '=', run.company_id.id)], limit=1)
-            manager = employee.parent_id.user_id if employee else None
+            if hasattr(source, '_workflow_subject'):
+                # The module's own manager rule (Expense: the expense
+                # approver first; Time off: the leave manager first).
+                manager = self._subject(source).get('manager_user')
+            else:
+                employee = source if source._name == 'hr.employee' else source.employee_id if 'employee_id' in source._fields else self.env['hr.employee'].search([
+                    ('user_id', '=', initiator.id if initiator else 0), ('company_id', '=', company.id)], limit=1)
+                manager = employee.parent_id.user_id if employee else None
             if not manager:
                 raise UserError(_('Name the employee’s manager and link their user account in People.'))
-            return manager.id
+            return manager[:1].id
         if kind == 'role':
             role = self.env['biz.approval.role'].sudo().browse(owner.get('id', 0)).exists()
             if not role or role.is_pool:
                 raise UserError(_('Choose a single-person responsibility from People & backups.'))
             scopes = source._approval_context().get('scope_keys', ['']) if hasattr(source, '_approval_context') else ['']
-            row, _via = self.env['biz.approval.responsibility'].resolve(run.company_id, role, scopes)
+            row, _via = self.env['biz.approval.responsibility'].resolve(company, role, scopes)
             if not row or not row.user_id:
                 raise UserError(_('Nobody is named for %s in People & backups.', role.name))
             # These are ordinary tasks. Approval-only cover is deliberately
@@ -62,7 +95,7 @@ class WorkflowProgress(models.AbstractModel):
         """Cheap form hook: empty for users without permission, never a grant."""
         self._staff()
         if not self._can_view_progress():
-            return {'runs': [], 'approvals': [], 'can_design': False, 'record_stages': []}
+            return {'runs': [], 'approvals': [], 'can_design': False, 'record_stages': [], 'record_stage': None}
         source = self._source(model, record_id)
         domain = [('source_model', '=', model), ('source_id', '=', int(record_id)),
                   ('company_id', '=', self.env.company.id)]
@@ -74,6 +107,7 @@ class WorkflowProgress(models.AbstractModel):
         approvals -= runs.sudo().mapped('step_ids.approval_id').with_env(self.env)
         return {'can_design': self._can_design() and model in {row['key'] for row in self._models()},
                 'record_stages': self._record_stages(model, source),
+                'record_stage': self._record_stage_safe(model, source.id),
                 'record_name': source.display_name,
                 'runs': [{'id': r.id, 'name': r.name, 'state': r.state,
                           'started': str(r.create_date)} for r in runs],
@@ -130,6 +164,9 @@ class WorkflowProgress(models.AbstractModel):
                 'can_manage': self._can_design(),
                 'workflow_id': srun.workflow_id.id if self._can_design() else None,
                 'record_stages': self._record_stages(run.source_model, self._source(run.source_model, run.source_id)) if run.source_model else [],
+                'record_stage': self._record_stage_safe(run.source_model or 'pb.workflow.run', run.source_id if run.source_model else run.id),
+                'gate': {'section': (srun.gate or {}).get('section'), 'reason': (srun.gate or {}).get('reason', '')}
+                        if run.state in ('running', 'waiting', 'failed') and (srun.gate or {}).get('reason') else None,
                 'can_read_submission': self._can_design() or run.initiator_id.id == self.env.uid or self.env.uid in srun.step_ids.mapped('approval_id.seat_ids.acting_user_id').ids,
                 'tasks': self.tasks(run_id=run.id)}
 
