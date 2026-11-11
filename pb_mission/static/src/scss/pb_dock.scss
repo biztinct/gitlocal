@@ -418,6 +418,17 @@
         }
     }
 
+    // WF2 P4b (D20): the one task line under the header.
+    .pbms-dock__tasks {
+        display: flex; align-items: center; gap: 7px; width: calc(100% - 24px);
+        margin: 0 12px 8px; padding: 7px 10px; border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: 9px; background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0);
+        font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left;
+        b { font-weight: 800; }
+        .pbms-dock__taskst { flex: 1; }
+        &:hover, &:focus-visible { border-color: var(--pbim-primary, #5A4BB0); outline: none; }
+    }
+
     .pbms-dock__more {
         display: block;
         width: 100%;

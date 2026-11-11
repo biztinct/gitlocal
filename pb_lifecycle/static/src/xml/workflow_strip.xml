@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- WF2 P4b — "where this is" on a record's own screen. Same tokens as the
+       workbench's record track and the employee-home twin
+       (views/workflow_strip_page.xml). Loop variables: `wst`, `wsm`. -->
+  <t t-name="pb_lifecycle.WorkflowStrip">
+    <section class="pbwfs" role="region" aria-label="Where this record is">
+      <div class="pbwfs-top">
+        <span t-attf-class="pbwfs-dot is-{{ tone }}" aria-hidden="true"/>
+        <span t-if="lead" class="pbwfs-chip" t-att-title="lead.name"><t t-out="icons.flow"/><t t-esc="lead.name"/></span>
+        <button t-if="workflows.length > 1" type="button" class="pbwfs-switch" t-on-click="nextWorkflow"
+                t-attf-aria-label="Showing {{ state.index + 1 }} of {{ workflows.length }} workflows. Show the next one.">
+          <t t-esc="workflows.length"/> workflows ›
+        </button>
+        <p class="pbwfs-sentence">
+          <t t-esc="sentence"/>
+          <span t-if="lead and lead.meta" class="pbwfs-meta" t-att-class="{ 'is-late': lead.late }"> · <t t-esc="lead.meta"/></span>
+        </p>
+        <div class="pbwfs-acts">
+          <button t-if="lead and lead.resend_id" type="button" class="pbwfs-btn pbwfs-btn--quiet"
+                  t-att-disabled="state.busy" t-on-click="resend"><t t-out="icons.mail"/>Send again</button>
+          <button t-if="primary === 'do'" type="button" class="pbwfs-btn pbwfs-btn--primary" t-on-click="openTask">
+            Do it now <t t-out="icons.arrow"/>
+          </button>
+          <div t-elif="primary === 'move'" class="pbwfs-movebox">
+            <button type="button" class="pbwfs-btn pbwfs-btn--primary" aria-haspopup="menu"
+                    t-att-aria-expanded="state.menu ? 'true' : 'false'" t-on-click="toggleMenu">
+              Move to… <t t-out="icons.chevron"/>
+            </button>
+            <div t-if="state.menu" class="pbwfs-menu" role="menu" aria-label="Move to">
+              <button t-foreach="moves" t-as="wsm" t-key="wsm.stage_id" type="button" class="pbwfs-menu-item" role="menuitem"
+                      t-att-aria-disabled="wsm.allowed ? 'false' : 'true'" t-att-disabled="state.busy"
+                      t-on-click="() => this.move(wsm)">
+                <t t-out="wsm.allowed ? icons.flag : icons.lock"/>
+                <span><t t-esc="wsm.name"/><small t-if="!wsm.allowed" t-esc="wsm.reason"/></span>
+              </button>
+            </div>
+          </div>
+          <button t-elif="primary === 'view'" type="button" class="pbwfs-btn pbwfs-btn--quiet" t-on-click="view">
+            View workflow <t t-out="icons.arrow"/>
+          </button>
+        </div>
+      </div>
+
+      <p t-if="state.note" class="pbwfs-note" t-att-class="state.note.bad ? 'is-bad' : 'is-ok'"
+         t-att-role="state.note.bad ? 'alert' : 'status'">
+        <t t-out="state.note.bad ? icons.alert : icons.check"/><span t-esc="state.note.text"/>
+      </p>
+
+      <ol t-if="s.track and s.track.length" class="pbwfs-track" aria-label="Stages">
+        <t t-foreach="s.track" t-as="wst" t-key="wst.kind + ':' + wst.key">
+          <li t-if="wst.more" class="pbwfs-step is-more">
+            <details class="pbwfs-more">
+              <summary t-attf-aria-label="{{ wst.count }} more stages">+<t t-esc="wst.count"/></summary>
+              <div class="pbwfs-pop"><span t-foreach="wst.names" t-as="nm" t-key="nm_index" t-esc="nm"/></div>
+            </details>
+          </li>
+          <li t-elif="!wst.hidden" t-attf-class="pbwfs-step track-step {{ wst.state }} kind-{{ wst.kind }}"
+              t-att-aria-current="wst.state === 'here' ? 'step' : false">
+            <span class="track-icon"><t t-out="icons[wst.state] or icons.later"/></span>
+            <span class="pbwfs-name">
+              <b t-esc="wst.name"/>
+              <small t-if="wst.kind === 'yours' and wst.counts_as">counts as <t t-esc="wst.counts_as"/></small>
+            </span>
+            <span t-if="wst.state === 'here'" class="pbwfs-here">Here now</span>
+          </li>
+        </t>
+      </ol>
+      <p t-if="stopAt" class="pbwfs-exits">Stopped: this is now <b t-esc="stopAt.name"/>.</p>
+
+      <details t-if="s.track and s.track.length" class="pbwfs-mobile">
+        <summary>
+          <span t-if="compactLabel"><t t-esc="compactLabel"/> · <b t-esc="s.compact.name"/></span>
+          <span t-else=""><b t-esc="s.compact.name or 'Where it is'"/></span>
+          <t t-out="icons.chevron"/>
+        </summary>
+        <ol class="pbwfs-vtrack">
+          <t t-foreach="s.track" t-as="wst" t-key="'v' + wst.kind + ':' + wst.key">
+            <li t-if="!wst.more" t-attf-class="track-step {{ wst.state }} kind-{{ wst.kind }}">
+              <span class="track-icon"><t t-out="icons[wst.state] or icons.later"/></span>
+              <b t-esc="wst.name"/><span t-if="wst.state === 'here'" class="pbwfs-here">Here now</span>
+            </li>
+          </t>
+        </ol>
+      </details>
+
+      <t t-if="state.task">
+        <div class="pbwfs-scrim" t-on-click="closeTask"/>
+        <aside class="pbwfs-drawer" role="dialog" aria-modal="true" aria-labelledby="pbwfs-drawer-h">
+          <div class="pbwfs-dh">
+            <span class="pbwfs-chip"><t t-out="icons.task"/></span>
+            <div>
+              <h2 id="pbwfs-drawer-h" t-esc="state.task.task_name or state.task.name"/>
+              <p t-esc="state.task.name"/>
+            </div>
+            <button type="button" class="pbwfs-x" aria-label="Close" t-on-click="closeTask"><t t-out="icons.x"/></button>
+          </div>
+          <iframe class="pbwfs-frame" t-att-src="taskUrl()" title="Task"/>
+        </aside>
+      </t>
+    </section>
+  </t>
+
+  <!-- On every form: the strip above the sheet, only when there is one. -->
+  <t t-inherit="web.FormView" t-inherit-mode="extension">
+    <xpath expr="//Layout/t[@t-component='props.Renderer']" position="before">
+      <div t-if="workflowProgress.strip and !env.inDialog" class="pbwfs-host">
+        <WorkflowStrip strip="workflowProgress.strip" onChanged.bind="onWorkflowStripChanged" onView.bind="openWorkflowProgress"/>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

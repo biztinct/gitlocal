@@ -204,6 +204,12 @@ export class WfDock extends Component {
 
     get canOrg() { return !!(this.state.data && this.state.data.can_org); }
 
+    /** WF2 P4b (D20): workflow tasks waiting for me — one line, no cards.
+     *  The count is the inbox's own (`queues.tasks`), read in the same call. */
+    get taskCount() {
+        return Number((this.state.data && this.state.data.queues && this.state.data.queues.tasks) || 0);
+    }
+
     get hasTeam() { return !!(this.state.data && this.state.data.has_team); }
 
     /** Cards grouped by source, in the semantic order, with the cut marker. */

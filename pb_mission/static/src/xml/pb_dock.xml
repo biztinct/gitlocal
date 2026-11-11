@@ -51,6 +51,15 @@
                   t-on-click="() => this.setScope('org')">Organisation</button>
         </div>
 
+        <!-- WF2 P4b (D20): one line with the workflow task count; it opens
+             the Approvals inbox, where the tasks are listed. No new cards. -->
+        <button class="pbms-dock__tasks" t-if="taskCount" t-on-click="() => this.openQueue()"
+                t-attf-aria-label="{{ taskCount }} workflow {{ taskCount === 1 ? 'task' : 'tasks' }} for you. Open Approvals.">
+          <span class="pbms-dock__tasksic" t-out="ic('checkCircle', 13)"/>
+          <span class="pbms-dock__taskst"><b t-esc="taskCount"/> <t t-if="taskCount === 1">task for you</t><t t-else="">tasks for you</t></span>
+          <span t-out="ic('chevron', 12)"/>
+        </button>
+
         <div class="pbms-dock__body">
 
           <div class="pbms-dock__msg" t-if="state.loading and !state.data">

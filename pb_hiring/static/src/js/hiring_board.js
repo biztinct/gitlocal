@@ -2059,6 +2059,11 @@ export class PbHiringBoard extends Component {
 
     closeCand() { this.state.cand = null; }
 
+    /** WF2 P4b: "where this is" from Workflow Studio, drawn at the top of
+     *  the drawer only when a workflow or a stage has something to say.
+     *  Looked up by registry, so this screen never imports the strip. */
+    get wfStrip() { return registry.category("pb_record_strips").get("workflow", null); }
+
     // RECRUIT P2: "Same person" links the two records both ways; no merge.
     async samePerson(cand, undo = false) {
         const res = await this.act("same_person", { applicant_id: cand.id, undo }, { reload: false });

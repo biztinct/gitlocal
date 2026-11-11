@@ -8,6 +8,7 @@ import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { SETTINGS_CATEGORIES } from "@pb_settings/js/settings_hub";
 import { openHub } from "@pb_hub/js/hub_nav";
+import { WorkflowStrip } from "./workflow_strip";
 
 export class WorkflowStudio extends Component {
     static props = ["*"];
@@ -15,7 +16,7 @@ export class WorkflowStudio extends Component {
     setup() {
         this.action = useService("action");
         this.frame = useRef("frame");
-        const q = new URLSearchParams({v: "wf2-p4a", company: (user.context.allowed_company_ids || [])[0] || "",
+        const q = new URLSearchParams({v: "wf2-p4b", company: (user.context.allowed_company_ids || [])[0] || "",
             origin: this.props.action?.context?.pb_workflow_origin ? JSON.stringify(this.props.action.context.pb_workflow_origin) : "",
             workflow: this.props.action?.context?.pb_workflow_id || "",
             template: this.props.action?.context?.pb_workflow_template_id || "",
@@ -48,12 +49,15 @@ export class WorkflowStudio extends Component {
     }
 }
 registry.category("actions").add("pb_workflow_studio", WorkflowStudio);
+FormController.components = { ...FormController.components, WorkflowStrip };
 // One common entry on native forms, including Expenses, Pay, Time and future
 // modules. The server checks record and progress-view permissions every time.
 patch(FormController.prototype, {
     setup() {
         super.setup(...arguments);
-        this.workflowProgress = useState({ available: false, canDesign: false });
+        // WF2 P4b: `strip` comes in the same answer (no extra request); it
+        // is null on every record with nothing to show, so nothing is drawn.
+        this.workflowProgress = useState({ available: false, canDesign: false, strip: null });
         useEffect(() => {
             let live = true;
             this.workflowProgress.available = false;
@@ -64,11 +68,23 @@ patch(FormController.prototype, {
                     .then(data => { if (live) {
                         this.workflowProgress.available = !!(data.runs.length || data.approvals.length || data.record_stages?.length);
                         this.workflowProgress.canDesign = !!data.can_design;
+                        this.workflowProgress.strip = data.strip || null;
                     } })
-                    .catch(() => { if (live) this.workflowProgress.available = false; });
+                    .catch(() => { if (live) { this.workflowProgress.available = false; this.workflowProgress.strip = null; } });
+            } else {
+                this.workflowProgress.strip = null;
             }
             return () => { live = false; };
-        }, () => [this.model.root.resModel, this.model.root.resId]);
+        }, () => {
+            // A status change on the record (a button, a save) reads it again.
+            const data = this.model.root.data || {};
+            const stage = data.stage_id;
+            return [this.model.root.resModel, this.model.root.resId, data.state,
+                    stage && typeof stage === "object" ? stage.id : stage];
+        });
+    },
+    onWorkflowStripChanged(strip) {
+        this.workflowProgress.strip = strip || null;
     },
     async openWorkflowProgress() {
         if (!(await this.model.root.save())) return;

@@ -284,6 +284,7 @@
             <button type="button" t-on-click="() =&gt; this.stepCand(1)" title="Next card (arrow key)"><t t-out="ic('chevronDown',13)"/></button>
             <span>Arrow keys move to the next person</span>
           </div>
+          <t t-if="wfStrip" t-component="wfStrip" model="'hr.applicant'" resId="cand.id"/>
 
           <div class="pbhr-cd-kv">
             <t t-if="cand.applied_on"><span>Applied</span><b><t t-esc="dayShort(cand.applied_on)"/><t t-if="cand.source"> · <t t-esc="cand.source"/></t></b></t>
