@@ -306,11 +306,13 @@ class WorkflowStudio(models.AbstractModel):
                         if field['bind'] in bindings:
                             error(n['id'], 'duplicate_binding', _('Map each approval value from one form field only.'))
                         bindings.add(field['bind'])
-            if n['type'] in ('task', 'input') and n.get('owner', {}).get('kind') == 'role':
+            if n['type'] in D.PEOPLE + ('notify',) and n.get('owner', {}).get('kind') == 'role':
                 role = self.env['biz.approval.role'].sudo().browse(n['owner'].get('id', 0)).exists()
                 if not role or role.is_pool:
                     error(n['id'], 'bad_role', _('Choose an existing single-person responsibility.'))
-            if n['type'] in ('task', 'input'):
+            if n['type'] in D.PEOPLE + ('notify',):
+                if n.get('owner', {}).get('kind') in ('manager', 'managers_manager') and not w.source_model:
+                    error(n['id'], 'owner_needs_record', _('A new process has no record that names a manager. Choose someone else.'))
                 if n.get('owner', {}).get('kind') == 'field':
                     f = fields_meta.get(n['owner'].get('field'), {})
                     if f.get('type') != 'many2one' or f.get('relation') != 'res.users':
@@ -330,7 +332,7 @@ class WorkflowStudio(models.AbstractModel):
                 # send it.
                 if not n.get('purpose', '').strip():
                     error(n['id'], 'email_purpose', _('Say why this message is additional to existing notifications.'))
-            if n['type'] in ('task', 'input') and n.get('owner', {}).get('kind') == 'user':
+            if n['type'] in D.PEOPLE + ('notify',) and n.get('owner', {}).get('kind') == 'user':
                 user = self.env['res.users'].sudo().browse(n['owner']['id']).exists()
                 if not user or not user.active or user.share or w.company_id not in user.company_ids:
                     error(n['id'], 'inactive_owner', _('Choose an active person in this company.'))
@@ -347,7 +349,86 @@ class WorkflowStudio(models.AbstractModel):
                               param.get('error') or _('Choose one of the listed options for “%s”.', param.get('label', '')))
             if n['type'] == 'reference' and n.get('owner_key') not in {r['key'] for r in self._ownership(w.source_model)}:
                 error(n['id'], 'bad_reference_owner', _('Choose an existing owner from the list.'))
+            for code, text in self._new_step_issues(w, definition, n):
+                error(n['id'], code, text)
         return errors
+
+    def _new_step_issues(self, w, d, n):
+        """Checks of the WF2 P3b step types that need the database: the
+        stage, value, template or workflow a step names must exist, belong
+        here and be allowed. Codes, never wording (ledger G2)."""
+        kind, company, model = n['type'], w.company_id, w.source_model or ''
+        out = []
+        if kind == 'stage_move':
+            contract = self._contract(model) if model else {}
+            if contract.get('own_stage_rows'):
+                return [('stage_move_area', _('%(label)s stages belong to %(area)s. Use “Move to a Hiring stage” instead.',
+                                               label=contract['label'], area=contract['area']))]
+            stage = self.env['pb.workflow.stage'].sudo().browse(int((n.get('target') or {}).get('id') or 0)).exists()
+            if not stage or not stage.active or stage.company_id != company or (
+                    (stage.source_model or '') != model or (not model and stage.workflow_id != w)):
+                out.append(('stage_move_target', _('Choose one of your stages to move it to.')))
+        if kind == 'update':
+            if not model:
+                return [('update_needs_record', _('A new process has no record to update.'))]
+            contract = self._contract(model)
+            safe = contract.get('safe_fields') or []
+            if not safe:
+                return [('update_not_open', _('%s has not opened any values to workflows yet.', contract['area']))]
+            spec = self._safe_spec(model, n.get('field'))
+            if not spec or n.get('field') == contract.get('stage_field'):
+                return [('update_field', _('Choose one of the values %s lets workflows set.', contract['area']))]
+            if n.get('value_from'):
+                source_kind = self._answer_kind(d, n['value_from'])
+                if source_kind not in D.FEEDS.get(spec.get('type'), ()):
+                    out.append(('update_value_from', _('That answer is not %(kind)s, so it cannot fill “%(label)s”.',
+                                                       kind=_(D.TYPE_WORDS.get(spec.get('type'), 'a value')),
+                                                       label=spec.get('label'))))
+            elif spec.get('type') == 'text' and not str(n.get('value') or '').strip():
+                out.append(('update_value', _('Write what to set “%s” to.', spec.get('label'))))
+            else:
+                try:
+                    self._safe_value(spec, n.get('value'), company)
+                except UserError as exc:
+                    out.append(('update_value', str(exc)))
+        if kind == 'create':
+            creator = self._creator(n.get('creator'))
+            if not creator:
+                return out
+            if not creator['available']:
+                return [('create_unavailable', _('This app is not switched on here.'))]
+            if creator['needs_subject'] and not (model and hasattr(self.env[model], '_workflow_subject')):
+                return [('create_needs_subject', _('Letters are written for the person a record is about, and this kind of record does not say who that is.'))]
+            template = self.env[creator['template_model']].sudo().browse(int(n.get('template_id') or 0)).exists()
+            if not template or template not in self._creator_templates(creator, company, readable=False):
+                out.append(('create_template', _('Choose the template to start from.')))
+        if kind == 'start':
+            target = self.env['pb.workflow'].sudo().browse(int(n.get('workflow_id') or 0)).exists()
+            if not target or target.company_id != company:
+                out.append(('start_target', _('Choose the workflow to hand over to.')))
+            elif target == w:
+                out.append(('start_self', _('A workflow cannot start itself. Choose another one.')))
+            elif (target.source_model or '') != model or target.component:
+                out.append(('start_target', _('“%s” is for another kind of record. Choose one for the same records.', target.name)))
+            elif not target.published_id:
+                out.append(('start_unpublished', _('Publish “%s” first, so there is a version to start.', target.name)))
+            elif target.published_id.definition['trigger']['kind'] != 'manual':
+                out.append(('start_automatic', _('“%s” starts by itself, so it cannot be handed over to. Choose one that a person starts.', target.name)))
+        return out
+
+    def _answer_kind(self, d, key):
+        """The kind of an earlier answer `step.<id>.<field>`: the form
+        field's type, or `outcome` for a person step's chosen button."""
+        parts = str(key).split('.')
+        if len(parts) != 3 or parts[0] != 'step':
+            return None
+        node = next((x for x in d['nodes'] if x['id'] == parts[1]), None)
+        if not node:
+            return None
+        if parts[2] == 'outcome':
+            return 'outcome'
+        field = next((f for f in (node.get('form') or {}).get('fields', []) if f.get('id') == parts[2]), None)
+        return field.get('type') if field else None
 
     @api.model
     def save_draft(self, workflow_id, revision, definition, process_id=None, execution_user_id=None, starter_group_ids=None):
@@ -405,6 +486,9 @@ class WorkflowStudio(models.AbstractModel):
     def _rule_words(self, model, scope):
         """The filters of a rule in words ("Urgent is Yes and …"), or ''."""
         rules = D.leaves(scope) if isinstance(scope, dict) and scope.get('rules') else []
+        # A rule still being written (no value yet) is left out, so the
+        # words never say "ID is" (WF2 P3b).
+        rules = [r for r in rules if r.get('op') in ('set', 'unset') or r.get('value') not in (None, '', [])]
         if not rules:
             return ''
         meta = {f['key']: f for f in self._source_fields(model)}
@@ -562,7 +646,7 @@ class WorkflowStudio(models.AbstractModel):
                 return {'issues': [{'id': 'trigger', 'code': 'preview_needs_before', 'text': _('Add example values from before the change.')}], 'steps': []}
             included = included and D.matches(w.draft['trigger']['before'], before_values)
         return {'issues': [], 'included': included,
-                'steps': D.route_preview(w.draft, values) if included else [],
+                'steps': D.route_preview(w.draft, values, self._would(w)) if included else [],
                 'notice': _('Preview only. No tasks, approvals or messages are created.')}
 
     @api.model
@@ -729,7 +813,7 @@ class WorkflowStudio(models.AbstractModel):
     def tasks(self, run_id=None):
         self._staff()
         domain = [('assignee_id', '=', self.env.uid), ('state', '=', 'waiting'),
-                  ('kind', 'in', ['task', 'input']), ('company_id', '=', self._company().id),
+                  ('kind', 'in', list(D.PEOPLE)), ('company_id', '=', self._company().id),
                   ('run_id.state', 'not in', ['held', 'cancelled', 'rejected', 'done'])]
         if run_id:
             domain.append(('run_id', '=', int(run_id)))
@@ -762,8 +846,15 @@ class WorkflowStudio(models.AbstractModel):
         task = self._task(task_id)
         form = task.config.get('form', {'fields': []})
         prefills = self._prefills(task)
+        answers = {k: v for k, v in (task.answers or {}).items() if not str(k).startswith('_')}
+        back = (task.answers or {}).get('_sent_back') or None
         return {'id': task.id, 'name': task.name, 'workflow': task.run_id.name,
-                'form': form, 'answers': {**(task.answers or {}), **prefills},
+                # WF2 P3b: the buttons that finish it, what a confirmation
+                # asks the person to read, and the note it came back with.
+                'buttons': D.buttons(task.config) if task.kind in ('task', 'confirm') else [],
+                'text': task.config.get('text', '') if task.kind == 'confirm' else '',
+                'sent_back': back,
+                'form': form, 'answers': {**answers, **prefills},
                 'readonly': list(prefills), 'instructions': task.config.get('notes', ''),
                 'file_names': {a.id: a.name for a in self.env['ir.attachment'].search([('res_model', '=', 'pb.workflow.step'), ('res_id', '=', task.id), ('create_uid', '=', self.env.uid)])},
                 'lookup_names': {f['id']: self._source(f['lookup_model'], task.answers[f['id']]).display_name for f in form.get('fields', []) if f['type'] == 'lookup' and (task.answers or {}).get(f['id'])},
@@ -779,8 +870,14 @@ class WorkflowStudio(models.AbstractModel):
             raise UserError(_('This step has already been completed.'))
         cleaned, errors = D.validate_answers(task.config.get('form', {'fields': []}), values or {},
                                              self._prefills(task), partial=not complete) if task.kind == 'input' else ({}, {})
+        if task.kind in ('task', 'confirm'):
+            # The chosen button (required when there are several) and an
+            # optional note (WF2 P3b).
+            cleaned, errors = D.validate_outcome(task.config, values or {}) if complete else ({}, {})
         if errors:
             return {'ok': False, 'errors': errors}
+        if not complete and (task.answers or {}).get('_sent_back'):
+            cleaned = dict(cleaned, _sent_back=task.answers['_sent_back'])
         for f in task.config.get('form', {}).get('fields', []):
             if f['type'] == 'lookup' and cleaned.get(f['id']):
                 self._source(f['lookup_model'], cleaned[f['id']])
@@ -793,6 +890,10 @@ class WorkflowStudio(models.AbstractModel):
         internal(task).write({'answers': cleaned})
         if complete:
             task._finish(cleaned)
+            if task.kind == 'confirm':
+                run._log(_('%(who)s confirmed: “%(what)s”.', who=self.env.user.name, what=cleaned.get('outcome_label', '')), task)
+            elif len(D.buttons(task.config)) > 1:
+                run._log(_('%(who)s chose “%(what)s”.', who=self.env.user.name, what=cleaned.get('outcome_label', '')), task)
             run._advance()
         return {'ok': True, 'complete': bool(complete), 'run_id': run.id}
 
@@ -825,6 +926,15 @@ class WorkflowStudio(models.AbstractModel):
             step = run.step_ids.filtered(lambda s: s.id == int(step_id or 0) and s.state == 'failed')
             if not step or run.state == 'held':
                 raise UserError(_('Choose a failed step in an active run.'))
+            if step.kind == 'send_back' and str(step.choice or '').isdigit() and int(step.choice) >= D.SEND_BACK_LIMIT:
+                # Someone looked at it: carry on without a fourth send back.
+                step._finish()
+                internal(step).write({'error': _('Carried on without sending it back again.')})
+                run._log(_('Carried on without sending it back again.'), step)
+                internal(run).write({'state': 'running'})
+                run._advance()
+                run._log(_('%s by %s.', action.capitalize(), self.env.user.name))
+                return self.run_detail(run.id)
             if step.attempts >= 5:
                 raise UserError(_('This step has failed five times. Resolve the source issue before starting a new run.'))
             internal(step).write({'state': 'pending', 'error': False})
@@ -910,9 +1020,19 @@ class WorkflowStudio(models.AbstractModel):
                 if D.matches(step.config['wait_for'], run._condition_values(step.config)):
                     step._finish()
                 elif step.wake_at <= fields.Datetime.now():
-                    internal(step).write({'state': 'failed', 'error': _('The wait reached its deadline before the conditions matched. Check the record, then retry.')})
+                    if step.config.get('on_timeout') == 'continue':
+                        # WF2 P3b: "Carry on anyway" when time runs out.
+                        step._finish()
+                        note = _('Carried on after waiting %s.', self._wait_words(step.config))
+                        internal(step).write({'error': note})
+                        run._log(note, step)
+                    else:
+                        internal(step).write({'state': 'failed', 'error': _('The wait reached its deadline before the conditions matched. Check the record, then retry.')})
             elif step.wake_at <= fields.Datetime.now():
                 step._finish()
+        elif step.kind == 'stage_move':
+            # Waiting for the record to reach the stage it follows.
+            self._move_step(run, step, run._source() if run.source_model else None, step.config)
         elif step.kind == 'email':
             if not step.mail_id:
                 internal(step).write({'state': 'failed', 'error': _('The queued message is missing. Check the mail service before retrying.')})

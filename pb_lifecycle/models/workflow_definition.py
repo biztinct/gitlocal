@@ -8,7 +8,116 @@ import re
 SCHEMA = 'payobook.workflow/1'
 GROUPS = ('branch', 'parallel', 'subprocess')
 TYPES = ('trigger', 'task', 'input', 'matrix', 'email', 'wait', 'branch',
-         'parallel', 'subprocess', 'action', 'reference')
+         'parallel', 'subprocess', 'action', 'reference',
+         # WF2 P3b: eight more, each a registered, guarded operation.
+         'stage_move', 'send_back', 'update', 'create', 'notify', 'confirm', 'start', 'end')
+#: Steps a person completes (they wait with a task in someone's list).
+PEOPLE = ('task', 'input', 'confirm')
+#: Who a person step (or a notice) can go to.
+OWNER_KINDS = ('initiator', 'user', 'role', 'manager', 'field', 'subject', 'managers_manager')
+#: Steps that change something outside the run. A "send back" may not jump
+#: over one of these: going back would make it happen twice.
+ONCE_ONLY = ('matrix', 'action', 'update', 'create', 'start')
+#: Steps that tell someone; going back over one sends it again (a warning).
+TELLS = ('email', 'notify')
+#: Which earlier answers can fill which kind of value an area declared safe.
+FEEDS = {'text': ('text', 'textarea', 'email', 'select', 'date', 'outcome'),
+         'number': ('number',), 'date': ('date',), 'yesno': ('boolean',),
+         'choice': ('select', 'outcome'), 'person': ()}
+TYPE_WORDS = {'text': 'a text', 'number': 'a number', 'date': 'a date', 'yesno': 'a yes or no',
+              'choice': 'one of the listed choices', 'person': 'a person'}
+MAX_BUTTONS = 4
+SEND_BACK_LIMIT = 3
+CHAIN_LIMIT = 3
+
+
+def buttons(node):
+    """A person step's completion buttons: [{key, label}], at least one."""
+    rows = node.get('buttons') if isinstance(node.get('buttons'), list) else None
+    if rows:
+        return rows
+    if node.get('type') == 'confirm':
+        return [{'key': 'confirm', 'label': 'I confirm'}]
+    return [{'key': 'done', 'label': 'Done'}]
+
+
+def parents(d):
+    """{step id: (group node, path id or None)} for every grouped step."""
+    found = {}
+    for n in d.get('nodes', []):
+        for b in n.get('branches', []) or []:
+            for child in b.get('steps', []):
+                found[child] = (n, b['id'])
+        if n.get('type') == 'subprocess':
+            for child in n.get('steps', []):
+                found[child] = (n, None)
+    return found
+
+
+group_map = parents
+
+
+def ancestors(d, key, parent_map=None):
+    """Group nodes around `key`, innermost first."""
+    parent_map = parents(d) if parent_map is None else parent_map
+    out, guard = [], 0
+    while key in parent_map and guard < 50:
+        group, _branch = parent_map[key]
+        out.append(group)
+        key, guard = group['id'], guard + 1
+    return out
+
+
+def main_ancestor(d, key, parent_map=None):
+    """The main-path step that holds `key` (itself when on the main path)."""
+    chain = ancestors(d, key, parent_map)
+    return chain[-1]['id'] if chain else key
+
+
+def ran_before(d, key, parent_map=None):
+    """Steps that may already have run when `key` is reached, back to the
+    start of its main-path step: earlier siblings in every container on the
+    way up (with what is inside them). Later siblings have not run yet."""
+    parent_map = parents(d) if parent_map is None else parent_map
+    nodes = {n['id']: n for n in d['nodes']}
+    out, at, guard = [], key, 0
+    while at in parent_map and guard < 50:
+        group, branch = parent_map[at]
+        ids = next(b['steps'] for b in group['branches'] if b['id'] == branch) if branch else group['steps']
+        for sibling in ids[:ids.index(at)]:
+            out += descendants(d, sibling)
+        at, guard = group['id'], guard + 1
+    return [k for k in out if k in nodes]
+
+
+def between(d, target, key, parent_map=None):
+    """What runs again when `key` sends the run back to main-path `target`:
+    every step after the target that may already have run."""
+    order = d['order']
+    top = main_ancestor(d, key, parent_map)
+    if target not in order or top not in order:
+        return []
+    out = []
+    for step in order[order.index(target) + 1:order.index(top)]:
+        out += descendants(d, step)
+    return out + ran_before(d, key, parent_map)
+
+
+def reset_range(d, target, key, parent_map=None):
+    """The steps a send back puts back to not started: the target and every
+    main-path step after it up to (and including) the one holding `key`."""
+    order = d['order']
+    top = main_ancestor(d, key, parent_map)
+    out = []
+    for step in order[order.index(target):order.index(top) + 1]:
+        out += descendants(d, step)
+    return out
+
+
+def conditional(n, d, parent_map=None):
+    """Whether a step can be passed by: it has an "Only when…" or sits in a
+    chosen path."""
+    return bool(n.get('when')) or any(g['type'] == 'branch' for g in ancestors(d, n['id'], parent_map))
 FORM_TYPES = ('text', 'textarea', 'number', 'date', 'email', 'select',
               'multiselect', 'boolean', 'file', 'rows', 'section', 'lookup')
 OPS = ('eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'icontains', 'not_contains', 'set', 'unset', 'in', 'not_in')
@@ -174,6 +283,48 @@ def form_errors(form):
     return errors
 
 
+def button_errors(node):
+    """'' when a person step's buttons are fine, else what to fix."""
+    rows = node.get('buttons')
+    if rows is None:
+        return ''
+    if not isinstance(rows, list) or not 1 <= len(rows) <= MAX_BUTTONS:
+        return 'Use one to four buttons.'
+    keys = set()
+    for row in rows:
+        if not isinstance(row, dict) or not IDENT.fullmatch(str(row.get('key', ''))) or row['key'] in keys:
+            return 'Give each button its own name.'
+        label = row.get('label')
+        if not isinstance(label, str) or not label.strip() or len(label) > 40:
+            return 'Give each button a label of up to 40 characters.'
+        keys.add(row['key'])
+    if node.get('type') == 'confirm' and len(rows) != 1:
+        return 'A confirmation has one button.'
+    return ''
+
+
+def validate_outcome(node, values):
+    """The chosen button of a person step: (cleaned, errors).
+
+    One button needs no choice; with more, the person must pick one. An
+    optional note travels with it (a send back shows it to the next person)."""
+    rows = buttons(node)
+    values = values if isinstance(values, dict) else {}
+    chosen = values.get('outcome')
+    if chosen is None and len(rows) == 1:
+        chosen = rows[0]['key']
+    row = next((r for r in rows if r['key'] == chosen), None)
+    if not row:
+        return {}, {'_outcome': 'Choose one of the buttons.'}
+    comment = values.get('comment')
+    if comment is not None and (not isinstance(comment, str) or len(comment) > 2000):
+        return {}, {'_outcome': 'Keep the note under 2,000 characters.'}
+    cleaned = {'outcome': row['key'], 'outcome_label': row['label']}
+    if comment and comment.strip():
+        cleaned['comment'] = comment.strip()
+    return cleaned, {}
+
+
 def validate_answers(form, values, prefills=None, partial=False):
     if not isinstance(values, dict) or not safe_json(values, 500000):
         return {}, {'_form': 'These answers are too large or not valid.'}
@@ -337,6 +488,8 @@ def _validate(d, source_fields=None, actions=None):
     if any(nodes[a]['stage'] > nodes[b]['stage'] for a, b in zip(order, order[1:])):
         error('trigger', 'section_order', 'Keep steps in their section order.')
     base = set(source_fields) if source_fields is not None else {'amount', 'urgent'}
+    # `parents` is a local name above; the module helper is `group_map`.
+    parent_map = group_map(d)
     def condition(rule, available, ident, depth=0):
         if isinstance(rule, dict) and 'rules' in rule:
             if (depth >= 4 or rule.get('match') not in ('all', 'any') or
@@ -365,13 +518,66 @@ def _validate(d, source_fields=None, actions=None):
                 condition(n['wait_for'], available, key)
                 if kind != 'wait':
                     error(key, 'wait_condition_misplaced', 'Only a wait step can wait for a condition.')
-            if kind in ('task', 'input'):
+            if kind in PEOPLE or kind == 'notify':
                 owner = n.get('owner', {})
-                if not isinstance(owner, dict) or owner.get('kind') not in ('initiator', 'user', 'role', 'manager', 'field', 'subject') or (
+                if not isinstance(owner, dict) or owner.get('kind') not in OWNER_KINDS or (
                         owner.get('kind') == 'user' and type(owner.get('id')) is not int):
-                    error(key, 'missing_owner', 'Choose who does this step.')
+                    error(key, 'missing_owner', 'Choose who gets this.' if kind == 'notify' else 'Choose who does this step.')
+            if kind in PEOPLE:
                 if type(n.get('due', 2)) is not int or not 1 <= n.get('due', 2) <= 365:
                     error(key, 'bad_deadline', 'Choose a deadline from 1 to 365 days.')
+            if kind in ('task', 'confirm'):
+                problem = button_errors(n)
+                if problem:
+                    error(key, 'bad_buttons', problem)
+                elif kind == 'task' and len(buttons(n)) > 1:
+                    # The chosen answer can steer what comes next.
+                    available.add('step.%s.outcome' % key)
+            if kind == 'confirm' and (not isinstance(n.get('text'), str) or not n['text'].strip()
+                                      or len(n['text']) > 4000):
+                error(key, 'confirm_needs_text', 'Write what the person is asked to read and confirm.')
+            if kind == 'notify' and (not isinstance(n.get('text'), str) or not n['text'].strip()
+                                     or len(n['text']) > 1000):
+                error(key, 'notify_needs_text', 'Write the notice, in up to 1,000 characters.')
+            if kind == 'stage_move':
+                target = n.get('target')
+                if not isinstance(target, dict) or target.get('kind') != 'yours' or type(target.get('id')) is not int:
+                    error(key, 'stage_move_target', 'Choose one of your stages to move it to.')
+            if kind == 'update':
+                if not isinstance(n.get('field'), str) or not n['field']:
+                    error(key, 'update_field', 'Choose the value to set.')
+                elif n.get('value_from') and n['value_from'] not in available:
+                    error(key, 'update_value_from', 'Use an answer given earlier in this workflow.')
+            if kind == 'create':
+                if n.get('creator') not in ('letter', 'announcement'):
+                    error(key, 'create_kind', 'Choose what to create.')
+                elif type(n.get('template_id')) is not int:
+                    error(key, 'create_template', 'Choose the template to start from.')
+            if kind == 'start' and type(n.get('workflow_id')) is not int:
+                error(key, 'start_target', 'Choose the workflow to hand over to.')
+            if kind in ('send_back', 'end'):
+                inside = ancestors(d, key, parent_map)
+                if any(g['type'] == 'parallel' for g in inside):
+                    error(key, 'flow_in_parallel', '“%s” cannot sit inside work in parallel. Move it after the parallel paths.' % n['title'])
+                elif not conditional(n, d, parent_map):
+                    error(key, 'needs_condition', ('“%s” would always send the work back. Put it inside a path, '
+                                                   'or give it an “Only when…”.' if kind == 'send_back' else
+                                                   '“%s” would always stop the workflow here. Put it inside a path, '
+                                                   'or give it an “Only when…”.') % n['title'])
+                if kind == 'end' and len(str(n.get('reason') or '')) > 200:
+                    error(key, 'end_reason', 'Keep the reason under 200 characters.')
+            if kind == 'send_back':
+                target = nodes.get(n.get('target')) if isinstance(n.get('target'), str) else None
+                top = main_ancestor(d, key, parent_map)
+                if (not target or target['type'] not in ('task', 'input', 'confirm') or target['id'] not in order
+                        or top not in order or order.index(target['id']) >= order.index(top)):
+                    error(key, 'send_back_target', 'Send it back to an earlier task or form on the main path.')
+                else:
+                    twice = [nodes[x]['title'] for x in between(d, target['id'], key, parent_map)
+                             if nodes[x]['type'] in ONCE_ONLY]
+                    if twice:
+                        error(key, 'send_back_effects', 'Steps in between would run twice: %s. Send it back to a '
+                                                        'later step, or move those steps after this one.' % ', '.join(twice))
             if kind == 'input':
                 problems = form_errors(n.get('form'))
                 for code, text in problems:
@@ -391,6 +597,9 @@ def _validate(d, source_fields=None, actions=None):
                 error(key, 'email_needs_template', 'Choose an existing email template.')
             if kind == 'wait' and (type(n.get('hours')) not in (int, float) or not 0 < n['hours'] <= 8760):
                 error(key, 'bad_wait', 'Set a wait of up to one year.')
+            if kind == 'wait' and (n.get('on_timeout', 'flag') not in ('flag', 'continue')
+                                   or n.get('unit', 'hours') not in ('hours', 'days', 'working')):
+                error(key, 'bad_wait', 'Choose how long to wait and what happens when time runs out.')
             if kind == 'action' and n.get('action_key') not in (actions or {}):
                 error(key, 'bad_action', 'Choose an available business action.')
             if kind == 'reference' and not n.get('owner_key'):
@@ -404,7 +613,7 @@ def _validate(d, source_fields=None, actions=None):
                         any(not b['steps'] for b in branches)):
                     error(key, 'parallel_join', 'Choose a join and add work to every parallel path.')
                 if kind == 'parallel' and n.get('join') == 'any' and any(
-                        nodes[x]['type'] in ('matrix', 'email', 'action')
+                        nodes[x]['type'] in ('matrix', 'email', 'action', 'update', 'create', 'start', 'notify', 'stage_move')
                         for x in descendants(d, key)):
                     error(key, 'parallel_any_effects', 'Use “Everyone finishes” for paths with approvals or automatic effects.')
                 for b in branches:
@@ -442,11 +651,17 @@ def _validate(d, source_fields=None, actions=None):
     return out
 
 
-def route_preview(d, values):
-    """An explicit simulation: no effects, database records or fake approvals."""
+def route_preview(d, values, describe=None):
+    """An explicit simulation: no effects, database records or fake approvals.
+
+    `describe(node)` (optional) gives the plain "Would …" line of a step;
+    a send back or a stop ends the walk there, as the real run would."""
     nodes, rows = {n['id']: n for n in d['nodes']}, []
+    stopped = []
     def visit(ids, path='Main path'):
         for key in ids:
+            if stopped:
+                return
             n = nodes[key]
             stage_values = {**values, 'workflow.stage': n['stage']}
             if n.get('when') and not matches(n['when'], stage_values):
@@ -454,6 +669,9 @@ def route_preview(d, values):
                              'reason': 'Skipped · filters do not match', 'skipped': True})
                 continue
             rows.append({'id': key, 'title': n['title'], 'type': n['type'], 'path': path})
+            words = describe(n) if describe else None
+            if words:
+                rows[-1]['reason'] = words
             if n['type'] == 'branch':
                 selected = next(b for b in n['branches'] if not b.get('condition') or matches(b['condition'], stage_values))
                 rows[-1]['reason'] = selected['label']
@@ -467,6 +685,8 @@ def route_preview(d, values):
                                      'reason': 'Skipped · path filters do not match', 'skipped': True})
             elif n['type'] == 'subprocess':
                 visit(n['steps'], n['title'])
+            elif n['type'] in ('send_back', 'end'):
+                stopped.append(key)
     visit(d['order'])
     return rows
 

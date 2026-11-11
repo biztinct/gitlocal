@@ -298,7 +298,9 @@ class WorkflowRun(models.Model):
         result = dict(self.sudo().facts or {})
         for s in self.sudo().step_ids.filtered(lambda x: x.state == 'done'):
             for key, value in (s.answers or {}).items():
-                result['step.%s.%s' % (s.key, key)] = value
+                # `_sent_back` and other bookkeeping never become values.
+                if not str(key).startswith('_'):
+                    result['step.%s.%s' % (s.key, key)] = value
             for field in s.config.get('form', {}).get('fields', []):
                 if field.get('bind') and field['id'] in (s.answers or {}):
                     result[field['bind']] = s.answers[field['id']]
@@ -323,6 +325,9 @@ class WorkflowRun(models.Model):
         if self.state in ('held', 'done', 'cancelled', 'rejected'):
             return
         d, steps = self.version_id.definition, {s.key: s for s in self.sudo().step_ids}
+        # WF2 P3b: a "Send back" puts earlier steps back to not started (the
+        # walk then starts again from the top), a "Stop here" ends the run.
+        signals = {}
         def skip(ids, reason='Another path was selected.'):
             for key in ids:
                 for child in D.descendants(d, key):
@@ -405,7 +410,16 @@ class WorkflowRun(models.Model):
                 _logger.exception('Workflow step %s failed', s.id)
                 internal(s).write({'state': 'failed', 'error': str(exc)[:1000], 'attempts': s.attempts+1})
                 self._log(_('Needs attention: %s', str(exc)[:400]), s)
-            return s.state == 'done'
+            if n['type'] == 'send_back' and s.state == 'pending':
+                signals['restart'] = True
+                return False
+            if n['type'] == 'end' and s.state == 'done':
+                signals['stop'] = s
+                return False
+            # A step that decides it does not apply (a move to a stage the
+            # record is already past, a notice to someone with no login) is
+            # skipped and the walk carries on.
+            return s.state in ('done', 'skipped')
         bound = [i for i, s in enumerate(d['stages']) if isinstance(s, dict) and s.get('bind')]
         gate = dict(self.gate or {})
         passed = set(gate.get('passed') or [])
@@ -436,7 +450,22 @@ class WorkflowRun(models.Model):
                 if not sequence([key]):
                     return False
             return enter(len(d['stages'])) if bound else True
-        complete = main()
+        for _round in range(D.SEND_BACK_LIMIT + 2):
+            signals.pop('restart', None)
+            complete = main()
+            if not signals.get('restart') or signals.get('stop'):
+                break
+        if signals.get('stop'):
+            stopper = signals['stop']
+            reason = str(stopper.config.get('reason') or '').strip()
+            for s in steps.values():
+                if s.state not in ('done', 'skipped'):
+                    s._cancel_activity()
+                    internal(s).write({'state': 'skipped', 'error': _('Stopped by “%s”.', stopper.name)})
+            internal(self).write({'state': 'done', 'ended_at': fields.Datetime.now()})
+            self._log(_('Stopped here: %(step)s. %(why)s', step=stopper.name, why=reason) if reason
+                      else _('Stopped here: %s.', stopper.name), stopper)
+            return
         if bound:
             fresh = {'passed': sorted(passed)}
             if outcome.get('verdict') in ('wait', 'problem'):
@@ -591,7 +620,7 @@ class WorkflowStep(models.Model):
             internal(self).write({'started_at': fields.Datetime.now()})
         if self.kind in ('trigger', 'reference'):
             self._finish()
-        elif self.kind in ('task', 'input'):
+        elif self.kind in D.PEOPLE:
             uid = service._resolve_owner(run, n.get('owner', {}))
             user = self.env['res.users'].sudo().browse(uid).exists()
             if not user or not user.active or user.share or run.company_id not in user.company_ids:
@@ -623,7 +652,7 @@ class WorkflowStep(models.Model):
             if n.get('wait_for') and D.matches(n['wait_for'], run._condition_values(n)):
                 self._finish()
                 return
-            internal(self).write({'state': 'waiting', 'wake_at': fields.Datetime.now() + timedelta(hours=n['hours'])})
+            internal(self).write({'state': 'waiting', 'wake_at': service._wake_at(run, n)})
             run._log(_('Waiting for matching conditions.') if n.get('wait_for') else _('Waiting for the set time.'), self)
         elif self.kind == 'matrix':
             if self.approval_id:
@@ -671,6 +700,22 @@ class WorkflowStep(models.Model):
             run._log(_('Message queued in the existing mail service.'), self)
         elif self.kind == 'action':
             service._execute_action(source, n)
+            self._finish()
+        # WF2 P3b: each of these finishes, waits or skips itself
+        # (`workflow_steps.py`); none writes a record's own status.
+        elif self.kind == 'stage_move':
+            service._move_step(run, self, source if run.source_model else None, n)
+        elif self.kind == 'send_back':
+            service._send_back(run, self, n)
+        elif self.kind == 'update':
+            service._update_step(run, self, source, n)
+        elif self.kind == 'create':
+            service._create_step(run, self, source if run.source_model else None, n)
+        elif self.kind == 'notify':
+            service._notify_step(run, self, source if run.source_model else None, n)
+        elif self.kind == 'start':
+            service._start_step(run, self, n)
+        elif self.kind == 'end':
             self._finish()
 
 

@@ -19,7 +19,7 @@ from . import workflow_definition as D
 from .workflow_models import internal, system
 
 ENTER = [('auto', 'By itself'), ('person', 'A person moves it'), ('rule', 'When a rule matches')]
-OWNER_KINDS = ('initiator', 'user', 'role', 'manager', 'field', 'subject')
+OWNER_KINDS = D.OWNER_KINDS
 RUN = 'pb.workflow.run'
 
 
@@ -162,6 +162,7 @@ class WorkflowStageService(models.AbstractModel):
             label = next((f['label'] for f in self._source_fields(model) if f['key'] == owner.get('field')), '')
             return label or _('A person on this record')
         return {'manager': _('Their manager'), 'subject': _('The person this is about'),
+                'managers_manager': _('Their manager’s manager'),
                 'initiator': _('The person who started the workflow')}.get(kind, _('Someone'))
 
     def _enters_words(self, model, stage):
@@ -199,7 +200,7 @@ class WorkflowStageService(models.AbstractModel):
             f = next((f for f in self._source_fields(model) if f['key'] == owner.get('field')), {})
             if not model or f.get('type') != 'many2one' or f.get('relation') != 'res.users':
                 raise UserError(_('Choose a person field from this record.'))
-        if kind in ('manager', 'subject') and not model:
+        if kind in ('manager', 'subject', 'managers_manager') and not model:
             raise UserError(_('A new process has no record of its own. Choose a named person or a responsibility.'))
         if kind == 'subject' and not hasattr(self.env[model], '_workflow_subject'):
             raise UserError(_('This kind of record does not say who it is about. Choose someone else.'))
@@ -335,7 +336,7 @@ class WorkflowStageService(models.AbstractModel):
             'actor_id': (actor or self.env['res.users'].browse(SUPERUSER_ID)).id,
             'stage_id': stage.id if stage else False})
 
-    def _set_position(self, model, res_id, stage, company, run=None, mover=None):
+    def _set_position(self, model, res_id, stage, company, run=None, mover=None, by_workflow=False):
         """Put a record into a user-made stage. Never touches the record.
 
         No local may be called `user` or `uid` in a method that calls `_()`:
@@ -360,7 +361,7 @@ class WorkflowStageService(models.AbstractModel):
             if old:
                 self._stage_log(target, _('Left %s.', old.stage_id.name), actor=actor)
             text = _('Moved to %(stage)s by %(who)s.', stage=stage.name, who=actor.name) if mover else \
-                _('Moved to %s.', stage.name)
+                _('Moved to %s by the workflow.', stage.name) if by_workflow else _('Moved to %s.', stage.name)
             self._stage_log(target, text, stage=stage, actor=actor)
         return self.env['pb.workflow.record.stage'].sudo().browse(row.id)
 
@@ -698,7 +699,11 @@ class WorkflowStageService(models.AbstractModel):
         current = None
         if position:
             current = {'kind': 'yours', 'key': position.stage_id.id, 'name': position.stage_id.name,
-                       'since': str(position.entered_at), 'by': position.entered_by.name or ''}
+                       'since': str(position.entered_at),
+                       # The system account's own name is never shown (R7):
+                       # a move it made is "the workflow's".
+                       'by': _('the workflow') if position.entered_by.id == SUPERUSER_ID
+                       else position.entered_by.name or ''}
         elif status is not None:
             core = next((c for c in contract['stages'] if str(c['key']) == str(status)), None)
             if core:

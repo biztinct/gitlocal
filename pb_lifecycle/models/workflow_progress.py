@@ -1,6 +1,6 @@
 """Permission-checked runtime views shared by every business module."""
 import copy
-from odoo import api, fields, models, _
+from odoo import SUPERUSER_ID, api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 from .workflow_models import internal
 from . import workflow_definition as D
@@ -77,6 +77,18 @@ class WorkflowProgress(models.AbstractModel):
             if not manager:
                 raise UserError(_('Name the employee’s manager and link their user account in People.'))
             return manager[:1].id
+        if kind == 'managers_manager':
+            # WF2 P3b: one level up from the manager the area names.
+            manager = self.env['res.users'].sudo().browse(
+                self._resolve_owner_on(source, company, {'kind': 'manager'}, initiator))
+            Employee = self.env['hr.employee'].sudo()
+            boss_row = Employee.search([('user_id', '=', manager.id), ('company_id', '=', company.id)], limit=1) \
+                or Employee.search([('user_id', '=', manager.id)], limit=1)
+            boss = boss_row.parent_id.user_id
+            if not boss or not boss.active or boss.share:
+                raise UserError(_('%s has no manager with a staff login, so this cannot go to their manager’s manager.',
+                                  manager.name))
+            return boss.id
         if kind == 'role':
             role = self.env['biz.approval.role'].sudo().browse(owner.get('id', 0)).exists()
             if not role or role.is_pool:
@@ -144,6 +156,29 @@ class WorkflowProgress(models.AbstractModel):
                 reason = step.error or _('Another path was selected.')
             if step.state == 'waiting' and step.kind == 'wait' and step.config.get('wait_for'):
                 reason = _('Waiting for matching conditions; the shown time is the deadline.')
+            # WF2 P3b: what the new steps say about themselves.
+            extra = {}
+            if step.state == 'waiting' and step.kind == 'confirm':
+                reason = _('Waiting for the person to confirm')
+            if step.state == 'waiting' and step.kind == 'stage_move' and step.error:
+                reason = step.error
+            back = (step.answers or {}).get('_sent_back') if step.state == 'waiting' else None
+            if back:
+                reason = (_('Sent back by %(who)s: %(note)s', who=back.get('by'), note=back['note'])
+                          if back.get('note') and back.get('by') else
+                          _('Sent back by “%s” for changes.', back.get('from') or _('a later step')))
+            if step.kind == 'send_back' and str(step.choice or '').isdigit() and int(step.choice):
+                extra['loops'] = int(step.choice)
+            if step.state == 'done':
+                answers = step.answers or {}
+                if answers.get('outcome_label') and (step.kind == 'confirm' or len(D.buttons(step.config)) > 1):
+                    extra['answer'] = answers['outcome_label']
+                if step.error:
+                    extra['note'] = step.error
+                made = self._made(step) if step.kind in ('create', 'start') else None
+                if made:
+                    extra['link'] = {'model': made._name, 'id': made.id,
+                                     'label': made.display_name if made._name != 'pb.workflow.run' else made.name}
             approval = None
             if step.approval_id:
                 try:
@@ -156,7 +191,7 @@ class WorkflowProgress(models.AbstractModel):
                          'finished': str(step.done_at) if step.done_at else '',
                          'due': str(step.activity_id.date_deadline) if step.activity_id else '',
                          'wake_at': str(step.wake_at) if step.wake_at else '',
-                         'approval': approval})
+                         'approval': approval, **extra})
         return {'id': run.id, 'name': run.name, 'state': run.state,
                 'version': srun.version_id.number, 'graph': graph, 'steps': rows,
                 'source_model': run.source_model or '', 'source_id': run.source_id,
@@ -165,6 +200,11 @@ class WorkflowProgress(models.AbstractModel):
                 'workflow_id': srun.workflow_id.id if self._can_design() else None,
                 'record_stages': self._record_stages(run.source_model, self._source(run.source_model, run.source_id)) if run.source_model else [],
                 'record_stage': self._record_stage_safe(run.source_model or 'pb.workflow.run', run.source_id if run.source_model else run.id),
+                # WF2 P3b: what happened, step by step (plain sentences the
+                # run already keeps), so a send back and its redo can be read.
+                'history': [{'step': l.step_key or '', 'text': l.message, 'at': str(l.create_date),
+                             'by': '' if l.actor_id.id == SUPERUSER_ID else l.actor_id.name or ''}
+                            for l in srun.log_ids[-150:]],
                 'gate': {'section': (srun.gate or {}).get('section'), 'reason': (srun.gate or {}).get('reason', '')}
                         if run.state in ('running', 'waiting', 'failed') and (srun.gate or {}).get('reason') else None,
                 'can_read_submission': self._can_design() or run.initiator_id.id == self.env.uid or self.env.uid in srun.step_ids.mapped('approval_id.seat_ids.acting_user_id').ids,

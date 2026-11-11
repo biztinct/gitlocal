@@ -19,3 +19,5 @@ from . import workflow_record_context
 # WORKFLOW-2 P2: the module contract ("already happens") and user-made stages.
 from . import workflow_contract
 from . import workflow_stage
+# WORKFLOW-2 P3b: the eight new step types (after the facade they extend).
+from . import workflow_steps

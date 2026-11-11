@@ -52,7 +52,8 @@ class WorkflowContract(models.AbstractModel):
         """The module's contract, normalised; discovered when none is declared."""
         result = {'source': 'none', 'model': model or '', 'label': '', 'area': '', 'stage_field': '',
                   'stages': [], 'effects': [], 'has_subject': False, 'submits_itself': False,
-                  'approval_outcomes': {}, 'screen': '', 'own_stage_rows': False}
+                  'approval_outcomes': {}, 'screen': '', 'own_stage_rows': False,
+                  'safe_fields': [], 'adds_stages': False}
         if not model or model not in self.env:
             return result
         obj = self.env[model]
@@ -65,7 +66,11 @@ class WorkflowContract(models.AbstractModel):
                       submits_itself=bool(declared.get('submits_itself')),
                       approval_outcomes=dict(declared.get('approval_outcomes') or {}),
                       screen=declared.get('screen') or '',
-                      own_stage_rows=bool(declared.get('own_stage_rows')))
+                      own_stage_rows=bool(declared.get('own_stage_rows')),
+                      # WF2 P3b: values a workflow may set, and whether the
+                      # area adds a stage itself (Hiring, D10).
+                      safe_fields=[dict(f) for f in declared.get('safe_fields', []) if isinstance(f, dict) and f.get('key')],
+                      adds_stages=bool(declared.get('adds_stages')))
         if hasattr(obj, '_workflow_stage_options'):
             stages, result['source'] = obj._workflow_stage_options(record), 'declared'
         elif declared.get('stages'):
@@ -98,7 +103,7 @@ class WorkflowContract(models.AbstractModel):
         contract = self._contract(model)
         result['contract'] = {k: contract[k] for k in (
             'source', 'label', 'area', 'stage_field', 'has_subject', 'submits_itself', 'stages', 'screen',
-            'own_stage_rows')}
+            'own_stage_rows', 'adds_stages')}
         try:
             result['stage_catalogue'] = self.stage_catalogue(model, workflow_id) if (model or workflow_id) else None
         except (AccessError, UserError):
@@ -158,16 +163,49 @@ class WorkflowContract(models.AbstractModel):
                     add('workflow', {'stage': at, 'kind': 'message', 'audience': n.get('audience') or 'other',
                                      'owner': other.name, 'settings': {'workflow_id': other.id},
                                      'text': _('“%(w)s” sends “%(t)s”.', w=other.name, t=template.name or n.get('title', ''))})
-                elif n.get('type') in ('task', 'input'):
+                elif n.get('type') in D.PEOPLE:
                     owner = n.get('owner') or {}
                     add('workflow', {'stage': at, 'kind': 'todo', 'audience': self._owner_audience(owner),
                                      'owner': other.name, 'settings': {'workflow_id': other.id},
                                      'text': _('“%(w)s” gives %(who)s a task: “%(t)s”.', w=other.name,
                                                who=_lower_first(self._owner_words(model, owner)), t=n.get('title', ''))})
+                else:
+                    row = self._other_step_row(model, other, n)
+                    if row:
+                        add('workflow', dict(row, stage=at, owner=other.name, settings={'workflow_id': other.id}))
         return out
 
+    def _other_step_row(self, model, other, n):
+        """Another workflow's WF2 P3b step as an "already happens" row
+        (`ref` lets a double-up check match it exactly)."""
+        kind = n.get('type')
+        if kind == 'notify':
+            owner = n.get('owner') or {}
+            return {'kind': 'message', 'audience': self._owner_audience(owner), 'ref': 'notify',
+                    'text': _('“%(w)s” tells %(who)s in the app: “%(t)s”.', w=other.name,
+                              who=_lower_first(self._owner_words(model, owner)), t=n.get('title', ''))}
+        if kind == 'update':
+            spec = self._safe_spec(model, n.get('field')) or {}
+            return {'kind': 'change', 'audience': 'other', 'ref': 'update:%s' % n.get('field'),
+                    'text': _('“%(w)s” sets %(f)s.', w=other.name, f=spec.get('label') or n.get('field'))}
+        if kind == 'create':
+            creator = self._creator(n.get('creator')) or {}
+            return {'kind': 'record', 'audience': 'other', 'ref': 'create:%s:%s' % (n.get('creator'), n.get('template_id')),
+                    'text': _('“%(w)s” makes a draft: “%(t)s”.', w=other.name, t=n.get('title', ''))
+                    if creator else ''}
+        if kind == 'start':
+            target = self.env['pb.workflow'].sudo().browse(int(n.get('workflow_id') or 0)).exists()
+            return {'kind': 'change', 'audience': 'other', 'ref': 'start:%s' % n.get('workflow_id'),
+                    'text': _('“%(w)s” hands over to “%(t)s”.', w=other.name, t=target.name or n.get('title', ''))}
+        if kind == 'stage_move':
+            stage = self.env['pb.workflow.stage'].sudo().browse(int((n.get('target') or {}).get('id') or 0)).exists()
+            return {'kind': 'change', 'audience': 'other', 'ref': 'stage:%s' % ((n.get('target') or {}).get('id')),
+                    'text': _('“%(w)s” moves it to %(s)s.', w=other.name, s=stage.name or n.get('title', ''))}
+        return None
+
     def _owner_audience(self, owner):
-        return {'manager': 'manager', 'subject': 'requester'}.get((owner or {}).get('kind'), 'other')
+        return {'manager': 'manager', 'managers_manager': 'manager',
+                'subject': 'requester'}.get((owner or {}).get('kind'), 'other')
 
     def _bind_key(self, section):
         """The stage a section waits for, as an effect `stage` value."""
@@ -258,6 +296,7 @@ class WorkflowContract(models.AbstractModel):
             issues += binding + self._same_path_templates(definition)
             if not binding:
                 issues += self._repeat_warnings(w, definition)
+            issues += self._send_back_warnings(definition) + self._same_path_creates(definition)
         except (KeyError, TypeError, AttributeError, IndexError, ValueError):
             pass
         return issues
@@ -341,9 +380,53 @@ class WorkflowContract(models.AbstractModel):
                                 'text': _('This message is already sent by another step on the same path.')})
         return out
 
+    def _send_back_warnings(self, d):
+        """A send back over a message or a notice sends it again (WF2 P3b).
+        Errors (an approval or a change in between) are D's; this is the
+        warning the designer keeps on purpose."""
+        out, nodes, parent_map = [], {n['id']: n for n in d['nodes']}, D.parents(d)
+        for n in d['nodes']:
+            if n['type'] != 'send_back' or n.get('target') not in d['order']:
+                continue
+            again = [nodes[x]['title'] for x in D.between(d, n['target'], n['id'], parent_map)
+                     if nodes[x]['type'] in D.TELLS]
+            if again:
+                out.append({'id': n['id'], 'code': 'send_back_repeats', 'severity': 'warning',
+                            'acknowledged': bool(n.get('ack_repeat')), 'existing': '', 'existing_source': 'workflow',
+                            'text': _('Going back sends these again: %s.', ', '.join(again))})
+        return out
+
+    def _same_path_creates(self, d):
+        """The same draft made twice on one path is an error, like the same
+        email twice (`_same_path_templates`)."""
+        made = [n for n in d['nodes'] if n['type'] == 'create' and n.get('creator') and type(n.get('template_id')) is int]
+        if len(made) < 2:
+            return []
+        parent_map = D.parents(d)
+        def chosen(key):
+            out, at, guard = {}, key, 0
+            while at in parent_map and guard < 50:
+                group, branch = parent_map[at]
+                if branch and group['type'] == 'branch':
+                    out[group['id']] = branch
+                at, guard = group['id'], guard + 1
+            return out
+        out, flagged = [], set()
+        for i, a in enumerate(made):
+            for b in made[i + 1:]:
+                if (a['creator'], a['template_id']) != (b['creator'], b['template_id']) or b['id'] in flagged:
+                    continue
+                pa, pb = chosen(a['id']), chosen(b['id'])
+                if not any(g in pb and pb[g] != pa[g] for g in pa):
+                    flagged.add(b['id'])
+                    out.append({'id': b['id'], 'code': 'duplicate_create', 'severity': 'error',
+                                'text': _('Another step on the same path already makes this draft.')})
+        return out
+
     def _repeat_warnings(self, w, d):
         model = w.source_model
-        if not model or not any(n['type'] in ('email', 'task', 'input', 'matrix') for n in d['nodes']):
+        if not model or not any(n['type'] in ('email', 'task', 'input', 'matrix', 'confirm', 'notify', 'update',
+                                               'create', 'start', 'stage_move') for n in d['nodes']):
             return []
         contract = self._contract(model)
         effects = self._existing(model, w.company_id, exclude=w if w.id else None)
@@ -363,7 +446,28 @@ class WorkflowContract(models.AbstractModel):
                 if hit:
                     warn(n, hit, _('%(owner)s already does this here: %(text)s This step would send a second message.',
                                    owner=hit['owner'], text=_lower_first(hit['text'])))
-            elif n['type'] in ('task', 'input') and at is not None:
+            elif n['type'] == 'notify' and at is not None:
+                audience = self._owner_audience(n.get('owner'))
+                hit = next((e for e in effects if e['kind'] == 'message' and str(e['stage']) == str(at)
+                            and audience != 'other' and e['audience'] == audience), None)
+                if hit:
+                    warn(n, hit, _('%(owner)s already does this here: %(text)s This step would tell them a second time.',
+                                   owner=hit['owner'], text=_lower_first(hit['text'])))
+            elif n['type'] in ('update', 'create', 'start', 'stage_move'):
+                ref = {'update': 'update:%s' % n.get('field'),
+                       'create': 'create:%s:%s' % (n.get('creator'), n.get('template_id')),
+                       'start': 'start:%s' % n.get('workflow_id'),
+                       'stage_move': 'stage:%s' % ((n.get('target') or {}).get('id'))}[n['type']]
+                hit = next((e for e in effects if e.get('ref') == ref and e['source'] == 'workflow'), None)
+                if hit:
+                    warn(n, hit, _('Another workflow already does this: %(text)s This step would do it a second time.',
+                                   text=_lower_first(hit['text'])))
+                elif n['type'] == 'stage_move':
+                    stage = self.env['pb.workflow.stage'].sudo().browse(int((n.get('target') or {}).get('id') or 0)).exists()
+                    if stage and stage.enter in ('auto', 'rule'):
+                        warn(n, {'text': '', 'source': 'workflow'},
+                             _('“%s” already gets records by itself. This step would move them there a second way.', stage.name))
+            elif n['type'] in D.PEOPLE and at is not None:
                 audience = self._owner_audience(n.get('owner'))
                 wanted = {'manager', 'approver'} if audience == 'manager' else {audience} if audience != 'other' else set()
                 hit = next((e for e in effects if e['kind'] == 'todo' and str(e['stage']) == str(at)
