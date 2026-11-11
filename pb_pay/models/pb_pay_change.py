@@ -24,6 +24,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from .pay_single_notice import pay_group_rest
+
 _logger = logging.getLogger(__name__)
 
 GROUP_MANAGER = 'pb_pay.group_pay_manager'
@@ -357,7 +359,10 @@ class PbPayChange(models.Model):
             lambda u: u.active and u.id != self.env.uid)[:10]
 
         def send(users, self=self):   # `self` keeps _() on the env's language (G12)
-            for person in users:
+            # WF2 P5a (D26): with a live route only the person whose turn it
+            # is is told; the rest of the group reads it in Approvals ›
+            # Everyone (anyone who cannot open that keeps this to-do)
+            for person in pay_group_rest(self, users):
                 try:
                     self.activity_schedule(
                         act_type_xmlid='mail.mail_activity_data_todo',

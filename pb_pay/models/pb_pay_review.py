@@ -41,6 +41,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from .bands_approval import BANDS_WRITE
+from .pay_single_notice import pay_group_rest
 
 
 _logger = logging.getLogger(__name__)
@@ -505,7 +506,10 @@ class PbPayReview(models.Model):
         people = people.filtered(lambda u: u.active and u.id != self.env.uid)
 
         def send(users, self=self):   # `self` keeps _() on the env's language (G12)
-            for person in users:
+            # WF2 P5a (D26): with a live route only the person whose turn it
+            # is is told; the rest of the group reads it in Approvals ›
+            # Everyone (anyone who cannot open that keeps this to-do)
+            for person in pay_group_rest(self, users):
                 try:
                     self.activity_schedule(
                         act_type_xmlid='mail.mail_activity_data_todo',
