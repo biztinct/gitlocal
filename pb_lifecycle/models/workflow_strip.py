@@ -189,7 +189,7 @@ class WorkflowStrip(models.AbstractModel):
                 allowed = False
             rows.append({'stage_id': stage.id, 'name': stage.name, 'allowed': allowed,
                          'reason': '' if allowed else _('Only %(who)s can move this to %(stage)s.',
-                                                        who=self._owner_words(model, stage.enter_owner),
+                                                        who=self._lower_words(self._owner_words(model, stage.enter_owner)),
                                                         stage=stage.name)})
         return rows
 
@@ -450,7 +450,7 @@ class WorkflowStrip(models.AbstractModel):
                                            ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting'])])
         if not self._home_names(person, record, stage, waiting[:1].initiator_id if waiting else None):
             return {'ok': False, 'code': 'who', 'message': _('Only %(who)s can move this to %(stage)s.',
-                                              who=service._owner_words(model, stage.enter_owner), stage=stage.name)}
+                                              who=service._lower_words(service._owner_words(model, stage.enter_owner)), stage=stage.name)}
         service._set_position(model, record.id, stage, company, run=waiting[:1] if waiting else None,
                               mover=service.env['res.users'].browse(person.id))
         for run in waiting:

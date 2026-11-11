@@ -287,7 +287,7 @@ class WorkflowTimeReport(models.AbstractModel):
         visits = defaultdict(list)
         for v in self.env['pb.workflow.stage.visit'].sudo().search([
                 ('company_id', '=', company.id), ('res_model', '=', model), ('res_id', 'in', records.ids)]):
-            visits[v.res_id].append(('yours', v.stage_id.id, v.entered_at, v.left_at))
+            visits[v.res_id].append(('yours', v.stage_id.id, v.entered_at, v.left_at or None))
         out = {}
         for record in records:
             history = changes.get(record.id, [])
@@ -343,8 +343,12 @@ class WorkflowTimeReport(models.AbstractModel):
             return {'workflow_id': w.id, 'period': period, 'empty': True}
         runs = Run.search(domain + ([('create_date', '>=', since)] if since else []), order='id desc', limit=MAX_RUNS)
         model = w.source_model or ''
-        stages_out, sitting_runs = self._report_stages(w, model, company, runs, since, now)
-        steps_out = self._report_steps(w, runs, now)
+        try:
+            stages_out, _live = self._report_stages(w, model, company, runs, since, now)
+            steps_out = self._report_steps(w, runs, now)
+        except Exception:  # noqa: BLE001 — a plain sentence, never a server message
+            _logger.exception('Where time goes failed for workflow %s', w.id)
+            raise UserError(_('Where time goes could not be worked out just now. Try again in a moment.'))
         first = min([r.create_date for r in Run.search(domain, order='id', limit=1)] +
                     [v.entered_at for v in self.env['pb.workflow.stage.visit'].sudo().search(
                         [('company_id', '=', company.id), ('res_model', '=', model or RUN)], order='entered_at', limit=1)])
@@ -383,7 +387,7 @@ class WorkflowTimeReport(models.AbstractModel):
             lines = defaultdict(list)
             for v in self.env['pb.workflow.stage.visit'].sudo().search([
                     ('company_id', '=', company.id), ('res_model', '=', RUN), ('res_id', 'in', runs.ids)]):
-                lines[v.res_id].append(('yours', v.stage_id.id, v.entered_at, v.left_at))
+                lines[v.res_id].append(('yours', v.stage_id.id, v.entered_at, v.left_at or None))
             live_ids = set(runs.filtered(lambda r: r.state in ('running', 'waiting', 'failed', 'held')).ids)
             runs_of = {i: [i] for i in live_ids}
         starts = [seg[2] for segs in lines.values() for seg in segs if seg[2]]

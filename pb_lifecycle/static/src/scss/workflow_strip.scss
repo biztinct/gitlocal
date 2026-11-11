@@ -183,13 +183,24 @@
 }
 
 // ------------------------------------------------------------ where it sits
-// A record screen: above the form sheet, as wide as the sheet.
-.pbwfs-host { max-width: 1140px; margin: 12px auto 0; padding: 0 16px; }
+// A record screen: above the form sheet, on the sheet's own background and
+// lined up with the cards inside the sheet (the sheet keeps 24px inside).
+// While its menu or a "+3" is open it lifts over the sheet's sticky status
+// bar (z 1020); otherwise it stays under it, so scrolling never covers the bar.
+.pbwfs-host:has(.pbwfs-menu, .pbwfs-more[open]) { z-index: 1021; }
+.pbwfs-host { background: #f4f6fb; padding: 16px 8px 0 16px; position: relative; z-index: 5;
+    // No Sass max()/min() with calc() here: the server's compiler refuses
+    // them and the whole backend style sheet falls back (ledger G46).
+    > .pbwfs { max-width: 1272px; width: calc(100% - 48px); margin: 0 auto; }
+    @media (max-width: 767.98px) { padding: 10px 10px 0; > .pbwfs { width: auto; } }
+}
 // A cockpit drawer (Hiring's candidate drawer): inside its padding.
 .pbhr-cdrawer > .pbwfs { margin: 10px 16px 6px; }
 // The employee home: inside the page's own column.
 .pbwfs-wrap { max-width: 760px; margin: 0 auto 14px; }
-.pbwfs-wrap--task { margin-bottom: 18px; }
+.pbwfs-wrap--task { margin-bottom: 18px; max-width: 640px; }
+// The expense claim page is a little wider; line up with its own card.
+.pbwfs-wrap--claim { max-width: 880px; }
 .pbwfs--page { margin: 0; }
 
 // My requests: one quiet line under the title.
@@ -201,6 +212,10 @@
 
 // ---------------------------------------------------------------- the drawer
 // "Do it now" opens the task in place (the same task page the inbox shows).
+// The drawer is portalled to the page body, so it carries its own tokens.
+.pbwfs-portal { --pbwfs-brand-soft: #f0ecff; --pbwfs-brand-ink: #3d2f86; font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    .pbwfs-chip { padding: 6px; }
+}
 .pbwfs-scrim { position: fixed; inset: 0; z-index: 1040; background: #1f1d2b; opacity: .34; animation: pbwfs-fade .16s ease both; }
 @keyframes pbwfs-fade { from { opacity: 0; } to { opacity: .34; } }
 .pbwfs-drawer {

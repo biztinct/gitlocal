@@ -17,7 +17,7 @@ async function loadTime(period){
  if(period)t.period=period;
  t.loading=true;t.error='';
  try{t.data=await rpc('time_report',[S.w.id,t.period]);}
- catch(e){t.error=e.message||'This could not load.';t.data=null;}
+ catch(e){t.error='Where time goes could not be worked out just now.';t.data=null;console.warn('time_report',e.message);}
  finally{t.loading=false;}
  if(S.page==='editor'&&S.tab==='runs')render();
 }

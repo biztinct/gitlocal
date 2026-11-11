@@ -63,7 +63,9 @@ export class WorkflowStrip extends Component {
         this.icons = ICONS;
         this.state = useState({ strip: this.props.strip, index: 0, menu: false, busy: false, task: null, note: null });
         onWillUpdateProps((next) => {
-            if (next.strip !== this.props.strip) {
+            // A strip this component just applied itself (a move, a done
+            // task) keeps its own note; a new record starts clean.
+            if (next.strip !== this.props.strip && next.strip !== this.state.strip) {
                 this.state.strip = next.strip;
                 this.state.note = null;
                 if (this.state.index >= ((next.strip && next.strip.workflows) || []).length) { this.state.index = 0; }

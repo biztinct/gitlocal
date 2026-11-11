@@ -56,7 +56,7 @@
         <button class="pbms-dock__tasks" t-if="taskCount" t-on-click="() => this.openQueue()"
                 t-attf-aria-label="{{ taskCount }} workflow {{ taskCount === 1 ? 'task' : 'tasks' }} for you. Open Approvals.">
           <span class="pbms-dock__tasksic" t-out="ic('checkCircle', 13)"/>
-          <span class="pbms-dock__taskst"><b t-esc="taskCount"/> <t t-if="taskCount === 1">task for you</t><t t-else="">tasks for you</t></span>
+          <span class="pbms-dock__taskst"><b t-esc="taskCount"/> <t t-if="taskCount === 1">workflow task for you</t><t t-else="">workflow tasks for you</t></span>
           <span t-out="ic('chevron', 12)"/>
         </button>
 
