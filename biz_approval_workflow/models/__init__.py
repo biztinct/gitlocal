@@ -21,3 +21,5 @@ from . import chain_shim
 from . import ir_http
 # WF2 P3b: what an "Other request" tells Workflow Studio (read-only).
 from . import workflow_contract
+# WF2 P4a: the late job and the outbox reused by workflow tasks (add-only).
+from . import late_extra

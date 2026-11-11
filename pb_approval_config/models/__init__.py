@@ -6,3 +6,5 @@ from . import inbox_facade
 from . import matrix_import
 # LEARNREV P5a - the Guide's "Right now" for the Approval Matrix.
 from . import matrix_learn
+# WF2 P4a - an add-only seam for work that is not an approval (tasks).
+from . import inbox_extra
