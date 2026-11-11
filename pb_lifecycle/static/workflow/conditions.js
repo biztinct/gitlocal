@@ -8,7 +8,10 @@ function availableFields(){
   {key:'workflow.completed_stages',label:'This workflow · completed section',type:'ids',options:S.w.definition.stages.map((s,i)=>[i,s.name])}];
 }
 function conditionLeaves(rule){return !rule?[]:rule.rules?rule.rules.flatMap(conditionLeaves):[rule];}
-function editRoot(path){return /^(scope|trigger)\./.test(path)||path==='scope'?S.w.definition:byId(S.w.definition,S.selected);}
+/* `stageForm.*` paths edit the Stages sheet's unsaved form, not the definition. */
+const formPath=path=>/^stageForm\./.test(path||'');
+function editRoot(path){return formPath(path)?S:/^(scope|trigger)\./.test(path)||path==='scope'?S.w.definition:byId(S.w.definition,S.selected);}
+function applyEdit(path,fn,redraw=true){if(formPath(path)){fn();renderSheet();return;}mutate(fn,redraw);}
 function atPath(path){return path.split('.').reduce((o,k)=>o?.[k],editRoot(path));}
 function ruleOptions(f){return f?.options?.map(o=>Array.isArray(o)?o:[o,o])||[];}
 function operators(f){
@@ -42,17 +45,17 @@ function sampleInput(f){const choices=ruleOptions(f);return `<${choices.length||
 async function conditionAction(name,el){
  const path=el.dataset.path;
  if(name==='condition-add'||name==='condition-group'){
-  const available=/^(scope|trigger)/.test(path)?S.w.metadata.fields:availableFields(),f=available[0];
+  const available=/^(scope|trigger)/.test(path)||formPath(path)?S.w.metadata.fields:availableFields(),f=available[0];
   if(!f)throw Error('No accessible fields are available for this record.');
   const rule={field:f.key,op:'eq',value:defaultRuleValue(f)};
-  mutate(()=>{let tree=atPath(path);if(!tree){tree={match:'all',rules:[]};setPath(editRoot(path),path,tree);}if(!tree.rules){tree={match:'all',rules:[tree]};setPath(editRoot(path),path,tree);}tree.rules.push(name==='condition-group'?{match:'any',rules:[rule]}:rule);});return true;
+  applyEdit(path,()=>{let tree=atPath(path);if(!tree){tree={match:'all',rules:[]};setPath(editRoot(path),path,tree);}if(!tree.rules){tree={match:'all',rules:[tree]};setPath(editRoot(path),path,tree);}tree.rules.push(name==='condition-group'?{match:'any',rules:[rule]}:rule);});return true;
  }
  if(name==='condition-remove'){
-  mutate(()=>{if(/\.rules\.\d+$/.test(path)){const parts=path.split('.'),i=Number(parts.pop()),arr=parts.reduce((o,k)=>o[k],editRoot(path));arr.splice(i,1);const parent=parts.slice(0,-1).join('.');if(!arr.length&&parent!=='scope'){const keys=parent.split('.'),last=keys.pop();delete keys.reduce((o,k)=>o[k],editRoot(path))[last];}}else if(path==='scope')S.w.definition.scope={match:'all',rules:[]};else{const keys=path.split('.'),last=keys.pop();delete keys.reduce((o,k)=>o[k],editRoot(path))[last];}});return true;
+  applyEdit(path,()=>{if(/\.rules\.\d+$/.test(path)){const parts=path.split('.'),i=Number(parts.pop()),arr=parts.reduce((o,k)=>o[k],editRoot(path));arr.splice(i,1);const parent=parts.slice(0,-1).join('.');if(!arr.length&&parent!=='scope'){const keys=parent.split('.'),last=keys.pop();delete keys.reduce((o,k)=>o[k],editRoot(path))[last];}}else if(path==='scope')S.w.definition.scope={match:'all',rules:[]};else{const keys=path.split('.'),last=keys.pop();delete keys.reduce((o,k)=>o[k],editRoot(path))[last];}});return true;
  }
  if(name==='filter-lookup'){S.filterLookup=path;modal('Choose a matching record','<div class="row"><input id="condition-search" placeholder="Search by name" aria-label="Find a matching record">'+btn('filter-search','Search','search')+'</div><div id="condition-results" class="choice-list"></div>');await conditionAction('filter-search',el);return true;}
  if(name==='filter-search'){const r=atPath(S.filterLookup);S.conditionResults=await rpc('filter_choices',[S.w.id,r.field,$('#condition-search').value,r.value||null]);$('#condition-results').innerHTML=S.conditionResults.map(r=>btn('filter-picked',esc(r.name),'','',`data-id="${r.id}"`)).join('')||'<p>No accessible matches.</p>';return true;}
- if(name==='filter-picked'){const r=S.conditionResults.find(r=>r.id===Number(el.dataset.id));mutate(()=>Object.assign(atPath(S.filterLookup),{value:r.id,value_label:r.name}));close();return true;}
+ if(name==='filter-picked'){const r=S.conditionResults.find(r=>r.id===Number(el.dataset.id));const at=S.filterLookup;close();applyEdit(at,()=>Object.assign(atPath(at),{value:r.id,value_label:r.name}));return true;}
  return false;
 }
 function defaultRuleValue(f){return ruleOptions(f)[0]?.[0]??(f?.type==='boolean'?true:['number','float','monetary','integer','many2one','ids'].includes(f?.type)?0:'');}

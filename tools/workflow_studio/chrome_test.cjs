@@ -19,7 +19,7 @@ try{
  await frame.getByRole('button',{name:'Activity',exact:true}).last().click();
  await frame.locator('tr').filter({hasText:'UI verification · expense progress'}).getByRole('button',{name:'View flow',exact:true}).click();
  await frame.locator('.node.current').filter({hasText:'Check supporting details'}).waitFor();
- assert.equal(await frame.getByText('● You are here',{exact:true}).count(),2);
+ assert.equal(await frame.getByText('You are here',{exact:true}).count(),2);
  await frame.getByRole('button',{name:'Back to record',exact:true}).click();
  await page.getByRole('button',{name:'View workflow',exact:true}).waitFor({timeout:30000});
  await page.getByRole('button',{name:'View workflow',exact:true}).click();
@@ -55,7 +55,7 @@ try{
  await frame.getByRole('button',{name:'Undo',exact:true}).click();
  names=await frame.locator('.journey .node h3').allTextContents();assert.ok(names.indexOf('Provide request details')<names.indexOf('Prepare response'));
  console.log('PASS: real flowchart drag changes step order; Undo restores it');
- await frame.getByRole('button',{name:'Stages',exact:true}).click();await frame.locator('[data-stage-name="1"]').fill('Team review');await frame.locator('[data-stage-name="1"]').press('Tab');await frame.getByRole('button',{name:'Save stages'}).click();
+ await frame.getByRole('button',{name:'Stages',exact:true}).click();await frame.locator('#sheet [data-act="heading-rename"][data-index="1"]').click();await frame.locator('[data-heading-name="1"]').fill('Team review');await frame.locator('[data-heading-name="1"]').press('Enter');await frame.getByRole('button',{name:'Done',exact:true}).click();
  await frame.getByRole('button',{name:'Review',exact:true}).first().click();
  await frame.getByText('The workflow is ready to publish',{exact:true}).waitFor();
  await frame.getByRole('button',{name:'Publish version'}).click();
