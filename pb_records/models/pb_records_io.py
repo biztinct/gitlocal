@@ -160,7 +160,7 @@ class PbRecordsDeskIo(models.AbstractModel):
         return labels
 
     @api.model
-    def _io_export_value(self, probe, card, employee, contract):
+    def _io_export_value(self, probe, card, employee, contract, memo=None):
         """One cell, as a spreadsheet should hold it.
 
         Numbers stay numbers and dates stay DATES — a date written as text is a
@@ -169,7 +169,7 @@ class PbRecordsDeskIo(models.AbstractModel):
         Everything else is written exactly as the grid shows it, which is what
         makes the file readable and the round trip lossless at the same time.
         """
-        cell = self._read_cell(probe, card, employee, contract)
+        cell = self._read_cell(probe, card, employee, contract, memo)
         if cell.get('missing'):
             return None, None
         kind = card['id'][:1]
@@ -336,6 +336,7 @@ class PbRecordsDeskIo(models.AbstractModel):
                                      max(2, len(employees) + 1)))
 
         empty_contract = self.env[CON]
+        memo = {}       # UPDATES P2a: per-call reads, gone with this call
         for r, emp in enumerate(employees, start=2):
             contract = contracts.get(emp.id) or empty_contract
             ws.cell(row=r, column=1, value=emp.barcode or emp.employee_id or '')
@@ -344,7 +345,8 @@ class PbRecordsDeskIo(models.AbstractModel):
             if mode == 'template':
                 continue
             for offset, card in enumerate(picked):
-                value, numfmt = self._io_export_value(probe, card, emp, contract)
+                value, numfmt = self._io_export_value(probe, card, emp,
+                                                      contract, memo)
                 if value is None:
                     continue
                 cell = ws.cell(row=r, column=first_data_col + offset, value=value)

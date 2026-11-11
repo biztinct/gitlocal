@@ -66,6 +66,32 @@ BANK_ROLE_LABELS = {
 BANK_ROLE_ORDER = ('acc_number', 'bank_name', 'bank_bic', 'acc_holder_name')
 
 
+class _LightRow:
+    """A read-only stand-in for one record, for the shared read helpers.
+
+    UPDATES P2a. `_mapped_record_value` and `_bank_record_value` take a
+    mapping RECORD and read four or five of its attributes on every cell.
+    Every attribute of every record passes through the access guard's
+    `__getattribute__` hook, so a 4,575 × 73 sheet spent most of its time
+    re-reading the same mapping row 333,000 times. This object answers the
+    attributes those helpers ask for from plain Python attributes, copied
+    once from the real row, and hands every other question to the real
+    record — so the ONE implementation of "what does this mapped field
+    hold" stays the only one. The record values themselves (`getattr(record,
+    field.name)`) are still read through the guarded path.
+    """
+
+    def __init__(self, real, **values):
+        self._real = real
+        self.__dict__.update(values)
+
+    def __getattr__(self, name):       # only for names not copied above
+        return getattr(self._real, name)
+
+    def __bool__(self):
+        return bool(self._real)
+
+
 class PbRecordsDesk(models.AbstractModel):
     _name = 'pb.records.desk'
     # FILTER W6 (2026-10-31): the WHO rail is the shared filter panel. Its
@@ -719,11 +745,11 @@ class PbRecordsDesk(models.AbstractModel):
         return self._apply_post_filters(employees, filters, skip=skip, ctx=ctx)
 
     @api.model
-    def _person_row(self, probe, picked, emp, signals):
+    def _person_row(self, probe, picked, emp, signals, memo=None):
         contract = probe._get_latest_contract(emp) or self.env[CON]
         values = {}
         for card in picked:
-            values[card['id']] = self._read_cell(probe, card, emp, contract)
+            values[card['id']] = self._read_cell(probe, card, emp, contract, memo)
         return {
             'id': emp.id,
             'name': emp.display_name or emp.name or '',
@@ -760,7 +786,8 @@ class PbRecordsDesk(models.AbstractModel):
         picked = [cards[fid] for fid in (field_ids or []) if fid in cards]
         probe = self._probe(config_id)
         signals = self._pbf_feed()['signals']
-        rows = [self._person_row(probe, picked, emp, signals) for emp in page]
+        memo = {}
+        rows = [self._person_row(probe, picked, emp, signals, memo) for emp in page]
         return {'total': total, 'offset': offset, 'rows': rows}
 
     @api.model
@@ -778,7 +805,8 @@ class PbRecordsDesk(models.AbstractModel):
         # The row's own status chip needs the signals; the facets need them too,
         # and both read the one copy in `ctx`.
         signals = self._ctx_signals(ctx) if self._ctx_statuses(ctx) else {}
-        rows = [self._person_row(probe, picked, emp, signals) for emp in page]
+        memo = {}
+        rows = [self._person_row(probe, picked, emp, signals, memo) for emp in page]
         wants_facets = (int(offset) == 0) if with_facets is None else bool(with_facets)
         return {'total': total, 'offset': int(offset), 'rows': rows,
                 'facets': self._facets(filters, ctx) if wants_facets else None}
@@ -890,19 +918,50 @@ class PbRecordsDesk(models.AbstractModel):
         return self.env['hr.payroll.import.batch'].sudo().new(vals)
 
     @api.model
-    def _advantage_line(self, probe, contract, code):
+    def _advantage_line(self, probe, contract, code, memo=None):
         if not contract:
             return None
-        return probe._get_contract_advantage_map(contract).get(code)
+        if memo is None:
+            return probe._get_contract_advantage_map(contract).get(code)
+        # UPDATES P2a: one walk of a contract's lines per call, not one per
+        # cell — 26 components × 4,575 people walked every line every time.
+        key = ('adv', contract.id)
+        lines = memo.get(key)
+        if lines is None:
+            lines = memo[key] = probe._get_contract_advantage_map(contract)
+        return lines.get(code)
 
     @api.model
-    def _read_cell(self, probe, card, employee, contract):
+    def _light_mapping(self, card):
+        """The card's mapping as a `_LightRow` — built once per card, per
+        call (cards are rebuilt by every `_cards()` call, so this never
+        outlives a request). See `_LightRow` for why."""
+        light = card.get('_light')
+        if light is None:
+            mapping = card['_mapping']
+            values = {'destination_type': mapping.destination_type}
+            if mapping.destination_type == 'bank_account':
+                values['bank_role'] = mapping.bank_role
+            else:
+                model = mapping.target_model_id
+                field = mapping.target_field_id
+                values['target_model_id'] = _LightRow(model, model=model.model)
+                values['target_field_id'] = _LightRow(
+                    field, name=field.name, ttype=field.ttype)
+            light = card['_light'] = _LightRow(mapping, **values)
+        return light
+
+    @api.model
+    def _read_cell(self, probe, card, employee, contract, memo=None):
         """`{v, label}` — the raw value to compare/write and the text to show.
 
         The LABEL of a selection or a many2one comes from
         `_mapped_record_value`, so the desk shows exactly what an import sees;
         the raw half is read off the record here because that method returns
         only the label and a grid needs the key it will write back.
+
+        `memo` (UPDATES P2a, optional) is the caller's per-call dict; with it
+        a contract's component lines are walked once, not once per cell.
         """
         kind = card['id'][:1]
         if kind == 'f':
@@ -911,8 +970,27 @@ class PbRecordsDesk(models.AbstractModel):
                 return {'v': None, 'label': '', 'missing': True}
             field = card['_field']
             raw = record[card['field']]
-            label = probe._mapped_record_value(
-                card['_mapping'], contract=contract, employee=employee)
+            label_key = None
+            if memo is not None:
+                # The label is a function of (field, value) alone — the helper
+                # reads exactly `record[field]` and formats it — so one call
+                # per distinct value answers every cell holding that value:
+                # 4,575 people in 30 departments ask it 30 times, not 4,575.
+                label_key = ('label', card['id'],
+                             raw.id if field.type == 'many2one' else raw)
+                try:
+                    if label_key in memo:
+                        label = memo[label_key]
+                    else:
+                        label = memo[label_key] = probe._mapped_record_value(
+                            self._light_mapping(card), contract=contract,
+                            employee=employee)
+                except TypeError:          # an unhashable value: ask directly
+                    label_key = None
+            if label_key is None:
+                label = probe._mapped_record_value(
+                    self._light_mapping(card), contract=contract,
+                    employee=employee)
             if field.type == 'many2one':
                 return {'v': raw.id or False, 'label': str(label or '')}
             if field.type == 'boolean':
@@ -932,12 +1010,13 @@ class PbRecordsDesk(models.AbstractModel):
             return {'v': raw if raw not in (None, False) else '',
                     'label': str(label or '')}
         if kind == 'b':
-            value = probe._bank_record_value(card['_mapping'], employee=employee)
+            value = probe._bank_record_value(self._light_mapping(card),
+                                             employee=employee)
             return {'v': value or '', 'label': str(value or '')}
         if kind == 'c':
             if not contract:
                 return {'v': None, 'label': '', 'missing': True}
-            line = self._advantage_line(probe, contract, card['code'])
+            line = self._advantage_line(probe, contract, card['code'], memo)
             if card['ttype'] == 'text_component':
                 text = (line.text_value if line else '') or ''
                 return {'v': text, 'label': text}
@@ -1289,8 +1368,9 @@ class PbRecordsDesk(models.AbstractModel):
 
         wanted_ids = [int(c.get('emp_id')) for c in (changes or [])
                       if c.get('emp_id')]
+        # One id per person (a full sheet repeats each id per cell).
         in_scope = set(Employee.search(
-            [('id', 'in', wanted_ids)] + self._company_domain()).ids)
+            [('id', 'in', sorted(set(wanted_ids)))] + self._company_domain()).ids)
         employees = {e.id: e for e in Employee.browse(sorted(set(wanted_ids))).exists()}
         contracts = {}
         can_write = {EMP: self._may_write(EMP), CON: self._may_write(CON)}
@@ -1326,7 +1406,7 @@ class PbRecordsDesk(models.AbstractModel):
                                         "this. Ask an administrator.")))
                 continue
 
-            current = self._read_cell(probe, card, employee, contract)
+            current = self._read_cell(probe, card, employee, contract, memo)
             if current.get('missing'):
                 items.append(dict(base, old_label='', new_label='',
                                   status='refused',

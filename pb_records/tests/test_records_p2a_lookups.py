@@ -271,6 +271,34 @@ class TestRecordsP2aLookups(TransactionCase):
         self.assertEqual(res['counts']['ok'], 20)
         self.assertEqual(len(calls), 1, calls)
 
+    def test_A9b_memoised_reads_equal_direct_reads(self):
+        """Every Master card, every fixture person: a cell read with the
+        per-call memo (light mapping, remembered labels and component lines)
+        equals the direct read, and the label equals what the shared helper
+        says when handed the REAL mapping record."""
+        desk = self.Desk
+        cards = desk._cards(0)
+        probe = desk._probe(0)
+        memo = {}
+        people = self.people + [self.boss]
+        checked = 0
+        for _round in range(2):            # second round: answers from the memo
+            for person in people:
+                contract = probe._get_latest_contract(person) or self.env['hr.contract']
+                for card in cards.values():
+                    direct = desk._read_cell(probe, card, person, contract)
+                    remembered = desk._read_cell(probe, card, person, contract, memo)
+                    self.assertEqual(direct, remembered, (person.name, card['id']))
+                    if card['id'][:1] == 'f' and not direct.get('missing'):
+                        label = probe._mapped_record_value(
+                            card['_mapping'], contract=contract, employee=person)
+                        if card['_field'].type not in (
+                                'boolean', 'integer', 'float', 'monetary'):
+                            self.assertEqual(direct['label'], str(label or ''),
+                                             (person.name, card['id']))
+                    checked += 1
+        self.assertGreater(checked, 1000)
+
     # =====================================================================
     # A9 — the golden comparison
     # =====================================================================

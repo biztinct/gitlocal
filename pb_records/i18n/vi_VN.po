@@ -615,6 +615,18 @@ msgstr "Không có %(what)s nào tên '%(value)s', và bản ghi %(what)s không
 #. module: pb_records
 #. odoo-python
 #: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "No %(what)s is called '%(value)s'. Check the full name, including the part before the slash."
+msgstr "Không có %(what)s nào tên '%(value)s'. Hãy kiểm tra tên đầy đủ, kể cả phần trước dấu gạch chéo."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "%(n)s %(what)s records are called '%(value)s'. Pick the right one on the Records screen, or use a name that is unique."
+msgstr "Có %(n)s bản ghi %(what)s cùng tên '%(value)s'. Hãy chọn đúng bản ghi trên màn hình Hồ sơ, hoặc dùng một tên không trùng."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
 msgid "%s (new)"
 msgstr "%s (mới)"
 

@@ -54,8 +54,15 @@ UPDATES P1 adds two read-only seams for the Updates front door (`pb_updates`):
 `import_columns` says what each column of a file is and where the desk would
 put it, and `import_peek(columns=...)` lets a person's own column matching
 replace the desk's five automatic ways. Neither writes; Apply is unchanged.
+
+UPDATES P2a: a typed name for a linked record (department, manager, working
+hours) no longer guesses — the current value first, one exact match inside
+the companies in use, a department's full path; two records with the name are
+refused, and a slashed path never becomes a new record. Look-ups, labels and
+component lines are remembered for one call only, which takes a full-roster
+review from about 110 s to about 11 s with identical answers.
 """,
-    'version': '19.0.1.8.4',
+    'version': '19.0.1.8.5',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
