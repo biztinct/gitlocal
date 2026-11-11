@@ -53,7 +53,10 @@ class WorkflowContract(models.AbstractModel):
         result = {'source': 'none', 'model': model or '', 'label': '', 'area': '', 'stage_field': '',
                   'stages': [], 'effects': [], 'has_subject': False, 'submits_itself': False,
                   'approval_outcomes': {}, 'screen': '', 'own_stage_rows': False,
-                  'safe_fields': [], 'adds_stages': False}
+                  'safe_fields': [], 'adds_stages': False,
+                  # WF2 P4a: values an area no longer offers, whether it
+                  # removes its own stages, and the keys of removed ones.
+                  'retired_fields': [], 'removes_stages': False, 'removed_keys': []}
         if not model or model not in self.env:
             return result
         obj = self.env[model]
@@ -70,7 +73,10 @@ class WorkflowContract(models.AbstractModel):
                       # WF2 P3b: values a workflow may set, and whether the
                       # area adds a stage itself (Hiring, D10).
                       safe_fields=[dict(f) for f in declared.get('safe_fields', []) if isinstance(f, dict) and f.get('key')],
-                      adds_stages=bool(declared.get('adds_stages')))
+                      adds_stages=bool(declared.get('adds_stages')),
+                      retired_fields=[str(f) for f in declared.get('retired_fields', [])],
+                      removes_stages=bool(declared.get('removes_stages')),
+                      removed_keys=[str(k) for k in declared.get('removed_keys', [])])
         if hasattr(obj, '_workflow_stage_options'):
             stages, result['source'] = obj._workflow_stage_options(record), 'declared'
         elif declared.get('stages'):
@@ -92,7 +98,7 @@ class WorkflowContract(models.AbstractModel):
                    'exit': bool(s.get('exit')), 'optional': bool(s.get('optional')),
                    'approval': bool(s.get('approval')) or (submit is not None and str(s['key']) == str(submit)),
                    'renamable': bool(s.get('renamable')), 'kind': 'core', 'locked': True}
-            row.update({k: s[k] for k in ('id', 'family', 'revision', 'meaning') if k in s})
+            row.update({k: s[k] for k in ('id', 'family', 'revision', 'meaning', 'removable') if k in s})
             rows.append(row)
         result['stages'] = [r for r in rows if not r['exit']] + [r for r in rows if r['exit']]
         return result
@@ -103,7 +109,7 @@ class WorkflowContract(models.AbstractModel):
         contract = self._contract(model)
         result['contract'] = {k: contract[k] for k in (
             'source', 'label', 'area', 'stage_field', 'has_subject', 'submits_itself', 'stages', 'screen',
-            'own_stage_rows', 'adds_stages')}
+            'own_stage_rows', 'adds_stages', 'removes_stages')}
         try:
             result['stage_catalogue'] = self.stage_catalogue(model, workflow_id) if (model or workflow_id) else None
         except (AccessError, UserError):
@@ -133,7 +139,7 @@ class WorkflowContract(models.AbstractModel):
             row = {'stage': e.get('stage'), 'kind': e.get('kind') or 'change', 'audience': e.get('audience') or 'other',
                    'text': str(e.get('text') or ''), 'owner': str(e.get('owner') or contract['area']),
                    'settings': settings, 'source': source}
-            row.update({k: e[k] for k in ('detail', 'ref') if e.get(k)})
+            row.update({k: e[k] for k in ('detail', 'ref', 'sets') if e.get(k)})
             out.append(row)
         for e in contract['effects']:
             add('area', e)
@@ -330,6 +336,12 @@ class WorkflowContract(models.AbstractModel):
             ident = None
             if isinstance(bind, dict) and bind.get('kind') == 'core' and w.source_model:
                 value = str(bind.get('value'))
+                if value in self._contract(w.source_model).get('removed_keys', []) and ('core', value) not in positions:
+                    # WF2 P4a (D17): the area removed this stage; the section
+                    # now works as a heading until someone chooses again.
+                    error(i, 'bind_removed', _('Section “%s” waited for a stage that was removed. It works as a heading '
+                                               'now: choose another stage, or keep it as a heading.', name))
+                    continue
                 if value in exits:
                     error(i, 'bind_exit', _('Section “%(s)s” cannot wait for %(e)s: records that get there stop.', s=name, e=exits[value]))
                     continue
@@ -459,9 +471,16 @@ class WorkflowContract(models.AbstractModel):
                        'start': 'start:%s' % n.get('workflow_id'),
                        'stage_move': 'stage:%s' % ((n.get('target') or {}).get('id'))}[n['type']]
                 hit = next((e for e in effects if e.get('ref') == ref and e['source'] == 'workflow'), None)
+                sets = '%s:%s' % (n.get('field'), n.get('value')) if n['type'] == 'update' and not n.get('value_from') else None
+                same = next((e for e in effects if sets and e.get('sets') == sets
+                             and (at is None or e.get('stage') in (None, at))), None) if not hit else None
                 if hit:
                     warn(n, hit, _('Another workflow already does this: %(text)s This step would do it a second time.',
                                    text=_lower_first(hit['text'])))
+                elif same:
+                    # WF2 P4a: e.g. a Hiring automation already adds this tag.
+                    warn(n, same, _('%(owner)s already does this: %(text)s This step would do it a second time.',
+                                    owner=same.get('owner') or contract['area'], text=_lower_first(same['text'])))
                 elif n['type'] == 'stage_move':
                     stage = self.env['pb.workflow.stage'].sudo().browse(int((n.get('target') or {}).get('id') or 0)).exists()
                     if stage and stage.enter in ('auto', 'rule'):

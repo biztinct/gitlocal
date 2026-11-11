@@ -33,4 +33,7 @@
   <record id="workflow_run_viewer" model="ir.rule"><field name="name">Workflow progress overview</field><field name="model_id" ref="model_pb_workflow_run"/><field name="groups" eval="[(4, ref('group_workflow_viewer'))]"/><field name="domain_force">[(1, '=', 1)]</field></record>
   <record id="workflow_stage_company" model="ir.rule"><field name="name">Workflow stage company</field><field name="model_id" ref="model_pb_workflow_stage"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
   <record id="workflow_record_stage_company" model="ir.rule"><field name="name">Workflow stage position company</field><field name="model_id" ref="model_pb_workflow_record_stage"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+  <!-- WF2 P4a: a notice is read by the person it is for; employee-home
+       logins read theirs through the /my/tasks controller only. -->
+  <record id="workflow_notice_own" model="ir.rule"><field name="name">My workflow notices</field><field name="model_id" ref="model_pb_workflow_notice"/><field name="groups" eval="[(4, ref('base.group_user'))]"/><field name="domain_force">[('user_id', '=', user.id)]</field></record>
 </odoo>

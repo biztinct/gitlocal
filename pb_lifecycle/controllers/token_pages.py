@@ -21,11 +21,38 @@ one record, and can only move that record forward.
 """
 
 import logging
+import threading
+import time
+from collections import deque
 
-from odoo import _, http
+from odoo import _, fields, http
 from odoo.http import request
 
+from .task_form import parse_answers, parse_outcome
+
 _logger = logging.getLogger(__name__)
+
+#: WF2 P4a: a cheap in-memory guard per worker process. After this many
+#: unknown or run-out workflow links from one address in the window, that
+#: address gets the "run out" page WITHOUT a lookup until the window passes.
+_BAD_LIMIT = 10
+_BAD_WINDOW = 600
+_BAD = {}
+_BAD_LOCK = threading.Lock()
+
+
+def _bad_address(address, record=False):
+    """True when `address` is over the limit; `record` adds one miss."""
+    now = time.monotonic()
+    with _BAD_LOCK:
+        if len(_BAD) > 5000:
+            _BAD.clear()
+        misses = _BAD.setdefault(address or '?', deque())
+        while misses and now - misses[0] > _BAD_WINDOW:
+            misses.popleft()
+        if record:
+            misses.append(now)
+        return len(misses) >= _BAD_LIMIT
 
 #: A single answer is capped so a public form cannot be used to post a book.
 _MAX_ANSWER = 4000
@@ -151,3 +178,85 @@ class PbLifecycleTokenPages(http.Controller):
             except Exception:
                 _logger.exception('pb_lifecycle: feedback submit failed')
         return request.redirect('/journey/f/%s?done=1' % token)
+
+    # ===================================================== workflow links
+    # WF2 P4a (R5, D16): a workflow step for someone with no login. The key
+    # (32 random bytes) is compared by an indexed lookup; an unknown key and
+    # a run-out one get the SAME page; the POST is csrf-checked (the page
+    # carries the token), single-use (the step row is locked and its state
+    # re-read inside the transaction) and validated by the app's own rules.
+    # `sudo()` / the system environment only AFTER the key resolves.
+
+    def _wf_address(self):
+        return request.httprequest.remote_addr or '?'
+
+    def _wf_page(self, step, state, token='', errors=None, values=None):
+        from ..models.workflow_people import LINK_UNSUPPORTED
+        data = {}
+        if step and state == 'ok':
+            data = request.env['pb.workflow.studio'].sudo()._page_data(step, LINK_UNSUPPORTED)
+        return request.render('pb_lifecycle.workflow_link_page', {
+            't': data, 'mode': 'link', 'state': state, 'errors': errors or {},
+            'values': values if values is not None else data.get('values', {}),
+            'post_url': '/workflow/t/%s/done' % token if state == 'ok' else '',
+            # the company shows only once the link is known to be good
+            'company_id': data.get('company_id') if state == 'ok' else False,
+            'company_name': data.get('company') if state == 'ok' else '',
+        })
+
+    def _wf_resolve(self, token):
+        address = self._wf_address()
+        if _bad_address(address):
+            return None, 'gone'
+        step, status = request.env['pb.workflow.studio'].sudo()._step_for_token(token)
+        if status in ('missing', 'expired'):
+            _bad_address(address, record=True)
+            return None, 'gone'
+        return step, status
+
+    @http.route('/workflow/t/<string:token>', type='http', auth='public',
+                website=True, sitemap=False)
+    def workflow_link_view(self, token, **kw):
+        step, status = self._wf_resolve(token)
+        if status == 'done':
+            return self._wf_page(step, 'thanks' if kw.get('done') == '1' else 'done', token)
+        if status != 'ok':
+            return self._wf_page(None, 'gone')
+        if not step.link_opened_at:
+            from ..models.workflow_models import internal
+            internal(step).write({'link_opened_at': fields.Datetime.now()})
+        return self._wf_page(step, 'ok', token)
+
+    @http.route('/workflow/t/<string:token>/done', type='http', auth='public',
+                website=True, methods=['POST'], sitemap=False)
+    def workflow_link_done(self, token, **post):
+        step, status = self._wf_resolve(token)
+        if status != 'ok':
+            return request.redirect('/workflow/t/%s' % token) if status == 'done' else self._wf_page(None, 'gone')
+        from psycopg2 import errors as pg_errors
+        from ..models.workflow_models import system
+        from ..models.workflow_people import LINK_UNSUPPORTED
+        try:
+            with request.env.cr.savepoint(flush=False):
+                request.env.cr.execute('SELECT id FROM pb_workflow_step WHERE id=%s FOR UPDATE NOWAIT', [step.id])
+        except pg_errors.LockNotAvailable:
+            return request.redirect('/workflow/t/%s' % token)
+        studio = system(request.env, step.company_id)['pb.workflow.studio']
+        step = studio.env['pb.workflow.step'].browse(step.id)
+        step.invalidate_recordset()
+        if step.sudo().access_token != token or step.state != 'waiting':
+            return request.redirect('/workflow/t/%s' % token)
+        form = request.httprequest.form
+        if step.kind == 'input':
+            values = parse_answers(studio._page_fields(step, LINK_UNSUPPORTED), form)
+        else:
+            values = parse_outcome(form)
+        try:
+            result = studio._complete_outside(step, values, ip=self._wf_address())
+        except Exception:  # noqa: BLE001 — a visitor never sees a server error
+            _logger.exception('pb_lifecycle: workflow link %s could not be sent', step.id)
+            result = {'ok': False, 'errors': {'_form': _('This could not be sent. Try again in a moment.')}}
+        if result.get('ok') or result.get('state') == 'done':
+            return request.redirect('/workflow/t/%s?done=1' % token)
+        merged = dict(studio._page_values(step), **values)
+        return self._wf_page(step, 'ok', token, errors=result.get('errors'), values=merged)

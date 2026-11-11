@@ -55,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.13.0',
+    'version': '19.0.1.14.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -73,6 +73,10 @@ that has closed expires itself. The whole job is behind
         'pb_employee_vault',    # generated letters are filed as vault documents
         'biz_approval_workflow',  # P7: sending a letter is the act
         'pb_filter_kit',        # FILTER W1: the board sits in the shared filter panel
+        # WF2 P4a: workflow tasks in the one Approvals inbox (D1) and on the
+        # employee home (R5). Neither depends back on this module.
+        'pb_approval_config',
+        'pb_me_portal',
     ],
     'data': [
         'security/pb_lifecycle_security.xml',
@@ -94,6 +98,9 @@ that has closed expires itself. The whole job is behind
         'data/pb_sidebar.xml',
         'views/workflow_action.xml',
         'data/workflow_cron.xml',
+        # WF2 P4a: the task page outside the app, and the link email.
+        'views/workflow_task_page.xml',
+        'data/workflow_link_mail.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -106,12 +113,18 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/js/workflow_studio.js',
             'pb_lifecycle/static/src/xml/journeys.xml',
             'pb_lifecycle/static/src/xml/workflow_record.xml',
+            # WF2 P4a (D1): the Tasks group and task drawer in the inbox.
+            'pb_lifecycle/static/src/scss/workflow_inbox.scss',
+            'pb_lifecycle/static/src/js/workflow_inbox.js',
+            'pb_lifecycle/static/src/xml/workflow_inbox.xml',
         ],
         # A LEAN frontend bundle for the two login-less pages: the kit's tokens
         # and this module's page block. No backend asset is leaked into them.
         'web.assets_frontend': [
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_lifecycle/static/src/scss/token_pages.scss',
+            # WF2 P4a: the workflow task page (employee home and link).
+            'pb_lifecycle/static/src/scss/workflow_task_page.scss',
         ],
     },
     'post_init_hook': 'post_init_hook',

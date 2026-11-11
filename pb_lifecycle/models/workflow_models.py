@@ -621,33 +621,9 @@ class WorkflowStep(models.Model):
         if self.kind in ('trigger', 'reference'):
             self._finish()
         elif self.kind in D.PEOPLE:
-            uid = service._resolve_owner(run, n.get('owner', {}))
-            user = self.env['res.users'].sudo().browse(uid).exists()
-            if not user or not user.active or user.share or run.company_id not in user.company_ids:
-                raise UserError(_('Choose an active person who belongs to this company.'))
-            if run.source_model:
-                service.with_user(user)._source(run.source_model, run.source_id)
-            activity = self.activity_id
-            if not activity:
-                days = n.get('due', 2)
-                deadline = fields.Date.today() + timedelta(days=days)
-                if n.get('due_kind', 'working') == 'working':
-                    calendar = run.company_id.resource_calendar_id
-                    if not calendar:
-                        raise UserError(_('Set the company working calendar before assigning this task.'))
-                    planned = calendar.plan_days(days + 1, pytz.utc.localize(fields.Datetime.now()), compute_leaves=True)
-                    if not planned:
-                        raise UserError(_('The company calendar has no available working days.'))
-                    deadline = planned.astimezone(pytz.timezone(calendar.tz or 'UTC')).date()
-                activity = internal(self.env['mail.activity']).create({
-                    'res_model_id': self.env['ir.model']._get_id('pb.workflow.run'),
-                    'res_id': run.id, 'activity_type_id': n.get('activity_type_id') or self.env.ref('mail.mail_activity_data_todo').id,
-                    'user_id': uid, 'summary': n['title'],
-                    'note': _('Open Workflow Studio → My tasks to complete this step.'),
-                    'date_deadline': deadline,
-                    'workflow_step_id': self.id})
-            internal(self).write({'state': 'waiting', 'assignee_id': uid, 'activity_id': activity.id})
-            run._log(_('Waiting for %s.', user.name), self)
+            # WF2 P4a: a staff person (or whoever covers for them), a team,
+            # an employee-home login or a private link (`workflow_people`).
+            service._assign_person_step(run, self, n)
         elif self.kind == 'wait':
             if n.get('wait_for') and D.matches(n['wait_for'], run._condition_values(n)):
                 self._finish()

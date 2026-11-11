@@ -277,7 +277,9 @@ class WorkflowSteps(models.AbstractModel):
         value = run._values().get(node['value_from']) if node.get('value_from') else node.get('value')
         value = self._safe_value(spec, value, run.company_id)
         source._workflow_update(key, value)
-        run._log(_('Set %(label)s to %(value)s.', label=spec.get('label') or key,
+        # WF2 P4a: an area may give its own words ("Added the tag “%s”.").
+        run._log(spec['done_words'] % self._value_words(spec, value) if spec.get('done_words') else
+                 _('Set %(label)s to %(value)s.', label=spec.get('label') or key,
                    value=self._value_words(spec, value)), step)
         step._finish()
 
@@ -455,6 +457,8 @@ class WorkflowSteps(models.AbstractModel):
                     source = nodes.get(str(n['value_from']).split('.')[1]) if str(n['value_from']).count('.') == 2 else None
                     return _('Would set %(label)s from the answer to %(step)s', label=spec.get('label'),
                              step=source['title'] if source else _('an earlier step'))
+                if spec.get('would_words'):
+                    return spec['would_words'] % self._value_words(spec, n.get('value'))
                 return _('Would set %(label)s to %(value)s', label=spec.get('label'), value=self._value_words(spec, n.get('value')))
             if kind == 'create':
                 creator = self._creator(n.get('creator'))

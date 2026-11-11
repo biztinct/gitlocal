@@ -10,3 +10,4 @@ workflow_version_system,Workflow version administrator,model_pb_workflow_version
 workflow_event_system,Workflow event administrator,model_pb_workflow_event,base.group_system,1,1,1,1
 workflow_stage_user,Workflow stages,model_pb_workflow_stage,base.group_user,1,0,0,0
 workflow_record_stage_user,Workflow stage positions,model_pb_workflow_record_stage,base.group_user,1,0,0,0
+workflow_notice_user,Workflow notices,model_pb_workflow_notice,base.group_user,1,0,0,0

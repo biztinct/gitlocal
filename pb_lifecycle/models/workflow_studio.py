@@ -376,6 +376,9 @@ class WorkflowStudio(models.AbstractModel):
             if not safe:
                 return [('update_not_open', _('%s has not opened any values to workflows yet.', contract['area']))]
             spec = self._safe_spec(model, n.get('field'))
+            if not spec and n.get('field') in contract.get('retired_fields', []):
+                # WF2 P4a (D14): e.g. Hiring's evaluation stars.
+                return [('update_field', _('%s no longer offers this value. Choose another.', contract['area']))]
             if not spec or n.get('field') == contract.get('stage_field'):
                 return [('update_field', _('Choose one of the values %s lets workflows set.', contract['area']))]
             if n.get('value_from'):

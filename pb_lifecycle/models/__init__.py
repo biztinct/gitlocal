@@ -21,3 +21,9 @@ from . import workflow_contract
 from . import workflow_stage
 # WORKFLOW-2 P3b: the eight new step types (after the facade they extend).
 from . import workflow_steps
+# WORKFLOW-2 P4a: everyone takes part (teams, cover, employee home, links),
+# late work through the approval engine's job, tasks in the one inbox.
+from . import workflow_people
+from . import workflow_people_design
+from . import workflow_inbox
+from . import workflow_home

@@ -348,7 +348,9 @@ class WorkflowStageService(models.AbstractModel):
             return old
         actor = mover or sysenv['res.users'].browse(SUPERUSER_ID)
         vals = {'stage_id': stage.id, 'entered_at': fields.Datetime.now(),
-                'entered_by': actor.id, 'run_id': run.id if run else False}
+                'entered_by': actor.id, 'run_id': run.id if run else False,
+                # WF2 P4a (D13): a new entry arms "past its target time" again.
+                'late_told_at': False}
         row = Pos.search([('company_id', '=', company.id), ('res_model', '=', model), ('res_id', '=', int(res_id))], limit=1)
         if row:
             internal(row).write(vals)
@@ -387,6 +389,10 @@ class WorkflowStageService(models.AbstractModel):
                 return status in keys and str(value) in keys and keys.index(status) >= keys.index(str(value))
             if bind.get('kind') == 'core':
                 target = next((s for s in order if str(s['key']) == str(bind.get('value'))), None)
+                if not target and str(bind.get('value')) in contract.get('removed_keys', []):
+                    # WF2 P4a (D17): the area removed this stage; the section
+                    # is a heading now, so the work carries on.
+                    return 'pass', ''
                 if not target:
                     return 'problem', _('This workflow waits for a stage that no longer exists. Edit its sections.')
                 return ('pass', '') if reached(target['key']) else ('wait', _('Waiting for this to reach %s.', target['name']))
@@ -446,6 +452,7 @@ class WorkflowStageService(models.AbstractModel):
                              'name': item['name'], 'locked': True, 'area': contract['area'],
                              'enters': item.get('enters', ''), 'exit': bool(item.get('exit')),
                              'approval': bool(item.get('approval')), 'renamable': bool(item.get('renamable')),
+                             'removable': bool(item.get('removable')),
                              'revision': item.get('revision'), 'stage_id': item.get('id')})
                 continue
             anchor = next((c for c in contract['stages'] if str(c['key']) == str(item.anchor_value)), {})
