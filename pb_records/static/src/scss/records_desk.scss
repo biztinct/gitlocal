@@ -529,6 +529,10 @@ $rd-w-data: 194px;
         // UPDATES P2c — waiting for its day: indigo, with its calendar clock.
         &.rd-tag-when { display: inline-flex; align-items: center; gap: 4px;
                         svg { flex: none; } }
+        // UPDATES P3a — a bank-details part: its own route, a second person.
+        &.rd-tag-bank { display: inline-flex; align-items: center; gap: 4px;
+                        background: var(--pbim-amber-soft); color: var(--pbim-amber);
+                        svg { flex: none; } }
     }
 
     // -------------------------------------------------------- set-for modal

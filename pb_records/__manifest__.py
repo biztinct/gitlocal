@@ -71,8 +71,16 @@ now cancels it for real). A manager or coach can be typed as a name, an
 employee code or a work email; a name that matches nobody is refused, never
 created. A pay run's preparation mentions a scheduled change that starts
 inside its pay period.
+
+UPDATES P3a: one proposal is split into lanes — personal details, pay and
+contract, bank details. Bank details travel their own approval route and are
+never approved by the person who proposed them (a second person, always,
+whatever the records route says). Through Updates, personal details apply at
+once where the company's records route is the shipped one or "No approval
+needed" (a company switch turns that off); a route a company set up itself is
+always followed.
 """,
-    'version': '19.0.1.9.0',
+    'version': '19.0.1.10.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -95,6 +103,7 @@ inside its pay period.
         'security/records_approval_rules.xml',
         'views/pb_records_action.xml',
         'data/records_cron.xml',
+        'data/records_bank_process.xml',
     ],
     'assets': {
         'web.assets_backend': [

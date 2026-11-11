@@ -2087,3 +2087,174 @@ msgstr "Những gì chờ đến ngày bắt đầu"
 #: code:addons/pb_records/static/src/xml/records_desk.xml:0
 msgid "Nothing to undo"
 msgstr "Không có gì để hoàn tác"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "%(what)s: %(n)s changed"
+msgstr "%(what)s: đã thay đổi %(n)s"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "%(what)s: waiting for %(who)s"
+msgstr "%(what)s: đang chờ %(who)s"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "%(what)s: waiting for a second person (%(who)s)"
+msgstr "%(what)s: đang chờ người thứ hai (%(who)s)"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "%s: scheduled"
+msgstr "%s: đã lên lịch"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "A proposed change cannot be edited. Cancel it and propose it again."
+msgstr "Không thể sửa một thay đổi đã đề xuất. Hãy hủy và đề xuất lại."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "A second person (records manager)"
+msgstr "Người thứ hai (quản lý hồ sơ)"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/xml/records_desk.xml:0
+msgid "Always approved by somebody other than the person who proposed it"
+msgstr "Luôn được phê duyệt bởi người khác với người đề xuất"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__details_now
+msgid "Applied without approval"
+msgstr "Đã áp dụng không cần phê duyệt"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Backup for %s, who proposed this change"
+msgstr "Người dự phòng cho %s, người đã đề xuất thay đổi này"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Bank details for %s people"
+msgstr "Tài khoản ngân hàng của %s người"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Bank details for 1 person"
+msgstr "Tài khoản ngân hàng của 1 người"
+
+#. module: pb_records
+#: model:biz.approval.process,name:pb_records.process_records_bank
+msgid "Bank details from Records and Updates"
+msgstr "Tài khoản ngân hàng từ Hồ sơ và Cập nhật"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid ""
+"Bank details need a second person. Nobody other than the person who proposed"
+" this change has approved it, so nothing was written."
+msgstr "Tài khoản ngân hàng cần người thứ hai. Ngoài người đề xuất, chưa ai phê duyệt thay đổi này, nên chưa có gì được ghi."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid ""
+"Bank details need a second person. You proposed this change, so somebody "
+"else has to approve it."
+msgstr "Tài khoản ngân hàng cần người thứ hai. Bạn đã đề xuất thay đổi này, nên người khác phải phê duyệt."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid ""
+"Bank details need a second person: %s proposed this change, so somebody else"
+" approves it."
+msgstr "Tài khoản ngân hàng cần người thứ hai: %s đã đề xuất thay đổi này, nên người khác sẽ phê duyệt."
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/xml/records_desk.xml:0
+msgid "Changed now"
+msgstr "Đã thay đổi ngay"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/xml/records_desk.xml:0
+msgid ""
+"Changed without approval, as your company allows for personal details from a"
+" sheet"
+msgstr "Đã thay đổi không cần phê duyệt, vì công ty bạn cho phép với thông tin cá nhân từ bảng tính"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Finance approver"
+msgstr "Người phê duyệt tài chính"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__lane
+msgid "Lane"
+msgstr "Nhóm"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__lane__pay
+msgid "Pay and contract"
+msgstr "Lương và hợp đồng"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__lane__details
+msgid "Personal details"
+msgstr "Thông tin cá nhân"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_res_company__pb_records_sheet_details_now
+msgid "Personal details from a sheet apply without approval"
+msgstr "Thông tin cá nhân từ bảng tính được áp dụng không cần phê duyệt"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid ""
+"Waiting for a second person. Nobody else in %s can approve bank details yet "
+"— add one in Access."
+msgstr "Đang chờ người thứ hai. Chưa có ai khác trong %s có thể phê duyệt tài khoản ngân hàng — hãy thêm một người trong Phân quyền."
+
+#. module: pb_records
+#: model:biz.approval.process,description:pb_records.process_records_bank
+msgid ""
+"Where somebody's pay is sent, changed from a spreadsheet or the Records "
+"screen. Always approved by somebody other than the person who proposed it."
+msgstr "Nơi nhận lương của một người, được thay đổi từ bảng tính hoặc màn hình Hồ sơ. Luôn được phê duyệt bởi người khác với người đề xuất."
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "its approver"
+msgstr "người phê duyệt"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "nobody yet"
+msgstr "chưa có ai"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "%(names)s and %(n)s more"
+msgstr "%(names)s và %(n)s người khác"

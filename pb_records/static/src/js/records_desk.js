@@ -625,6 +625,43 @@ export class PbRecordsDesk extends Component {
      * door to the request.
      */
     _applyToast(result) {
+        const lanes = result.lanes || [];
+        if (lanes.length > 1) {
+            // UPDATES P3a — a proposal that mixed bank details with other
+            // values was split: each part says what happened to it.
+            const few = (names) => {
+                const all = (names || "").split(", ").filter(Boolean);
+                return all.length > 3
+                    ? _t("%(names)s and %(n)s more", { names: all.slice(0, 3).join(", "), n: all.length - 3 })
+                    : all.join(", ");
+            };
+            const words = lanes.map((l) => {
+                const label = l.lane === "bank" ? _t("Bank details")
+                    : l.lane === "pay" ? _t("Pay and contract") : _t("Personal details");
+                if (l.pending) {
+                    return l.lane === "bank"
+                        ? _t("%(what)s: waiting for a second person (%(who)s)", {
+                            what: label, who: few(l.with_whom) || _t("nobody yet") })
+                        : _t("%(what)s: waiting for %(who)s", {
+                            what: label, who: few(l.with_whom) || _t("its approver") });
+                }
+                if (l.scheduled) { return _t("%s: scheduled", label); }
+                return _t("%(what)s: %(n)s changed", { what: label, n: l.written });
+            });
+            const waiting = lanes.find((l) => l.pending);
+            this.state.toast = {
+                text: words.join(" · "),
+                applyId: result.apply_id,
+                requestId: waiting ? waiting.request_id : 0,
+                pending: !!waiting,
+            };
+            setTimeout(() => {
+                if (this.state.toast && this.state.toast.applyId === result.apply_id) {
+                    this.state.toast = null;
+                }
+            }, 12000);
+            return;
+        }
         if (result.pending) {
             const names = (result.route || [])
                 .map((s) => s.title).join(" → ");

@@ -44,7 +44,10 @@ from odoo.addons.pb_hr_payroll_formula.models.payroll_import_batch import (
 from odoo.addons.pb_hr_payroll_formula.models.bank_account_util import (
     acc_numbers_match, sanitize_acc_number, sanitize_bank_text)
 from odoo.addons.pb_records.models.records_approval import (
-    LOCK_ERRORS, START_DATE_REACH)
+    LOCK_ERRORS, START_DATE_REACH, lane_of)
+
+#: UPDATES P3a — the order a split proposal's parts are made in.
+LANE_ORDER = ('details', 'pay', 'bank')
 
 _logger = logging.getLogger(__name__)
 
@@ -2058,6 +2061,15 @@ class PbRecordsDesk(models.AbstractModel):
         starting that day; a future date is proposed and approved as above
         and then held as "Scheduled" until its day. `hold_scope` is kept as
         the record of what the person chose to hold back (`pay` / `all`).
+
+        UPDATES P3a (D3): one proposal is split into LANES. Bank details are
+        always their own proposal, on their own route (a second person) —
+        from every door, so the bank rule cannot be avoided by using another
+        screen. Through Updates (context `records_lanes`) personal details
+        and pay are split as well, and personal details apply at once where
+        the company allows it (`_details_go_now`). A proposal with one lane
+        is made exactly as before; a mixed one answers with every part under
+        `lanes` and the first part's keys on top.
         """
         self._check_read()
         source = source if source in ('desk', 'import') else 'desk'
@@ -2065,6 +2077,43 @@ class PbRecordsDesk(models.AbstractModel):
         if refusal:
             return {'ok': False, 'msg': refusal, 'apply_id': 0, 'written': 0,
                     'people': 0, 'items': [], 'refused': [], 'pending': False}
+        groups = self._lane_groups(changes or [])
+        if len(groups) <= 1:
+            lane, part = next(iter(groups.items()), ('', changes or []))
+            return self._apply_lane(config_id, part, note, source, start,
+                                    hold_scope, lane)
+        answers = []
+        for lane in LANE_ORDER:
+            if groups.get(lane):
+                answers.append((lane, self._apply_lane(
+                    config_id, groups[lane], note, source, start, hold_scope,
+                    lane)))
+        return self._merge_lanes(answers)
+
+    @api.model
+    def _lane_groups(self, changes):
+        """`{lane: [change]}` in the order the changes came. Bank values are
+        always apart; personal details and pay are apart only through
+        Updates (`records_lanes`) — on the Records screen they stay one
+        proposal on the records route, exactly as before."""
+        three = bool(self.env.context.get('records_lanes'))
+        groups = {}
+        for change in changes:
+            lane = lane_of((change or {}).get('field_id'))
+            if lane != 'bank' and not three:
+                lane = 'rest'
+            groups.setdefault(lane, []).append(change)
+        if 'rest' in groups:
+            rest = groups.pop('rest')
+            lane = 'pay' if any(lane_of(c.get('field_id')) == 'pay'
+                                for c in rest) else 'details'
+            groups = dict([(lane, rest)] + list(groups.items()))
+        return groups
+
+    @api.model
+    def _apply_lane(self, config_id, changes, note, source, start, hold_scope,
+                    lane):
+        """One proposal — the call `apply_changes` always made, for one lane."""
         desk = self.with_context(records_from_file=True) \
             if source == 'import' else self
         items, plan, counts = desk._evaluate(config_id, changes or [])
@@ -2072,10 +2121,16 @@ class PbRecordsDesk(models.AbstractModel):
             return {'ok': True, 'apply_id': 0, 'written': 0, 'people': 0,
                     'items': items, 'counts': counts, 'pending': False,
                     'refused': [i for i in items if i['status'] == 'refused'],
-                    'skipped_same': counts['same']}
+                    'skipped_same': counts['same'], 'lane': lane or ''}
 
         configs = self._configs(config_id)
         rows = self._plan_rows(plan)
+        if lane in ('pay', 'details') and not self.env.context.get('records_lanes'):
+            # The Records screen keeps personal details and pay together; the
+            # proposal is labelled by what will really change (a pay value
+            # that is already set is not part of it).
+            lane = 'pay' if any(lane_of(r.get('field_id')) == 'pay'
+                                for r in rows) else 'details'
         touches_bank, touches_salary = self._plan_touches(rows)
         apply_rec = self.env['pb.records.apply'].sudo().create({
             'name': '/',
@@ -2092,10 +2147,25 @@ class PbRecordsDesk(models.AbstractModel):
             'company_id': self.env.company.id,
             'start_date': start or False,
             'hold_scope': 'all' if hold_scope == 'all' else 'pay',
+            'lane': lane or False,
         })
         apply_rec.name = 'RD%05d' % apply_rec.id
 
-        payload = self.env['biz.approval.engine'].submit(apply_rec)
+        payload = {}
+        if lane == 'details' and self.env.context.get('records_details_at_once') \
+                and apply_rec._details_go_now():
+            # UPDATES P3a (D3) — personal details from a sheet: carried out
+            # now, through the same all-or-none write an approval uses. No
+            # request is made: nobody was asked, and the proposal row says so.
+            apply_rec.write({'details_now': True})
+            apply_rec._approval_apply(None)
+        else:
+            bank = lane == 'bank' or apply_rec._has_bank()
+            if bank:
+                apply_rec._ensure_bank_route()
+            payload = self.env['biz.approval.engine'].submit(apply_rec)
+            if bank:
+                apply_rec._note_second_person()
         apply_rec.invalidate_recordset()
         # THE WRITE'S OWN REFUSALS COME BACK TOO. Some rows can only be refused
         # while they are being written — a contract component already kept as
@@ -2121,8 +2191,85 @@ class PbRecordsDesk(models.AbstractModel):
             'with_whom': apply_rec._waiting_for(),
             'route': self._route_labels(apply_rec),
             'block_note': apply_rec.block_note or '',
+            # UPDATES P3a — which lane, and every part (one here).
+            'lane': apply_rec.lane or '',
+            'details_now': apply_rec.details_now,
         }
+        answer['lanes'] = [self._lane_part(answer)]
+        answer['apply_ids'] = [apply_rec.id]
         return answer
+
+    @api.model
+    def _lane_part(self, answer):
+        """One lane's line, for the screens."""
+        rec = self.env['pb.records.apply'].sudo().browse(answer['apply_id'])
+        return {
+            'lane': answer.get('lane') or '',
+            'apply_id': answer['apply_id'],
+            'reference': answer.get('reference') or '',
+            'state': answer.get('state') or '',
+            'values': rec.values_count,
+            'people': rec.people_count,
+            'written': answer.get('written') or 0,
+            'pending': bool(answer.get('pending')),
+            'scheduled': bool(answer.get('scheduled')),
+            'details_now': bool(answer.get('details_now')),
+            'with_whom': answer.get('with_whom') or '',
+            'route': answer.get('route') or [],
+            'block_note': answer.get('block_note') or '',
+            'request_id': answer.get('request_id') or 0,
+            'start_date': answer.get('start_date') or '',
+        }
+
+    @api.model
+    def _merge_lanes(self, answers):
+        """One answer for a proposal split into lanes. The first part that
+        made a proposal gives the top keys (`apply_id`, `reference`, ...);
+        `lanes` lists every part; counts are summed, people counted once."""
+        made = [(lane, a) for lane, a in answers if a.get('apply_id')]
+        first = made[0][1] if made else (answers[0][1] if answers else {})
+        waiting = [a for _lane, a in made if a.get('pending')]
+        written_ids = [a['apply_id'] for _lane, a in made
+                       if not a.get('pending') and not a.get('scheduled')]
+        Apply = self.env['pb.records.apply'].sudo()
+        people = set()
+        for rec in Apply.browse(written_ids):
+            people |= {int(r.get('emp_id') or 0) for r in rec.plan()}
+        people.discard(0)
+        counts = {}
+        for _lane, a in answers:
+            for key, value in (a.get('counts') or {}).items():
+                if isinstance(value, (int, float)):
+                    counts[key] = counts.get(key, 0) + value
+        if 'people' in counts:
+            counts['people'] = len({i['emp_id'] for _l, a in answers
+                                    for i in a.get('items') or []
+                                    if i.get('status') == 'ok'})
+        return {
+            'ok': True,
+            'apply_id': first.get('apply_id') or 0,
+            'apply_ids': [a['apply_id'] for _lane, a in made],
+            'written': sum(a.get('written') or 0 for _l, a in made
+                           if not a.get('pending')),
+            'people': len(people),
+            'items': [i for _l, a in answers for i in a.get('items') or []],
+            'counts': counts,
+            'refused': [r for _l, a in answers for r in a.get('refused') or []],
+            'skipped_same': sum(a.get('skipped_same') or 0 for _l, a in answers),
+            'reference': ', '.join(a.get('reference') or '' for _l, a in made),
+            'pending': bool(waiting),
+            'scheduled': any(a.get('scheduled') for _l, a in made),
+            'start_date': first.get('start_date') or '',
+            'request_id': (waiting[0].get('request_id') if waiting else 0) or 0,
+            'state': first.get('state') or '',
+            'with_whom': waiting[0].get('with_whom') if waiting else '',
+            'route': waiting[0].get('route') if waiting else [],
+            'block_note': '; '.join(a.get('block_note') or '' for _l, a in made
+                                    if a.get('block_note')),
+            'lane': '',
+            'details_now': any(a.get('details_now') for _l, a in made),
+            'lanes': [self._lane_part(a) for _l, a in made],
+        }
 
     @api.model
     def _route_labels(self, apply_rec):
@@ -2385,5 +2532,11 @@ class PbRecordsDesk(models.AbstractModel):
                 'can_cancel': bool(
                     rec.state == 'scheduled' and not rec.applied
                     and not rec.undone and rec.with_env(self.env)._may_cancel()),
+                # UPDATES P3a — which lane; a proposal split into lanes
+                # shows one row per lane, each with its own state.
+                'lane': rec.lane or '',
+                'lane_label': dict(rec._fields['lane']._description_selection(
+                    self.env)).get(rec.lane, '') if rec.lane else '',
+                'details_now': rec.details_now,
             })
         return {'applies': out}

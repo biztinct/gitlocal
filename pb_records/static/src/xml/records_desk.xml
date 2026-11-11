@@ -763,6 +763,10 @@
                 <span t-esc="histLine(h)"/>
                 <span t-if="h.source === 'undo'" class="rd-tag">Undo</span>
                 <span t-if="h.source === 'import'" class="rd-tag">From a file</span>
+                <span t-if="h.lane === 'bank'" class="rd-tag rd-tag-bank" title="Always approved by somebody other than the person who proposed it">
+                  <t t-out="ic('landmark',11)"/> <t t-esc="h.lane_label"/>
+                </span>
+                <span t-elif="h.details_now" class="rd-tag" title="Changed without approval, as your company allows for personal details from a sheet">Changed now</span>
                 <span t-if="h.undone" class="rd-tag amber">Already undone</span>
                 <!-- A change that has not happened yet wears its own word, so
                      nobody reads this list as a list of things that did. -->

@@ -22,6 +22,7 @@ from unittest.mock import patch
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.modules.module import get_module_path
+from odoo.addons.pb_records.tests.bank_second import approve_bank
 from odoo.tests import TransactionCase, tagged
 
 
@@ -506,21 +507,26 @@ class TestRecordsR2Desk(TransactionCase):
             {'emp_id': self.e1.id, 'field_id': 'b:bank_name',
              'value': 'RD Bank'},
         ])
-        self.assertEqual(res['written'], 2)
+        # UPDATES P3a: nothing is written until a second person approves.
+        self.assertEqual(res['written'], 0)
+        self.assertFalse(self.e1.bank_account_ids)
+        self.assertEqual(approve_bank(self.env, res), 1)
+        rec = self.env['pb.records.apply'].browse(res['apply_id'])
+        self.assertEqual(rec.count_values, 2)
         accounts = self.e1.bank_account_ids
         self.assertEqual(len(accounts), 1)
         self.assertEqual(accounts.acc_number, '1234567890')
         self.assertEqual(accounts.bank_id.name, 'RD Bank')
 
     def test_05b_a_different_account_number_adds_and_never_replaces(self):
-        self.Desk.apply_changes(self.cfg.id, [
+        approve_bank(self.env, self.Desk.apply_changes(self.cfg.id, [
             {'emp_id': self.e2.id, 'field_id': 'b:acc_number', 'value': '111000'},
-        ])
+        ]))
         first = self.e2.bank_account_ids
         self.assertEqual(len(first), 1)
-        self.Desk.apply_changes(self.cfg.id, [
+        approve_bank(self.env, self.Desk.apply_changes(self.cfg.id, [
             {'emp_id': self.e2.id, 'field_id': 'b:acc_number', 'value': '222000'},
-        ])
+        ]))
         self.assertEqual(len(self.e2.bank_account_ids), 2)
         self.assertIn(first.id, self.e2.bank_account_ids.ids)
 

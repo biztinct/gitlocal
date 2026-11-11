@@ -25,6 +25,7 @@ import re
 from unittest.mock import patch
 
 from odoo.modules.module import get_module_path
+from odoo.addons.pb_records.tests.bank_second import approve_bank
 from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.pb_records.models import pb_records_io
@@ -468,7 +469,8 @@ class TestRecordsR3RoundTrip(TransactionCase):
         ws.append(['R30003', '7778889', 'R3 Savings'])
         peek = self._peek(self._b64(wb))
         self.assertEqual(peek['summary']['changes_ok'], 2)
-        self.Desk.apply_changes(self.cfg.id, peek['changes'], source='import')
+        approve_bank(self.env, self.Desk.apply_changes(
+            self.cfg.id, peek['changes'], source='import'))
         accounts = self.e3.bank_account_ids
         self.assertEqual(len(accounts), 1)
         self.assertEqual(accounts.acc_number, '7778889')
@@ -479,7 +481,8 @@ class TestRecordsR3RoundTrip(TransactionCase):
         ws2.append(['Employee code', 'Account number'])
         ws2.append(['R30003', '9990001'])
         again = self._peek(self._b64(wb2))
-        self.Desk.apply_changes(self.cfg.id, again['changes'], source='import')
+        approve_bank(self.env, self.Desk.apply_changes(
+            self.cfg.id, again['changes'], source='import'))
         self.assertEqual(len(self.e3.bank_account_ids), 2)
 
     # =====================================================================

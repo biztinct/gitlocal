@@ -22,6 +22,7 @@ import json
 import os
 
 from odoo.modules.module import get_module_path
+from odoo.addons.pb_records.tests.bank_second import approve_bank
 from odoo.tests import TransactionCase, tagged
 
 GOLDEN = ('pb_records', 'tests', 'data', 'p2a_golden_preview.json')
@@ -110,10 +111,12 @@ class TestRecordsP2aLookups(TransactionCase):
                      'advantage_template_id': cls.t_amount.id, 'amount': 0.0})
 
         # One existing bank account, so the bank judgement has a "same".
-        cls.Desk.apply_changes(0, [
+        # UPDATES P3a: bank details need a second person — approved here by
+        # whoever holds the seat, so the fixture still WRITES the account.
+        approve_bank(cls.env, cls.Desk.apply_changes(0, [
             {'emp_id': cls.people[0].id, 'field_id': 'b:acc_number', 'value': '55500001'},
             {'emp_id': cls.people[0].id, 'field_id': 'b:bank_name', 'value': 'P2A Bank'},
-        ], note='P2A fixture')
+        ], note='P2A fixture'))
 
     # ---------------------------------------------------------------- helpers
     def one(self, emp, field_id, value, desk=None):
