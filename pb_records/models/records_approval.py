@@ -380,6 +380,21 @@ class PbRecordsApply(models.Model):
             lambda d: d.action == 'approve' and d.user_id
             and d.user_id != proposer))
 
+    def _writer_desk(self):
+        """The desk as the proposer (else the last approver), in the
+        proposal's company first — the writer `_start_scheduled` uses."""
+        self.ensure_one()
+        rec = self.sudo()
+        # Proposed by the system itself (a script, a test): it had every right.
+        actor = rec.user_id if rec.user_id.id == SUPERUSER_ID else rec._start_user()
+        mine = actor.sudo().company_ids.ids
+        companies = [rec.company_id.id] if rec.company_id.id in mine else []
+        companies += [c for c in mine if c not in companies]
+        desk = self.env['pb.records.desk'].with_user(actor)
+        if companies:
+            desk = desk.with_context(allowed_company_ids=companies)
+        return desk
+
     def _bank_refusal(self, request=None):
         """The fail-closed rail, checked wherever a proposal is WRITTEN:
         a bank value is never written without a second person's yes —
@@ -688,7 +703,13 @@ class PbRecordsApply(models.Model):
             # UPDATES P3a — fails closed: the request reads "approved but
             # could not be carried out" with this sentence; nothing written.
             raise UserError(refusal)
-        Desk = self.env['pb.records.desk']
+        bank = self._bank_rule_applies(request)
+        # UPDATES P3a — a bank change is WRITTEN with the proposer's rights
+        # (the way a scheduled change is): the second person approves, and
+        # may well be a Finance approver with no right to change employee
+        # records — under their rights the evaluation would quietly find
+        # nothing to write and the change would read "carried out".
+        Desk = self._writer_desk() if bank else self.env['pb.records.desk']
         moved = Desk._plan_moved_since(self)
         if moved:
             note, names, more = self._moved_sentence(moved)
@@ -703,6 +724,10 @@ class PbRecordsApply(models.Model):
             self.sudo().write({'state': 'scheduled', 'block_note': False})
             return True
         written, people, refused = Desk._write_plan(self)
+        if bank and not written and self.plan():
+            raise UserError(_(
+                "Nothing could be written: none of these bank details can be "
+                "saved any more. Send this back and propose it again."))
         self.sudo().write({
             'applied': True,
             'applied_at': fields.Datetime.now(),

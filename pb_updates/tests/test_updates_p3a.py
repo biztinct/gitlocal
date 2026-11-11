@@ -364,6 +364,19 @@ class TestUpdatesP3aLanes(P3aCommon):
         self.assertEqual(self.account(self.ann), '')
 
     # ------------------------------------------------------------ F6
+    def test_F5d_a_finance_approver_without_hr_rights(self):
+        """The second person may have no right to change employee records:
+        the approved change is written with the proposer's rights."""
+        fin = self._user('p3a.finance', ('base.group_user',), self.company)
+        self._hold(self.company, 'finance', fin)
+        bank = self.parts(self.mixed())['bank']
+        self.assertEqual(self.seat_users(bank), fin)
+        self.approve(bank, fin)
+        self.fresh(bank)
+        self.assertTrue(bank.applied, bank.approval_request_id.block_reason)
+        self.assertEqual(bank.count_values, 2)
+        self.assertEqual(self.account(self.ann), '9988776655')
+
     def test_F5c_finance_is_the_proposer_falls_back(self):
         self._hold(self.company, 'finance', self.proposer)
         bank = self.parts(self.mixed())['bank']
