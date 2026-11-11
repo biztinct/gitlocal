@@ -22,6 +22,8 @@ and in every preset that already holds it. Removing such a stage is not a
 door here (Hiring set-up hides columns per role and per preset, as it does
 for any stage).
 """
+import json
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -30,6 +32,16 @@ from .hiring_common import as_id
 #: The spare keys, in the order they are handed out.
 OWN_KEYS = [('own_%d' % i, 'Your own stage %d' % i) for i in range(1, 13)]
 OWN = {key for key, _label in OWN_KEYS}
+RETIRED = 'pb_hiring.retired_stage_keys'
+
+
+def retired_keys(env):
+    """Keys of removed company stages that something still refers to."""
+    try:
+        keys = json.loads(env['ir.config_parameter'].sudo().get_param(RETIRED) or '[]')
+    except ValueError:
+        keys = []
+    return {k for k in keys if k in OWN}
 
 
 class HiringStageOwnKeys(models.Model):
@@ -71,7 +83,7 @@ class PbHiringStageAdd(models.AbstractModel):
         every = Stage.search([('pb_key', '!=', False)], order='sequence,id')
         if any((s.name or '').strip().lower() == name.lower() for s in every):
             raise UserError(_("There is already a stage called “%s”.", name))
-        used = set(every.mapped('pb_key'))
+        used = set(every.mapped('pb_key')) | retired_keys(self.env)
         free = next((key for key, _label in OWN_KEYS if key not in used), None)
         if not free:
             raise UserError(_("Hiring takes up to %s stages of your own. Rename one you no longer use.",
@@ -93,3 +105,75 @@ class PbHiringStageAdd(models.AbstractModel):
             role.write({'pb_visible_stage_ids': [(4, stage.id)]})
         return {'id': stage.id, 'key': stage.pb_key,
                 'note': _("“%(name)s” added after %(after)s.", name=stage.name, after=after.name)}
+
+    # ------------------------------------------------------------ remove
+    def _own_counts(self):
+        """(used, total) company stage keys: rows that hold one, plus retired."""
+        Stage = self.env['hr.recruitment.stage'].sudo().with_context(active_test=False)
+        used = set(Stage.search([('pb_key', 'in', list(OWN))]).mapped('pb_key')) | retired_keys(self.env)
+        return len(used), len(OWN_KEYS)
+
+    def _stage_referenced(self, stage):
+        """Whether anything still names this stage (history, visibility,
+        a workflow section)."""
+        env = self.env
+        if env['pb.hiring.stage.log'].sudo().search_count(
+                ['|', ('from_stage_id', '=', stage.id), ('to_stage_id', '=', stage.id)], limit=1):
+            return True
+        if 'pb.hiring.visibility.policy' in env and env['pb.hiring.visibility.policy'].sudo().search_count(
+                [('stage_id', '=', stage.id)], limit=1):
+            return True
+        needle = '%%"%s"%%' % stage.pb_key
+        for table in ('pb_workflow', 'pb_workflow_version'):
+            column = 'draft' if table == 'pb_workflow' else 'definition'
+            env.cr.execute("SELECT to_regclass(%s)", [table])
+            if not env.cr.fetchone()[0]:
+                continue
+            env.cr.execute('SELECT 1 FROM %s WHERE %s::text LIKE %%s LIMIT 1' % (table, column), [needle])
+            if env.cr.fetchone():
+                return True
+        return False
+
+    def _act_stage_remove(self, payload):
+        """payload: {stage_id}. Returns {note, used, total}."""
+        self._require_write()
+        Stage = self.env['hr.recruitment.stage'].sudo().with_context(active_test=False)
+        stage = Stage.browse(as_id(payload.get('stage_id'))).exists()
+        if not stage or not stage.pb_key:
+            raise UserError(_("That stage is no longer there."))
+        if stage.pb_key not in OWN:
+            raise UserError(_("“%s” is one of Hiring's own stages. It can be renamed or hidden from a role, "
+                              "but not removed.", stage.name))
+        n = self.env['hr.applicant'].sudo().with_context(active_test=False).search_count([('stage_id', '=', stage.id)])
+        if n:
+            raise UserError(_("1 candidate is in this stage. Move them first.") if n == 1 else
+                            _("%s candidates are in this stage. Move them first.", n))
+        rules = self.env['pb.hiring.automation.rule'].sudo().with_context(active_test=False).search(
+            ['|', ('stage_id', '=', stage.id), ('target_stage_id', '=', stage.id)])
+        if rules:
+            raise UserError(_("An automation uses “%(s)s”: %(r)s. Change or remove it in Automations first.",
+                              s=stage.name, r=', '.join('“%s”' % r.name for r in rules[:3])))
+        Preset = self.env['pb.hiring.stage.preset'].sudo().with_context(active_test=False)
+        for preset in Preset.search([('stage_ids', 'in', stage.ids)]):
+            preset.write({'stage_ids': [(3, stage.id)]})
+        Role = self.env['pb.hiring.requisition'].sudo().with_context(active_test=False)
+        for role in Role.search([('pb_visible_stage_ids', 'in', stage.ids)]):
+            role.write({'pb_visible_stage_ids': [(3, stage.id)]})
+        key, name = stage.pb_key, stage.name
+        if self._stage_referenced(stage):
+            keys = sorted(retired_keys(self.env) | {key})
+            self.env['ir.config_parameter'].sudo().set_param(RETIRED, json.dumps(keys))
+        stage.write({'pb_key': False})
+        used, total = self._own_counts()
+        return {'id': stage.id, 'used': used, 'total': total,
+                'note': _("“%(name)s” is removed. %(free)s of %(total)s company stages are free.",
+                          name=name, free=total - used, total=total)}
+
+    @api.model
+    def get_setup(self):
+        data = super().get_setup()
+        used, total = self._own_counts()
+        for row in data.get('stages', []):
+            row['own'] = row.get('key') in OWN
+        data['own_stages'] = {'used': used, 'total': total}
+        return data

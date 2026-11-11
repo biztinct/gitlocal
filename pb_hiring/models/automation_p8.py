@@ -458,7 +458,7 @@ class PbHiringAutomationRule(models.Model):
             if dry:
                 return {'status': 'done', 'text': _('Would tag %(who)s “%(t)s”.', who=name,
                                                     t=self.tag_id.name)}
-            app.sudo().write({'categ_ids': [(4, self.tag_id.id)]})
+            app._pb_tag_add(self.tag_id)     # Hiring's one tag door (WF2 P4a)
             return {'status': 'done', 'text': _('Tagged %(who)s “%(t)s”.', who=name,
                                                 t=self.tag_id.name)}
         return {'status': 'skipped', 'text': _('This rule has nothing to do.')}

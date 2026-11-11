@@ -50,9 +50,22 @@
           <div class="pbhr-su-h">
             <h2>Stages</h2>
             <span class="pbhr-pill" t-esc="rolesCountLabel"/>
+            <span t-if="ownCounter" class="pbhr-pill pbhr-su-owncount" t-esc="ownCounter"/>
             <span class="pbhr-foot-gap"/>
+            <button t-if="state.data.can_edit and !state.stageAdd" class="pbim-btn primary" t-att-disabled="!canAddStage" t-att-title="canAddStage ? '' : tr('All company stages are in use. Remove one you no longer need.')" t-on-click="() =&gt; this.startAddStage()"><t t-out="ic('plus',14)"/> Add a stage</button>
           </div>
           <p class="pbhr-su-lede">The universal list, in the order a board shows it. Click a name to rename it everywhere. Drag the handle to reorder. The meaning shows when somebody points at the column on a board.</p>
+          <div t-if="state.stageAdd" class="pbhr-su-add pbhr-su-addstage">
+            <input class="pbhr-in" t-model="state.stageAdd.name" maxlength="60" placeholder="Name of the new stage" aria-label="Name of the new stage" t-on-keydown="(ev) =&gt; this.onAddStageKey(ev)"/>
+            <label class="pbhr-su-after">after
+              <select class="pbhr-in" t-model="state.stageAdd.after_id" aria-label="The stage it comes after">
+                <option t-foreach="workingStages" t-as="ws" t-key="ws.id" t-att-value="ws.id" t-esc="ws.name"/>
+              </select>
+            </label>
+            <button class="pbim-btn primary" t-att-disabled="!(state.stageAdd.name or '').trim() or state.busy" t-on-click="() =&gt; this.saveAddStage()"><t t-out="ic('check',14)"/> Add it</button>
+            <button class="pbim-btn ghost" t-on-click="() =&gt; { state.stageAdd = null; }">Cancel</button>
+            <small class="pbhr-su-addnote">It shows wherever the stage before it shows: on those roles' boards and in those presets.</small>
+          </div>
           <div class="pbhr-su-list" t-ref="stages">
             <div t-foreach="stages" t-as="st" t-key="st.id" class="pbhr-su-row" t-att-class="'fam-' + st.family" t-att-data-id="st.id">
               <span t-if="state.data.can_edit" class="pbhr-su-grip" title="Drag to reorder"><t t-out="ic('grip',14)"/></span>
@@ -62,9 +75,15 @@
                 <button t-else="" type="button" class="pbhr-su-namebtn" t-att-disabled="!state.data.can_edit" t-on-click="() =&gt; this.startRename(st)" t-att-title="renameTitle">
                   <t t-esc="st.name"/> <t t-if="state.data.can_edit" t-out="ic('pencil',12)"/>
                 </button>
-                <small><t t-esc="familyLabel(st.family)"/><t t-if="st.always_on"> · always on</t> · <t t-esc="usedBy(st)"/></small>
+                <small><t t-esc="familyLabel(st.family)"/><t t-if="st.always_on"> · always on</t> · <t t-esc="usedBy(st)"/><t t-if="st.own"> · added by your company<t t-if="state.data.can_edit"> · <button type="button" class="pbhr-su-remove" t-on-click="() =&gt; this.askRemoveStage(st)"><t t-out="ic('trash',11)"/> Remove</button></t></t></small>
               </div>
               <input class="pbhr-in pbhr-su-meaning" t-model="state.meanings[st.id]" t-att-disabled="!state.data.can_edit" maxlength="160" placeholder="One sentence: what does it mean to be here?" t-on-change="() =&gt; this.saveMeaning(st)"/>
+              <div t-if="state.removing === st.id" class="pbhr-su-confirm" role="alertdialog" t-att-aria-label="tr('Remove %s?', st.name)">
+                <t t-out="ic('alert',15)"/>
+                <span>Remove “<b t-esc="st.name"/>”? It comes off every board and preset. Candidates' history keeps it.</span>
+                <button class="pbim-btn danger pbim-btn-sm" t-att-disabled="state.busy" t-on-click="() =&gt; this.removeStage(st)">Remove it</button>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() =&gt; { state.removing = null; }">Keep it</button>
+              </div>
             </div>
           </div>
         </section>

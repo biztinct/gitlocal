@@ -15,6 +15,7 @@ from odoo.exceptions import UserError
 
 from .automation_p8 import BUILTINS, _days_words
 from .hiring_common import P_LEAD_LATE_DAYS, P_WEEK_BEFORE_DAYS, flag, number
+from .stage_add import OWN, retired_keys
 
 #: Stages a workflow may not move a candidate into. Joined comes from
 #: confirming the person started, on their offer.
@@ -79,23 +80,55 @@ class HiringApplicantWorkflowContract(models.Model):
             # WF2 P3b (D10): a new candidate stage is a real Hiring stage,
             # added through Hiring's own `stage_add` door.
             'adds_stages': True,
-            # WF2 P3b: the one value a workflow's "Update the record" step
-            # may set on a candidate, the evaluation stars.
+            # WF2 P4a (D14): the one thing a workflow's "Update the record"
+            # step may do to a candidate is add one of Hiring's tags, through
+            # the same door Hiring's own "tag the candidate" automation uses.
+            # The evaluation stars are no longer offered (Hiring's screens do
+            # not show them).
             'safe_fields': [
-                {'key': 'priority', 'label': _('Evaluation'), 'type': 'choice',
-                 'options': [{'key': k, 'label': _(v)} for k, v in
-                             self.env['hr.applicant']._fields['priority']._description_selection(self.env)]},
+                {'key': 'tag', 'label': _('Add a tag'), 'type': 'choice',
+                 'done_words': _('Added the tag “%s”.'), 'would_words': _('Would add the tag “%s”'),
+                 'card_words': _('Adds the tag “%s”'),
+                 'options': [{'key': t.id, 'label': t.name}
+                             for t in self.env['hr.applicant.category'].sudo().search([], order='name', limit=300)]},
             ],
+            'retired_fields': ['priority'],
+            # WF2 P4a (D17): a company-added stage can be removed, by Hiring;
+            # a workflow section that waited for one becomes a heading.
+            'removes_stages': True,
+            'removed_keys': sorted(retired_keys(self.env)),
         }
 
     def _workflow_update(self, key, value):
-        """Studio's "Update the record" step: one declared value only."""
+        """Studio's "Update the record" step: one declared value only. A tag
+        is added through Hiring's own door (`_pb_tag_add`), as its "tag the
+        candidate" automation does; nothing else is written."""
         self.ensure_one()
         allowed = {f['key'] for f in self._workflow_capabilities().get('safe_fields', [])}
         if key not in allowed:
             raise UserError(_('Hiring has not opened this value to workflows.'))
-        self.write({key: value})
+        if key == 'tag':
+            tag = self.env['hr.applicant.category'].sudo().browse(int(value or 0)).exists()
+            if not tag:
+                raise UserError(_('That tag is no longer in Hiring. Edit the step.'))
+            self._pb_tag_add(tag)
+            return True
+        raise UserError(_('Hiring has not opened this value to workflows.'))
+
+    def _pb_tag_add(self, tag):
+        """Hiring's one door for adding a tag (its automations use it too).
+        Returns False when the candidate already had it."""
+        self.ensure_one()
+        if tag in self.sudo().categ_ids:
+            return False
+        self.sudo().write({'categ_ids': [(4, tag.id)]})
         return True
+
+    @api.model
+    def _workflow_remove_stage(self, stage_id):
+        """Remove a company-added candidate stage (D17), by Hiring itself:
+        its own door and its own set-up permission."""
+        return self.env['pb.hiring'].act('stage_remove', {'stage_id': stage_id})
 
     @api.model
     def _workflow_add_stage(self, name, after_stage_id):
@@ -128,6 +161,7 @@ class HiringApplicantWorkflowContract(models.Model):
                 enters = _('A recruiter moves the candidate here')
             rows.append({'key': s.pb_key, 'id': s.id, 'name': s.name or '', 'family': s.pb_family or 'open',
                          'exit': s.pb_family == 'closed', 'renamable': can_rename,
+                         'removable': can_rename and s.pb_key in OWN,
                          'revision': str(s.write_date) if can_rename else None,
                          'meaning': s.pb_meaning or '', 'enters': enters})
         return rows
@@ -143,7 +177,10 @@ class HiringApplicantWorkflowContract(models.Model):
                 'kind': RULE_KIND.get(rule.action, 'change'),
                 'audience': RULE_AUDIENCE.get(rule.recipient or '', 'other'),
                 'owner': _('Hiring automations'), 'settings': SETTINGS,
-                'text': rule._sentence(), 'ref': 'hiring_rule:%s' % rule.id})
+                'text': rule._sentence(), 'ref': 'hiring_rule:%s' % rule.id,
+                # WF2 P4a: what the rule sets, so a workflow adding the same
+                # tag is caught as a double-up (R2e).
+                **({'sets': 'tag:%s' % rule.tag_id.id} if rule.action == 'tag' and rule.tag_id else {})})
         lead_days = number(self.env, P_LEAD_LATE_DAYS, 0)
         week = number(self.env, P_WEEK_BEFORE_DAYS, 7)
         for key, sentence, param, default, _email, _why in BUILTINS:

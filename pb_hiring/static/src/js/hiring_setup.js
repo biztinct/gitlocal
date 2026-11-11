@@ -38,6 +38,8 @@ export class PbHiringSetup extends Component {
             whoQ: "",
             // RECRUIT P4: consent & retention
             retEdit: null, retAdd: { country_id: "", months: 12 }, retConfirm: false,
+            // WF2 P4a (D17): add a company stage, remove one
+            stageAdd: null, removing: null,
         });
         this.listRef = useRef("stages");
         useSortable({
@@ -164,6 +166,45 @@ export class PbHiringSetup extends Component {
         await this.call("stage_meaning", { stage_id: st.id, meaning }, {
             undo: (res) => this.call("stage_meaning", { stage_id: st.id, meaning: res.old }),
         });
+    }
+
+    // WF2 P4a (D17) — a company stage: add one after a working stage, remove
+    // one nobody is in. The server (`stage_add` / `stage_remove`) decides.
+    get workingStages() { return this.stages.filter((s) => s.family === "open"); }
+
+    get ownCounts() { return (this.state.data && this.state.data.own_stages) || null; }
+
+    get ownCounter() {
+        const c = this.ownCounts;
+        return c ? _t("%(used)s of %(total)s company stages used", { used: c.used, total: c.total }) : "";
+    }
+
+    get canAddStage() { const c = this.ownCounts; return !c || c.used < c.total; }
+
+    startAddStage() {
+        const working = this.workingStages;
+        this.state.removing = null;
+        this.state.stageAdd = { name: "", after_id: working.length ? String(working[working.length - 1].id) : "" };
+    }
+
+    onAddStageKey(ev) {
+        if (ev.key === "Enter") { ev.preventDefault(); this.saveAddStage(); }
+        if (ev.key === "Escape") { ev.preventDefault(); this.state.stageAdd = null; }
+    }
+
+    async saveAddStage() {
+        const f = this.state.stageAdd;
+        if (!f || !(f.name || "").trim()) { return; }
+        const res = await this.call("stage_add", { name: f.name.trim(), after_stage_id: Number(f.after_id) || false });
+        if (res) { this.state.stageAdd = null; }
+    }
+
+    askRemoveStage(st) { this.state.stageAdd = null; this.state.removing = st.id; }
+
+    async removeStage(st) {
+        const res = await this.call("stage_remove", { stage_id: st.id });
+        this.state.removing = null;
+        return res;
     }
 
     async onReorder(element, previous) {
