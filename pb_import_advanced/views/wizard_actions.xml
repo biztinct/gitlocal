@@ -5,10 +5,10 @@
         <field name="tag">pb_import_formula_wizard</field>
     </record>
 
-    <record id="action_pb_employee_wizard" model="ir.actions.client">
-        <field name="name">Import Employees</field>
-        <field name="tag">pb_import_employee_wizard</field>
-    </record>
+    <!-- UPDATES P3a: "Import Employees" (the guided wrapper around the old
+         employee import) is retired. People › Updates is the one door for
+         changing many people from a sheet; the Import screen's tile opens it.
+         This record's removal deletes the action on upgrade. -->
 
     <record id="action_pb_sync_wizard" model="ir.actions.client">
         <field name="name">Pull from Connector</field>

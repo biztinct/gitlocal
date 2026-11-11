@@ -55,8 +55,12 @@ LAUNCH_CANDIDATES = [
      'cloud-download', False),
     ('pb_import_advanced.action_pb_multisheet_wizard',
      'Set up columns from Excel', 'One-off setup: turn a workbook’s columns into scheme components', 'table', False),
-    ('pb_import_advanced.action_pb_employee_wizard',
-     'Import Employees', 'Create employee records from a file or a connected system', 'users', False),
+    # UPDATES P3a — the old employee import is retired; the tile opens
+    # People › Updates, the one door for changing many people from a sheet.
+    ('pb_updates.action_pb_updates_desk',
+     'Update employees from a sheet',
+     'Change people, contracts, bank details and pay items from one spreadsheet',
+     'users', False),
     ('pb_import_advanced.action_pb_formula_wizard',
      'Set up a scheme from a file', 'One-off setup: load rules from a salary structure or file', 'function', False),
 ]

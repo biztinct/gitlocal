@@ -10,7 +10,7 @@ Houses the power-user Import surfaces as guided OWL experiences:
    reimplementing their logic.
 All share the pb_import_kit powder design system.
 """,
-    'version': '19.0.1.15.3',
+    'version': '19.0.1.15.4',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -30,12 +30,10 @@ All share the pb_import_kit powder design system.
             'pb_import_advanced/static/src/scss/wizards.scss',
             'pb_import_advanced/static/src/js/connector_cockpit.js',
             'pb_import_advanced/static/src/js/formula_wizard.js',
-            'pb_import_advanced/static/src/js/employee_wizard.js',
             'pb_import_advanced/static/src/js/sync_wizard.js',
             'pb_import_advanced/static/src/js/multisheet_wizard.js',
             'pb_import_advanced/static/src/xml/connector_cockpit.xml',
             'pb_import_advanced/static/src/xml/formula_wizard.xml',
-            'pb_import_advanced/static/src/xml/employee_wizard.xml',
             'pb_import_advanced/static/src/xml/sync_wizard.xml',
             'pb_import_advanced/static/src/xml/multisheet_wizard.xml',
         ],
