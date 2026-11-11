@@ -11,3 +11,4 @@ from . import test_t3b_papers_token
 from . import test_rize_policy
 
 from . import test_policy_year_opening
+from . import test_wf2p2b_timeoff

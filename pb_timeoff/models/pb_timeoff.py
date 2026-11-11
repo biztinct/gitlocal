@@ -210,8 +210,10 @@ class PbTimeoff(models.AbstractModel):
 
     def _leave_card(self, lv):
         df, dt = self._leave_dates(lv)
-        state_label = {'confirm': _('To approve'),
-                       'validate1': _('2nd approval'),
+        # WF2 P2b (D22): the same words as the time-off form and the
+        # employee home ("Waiting for approval", "Second approval").
+        state_label = {'confirm': _('Waiting for approval'),
+                       'validate1': _('Second approval'),
                        'validate': _('Approved'),
                        'refuse': _('Refused')}.get(lv.state, lv.state)
         return {
@@ -412,9 +414,12 @@ class PbTimeoff(models.AbstractModel):
             {'key': 'status', 'label': _('Status'), 'icon': 'listChecks',
              'group': 'other', 'type': 'choice', 'pinned': True,
              'options': [
-                 {'value': 'confirm', 'label': _('To approve'), 'tone': 'amber',
+                 # WF2 P2b (D22): the form's and the board's own words
+                 {'value': 'confirm', 'label': _('Waiting for approval'),
+                  'tone': 'amber',
                   'domain': [('state', '=', 'confirm')]},
-                 {'value': 'validate1', 'label': _('2nd approval'), 'tone': 'blue',
+                 {'value': 'validate1', 'label': _('Second approval'),
+                  'tone': 'blue',
                   'domain': [('state', '=', 'validate1')]},
                  {'value': 'validate', 'label': _('Approved'), 'tone': 'green',
                   'domain': [('state', '=', 'validate')]},

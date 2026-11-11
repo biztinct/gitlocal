@@ -46,9 +46,12 @@ class HrLeaveWorkflowContract(models.Model):
             'approval_outcomes': {'approved': 'validate', 'returned': 'refuse',
                                   'rejected': 'refuse'},
             'effects': [
+                # WF2 P2b (D5): with a live route only the route tells the
+                # people it asks; this to-do is for anyone it does not ask.
                 {'stage': 'confirm', 'kind': 'todo', 'audience': 'approver',
                  'owner': area, 'settings': settings,
-                 'text': _('The person who approves this employee’s time off gets a to-do.')},
+                 'text': _('The person who approves this employee’s time off gets a to-do, '
+                           'unless the approval route already asks them.')},
                 {'stage': 'confirm', 'kind': 'change', 'audience': 'approver',
                  'owner': area, 'settings': settings,
                  'text': _('A new request is sent for approval by itself when an '
@@ -60,7 +63,8 @@ class HrLeaveWorkflowContract(models.Model):
                            'with “Tell HR when it is” switched on.')},
                 {'stage': 'validate1', 'kind': 'todo', 'audience': 'approver',
                  'owner': area, 'settings': settings,
-                 'text': _('When a second approval is needed, the second approver gets a to-do.')},
+                 'text': _('When a second approval is needed, the second approver gets a to-do, '
+                           'unless the approval route already asks them.')},
                 {'stage': 'validate', 'kind': 'message', 'audience': 'requester',
                  'owner': area, 'settings': settings,
                  'text': _('The employee is told their time off is approved.')},

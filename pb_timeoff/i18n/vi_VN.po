@@ -812,3 +812,31 @@ msgstr "Chọn nhân viên trước"
 #: code:addons/pb_timeoff/models/pb_timeoff.py:0
 msgid "This leave type is for employees in another country."
 msgstr "Loại nghỉ phép này dành cho nhân viên ở quốc gia khác."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/pb_timeoff.py:0
+msgid "Second approval"
+msgstr "Duyệt cấp 2"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The person who approves this employee’s time off gets a to-do, unless the approval route already asks them."
+msgstr "Người duyệt nghỉ phép của nhân viên này nhận một việc cần làm, trừ khi quy trình phê duyệt đã hỏi họ."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "When a second approval is needed, the second approver gets a to-do, unless the approval route already asks them."
+msgstr "Khi cần duyệt lần hai, người duyệt thứ hai nhận một việc cần làm, trừ khi quy trình phê duyệt đã hỏi họ."
+
+#. module: pb_timeoff
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__hr_leave__state__confirm
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"
+
+#. module: pb_timeoff
+#: model:ir.model.fields.selection,name:pb_timeoff.selection__hr_leave__state__validate1
+msgid "Second approval"
+msgstr "Duyệt cấp 2"

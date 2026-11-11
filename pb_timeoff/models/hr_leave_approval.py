@@ -40,6 +40,12 @@ ENGINE_APPLY = 'pb_leave_engine_apply'
 
 OFFICER_GROUP = 'hr_holidays.group_hr_holidays_user'
 
+#: WF2 P2b (D5): the approvers the approval engine already told about this
+#: leave, carried into the standard to-do so it leaves exactly them out.
+SINGLE_NOTICE_TOLD = 'pb_leave_single_notice_told'
+#: Set while a leave is being created, so its first to-do waits for the route.
+SINGLE_NOTICE_CREATING = 'pb_leave_single_notice_creating'
+
 #: A leave type whose name or code says the days are not paid. A heuristic and
 #: deliberately a wide one: it is only ever used as a FACT a route may
 #: condition on, never as a gate, and a business that wants it exact says so
@@ -53,6 +59,31 @@ class HrLeaveApproval(models.Model):
     _inherit = ['hr.leave', 'biz.approval.adapter.mixin']
 
     _approval_process_key = LEAVE_PROCESS_KEY
+
+    #: WF2 P2b (D6): time off itself tells the employee "has been accepted"
+    #: and "has been refused" (hr_holidays' own messages, which also reach an
+    #: employee-home login), so the approval engine leaves its own copy of
+    #: those two out when the employee sent it in. "Sent back" stays the
+    #: engine's: time off has no sent-back message of its own.
+    _approval_requester_notice = ('approved', 'rejected')
+
+    #: WF2 P2b (D22, owner 11 Nov): the two waiting statuses read the same
+    #: on every screen — "Waiting for approval" (was "To Approve") and
+    #: "Second approval" (was "Second Approval"). Labels only: the stored
+    #: values are untouched. vi/id labels: this module's i18n files.
+    state = fields.Selection(selection_add=[
+        ('confirm', 'Waiting for approval'),
+        ('validate1', 'Second approval'),
+    ])
+
+    #: The labels these statuses had before, in every language they were
+    #: shipped in, so a status history written before the change is still
+    #: read as the same status ("where time goes", WF2 P4b).
+    _workflow_former_labels = {
+        'confirm': ('To Approve', 'Cần phê duyệt', 'Akan Disetujui'),
+        'validate1': ('Second Approval', 'Phê duyệt lần hai',
+                      'Persetujuan Kedua'),
+    }
 
     #: A SEAT IS ALSO A READ (ledger AM60). The time-off module already lets
     #: a leave manager read their own people's requests, which covers the
@@ -312,9 +343,14 @@ class HrLeaveApproval(models.Model):
     # ==================================================================
     @api.model_create_multi
     def create(self, vals_list):
-        leaves = super().create(vals_list)
+        # WF2 P2b: the standard to-do made inside create waits for the route
+        # (`activity_update` below), so it knows who the engine tells
+        leaves = super(HrLeaveApproval, self.with_context(
+            **{SINGLE_NOTICE_CREATING: True})).create(vals_list)
+        leaves = leaves.with_env(self.env)
         if self.env.context.get(ENGINE_APPLY) \
                 or self.env.context.get('leave_fast_create'):
+            self._single_notice_flush_all(leaves)
             return leaves
         for leave in leaves:
             if leave.state != 'confirm':
@@ -329,7 +365,68 @@ class HrLeaveApproval(models.Model):
                 # to ask for a day off because a route is half set up.
                 _logger.warning('pb_timeoff: leave %s could not be sent for '
                                 'approval: %s', leave.id, exc)
+        self._single_notice_flush_all(leaves)
         return leaves
+
+    def _single_notice_flush_all(self, leaves):
+        """WF2 P2b: decide every standard to-do that waited on the route."""
+        engine = self.env['biz.approval.engine']
+        for leave in leaves:
+            engine.single_notice_flush(leave)
+
+    # ------------------------------------------- WF2 P2b: approvers told once
+    def _get_responsible_for_approval(self):
+        responsible = super()._get_responsible_for_approval()
+        told = self.env.context.get(SINGLE_NOTICE_TOLD)
+        if told:
+            responsible = responsible.filtered(lambda u: u.id not in told)
+        return responsible
+
+    def activity_update(self):
+        """The standard "time off to approve" to-do, without a second one.
+
+        With a live route the approval engine tells each approver itself
+        ("Your approval is needed" + a to-do on the request). The standard
+        to-do is then left out for exactly the people the engine proves it
+        told; everyone else (and every leave without a live route) gets it as
+        before. Kill switch: `biz_approval.single_notice`.
+        """
+        ctx = self.env.context
+        if ctx.get('mail_activity_automation_skip') \
+                or SINGLE_NOTICE_TOLD in ctx:
+            return super().activity_update()
+        engine = self.env['biz.approval.engine']
+        try:
+            guarded = self.filtered(
+                lambda l: l.state in ('confirm', 'validate1')
+                and l.holiday_status_id.leave_validation_type != 'no_validation'
+                and l._leave_engine_managed()) \
+                if engine._single_notice_on() else self.browse()
+        except Exception:       # noqa: BLE001 — when in doubt, as before
+            _logger.exception('pb_timeoff: single-notice check failed')
+            guarded = self.browse()
+        if not guarded:
+            return super().activity_update()
+        rest = self - guarded
+        if rest:
+            super(HrLeaveApproval, rest).activity_update()
+        submitting = bool(ctx.get(SINGLE_NOTICE_CREATING)) and not (
+            ctx.get(ENGINE_APPLY) or ctx.get('leave_fast_create'))
+        for leave in guarded:
+            people = leave.sudo()._get_responsible_for_approval()
+
+            def send(users, leave=leave, everyone=people):
+                told = everyone - users if users is not None else everyone
+                leave.with_context(**{
+                    SINGLE_NOTICE_TOLD: told.ids}).activity_update()
+            if not people:
+                send(people)
+                continue
+            engine.notify_unless_told(
+                leave, people, send, live=True, always=True,
+                submitting=submitting and leave.state == 'confirm',
+                what='time off %s' % leave.id)
+        return None
 
     def action_approve(self, check_state=True):
         """One press = one decision on the live route."""
