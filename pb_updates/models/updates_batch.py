@@ -52,6 +52,10 @@ class PbUpdatesBatch(models.Model):
     rows_total = fields.Integer(string='Rows in the file')
     rows_unmatched = fields.Integer(string='Rows that matched nobody')
     values_refused = fields.Integer(string='Values left out')
+    values_off_scheme = fields.Integer(
+        string='Values not in the pay scheme',
+        help="Pay-item values skipped because the item is not in that "
+             "person's pay scheme.")
 
 
 class PbUpdatesLayout(models.Model):

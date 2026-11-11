@@ -1070,16 +1070,6 @@ msgstr "Các khoản lương định kỳ"
 
 #. module: pb_updates
 #. odoo-javascript
-#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
-msgid ""
-"Only cells with something in them can change anything. Nothing is written "
-"until you apply, and you can undo it afterwards."
-msgstr ""
-"Chỉ những ô có dữ liệu mới có thể thay đổi. Không có gì được ghi cho đến khi"
-" bạn áp dụng, và bạn có thể hoàn tác sau đó."
-
-#. module: pb_updates
-#. odoo-javascript
 #: code:addons/pb_updates/static/src/js/updates_review.js:0
 msgid "Only columns with changes"
 msgstr "Chỉ các cột có thay đổi"
@@ -1781,3 +1771,220 @@ msgstr "Tiếp tục, bỏ qua 1 mục cần xem lại"
 #: code:addons/pb_updates/static/src/js/updates_desk.js:0
 msgid "None of them is matched yet: choose where each one goes."
 msgstr "Chưa cột nào được ghép: hãy chọn nơi đưa vào cho từng cột."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(field)s is emptied. Today it is %(old)s."
+msgstr "%(field)s sẽ được xóa trống. Hiện tại là %(old)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_schemes.py:0
+msgid "%(first)s and %(last)s"
+msgstr "%(first)s và %(last)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(scheme)s · %(people)s in this file"
+msgstr "%(scheme)s · %(people)s trong tệp này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_schemes.py:0
+msgid "%(who)s is paid under %(scheme)s (%(via)s), which has no %(item)s."
+msgstr "%(who)s được trả lương theo %(scheme)s (%(via)s), chương trình này không có %(item)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_schemes.py:0
+msgid "%(who)s is paid under %(scheme)s, which has no %(item)s."
+msgstr "%(who)s được trả lương theo %(scheme)s, chương trình này không có %(item)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_schemes.py:0
+msgid "%(who)s is paid under %(schemes)s, which have no %(item)s."
+msgstr "%(who)s được trả lương theo %(schemes)s, các chương trình này không có %(item)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values were skipped because those pay items are not in the person's pay scheme."
+msgstr "%s giá trị đã được bỏ qua vì các khoản lương đó không có trong chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values will be skipped because those pay items are not in the person's pay scheme."
+msgstr "%s giá trị sẽ được bỏ qua vì các khoản lương đó không có trong chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value was skipped because that pay item is not in the person's pay scheme."
+msgstr "1 giá trị đã được bỏ qua vì khoản lương đó không có trong chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value will be skipped because that pay item is not in the person's pay scheme."
+msgstr "1 giá trị sẽ được bỏ qua vì khoản lương đó không có trong chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Already empty"
+msgstr "Đã trống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Already empty. Nothing changes."
+msgstr "Đã trống. Không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "CLEAR"
+msgstr "CLEAR"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Change a value to update it. Leave a cell as it is, or blank, and nothing changes for it."
+msgstr "Sửa một giá trị để cập nhật. Giữ nguyên hoặc để trống một ô thì ô đó không thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Cleared"
+msgstr "Đã xóa trống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Each person's pay scheme is worked out for you, the same way a pay run does it."
+msgstr "Chương trình lương của từng người được xác định giúp bạn, giống hệt cách một kỳ tính lương làm."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Emptied on apply (the file says CLEAR). Press Enter to leave it out or change it."
+msgstr "Sẽ được xóa trống khi áp dụng (tệp ghi CLEAR). Nhấn Enter để bỏ qua hoặc sửa giá trị."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Grey cells are pay items that are not in that person's pay scheme. They stay blank and anything typed there is left out."
+msgstr "Ô màu xám là các khoản lương không có trong chương trình lương của người đó. Các ô này để trống và mọi thứ nhập vào đó sẽ được bỏ qua."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "How to fill in this sheet"
+msgstr "Cách điền bảng này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Kept on contracts only"
+msgstr "Chỉ lưu trên hợp đồng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "No pay scheme covers this person yet. Pay items are still saved on their contract."
+msgstr "Chưa có chương trình lương nào áp dụng cho người này. Các khoản lương vẫn được lưu trên hợp đồng của họ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No pay scheme yet"
+msgstr "Chưa có chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Not in their pay scheme"
+msgstr "Không có trong chương trình lương của họ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Nothing was changed: every value left is for a pay item that is not in that person's pay scheme."
+msgstr "Chưa có gì thay đổi: mọi giá trị còn lại đều thuộc khoản lương không có trong chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Only cells with something in them can change anything. To empty a value on purpose, type CLEAR in its cell. Nothing is written until you apply, and you can undo it afterwards."
+msgstr "Chỉ những ô có dữ liệu mới làm thay đổi. Muốn xóa trống một giá trị, hãy gõ CLEAR vào ô đó. Chưa có gì được ghi cho đến khi bạn áp dụng, và bạn có thể hoàn tác sau đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pay schemes in this file"
+msgstr "Các chương trình lương trong tệp này"
+
+#. module: pb_updates
+#: model:ir.model.fields,help:pb_updates.field_pb_updates_batch__values_off_scheme
+msgid "Pay-item values skipped because the item is not in that person's pay scheme."
+msgstr "Các giá trị khoản lương bị bỏ qua vì khoản đó không có trong chương trình lương của người đó."
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_records_desk
+msgid "Records Desk"
+msgstr "Bàn hồ sơ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_schemes.py:0
+msgid "This person"
+msgstr "Người này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "To empty a value, type CLEAR in its cell."
+msgstr "Muốn xóa trống một giá trị, hãy gõ CLEAR vào ô đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Used by several pay schemes"
+msgstr "Dùng trong nhiều chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Values crossed out with"
+msgstr "Các giá trị bị gạch kèm dấu"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__values_off_scheme
+msgid "Values not in the pay scheme"
+msgstr "Giá trị không có trong chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "are pay items that are not in that person's pay scheme, so they are skipped."
+msgstr "là khoản lương không có trong chương trình lương của người đó, nên được bỏ qua."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_schemes.py:0
+msgid "their pay scheme"
+msgstr "chương trình lương của họ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "── Other pay schemes ──"
+msgstr "── Các chương trình lương khác ──"

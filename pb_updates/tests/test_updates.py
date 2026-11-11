@@ -14,6 +14,7 @@ publishes "No approval needed" for Records Desk changes (the approval path is
 import base64
 import csv
 import io
+from unittest.mock import patch
 
 from odoo.tests import TransactionCase, tagged
 
@@ -54,6 +55,15 @@ class TestUpdates(TransactionCase):
             cls.env.company, 'records')
         cls.Desk = cls.env['pb.records.desk']
         cls.Upd = cls.env['pb.updates.desk']
+        # UPDATES P2b: these cases predate pay-scheme awareness and are about
+        # everything else, so nobody here is known to a pay scheme — on a
+        # database whose main company has one, T18's "a pay item for a
+        # contract without that line" would otherwise be greyed out by
+        # design. Pay schemes have their own cases (test_updates_p2b.py).
+        cls.startClassPatcher(patch.object(
+            type(cls.Upd), '_people_schemes',
+            lambda self, emp_ids: {int(i): {'ids': set(), 'name': '', 'via': ''}
+                                   for i in (emp_ids or []) if i}))
         cls.Employee = cls.env['hr.employee']
         cls.Contract = cls.env['hr.contract']
         cls.company = cls.env.company

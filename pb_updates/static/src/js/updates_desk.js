@@ -69,6 +69,13 @@ function saveFile(res) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/** "3 values were skipped: those pay items are not in the person's pay scheme." */
+export function offSchemeLine(n) {
+    return plural(n,
+        _t("1 value was skipped because that pay item is not in the person's pay scheme."),
+        _t("%s values were skipped because those pay items are not in the person's pay scheme."));
+}
+
 export class PbUpdatesDesk extends Component {
     static template = "pb_updates.PbUpdatesDesk";
     static components = { UpdReview };
@@ -175,8 +182,11 @@ export class PbUpdatesDesk extends Component {
                 ? _t("Put back on %(when)s by %(who)s.", { when: whenLabel(h.undone_date), who: h.undone_by })
                 : _t("Put back on %s.", whenLabel(h.undone_date));
         }
+        const bits = [];
         const left = (h.values_refused || 0);
-        return left ? plural(left, _t("1 value from the file was left out."), _t("%s values from the file were left out.")) : "";
+        if (left) { bits.push(plural(left, _t("1 value from the file was left out."), _t("%s values from the file were left out."))); }
+        if (h.values_off_scheme) { bits.push(offSchemeLine(h.values_off_scheme)); }
+        return bits.join(" ");
     }
 
     fileUrl(h) { return `/web/content/${h.file_id}?download=true`; }
@@ -375,6 +385,8 @@ export class PbUpdatesDesk extends Component {
             layoutKnown: res.layout_known,
             fromSheet: res.from_sheet,
             fields: res.fields || [],
+            schemes: res.schemes || [],
+            noScheme: res.no_scheme || 0,
             columns: (res.columns || []).map((c) => ({
                 idx: c.idx, head: c.head, samples: c.samples || [],
                 target: c.target || "", how: c.how || "" })),
@@ -398,6 +410,79 @@ export class PbUpdatesDesk extends Component {
         return out;
     }
 
+    /**
+     * The "Goes to" list (UPDATES P2b). Person, contract and bank fields keep
+     * their topic groups. Pay items are grouped by pay scheme: first the
+     * schemes the people in this file are paid under (most people first), then
+     * the pay items several schemes share, then — under "Other pay schemes" —
+     * the schemes nobody in this file is paid under, and last the pay items no
+     * scheme has that are kept on contracts.
+     */
+    get goesTo() {
+        const m = this.state.match;
+        if (!m) { return []; }
+        const out = [];
+        for (const t of m.fields) {
+            if (t.key !== "component") {
+                out.push({ key: t.key, label: t.label, options: t.fields.map((f) => ({ id: f.id, label: f.label })) });
+                continue;
+            }
+            const present = new Map((m.schemes || []).map((s, i) => [s.id, { ...s, order: i }]));
+            const single = new Map();
+            const several = [];
+            const kept = [];
+            for (const f of t.fields) {
+                const schemes = f.schemes || [];
+                if (!schemes.length) { kept.push({ id: f.id, label: f.label }); continue; }
+                if (schemes.length > 1) {
+                    const names = schemes.map((s) => s.name);
+                    const shown = names.length > 3
+                        ? _t("%(list)s and %(n)s more", { list: names.slice(0, 3).join(", "), n: names.length - 3 })
+                        : names.join(", ");
+                    several.push({ id: f.id, label: `${f.label} · ${shown}` });
+                    continue;
+                }
+                const s = schemes[0];
+                if (!single.has(s.id)) { single.set(s.id, { scheme: s, options: [] }); }
+                single.get(s.id).options.push({ id: f.id, label: f.label });
+            }
+            const groups = [...single.values()];
+            const inFile = groups.filter((g) => present.has(g.scheme.id))
+                .sort((a, b) => present.get(a.scheme.id).order - present.get(b.scheme.id).order);
+            const others = groups.filter((g) => !present.has(g.scheme.id))
+                .sort((a, b) => a.scheme.name.localeCompare(b.scheme.name));
+            for (const g of inFile) {
+                out.push({ key: `s${g.scheme.id}`, label: _t("%(scheme)s · %(people)s in this file", {
+                    scheme: g.scheme.name, people: plural(present.get(g.scheme.id).count, _t("1 person"), _t("%s people")) }),
+                    options: g.options });
+            }
+            if (several.length) {
+                out.push({ key: "several", label: _t("Used by several pay schemes"), options: several });
+            }
+            if (others.length) {
+                out.push({ key: "others", label: _t("── Other pay schemes ──"), options: [], divider: true });
+                for (const g of others) {
+                    out.push({ key: `s${g.scheme.id}`, label: g.scheme.name, options: g.options });
+                }
+            }
+            if (kept.length) {
+                out.push({ key: "kept", label: _t("Kept on contracts only"), options: kept });
+            }
+        }
+        return out;
+    }
+
+    /** The quiet line and chips under the "Match your columns" heading. */
+    get matchSchemes() {
+        const m = this.state.match;
+        if (!m || !m.fields.some((t) => t.key === "component" && t.fields.length)) { return null; }
+        const chips = (m.schemes || []).map((s) => ({ key: `s${s.id}`, label: s.name, count: s.count, tone: "pri" }));
+        if (m.noScheme) {
+            chips.push({ key: "none", label: _t("No pay scheme yet"), count: m.noScheme, tone: "warn" });
+        }
+        return { chips };
+    }
+
     get fieldGroups() {
         const out = {};
         for (const t of (this.state.match ? this.state.match.fields : [])) {
@@ -407,9 +492,30 @@ export class PbUpdatesDesk extends Component {
     }
 
     setTarget(col, value) {
+        const wasIdentity = (col.target || "").startsWith("identity:");
         col.target = value;
         col.how = value && value !== "ignore" ? "you" : "";
         this.state.matchError = "";
+        if (wasIdentity || (value || "").startsWith("identity:")) { this.refreshSchemes(); }
+    }
+
+    /** The pay schemes of the people this file finds, counted again once the
+     *  column that finds the person has been chosen by hand. Quiet: a failure
+     *  only leaves the counts as they were. */
+    async refreshSchemes() {
+        const m = this.state.match;
+        if (!m || !this.matchSchemes) { return; }
+        const seq = (this._schemeSeq = (this._schemeSeq || 0) + 1);
+        const { identity } = this.matchColumns();
+        try {
+            const res = await this.orm.silent.call(MODEL, "file_schemes", [], {
+                file_b64: this.state.file.b64, filename: this.state.file.name, identity });
+            if (seq !== this._schemeSeq || !res.ok || this.state.match !== m) { return; }
+            m.schemes = res.schemes || [];
+            m.noScheme = res.no_scheme || 0;
+        } catch {
+            // the counts are a guide, never a gate
+        }
     }
 
     confirmGuess(col) { col.how = "confirmed"; }
@@ -552,6 +658,10 @@ export class PbUpdatesDesk extends Component {
                 columns: res.columns || [],
                 rows,
                 unmatched,
+                pay_items: !!res.pay_items,
+                schemes: res.schemes || [],
+                no_scheme: res.no_scheme || 0,
+                scheme: null,
                 filter: rows.length > 300 ? "chg" : "all",
                 allCols: false,
                 limit: PAGE_ROWS,
@@ -636,7 +746,7 @@ export class PbUpdatesDesk extends Component {
                 columns: this.matchColumns(),
                 changes: changesToSend(rv),
                 stats: { rows: rv.stats.rows, unmatched: counts.rowsOpen + rv.unmatched.filter((u) => u.skipped).length,
-                         left_out: counts.leftOut },
+                         left_out: counts.leftOut, off_scheme: counts.offScheme },
             });
             if (!answer.ok) {
                 a.error = answer.msg;
@@ -673,6 +783,18 @@ export class PbUpdatesDesk extends Component {
                 : _t("%s are waiting for approval. Nothing changes until it is approved.", what);
         }
         return _t("Saved as “%s”. You will find it under Past updates, with the original file.", d.batch_name || this.state.apply.name);
+    }
+
+    get doneOffScheme() {
+        const d = this.state.done;
+        return d && d.off_scheme ? offSchemeLine(d.off_scheme) : "";
+    }
+
+    get applyOffScheme() {
+        const n = this.applyCounts.offScheme;
+        return n ? plural(n,
+            _t("1 value will be skipped because that pay item is not in the person's pay scheme."),
+            _t("%s values will be skipped because those pay items are not in the person's pay scheme.")) : "";
     }
 
     get refusedRows() {

@@ -18,9 +18,14 @@ routed for approval and undone by the Records Desk (`pb.records.desk`, module
 (`pb.updates.layout`) and the named batch (`pb.updates.batch`) that groups an
 apply with the file it came from.
 
-UPDATES programme, phase 1. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+Phase 2b: pay items are judged against each person's own pay scheme
+(worked out by the scheme map, the pay run's own resolver); a value for a
+pay item that is not in that person's scheme is greyed out and skipped.
+A cell saying CLEAR empties that value.
+
+UPDATES programme, phases 1-2b. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -30,6 +35,9 @@ UPDATES programme, phase 1. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
         'pb_records',
         'pb_people_hub',
         'pb_import_kit',
+        # UPDATES P2b: each person's pay scheme comes from the scheme map
+        # (`pb.scheme.map.resolve_many`). Installed on every live database.
+        'pb_scheme_map',
     ],
     'data': [
         'security/ir.model.access.csv',

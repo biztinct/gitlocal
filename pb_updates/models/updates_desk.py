@@ -44,6 +44,12 @@ _logger = logging.getLogger(__name__)
 EMP = 'hr.employee'
 CON = 'hr.contract'
 
+#: UPDATES P2b — the two context keys that switch the Records Desk's
+#: Updates-only seams on (`pb_records`): every pay item of every pay scheme in
+#: the catalogue (`records_scheme_items`), and the explicit-CLEAR rules
+#: (`records_strict_clear`). The Records screen sets neither.
+DOOR_CONTEXT = {'records_scheme_items': True, 'records_strict_clear': True}
+
 #: The desk's four catalogue groups, in order, with their icons. Their words
 #: are `PbUpdatesDesk._topic_label` (literal `_()` calls, so they translate).
 TOPICS = (
@@ -94,7 +100,12 @@ class PbUpdatesDesk(models.AbstractModel):
     # =================================================================
     @api.model
     def _desk(self):
-        return self.env['pb.records.desk']
+        """The Records Desk, with Updates' two opt-in seams switched on
+        (UPDATES P2b): every pay item of every pay scheme in the catalogue,
+        and CLEAR's rules. Every desk call Updates makes goes through here, so
+        the catalogue a column was matched against is the one its values are
+        judged and written against."""
+        return self.env['pb.records.desk'].with_context(**DOOR_CONTEXT)
 
     @api.model
     def _gate(self):
@@ -126,6 +137,15 @@ class PbUpdatesDesk(models.AbstractModel):
         desk = desk or self._desk()
         data = desk.get_fields(0)
         groups = {g['key']: g for g in data.get('groups') or []}
+        # UPDATES P2b: which pay schemes have each pay item, for the "Goes
+        # to" list's groups and the sheet's columns.
+        by_code = {}
+        if groups.get('component'):
+            for cid, scheme in sorted(self._scheme_items(desk).items(),
+                                      key=lambda kv: (kv[1]['name'].lower(), kv[0])):
+                for code in scheme['codes']:
+                    by_code.setdefault(code, []).append(
+                        {'id': cid, 'name': scheme['name']})
         topics, by_id = [], {}
         for key, icon in TOPICS:
             group = groups.get(key)
@@ -137,6 +157,9 @@ class PbUpdatesDesk(models.AbstractModel):
                        'group': key, 'ttype': card.get('ttype') or '',
                        'editable': bool(card.get('editable')),
                        'locked': bool(card.get('locked'))}
+                if key == 'component':
+                    row['code'] = card.get('code') or card['id'][2:]
+                    row['schemes'] = by_code.get(row['code'], [])
                 by_id[card['id']] = row
                 # A field that is read-only ON THE RECORD (not merely locked
                 # for this person) can never be changed from a file, so it is
@@ -225,7 +248,7 @@ class PbUpdatesDesk(models.AbstractModel):
             return {'ok': False, 'msg': _(
                 "Downloading a sheet needs permission to export employee "
                 "records. Ask an administrator, or upload a file of your own.")}
-        topics, _by_id, _data = self._catalogue(desk)
+        topics, by_id, _data = self._catalogue(desk)
         keys = set(topic_keys or [])
         field_ids = [fid for t in topics if t['key'] in keys
                      for fid in t['field_ids']]
@@ -233,7 +256,21 @@ class PbUpdatesDesk(models.AbstractModel):
             return {'ok': False, 'msg': _(
                 "Pick at least one topic first, so the sheet has columns to "
                 "fill in.")}
-        answer = desk.export_records(0, filters or {}, field_ids, 'data')
+        blank_cells, notes = {}, []
+        if 'component' in keys:
+            field_ids, blank_cells = self._sheet_pay_items(
+                desk, filters or {}, field_ids, by_id)
+            notes = [
+                _("How to fill in this sheet"),
+                _("Change a value to update it. Leave a cell as it is, or "
+                  "blank, and nothing changes for it."),
+                _("Grey cells are pay items that are not in that person's pay "
+                  "scheme. They stay blank and anything typed there is left "
+                  "out."),
+                _("To empty a value, type CLEAR in its cell."),
+            ]
+        answer = desk.export_records(0, filters or {}, field_ids, 'data',
+                                     blank_cells=blank_cells, notes=notes)
         if answer.get('ok'):
             # The desk names its files after a pay scheme; this one is not
             # tied to any, so it gets a name a person recognises in Downloads.
@@ -241,6 +278,41 @@ class PbUpdatesDesk(models.AbstractModel):
                 'product': product_label(self.env),
                 'date': fields.Date.context_today(self).isoformat()}
         return answer
+
+    @api.model
+    def _sheet_pay_items(self, desk, filters, field_ids, by_id):
+        """`(field_ids, blank_cells)` for a sheet that carries pay items.
+
+        The columns: every pay item of the pay schemes the people in the
+        sheet are paid under, plus every pay item that already has a line on
+        some contract (the sheet always carried those). A cell for a person
+        whose schemes do not have that pay item, and whose contract has no
+        line for it, is left blank and greyed."""
+        pay = [fid for fid in field_ids if by_id.get(fid, {}).get('group') == 'component']
+        if not pay:
+            return field_ids, {}
+        people = desk._matching(filters, ctx={})
+        codes = {by_id[fid]['code']: fid for fid in pay}
+        ctx = self._scheme_context(desk, people.ids, set(codes))
+        in_file = {cid for p in ctx['people'].values() for cid in p['ids']}
+        wanted = set()
+        for cid in in_file:
+            wanted |= (ctx['items'].get(cid) or {}).get('codes', set())
+        saved = {by_id[fid]['code'] for fid in pay if not by_id[fid].get('schemes')}
+        # A pay item of a scheme nobody in the sheet is paid under is left
+        # out; one kept on contracts (no scheme has it) stays, as before.
+        held = {code for (_emp, code) in ctx['held']}
+        keep = {fid for code, fid in codes.items()
+                if code in wanted or code in saved or code in held}
+        if not in_file:
+            keep = set(pay)
+        field_ids = [fid for fid in field_ids if fid not in pay or fid in keep]
+        blank = {}
+        for emp_id in people.ids:
+            for fid in keep:
+                if self._is_off_scheme(ctx, emp_id, fid):
+                    blank.setdefault(emp_id, set()).add(fid)
+        return field_ids, blank
 
     # =================================================================
     # Match columns
@@ -267,7 +339,7 @@ class PbUpdatesDesk(models.AbstractModel):
         memory or a guess points at that is no longer in the catalogue is
         dropped. The same field is never offered to two columns."""
         desk = self._gate()
-        res = desk.import_columns(0, file_b64, filename)
+        res, body = desk._import_columns(0, file_b64, filename)
         if not res.get('ok'):
             return res
         if not res.get('rows'):
@@ -327,12 +399,71 @@ class PbUpdatesDesk(models.AbstractModel):
         placed_by_id = [c for c in columns if c['how'] == 'id']
         from_sheet = bool(placed_by_id) and all(
             c['how'] in ('id', 'identity') for c in columns)
-        return {
+        answer = {
             'ok': True, 'filename': res.get('filename'), 'rows': res['rows'],
             'truncated': bool(res.get('truncated')), 'columns': columns,
             'fields': topics, 'layout_known': bool(exact),
-            'from_sheet': from_sheet,
+            'from_sheet': from_sheet, 'schemes': [], 'no_scheme': 0,
         }
+        if any(t['key'] == 'component' and t['fields'] for t in topics):
+            # UPDATES P2b: the pay schemes of the people in this file, with
+            # head-counts, so the "Goes to" list can put their pay items first.
+            ids = self._file_people(desk, columns, body)
+            if ids:
+                ctx = {'people': self._people_schemes(ids), 'held': set()}
+                ctx['items'] = self._scheme_items(
+                    desk, {c for p in ctx['people'].values() for c in p['ids']})
+                answer.update(self._strip(ctx, ids))
+        return answer
+
+    @api.model
+    def file_schemes(self, file_b64='', filename='', identity=None):
+        """The "Goes to" list's head-counts again, after the person chose by
+        hand which column finds the person (UPDATES P2b). Reads only.
+        `identity` is `{'code'|'name'|'email': column number}`."""
+        desk = self._gate()
+        res, body = desk._import_columns(0, file_b64, filename)
+        out = {'ok': bool(res.get('ok')), 'schemes': [], 'no_scheme': 0}
+        if not res.get('ok'):
+            return out
+        columns = []
+        for key, idx in (identity or {}).items():
+            try:
+                idx = int(idx or 0)
+            except (TypeError, ValueError):
+                idx = 0
+            if key in IDENTITY_KEYS and idx > 0:
+                columns.append({'idx': idx, 'target': 'identity:%s' % key})
+        ids = self._file_people(desk, columns, body)
+        if ids:
+            ctx = {'people': self._people_schemes(ids), 'held': set()}
+            ctx['items'] = self._scheme_items(
+                desk, {c for p in ctx['people'].values() for c in p['ids']})
+            out.update(self._strip(ctx, ids))
+        return out
+
+    @api.model
+    def _file_people(self, desk, columns, body):
+        """The people a file's rows find, by the columns placed as "finds the
+        person" so far — the desk's own matching ladder (code, email, name).
+        Only for head-counts: the review matches again with what was chosen."""
+        identity = {}
+        for col in columns:
+            target = col.get('target') or ''
+            if target.startswith('identity:'):
+                identity.setdefault(target.split(':', 1)[1], col['idx'])
+        if not identity or not body:
+            return []
+        index = desk._io_index(desk._matching({}, ctx={}))
+        found = set()
+        for _offset, row in body[:10000]:
+            values = {key: desk._io_text(desk._io_cell(row, idx))
+                      for key, idx in identity.items()}
+            emp_id, _method, _why = desk._io_match(
+                index, values.get('code'), values.get('name'), values.get('email'))
+            if emp_id:
+                found.add(emp_id)
+        return sorted(found)
 
     # =================================================================
     # Review
@@ -356,10 +487,12 @@ class PbUpdatesDesk(models.AbstractModel):
             return {'ok': False, 'msg': _(
                 "Pick at least one column to bring in. Only the columns that "
                 "find the person are matched so far.")}
+        # `clear_word`: a cell saying CLEAR empties that value (decision D6).
         peek = desk.import_peek(
             0, file_b64, filename,
             columns={'used': {str(k): v for k, v in cols['used'].items()},
-                     'identity': cols['identity']})
+                     'identity': cols['identity']},
+            clear_word=True)
         if not peek.get('ok'):
             return peek
         _topics, by_id, _data = self._catalogue(desk)
@@ -372,12 +505,15 @@ class PbUpdatesDesk(models.AbstractModel):
             out_columns.append({'field_id': fid, 'label': by_id[fid]['label'],
                                 'group': by_id[fid]['group'], 'idx': idx,
                                 'head': cols['heads'].get(idx, '')})
+        pay_codes = {c['field_id'][2:] for c in out_columns
+                     if c['group'] == 'component'}
         base = {
             'ok': True, 'filename': peek.get('filename') or filename,
             'summary': peek.get('summary') or {},
             'identity': peek.get('identity') or '',
             'truncated': bool(peek.get('truncated')),
             'columns': out_columns,
+            'pay_items': bool(pay_codes), 'schemes': [], 'no_scheme': 0,
         }
         if peek.get('empty'):
             base.update(empty=True, msg=peek.get('msg'), rows=[], unmatched=[],
@@ -387,6 +523,10 @@ class PbUpdatesDesk(models.AbstractModel):
         matched = peek.get('matched') or []
         changes = peek.get('changes') or []
         info = self._people_info(desk, {m['emp_id'] for m in matched})
+        # UPDATES P2b: each person's pay scheme, asked once for the whole file
+        # and only when the file brings pay items in.
+        scheme_ctx = self._scheme_context(
+            desk, {m['emp_id'] for m in matched}, pay_codes) if pay_codes else None
 
         # One queue of the desk's verdicts per (person, field).
         queues = {}
@@ -431,6 +571,18 @@ class PbUpdatesDesk(models.AbstractModel):
                                  "down, and that row's value is the one used."),
                         'value': value}
                     continue
+                if scheme_ctx and self._is_off_scheme(
+                        scheme_ctx, m['emp_id'], change['field_id']):
+                    # Not in this person's pay scheme: greyed, never sent,
+                    # never a problem to fix (decision D5).
+                    cells[change['field_id']] = {
+                        'status': 'off_scheme',
+                        'old': (item or {}).get('old_label') or '',
+                        'new': text, 'value': value, 'cleared': value == '',
+                        'why': self._off_scheme_why(
+                            scheme_ctx, m['emp_id'], person.get('name'),
+                            by_id.get(change['field_id'], {}).get('label') or '')}
+                    continue
                 if item is None:
                     cells[change['field_id']] = {
                         'status': 'refused', 'old': '', 'new': text, 'value': value,
@@ -453,26 +605,71 @@ class PbUpdatesDesk(models.AbstractModel):
                     'new': item.get('new_label') or text,
                     'why': (item.get('why') or '') if status != 'same' else '',
                     'value': value}
+                if value == '':
+                    # A CLEAR from the file: shown as "Cleared", the old value
+                    # struck through. Clearing what is already empty is "same".
+                    cells[change['field_id']]['cleared'] = True
                 if status == 'ok':
                     ok_changes.append({'emp_id': m['emp_id'],
                                        'field_id': change['field_id'],
                                        'value': value})
-            rows.append({
+            row = {
                 'row': m['row'], 'emp_id': m['emp_id'], 'method': m.get('method'),
                 'name': person.get('name') or '', 'code': person.get('code') or '',
                 'department': person.get('department') or '',
                 'twice': emp_rows.get(m['emp_id'], 0) > 1,
                 'cells': cells,
-            })
+            }
+            if scheme_ctx:
+                row.update(self._person_scheme(scheme_ctx, m['emp_id']))
+            rows.append(row)
+        if scheme_ctx:
+            base.update(self._strip(scheme_ctx, [m['emp_id'] for m in matched]))
         base.update(rows=rows, unmatched=peek.get('unmatched') or [],
                     changes=ok_changes)
         return base
 
     @api.model
+    def _clear_words(self, desk, changes):
+        """A value typed as CLEAR (any case, or the word in the reader's
+        language) means "empty this value" — the same reading the file gets."""
+        words = desk._io_clear_words()
+        out = []
+        for change in changes or []:
+            if not isinstance(change, dict):
+                continue
+            value = change.get('value')
+            if isinstance(value, str) and value.strip().lower() in words:
+                change = dict(change, value='')
+            out.append(change)
+        return out
+
+    @api.model
     def recheck(self, changes=None):
-        """After an on-screen fix or a row bound by hand: the desk's verdict."""
+        """After an on-screen fix or a row bound by hand: the desk's verdict,
+        and — for a pay item — whether it is in the person's pay scheme at all
+        (the same verdict `review` gives, UPDATES P2b)."""
         desk = self._gate()
-        return desk.preview_changes(0, changes or [])
+        changes = self._clear_words(desk, changes)
+        answer = desk.preview_changes(0, changes)
+        pay = {str(c.get('field_id'))[2:] for c in changes
+               if str(c.get('field_id') or '')[:2] == 'c:'}
+        emp_ids = {int(c.get('emp_id') or 0) for c in changes} - {0}
+        cleared = {(int(c.get('emp_id') or 0), c.get('field_id'))
+                   for c in changes if c.get('value') == ''}
+        ctx = self._scheme_context(desk, emp_ids, pay) if pay else None
+        names = {i: p['name'] for i, p in self._people_info(desk, emp_ids).items()} \
+            if ctx else {}
+        for item in answer.get('items') or []:
+            if (item['emp_id'], item['field_id']) in cleared:
+                item['cleared'] = True
+            if ctx and self._is_off_scheme(ctx, item['emp_id'], item['field_id']):
+                item.update(status='off_scheme', why=self._off_scheme_why(
+                    ctx, item['emp_id'], names.get(item['emp_id']),
+                    item.get('field_label') or ''))
+        if ctx:
+            answer['people'] = {str(i): self._person_scheme(ctx, i) for i in emp_ids}
+        return answer
 
     @api.model
     def lookup_people(self, term='', limit=10):
@@ -522,20 +719,12 @@ class PbUpdatesDesk(models.AbstractModel):
                 "You can look through these changes, but you do not have "
                 "permission to change employee records. Ask an administrator "
                 "for the HR or Payroll Officer role.")}
-        changes = [c for c in (changes or []) if isinstance(c, dict)]
+        changes = self._clear_words(desk, changes)
         if not changes:
             return {'ok': False, 'msg': _(
                 "There is nothing to apply: no value in this file would change "
                 "anything.")}
         cols = self._clean_columns(columns)
-        answer = desk.apply_changes(0, changes, note=name, source='import')
-        self._remember_layout(desk, file_b64, filename, cols)
-        if not answer.get('apply_id'):
-            answer.update(batch_id=0, nothing=True, msg=_(
-                "Nothing was changed: every value in this file is already on "
-                "record, or could not be used."))
-            return answer
-
         stats = stats if isinstance(stats, dict) else {}
 
         def count(key):
@@ -544,12 +733,35 @@ class PbUpdatesDesk(models.AbstractModel):
             except (TypeError, ValueError):
                 return 0
 
+        # UPDATES P2b — the server's own rail: a pay item that is not in the
+        # person's pay scheme is dropped here too, whatever the browser sent,
+        # and the answer says how many.
+        changes, skipped = self._drop_off_scheme(desk, changes)
+        off_scheme = count('off_scheme') + len(skipped)
+        if not changes:
+            self._remember_layout(desk, file_b64, filename, cols)
+            return {'ok': True, 'apply_id': 0, 'batch_id': 0, 'nothing': True,
+                    'written': 0, 'people': 0, 'refused': [], 'pending': False,
+                    'skipped_off_scheme': len(skipped), 'off_scheme': off_scheme,
+                    'msg': _("Nothing was changed: every value left is for a "
+                             "pay item that is not in that person's pay "
+                             "scheme.")}
+        answer = desk.apply_changes(0, changes, note=name, source='import')
+        answer.update(skipped_off_scheme=len(skipped), off_scheme=off_scheme)
+        self._remember_layout(desk, file_b64, filename, cols)
+        if not answer.get('apply_id'):
+            answer.update(batch_id=0, nothing=True, msg=_(
+                "Nothing was changed: every value in this file is already on "
+                "record, or could not be used."))
+            return answer
+
         batch = self.env['pb.updates.batch'].create({
             'name': name[:200],
             'filename': (filename or '').strip() or False,
             'rows_total': count('rows'),
             'rows_unmatched': count('unmatched'),
             'values_refused': count('left_out') + len(answer.get('refused') or []),
+            'values_off_scheme': off_scheme,
         })
         if file_b64:
             attachment = self.env['ir.attachment'].create({
@@ -604,6 +816,7 @@ class PbUpdatesDesk(models.AbstractModel):
             'values': sum(a.count_values or a.values_count for a in applies),
             'rows_unmatched': batch.rows_unmatched,
             'values_refused': batch.values_refused,
+            'values_off_scheme': batch.values_off_scheme,
             'state': state,
             'state_label': label,
             'with_whom': pending._waiting_for() if pending else '',

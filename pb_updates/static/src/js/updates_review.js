@@ -20,7 +20,7 @@
  * The counting is plain functions over the review object, exported so the
  * sentences and the button label can be asserted without a server.
  */
-import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
+import { Component, markup, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { grouped } from "@pb_records/js/records_review";
@@ -29,11 +29,20 @@ import { grouped } from "@pb_records/js/records_review";
 export const PAGE_ROWS = 150;
 
 const ICONS = {};
+/** Lucide glyphs this screen needs that the shared kit does not carry yet
+ *  (same 24-unit grid, same stroke): `eraser` marks a value a file CLEARs. */
+const LOCAL_GLYPHS = {
+    eraser: '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
+};
 /** One markup object per icon and size, reused on every render (OWL t-out
  *  re-inserts a NEW markup every redraw — memory: owl-markup-flicker). */
 export function icon(name, size = 16) {
     const key = `${name}:${size}`;
-    if (!ICONS[key]) { ICONS[key] = ic(name, size); }
+    if (!ICONS[key]) {
+        ICONS[key] = LOCAL_GLYPHS[name]
+            ? markup(`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LOCAL_GLYPHS[name]}</svg>`)
+            : ic(name, size);
+    }
     return ICONS[key];
 }
 
@@ -42,9 +51,12 @@ export function plural(count, one, many) {
     return count === 1 ? one : many.replace("%s", grouped(count));
 }
 
-/** What a cell will do: change · fix · left · same · dup · blank. */
+/** What a cell will do: change · fix · left · same · dup · off · blank.
+ *  `off` is a pay item that is not in the person's pay scheme: greyed, never
+ *  sent, never a problem (UPDATES P2b). */
 export function cellKind(cell) {
     if (!cell) { return "blank"; }
+    if (cell.status === "off_scheme") { return "off"; }
     if (cell.left) { return "left"; }
     if (cell.status === "dup") { return "dup"; }
     if (cell.status === "ok") { return "change"; }
@@ -62,21 +74,29 @@ export function cellKind(cell) {
  */
 export function reviewCounts(rv) {
     const out = { changes: 0, people: 0, cells: 0, rowsOpen: 0, attention: 0,
-                  leftOut: 0, rows: { all: 0, chg: 0, att: 0, same: 0 } };
+                  leftOut: 0, offScheme: 0, cleared: 0,
+                  rows: { all: 0, chg: 0, att: 0, same: 0, off: 0 } };
     const people = new Set();
     for (const row of rv.rows || []) {
         let hasChange = false;
         let hasFix = false;
+        let hasOff = false;
         for (const cell of Object.values(row.cells || {})) {
             const kind = cellKind(cell);
-            if (kind === "change") { out.changes += 1; hasChange = true; }
+            if (kind === "change") {
+                out.changes += 1;
+                hasChange = true;
+                if (cell.cleared) { out.cleared += 1; }
+            }
             else if (kind === "fix") { out.cells += 1; out.leftOut += 1; hasFix = true; }
             else if (kind === "left") { out.leftOut += 1; }
+            else if (kind === "off") { out.offScheme += 1; hasOff = true; }
         }
         if (hasChange) { people.add(row.emp_id); }
         out.rows.all += 1;
         if (hasChange) { out.rows.chg += 1; }
         if (hasFix) { out.rows.att += 1; }
+        if (hasOff) { out.rows.off += 1; }
         if (!hasChange && !hasFix) { out.rows.same += 1; }
     }
     for (const u of rv.unmatched || []) {
@@ -97,6 +117,20 @@ export function reviewCounts(rv) {
 export function sameText(typed, shown) {
     const norm = (v) => String(v === null || v === undefined ? "" : v).replace(/\s+/g, " ").trim();
     return !!norm(typed) && norm(typed) === norm(shown);
+}
+
+/** A cell's verdict from a recheck item (`pb.updates.desk.recheck`). */
+export function cellFromItem(item, value) {
+    const text = value === null || value === undefined ? "" : String(value);
+    if (item.status !== "same" && item.status !== "off_scheme" && sameText(text, item.old_label)) {
+        item.status = "same";
+    }
+    return {
+        status: item.status, old: item.old_label || "",
+        new: item.status === "off_scheme" ? text : (item.new_label || (item.cleared ? "" : text)),
+        why: item.status === "refused" || item.status === "off_scheme" ? item.why : "",
+        value: item.cleared ? "" : value, cleared: !!item.cleared,
+    };
 }
 
 /** The changes Apply sends: every cell the desk said yes to, not left out. */
@@ -170,6 +204,9 @@ export class UpdFixRow extends Component {
         if (this.state.msg) { return this.state.msg; }
         if (this.kind === "fix") { return cell.why || _t("This value cannot be used as it is."); }
         if (this.kind === "left") { return _t("You chose to leave this value out. It stays as it is now."); }
+        if (cell.cleared) {
+            return _t("%(field)s is emptied. Today it is %(old)s.", { field: this.props.label, old: cell.old });
+        }
         return cell.old
             ? _t("%(field)s goes from %(old)s to %(new)s.", { field: this.props.label, old: cell.old, new: cell.new })
             : _t("%(field)s is empty today and becomes %(new)s.", { field: this.props.label, new: cell.new });
@@ -335,12 +372,47 @@ export class UpdReview extends Component {
 
     get filters() {
         const c = this.counts.rows;
-        return [
+        const out = [
             { key: "all", label: _t("Everyone"), count: c.all },
             { key: "chg", label: _t("With changes"), count: c.chg },
             { key: "att", label: _t("Needs attention"), count: c.att },
             { key: "same", label: _t("Nothing to change"), count: c.same },
         ];
+        if (this.counts.offScheme) {
+            // Counted in VALUES, never red: it is not something to fix.
+            out.push({ key: "off", label: _t("Not in their pay scheme"), count: this.counts.offScheme, quiet: true });
+        }
+        return out;
+    }
+
+    // ------------------------------------------------------------- pay schemes
+    /** "Pay schemes in this file": one chip per scheme with its head-count. */
+    get schemeChips() {
+        const rv = this.rv;
+        if (!rv.pay_items) { return []; }
+        const out = (rv.schemes || []).map((s) => ({
+            key: `s${s.id}`, id: s.id, label: s.name, count: s.count, tone: "pri" }));
+        if (rv.no_scheme) {
+            out.push({ key: "none", id: "none", label: _t("No pay scheme yet"), count: rv.no_scheme, tone: "warn" });
+        }
+        return out;
+    }
+
+    setScheme(id) {
+        this.rv.scheme = this.rv.scheme === id ? null : id;
+        this.rv.limit = PAGE_ROWS;
+        this.rv.fix = null;
+    }
+
+    inScheme(row) {
+        const s = this.rv.scheme;
+        if (s === null || s === undefined) { return true; }
+        if (s === "none") { return !!row.no_scheme; }
+        return (row.scheme_ids || []).includes(s);
+    }
+
+    noSchemeTitle() {
+        return _t("No pay scheme covers this person yet. Pay items are still saved on their contract.");
     }
 
     setFilter(key) {
@@ -352,21 +424,26 @@ export class UpdReview extends Component {
     rowClass(row) {
         let change = false;
         let fix = false;
+        let off = false;
         for (const cell of Object.values(row.cells)) {
             const kind = cellKind(cell);
             if (kind === "change") { change = true; }
             if (kind === "fix") { fix = true; }
+            if (kind === "off") { off = true; }
         }
-        return { change, fix };
+        return { change, fix, off };
     }
 
     get filteredRows() {
         const f = this.rv.filter;
-        if (f === "all") { return this.rv.rows; }
-        return this.rv.rows.filter((row) => {
+        const rows = this.rv.scheme === null || this.rv.scheme === undefined
+            ? this.rv.rows : this.rv.rows.filter((row) => this.inScheme(row));
+        if (f === "all") { return rows; }
+        return rows.filter((row) => {
             const k = this.rowClass(row);
             if (f === "chg") { return k.change; }
             if (f === "att") { return k.fix; }
+            if (f === "off") { return k.off; }
             return !k.change && !k.fix;
         });
     }
@@ -386,7 +463,7 @@ export class UpdReview extends Component {
         for (const row of this.rv.rows) {
             for (const [fid, cell] of Object.entries(row.cells)) {
                 const kind = cellKind(cell);
-                if (kind === "change" || kind === "fix" || kind === "left") { live.add(fid); }
+                if (kind === "change" || kind === "fix" || kind === "left" || kind === "off") { live.add(fid); }
             }
         }
         const cols = this.rv.columns.filter((c) => live.has(c.field_id));
@@ -416,6 +493,11 @@ export class UpdReview extends Component {
         if (kind === "same") { return _t("Already set to this. Nothing changes."); }
         if (kind === "dup") { return cell.why; }
         if (kind === "fix") { return cell.why; }
+        if (kind === "off") { return cell.why; }
+        if (kind === "same" && cell.cleared) { return _t("Already empty. Nothing changes."); }
+        if (kind === "change" && cell.cleared) {
+            return _t("Emptied on apply (the file says CLEAR). Press Enter to leave it out or change it.");
+        }
         if (kind === "left") { return _t("Left out. It stays as it is now."); }
         return _t("Changes on apply. Press Enter to leave it out or change it.");
     }
@@ -487,17 +569,9 @@ export class UpdReview extends Component {
         const item = (res.items || []).find((i) => i.field_id === fieldId) || (res.items || [])[0];
         if (!item) { return { ok: false, why: _t("This value could not be checked. Try again.") }; }
         const cell = row.cells[fieldId];
-        if (item.status !== "same" && sameText(value, item.old_label)) { item.status = "same"; }
-        if (item.status === "ok") {
-            Object.assign(cell, { status: "ok", old: item.old_label || "", new: item.new_label || value,
-                                  why: "", value, left: false, fixed: true });
-            this.closeFix();
-            this.flash(row.key, fieldId);
-            return { ok: true };
-        }
-        if (item.status === "same") {
-            Object.assign(cell, { status: "same", old: item.old_label || "", new: item.new_label || value,
-                                  why: "", value, left: false, fixed: true });
+        const next = cellFromItem(item, value);
+        if (next.status === "ok" || next.status === "same" || next.status === "off_scheme") {
+            Object.assign(cell, next, { left: false, fixed: next.status !== "off_scheme" });
             this.closeFix();
             this.flash(row.key, fieldId);
             return { ok: true };
@@ -528,7 +602,7 @@ export class UpdReview extends Component {
 
     unmatchedValues(u) {
         const labels = Object.fromEntries(this.rv.columns.map((c) => [c.field_id, c.label]));
-        return Object.entries(u.values || {}).map(([fid, v]) => `${labels[fid] || fid}: ${v}`).join(" · ");
+        return Object.entries(u.values || {}).map(([fid, v]) => `${labels[fid] || fid}: ${v === "" ? _t("CLEAR") : v}`).join(" · ");
     }
 
     valuesWaiting(u) {
@@ -550,16 +624,17 @@ export class UpdReview extends Component {
         for (const change of changes) {
             const item = (res.items || []).find((i) => i.field_id === change.field_id) || null;
             const text = change.value === null || change.value === undefined ? "" : String(change.value);
-            if (item && item.status !== "same" && sameText(text, item.old_label)) { item.status = "same"; }
             cells[change.field_id] = item
-                ? { status: item.status, old: item.old_label || "", new: item.new_label || text,
-                    why: item.status === "refused" ? item.why : "", value: change.value }
+                ? cellFromItem(item, change.value)
                 : { status: "refused", old: "", new: text, value: change.value,
                     why: _t("This value could not be checked. Try again.") };
         }
         const [name, rest] = String(person.label || "").split(" — ");
+        const scheme = (res.people || {})[String(person.id)] || {};
         const row = { key: `u${u.row}`, row: u.row, emp_id: person.id, name: name || "",
-                      code: rest || "", department: "", twice: false, bound: true, cells };
+                      code: rest || "", department: "", twice: false, bound: true, cells,
+                      scheme: scheme.scheme || "", scheme_ids: scheme.scheme_ids || [],
+                      no_scheme: !!scheme.no_scheme };
         const at = this.rv.rows.findIndex((r) => r.row > u.row);
         if (at === -1) { this.rv.rows.push(row); } else { this.rv.rows.splice(at, 0, row); }
         u.bound = true;

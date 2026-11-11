@@ -177,6 +177,14 @@
               <h2 class="pbu-h2">Match your columns</h2>
               <p class="pbu-sub"><t t-esc="matchLead"/> <b t-if="matchCheckLine" class="pbu-warn-text" t-esc="matchCheckLine"/></p>
             </div>
+            <div t-if="matchSchemes" class="pbu-schemes">
+              <span class="pbu-schemes-l"><t t-out="icon('layers', 15)"/>Each person's pay scheme is worked out for you, the same way a pay run does it.</span>
+              <span t-if="matchSchemes.chips.length" class="pbu-schemes-chips">
+                <span t-foreach="matchSchemes.chips" t-as="c" t-key="c.key" t-attf-class="pbu-sch pbu-sch--{{ c.tone }} is-static" t-att-title="c.label">
+                  <span class="pbu-sch-l" t-esc="c.label"/><b t-esc="grouped(c.count)"/>
+                </span>
+              </span>
+            </div>
             <div t-if="state.match.truncated" class="pbu-note pbu-note--warn">
               <t t-out="icon('alert', 16)"/>
               <div>This file has more than 10,000 rows. Only the first 10,000 are checked and can be applied. Put the rest in a second file.</div>
@@ -209,9 +217,9 @@
                             <option t-att-value="o.value" t-att-selected="col.target === o.value" t-esc="o.label"/>
                           </t>
                         </optgroup>
-                        <t t-foreach="state.match.fields" t-as="topic" t-key="topic.key">
-                          <optgroup t-att-label="topic.label">
-                            <t t-foreach="topic.fields" t-as="f" t-key="f.id">
+                        <t t-foreach="goesTo" t-as="g" t-key="g.key">
+                          <optgroup t-att-label="g.label" t-att-disabled="g.divider ? 'disabled' : undefined" t-att-class="g.divider ? 'pbu-divider' : undefined">
+                            <t t-foreach="g.options" t-as="f" t-key="f.id">
                               <option t-att-value="f.id" t-att-selected="col.target === f.id" t-esc="f.label"/>
                             </t>
                           </optgroup>
@@ -234,7 +242,7 @@
             </div>
             <div class="pbu-note">
               <t t-out="icon('info', 16)"/>
-              <div><b>A blank cell means "leave it alone".</b> Only cells with something in them can change anything. Nothing is written until you apply, and you can undo it afterwards.</div>
+              <div><b>A blank cell means "leave it alone".</b> Only cells with something in them can change anything. To empty a value on purpose, type CLEAR in its cell. Nothing is written until you apply, and you can undo it afterwards.</div>
             </div>
             <p t-if="state.matchError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="state.matchError"/></p>
             <div class="pbu-bar">
@@ -290,6 +298,7 @@
                   <span class="pbu-n" t-esc="grouped(applyCounts.leftOut)"/>
                 </div>
               </div>
+              <p t-if="applyOffScheme" class="pbu-inline-note pbu-apply-off"><t t-out="icon('ban', 14)"/><span t-esc="applyOffScheme"/></p>
               <div class="pbu-note">
                 <t t-out="icon('undo', 16)"/>
                 <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.</div>
@@ -318,6 +327,7 @@
             </span>
             <h1 class="pbu-h1" t-esc="doneTitle"/>
             <p class="pbu-lead" t-esc="doneLine"/>
+            <p t-if="doneOffScheme" class="pbu-inline-note"><t t-out="icon('ban', 14)"/><span t-esc="doneOffScheme"/></p>
             <ol t-if="state.done.pending and state.done.route and state.done.route.length" class="pbu-route">
               <li t-foreach="state.done.route" t-as="step" t-key="step_index" t-attf-class="is-{{ stepTone(step) }}">
                 <span class="pbu-route-dot"><t t-out="icon(step.status === 'open' ? 'clock' : 'check', 13)"/></span>
@@ -427,9 +437,22 @@
         </ul>
       </section>
 
+      <div t-if="schemeChips.length" class="pbu-schemes pbu-schemes--strip" role="group" aria-label="Pay schemes in this file">
+        <span class="pbu-schemes-l"><t t-out="icon('layers', 15)"/>Pay schemes in this file</span>
+        <span class="pbu-schemes-chips">
+          <button t-foreach="schemeChips" t-as="c" t-key="c.key" type="button"
+                  t-attf-class="pbu-sch pbu-sch--{{ c.tone }}" t-att-title="c.label"
+                  t-att-aria-pressed="rv.scheme === c.id ? 'true' : 'false'"
+                  t-on-click="() => this.setScheme(c.id)">
+            <span class="pbu-sch-l" t-esc="c.label"/><b t-esc="grouped(c.count)"/>
+          </button>
+        </span>
+      </div>
+
       <div class="pbu-toolbar">
         <div class="pbu-filters" role="group" aria-label="Show">
           <button t-foreach="filters" t-as="f" t-key="f.key" type="button"
+                  t-att-class="{ 'is-quiet': f.quiet }"
                   t-att-aria-pressed="rv.filter === f.key ? 'true' : 'false'"
                   t-on-click="() => this.setFilter(f.key)">
             <t t-esc="f.label"/> <span class="pbu-count-pill" t-esc="grouped(f.count)"/>
@@ -440,6 +463,7 @@
           <span><i class="lg-fix"/>Needs a fix</span>
           <span><i class="lg-left"/>Left out</span>
           <span><i class="lg-same"/>Stays the same</span>
+          <span t-if="rv.pay_items"><i class="lg-off"/>Not in their pay scheme</span>
           <span><i class="lg-blank"/>Blank in your file</span>
         </div>
       </div>
@@ -459,12 +483,16 @@
             <t t-foreach="pageRows" t-as="row" t-key="row.key">
               <tr t-att-class="{ 'is-bound': row.bound, 'is-open': rowOpen(row) }">
                 <th scope="row" class="pbu-who">
-                  <b t-esc="row.name"/>
+                  <b><t t-esc="row.name"/><span t-if="rv.pay_items and row.no_scheme" class="pbu-dot-amber" t-att-title="noSchemeTitle()" role="img" t-att-aria-label="noSchemeTitle()"/></b>
                   <span>
                     <span class="pbu-rowno">Row <t t-esc="row.row"/></span>
                     <t t-if="row.code"> · <t t-esc="row.code"/></t>
                     <t t-if="row.bound"> · <span class="pbu-tag">Matched by you</span></t>
                     <t t-if="row.twice"> · <span class="pbu-tag pbu-tag--warn">In the file twice</span></t>
+                  </span>
+                  <span t-if="rv.pay_items" class="pbu-who-sch" t-att-title="row.scheme or noSchemeTitle()">
+                    <t t-if="row.scheme" t-esc="row.scheme"/>
+                    <t t-else="">No pay scheme yet</t>
                   </span>
                 </th>
                 <td t-foreach="columns" t-as="col" t-key="col.field_id"
@@ -476,11 +504,19 @@
                     t-on-keydown="(ev) => this.onCellKey(ev, row, col)">
                   <t t-set="cell" t-value="row.cells[col.field_id]"/>
                   <t t-set="k" t-value="kind(cell)"/>
-                  <t t-if="k === 'change'">
+                  <t t-if="k === 'change' and cell.cleared">
+                    <span t-if="cell.old" class="pbu-was" t-esc="cell.old"/>
+                    <span t-else="" class="pbu-was pbu-was--empty">empty</span>
+                    <span class="pbu-now pbu-now--clear"><t t-out="icon('eraser', 13)"/>Cleared<t t-if="cell.new"> · <t t-esc="cell.new"/></t></span>
+                  </t>
+                  <t t-elif="k === 'change'">
                     <span t-if="cell.old" class="pbu-was" t-esc="cell.old"/>
                     <span t-else="" class="pbu-was pbu-was--empty">empty</span>
                     <span class="pbu-now"><t t-esc="cell.new"/><t t-if="cell.fixed" t-out="icon('check', 12)"/></span>
                   </t>
+                  <span t-elif="k === 'off'" class="pbu-offval">
+                    <t t-out="icon('ban', 13)"/><span t-if="cell.cleared">CLEAR</span><span t-else="" t-esc="cell.new"/>
+                  </span>
                   <span t-elif="k === 'fix'" class="pbu-fixval">
                     <t t-out="icon('alert', 13)"/><span t-esc="cell.new or cell.value"/>
                   </span>
@@ -492,6 +528,7 @@
                     <span class="pbu-was" t-esc="cell.new"/>
                     <span class="pbu-lo">Used further down</span>
                   </t>
+                  <span t-elif="k === 'same' and cell.cleared" class="pbu-same pbu-same--clear"><t t-out="icon('eraser', 12)"/>Already empty</span>
                   <span t-elif="k === 'same'" class="pbu-same" t-esc="cell.old or cell.new"/>
                 </td>
               </tr>
@@ -516,7 +553,7 @@
         <button t-if="moreRows" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="showMore" t-esc="moreLabel"/>
         <button t-if="hiddenColumns or rv.allCols" type="button" class="pbu-link" t-on-click="() => this.rv.allCols = !this.rv.allCols" t-esc="columnsToggleLabel"/>
       </div>
-      <p class="pbu-hint">Click a red cell to sort it out here, with no need to go back to Excel. Click a changed cell to leave it out. Grey values are what is on file today and are not touched.</p>
+      <p class="pbu-hint">Click a red cell to sort it out here, with no need to go back to Excel. Click a changed cell to leave it out. Grey values are what is on file today and are not touched.<t t-if="rv.pay_items"> Values crossed out with <t t-out="icon('ban', 12)"/> are pay items that are not in that person's pay scheme, so they are skipped.</t></p>
 
       <p t-if="attentionNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="attentionNote"/></p>
       <p t-if="!props.canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span t-esc="noWriteLine"/></p>
