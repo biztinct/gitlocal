@@ -72,6 +72,10 @@ class HiringApplicantWorkflowContract(models.Model):
                            '“not this time” email.')},
             ],
             'screen': 'pb_hiring_hub',
+            # Hiring keeps its own stage rows (D10): Workflow Studio offers
+            # headings on candidates and sends people to Hiring set-up for
+            # a new stage; it never keeps a stage layer of its own here.
+            'own_stage_rows': True,
         }
 
     @api.model

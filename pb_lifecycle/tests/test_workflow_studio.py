@@ -1440,3 +1440,72 @@ class TestWorkflowStudio(TransactionCase):
             self.service.activate(w.id, True)
         self.assertIn('The approval route for this is paused', str(caught.exception))
         self.assertFalse(w.enabled)
+
+    # ------------------------------------------------------------ WF2 P3a
+    def test_wf2p3a_b1_candidates_keep_their_stages_in_hiring(self):
+        self.need('pb.hiring')
+        self.recruiter()
+        contract = self.service.metadata('hr.applicant')['contract']
+        self.assertTrue(contract['own_stage_rows'])
+        self.assertFalse(self.service.metadata(self.CLAIM)['contract']['own_stage_rows'] if self.CLAIM in self.env else False)
+        with self.assertRaises(UserError) as caught:
+            self.service.stage_create('hr.applicant', None, {'name': 'WF2 P3a own row', 'anchor_value': 'screening'})
+        self.assertEqual(str(caught.exception), 'Candidate stages are managed in Hiring.')
+        self.assertFalse(self.env['pb.workflow.stage'].search([('name', '=', 'WF2 P3a own row')]))
+        core = [s['key'] for s in self.service._contract('hr.applicant')['stages'] if not s.get('exit')]
+        # A reorder that carries no user-made stage is still accepted; one
+        # that carries a user-made stage is refused the same way.
+        self.service.stage_reorder('hr.applicant', None, core)
+        stray = internal(self.env['pb.workflow.stage']).create({
+            'company_id': self.company.id, 'source_model': 'hr.applicant', 'name': 'WF2 P3a stray',
+            'anchor_value': core[0]})
+        with self.assertRaises(UserError) as caught:
+            self.service.stage_reorder('hr.applicant', None, core[:1] + [stray.id] + core[1:])
+        self.assertIn('managed in Hiring', str(caught.exception))
+        # Headings stay allowed on a candidate workflow.
+        w, d = self.staged('hr.applicant', [('Just a heading', None)], [])
+        self.service.save_draft(w.id, w.revision, d)
+        self.assertFalse([i for i in self.service.review(w.id)['issues'] if i['id'] == 'sections'])
+
+    def test_wf2p3a_b2_no_approval_needed_lane_lists_only_the_route(self):
+        self.need(self.CLAIM)
+        process = self.env['biz.approval.process']._by_key('expense')
+        self.approval_route(process=process, fast=True)
+        rows = [e for e in self.service.existing_behaviour(self.CLAIM) if e['source'] == 'approvals']
+        self.assertEqual(len(rows), 1, rows)
+        self.assertEqual((rows[0]['stage'], rows[0]['kind'], rows[0]['audience']), ('submitted', 'change', 'approver'))
+        self.assertIn('No approval needed', rows[0]['text'])
+        self.assertFalse([e for e in rows if e['kind'] in ('message', 'reminder')])
+        # A route with people still lists its messages and reminders.
+        self.approval_route(process=process)
+        kinds = {e['kind'] for e in self.service.existing_behaviour(self.CLAIM) if e['source'] == 'approvals'}
+        self.assertEqual(kinds, {'change', 'message', 'reminder'})
+
+    def test_wf2p3a_b3_record_stage_says_who_may_move_it_next(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        owner = self.staff
+        stage = self.user_stage('WF2 P3a ready', enter='person', enter_owner={'kind': 'user', 'id': owner.id})
+        claim = self.claim('approved', employee=self.employee('WF2 P3a claimant', user=owner))
+        wrong = self.person('Workflow P3a wrong', ['base.group_user'])
+        self.expense_access(owner, wrong)
+        move = self.service.with_user(owner).record_stage(self.CLAIM, claim.id)['next_move']
+        self.assertEqual((move['stage_id'], move['allowed'], move['reason']), (stage.id, True, ''))
+        move = self.service.with_user(wrong).record_stage(self.CLAIM, claim.id)['next_move']
+        self.assertFalse(move['allowed'])
+        self.assertEqual(move['reason'], 'Only %s can move this to WF2 P3a ready.' % owner.name)
+        # Not yet at its stage, or stopped: nothing to move.
+        self.assertIsNone(self.service.record_stage(self.CLAIM, self.claim('submitted').id)['next_move'])
+        self.assertIsNone(self.service.record_stage(self.CLAIM, self.claim('refused').id)['next_move'])
+        # An automatic stage is never offered.
+        auto = self.user_stage('WF2 P3a auto', anchor='paid')
+        self.assertIsNone(self.service.record_stage(self.CLAIM, self.claim('paid').id)['next_move'])
+        self.assertTrue(auto)
+
+    def test_wf2p3a_b4_workbench_sentence_reads_the_review_filter_words(self):
+        w, d = self.workflow(model='res.partner')
+        self.assertEqual(self.service.get_workflow(w.id)['scope_summary'], 'Every record')
+        d['scope'] = {'match': 'all', 'rules': [{'field': 'is_company', 'op': 'eq', 'value': True}]}
+        result = self.service.save_draft(w.id, w.revision, d)
+        self.assertEqual(result['scope_summary'], self.service._scope_summary('res.partner', d['scope']))
+        self.assertTrue(result['scope_summary'].startswith('Records where '))

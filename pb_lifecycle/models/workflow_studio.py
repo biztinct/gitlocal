@@ -225,7 +225,8 @@ class WorkflowStudio(models.AbstractModel):
                     starter_group_ids=w.starter_group_ids.ids,
                     versions=[{'id': v.id, 'number': v.number, 'date': str(v.published_at),
                                'note': v.note or '', 'by': v.published_by.name} for v in w.version_ids],
-                    metadata=self.metadata(w.source_model, workflow_id=w.id))
+                    metadata=self.metadata(w.source_model, workflow_id=w.id),
+                    scope_summary=self._scope_summary(w.source_model, (w.draft or {}).get('scope') or {}))
         return data
 
     @api.model
@@ -383,7 +384,10 @@ class WorkflowStudio(models.AbstractModel):
                 raise UserError(_('Choose an approval process belonging to this record.'))
             vals['process_id'] = p.id
         internal(w).write(vals)
-        return {'revision': w.revision, 'issues': self._validate(w, definition)}
+        # The "When …" sentence on the workbench reads the same plain filter
+        # words Review uses (one describer, WF2 P3a).
+        return {'revision': w.revision, 'issues': self._validate(w, definition),
+                'scope_summary': self._scope_summary(w.source_model, definition.get('scope') or {})}
 
     TRIGGER_LABELS = {'manual': 'Started by a person', 'created': 'When a record is created',
                       'changed': 'When selected fields change', 'date': 'Based on a record date',

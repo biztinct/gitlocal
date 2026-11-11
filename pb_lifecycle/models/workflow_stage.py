@@ -117,6 +117,13 @@ class WorkflowStageService(models.AbstractModel):
             domain += [('workflow_id', '=', workflow.id)]
         return self.env['pb.workflow.stage'].sudo().search(domain)
 
+    def _refuse_own_rows(self, contract):
+        """A module that keeps its own stage rows (Hiring, D10) gets no
+        user-made stage layer: new stages are added in that module."""
+        if contract.get('own_stage_rows'):
+            raise UserError(_('%(label)s stages are managed in %(area)s.',
+                              label=contract['label'], area=contract['area']))
+
     def _stage(self, stage_id):
         self._design()
         stage = self.env['pb.workflow.stage'].sudo().browse(int(stage_id or 0)).exists()
@@ -455,6 +462,7 @@ class WorkflowStageService(models.AbstractModel):
         model, workflow = self._stage_scope(model, workflow_id)
         company = self._company()
         contract = self._contract(model)
+        self._refuse_own_rows(contract)
         vals = self._stage_values(model, company, contract, values or {})
         siblings = self._user_stages(model, workflow).filtered(
             lambda s: str(s.anchor_value or '') == str(vals.get('anchor_value') or ''))
@@ -490,6 +498,8 @@ class WorkflowStageService(models.AbstractModel):
             raise UserError(_('This stage order is not valid.'))
         given_core = [str(x) for x in ordered if type(x) is not int]
         given_yours = [x for x in ordered if type(x) is int]
+        if given_yours:
+            self._refuse_own_rows(contract)
         if given_core != core or sorted(given_yours) != sorted(stages.ids):
             raise UserError(_('Keep every stage once, and the existing stages in their own order.'))
         if model and ordered and type(ordered[0]) is int:
@@ -547,6 +557,57 @@ class WorkflowStageService(models.AbstractModel):
             return self._run(record_id)
         return self._source(model, record_id)
 
+    def _may_move(self, model, source, stage, waiting):
+        """Whether the signed-in person may move `source` into `stage`.
+
+        A designer always may. Otherwise the caller must be who the stage
+        names, resolved the way a task owner is: through a run on this record
+        when there is one (so "the person who started it" works), else from
+        the record."""
+        if self._can_design():
+            return True
+        company = stage.company_id
+        owner = stage.enter_owner or {}
+        service = system(self.env, company)['pb.workflow.studio']
+        for run in waiting:
+            try:
+                if service._resolve_owner(service.env[RUN].browse(run.id), owner) == self.env.uid:
+                    return True
+            except (AccessError, UserError):
+                continue
+        if model != RUN and owner.get('kind') != 'initiator':
+            try:
+                return service._resolve_owner_on(service.env[model].browse(source.id), company, owner) == self.env.uid
+            except (AccessError, UserError):
+                return False
+        return False
+
+    def _next_move(self, model, record, status, track, merged_stages, company):
+        """The user-made stage right after where the record is, when a
+        person moves records into it: its name, whether the signed-in person
+        may press "Move to …", and otherwise who can (WF2 P3a)."""
+        here = next((i for i, row in enumerate(track) if row['state'] == 'here'), None)
+        if here is None or here + 1 >= len(track) or track[here + 1]['kind'] != 'yours':
+            return None
+        stage = next((s for s in merged_stages if s.id == track[here + 1]['key']), None)
+        if not stage or stage.enter != 'person':
+            return None
+        if model != RUN and str(status) != str(stage.anchor_value):
+            return None
+        if model == RUN:
+            waiting = record.sudo()
+        else:
+            waiting = self.env[RUN].sudo().search([('company_id', '=', company.id), ('source_model', '=', model),
+                                                   ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting'])])
+        try:
+            allowed = self._may_move(model, record, stage, waiting)
+        except (AccessError, UserError):
+            allowed = False
+        return {'stage_id': stage.id, 'name': stage.name, 'allowed': bool(allowed),
+                'reason': '' if allowed else _('Only %(who)s can move this to %(stage)s.',
+                                               who=self._owner_words(stage.source_model, stage.enter_owner),
+                                               stage=stage.name)}
+
     @api.model
     def move_record_stage(self, model, record_id, stage_id):
         """A person moves a record into a user-made stage that waits for them."""
@@ -573,26 +634,9 @@ class WorkflowStageService(models.AbstractModel):
             if str(status) != str(stage.anchor_value):
                 anchor = next((s['name'] for s in contract['stages'] if str(s['key']) == stage.anchor_value), '')
                 raise UserError(_('This is not at %(anchor)s, so it cannot move to %(stage)s yet.', anchor=anchor, stage=stage.name))
-        if not self._can_design():
-            # The caller must be who the stage names, resolved the way a task
-            # owner is: through a run on this record when there is one (so
-            # "the person who started it" works), else from the record.
-            owner = stage.enter_owner or {}
-            service = system(self.env, company)['pb.workflow.studio']
-            allowed = False
-            for run in waiting:
-                try:
-                    allowed = allowed or service._resolve_owner(service.env[RUN].browse(run.id), owner) == self.env.uid
-                except (AccessError, UserError):
-                    continue
-            if not allowed and model != RUN and owner.get('kind') != 'initiator':
-                try:
-                    allowed = service._resolve_owner_on(service.env[model].browse(source.id), company, owner) == self.env.uid
-                except (AccessError, UserError):
-                    allowed = False
-            if not allowed:
-                raise AccessError(_('Only %(who)s can move this to %(stage)s.',
-                                    who=self._owner_words(stage.source_model, stage.enter_owner), stage=stage.name))
+        if not self._may_move(model, source, stage, waiting):
+            raise AccessError(_('Only %(who)s can move this to %(stage)s.',
+                                who=self._owner_words(stage.source_model, stage.enter_owner), stage=stage.name))
         target_model = RUN if model == RUN else model
         self._set_position(target_model, record.id, stage, company,
                            run=waiting[:1] if waiting else None, mover=self.env.user)
@@ -662,7 +706,8 @@ class WorkflowStageService(models.AbstractModel):
         approval = next((c['key'] for c in contract['stages'] if c.get('approval')), None)
         return {'model': model, 'record_id': record.id, 'source': contract['source'],
                 'area': contract['area'], 'track': rows, 'exits': exits, 'current': current,
-                'approval_at': approval}
+                'approval_at': approval,
+                'next_move': None if stopped else self._next_move(model, record, status, rows, stages, company)}
 
     def _record_stage_safe(self, model, record_id):
         try:

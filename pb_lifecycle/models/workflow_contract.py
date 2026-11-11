@@ -21,6 +21,8 @@ workflows already do, and `_validate` warns before a step repeats one (R2).
 from odoo import api, models, _
 from odoo.exceptions import AccessError, UserError
 
+from odoo.addons.biz_approval_workflow.models import definition as AD
+
 from . import workflow_definition as D
 
 MATRIX_ACTION = 'pb_approval_config.action_pb_approval_matrix'
@@ -50,7 +52,7 @@ class WorkflowContract(models.AbstractModel):
         """The module's contract, normalised; discovered when none is declared."""
         result = {'source': 'none', 'model': model or '', 'label': '', 'area': '', 'stage_field': '',
                   'stages': [], 'effects': [], 'has_subject': False, 'submits_itself': False,
-                  'approval_outcomes': {}, 'screen': ''}
+                  'approval_outcomes': {}, 'screen': '', 'own_stage_rows': False}
         if not model or model not in self.env:
             return result
         obj = self.env[model]
@@ -62,7 +64,8 @@ class WorkflowContract(models.AbstractModel):
                       has_subject=hasattr(obj, '_workflow_subject'),
                       submits_itself=bool(declared.get('submits_itself')),
                       approval_outcomes=dict(declared.get('approval_outcomes') or {}),
-                      screen=declared.get('screen') or '')
+                      screen=declared.get('screen') or '',
+                      own_stage_rows=bool(declared.get('own_stage_rows')))
         if hasattr(obj, '_workflow_stage_options'):
             stages, result['source'] = obj._workflow_stage_options(record), 'declared'
         elif declared.get('stages'):
@@ -94,7 +97,8 @@ class WorkflowContract(models.AbstractModel):
         result = super().metadata(model, workflow_id)
         contract = self._contract(model)
         result['contract'] = {k: contract[k] for k in (
-            'source', 'label', 'area', 'stage_field', 'has_subject', 'submits_itself', 'stages', 'screen')}
+            'source', 'label', 'area', 'stage_field', 'has_subject', 'submits_itself', 'stages', 'screen',
+            'own_stage_rows')}
         try:
             result['stage_catalogue'] = self.stage_catalogue(model, workflow_id) if (model or workflow_id) else None
         except (AccessError, UserError):
@@ -205,10 +209,16 @@ class WorkflowContract(models.AbstractModel):
             return [dict(base, kind='change', audience='approver', text=str(problem.get('message') or ''))]
         version = self.env['biz.approval.workflow.version'].sudo().browse(found['version_id'])
         labels = engine.route_labels(version.definition)
-        effects = [dict(base, kind='change', audience='approver',
-                        text=_('Approval route “%(name)s”: %(route)s.', name=found['workflow_name'],
-                               route=_(', then ').join(labels) or _('no steps yet')),
-                        detail=engine.summary(version.definition)),
+        route = dict(base, kind='change', audience='approver',
+                     text=_('Approval route “%(name)s”: %(route)s.', name=found['workflow_name'],
+                            route=_(', then ').join(labels) or _('no steps yet')),
+                     detail=engine.summary(version.definition))
+        decisions = AD.decision_steps(AD.normalise(version.definition))
+        if decisions and all(s['kind'] == 'fast' for s in decisions):
+            # The "No approval needed" lane: nobody is asked, told or
+            # reminded, so only the route itself is listed (WF2 P3a).
+            return [route]
+        effects = [route,
                    dict(base, kind='message', audience='approver',
                         text=_('Each approver is told when it is their turn and gets a to-do.')),
                    dict(base, kind='reminder', audience='approver',
