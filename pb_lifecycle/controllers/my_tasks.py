@@ -55,7 +55,25 @@ class WorkflowMyTasks(http.Controller):
             'page_name': 'workflow_task', 't': data, 'mode': 'home', 'state': state,
             'errors': errors or {}, 'values': values if values is not None else data['values'],
             'post_url': '/my/todo/%s/done' % step.id,
+            # WF2 P4b: where the whole thing is, above the task. The step is
+            # already proven to be this person's (`_own`), so the record it
+            # belongs to may be shown in the employee-home way.
+            'wf_strip': self._task_strip(step),
+            'back': '/my/todo/%s' % step.id,
         })
+
+    def _task_strip(self, step):
+        run = step.run_id
+        if not run.source_model or step.state != 'waiting':
+            return None
+        home = request.env['pb.me.home']
+        try:
+            words = next(({str(k): v[0] for k, v in (src.get('states') or {}).items()}
+                          for src in home._my_requests_sources() if src.get('model') == run.source_model), {})
+        except Exception:  # noqa: BLE001 — the area's own words are optional
+            words = {}
+        return self._studio()._home_strip_safe(request.env.user, run.source_model, run.source_id,
+                                               words=words, owned=True)
 
     @http.route(['/my/todo'], type='http', auth='user', website=True, sitemap=False)
     def my_todo(self, **kw):
@@ -125,6 +143,25 @@ class WorkflowMyTasks(http.Controller):
             errors = result.get('errors') or {}
         merged = dict(studio._page_values(step), **values)
         return self._render(step, 'ok', errors=errors, values=merged)
+
+    @http.route(['/my/todo/move'], type='http', auth='user', website=True, methods=['POST'], sitemap=False)
+    def my_todo_move(self, **post):
+        """WF2 P4b: "Move to…" on the employee home. The person is the
+        session's own login; the record and the stage from the form are
+        re-checked by `_home_move` (the stage must name this person) before
+        anything is written, as the system, through the shipped move."""
+        person = request.env.user
+        if not person or person._is_public():
+            return request.not_found()
+        back = str(post.get('back') or '/my')
+        if not back.startswith('/my') or '//' in back or '\\' in back:
+            back = '/my'
+        back = back.split('?', 1)[0]
+        record_id, stage_id = str(post.get('record_id') or ''), str(post.get('stage_id') or '')
+        if not record_id.isdigit() or not stage_id.isdigit():
+            return request.redirect('%s?wf_move=gone' % back)
+        result = self._studio()._home_move(person, str(post.get('model') or ''), int(record_id), int(stage_id))
+        return request.redirect('%s?wf_move=%s' % (back, result.get('code') or ('ok' if result.get('ok') else 'gone')))
 
     @http.route(['/my/todo/notice/<int:notice_id>/read'], type='http', auth='user', website=True,
                 methods=['POST'], sitemap=False)

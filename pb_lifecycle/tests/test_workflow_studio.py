@@ -2610,3 +2610,430 @@ class TestWorkflowStudio(TransactionCase):
         Studio = self.env['pb.workflow.studio'].sudo()
         self.assertIsNone(Studio._home_task(self.staff, 0))
         self.assertEqual(Studio._step_for_token(None)[1], 'missing')
+
+    # ================================================================ WF2 P4b
+    def claim_flow(self, nodes, employee=None, state='approved'):
+        """A published claim workflow and one claim with it running."""
+        self.need(self.CLAIM)
+        self.expense_access(self.admin, self.staff)
+        w, d = self.workflow(nodes, model=self.CLAIM)
+        self.publish(w, d)
+        claim = self.claim(state, employee=employee)
+        return w, claim, self.start(w, claim)
+
+    def strip(self, person, model, record_id):
+        return self.env['pb.workflow.studio'].with_user(person).with_company(self.company).record_runs(model, record_id)['strip']
+
+    def test_wf2p4b_t1_the_strip_shows_only_when_there_is_something(self):
+        self.need(self.CLAIM)
+        self.expense_access(self.admin, self.staff)
+        plain = self.claim('approved')
+        self.assertIsNone(self.strip(self.admin, self.CLAIM, plain.id), 'nothing to show, no strip')
+        w, claim, run = self.claim_flow([self.todo('check', owner={'kind': 'user', 'id': self.staff.id}, title='Check receipt')])
+        step = self.step(run, 'check')
+        mine = self.strip(self.staff, self.CLAIM, claim.id)
+        self.assertEqual(len(mine['workflows']), 1)
+        row = mine['workflows'][0]
+        self.assertEqual((row['action'], row['task_id'], row['sentence']), ('do', step.id, 'Waiting for you: Check receipt'))
+        self.assertTrue(mine['track'], 'the stage track comes with it')
+        self.assertTrue(any(t['state'] == 'here' for t in mine['track']))
+        full = self.strip(self.admin, self.CLAIM, claim.id)
+        self.assertEqual(full['workflows'][0]['sentence'], 'Waiting for %s: Check receipt' % self.staff.name)
+        self.assertEqual(full['workflows'][0]['action'], 'view')
+        # Someone with no progress rights and nothing of their own: no strip.
+        outsider = self.staffer('WF2 P4b outsider')
+        self.expense_access(outsider)
+        self.assertIsNone(self.strip(outsider, self.CLAIM, claim.id))
+        # A person a company stage names may move it: the strip offers it.
+        mover = self.staffer('WF2 P4b mover')
+        self.expense_access(mover)
+        stage = self.user_stage('WF2 P4b booked', anchor='approved', enter='person',
+                                enter_owner={'kind': 'user', 'id': mover.id})
+        moving = self.strip(mover, self.CLAIM, claim.id)
+        self.assertEqual([m['name'] for m in moving['moves'] if m['allowed']], ['WF2 P4b booked'])
+        self.assertEqual(moving['workflows'], [], 'no task of theirs, no workflow detail')
+        self.assertEqual(moving['action'], 'move')
+        self.assertEqual(self.strip(self.admin, self.CLAIM, claim.id)['workflows'][0]['action'], 'move', 'a designer may move')
+        refused = next(m for m in self.strip(self.staff, self.CLAIM, claim.id)['moves'] if m['stage_id'] == stage.id)
+        self.assertFalse(refused['allowed'])
+        self.assertEqual(refused['reason'], 'Only %s can move this to WF2 P4b booked.' % mover.name)
+        # Two workflows on one record: both.
+        w2, d2 = self.workflow([self.todo('second', owner={'kind': 'user', 'id': self.admin.id})], model=self.CLAIM)
+        self.publish(w2, d2)
+        self.start(w2, claim)
+        self.assertEqual(len(self.strip(self.admin, self.CLAIM, claim.id)['workflows']), 2)
+        # A record with only a stage position (no workflow) still has a strip.
+        lonely = self.claim('approved')
+        self.service.with_user(mover).strip_move(self.CLAIM, lonely.id, stage.id)
+        only = self.strip(self.admin, self.CLAIM, lonely.id)
+        self.assertEqual(only['workflows'], [])
+        self.assertTrue(only['sentence'].startswith('In WF2 P4b booked since'))
+
+    def test_wf2p4b_t2_every_sentence_is_plain(self):
+        self.need(self.CLAIM)
+        self.expense_access(self.admin, self.staff)
+        b = self.staffer('WF2 P4b teammate')
+        role = self.team('WF2 P4b payroll', [self.staff, b])
+        sentences = []
+        # A team nobody has taken.
+        w, claim, run = self.claim_flow([self.todo('team', owner={'kind': 'team', 'id': role.id}, title='Pay it')])
+        row = self.strip(self.admin, self.CLAIM, claim.id)['workflows'][0]
+        self.assertEqual(row['sentence'], 'Waiting for WF2 P4b payroll — nobody has taken it yet')
+        sentences.append(row)
+        # Late.
+        step = self.step(run, 'team')
+        internal(step).write({'due_at': fields.Datetime.now() - timedelta(days=2, hours=1)})
+        row = self.strip(self.admin, self.CLAIM, claim.id)['workflows'][0]
+        self.assertTrue(row['late'])
+        self.assertEqual(row['tone'], 'late')
+        self.assertRegex(row['meta'], r'^Late by \d+ days?$')
+        sentences.append(row)
+        # Covered while away.
+        cover = self.staffer('WF2 P4b covering')
+        self.expense_access(cover)
+        self.env['biz.approval.delegation'].create({
+            'company_id': self.company.id, 'principal_user_id': b.id, 'delegate_user_id': cover.id,
+            'date_from': fields.Date.today(), 'date_to': fields.Date.today() + timedelta(days=5),
+            'reason': 'Annual leave', 'state': 'active'})
+        self.expense_access(b)
+        w2, claim2, run2 = self.claim_flow([self.todo('cover', owner={'kind': 'user', 'id': b.id}, title='Check it')])
+        row = self.strip(self.admin, self.CLAIM, claim2.id)['workflows'][0]
+        self.assertEqual(row['sentence'], 'Waiting for %s, covering for %s: Check it' % (cover.name, b.name))
+        sentences.append(row)
+        # By link: the person has no login, only a work email (masked).
+        nolog = self.employee('WF2 P4b no login', work_email='mai.tran@example.com')
+        w3, claim3, run3 = self.claim_flow([{'id': 'ok', 'type': 'confirm', 'title': 'Confirm trip', 'stage': 0, 'due': 2,
+                                             'owner': {'kind': 'subject'}, 'text': 'It was a work trip.'}], employee=nolog)
+        row = self.strip(self.admin, self.CLAIM, claim3.id)['workflows'][0]
+        self.assertEqual(row['sentence'], 'Waiting for WF2 P4b no login by email link (m***@example.com)')
+        self.assertEqual(row['resend_id'], self.step(run3, 'ok').id, 'progress viewers may send it again')
+        self.assertNotIn('mai.tran', str(row))
+        sentences.append(row)
+        # Stopped and done.
+        internal(run3).write({'state': 'cancelled', 'ended_at': fields.Datetime.now()})
+        row = self.strip(self.admin, self.CLAIM, claim3.id)['workflows'][0]
+        self.assertTrue(row['sentence'].startswith('Stopped on '))
+        self.assertEqual(row['tone'], 'stopped')
+        sentences.append(row)
+        internal(run2).write({'state': 'done', 'ended_at': fields.Datetime.now()})
+        row = self.strip(self.admin, self.CLAIM, claim2.id)['workflows'][0]
+        self.assertTrue(row['sentence'].startswith('Done on '))
+        sentences.append(row)
+        for row in sentences:
+            for words in (row['sentence'], row['meta']):
+                self.assertFalse(self.BANNED.search(words), words)
+                self.assertNotIn('run', words.lower().split(), words)
+
+    def test_wf2p4b_t3_a_fault_in_the_strip_never_breaks_the_form(self):
+        w, claim, run = self.claim_flow([self.todo('check', owner={'kind': 'user', 'id': self.staff.id})])
+        Studio = type(self.env['pb.workflow.studio'])
+        with patch.object(Studio, '_strip_row', side_effect=RuntimeError('boom')), \
+                self.assertLogs('odoo.addons.pb_lifecycle.models.workflow_strip', level='ERROR'):
+            result = self.service.record_runs(self.CLAIM, claim.id)
+        self.assertIsNone(result['strip'])
+        self.assertEqual([r['id'] for r in result['runs']], [run.id], 'the rest of the answer is intact')
+        with patch.object(Studio, '_strip_row', side_effect=RuntimeError('boom')), \
+                self.assertLogs('odoo.addons.pb_lifecycle.models.workflow_strip', level='ERROR'):
+            self.assertIsNone(self.service.record_strip(self.CLAIM, claim.id)['strip'])
+
+    def test_wf2p4b_t4_the_employee_page_shows_only_their_own_and_its_own_words(self):
+        self.need(self.CLAIM)
+        portal, emp = self.portal_person('WF2 P4b claimant')
+        w, claim, run = self.claim_flow([self.todo('check', owner={'kind': 'user', 'id': self.staff.id}, title='Check receipt')],
+                                        employee=emp)
+        home = self.env['pb.me.home'].with_user(portal)
+        strip = home._wf_page_strip('expense_claim', claim.id)
+        self.assertTrue(strip)
+        self.assertEqual(set(strip), {'model', 'record_id', 'track', 'exits', 'compact', 'workflows', 'moves', 'sentence'})
+        row = strip['workflows'][0]
+        self.assertLessEqual(set(row), {'state', 'sentence', 'meta', 'tone', 'task_id', 'late', 'who', 'url'})
+        self.assertEqual(row['sentence'], 'Waiting for %s: Check receipt' % self.staff.name)
+        # Another employee: nothing.
+        other, _emp = self.portal_person('WF2 P4b someone else')
+        self.assertIsNone(self.env['pb.me.home'].with_user(other)._wf_page_strip('expense_claim', claim.id))
+        # One word per status: the page's own word for "approved".
+        words = self.env['pb.me.home']._wf_expense_words()
+        here = next(t for t in strip['track'] if t['state'] == 'here')
+        self.assertEqual(here['name'], words['approved'])
+        html = str(self.env['ir.qweb']._render('pb_lifecycle.workflow_strip_page', {'s': strip, 'back': '/my/expenses/%s' % claim.id}))
+        self.assertIn(words['approved'], html)
+        contract_word = next(s['name'] for s in self.service._contract(self.CLAIM)['stages'] if s['key'] == 'approved')
+        if contract_word != words['approved']:
+            self.assertNotIn('>%s<' % contract_word, html, 'never two words for one status on a page')
+        self.assertNotIn(w.name, html, 'no workflow name on the employee home')
+        # My requests: one quiet line, the status word untouched.
+        src = next(s for s in home._my_requests_sources() if s['model'] == self.CLAIM)
+        rows = home._my_requests_rows(src, emp)
+        line = next(r for r in rows if r['id'] == claim.id)
+        self.assertRegex(line['wf_line'], r'^Stage \d+ of \d+ · with ')
+        self.assertEqual(line['state_label'], src['states']['approved'][0])
+
+    def test_wf2p4b_t5_the_employee_moves_it_only_when_the_stage_names_them(self):
+        self.need(self.CLAIM)
+        portal, emp = self.portal_person('WF2 P4b mover at home')
+        stage = self.user_stage('WF2 P4b handed in', anchor='approved', enter='person', enter_owner={'kind': 'subject'})
+        auto = self.user_stage('WF2 P4b by itself', anchor='approved')
+        early = self.user_stage('WF2 P4b early', anchor='submitted', enter='person', enter_owner={'kind': 'subject'})
+        self.expense_access()
+        claim = self.claim('approved', employee=emp)
+        Studio = self.env['pb.workflow.studio'].sudo().with_user(portal)
+        strip = self.env['pb.me.home'].with_user(portal)._wf_page_strip('expense_claim', claim.id)
+        self.assertIsNone(strip, 'nothing to show yet')
+        other, _o = self.portal_person('WF2 P4b not them')
+        self.assertEqual(self.env['pb.workflow.studio'].sudo().with_user(other)._home_move(other, self.CLAIM, claim.id, stage.id)['code'], 'who')
+        self.assertEqual(Studio._home_move(portal, self.CLAIM, claim.id, early.id)['code'], 'gone', 'the rules forbid it')
+        self.assertEqual(Studio._home_move(portal, self.CLAIM, claim.id, auto.id)['code'], 'auto')
+        self.assertEqual(Studio._home_move(portal, 'res.partner', 1, stage.id)['code'], 'gone', 'only areas with a contract')
+        result = Studio._home_move(portal, self.CLAIM, claim.id, stage.id)
+        self.assertTrue(result['ok'], result)
+        self.assertEqual(self.positions(self.CLAIM, claim.id).stage_id, stage)
+        self.assertEqual(self.positions(self.CLAIM, claim.id).entered_by, portal)
+        claim.invalidate_recordset()
+        self.assertEqual(claim.state, 'approved', 'the area status is never written')
+        strip = self.env['pb.me.home'].with_user(portal)._wf_page_strip('expense_claim', claim.id)
+        self.assertEqual(next(t for t in strip['track'] if t['state'] == 'here')['name'], 'WF2 P4b handed in')
+
+    def test_wf2p4b_t6_stays_are_counted_with_or_without_a_workflow(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        a = self.user_stage('WF2 P4b first', anchor='approved', enter='person', enter_owner={'kind': 'user', 'id': self.admin.id})
+        b = self.user_stage('WF2 P4b second', anchor='approved', enter='person', enter_owner={'kind': 'user', 'id': self.admin.id})
+        claim = self.claim('approved')
+        Visit = self.env['pb.workflow.stage.visit'].sudo()
+        self.service.move_record_stage(self.CLAIM, claim.id, a.id)
+        self.service.move_record_stage(self.CLAIM, claim.id, b.id)
+        stays = Visit.search([('res_model', '=', self.CLAIM), ('res_id', '=', claim.id)], order='id')
+        self.assertEqual(stays.mapped('stage_id'), a | b)
+        self.assertTrue(stays[0].left_at and not stays[1].left_at)
+        self.assertEqual(set(stays.mapped('company_id').ids), {self.company.id})
+        self.assertEqual(stays[1].entered_by, self.admin)
+        with self.assertRaises(AccessError):
+            self.env['pb.workflow.stage.visit'].with_user(self.admin).create({
+                'company_id': self.company.id, 'res_model': self.CLAIM, 'res_id': claim.id,
+                'stage_id': a.id, 'entered_at': fields.Datetime.now()})
+        # Leaving the status closes the stay (the stale row is removed).
+        claim._chain_engine_write('paid')
+        self.assertFalse(self.service._record_position(self.CLAIM, claim.id))
+        stays.invalidate_recordset()
+        self.assertTrue(stays[1].left_at)
+        # Backfill makes only what the history proves.
+        w, d = self.staged('', [], [])
+        x = self.user_stage('WF2 P4b x', model='', workflow=w, enter='person', enter_owner={'kind': 'user', 'id': self.admin.id})
+        y = self.user_stage('WF2 P4b y', model='', workflow=w, enter='person', enter_owner={'kind': 'user', 'id': self.admin.id})
+        z = self.user_stage('WF2 P4b z', model='', workflow=w, enter='person', enter_owner={'kind': 'user', 'id': self.admin.id})
+        self.publish(w, d)
+        run = self.start(w)
+        Studio = self.env['pb.workflow.studio'].sudo()
+        Studio._set_position('pb.workflow.run', run.id, x, self.company, run=run.sudo())
+        Studio._set_position('pb.workflow.run', run.id, y, self.company, run=run.sudo())
+        self.env.cr.execute('DELETE FROM pb_workflow_stage_visit')
+        self.env.invalidate_all()
+        made = Visit._backfill()
+        rebuilt = Visit.search([('res_model', '=', 'pb.workflow.run'), ('res_id', '=', run.id)], order='entered_at, id')
+        self.assertEqual(rebuilt.mapped('stage_id'), x | y)
+        self.assertTrue(rebuilt[0].left_at and not rebuilt[1].left_at, 'y is where it is today')
+        self.assertTrue(all(rebuilt.mapped('backfilled')))
+        self.assertGreaterEqual(made, 2)
+        self.assertFalse(Visit.search([('stage_id', '=', z.id)]), 'never entered, never invented')
+        self.assertEqual(Visit._backfill(), 0, 'once only')
+
+    def test_wf2p4b_t7_where_time_goes_is_counted_right(self):
+        self.need(self.CLAIM)
+        self.expense_access()
+        stage = self.user_stage('WF2 P4b checked', anchor='approved', target_hours=2)
+        w, d = self.workflow([self.todo('check', owner={'kind': 'user', 'id': self.admin.id}, title='Check receipt')], model=self.CLAIM)
+        self.publish(w, d)
+        Visit = internal(self.env['pb.workflow.stage.visit'])
+        base = fields.Datetime.now() - timedelta(days=3)
+        for i, hours in enumerate((1, 2, 3, 4, 5)):
+            claim = self.claim('approved')
+            run = self.start(w, claim)
+            step = self.step(run, 'check')
+            self.assertEqual(step.assignee_id, self.admin, step.error)
+            internal(step).write({'state': 'done', 'started_at': base, 'done_at': base + timedelta(hours=hours)})
+            stay = (1, 1, 3, 3, 3)[i]
+            Visit.create({'company_id': self.company.id, 'res_model': self.CLAIM, 'res_id': claim.id,
+                          'stage_id': stage.id, 'entered_at': base, 'left_at': base + timedelta(hours=stay)})
+        other = self.env['res.company'].create({'name': 'WF2 P4b elsewhere'})
+        Visit.create({'company_id': other.id, 'res_model': self.CLAIM, 'res_id': claim.id, 'stage_id': stage.id,
+                      'entered_at': base - timedelta(days=1), 'left_at': base + timedelta(hours=60)})
+        w2, d2 = self.workflow([self.todo('check', owner={'kind': 'user', 'id': self.admin.id})], model=self.CLAIM)
+        self.publish(w2, d2)
+        run2 = self.start(w2, self.claim('approved'))
+        internal(self.step(run2, 'check')).write({'state': 'done', 'started_at': base, 'done_at': base + timedelta(hours=1)})
+        w3, d3 = self.workflow([self.todo('x')], model=self.CLAIM)
+        self.publish(w3, d3)
+        aw, _ad = self.approval_workflow()
+        arun = self.start(aw, self.generic())
+        # Whole hours from here on, so the numbers are exact by hand.
+        self.company.resource_calendar_id = False
+        report = self.service.time_report(w.id, '30')
+        self.assertFalse(report['empty'])
+        self.assertFalse(report['calendar'])
+        step_row = next(s for s in report['steps'] if s['key'] == 'check')
+        self.assertEqual((step_row['samples'], step_row['enough'], step_row['median_words']), (5, True, '3 h'))
+        self.assertEqual(step_row['who'], self.admin.name)
+        row = next(s for s in report['stages'] if s['kind'] == 'yours' and s['key'] == str(stage.id))
+        self.assertEqual((row['samples'], row['median_words'], row['p90_words'], row['late_share']), (5, '3 h', '3 h', 60),
+                         'the other company’s long stay is not counted')
+        self.assertAlmostEqual(sum(s['share'] for s in report['stages']), 100.0, delta=0.5)
+        # Under five: "not enough yet".
+        few = next(s for s in self.service.time_report(w2.id, 'all')['steps'] if s['key'] == 'check')
+        self.assertEqual((few['enough'], few['median_words']), (False, ''))
+        # Nothing has run: the empty state.
+        self.assertTrue(self.service.time_report(w3.id)['empty'])
+        # Approval steps are read, never written.
+        request = self.step(arun, 'approval').approval_id
+        stamp = request.write_date
+        arow = next(s for s in self.service.time_report(aw.id)['steps'] if s['key'] == 'approval')
+        self.assertTrue(arow['approval'])
+        self.assertEqual(arow['who'], 'Approvals')
+        request.invalidate_recordset()
+        self.assertEqual(request.write_date, stamp)
+        with self.assertRaises(AccessError):
+            self.service.with_user(self.staff).time_report(w.id)
+
+    def test_wf2p4b_t8_the_candidate_takes_part_by_link(self):
+        self.need('pb.hiring', 'hr.applicant')
+        self.recruiter()
+        confirm = {'id': 'agree', 'type': 'confirm', 'title': 'Confirm your details', 'stage': 1, 'due': 2,
+                   'owner': {'kind': 'participant', 'key': 'candidate'}, 'text': 'My details are right.'}
+        w, d = self.workflow([dict(confirm, stage=0)], model='hr.applicant')
+        self.assertEqual(self.codes(w, d), [])
+        meta = self.service.metadata('hr.applicant', w.id)
+        self.assertEqual(meta['participants'], [{'key': 'candidate', 'label': 'The candidate'}])
+        self.assertIn('participant_link', [n['code'] for n in self.service._people_notes(w, d)])
+        self.publish(w, d)
+        applicant = self.env['hr.applicant'].create({'partner_name': 'WF2 P4b candidate', 'email_from': 'cand@example.com',
+                                                     'company_id': self.company.id})
+        run = self.start(w, applicant)
+        step = self.step(run, 'agree')
+        self.assertEqual(step.state, 'waiting', step.error)
+        self.assertEqual((step.sudo().link_email, step.link_name), ('cand@example.com', 'WF2 P4b candidate'))
+        self.assertFalse(step.assignee_id, 'never a user')
+        self.assertTrue(len(step.sudo().access_token) >= 32)
+        mail = self.env['mail.mail'].sudo().search([('email_to', '=', 'cand@example.com')], order='id desc', limit=1)
+        self.assertTrue(mail)
+        # The link page shows the step and nothing of the record around it.
+        page = self.env['pb.workflow.studio'].sudo()._page_data(step, ('file', 'lookup'))
+        self.assertEqual(page['record'], '')
+        self.assertNotIn(w.name, page['workflow'])
+        # No email: the step stops with a plain reason.
+        quiet = self.env['hr.applicant'].create({'partner_name': 'WF2 P4b no email', 'company_id': self.company.id})
+        failed = self.step(self.start(w, quiet), 'agree')
+        self.assertEqual(failed.state, 'failed')
+        self.assertEqual(failed.error, 'WF2 P4b no email has no email address on the record, so this cannot reach them.')
+        # A form with a file is refused; a notice too.
+        form = self.form('papers', fields_=[{'id': 'cv', 'type': 'file', 'label': 'CV', 'required': True}],
+                         owner={'kind': 'participant', 'key': 'candidate'})
+        self.assertIn('participant_cannot', self.codes(*self.workflow([form], model='hr.applicant')))
+        notice = {'id': 'tell', 'type': 'notify', 'title': 'Tell', 'stage': 0, 'text': 'Hello',
+                  'owner': {'kind': 'participant', 'key': 'candidate'}}
+        self.assertIn('participant_notice', self.codes(*self.workflow([notice], model='hr.applicant')))
+        self.assertIn('bad_participant', self.codes(*self.workflow([dict(confirm, stage=0, owner={'kind': 'participant', 'key': 'boss'})],
+                                                                   model='hr.applicant')))
+        # Somewhere Hiring already emails the candidate: Review warns.
+        self.env['pb.hiring.automation.rule'].create({
+            'company_id': self.company.id, 'event': 'stage_entered', 'action': 'send_email', 'recipient': 'candidate',
+            'stage_id': self.env['hr.recruitment.stage']._pb_stage('screening').id})
+        w2, d2 = self.staged('hr.applicant', [('Screening', self.core('screening'))], [confirm])
+        warning = next(i for i in self.service._validate(w2, d2) if i['code'] == 'repeats_existing' and i['id'] == 'agree')
+        self.assertIn('already emails the candidate here', warning['text'])
+        self.assertEqual(warning['severity'], 'warning')
+        # A stage mover is always staff.
+        with self.assertRaises(UserError):
+            self.service._check_owner('hr.applicant', self.company, {'kind': 'participant', 'key': 'candidate'})
+
+    def test_wf2p4b_t9_late_with_no_manager_tells_the_named_role(self):
+        Studio = self.env['pb.workflow.studio'].sudo()
+        now = fields.Datetime.now()
+        lead = self.staffer('WF2 P4b HR lead')
+        role = self.env['biz.approval.role'].create({'key': 'wf2p4b_%s' % uuid.uuid4().hex[:8], 'name': 'WF2 P4b HR lead'})
+        self.env['biz.approval.responsibility'].create({'company_id': self.company.id, 'role_id': role.id,
+                                                        'scope_key': '', 'user_id': lead.id})
+
+        def late_step(owner, late_tell=None):
+            w, d = self.workflow([self.todo('do', owner=owner)])
+            if late_tell:
+                d['late_tell'] = late_tell
+            self.assertNotIn('late_tell', self.codes(w, d))
+            self.publish(w, d)
+            step = self.step(self.start(w), 'do')
+            internal(step).write({'due_at': now - timedelta(days=3)})
+            Studio._chase_late(now)
+            return step
+        # A line manager comes first, the role is not asked.
+        boss = self.staffer('WF2 P4b boss')
+        managed = self.staffer('WF2 P4b managed')
+        self.employee('WF2 P4b managed', user=managed, parent_id=self.employee('WF2 P4b boss', user=boss).id)
+        step = late_step({'kind': 'user', 'id': managed.id}, {'id': role.id})
+        self.assertTrue(self.outbox('task_passed_up', boss))
+        self.assertEqual(step.passed_up_to, 'manager')
+        self.assertTrue(Studio._passed_up_words(step).startswith('Their manager was told on '))
+        # Nobody manages them: the named role.
+        step = late_step({'kind': 'user', 'id': self.staff.id}, {'id': role.id})
+        told = self.outbox('task_passed_up', lead).filtered(lambda o: o.payload.get('res_id') == step.run_id.id)
+        self.assertEqual(len(told), 1)
+        self.assertEqual(step.passed_up_to, 'WF2 P4b HR lead')
+        self.assertTrue(self.service.progress(step.run_id.id)['steps'][1]['passed_up'].startswith('WF2 P4b HR lead was told on '))
+        # No role named: the publisher, as before.
+        step = late_step({'kind': 'user', 'id': self.staff.id})
+        self.assertTrue(self.outbox('task_passed_up', self.admin).filtered(lambda o: o.payload.get('res_id') == step.run_id.id))
+        self.assertEqual(step.passed_up_to, 'publisher')
+        # Never the person it waits for, never the system account.
+        step = late_step({'kind': 'user', 'id': lead.id}, {'id': role.id})
+        self.assertFalse(self.outbox('task_passed_up', lead).filtered(lambda o: o.payload.get('res_id') == step.run_id.id))
+        # The role's holder in another company is never used.
+        other = self.env['res.company'].create({'name': 'WF2 P4b other'})
+        far = self.env['biz.approval.role'].create({'key': 'wf2p4b_%s' % uuid.uuid4().hex[:8], 'name': 'WF2 P4b far'})
+        stranger = self.staffer('WF2 P4b stranger')
+        stranger.write({'company_ids': [(4, other.id)]})
+        self.env['biz.approval.responsibility'].create({'company_id': other.id, 'role_id': far.id,
+                                                        'scope_key': '', 'user_id': stranger.id})
+        step = late_step({'kind': 'user', 'id': self.staff.id}, {'id': far.id})
+        self.assertFalse(self.outbox('task_passed_up', stranger))
+        self.assertEqual(step.passed_up_to, 'publisher')
+        # A role that does not exist is refused at design time.
+        w, d = self.workflow([self.todo('do')])
+        d['late_tell'] = {'id': 0}
+        self.assertIn('late_tell', self.codes(w, d))
+        self.assertIn('late_fallback', [n['code'] for n in self.service._people_notes(*self.workflow([self.todo('do')]))])
+
+    def test_wf2p4b_t10_the_dock_line_counts_tasks_and_leaves_approvals_alone(self):
+        Inbox = self.env['pb.approval.inbox'].with_user(self.staff)
+        before = Inbox.get_team_data(scope='team', queues_only=True)
+        counts_before = self.inbox(self.staff)._counts('me')
+        w, d = self.workflow([self.todo('a', owner={'kind': 'user', 'id': self.staff.id}),
+                              self.todo('b', owner={'kind': 'user', 'id': self.staff.id})])
+        self.publish(w, d)
+        self.start(w)
+        after = Inbox.get_team_data(scope='team', queues_only=True)
+        self.assertEqual(after['queues']['tasks'], before['queues'].get('tasks', 0) + 1, 'the first waiting task')
+        self.assertEqual({k: v for k, v in after['queues'].items() if k != 'tasks'},
+                         {k: v for k, v in before['queues'].items() if k != 'tasks'}, 'approvals untouched')
+        counts = self.inbox(self.staff)._counts('me')
+        self.assertEqual({k: counts[k] for k in ('mine', 'all', 'returned', 'done')},
+                         {k: counts_before[k] for k in ('mine', 'all', 'returned', 'done')})
+
+    def test_wf2p4b_t11_new_doors_check_first_and_never_write_status(self):
+        root = os.path.join(os.path.dirname(os.path.dirname(__file__)))
+        mine = open(os.path.join(root, 'controllers', 'my_tasks.py'), encoding='utf-8').read()
+        body = mine.split('def my_todo_move', 1)[1].split('\n    @http.route', 1)[0]
+        self.assertLess(body.index('_is_public()'), body.index('self._studio()'))
+        self.assertIn('_home_move(person,', body)
+        self.assertNotIn('csrf=False', mine)
+        strip = open(os.path.join(root, 'models', 'workflow_strip.py'), encoding='utf-8').read()
+        move = strip.split('def _home_move', 1)[1].split('\n    def ', 1)[0]
+        for check in ("_workflow_capabilities", "stage.company_id != record.company_id", "_home_names(person"):
+            self.assertLess(move.index(check), move.index('_set_position('), check)
+        for name in ('workflow_strip.py', 'workflow_time.py', 'workflow_reach.py'):
+            text = open(os.path.join(root, 'models', name), encoding='utf-8').read()
+            self.assertFalse(re.search(r'\b(source|record|records|rec)\b\.(state|stage_id)\s*=[^=]', text), name)
+            self.assertFalse(re.search(r'\b(source|record|records|rec)\b(\.\w+\([^)]*\))*\.write\(', text), name)
+            self.assertNotIn('_chain_engine_write', text, name)
+        for view in ('workflow_strip_page.xml', 'workflow_task_page.xml'):
+            self.assertNotIn('t-raw', open(os.path.join(root, 'views', view), encoding='utf-8').read())
+        # The employee page asks for a strip only on pages it knows.
+        Home = self.env['pb.me.home'].with_user(self.staff)
+        self.assertIsNone(Home._wf_page_strip('my_requests', 1))
+        self.assertIsNone(self.env['pb.workflow.studio'].sudo()._home_strip(self.env.ref('base.public_user'), self.CLAIM, 1))

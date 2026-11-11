@@ -218,6 +218,10 @@
       <t t-set="additional_title" t-value="t.get('name') or 'My tasks'"/>
       <div class="pbme pbwt pbwt-home">
         <a class="pbwt-backlink" href="/my/todo"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>My tasks</a>
+        <!-- WF2 P4b: where the whole thing is, above the task. -->
+        <div t-if="wf_strip and state == 'ok'" class="pbwfs-wrap pbwfs-wrap--task">
+          <t t-call="pb_lifecycle.workflow_strip_page"><t t-set="s" t-value="wf_strip"/></t>
+        </div>
         <t t-call="pb_lifecycle.workflow_task_body"/>
       </div>
     </t>

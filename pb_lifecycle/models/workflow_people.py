@@ -78,6 +78,8 @@ class WorkflowStepPeople(models.Model):
     due_at = fields.Datetime(index=True)
     reminded_at = fields.Datetime()
     passed_up_at = fields.Datetime()
+    #: WF2 P4b (D19): who was told — 'manager', 'publisher' or a role's name.
+    passed_up_to = fields.Char()
     #: A team task: everyone who may take it; `assignee_id` empty until taken.
     team_user_ids = fields.Many2many('res.users', 'pb_workflow_step_team_rel', 'step_id', 'user_id')
     #: Whose task this is when someone is covering for them.
@@ -799,6 +801,18 @@ class WorkflowPeople(models.AbstractModel):
             return boss
         return None
 
+    def _pass_up_people(self, step, run):
+        """(people to tell, what they are) when a task is late: the line
+        manager (`manager`), else whoever looks after the workflow
+        (`publisher`). WF2 P4b adds the workflow's named role between."""
+        Users = self.env['res.users']
+        if not (step.team_user_ids and not step.assignee_id):
+            boss = self._manager_of(step.assignee_id, step.person_employee_id, run.company_id)
+            if boss:
+                return boss, 'manager'
+        owner = self._workflow_owner(run)
+        return (owner, 'publisher') if owner else (Users, '')
+
     def _workflow_owner(self, run):
         """Who looks after a workflow: whoever published the version it runs."""
         owner = run.version_id.published_by
@@ -830,18 +844,20 @@ class WorkflowPeople(models.AbstractModel):
                         if people:
                             run._log(_('A reminder went out for %s.', step.name), step)
                     if not step.passed_up_at and now >= step.due_at + timedelta(days=escalate_days):
-                        boss = None if (step.team_user_ids and not step.assignee_id) else \
-                            self._manager_of(step.assignee_id, step.person_employee_id, run.company_id)
-                        boss = boss or self._workflow_owner(run)
-                        if boss and boss == step.assignee_id:
-                            boss = None
-                        if boss:
+                        # WF2 P4b (D19): who is told is one hook — line
+                        # manager, then the workflow's named role, then the
+                        # publisher. Never the person it waits for.
+                        bosses, told = self._pass_up_people(step, run)
+                        bosses = bosses.filtered(lambda b: b != step.assignee_id and b.id != SUPERUSER_ID)
+                        for boss in bosses:
                             Outbox._queue('task_passed_up', boss, payload=self._task_payload(run, step, 'passed_up'),
                                           dedupe='wf-task-passed-up-%s-%s-%s' % (step.id, stamp, boss.id))
-                            run._log(_('%(step)s is late; %(who)s was told.', step=step.name, who=boss.name), step)
+                        if bosses:
+                            run._log(_('%(step)s is late; %(who)s was told.', step=step.name,
+                                       who=', '.join(bosses.mapped('name'))), step)
                         else:
                             run._log(_('%s is late and there is nobody to tell.', step.name), step)
-                        internal(step).write({'passed_up_at': now})
+                        internal(step).write({'passed_up_at': now, 'passed_up_to': told if bosses else False})
             except Exception:  # noqa: BLE001 — one step never stops the rest
                 _logger.exception('Workflow step %s: late handling failed', step.id)
         self._chase_late_stages(now)

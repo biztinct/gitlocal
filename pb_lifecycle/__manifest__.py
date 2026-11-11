@@ -55,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.14.0',
+    'version': '19.0.1.15.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -101,6 +101,8 @@ that has closed expires itself. The whole job is behind
         # WF2 P4a: the task page outside the app, and the link email.
         'views/workflow_task_page.xml',
         'data/workflow_link_mail.xml',
+        # WF2 P4b: where a request is, on the employee home.
+        'views/workflow_strip_page.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -110,9 +112,13 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/js/journeys.js',
             'pb_lifecycle/static/src/js/lifecycle_hub.js',
             'pb_lifecycle/static/src/js/lifecycle_palette.js',
+            # WF2 P4b: the "where this is" strip (the form patch imports it).
+            'pb_lifecycle/static/src/scss/workflow_strip.scss',
+            'pb_lifecycle/static/src/js/workflow_strip.js',
             'pb_lifecycle/static/src/js/workflow_studio.js',
             'pb_lifecycle/static/src/xml/journeys.xml',
             'pb_lifecycle/static/src/xml/workflow_record.xml',
+            'pb_lifecycle/static/src/xml/workflow_strip.xml',
             # WF2 P4a (D1): the Tasks group and task drawer in the inbox.
             'pb_lifecycle/static/src/scss/workflow_inbox.scss',
             'pb_lifecycle/static/src/js/workflow_inbox.js',
@@ -125,6 +131,8 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/scss/token_pages.scss',
             # WF2 P4a: the workflow task page (employee home and link).
             'pb_lifecycle/static/src/scss/workflow_task_page.scss',
+            # WF2 P4b: the employee-home twin of the strip.
+            'pb_lifecycle/static/src/scss/workflow_strip.scss',
         ],
     },
     'post_init_hook': 'post_init_hook',

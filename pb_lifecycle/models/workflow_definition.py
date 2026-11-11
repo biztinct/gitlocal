@@ -16,7 +16,10 @@ PEOPLE = ('task', 'input', 'confirm')
 #: Who a person step (or a notice) can go to.
 OWNER_KINDS = ('initiator', 'user', 'role', 'manager', 'field', 'subject', 'managers_manager',
                # WF2 P4a: a team from Approvals (anyone on it can take the task).
-               'team')
+               'team',
+               # WF2 P4b (D18): someone the area names who never logs in
+               # (Hiring: "The candidate"), always reached by email link.
+               'participant')
 #: Steps that change something outside the run. A "send back" may not jump
 #: over one of these: going back would make it happen twice.
 ONCE_ONLY = ('matrix', 'action', 'update', 'create', 'start')
@@ -523,7 +526,8 @@ def _validate(d, source_fields=None, actions=None):
             if kind in PEOPLE or kind == 'notify':
                 owner = n.get('owner', {})
                 if not isinstance(owner, dict) or owner.get('kind') not in OWNER_KINDS or (
-                        owner.get('kind') in ('user', 'team') and type(owner.get('id')) is not int):
+                        owner.get('kind') in ('user', 'team') and type(owner.get('id')) is not int) or (
+                        owner.get('kind') == 'participant' and not isinstance(owner.get('key'), str)):
                     error(key, 'missing_owner', 'Choose who gets this.' if kind == 'notify' else 'Choose who does this step.')
             if kind in PEOPLE:
                 if type(n.get('due', 2)) is not int or not 1 <= n.get('due', 2) <= 365:

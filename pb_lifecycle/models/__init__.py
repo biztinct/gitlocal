@@ -27,3 +27,8 @@ from . import workflow_people
 from . import workflow_people_design
 from . import workflow_inbox
 from . import workflow_home
+# WORKFLOW-2 P4b: progress where people already are (record screens and the
+# employee home), where time goes, "The candidate" and the late-task role.
+from . import workflow_strip
+from . import workflow_time
+from . import workflow_reach

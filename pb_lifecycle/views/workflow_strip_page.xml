@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+       WF2 P4b — where a request is, on the employee home.
+
+       The server-rendered twin of the staff strip (static/src/xml/
+       workflow_strip.xml): the same track, the same states and the same
+       class tokens, so the two never look different. Shown only when a
+       workflow or a company stage has something to say; every other page is
+       exactly as it was. Words for the area's own statuses are the page's
+       own words (one word per status on a page).
+
+       What an employee sees: stage names, one sentence about who has it and
+       dates. Never amounts, notes, answers or the workflow's make-up.
+  -->
+
+  <template id="wfs_icon" name="Workflow strip icon">
+    <t t-set="isz" t-value="isz or 14"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbwfs-ic" aria-hidden="true">
+      <t t-if="icon == 'done'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'here'"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/></t>
+      <t t-elif="icon == 'passed'"><path d="M5 12h14"/></t>
+      <t t-elif="icon == 'stopped'"><rect x="6" y="6" width="12" height="12" rx="2"/></t>
+      <t t-elif="icon == 'arrow'"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></t>
+      <t t-elif="icon == 'flag'"><path d="M4 22V4"/><path d="M4 4h12l-2 4 2 4H4"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></t>
+      <t t-elif="icon == 'chevron'"><path d="m6 9 6 6 6-6"/></t>
+      <t t-elif="icon == 'alert'"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="5"/></t>
+    </svg>
+  </template>
+
+  <template id="workflow_strip_page" name="Where it is (employee home)">
+    <t t-set="lead" t-value="(s.get('workflows') or [{}])[0]"/>
+    <t t-set="moved" t-value="request and request.params.get('wf_move')"/>
+    <section class="pbwfs pbwfs--page" role="region" aria-label="Where this is now">
+      <div class="pbwfs-top">
+        <span t-attf-class="pbwfs-dot is-#{lead.get('tone') or 'wait'}" aria-hidden="true"/>
+        <p class="pbwfs-sentence">
+          <t t-if="lead.get('sentence')"><t t-esc="lead['sentence']"/></t>
+          <t t-else=""><t t-esc="s.get('sentence')"/></t>
+          <span t-if="lead.get('meta')" t-attf-class="pbwfs-meta #{'is-late' if lead.get('late') else ''}"> · <t t-esc="lead['meta']"/></span>
+        </p>
+        <a t-if="lead.get('url') and lead.get('url') != back" class="pbwfs-btn pbwfs-btn--primary" t-att-href="lead['url']">
+          Do it now <t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="'arrow'"/></t>
+        </a>
+        <details t-elif="s.get('moves')" class="pbwfs-movebox">
+          <summary class="pbwfs-btn pbwfs-btn--primary">Move to… <t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="'chevron'"/></t></summary>
+          <div class="pbwfs-menu" role="menu">
+            <form t-foreach="s['moves']" t-as="m" method="post" action="/my/todo/move" class="pbwfs-menu-form">
+              <input t-if="request" type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="model" t-att-value="s['model']"/>
+              <input type="hidden" name="record_id" t-att-value="s['record_id']"/>
+              <input type="hidden" name="stage_id" t-att-value="m['stage_id']"/>
+              <input type="hidden" name="back" t-att-value="back or (request and request.httprequest.path) or '/my'"/>
+              <button type="submit" class="pbwfs-menu-item" role="menuitem">
+                <t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="'flag'"/></t><t t-esc="m['name']"/>
+              </button>
+            </form>
+          </div>
+        </details>
+      </div>
+      <p t-if="moved == 'ok'" class="pbwfs-note is-ok" role="status">Moved. Everyone sees the new stage now.</p>
+      <p t-elif="moved" class="pbwfs-note is-bad" role="alert">
+        <t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="'alert'"/></t>
+        <t t-if="moved == 'who'">Only the person this stage names can move it there.</t>
+        <t t-elif="moved == 'auto'">It gets there by itself. Nobody needs to move it.</t>
+        <t t-else="">That move is not possible any more. The page shows where it is now.</t>
+      </p>
+      <ol t-if="s.get('track')" class="pbwfs-track" aria-label="Stages">
+        <t t-foreach="s['track']" t-as="t">
+          <li t-if="t.get('more')" class="pbwfs-step is-more">
+            <details class="pbwfs-more">
+              <summary t-attf-aria-label="#{t['count']} more stages">+<t t-esc="t['count']"/></summary>
+              <div class="pbwfs-pop"><span t-foreach="t['names']" t-as="nm" t-esc="nm"/></div>
+            </details>
+          </li>
+          <li t-elif="not t.get('hidden')" t-attf-class="pbwfs-step track-step #{t['state']} kind-#{t['kind']}"
+              t-att-aria-current="'step' if t['state'] == 'here' else None">
+            <span class="track-icon"><t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="t['state']"/><t t-set="isz" t-value="12"/></t></span>
+            <span class="pbwfs-name">
+              <b t-esc="t['name']"/>
+              <small t-if="t['kind'] == 'yours' and t.get('counts_as')">counts as <t t-esc="t['counts_as']"/></small>
+            </span>
+            <span t-if="t['state'] == 'here'" class="pbwfs-here">Here now</span>
+          </li>
+        </t>
+      </ol>
+      <details t-if="s.get('track')" class="pbwfs-mobile">
+        <summary>
+          <span t-if="s['compact']['index']">Stage <t t-esc="s['compact']['index']"/> of <t t-esc="s['compact']['total']"/> · <b t-esc="s['compact']['name']"/></span>
+          <span t-else=""><b t-esc="s['compact']['name'] or 'Where it is'"/></span>
+          <t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="'chevron'"/></t>
+        </summary>
+        <ol class="pbwfs-vtrack">
+          <t t-foreach="s['track']" t-as="t">
+            <li t-if="not t.get('more')" t-attf-class="track-step #{t['state']} kind-#{t['kind']}">
+              <span class="track-icon"><t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="t['state']"/><t t-set="isz" t-value="12"/></t></span>
+              <b t-esc="t['name']"/><span t-if="t['state'] == 'here'" class="pbwfs-here">Here now</span>
+            </li>
+          </t>
+        </ol>
+      </details>
+    </section>
+  </template>
+
+  <!-- The page that shows one request asks for its strip by name. Pages
+       not in the list (every other employee page) are untouched. -->
+  <template id="workflow_strip_layout" name="Where it is: request pages" inherit_id="portal.portal_layout">
+    <xpath expr="//div[hasclass('o_portal_wrap')]/div/t[@t-else='']/t[@t-out='0']" position="before">
+      <t t-if="page_name == 'expense_claim' and id and request">
+        <t t-set="wf_strip" t-value="request.env['pb.me.home']._wf_page_strip(page_name, id)"/>
+        <div t-if="wf_strip" class="pbwfs-wrap pbwfs-wrap--claim">
+          <t t-call="pb_lifecycle.workflow_strip_page"><t t-set="s" t-value="wf_strip"/></t>
+        </div>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- My requests: one quiet line under the title when a workflow has
+       something to say. The status pill is the request's own, unchanged. -->
+  <template id="workflow_my_requests_line" name="My requests: where it is" inherit_id="pb_me_portal.portal_my_requests">
+    <xpath expr="//b[hasclass('pbme-rq-title')]" position="after">
+      <span t-if="r.get('wf_line')" t-attf-class="pbwfs-rqline #{'is-late' if r.get('wf_late') else ''}">
+        <t t-call="pb_lifecycle.wfs_icon"><t t-set="icon" t-value="'flag'"/><t t-set="isz" t-value="12"/></t>
+        <t t-esc="r['wf_line']"/>
+      </span>
+    </xpath>
+  </template>
+</odoo>

@@ -11,3 +11,6 @@ workflow_event_system,Workflow event administrator,model_pb_workflow_event,base.
 workflow_stage_user,Workflow stages,model_pb_workflow_stage,base.group_user,1,0,0,0
 workflow_record_stage_user,Workflow stage positions,model_pb_workflow_record_stage,base.group_user,1,0,0,0
 workflow_notice_user,Workflow notices,model_pb_workflow_notice,base.group_user,1,0,0,0
+workflow_stage_visit_viewer,Workflow time in stages,model_pb_workflow_stage_visit,group_workflow_viewer,1,0,0,0
+workflow_stage_visit_designer,Workflow time in stages,model_pb_workflow_stage_visit,group_workflow_designer,1,0,0,0
+workflow_stage_visit_system,Workflow time in stages,model_pb_workflow_stage_visit,base.group_system,1,0,0,0
