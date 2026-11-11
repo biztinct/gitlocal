@@ -242,32 +242,41 @@ class TestRecordsR2Desk(TransactionCase):
 
     def test_01a_get_fields_returns_mapped_and_standard_record_destinations(self):
         # Commit 2e9777879 ("Separate master records from focused payroll
-        # inputs") made the split deliberate: a pay scheme's view lists ONLY
-        # what that scheme maps; the standard record fields live in Master
-        # records (`config_id = 0`). UPDATES P2a item 3 asserts both halves.
-        data = self._cards()
-        ids = self._card_ids(data)
-        self.assertEqual(ids, {
+        # inputs") made Master records (`config_id = 0`) independent of any
+        # scheme. pb_records itself lists, in a scheme's view, ONLY what that
+        # scheme maps; `pb_payroll_templates` (installed on every live
+        # database, NOT a dependency of this module) deliberately adds nine
+        # standard employee/contract fields to every scheme's view
+        # (`TemplateRecordFields._cards`). The expectation follows what is
+        # installed, so this test is right on a bare build AND on live
+        # (UPDATES P2a item 3 — the "stale" failure was a bare-build artefact).
+        mapped = {
             'f:hr.employee:location',
             'f:hr.contract:shuipart',
             'f:hr.contract:department_id',
             'f:hr.employee:%s' % self.bool_field,
             'b:acc_number', 'b:bank_name',
             'c:RDBONUS',
-        })
-        groups = {g['key'] for g in data['groups']}
-        self.assertEqual(groups, {'employee', 'contract', 'bank', 'component'})
-        master = self._card_ids(self.Desk.get_fields(0))
-        standard = {
+        }
+        standard_fields = {
             'f:hr.employee:birthday', 'f:hr.employee:name',
             'f:hr.employee:mobile_phone', 'f:hr.employee:work_phone',
             'f:hr.employee:job_title', 'f:hr.employee:department_id',
             'f:hr.contract:wage', 'f:hr.contract:date_start', 'f:hr.contract:date_end',
-            'b:acc_number', 'b:bank_name', 'b:bank_bic', 'b:acc_holder_name',
         }
+        templates_add_standard = 'pb.payroll.month.inputs' in self.env
+        data = self._cards()
+        ids = self._card_ids(data)
+        self.assertEqual(ids, mapped | standard_fields if templates_add_standard
+                         else mapped)
+        groups = {g['key'] for g in data['groups']}
+        self.assertEqual(groups, {'employee', 'contract', 'bank', 'component'})
+        # Master records always carries the standard fields and all four bank
+        # roles, whatever is installed.
+        master = self._card_ids(self.Desk.get_fields(0))
+        standard = standard_fields | {'b:acc_number', 'b:bank_name', 'b:bank_bic',
+                                      'b:acc_holder_name'}
         self.assertTrue(standard <= master, standard - master)
-        self.assertFalse(standard - {'b:acc_number', 'b:bank_name'} & ids,
-                         "a scheme's view must not carry the master fields")
 
     def test_01b_a_field_the_scheme_does_not_map_is_absent(self):
         ids = self._card_ids(self._cards())
