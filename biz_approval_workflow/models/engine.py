@@ -1134,7 +1134,11 @@ class BizApprovalEngine(models.AbstractModel):
         self.env['biz.approval.event']._log(
             'applied', _("\"%s\" was carried out", request.title),
             company=request.company_id, request=request)
-        if request.submitter_uid:
+        # WF2 P2b (D6): an area that tells the person who asked itself
+        # declares it; the engine's copy is then left out (kill switch
+        # `biz_approval.single_notice`, see single_notice.py).
+        if request.submitter_uid and not self._area_tells_requester(
+                request, record, 'approved'):
             self.env['biz.approval.outbox']._queue(
                 'approved', request.submitter_uid, request,
                 dedupe='approved-%s-%s' % (request.id, request.attempt))
@@ -1358,7 +1362,8 @@ class BizApprovalEngine(models.AbstractModel):
                           what=request.title,
                           why=reason or _('no reason given')),
             company=request.company_id, request=request)
-        if request.submitter_uid:
+        if request.submitter_uid and not self._area_tells_requester(
+                request, record, 'returned'):
             self.env['biz.approval.outbox']._queue(
                 'returned', request.submitter_uid, request,
                 payload={'reason': reason or ''},
@@ -1385,7 +1390,8 @@ class BizApprovalEngine(models.AbstractModel):
                           what=request.title,
                           why=reason or _('no reason given')),
             company=request.company_id, request=request)
-        if request.submitter_uid:
+        if request.submitter_uid and not self._area_tells_requester(
+                request, record, 'rejected'):
             self.env['biz.approval.outbox']._queue(
                 'rejected', request.submitter_uid, request,
                 payload={'reason': reason or ''},

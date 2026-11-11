@@ -23,3 +23,5 @@ from . import ir_http
 from . import workflow_contract
 # WF2 P4a: the late job and the outbox reused by workflow tasks (add-only).
 from . import late_extra
+# WF2 P2b: one message per event — the approver/requester guards (add-only).
+from . import single_notice

@@ -13,3 +13,4 @@ from . import test_audit_source
 from . import test_p7_conflict_backup
 # PAYAI P0 — approval switches never arrive from a client.
 from . import test_context_scrub
+from . import test_wf2p2b_single_notice
