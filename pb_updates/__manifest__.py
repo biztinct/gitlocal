@@ -23,9 +23,16 @@ Phase 2b: pay items are judged against each person's own pay scheme
 pay item that is not in that person's scheme is greyed out and skipped.
 A cell saying CLEAR empties that value.
 
-UPDATES programme, phases 1-2b. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+Phase 2c: an update can carry a start date — for the whole file, or per row
+from a start-date column. A past date is written now and recorded as starting
+that day (finished pay runs are not recalculated, no back pay); a future date
+is held as "Scheduled" and written on the day, with "Start now" and "Cancel"
+on the Updates home. A manager or coach can be given by name, employee code
+or work email.
+
+UPDATES programme, phases 1-2c. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

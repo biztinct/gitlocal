@@ -29,6 +29,7 @@ import logging
 import re
 
 from odoo import _, api, fields, models
+from odoo.tools.misc import format_date
 
 from odoo.addons.pb_records.models.pb_records_io import _norm, XLSX_MIME
 from odoo.addons.pb_updates.models.updates_batch import heading_fingerprint
@@ -48,7 +49,26 @@ CON = 'hr.contract'
 #: Updates-only seams on (`pb_records`): every pay item of every pay scheme in
 #: the catalogue (`records_scheme_items`), and the explicit-CLEAR rules
 #: (`records_strict_clear`). The Records screen sets neither.
-DOOR_CONTEXT = {'records_scheme_items': True, 'records_strict_clear': True}
+DOOR_CONTEXT = {'records_scheme_items': True, 'records_strict_clear': True,
+                # UPDATES P2c: values come from a file, so a sentence about a
+                # manager named twice says what to type, not where to click.
+                'records_from_file': True}
+
+#: UPDATES P2c — the "Goes to" target of the column that says when a row's
+#: changes start. It is never a value to write: Updates reads it itself.
+WHEN_TARGET = 'when:start'
+#: At most this many different start dates in one file (keeps approvals
+#: readable): more is refused before the review.
+MAX_START_DATES = 6
+#: The catalogue groups a future date holds back by default ("Pay and
+#: contract changes wait; personal details change today").
+DATED_GROUPS = ('contract', 'component')
+#: Headings that most likely mean "the start date of this row". A guess only
+#: — "Start date" on its own is the CONTRACT's start date and stays that.
+START_HEADINGS = ('start date for this row', 'effective date', 'effective from',
+                  'starts on', 'start from', 'change starts', 'ngày hiệu lực',
+                  'ngày áp dụng', 'tanggal efektif', 'berlaku mulai')
+MANAGER_FIELDS = ('f:hr.employee:parent_id', 'f:hr.employee:coach_id')
 
 #: The desk's four catalogue groups, in order, with their icons. Their words
 #: are `PbUpdatesDesk._topic_label` (literal `_()` calls, so they translate).
@@ -195,11 +215,17 @@ class PbUpdatesDesk(models.AbstractModel):
             except (TypeError, ValueError):
                 return 0
 
-        used = {}
-        for key, value in (columns.get('used') or {}).items():
+        used, start = {}, 0
+        for key, value in sorted((columns.get('used') or {}).items(),
+                                 key=lambda kv: as_int(kv[0])):
             idx = as_int(key)
-            if idx > 0 and value:
-                used[idx] = str(value)
+            if idx <= 0 or not value:
+                continue
+            if str(value) == WHEN_TARGET:
+                # UPDATES P2c: at most one start-date column — the first.
+                start = start or idx
+                continue
+            used[idx] = str(value)
         identity = {}
         for key in IDENTITY_KEYS:
             idx = as_int((columns.get('identity') or {}).get(key))
@@ -210,7 +236,10 @@ class PbUpdatesDesk(models.AbstractModel):
             idx = as_int(key)
             if idx > 0:
                 heads[idx] = str(value if value is not None else '')
-        return {'used': used, 'identity': identity, 'heads': heads}
+        if start in identity.values():
+            start = 0
+        return {'used': used, 'identity': identity, 'heads': heads,
+                'start': start}
 
     @api.model
     def _people_info(self, desk, emp_ids):
@@ -238,6 +267,9 @@ class PbUpdatesDesk(models.AbstractModel):
             'people_count': len(desk._matching({}, ctx={})),
             'topics': topics,
             'history': self.get_history(8)['batches'],
+            'coming_up': self.get_coming_up()['items'],
+            'today': fields.Date.to_string(
+                self.env['pb.records.apply']._today_for()),
         }
 
     @api.model
@@ -269,6 +301,15 @@ class PbUpdatesDesk(models.AbstractModel):
                   "out."),
                 _("To empty a value, type CLEAR in its cell."),
             ]
+        if any(fid in field_ids for fid in MANAGER_FIELDS):
+            # UPDATES P2c (decision D9): how a manager may be named.
+            if not notes:
+                notes = [_("How to fill in this sheet"),
+                         _("Change a value to update it. Leave a cell as it "
+                           "is, or blank, and nothing changes for it.")]
+            notes.append(_("A manager or coach can be given by name, employee "
+                           "code or work email. A name nobody has is not "
+                           "used, and nobody is ever created from this sheet."))
         answer = desk.export_records(0, filters or {}, field_ids, 'data',
                                      blank_cells=blank_cells, notes=notes)
         if answer.get('ok'):
@@ -370,6 +411,7 @@ class PbUpdatesDesk(models.AbstractModel):
                 col.update(how='identity', identity=key, field_id='')
 
         taken = {c['field_id'] for c in columns if c['field_id']}
+        when_taken = False
         for col in columns:
             col['target'] = col['field_id'] or (
                 'identity:%s' % col['identity'] if col['identity'] else '')
@@ -381,6 +423,12 @@ class PbUpdatesDesk(models.AbstractModel):
                 if remembered == 'ignore':
                     col.update(how='memory', target='ignore')
                     continue
+                if remembered == WHEN_TARGET:
+                    # UPDATES P2c — the start-date column, remembered.
+                    if not when_taken:
+                        when_taken = True
+                        col.update(how='memory', target=WHEN_TARGET)
+                    continue
                 if remembered.startswith('identity:'):
                     key = remembered.split(':', 1)[1]
                     if key in IDENTITY_KEYS and key not in taken_identity:
@@ -391,6 +439,10 @@ class PbUpdatesDesk(models.AbstractModel):
                     taken.add(remembered)
                     col.update(how='memory', field_id=remembered, target=remembered)
                     continue
+            if head in START_HEADINGS and not when_taken:
+                when_taken = True
+                col.update(how='guess', target=WHEN_TARGET)
+                continue
             guess = self._guess(head, by_id, taken)
             if guess:
                 taken.add(guess)
@@ -488,13 +540,21 @@ class PbUpdatesDesk(models.AbstractModel):
                 "Pick at least one column to bring in. Only the columns that "
                 "find the person are matched so far.")}
         # `clear_word`: a cell saying CLEAR empties that value (decision D6).
+        start_col = cols.get('start') or 0
         peek = desk.import_peek(
             0, file_b64, filename,
             columns={'used': {str(k): v for k, v in cols['used'].items()},
                      'identity': cols['identity']},
-            clear_word=True)
+            clear_word=True,
+            extra_columns=[start_col] if start_col else None)
         if not peek.get('ok'):
             return peek
+        # UPDATES P2c — each row's own start date, read and judged once.
+        starts = {}
+        if start_col:
+            starts, refusal = self._row_starts(desk, peek, start_col)
+            if refusal:
+                return {'ok': False, 'msg': refusal}
         _topics, by_id, _data = self._catalogue(desk)
         seen, out_columns = set(), []
         for idx in sorted(cols['used']):
@@ -514,6 +574,9 @@ class PbUpdatesDesk(models.AbstractModel):
             'truncated': bool(peek.get('truncated')),
             'columns': out_columns,
             'pay_items': bool(pay_codes), 'schemes': [], 'no_scheme': 0,
+            'dated': bool(start_col),
+            'today': fields.Date.to_string(
+                self.env['pb.records.apply']._today_for()),
         }
         if peek.get('empty'):
             base.update(empty=True, msg=peek.get('msg'), rows=[], unmatched=[],
@@ -550,11 +613,26 @@ class PbUpdatesDesk(models.AbstractModel):
             emp_rows[m['emp_id']] = emp_rows.get(m['emp_id'], 0) + 1
         for pos, m in enumerate(matched):
             person = info.get(m['emp_id']) or {}
+            start = starts.get(m['row']) or {}
             cells = {}
             for change in sliced[pos]:
                 key = (change['emp_id'], change['field_id'])
                 queue = queues.get(key) or []
                 is_last = last_row.get(key) == pos
+                if start.get('error') and \
+                        by_id.get(change['field_id'], {}).get('group') in DATED_GROUPS:
+                    # UPDATES P2c: this row's start date cannot be read, so
+                    # the values that would wait for it are refused. The
+                    # verdict is still taken off the queue so the rows below
+                    # read theirs.
+                    if change['field_id'][:1] != 'b':
+                        queue.pop(0) if queue else None
+                    value = change.get('value')
+                    cells[change['field_id']] = {
+                        'status': 'refused', 'date_refused': True,
+                        'old': '', 'new': '' if value is None else str(value),
+                        'value': value, 'why': start['error']}
+                    continue
                 if change['field_id'][:1] == 'b':
                     # Four bank roles are judged as ONE account per person, so
                     # the desk answers once per role — for the last value.
@@ -610,9 +688,11 @@ class PbUpdatesDesk(models.AbstractModel):
                     # struck through. Clearing what is already empty is "same".
                     cells[change['field_id']]['cleared'] = True
                 if status == 'ok':
-                    ok_changes.append({'emp_id': m['emp_id'],
-                                       'field_id': change['field_id'],
-                                       'value': value})
+                    sent = {'emp_id': m['emp_id'],
+                            'field_id': change['field_id'], 'value': value}
+                    if start.get('date'):
+                        sent['start'] = start['date']
+                    ok_changes.append(sent)
             row = {
                 'row': m['row'], 'emp_id': m['emp_id'], 'method': m.get('method'),
                 'name': person.get('name') or '', 'code': person.get('code') or '',
@@ -620,13 +700,19 @@ class PbUpdatesDesk(models.AbstractModel):
                 'twice': emp_rows.get(m['emp_id'], 0) > 1,
                 'cells': cells,
             }
+            if start_col:
+                row['start'] = start
             if scheme_ctx:
                 row.update(self._person_scheme(scheme_ctx, m['emp_id']))
             rows.append(row)
         if scheme_ctx:
             base.update(self._strip(scheme_ctx, [m['emp_id'] for m in matched]))
-        base.update(rows=rows, unmatched=peek.get('unmatched') or [],
-                    changes=ok_changes)
+        unmatched = peek.get('unmatched') or []
+        for entry in unmatched:
+            entry.pop('extra', None)
+            if start_col:
+                entry['start'] = starts.get(entry['row']) or {}
+        base.update(rows=rows, unmatched=unmatched, changes=ok_changes)
         return base
 
     @api.model
@@ -692,6 +778,8 @@ class PbUpdatesDesk(models.AbstractModel):
                 continue
             if idx in identity_at:
                 target = 'identity:%s' % identity_at[idx]
+            elif idx == cols.get('start'):
+                target = WHEN_TARGET
             elif idx in cols['used']:
                 target = cols['used'][idx]
             else:
@@ -701,13 +789,21 @@ class PbUpdatesDesk(models.AbstractModel):
 
     @api.model
     def apply(self, name='', file_b64='', filename='', columns=None,
-              changes=None, stats=None):
+              changes=None, stats=None, start_date=None, hold_scope='pay'):
         """Name the update, keep the file, and hand the changes to the desk.
 
         One transaction. The desk re-evaluates every change (whitelist, company
         scope, permissions, audit, approval route) — nothing here decides what
         is written. When the desk finds nothing to change, no batch is left
-        behind and the answer says so."""
+        behind and the answer says so.
+
+        UPDATES P2c: `start_date` is the default start for every change that
+        does not carry its own (`change['start']`, from the file's start-date
+        column). Changes are grouped by start date — one desk apply per date,
+        plus one with no date for today's values; with `hold_scope='pay'` a
+        future date holds back only contract and pay-item values, and the
+        personal and bank values of those rows go in today's apply. With no
+        date anywhere this is exactly the call it always was."""
         desk = self._gate()
         name = (name or '').strip()
         if not name:
@@ -746,7 +842,20 @@ class PbUpdatesDesk(models.AbstractModel):
                     'msg': _("Nothing was changed: every value left is for a "
                              "pay item that is not in that person's pay "
                              "scheme.")}
-        answer = desk.apply_changes(0, changes, note=name, source='import')
+        buckets, refusal = self._split_by_start(desk, changes, start_date,
+                                                hold_scope)
+        if refusal:
+            return {'ok': False, 'msg': refusal}
+        if list(buckets) == [None]:
+            # No date anywhere: exactly the call Updates has always made.
+            answer = desk.apply_changes(0, buckets[None], note=name,
+                                        source='import')
+            answers = [(None, answer)]
+        else:
+            answer, answers = self._apply_by_start(desk, buckets, name,
+                                                   hold_scope)
+            if not answer.get('ok', True):
+                return answer
         answer.update(skipped_off_scheme=len(skipped), off_scheme=off_scheme)
         self._remember_layout(desk, file_b64, filename, cols)
         if not answer.get('apply_id'):
@@ -774,7 +883,8 @@ class PbUpdatesDesk(models.AbstractModel):
             })
             batch.attachment_id = attachment
         # The desk files its applies under sudo; the back-link follows it.
-        self.env['pb.records.apply'].sudo().browse(answer['apply_id']).write(
+        apply_ids = [a.get('apply_id') for _day, a in answers if a.get('apply_id')]
+        self.env['pb.records.apply'].sudo().browse(apply_ids).write(
             {'updates_batch_id': batch.id})
         answer['batch_id'] = batch.id
         answer['batch_name'] = batch.name
@@ -790,13 +900,30 @@ class PbUpdatesDesk(models.AbstractModel):
             return 'applied', _("Applied")
         # The desk's own words for its states, in the reader's language.
         labels = dict(applies._fields['state']._description_selection(self.env))
-        if any(a.state == 'pending' for a in applies):
+        # UPDATES P2c — a cancelled part is out of the picture: it changed
+        # nothing and never will.
+        live = applies.filtered(lambda a: a.state != 'cancelled')
+        if not live:
+            return 'cancelled', _("Cancelled")
+        if any(a.state == 'pending' for a in live):
             return 'pending', labels.get('pending') or _("Waiting for approval")
-        if all(a.undone for a in applies):
+        scheduled = live.filtered(lambda a: a.state == 'scheduled')
+        done = live.filtered('applied')
+        if scheduled:
+            when = format_date(self.env, min(scheduled.mapped('start_date')))
+            if done.filtered(lambda a: not a.undone):
+                return 'mixed', _("Part applied, part scheduled for %s") % when
+            return 'scheduled', _("Scheduled for %s") % when
+        returned = live.filtered(lambda a: a.state == 'returned')
+        if returned and not done:
+            reason = (returned[:1].block_note or '').strip()
+            return 'returned', (_("Sent back: %s") % reason) if reason \
+                else (labels.get('returned') or _("Sent back"))
+        if done and all(a.undone for a in done):
             return 'undone', _("Undone")
-        if all(a.applied for a in applies):
+        if all(a.applied for a in live):
             return 'applied', _("Applied")
-        other = applies.filtered(lambda a: not a.applied)[:1]
+        other = live.filtered(lambda a: not a.applied)[:1]
         return other.state, labels.get(other.state) or other.state
 
     @api.model
@@ -805,7 +932,15 @@ class PbUpdatesDesk(models.AbstractModel):
         state, label = self._batch_state(applies)
         undone = applies.filtered('undone')[:1]
         pending = applies.filtered(lambda a: a.state == 'pending')[:1]
-        return {
+        scheduled = applies.filtered(
+            lambda a: a.state == 'scheduled' and not a.applied).sorted(
+                lambda a: (a.start_date, a.id))
+        cancelled = applies.filtered(lambda a: a.state == 'cancelled')
+        returned = applies.filtered(lambda a: a.state == 'returned')
+        open_parts = applies.filtered(
+            lambda a: not a.applied and a.state in ('pending', 'scheduled'))
+        applied = applies.filtered(lambda a: a.applied)
+        row = {
             'id': batch.id,
             'name': batch.name or '',
             'user': batch.user_id.display_name or '',
@@ -826,6 +961,53 @@ class PbUpdatesDesk(models.AbstractModel):
             'can_undo': bool(may_write and applies.filtered(
                 lambda a: a.applied and not a.undone)),
         }
+        # UPDATES P2c — the parts waiting for their day, the parts stopped,
+        # and what a person can still do about them.
+        row.update({
+            'state_date': fields.Date.to_string(scheduled[:1].start_date)
+            if scheduled else '',
+            'state_reason': (returned[:1].block_note or '') if state == 'returned' else '',
+            'scheduled': [{
+                'apply_id': a.id, 'date': fields.Date.to_string(a.start_date),
+                'values': a.values_count, 'people': a.people_count,
+            } for a in scheduled],
+            # Recorded with their own date: the past ones and the ones the job
+            # wrote on the day. One started early is recorded as of that day.
+            'recorded': [{
+                'date': fields.Date.to_string(a.start_date),
+                'values': a.count_values or a.values_count,
+            } for a in applied if a.start_date and not a.undone
+                and not (a.started_by_id and not a.started_by_job)],
+            'started_early': sum(a.count_values or a.values_count for a in applied
+                                 if a.started_by_id and not a.started_by_job
+                                 and not a.undone),
+            'applied_values': sum(a.count_values or a.values_count
+                                  for a in applied if not a.undone),
+            'cancelled_values': sum(a.values_count for a in cancelled),
+            'cancelled_date': cancelled[:1].cancelled_at and cancelled[:1].cancelled_at.strftime(
+                '%Y-%m-%d %H:%M:%S') or '',
+            'cancelled_by': cancelled[:1].cancelled_by_id.display_name or '',
+            'can_cancel': bool(may_write and open_parts.filtered(
+                lambda a: a.with_env(self.env)._may_cancel())),
+            'can_start': bool(may_write and scheduled),
+            # Part of it still waiting (approval or its day): Undo only puts
+            # back what was applied, and says so.
+            'has_open': bool(open_parts),
+            'open_values': sum(a.values_count for a in open_parts),
+        })
+        if len(applies) > 1:
+            # A dated update is several desk applies: count each person once.
+            row['people'] = len({int(r.get('emp_id') or 0)
+                                 for a in applies for r in a.plan()} - {0})
+        if state in ('scheduled', 'mixed', 'cancelled', 'returned'):
+            # The scheduled part's people and values, not the whole batch's.
+            if state == 'scheduled':
+                row['people'] = sum(a.people_count for a in scheduled)
+                row['values'] = sum(a.values_count for a in scheduled)
+            elif state == 'cancelled':
+                row['people'] = sum(a.people_count for a in cancelled)
+                row['values'] = sum(a.values_count for a in cancelled)
+        return row
 
     @api.model
     def get_history(self, limit=20):
@@ -869,6 +1051,9 @@ class PbUpdatesDesk(models.AbstractModel):
         if not todo:
             if applies and all(a.undone for a in applies):
                 msg = _("This update has already been undone.")
+            elif any(a.state == 'scheduled' for a in applies):
+                msg = _("Nothing in this update has been changed yet. Cancel "
+                        "the scheduled part instead.")
             elif any(a.state == 'pending' for a in applies):
                 msg = _("This update is still waiting for approval, so there "
                         "is nothing to undo yet.")

@@ -1988,3 +1988,660 @@ msgstr "chương trình lương của họ"
 #: code:addons/pb_updates/static/src/js/updates_desk.js:0
 msgid "── Other pay schemes ──"
 msgstr "── Các chương trình lương khác ──"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s are recorded as starting %(date)s"
+msgstr "%(n)s được ghi nhận là bắt đầu từ %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s are scheduled for %(date)s"
+msgstr "%(n)s đã lên lịch cho %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s values are recorded as starting %(date)s."
+msgstr "%(n)s giá trị được ghi nhận là bắt đầu từ %(date)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s values are scheduled for %(date)s"
+msgstr "%(n)s giá trị đã lên lịch cho %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s values changed, recorded as starting %(date)s"
+msgstr "%(n)s giá trị đã thay đổi, ghi nhận là bắt đầu từ %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s values start on %(date)s."
+msgstr "%(n)s giá trị bắt đầu từ %(date)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s waiting for approval, then starting %(date)s"
+msgstr "%(n)s đang chờ phê duyệt, sau đó bắt đầu từ %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(values)s for %(people)s"
+msgstr "%(values)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%s of these people have already been paid for a period after this date. "
+"Finished pay runs are not recalculated, and back pay is not added "
+"automatically."
+msgstr "%s người trong số này đã được trả lương cho một kỳ sau ngày này. Các kỳ tính lương đã hoàn tất không được tính lại, và tiền lương truy lĩnh không được tự động cộng thêm."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values"
+msgstr "%s giá trị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values change today"
+msgstr "%s giá trị thay đổi hôm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values changed today"
+msgstr "%s giá trị đã thay đổi hôm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values were changed when it was applied."
+msgstr "%s giá trị đã được thay đổi khi áp dụng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values were changed."
+msgstr "%s giá trị đã được thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s waiting for approval"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid "'%s' is not a date. Use a date like 1 Dec 2026."
+msgstr "'%s' không phải là ngày. Hãy dùng một ngày như 1 Dec 2026."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 is recorded as starting %s"
+msgstr "1 được ghi nhận là bắt đầu từ %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 is scheduled for %s"
+msgstr "1 đã lên lịch cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"1 of these people has already been paid for a period after this date. "
+"Finished pay runs are not recalculated, and back pay is not added "
+"automatically."
+msgstr "1 người trong số này đã được trả lương cho một kỳ sau ngày này. Các kỳ tính lương đã hoàn tất không được tính lại, và tiền lương truy lĩnh không được tự động cộng thêm."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value"
+msgstr "1 giá trị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value changed today"
+msgstr "1 giá trị đã thay đổi hôm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value changed, recorded as starting %s"
+msgstr "1 giá trị đã thay đổi, ghi nhận là bắt đầu từ %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value changes today"
+msgstr "1 giá trị thay đổi hôm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value is recorded as starting %s."
+msgstr "1 giá trị được ghi nhận là bắt đầu từ %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value is scheduled for %s"
+msgstr "1 giá trị đã lên lịch cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value starts on %s."
+msgstr "1 giá trị bắt đầu từ %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value was changed when it was applied."
+msgstr "1 giá trị đã được thay đổi khi áp dụng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value was changed."
+msgstr "1 giá trị đã được thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 waiting for approval"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"A manager or coach can be given by name, employee code or work email. A name"
+" nobody has is not used, and nobody is ever created from this sheet."
+msgstr "Người quản lý hoặc người kèm cặp có thể ghi bằng tên, mã nhân viên hoặc email công việc. Tên không thuộc về ai sẽ không được dùng, và không ai được tạo mới từ bảng này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"A past date is recorded as when the change started. A future date waits and "
+"is written on the day."
+msgstr "Ngày trong quá khứ được ghi nhận là ngày thay đổi bắt đầu. Ngày trong tương lai sẽ chờ và được ghi vào đúng ngày đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"A scheduled change is written on its day by itself. Until then you will find"
+" it under Coming up, where you can start it now or cancel it."
+msgstr "Thay đổi đã lên lịch sẽ tự được ghi vào đúng ngày. Trước đó bạn sẽ thấy nó trong mục Sắp diễn ra, nơi bạn có thể bắt đầu ngay hoặc hủy."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply and schedule %s changes"
+msgstr "Áp dụng và lên lịch %s thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply and schedule 1 change"
+msgstr "Áp dụng và lên lịch 1 thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Approved and waiting for their start date. Each one is written on its day by"
+" itself, all of it or none of it."
+msgstr "Đã duyệt và đang chờ đến ngày bắt đầu. Mỗi thay đổi sẽ tự được ghi vào đúng ngày, ghi toàn bộ hoặc không ghi gì."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancel and withdraw"
+msgstr "Hủy và rút lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancel the scheduled change"
+msgstr "Hủy thay đổi đã lên lịch"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancel the scheduled part"
+msgstr "Hủy phần đã lên lịch"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancel “%s”?"
+msgstr "Hủy “%s”?"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid "Cancelled before anything was changed."
+msgstr "Đã hủy trước khi có bất kỳ thay đổi nào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancelled on %(when)s by %(who)s. Nothing was changed."
+msgstr "%(who)s đã hủy lúc %(when)s. Không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancelled. Nothing was changed."
+msgstr "Đã hủy. Không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid ""
+"Cancelling an update needs permission to change employee records. Ask an "
+"administrator for the HR or Payroll Officer role."
+msgstr "Muốn hủy một lần cập nhật cần có quyền sửa hồ sơ nhân viên. Hãy nhờ quản trị viên cấp vai trò Nhân sự hoặc Cán bộ tính lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Changes as soon as it is applied."
+msgstr "Thay đổi ngay khi được áp dụng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Coming up"
+msgstr "Sắp diễn ra"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Dated in the past"
+msgstr "Ngày trong quá khứ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Every value this update has already changed goes back to what it was before."
+" A value someone has changed since is left as it is. The scheduled part is "
+"not touched: cancel it separately."
+msgstr "Mọi giá trị mà lần cập nhật này đã thay đổi sẽ trở về như trước. Giá trị nào đã bị người khác sửa sau đó sẽ được giữ nguyên. Phần đã lên lịch không bị ảnh hưởng: hãy hủy riêng phần đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Everything waits until that date"
+msgstr "Mọi thứ đều chờ đến ngày đó"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Job titles, phone numbers and bank details go in now."
+msgstr "Chức danh, số điện thoại và thông tin ngân hàng được cập nhật ngay."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Not a date"
+msgstr "Không phải ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Not yet"
+msgstr "Chưa"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Nothing changes before the day."
+msgstr "Không có gì thay đổi trước ngày đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid "Nothing could be cancelled."
+msgstr "Không có gì có thể hủy."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Nothing in this update has been changed yet. Cancel the scheduled part "
+"instead."
+msgstr "Lần cập nhật này chưa thay đổi gì. Hãy hủy phần đã lên lịch thay vào đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid "Nothing in this update is waiting, so there is nothing to cancel."
+msgstr "Không có phần nào của lần cập nhật này đang chờ, nên không có gì để hủy."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid "Nothing was changed: the update could not be sent."
+msgstr "Chưa có gì thay đổi: không thể gửi lần cập nhật."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Part applied, part scheduled for %s"
+msgstr "Đã áp dụng một phần, phần còn lại lên lịch cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pay and contract changes wait; personal details change today"
+msgstr "Thay đổi lương và hợp đồng chờ đến ngày; thông tin cá nhân thay đổi hôm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pick a date"
+msgstr "Chọn ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Pick a date up to a year back or a year ahead."
+msgstr "Hãy chọn một ngày lùi hoặc tiến tối đa một năm."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid ""
+"Recorded as starting on %s. Pay runs already finished are not recalculated."
+msgstr "Ghi nhận là bắt đầu từ %s. Các kỳ tính lương đã hoàn tất không được tính lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Rows with their own start date in the file keep it. This is for every other "
+"row."
+msgstr "Các dòng có ngày bắt đầu riêng trong tệp sẽ giữ ngày đó. Lựa chọn này dành cho mọi dòng còn lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Schedule %s changes"
+msgstr "Lên lịch %s thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Schedule 1 change"
+msgstr "Lên lịch 1 thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Scheduled for %s"
+msgstr "Đã lên lịch cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Scheduled: written on %s, not before."
+msgstr "Đã lên lịch: được ghi vào %s, không sớm hơn."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Sent back: %s"
+msgstr "Đã trả lại: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Start date for this row"
+msgstr "Ngày bắt đầu của dòng này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Start now"
+msgstr "Bắt đầu ngay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Start “%s” now?"
+msgstr "Bắt đầu “%s” ngay?"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid ""
+"Starting an update needs permission to change employee records. Ask an "
+"administrator for the HR or Payroll Officer role."
+msgstr "Muốn bắt đầu một lần cập nhật cần có quyền sửa hồ sơ nhân viên. Hãy nhờ quản trị viên cấp vai trò Nhân sự hoặc Cán bộ tính lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Starts in %s days"
+msgstr "Bắt đầu sau %s ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Starts later"
+msgstr "Bắt đầu sau"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Starts tomorrow"
+msgstr "Bắt đầu ngày mai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Starts within the hour"
+msgstr "Bắt đầu trong vòng một giờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"The %(what)s scheduled for %(date)s are never written. Nothing has been "
+"changed yet, so nothing needs putting back. To do it later, upload the file "
+"again."
+msgstr "%(what)s đã lên lịch cho %(date)s sẽ không bao giờ được ghi. Chưa có gì thay đổi nên không cần đưa về. Muốn làm sau, hãy tải tệp lên lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"The approval request is withdrawn and the %s waiting in it are never "
+"written. Nothing has been changed, so nothing needs putting back."
+msgstr "Yêu cầu phê duyệt được rút lại và %s đang chờ trong đó sẽ không bao giờ được ghi. Chưa có gì thay đổi nên không cần đưa về."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The update could not be cancelled. Nothing has changed."
+msgstr "Không thể hủy lần cập nhật. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The update could not be started. Nothing has changed."
+msgstr "Không thể bắt đầu lần cập nhật. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_dates.py:0
+msgid ""
+"This file has %(n)s different start dates. Split it into files of at most "
+"%(max)s."
+msgstr "Tệp này có %(n)s ngày bắt đầu khác nhau. Hãy chia thành các tệp có tối đa %(max)s ngày."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"This update has %(n)s different start dates. Split it into files of at most "
+"%(max)s."
+msgstr "Lần cập nhật này có %(n)s ngày bắt đầu khác nhau. Hãy chia thành các tệp có tối đa %(max)s ngày."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Undo what was applied"
+msgstr "Hoàn tác phần đã áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What waits for the date"
+msgstr "Những gì chờ đến ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "When do these changes start?"
+msgstr "Các thay đổi này bắt đầu khi nào?"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "When it starts"
+msgstr "Khi nào bắt đầu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Withdraw"
+msgstr "Rút lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "“%(name)s” has started. %(back)s"
+msgstr "“%(name)s” đã bắt đầu. %(back)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "“%(name)s”: %(what)s cancelled before anything was changed."
+msgstr "“%(name)s”: đã hủy %(what)s trước khi có bất kỳ thay đổi nào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%(values)s for %(people)s: written today instead of on %(date)s, and "
+"recorded as starting today. You can undo it afterwards from Past updates."
+msgstr "%(values)s cho %(people)s: được ghi hôm nay thay vì ngày %(date)s, và được ghi nhận là bắt đầu từ hôm nay. Bạn có thể hoàn tác sau đó trong Các lần cập nhật trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid ""
+"%s The value itself is fine: correct the date in your file and upload it "
+"again, or leave this one out."
+msgstr "%s Bản thân giá trị không có vấn đề: hãy sửa ngày trong tệp rồi tải lên lại, hoặc bỏ qua giá trị này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values were cancelled before they were changed."
+msgstr "%s giá trị đã được hủy trước khi thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values were started early, before their date."
+msgstr "%s giá trị đã được bắt đầu sớm, trước ngày dự kiến."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value was cancelled before it was changed."
+msgstr "1 giá trị đã được hủy trước khi thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value was started early, before its date."
+msgstr "1 giá trị đã được bắt đầu sớm, trước ngày dự kiến."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sent, part of it for approval"
+msgstr "Đã gửi, một phần đang chờ phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"What is waiting for approval changes nothing until it is approved. Each part"
+" is listed below."
+msgstr "Phần đang chờ phê duyệt sẽ không thay đổi gì cho đến khi được duyệt. Từng phần được liệt kê bên dưới."

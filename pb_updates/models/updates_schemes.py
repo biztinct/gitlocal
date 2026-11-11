@@ -255,3 +255,10 @@ class PbRecordsDeskUpdatesDoor(models.AbstractModel):
         source = self.env['pb.records.apply'].sudo().browse(int(apply_id or 0)).exists()
         door = self._updates_door(source)
         return super(PbRecordsDeskUpdatesDoor, door).undo_apply(apply_id)
+
+    @api.model
+    def _door_for(self, apply_rec):
+        """UPDATES P2c — a scheduled write ("Start now" or the hourly job)
+        is judged with the same catalogue and CLEAR rules as when it was
+        proposed."""
+        return self._updates_door(apply_rec)

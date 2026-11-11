@@ -55,6 +55,42 @@
               </button>
             </div>
 
+            <!-- UPDATES P2c — changes waiting for their day. Hidden when empty. -->
+            <section t-if="comingUp.length" class="pbu-card pbu-coming">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 class="pbu-h2"><t t-out="icon('calendarClock', 18)"/> Coming up</h2>
+                  <p class="pbu-sub">Approved and waiting for their start date. Each one is written on its day by itself, all of it or none of it.</p>
+                </div>
+              </header>
+              <ul class="pbu-cal">
+                <li t-foreach="comingUp" t-as="c" t-key="c.apply_id" class="pbu-cal-row">
+                  <t t-set="day" t-value="comingDay(c)"/>
+                  <span class="pbu-cal-day" aria-hidden="true">
+                    <small t-esc="day.m"/><b t-esc="day.d"/><small t-esc="day.y"/>
+                  </span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="c.name"/>
+                    <span class="pbu-sub" t-esc="comingLine(c)"/>
+                    <span class="pbu-cal-when"><t t-out="icon('clock', 12)"/><t t-esc="comingWhen(c)"/></span>
+                    <span t-if="c.note" class="pbu-sub pbu-warn-text" t-esc="c.note"/>
+                  </div>
+                  <div class="pbu-row">
+                    <button t-if="c.can_start" type="button" class="pbim-btn outline pbim-btn-sm"
+                            t-att-disabled="state.starting === c.apply_id"
+                            t-on-click="() => this.startNow(c)">
+                      <span t-if="state.starting === c.apply_id" class="pbu-spin sm"/>
+                      <t t-else="" t-out="icon('play', 13)"/> Start now
+                    </button>
+                    <button t-if="c.can_cancel" type="button" class="pbim-btn ghost pbim-btn-sm"
+                            t-on-click="() => this.cancelComing(c)">
+                      <t t-out="icon('x', 13)"/> Cancel
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
             <section class="pbu-card">
               <header class="pbu-card-h">
                 <div>
@@ -80,11 +116,16 @@
                   <a t-if="h.file_id" class="pbu-file" t-att-href="fileUrl(h)" t-att-title="h.filename">
                     <t t-out="icon('fileSpreadsheet', 14)"/><span t-esc="h.filename"/>
                   </a>
-                  <span t-attf-class="pbu-chip pbu-chip--{{ historyTone(h) }}" t-esc="h.state_label"/>
+                  <span t-attf-class="pbu-chip pbu-chip--{{ historyTone(h) }}" t-esc="historyLabel(h)"/>
                   <button t-if="h.can_undo" type="button" class="pbim-btn ghost pbim-btn-sm"
                           t-att-disabled="state.undoing === h.id"
-                          t-on-click="() => this.undoBatch(h.id, h.name)">
-                    <t t-out="icon('undo', 14)"/> Undo
+                          t-on-click="() => this.undoBatch(h.id, h.name, false, h.has_open)">
+                    <t t-out="icon('undo', 14)"/>
+                    <t t-if="h.has_open"> Undo what was applied</t><t t-else=""> Undo</t>
+                  </button>
+                  <button t-if="h.can_cancel" type="button" class="pbim-btn ghost pbim-btn-sm"
+                          t-on-click="() => this.cancelBatch(h)">
+                    <t t-out="icon('x', 14)"/> <t t-esc="cancelLabel(h)"/>
                   </button>
                 </li>
               </ul>
@@ -212,6 +253,9 @@
                       <select class="pbu-select" t-att-aria-label="col.head"
                               t-on-change="(ev) => this.setTarget(col, ev.target.value)">
                         <option value="ignore" t-att-selected="!col.target or col.target === 'ignore'">Don't bring this column in</option>
+                        <optgroup label="When it starts">
+                          <option t-att-value="whenOption.value" t-att-selected="col.target === whenOption.value" t-esc="whenOption.label"/>
+                        </optgroup>
                         <optgroup label="Finds the person">
                           <t t-foreach="identityOptions" t-as="o" t-key="o.value">
                             <option t-att-value="o.value" t-att-selected="col.target === o.value" t-esc="o.label"/>
@@ -299,6 +343,53 @@
                 </div>
               </div>
               <p t-if="applyOffScheme" class="pbu-inline-note pbu-apply-off"><t t-out="icon('ban', 14)"/><span t-esc="applyOffScheme"/></p>
+
+              <!-- UPDATES P2c — when do these changes start? -->
+              <section class="pbu-when-card" aria-labelledby="pbu-when-h">
+                <div class="pbu-when-head">
+                  <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('calendarClock', 16)"/></span>
+                  <div>
+                    <h3 id="pbu-when-h" class="pbu-h3">When do these changes start?</h3>
+                    <p class="pbu-sub" t-if="state.rv.dated">Rows with their own start date in the file keep it. This is for every other row.</p>
+                    <p class="pbu-sub" t-else="">A past date is recorded as when the change started. A future date waits and is written on the day.</p>
+                  </div>
+                </div>
+                <div class="pbu-when-pick">
+                  <div class="pbu-seg" role="radiogroup" aria-label="When do these changes start?">
+                    <button type="button" role="radio" t-att-aria-checked="state.when.mode === 'today' ? 'true' : 'false'"
+                            t-on-click="() => this.setWhenMode('today')">Today</button>
+                    <button type="button" role="radio" t-att-aria-checked="state.when.mode === 'date' ? 'true' : 'false'"
+                            t-on-click="() => this.setWhenMode('date')"><t t-out="icon('calendar', 13)"/> Pick a date</button>
+                  </div>
+                  <input t-if="state.when.mode === 'date'" type="date" class="pbu-input pbu-date"
+                         aria-label="Start date" t-att-min="whenBounds.min" t-att-max="whenBounds.max"
+                         t-att-value="state.when.date" t-on-change="onWhenDate"/>
+                </div>
+                <p t-if="whenDateError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="whenDateError"/></p>
+                <div t-if="futureInPlay" class="pbu-hold" role="radiogroup" aria-label="What waits for the date">
+                  <label t-att-class="{ 'is-on': state.when.scope === 'pay' }">
+                    <input type="radio" name="pbu-hold" value="pay" t-att-checked="state.when.scope === 'pay'"
+                           t-on-change="() => this.setScope('pay')"/>
+                    <span><b>Pay and contract changes wait; personal details change today</b>
+                      <small>Job titles, phone numbers and bank details go in now.</small></span>
+                  </label>
+                  <label t-att-class="{ 'is-on': state.when.scope === 'all' }">
+                    <input type="radio" name="pbu-hold" value="all" t-att-checked="state.when.scope === 'all'"
+                           t-on-change="() => this.setScope('all')"/>
+                    <span><b>Everything waits until that date</b>
+                      <small>Nothing changes before the day.</small></span>
+                  </label>
+                </div>
+                <p t-if="whenSummary" class="pbu-when-sum" aria-live="polite">
+                  <t t-out="icon(laterCount ? 'calendarClock' : 'check', 14)"/><span t-esc="whenSummary"/>
+                </p>
+                <p t-if="tooManyDates" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="tooManyDatesLine"/></p>
+                <div t-if="paidNote" class="pbu-note pbu-note--warn">
+                  <t t-out="icon('history', 16)"/>
+                  <div t-esc="paidNote"/>
+                </div>
+              </section>
+
               <div class="pbu-note">
                 <t t-out="icon('undo', 16)"/>
                 <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.</div>
@@ -311,10 +402,10 @@
                 <t t-out="icon('back', 15)"/> Back
               </button>
               <button t-if="canWrite" type="button" class="pbim-btn primary"
-                      t-att-disabled="state.apply.busy or nameMissing or !applyCounts.changes"
+                      t-att-disabled="state.apply.busy or nameMissing or !applyCounts.changes or whenDateError or tooManyDates"
                       t-on-click="applyNow">
                 <span t-if="state.apply.busy" class="pbu-spin sm on-dark"/>
-                <t t-else="" t-out="icon('check', 15)"/>
+                <t t-else="" t-out="icon(applyIcon, 15)"/>
                 <t t-esc="applyLabel"/>
               </button>
             </div>
@@ -322,11 +413,13 @@
 
           <!-- ======================================================= DONE -->
           <section t-elif="state.view === 'done'" class="pbu-card pbu-flow pbu-done">
-            <span t-attf-class="pbu-done-ic pbu-ib pbu-ib--{{ state.done.pending ? 'info' : state.done.nothing ? 'muted' : 'ok' }}">
-              <t t-out="icon(state.done.pending ? 'clock' : state.done.nothing ? 'info' : 'checkCircle', 26)"/>
+            <span t-attf-class="pbu-done-ic pbu-ib pbu-ib--{{ state.done.pending ? 'info' : state.done.nothing ? 'muted' : doneOnlyLater ? 'pri' : 'ok' }}">
+              <t t-out="icon(state.done.pending ? 'clock' : state.done.nothing ? 'info' : doneOnlyLater ? 'calendarClock' : 'checkCircle', 26)"/>
             </span>
             <h1 class="pbu-h1" t-esc="doneTitle"/>
             <p class="pbu-lead" t-esc="doneLine"/>
+            <p t-if="doneWhenLine" class="pbu-when-sum"><t t-out="icon('calendarClock', 14)"/><span t-esc="doneWhenLine"/></p>
+            <p t-if="doneLaterNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="doneLaterNote"/></p>
             <p t-if="doneOffScheme" class="pbu-inline-note"><t t-out="icon('ban', 14)"/><span t-esc="doneOffScheme"/></p>
             <ol t-if="state.done.pending and state.done.route and state.done.route.length" class="pbu-route">
               <li t-foreach="state.done.route" t-as="step" t-key="step_index" t-attf-class="is-{{ stepTone(step) }}">
@@ -348,9 +441,9 @@
             </div>
             <div class="pbu-row">
               <button type="button" class="pbim-btn primary" t-on-click="close">Back to Updates</button>
-              <button t-if="!state.done.pending and state.done.batch_id" type="button" class="pbim-btn ghost"
+              <button t-if="!state.done.pending and state.done.batch_id and state.done.written" type="button" class="pbim-btn ghost"
                       t-on-click="undoDone">
-                <t t-out="icon('undo', 15)"/> Undo this update
+                <t t-out="icon('undo', 15)"/> <t t-esc="undoDoneLabel"/>
               </button>
             </div>
           </section>
@@ -452,9 +545,10 @@
       <div class="pbu-toolbar">
         <div class="pbu-filters" role="group" aria-label="Show">
           <button t-foreach="filters" t-as="f" t-key="f.key" type="button"
-                  t-att-class="{ 'is-quiet': f.quiet }"
+                  t-att-class="{ 'is-quiet': f.quiet, 'is-later': f.when === 'later', 'is-past': f.when === 'past' }"
                   t-att-aria-pressed="rv.filter === f.key ? 'true' : 'false'"
                   t-on-click="() => this.setFilter(f.key)">
+            <t t-if="f.when" t-out="icon(f.when === 'later' ? 'calendarClock' : 'history', 12)"/>
             <t t-esc="f.label"/> <span class="pbu-count-pill" t-esc="grouped(f.count)"/>
           </button>
         </div>
@@ -469,10 +563,11 @@
       </div>
 
       <div class="pbu-scroll pbu-grid-wrap">
-        <table class="pbu-grid">
+        <table class="pbu-grid" t-att-class="{ 'has-starts': showStarts }">
           <thead>
             <tr>
               <th class="pbu-who" scope="col">Person</th>
+              <th t-if="showStarts" class="pbu-starts" scope="col">Starts</th>
               <th t-foreach="columns" t-as="col" t-key="col.field_id" scope="col">
                 <span t-esc="col.label"/>
                 <small t-if="col.head and col.head !== col.label" t-esc="col.head"/>
@@ -495,6 +590,12 @@
                     <t t-else="">No pay scheme yet</t>
                   </span>
                 </th>
+                <td t-if="showStarts" class="pbu-starts">
+                  <t t-set="st" t-value="startCell(row)"/>
+                  <span t-attf-class="pbu-when pbu-when--{{ st.kind }}" t-att-title="st.title">
+                    <t t-if="st.icon" t-out="icon(st.icon, 13)"/><t t-esc="st.label"/>
+                  </span>
+                </td>
                 <td t-foreach="columns" t-as="col" t-key="col.field_id"
                     t-att-class="cellClass(row, col)" t-att-title="cellTitle(row, col)"
                     t-att-tabindex="isActionable(row, col) ? '0' : undefined"
@@ -533,8 +634,8 @@
                 </td>
               </tr>
               <tr t-if="rowOpen(row)" class="pbu-fixrow">
-                <td t-att-colspan="columns.length + 1">
-                  <UpdFixRow cell="fixFor(row)" colspan="columns.length + 1"
+                <td t-att-colspan="columns.length + (showStarts ? 2 : 1)">
+                  <UpdFixRow cell="fixFor(row)" colspan="columns.length + (showStarts ? 2 : 1)"
                              label="fixLabel()" person="row.name" canWrite="props.canWrite"
                              onCheck="(value) => this.checkValue(row, value)"
                              onLeave="() => this.leaveOut(row)"
@@ -544,7 +645,7 @@
               </tr>
             </t>
             <tr t-if="!pageRows.length">
-              <td t-att-colspan="columns.length + 1" class="pbu-empty-row">No rows in this view. Pick another filter above.</td>
+              <td t-att-colspan="columns.length + (showStarts ? 2 : 1)" class="pbu-empty-row">No rows in this view. Pick another filter above.</td>
             </tr>
           </tbody>
         </table>
@@ -580,12 +681,14 @@
         <p class="pbu-fix-why" t-esc="sentence"/>
       </div>
       <div class="pbu-fix-act">
-        <input t-ref="input" type="text" class="pbu-input" t-model="state.draft"
-               placeholder="Type a different value" aria-label="Type a different value"/>
-        <button type="button" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.busy" t-on-click="check">
-          <span t-if="state.busy" class="pbu-spin sm on-dark"/>
-          Check this value
-        </button>
+        <t t-if="!cell.date_refused">
+          <input t-ref="input" type="text" class="pbu-input" t-model="state.draft"
+                 placeholder="Type a different value" aria-label="Type a different value"/>
+          <button type="button" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.busy" t-on-click="check">
+            <span t-if="state.busy" class="pbu-spin sm on-dark"/>
+            Check this value
+          </button>
+        </t>
         <button t-if="kind !== 'left'" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="props.onLeave">Leave this one out</button>
         <button t-else="" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="props.onRestore">Bring it back</button>
         <button type="button" class="pbu-x" t-on-click="props.onClose" title="Close (Esc)" aria-label="Close">

@@ -51,6 +51,70 @@ export function plural(count, one, many) {
     return count === 1 ? one : many.replace("%s", grouped(count));
 }
 
+// ---------------------------------------------------------------------------
+//  UPDATES P2c — when a row's changes start
+// ---------------------------------------------------------------------------
+/** "1 Dec 2026" in the reader's language, from `YYYY-MM-DD`. */
+export function dayLabel(iso) {
+    if (!iso) { return ""; }
+    const day = luxon.DateTime.fromISO(iso);
+    return day.isValid ? day.toFormat("d LLL yyyy") : iso;
+}
+
+/** The catalogue groups a future date holds back by default. */
+export const DATED_GROUPS = ["contract", "component"];
+
+/**
+ * A row's start: its own date from the file, else the file's default, else
+ * today. `{date, kind, error}` — `kind` is today · past · future · error.
+ */
+export function rowStart(rv, row) {
+    const own = row.start || {};
+    // A row whose own date cannot be read: its dated values are refused (the
+    // server's rule), and what is left of it takes the default, like any row
+    // without a date of its own. `error` says so for the Starts cell.
+    const mine = own.error ? "" : own.date;
+    const date = mine || rv.defaultStart || "";
+    const error = own.error || "";
+    if (!date || date === rv.today) { return { date: "", kind: "today", own: !!mine, error }; }
+    return { date, kind: date < rv.today ? "past" : "future", own: !!mine, error };
+}
+
+/** Does this review show the "Starts" column? */
+export function showsStarts(rv) {
+    return !!(rv.dated || rv.defaultStart);
+}
+
+/**
+ * Where each value Apply would send lands: `{now, later: {date: n},
+ * past: {date: n}, dates}` — the server's own grouping
+ * (`pb.updates.desk._split_by_start`), counted on screen for the summary.
+ */
+export function startBuckets(rv, scope = "pay") {
+    const out = { now: 0, later: {}, past: {}, dates: new Set() };
+    const groups = Object.fromEntries((rv.columns || []).map((c) => [c.field_id, c.group]));
+    for (const row of rv.rows || []) {
+        const start = rowStart(rv, row);
+        for (const [fieldId, cell] of Object.entries(row.cells || {})) {
+            if (cellKind(cell) !== "change") { continue; }
+            if (start.kind === "future") {
+                if (scope !== "all" && !DATED_GROUPS.includes(groups[fieldId])) {
+                    out.now += 1;
+                    continue;
+                }
+                out.later[start.date] = (out.later[start.date] || 0) + 1;
+                out.dates.add(start.date);
+            } else if (start.kind === "past") {
+                out.past[start.date] = (out.past[start.date] || 0) + 1;
+                out.dates.add(start.date);
+            } else {
+                out.now += 1;
+            }
+        }
+    }
+    return out;
+}
+
 /** What a cell will do: change · fix · left · same · dup · off · blank.
  *  `off` is a pay item that is not in the person's pay scheme: greyed, never
  *  sent, never a problem (UPDATES P2b). */
@@ -75,9 +139,14 @@ export function cellKind(cell) {
 export function reviewCounts(rv) {
     const out = { changes: 0, people: 0, cells: 0, rowsOpen: 0, attention: 0,
                   leftOut: 0, offScheme: 0, cleared: 0,
-                  rows: { all: 0, chg: 0, att: 0, same: 0, off: 0 } };
+                  rows: { all: 0, chg: 0, att: 0, same: 0, off: 0, later: 0, past: 0 } };
     const people = new Set();
     for (const row of rv.rows || []) {
+        if (showsStarts(rv)) {
+            const kind = rowStart(rv, row).kind;
+            if (kind === "future") { out.rows.later += 1; }
+            if (kind === "past") { out.rows.past += 1; }
+        }
         let hasChange = false;
         let hasFix = false;
         let hasOff = false;
@@ -133,13 +202,18 @@ export function cellFromItem(item, value) {
     };
 }
 
-/** The changes Apply sends: every cell the desk said yes to, not left out. */
+/** The changes Apply sends: every cell the desk said yes to, not left out.
+ *  A row with its own start date (from the file) sends it with each value;
+ *  the rest take the default the person picks on the Apply step. */
 export function changesToSend(rv) {
     const out = [];
     for (const row of rv.rows || []) {
+        const own = row.start && !row.start.error ? row.start.date : "";
         for (const [fieldId, cell] of Object.entries(row.cells || {})) {
             if (cellKind(cell) === "change") {
-                out.push({ emp_id: row.emp_id, field_id: fieldId, value: cell.value });
+                const change = { emp_id: row.emp_id, field_id: fieldId, value: cell.value };
+                if (own) { change.start = own; }
+                out.push(change);
             }
         }
     }
@@ -202,6 +276,9 @@ export class UpdFixRow extends Component {
     get sentence() {
         const cell = this.cell;
         if (this.state.msg) { return this.state.msg; }
+        if (this.kind === "fix" && cell.date_refused) {
+            return _t("%s The value itself is fine: correct the date in your file and upload it again, or leave this one out.", cell.why || "");
+        }
         if (this.kind === "fix") { return cell.why || _t("This value cannot be used as it is."); }
         if (this.kind === "left") { return _t("You chose to leave this value out. It stays as it is now."); }
         if (cell.cleared) {
@@ -382,7 +459,30 @@ export class UpdReview extends Component {
             // Counted in VALUES, never red: it is not something to fix.
             out.push({ key: "off", label: _t("Not in their pay scheme"), count: this.counts.offScheme, quiet: true });
         }
+        // UPDATES P2c — rows by when they start (rows, not values).
+        if (c.later) { out.push({ key: "later", label: _t("Starts later"), count: c.later, when: "later" }); }
+        if (c.past) { out.push({ key: "past", label: _t("Dated in the past"), count: c.past, when: "past" }); }
         return out;
+    }
+
+    // ------------------------------------------------------------- start dates
+    get showStarts() { return showsStarts(this.rv); }
+
+    /** The "Starts" cell of a row: what it says, its icon, tone and tooltip. */
+    startCell(row) {
+        const s = rowStart(this.rv, row);
+        if (s.error) {
+            return { kind: "error", label: _t("Not a date"), icon: "alert", title: s.error };
+        }
+        if (s.kind === "past") {
+            return { kind: "past", label: dayLabel(s.date), icon: "history",
+                     title: _t("Recorded as starting on %s. Pay runs already finished are not recalculated.", dayLabel(s.date)) };
+        }
+        if (s.kind === "future") {
+            return { kind: "future", label: dayLabel(s.date), icon: "calendarClock",
+                     title: _t("Scheduled: written on %s, not before.", dayLabel(s.date)) };
+        }
+        return { kind: "today", label: _t("Today"), icon: "", title: _t("Changes as soon as it is applied.") };
     }
 
     // ------------------------------------------------------------- pay schemes
@@ -439,6 +539,10 @@ export class UpdReview extends Component {
         const rows = this.rv.scheme === null || this.rv.scheme === undefined
             ? this.rv.rows : this.rv.rows.filter((row) => this.inScheme(row));
         if (f === "all") { return rows; }
+        if (f === "later" || f === "past") {
+            const want = f === "later" ? "future" : "past";
+            return rows.filter((row) => rowStart(this.rv, row).kind === want);
+        }
         return rows.filter((row) => {
             const k = this.rowClass(row);
             if (f === "chg") { return k.change; }
@@ -565,6 +669,10 @@ export class UpdReview extends Component {
     /** Ask the desk about one typed value; the cell takes its verdict. */
     async checkValue(row, value) {
         const fieldId = this.rv.fix.fieldId;
+        if (row.cells[fieldId] && row.cells[fieldId].date_refused) {
+            // The VALUE is not the problem: this row's start date is.
+            return { ok: false, why: row.cells[fieldId].why };
+        }
         const res = await this.props.recheck([{ emp_id: row.emp_id, field_id: fieldId, value }]);
         const item = (res.items || []).find((i) => i.field_id === fieldId) || (res.items || [])[0];
         if (!item) { return { ok: false, why: _t("This value could not be checked. Try again.") }; }
@@ -621,9 +729,17 @@ export class UpdReview extends Component {
             emp_id: person.id, field_id: fieldId, value }));
         const res = changes.length ? await this.props.recheck(changes) : { items: [] };
         const cells = {};
+        const groups = Object.fromEntries(this.rv.columns.map((c) => [c.field_id, c.group]));
+        const badDate = u.start && u.start.error;
         for (const change of changes) {
             const item = (res.items || []).find((i) => i.field_id === change.field_id) || null;
             const text = change.value === null || change.value === undefined ? "" : String(change.value);
+            if (badDate && DATED_GROUPS.includes(groups[change.field_id])) {
+                // UPDATES P2c: the row's start date cannot be read.
+                cells[change.field_id] = { status: "refused", date_refused: true, old: "",
+                                           new: text, value: change.value, why: u.start.error };
+                continue;
+            }
             cells[change.field_id] = item
                 ? cellFromItem(item, change.value)
                 : { status: "refused", old: "", new: text, value: change.value,
@@ -634,7 +750,7 @@ export class UpdReview extends Component {
         const row = { key: `u${u.row}`, row: u.row, emp_id: person.id, name: name || "",
                       code: rest || "", department: "", twice: false, bound: true, cells,
                       scheme: scheme.scheme || "", scheme_ids: scheme.scheme_ids || [],
-                      no_scheme: !!scheme.no_scheme };
+                      no_scheme: !!scheme.no_scheme, start: u.start || undefined };
         const at = this.rv.rows.findIndex((r) => r.row > u.row);
         if (at === -1) { this.rv.rows.push(row); } else { this.rv.rows.splice(at, 0, row); }
         u.bound = true;

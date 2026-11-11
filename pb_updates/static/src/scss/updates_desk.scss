@@ -550,6 +550,102 @@ $pbu-who-w: 210px;
     .pbu-apply-off { grid-column: 1 / -1; margin: 0; }
     .pbu-select optgroup.pbu-divider { color: #94A3B8; font-style: normal; }
 
+    // ------------------------------------------------------------ start dates (P2c)
+    //  Indigo = waits for its day. Amber = recorded in the past (a record,
+    //  nothing recalculated). Muted = today. Rose only for a date that
+    //  cannot be read.
+    .pbu-kind.pbu-kind--when { color: var(--pbim-primary); }
+
+    // The review's "Starts" column, pinned beside the person.
+    $pbu-starts-w: 124px;
+    .pbu-grid.has-starts {
+        thead th.pbu-who, tbody th.pbu-who { width: $pbu-who-w; min-width: $pbu-who-w; max-width: $pbu-who-w; }
+        th.pbu-starts, td.pbu-starts {
+            // The theme sizes cells border-box: the person column is exactly
+            // $pbu-who-w wide, padding and border included.
+            position: sticky; left: $pbu-who-w; z-index: 1;
+            width: $pbu-starts-w; min-width: $pbu-starts-w; max-width: $pbu-starts-w;
+            border-right: 1px solid var(--pbim-line);
+        }
+        td.pbu-starts { background: var(--pbim-surface); }
+        thead th.pbu-starts { z-index: 3; }
+    }
+    .pbu-when {
+        display: inline-flex; gap: 5px; align-items: center; font-size: 12.5px; font-weight: 700;
+        white-space: nowrap; font-variant-numeric: tabular-nums;
+        svg { flex: none; }
+        &.pbu-when--today { color: #94A3B8; font-weight: 600; }
+        &.pbu-when--past { color: #B45309; cursor: help; }
+        &.pbu-when--future { color: var(--pbim-primary); cursor: help; }
+        &.pbu-when--error { color: var(--pbim-rose); cursor: help; }
+    }
+    .pbu-filters button.is-later, .pbu-filters button.is-past {
+        display: inline-flex; gap: 5px; align-items: center;
+        svg { flex: none; }
+    }
+    .pbu-filters button.is-later { color: var(--pbim-primary); }
+    .pbu-filters button.is-past { color: #B45309; }
+    .pbu-filters button.is-past[aria-pressed="true"] { background: var(--pbim-amber-soft); color: #B45309; }
+
+    // The Apply step's "When do these changes start?" card.
+    .pbu-when-card {
+        grid-column: 1 / -1; display: flex; flex-direction: column; gap: 12px;
+        border: 1px solid var(--pbim-line); border-radius: 14px; padding: 14px 16px;
+        background: var(--pbim-surface); animation: pbu-in .2s ease-out;
+    }
+    .pbu-when-head { display: flex; gap: 12px; align-items: flex-start; }
+    .pbu-when-pick { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .pbu-seg {
+        display: inline-flex; padding: 3px; border-radius: 11px; background: var(--pbim-line-2);
+        button {
+            border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 700;
+            color: var(--pbim-muted); padding: 7px 14px; border-radius: 8px; cursor: pointer;
+            display: inline-flex; gap: 6px; align-items: center;
+            transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+            &[aria-checked="true"] { background: var(--pbim-surface); color: var(--pbim-primary);
+                                     box-shadow: 0 1px 2px rgba(30, 27, 46, .12); }
+        }
+    }
+    .pbu-date { width: 170px; animation: pbu-open .16s ease-out; }
+    .pbu-hold {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px;
+        animation: pbu-open .18s ease-out;
+        label {
+            display: flex; gap: 10px; align-items: flex-start; margin: 0; cursor: pointer;
+            border: 1px solid var(--pbim-line); border-radius: 12px; padding: 10px 12px;
+            transition: border-color .15s ease, background .15s ease;
+            input { margin-top: 3px; accent-color: var(--pbim-primary); }
+            b { display: block; font-size: 13px; color: var(--pbim-ink); }
+            small { display: block; font-size: 12px; color: var(--pbim-muted); margin-top: 2px; }
+            &.is-on { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        }
+    }
+    .pbu-when-sum {
+        display: flex; gap: 7px; align-items: flex-start; margin: 0;
+        font-size: 13px; font-weight: 700; color: var(--pbim-ink); line-height: 1.5;
+        svg { flex: none; margin-top: 3px; color: var(--pbim-primary); }
+    }
+
+    // Home — "Coming up": a small calendar leaf per scheduled change.
+    .pbu-coming .pbu-h2 { display: inline-flex; gap: 8px; align-items: center; svg { color: var(--pbim-primary); } }
+    .pbu-cal { list-style: none; margin: 0; padding: 0; }
+    .pbu-cal-row {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+        padding: 13px 22px; border-top: 1px solid var(--pbim-line); animation: pbu-in .2s ease-out;
+    }
+    .pbu-cal-day {
+        width: 52px; flex: none; border-radius: 12px; overflow: hidden; text-align: center;
+        border: 1px solid var(--pbim-primary-light, #C9C2EC); background: var(--pbim-surface);
+        small { display: block; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+        small:first-child { background: var(--pbim-primary); color: #fff; padding: 2px 0; }
+        small:last-child { color: var(--pbim-muted); padding-bottom: 3px; letter-spacing: 0; }
+        b { display: block; font-size: 20px; font-weight: 800; line-height: 1.1; color: var(--pbim-ink); padding-top: 2px; }
+    }
+    .pbu-cal-when {
+        display: inline-flex; gap: 5px; align-items: center; font-size: 12px; font-weight: 700;
+        color: var(--pbim-primary); svg { flex: none; }
+    }
+
     // ------------------------------------------------------------ narrow
     @media (max-width: 720px) {
         padding: 14px 12px 32px;

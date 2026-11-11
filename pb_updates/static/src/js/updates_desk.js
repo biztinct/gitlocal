@@ -35,10 +35,17 @@ import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { grouped } from "@pb_records/js/records_review";
 import {
     UpdReview, icon, plural, reviewCounts, changesToSend, PAGE_ROWS,
+    dayLabel, rowStart, startBuckets,
 } from "@pb_updates/js/updates_review";
 
 const MODEL = "pb.updates.desk";
 const STEPS = ["start", "match", "review", "apply"];
+/** UPDATES P2c — the "Goes to" target of a start-date column. */
+const WHEN = "when:start";
+/** A start date can be at most this many days back or ahead. */
+const REACH_DAYS = 366;
+/** At most this many different start dates in one update. */
+const MAX_DATES = 6;
 /** The default name: "November 2026 update", the month in the reader's language. */
 export function defaultName() {
     return _t("%s update", luxon.DateTime.now().toFormat("LLLL yyyy"));
@@ -89,7 +96,7 @@ export class PbUpdatesDesk extends Component {
             view: "home",
             loading: true,
             error: "",
-            home: { can_write: false, can_export: false, people_count: 0, topics: [], history: [] },
+            home: { can_write: false, can_export: false, people_count: 0, topics: [], history: [], coming_up: [], today: "" },
             historyAll: false,
             historyTotal: 0,
             picked: {},
@@ -99,8 +106,13 @@ export class PbUpdatesDesk extends Component {
             matchError: "",
             rv: null,
             apply: { name: "", busy: false, error: "", touched: false },
+            // UPDATES P2c — when the changes start: today, or a picked date
+            // (the default for rows without their own); what waits for a
+            // future date; and the "already paid" count for a past one.
+            when: { mode: "today", date: "", scope: "pay", paid: 0, paidKey: "" },
             done: null,
             undoing: 0,
+            starting: 0,
         });
         onWillStart(() => this.loadHome());
     }
@@ -132,10 +144,13 @@ export class PbUpdatesDesk extends Component {
     }
 
     async loadHistory() {
-        const res = await this.orm.call(MODEL, "get_history", [], {
-            limit: this.state.historyAll ? 200 : 8 });
+        const [res, coming] = await Promise.all([
+            this.orm.call(MODEL, "get_history", [], { limit: this.state.historyAll ? 200 : 8 }),
+            this.orm.call(MODEL, "get_coming_up", []),
+        ]);
         this.state.home.history = res.batches || [];
         this.state.historyTotal = res.total || 0;
+        this.state.home.coming_up = coming.items || [];
     }
 
     async showAllHistory() {
@@ -155,11 +170,128 @@ export class PbUpdatesDesk extends Component {
     }
 
     historyTone(h) {
-        return { applied: "ok", pending: "info", undone: "muted", rejected: "err", returned: "warn" }[h.state] || "muted";
+        return { applied: "ok", pending: "info", undone: "muted", rejected: "err", returned: "warn",
+                 scheduled: "pri", mixed: "pri", cancelled: "muted" }[h.state] || "muted";
     }
 
     historyIcon(h) {
-        return { applied: "check", pending: "clock", undone: "undo", rejected: "xCircle", returned: "rotate" }[h.state] || "info";
+        return { applied: "check", pending: "clock", undone: "undo", rejected: "xCircle", returned: "rotate",
+                 scheduled: "calendarClock", mixed: "calendarClock", cancelled: "ban" }[h.state] || "info";
+    }
+
+    /** The chip's words — the new states in the reader's own date form. */
+    historyLabel(h) {
+        if (h.state === "scheduled" && h.state_date) { return _t("Scheduled for %s", dayLabel(h.state_date)); }
+        if (h.state === "mixed" && h.state_date) { return _t("Part applied, part scheduled for %s", dayLabel(h.state_date)); }
+        if (h.state === "cancelled") { return _t("Cancelled"); }
+        return h.state_label;
+    }
+
+    // ------------------------------------------------------------ Coming up
+    get comingUp() { return this.state.home.coming_up || []; }
+
+    comingLine(c) {
+        const bits = [
+            _t("%(values)s for %(people)s", {
+                values: plural(c.values, _t("1 value"), _t("%s values")),
+                people: plural(c.people, _t("1 person"), _t("%s people")) }),
+        ];
+        if (c.user) { bits.push(_t("by %s", c.user)); }
+        return bits.join(" · ");
+    }
+
+    comingDay(c) {
+        const day = luxon.DateTime.fromISO(c.date);
+        return day.isValid ? { d: day.toFormat("d"), m: day.toFormat("LLL"), y: day.toFormat("yyyy") } : { d: "", m: "", y: "" };
+    }
+
+    comingWhen(c) {
+        const days = this.daysFromToday(c.date);
+        if (days <= 0) { return _t("Starts within the hour"); }
+        if (days === 1) { return _t("Starts tomorrow"); }
+        return _t("Starts in %s days", grouped(days));
+    }
+
+    daysFromToday(iso) {
+        const today = luxon.DateTime.fromISO(this.state.home.today || luxon.DateTime.now().toISODate());
+        const day = luxon.DateTime.fromISO(iso);
+        return day.isValid && today.isValid ? Math.round(day.diff(today, "days").days) : 0;
+    }
+
+    startNow(c) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Start “%s” now?", c.name),
+            body: _t("%(values)s for %(people)s: written today instead of on %(date)s, and recorded as starting today. You can undo it afterwards from Past updates.", {
+                values: plural(c.values, _t("1 value"), _t("%s values")),
+                people: plural(c.people, _t("1 person"), _t("%s people")),
+                date: dayLabel(c.date) }),
+            confirmLabel: _t("Start now"),
+            cancelLabel: _t("Not yet"),
+            confirm: async () => {
+                this.state.starting = c.apply_id;
+                try {
+                    const res = await this.orm.call(MODEL, "start_now", [], { apply_id: c.apply_id });
+                    if (res.ok) {
+                        this.notif.add(_t("“%(name)s” has started. %(back)s", {
+                            name: c.name,
+                            back: plural(res.written, _t("1 value was changed."), _t("%s values were changed.")) }),
+                            { type: "success" });
+                    } else {
+                        this.notif.add(res.msg, { type: "warning" });
+                    }
+                    await this.loadHistory();
+                } catch (e) {
+                    this.notif.add(e.data?.message || _t("The update could not be started. Nothing has changed."), { type: "danger" });
+                } finally {
+                    this.state.starting = 0;
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
+    /** Cancel what has not been written: one scheduled part, or the whole
+     *  waiting part of a named update. */
+    cancelParts({ applyId = 0, batchId = 0, name = "", values = 0, date = "", pending = false }) {
+        const what = plural(values, _t("1 value"), _t("%s values"));
+        const body = pending
+            ? _t("The approval request is withdrawn and the %s waiting in it are never written. Nothing has been changed, so nothing needs putting back.", what)
+            : _t("The %(what)s scheduled for %(date)s are never written. Nothing has been changed yet, so nothing needs putting back. To do it later, upload the file again.", {
+                what, date: dayLabel(date) });
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Cancel “%s”?", name),
+            body,
+            confirmLabel: pending ? _t("Cancel and withdraw") : _t("Cancel the scheduled change"),
+            cancelLabel: _t("Keep it"),
+            confirm: async () => {
+                try {
+                    const res = await this.orm.call(MODEL, "cancel", [], { batch_id: batchId, apply_id: applyId });
+                    this.notif.add(res.ok
+                        ? _t("“%(name)s”: %(what)s cancelled before anything was changed.", {
+                            name, what: plural(res.values, _t("1 value"), _t("%s values")) })
+                        : res.msg, { type: res.ok ? "success" : "warning" });
+                    await this.loadHistory();
+                } catch (e) {
+                    this.notif.add(e.data?.message || _t("The update could not be cancelled. Nothing has changed."), { type: "danger" });
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
+    cancelComing(c) {
+        this.cancelParts({ applyId: c.apply_id, name: c.name, values: c.values, date: c.date });
+    }
+
+    cancelBatch(h) {
+        const pending = h.state === "pending";
+        const values = h.open_values || (h.scheduled || []).reduce((n, s) => n + s.values, 0);
+        const date = (h.scheduled || [])[0] ? h.scheduled[0].date : "";
+        this.cancelParts({ batchId: h.id, name: h.name, values, date, pending });
+    }
+
+    cancelLabel(h) {
+        return h.state === "pending" ? _t("Withdraw") : _t("Cancel the scheduled part");
     }
 
     historyLine(h) {
@@ -177,15 +309,46 @@ export class PbUpdatesDesk extends Component {
         if (h.state === "pending") {
             return h.with_whom ? _t("Waiting for approval with %s.", h.with_whom) : _t("Waiting for approval.");
         }
+        if (h.state === "scheduled" || h.state === "mixed") {
+            const bits = [];
+            if (h.state === "mixed" && h.applied_values) {
+                bits.push(plural(h.applied_values, _t("1 value was changed when it was applied."), _t("%s values were changed when it was applied.")));
+            }
+            for (const s of h.scheduled || []) {
+                bits.push(s.values === 1
+                    ? _t("1 value starts on %s.", dayLabel(s.date))
+                    : _t("%(n)s values start on %(date)s.", { n: grouped(s.values), date: dayLabel(s.date) }));
+            }
+            return bits.join(" ");
+        }
+        if (h.state === "cancelled") {
+            return h.cancelled_by
+                ? _t("Cancelled on %(when)s by %(who)s. Nothing was changed.", { when: whenLabel(h.cancelled_date), who: h.cancelled_by })
+                : _t("Cancelled. Nothing was changed.");
+        }
+        if (h.state === "returned" && h.state_reason) {
+            return h.state_reason;
+        }
         if (h.state === "undone") {
             return h.undone_by
                 ? _t("Put back on %(when)s by %(who)s.", { when: whenLabel(h.undone_date), who: h.undone_by })
                 : _t("Put back on %s.", whenLabel(h.undone_date));
         }
         const bits = [];
+        for (const r of h.recorded || []) {
+            bits.push(r.values === 1
+                ? _t("1 value is recorded as starting %s.", dayLabel(r.date))
+                : _t("%(n)s values are recorded as starting %(date)s.", { n: grouped(r.values), date: dayLabel(r.date) }));
+        }
         const left = (h.values_refused || 0);
         if (left) { bits.push(plural(left, _t("1 value from the file was left out."), _t("%s values from the file were left out."))); }
         if (h.values_off_scheme) { bits.push(offSchemeLine(h.values_off_scheme)); }
+        if (h.started_early) {
+            bits.push(plural(h.started_early, _t("1 value was started early, before its date."), _t("%s values were started early, before their date.")));
+        }
+        if (h.cancelled_values) {
+            bits.push(plural(h.cancelled_values, _t("1 value was cancelled before it was changed."), _t("%s values were cancelled before they were changed.")));
+        }
         return bits.join(" ");
     }
 
@@ -220,6 +383,7 @@ export class PbUpdatesDesk extends Component {
         this.state.rv = null;
         this.state.done = null;
         Object.assign(this.state.apply, { name: "", busy: false, error: "", touched: false });
+        Object.assign(this.state.when, { mode: "today", date: "", scope: "pay", paid: 0, paidKey: "" });
     }
 
     async close() {
@@ -401,8 +565,12 @@ export class PbUpdatesDesk extends Component {
         ];
     }
 
+    /** UPDATES P2c — the start-date destination, first in "Goes to". */
+    get whenOption() { return { value: WHEN, label: _t("Start date for this row") }; }
+
     get fieldLabels() {
         const out = {};
+        out[WHEN] = this.whenOption.label;
         for (const o of this.identityOptions) { out[o.value] = o.label; }
         for (const t of (this.state.match ? this.state.match.fields : [])) {
             for (const f of t.fields) { out[f.id] = f.label; }
@@ -530,6 +698,7 @@ export class PbUpdatesDesk extends Component {
         const t = col.target || "";
         if (!t || t === "ignore") { return { label: "", tone: "none", icon: "" }; }
         if (t.startsWith("identity:")) { return { label: _t("Finds the person"), tone: "key", icon: "link" }; }
+        if (t === WHEN) { return { label: _t("When it starts"), tone: "when", icon: "calendarClock" }; }
         const group = this.fieldGroups[t];
         return {
             employee: { label: _t("About the person"), tone: "person", icon: "user" },
@@ -566,7 +735,8 @@ export class PbUpdatesDesk extends Component {
             placed: placed.length,
             guesses: cols.filter((c) => c.how === "guess").length,
             identity: placed.filter((c) => c.target.startsWith("identity:")).length,
-            values: placed.filter((c) => !c.target.startsWith("identity:")).length,
+            values: placed.filter((c) => !c.target.startsWith("identity:") && c.target !== WHEN).length,
+            dated: placed.some((c) => c.target === WHEN),
         };
     }
 
@@ -661,6 +831,11 @@ export class PbUpdatesDesk extends Component {
                 pay_items: !!res.pay_items,
                 schemes: res.schemes || [],
                 no_scheme: res.no_scheme || 0,
+                // UPDATES P2c — the file's start-date column, the company's
+                // today, and the default picked on the Apply step.
+                dated: !!res.dated,
+                today: res.today || this.state.home.today || "",
+                defaultStart: this.defaultStart,
                 scheme: null,
                 filter: rows.length > 300 ? "chg" : "all",
                 allCols: false,
@@ -704,6 +879,134 @@ export class PbUpdatesDesk extends Component {
         if (!a.touched) { a.name = defaultName(); }
         a.error = "";
         this.go("apply");
+        this.refreshPaid();
+    }
+
+    // =================================================================
+    //  Apply — when do these changes start? (UPDATES P2c)
+    // =================================================================
+    get todayIso() {
+        return (this.state.rv && this.state.rv.today) || this.state.home.today || luxon.DateTime.now().toISODate();
+    }
+
+    get whenBounds() {
+        const today = luxon.DateTime.fromISO(this.todayIso);
+        return { min: today.minus({ days: REACH_DAYS }).toISODate(),
+                 max: today.plus({ days: REACH_DAYS }).toISODate() };
+    }
+
+    /** The default start for rows without their own date ("" = today). */
+    get defaultStart() {
+        const w = this.state.when;
+        if (w.mode !== "date" || !w.date || w.date === this.todayIso) { return ""; }
+        const b = this.whenBounds;
+        return w.date < b.min || w.date > b.max ? "" : w.date;
+    }
+
+    get whenDateError() {
+        const w = this.state.when;
+        if (w.mode !== "date" || !w.date) { return ""; }
+        const b = this.whenBounds;
+        if (w.date < b.min || w.date > b.max) {
+            return _t("Pick a date up to a year back or a year ahead.");
+        }
+        return "";
+    }
+
+    syncDefault() {
+        if (this.state.rv) { this.state.rv.defaultStart = this.defaultStart; }
+        this.refreshPaid();
+    }
+
+    setWhenMode(mode) {
+        this.state.when.mode = mode;
+        if (mode === "date" && !this.state.when.date) {
+            this.state.when.date = luxon.DateTime.fromISO(this.todayIso).plus({ months: 1 }).startOf("month").toISODate();
+        }
+        this.syncDefault();
+    }
+
+    onWhenDate(ev) {
+        this.state.when.date = ev.target.value || "";
+        this.syncDefault();
+    }
+
+    setScope(scope) { this.state.when.scope = scope; }
+
+    /** Every row-date and default-date bucket, held as the person chose. */
+    get buckets() { return startBuckets(this.state.rv || { rows: [] }, this.state.when.scope); }
+
+    /** Is a future date in play at all (whatever is held back)? */
+    get futureInPlay() {
+        return Object.keys(startBuckets(this.state.rv || { rows: [] }, "all").later).length > 0;
+    }
+
+    get pastInPlay() { return Object.keys(this.buckets.past).length > 0; }
+
+    get laterCount() { return Object.values(this.buckets.later).reduce((n, v) => n + v, 0); }
+
+    get nowCount() {
+        return this.buckets.now + Object.values(this.buckets.past).reduce((n, v) => n + v, 0);
+    }
+
+    get tooManyDates() { return this.buckets.dates.size > MAX_DATES; }
+
+    /** "38 values change today · 12 are scheduled for 1 Dec 2026 · 4 are
+     *  recorded as starting 1 Oct 2026" — the server's own grouping. */
+    get whenSummary() {
+        const b = this.buckets;
+        const bits = [];
+        if (b.now) {
+            bits.push(plural(b.now, _t("1 value changes today"), _t("%s values change today")));
+        }
+        for (const day of Object.keys(b.later).sort()) {
+            bits.push(b.later[day] === 1
+                ? _t("1 is scheduled for %s", dayLabel(day))
+                : _t("%(n)s are scheduled for %(date)s", { n: grouped(b.later[day]), date: dayLabel(day) }));
+        }
+        for (const day of Object.keys(b.past).sort()) {
+            bits.push(b.past[day] === 1
+                ? _t("1 is recorded as starting %s", dayLabel(day))
+                : _t("%(n)s are recorded as starting %(date)s", { n: grouped(b.past[day]), date: dayLabel(day) }));
+        }
+        return bits.join(" · ");
+    }
+
+    get tooManyDatesLine() {
+        return _t("This update has %(n)s different start dates. Split it into files of at most %(max)s.", {
+            n: grouped(this.buckets.dates.size), max: MAX_DATES });
+    }
+
+    get paidNote() {
+        const n = this.state.when.paid;
+        if (!n || !this.pastInPlay) { return ""; }
+        return n === 1
+            ? _t("1 of these people has already been paid for a period after this date. Finished pay runs are not recalculated, and back pay is not added automatically.")
+            : _t("%s of these people have already been paid for a period after this date. Finished pay runs are not recalculated, and back pay is not added automatically.", grouped(n));
+    }
+
+    /** One grouped question to the server: who already has a finished
+     *  payslip ending on or after their past start date. */
+    async refreshPaid() {
+        const rv = this.state.rv;
+        if (!rv) { return; }
+        const people = {};
+        for (const row of rv.rows || []) {
+            const s = rowStart(rv, row);
+            if (s.kind !== "past") { continue; }
+            if (!Object.values(row.cells || {}).some((c) => c && c.status === "ok" && !c.left)) { continue; }
+            if (!people[row.emp_id] || s.date < people[row.emp_id]) { people[row.emp_id] = s.date; }
+        }
+        const key = JSON.stringify(people);
+        if (key === this.state.when.paidKey) { return; }
+        this.state.when.paidKey = key;
+        if (!Object.keys(people).length) { this.state.when.paid = 0; return; }
+        try {
+            const res = await this.orm.silent.call(MODEL, "paid_since", [], { people });
+            if (this.state.when.paidKey === key) { this.state.when.paid = res.count || 0; }
+        } catch {
+            // a note, never a gate
+        }
     }
 
     // =================================================================
@@ -713,10 +1016,17 @@ export class PbUpdatesDesk extends Component {
 
     get applyLabel() {
         const n = this.applyCounts.changes;
-        return this.state.apply.busy
-            ? plural(n, _t("Applying 1 change…"), _t("Applying %s changes…"))
-            : plural(n, _t("Apply 1 change"), _t("Apply %s changes"));
+        const later = this.laterCount;
+        const now = this.nowCount;
+        if (this.state.apply.busy) {
+            return plural(n, _t("Applying 1 change…"), _t("Applying %s changes…"));
+        }
+        if (later && now) { return plural(n, _t("Apply and schedule 1 change"), _t("Apply and schedule %s changes")); }
+        if (later) { return plural(n, _t("Schedule 1 change"), _t("Schedule %s changes")); }
+        return plural(n, _t("Apply 1 change"), _t("Apply %s changes"));
     }
+
+    get applyIcon() { return this.laterCount && !this.nowCount ? "calendarClock" : "check"; }
 
     onName(ev) {
         this.state.apply.name = ev.target.value;
@@ -735,6 +1045,10 @@ export class PbUpdatesDesk extends Component {
             a.error = _t("Give this update a name so you can find it later in Past updates.");
             return;
         }
+        if (this.whenDateError || this.tooManyDates) {
+            a.error = this.whenDateError || this.tooManyDatesLine;
+            return;
+        }
         const rv = this.state.rv;
         const counts = this.applyCounts;
         a.busy = true;
@@ -747,6 +1061,8 @@ export class PbUpdatesDesk extends Component {
                 changes: changesToSend(rv),
                 stats: { rows: rv.stats.rows, unmatched: counts.rowsOpen + rv.unmatched.filter((u) => u.skipped).length,
                          left_out: counts.leftOut, off_scheme: counts.offScheme },
+                start_date: this.defaultStart || false,
+                hold_scope: this.state.when.scope,
             });
             if (!answer.ok) {
                 a.error = answer.msg;
@@ -764,18 +1080,64 @@ export class PbUpdatesDesk extends Component {
     // =================================================================
     //  Done
     // =================================================================
+    /** UPDATES P2c — the parts of a dated update (none for an undated one). */
+    get doneParts() { return (this.state.done && this.state.done.parts) || []; }
+
+    get doneScheduled() { return this.doneParts.filter((p) => p.scheduled); }
+
+    get doneOnlyLater() {
+        const d = this.state.done;
+        return !!(d && !d.pending && !d.written && this.doneScheduled.length);
+    }
+
     get doneTitle() {
         const d = this.state.done;
         if (d.nothing) { return _t("Nothing needed changing"); }
+        if (d.pending && this.doneParts.some((p) => !p.pending)) { return _t("Sent, part of it for approval"); }
         if (d.pending) { return _t("Sent for approval"); }
+        if (this.doneOnlyLater) {
+            return _t("Scheduled for %s", dayLabel(this.doneScheduled[0].date));
+        }
         return _t("%(changes)s in for %(people)s", {
             changes: plural(d.written, _t("1 change is"), _t("%s changes are")),
             people: plural(d.people, _t("1 person"), _t("%s people")) });
     }
 
+    /** "12 values changed today · 30 are scheduled for 1 Dec 2026" */
+    get doneWhenLine() {
+        const bits = [];
+        for (const p of this.doneParts) {
+            if (p.pending) {
+                bits.push(p.date
+                    ? _t("%(n)s waiting for approval, then starting %(date)s", { n: grouped(p.values), date: dayLabel(p.date) })
+                    : plural(p.values, _t("1 waiting for approval"), _t("%s waiting for approval")));
+            } else if (p.scheduled) {
+                bits.push(p.values === 1
+                    ? _t("1 value is scheduled for %s", dayLabel(p.date))
+                    : _t("%(n)s values are scheduled for %(date)s", { n: grouped(p.values), date: dayLabel(p.date) }));
+            } else if (p.kind === "past") {
+                bits.push(p.written === 1
+                    ? _t("1 value changed, recorded as starting %s", dayLabel(p.date))
+                    : _t("%(n)s values changed, recorded as starting %(date)s", { n: grouped(p.written), date: dayLabel(p.date) }));
+            } else {
+                bits.push(plural(p.written, _t("1 value changed today"), _t("%s values changed today")));
+            }
+        }
+        return bits.length > 1 || this.doneScheduled.length || this.doneParts.some((p) => p.kind === "past")
+            ? bits.join(" · ") : "";
+    }
+
+    get doneLaterNote() {
+        if (!this.doneScheduled.length) { return ""; }
+        return _t("A scheduled change is written on its day by itself. Until then you will find it under Coming up, where you can start it now or cancel it.");
+    }
+
     get doneLine() {
         const d = this.state.done;
         if (d.nothing) { return d.msg; }
+        if (d.pending && this.doneParts.some((p) => !p.pending)) {
+            return _t("What is waiting for approval changes nothing until it is approved. Each part is listed below.");
+        }
         if (d.pending) {
             const what = plural(this.applyCounts.changes, _t("1 change"), _t("%s changes"));
             return d.with_whom
@@ -819,18 +1181,25 @@ export class PbUpdatesDesk extends Component {
     async undoDone() {
         const d = this.state.done;
         if (!d || !d.batch_id) { return; }
-        await this.undoBatch(d.batch_id, d.batch_name || this.state.apply.name, true);
+        await this.undoBatch(d.batch_id, d.batch_name || this.state.apply.name, true,
+                             this.doneScheduled.length > 0);
+    }
+
+    get undoDoneLabel() {
+        return this.doneScheduled.length ? _t("Undo what was applied") : _t("Undo this update");
     }
 
     // =================================================================
     //  Undo (home and done)
     // =================================================================
-    undoBatch(batchId, name, thenHome = false) {
+    undoBatch(batchId, name, thenHome = false, mixed = false) {
         return new Promise((resolve) => {
             this.dialog.add(ConfirmationDialog, {
                 title: _t("Undo “%s”?", name),
-                body: _t("Every value this update changed goes back to what it was before. A value someone has changed since is left as it is."),
-                confirmLabel: _t("Undo the update"),
+                body: mixed
+                    ? _t("Every value this update has already changed goes back to what it was before. A value someone has changed since is left as it is. The scheduled part is not touched: cancel it separately.")
+                    : _t("Every value this update changed goes back to what it was before. A value someone has changed since is left as it is."),
+                confirmLabel: mixed ? _t("Undo what was applied") : _t("Undo the update"),
                 cancelLabel: _t("Keep it"),
                 confirm: async () => {
                     this.state.undoing = batchId;
