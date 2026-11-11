@@ -20,7 +20,7 @@ const stamp=Date.now().toString(36);
  page.on('console',m=>{if(m.type()==='error'&&!/favicon|\/web\/image\//.test(m.location()?.url||''))errors.push(m.text());});
  const auth=await (await context.request.post(base+'/web/session/authenticate',{data:{jsonrpc:'2.0',method:'call',params:{db,login,password}}})).json();
  assert.ok(auth.result?.uid,'Login failed');
- const open=async q=>{await page.goto(base+'/pb_lifecycle/static/workflow/index.html?v=wf2-p3a&'+(q||''));await page.locator('.topbar').waitFor();};
+ const open=async q=>{await page.goto(base+'/pb_lifecycle/static/workflow/index.html?v=wf2-p3a2&'+(q||''));await page.locator('.topbar').waitFor();};
  const rpc=(m,a)=>page.evaluate(([m,a])=>rpc(m,a),[m,a]);
  const button=(name,scope=page)=>scope.getByRole('button',{name,exact:true});
  const sheet=page.locator('#sheet');

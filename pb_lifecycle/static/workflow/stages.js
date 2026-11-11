@@ -250,6 +250,27 @@ async function moveSection(from,to){
  refreshWork();renderSheet();
 }
 
+/* After Undo/Redo: a move may have made a stage of yours count as another
+   stage of the record. If the restored order no longer fits the company list,
+   put the stage back after the record's stage it now follows (the reverse of
+   the move), so one Undo really undoes one move. */
+async function realignStages(){
+ if(!S.w||!isRecordFlow())return;
+ const sections=S.w.definition.stages,cur=currentOrder(),pos=b=>cur.indexOf(b.kind==='core'?String(b.value):b.id);
+ const bound=sections.filter(x=>x.bind&&catIndex(x.bind)>=0).map(x=>pos(x.bind));
+ if(!bound.some((p,i)=>i&&p<bound[i-1]))return;
+ const anchors={},said=[];
+ sections.forEach((x,i)=>{
+  if(x.bind?.kind!=='yours')return;
+  let near=null;for(let k=i-1;k>=0;k--)if(sections[k].bind?.kind==='core'){near=String(sections[k].bind.value);break;}
+  const row=catRow(x.bind);
+  if(near!==null&&row&&String(row.anchor)!==near){anchors[x.bind.id]=near;said.push(`“${row.name}” counts as ${catalogue().find(c=>c.id==='core:'+near)?.name||near} again.`);}
+ });
+ if(!said.length)return;
+ try{await syncOrder(sections,anchors);notify(said.join(' '));loadExisting();}
+ catch(e){notify(e.message,true);}
+}
+
 /* ------------------------------------------------------------- the sheet */
 function openSheet(at=null){
  const sheet=$('#sheet');
