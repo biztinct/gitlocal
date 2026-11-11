@@ -287,7 +287,7 @@ class WorkflowStrip(models.AbstractModel):
                                   lambda stage, waiting: self._may_move(model, record, stage, waiting))
         live = runs.sorted(lambda r: (r.state not in LIVE, -r.id))
         rows = [self._strip_row(r, viewer, full) for r in live]
-        mine = [r for r in rows if r['task_id']]
+        mine = [r for r in rows if r['task_id'] or r.get('own')]   # own: WF2 P2b (D24)
         if not full:
             if not mine and not any(m['allowed'] for m in moves):
                 return None

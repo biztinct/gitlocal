@@ -302,6 +302,26 @@ class WorkflowReach(models.AbstractModel):
                 card['open'] = {'type': 'record', 'model': run.source_model, 'id': run.source_id}
         return card
 
+    def _strip_row(self, run, viewer, full, home=False):
+        """The record's strip says what is really waiting: an address, not
+        the candidate's own step, and no "Do it now" into a page that would
+        refuse it (the record itself is where the address goes)."""
+        row = super()._strip_row(run, viewer, full, home)
+        step = run.sudo().step_ids.filtered(lambda s: s.state == 'waiting' and self._awaiting(s))[:1]
+        if not step:
+            return row
+        name = self._awaiting(step).get('name') or ''
+        mine = step.assignee_id.id == viewer.id or (
+            step.team_user_ids and not step.assignee_id and viewer in step.team_user_ids)
+        row['task_id'] = None
+        row.pop('task_name', None)
+        if mine:
+            row['own'] = True
+        row['sentence'] = (_('Waiting for you: add an email for %s', name) if mine else
+                           _('Waiting for %(who)s to add an email for %(name)s',
+                             who=step.assignee_id.name or _('someone'), name=name))
+        return row
+
     @api.model
     def answer(self, task_id, values=None, complete=True):
         step = self.env['pb.workflow.step'].sudo().browse(int(task_id or 0)).exists()

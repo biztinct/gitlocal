@@ -3099,6 +3099,10 @@ class TestWorkflowStudio(TransactionCase):
         self.assertEqual(len(cards), 1)
         self.assertEqual(cards[0]['title'], 'Add an email for WF2 P2b no email')
         self.assertEqual(cards[0]['open'], {'type': 'record', 'model': 'hr.applicant', 'id': quiet.id})
+        # the record's own strip says the same, with no "Do it now"
+        row = self.strip(recruiter, 'hr.applicant', quiet.id)['workflows'][0]
+        self.assertEqual(row['sentence'], 'Waiting for you: add an email for WF2 P2b no email')
+        self.assertFalse(row['task_id'])
         # it cannot be "answered" on the candidate's behalf
         with self.assertRaises(UserError):
             self.service.with_user(recruiter).answer(step.id, {})
