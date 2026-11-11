@@ -42,6 +42,10 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | D19 | Late task, person has no manager | **A named Approvals role per workflow** ("If a task is late and there is no manager, tell…", in workflow Settings); falls back to the publisher when none is picked. (owner, 11 Nov) |
 | D20 | Dock | **One line with the task count** that opens the Approvals inbox; no new dock cards. (owner, 11 Nov) |
 | D21 | Main-loop calls on P4a overlaps 1 and 3 | Checklist links move onto the Studio link page only when checklists move into Studio (R6). Workflow notices on the employee home stay in their own small "For you" card. |
+| D22 | Status words (P4b §6) | **Apply all four**: expense approved stays "Approved — being paid" for employees; expense refused = "Refused — your turn" on both employee pages; time off to approve = "Waiting for approval" everywhere; time off second round = "Second approval" for staff. Labels only. (owner, 11 Nov) |
+| D23 | Claim page: "With X" box vs strip (P4b overlap 1) | **Strip only when it adds something**: shown only when a workflow step or a user-made stage is involved; a plain claim waiting for approval shows the existing box alone. (owner, 11 Nov) |
+| D24 | Step for "The candidate" with no email | **Stop and tell the recruiter**: the step waits and the recruiter gets a task in the Approvals inbox ("Add an email for this candidate"); once added the link is sent. (owner, 11 Nov) |
+| D25 | Main-loop calls on P4b | A task owner without "view progress" still sees the stage track of that record (kept). Dock wording under the task line is fixed in P2b. |
 
 ## 2. Phases
 
@@ -50,11 +54,11 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | P0 | Inventory of what every module already does (stages, approvals, messages, automations) | brief in agent prompt → `EXISTING_BEHAVIOUR_INVENTORY.md` | done 11 Nov (uncommitted; 17 overlaps listed) |
 | P1 | Backend unblock: system-level execution, approval step follows instead of forcing, coexistence, one timing rule, error codes | `WF2_P1_HANDOVER.md` → `WF2_P1_REPORT.md` | done (see report) |
 | P2 | Module contract (stages, transitions, existing effects, subject person) for Expense, Leave, Hiring + workflow stage layer + "already happens" data and double-up warnings + sudima brought up to date | `WF2_P2_HANDOVER.md` → `WF2_P2_REPORT.md` | done (see report) |
-| P2b | Message clean-up in the areas themselves (D5 approvers told once, D6 requester gaps incl. employee-home logins, D7 new-joiner split by date) — after P4 | — | — |
+| P2b | Message clean-up in the areas themselves (D5 approvers told once, D6 requester gaps incl. employee-home logins, D7 new-joiner split by date) — after P4 | `WF2_P2B_HANDOVER.md` | running |
 | P3a | Screens on the existing workbench: "When…" sentence, By stage view, one Stages screen, stage headers + "Gets here when" + "already happens" on every view incl. the canvas, record progress strip with user-made stages, touch drag | `WF2_P3A_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.12.0, 80 tests, U1–U16) — `WF2_P3A_REPORT.md` |
 | P3b | Task buttons; step types move to a stage, send back, update the record, create a letter/announcement, in-app notice, confirm, start another workflow, stop; manager's manager; wait time-out choice; duplicate; Hiring `stage_add` (D10); contracts for Other request and Pay run. "Repeat for each line" deferred. | `WF2_P3B_HANDOVER.md` | done 11 Nov (19.0.1.13.0, 94 tests, U1–U10) — `WF2_P3B_REPORT.md` |
 | P4a | Workflow tasks in the Approvals inbox (D1); approval reminders, pass-up and backups reused for waiting tasks and stage targets (D2, D13); team pools; employee-home logins and no-login links take part (R5, D16); candidate tag instead of stars (D14); Hiring set-up "Add a stage" / "Remove" (D17) | `WF2_P4A_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.14.0, 111 tests) — `WF2_P4A_REPORT.md` |
-| P4b | Progress on the record's own screen and the employee home, "Move to…" there, status words compared (D12), where time goes, "The candidate" (D18), late-with-no-manager role (D19), dock count (D20) | `WF2_P4B_HANDOVER.md` | done 11 Nov (19.0.1.15.0, 122 tests) — `WF2_P4B_REPORT.md` |
+| P4b | Progress on the record's own screen and the employee home, "Move to…" there, status words compared (D12), where time goes, "The candidate" (D18), late-with-no-manager role (D19), dock count (D20) | `WF2_P4B_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.15.0, 122 tests) — `WF2_P4B_REPORT.md` |
 | P5 | Vietnamese and Indonesian, schedule trigger, consolidation, closeout | — | — |
 
 ## 3. Standing engineering conventions
