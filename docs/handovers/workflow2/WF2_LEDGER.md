@@ -38,6 +38,10 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | D15 | One-person in-app notice vs announcement (P3b overlap 2) | **Keep both**: "Tell someone in the app" for one person, "Create something → An announcement" for a group. (owner, 11 Nov) |
 | D16 | Confirmation step (P3b overlap 3) | **Studio's "Ask someone to confirm" is the general one** (as D4 for forms); it gains a no-login link in P4. Running joining/leaving checklists keep their own until they move into Studio (R6). (owner, 11 Nov) |
 | D17 | Hiring set-up stages (P3b overlap 4) | **Hiring set-up gets "Add a stage" and "Remove"** for company-added stages (remove only when no candidate sits in it; the 17 built-in stages are never removable). One door (`stage_add` + a new `stage_remove`), two screens. (owner, 11 Nov) |
+| D18 | Candidate as a participant (P4a overlap 4) | **Add "The candidate" as a "Who does this?" choice on candidate workflows**; reached by email link. Small add-only Hiring contract addition (P4b). (owner, 11 Nov) |
+| D19 | Late task, person has no manager | **A named Approvals role per workflow** ("If a task is late and there is no manager, tell…", in workflow Settings); falls back to the publisher when none is picked. (owner, 11 Nov) |
+| D20 | Dock | **One line with the task count** that opens the Approvals inbox; no new dock cards. (owner, 11 Nov) |
+| D21 | Main-loop calls on P4a overlaps 1 and 3 | Checklist links move onto the Studio link page only when checklists move into Studio (R6). Workflow notices on the employee home stay in their own small "For you" card. |
 
 ## 2. Phases
 
@@ -49,8 +53,8 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | P2b | Message clean-up in the areas themselves (D5 approvers told once, D6 requester gaps incl. employee-home logins, D7 new-joiner split by date) — after P4 | — | — |
 | P3a | Screens on the existing workbench: "When…" sentence, By stage view, one Stages screen, stage headers + "Gets here when" + "already happens" on every view incl. the canvas, record progress strip with user-made stages, touch drag | `WF2_P3A_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.12.0, 80 tests, U1–U16) — `WF2_P3A_REPORT.md` |
 | P3b | Task buttons; step types move to a stage, send back, update the record, create a letter/announcement, in-app notice, confirm, start another workflow, stop; manager's manager; wait time-out choice; duplicate; Hiring `stage_add` (D10); contracts for Other request and Pay run. "Repeat for each line" deferred. | `WF2_P3B_HANDOVER.md` | done 11 Nov (19.0.1.13.0, 94 tests, U1–U10) — `WF2_P3B_REPORT.md` |
-| P4a | Workflow tasks in the Approvals inbox (D1); approval reminders, pass-up and backups reused for waiting tasks and stage targets (D2, D13); team pools; employee-home logins and no-login links take part (R5, D16); candidate tag instead of stars (D14); Hiring set-up "Add a stage" / "Remove" (D17) | `WF2_P4A_HANDOVER.md` | done 11 Nov (19.0.1.14.0, 111 tests, U1–U10) — `WF2_P4A_REPORT.md` |
-| P4b | Progress on the record's own screen and the employee home, "Move to…" there, one shared status word list per area (D12), where time goes | — | — |
+| P4a | Workflow tasks in the Approvals inbox (D1); approval reminders, pass-up and backups reused for waiting tasks and stage targets (D2, D13); team pools; employee-home logins and no-login links take part (R5, D16); candidate tag instead of stars (D14); Hiring set-up "Add a stage" / "Remove" (D17) | `WF2_P4A_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.14.0, 111 tests) — `WF2_P4A_REPORT.md` |
+| P4b | Progress on the record's own screen and the employee home, "Move to…" there, status words compared (D12), where time goes, "The candidate" (D18), late-with-no-manager role (D19), dock count (D20) | `WF2_P4B_HANDOVER.md` | running |
 | P5 | Vietnamese and Indonesian, schedule trigger, consolidation, closeout | — | — |
 
 ## 3. Standing engineering conventions
