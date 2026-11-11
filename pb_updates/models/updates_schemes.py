@@ -48,8 +48,11 @@ class PbUpdatesSchemes(models.AbstractModel):
         return out
 
     @api.model
-    def _people_schemes(self, emp_ids):
+    def _people_schemes(self, emp_ids, on_date=None):
         """`{emp_id: {'ids': {config_id}, 'name', 'via'}}`.
+
+        `on_date` (UPDATES P2d, optional): who pays them ON that day — the
+        pay month of a one-off sheet. Left out it is today, as before.
 
         A person can be paid under more than one scheme (a monthly one and an
         off-cycle one), so the map is asked about "any kind of run" AND once
@@ -66,7 +69,8 @@ class PbUpdatesSchemes(models.AbstractModel):
             [('active', '=', True)], ['cycle_type'])
         cycles = ['any'] + sorted({k for (k,) in kinds if k and k != 'any'})
         for cycle in cycles:
-            answers = Map.resolve_many(ids, cycle)
+            answers = Map.resolve_many(ids, cycle, on_date) if on_date \
+                else Map.resolve_many(ids, cycle)
             for emp_id, answer in (answers or {}).items():
                 person = out.get(emp_id)
                 config_id = (answer or {}).get('config_id') or 0

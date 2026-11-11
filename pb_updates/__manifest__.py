@@ -30,9 +30,17 @@ is held as "Scheduled" and written on the day, with "Start now" and "Cancel"
 on the Updates home. A manager or coach can be given by name, employee code
 or work email.
 
-UPDATES programme, phases 1-2c. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+Phase 2d: a second kind of sheet, "One-off pay items for a pay month" — a
+bonus, a one-time deduction, an overtime amount — entered any day before the
+pay run exists, approved like any records change, read by every kind of pay
+run (with or without a pay data file, and monthly-template runs; not runs from
+application data, which say so), paid once and released when the payslip or
+run is cancelled or deleted. When the pay data file carries a different
+amount for the same person, item and month, the pay run stops and asks.
+
+UPDATES programme, phases 1-2d. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -45,6 +53,11 @@ UPDATES programme, phases 1-2c. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
         # UPDATES P2b: each person's pay scheme comes from the scheme map
         # (`pb.scheme.map.resolve_many`). Installed on every live database.
         'pb_scheme_map',
+        # UPDATES P2d: one-off pay items are read by every kind of pay run —
+        # the Run Payroll screen (and its pay data files) and monthly
+        # templates. Installed on every live database.
+        'pb_payrun_wizard',
+        'pb_payroll_templates',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -57,6 +70,9 @@ UPDATES programme, phases 1-2c. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
             'pb_updates/static/src/js/updates_review.js',
             'pb_updates/static/src/js/updates_desk.js',
             'pb_updates/static/src/xml/updates_desk.xml',
+            # UPDATES P2d — one line and the D11 choice on the Run Payroll screen.
+            'pb_updates/static/src/js/payrun_oneoff.js',
+            'pb_updates/static/src/xml/payrun_oneoff.xml',
         ],
     },
     'installable': True,

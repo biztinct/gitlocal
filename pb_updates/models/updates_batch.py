@@ -75,6 +75,11 @@ class PbUpdatesLayout(models.Model):
     last_used = fields.Datetime(string='Last used', default=fields.Datetime.now)
     user_id = fields.Many2one('res.users', string='Last used by',
                               default=lambda self: self.env.user)
+    #: UPDATES P2d — a one-off sheet's matchings are kept apart from the
+    #: lasting-change ones: the same heading means a different destination.
+    kind = fields.Selection([('lasting', 'Lasting changes'),
+                             ('oneoff', 'One-off pay items')],
+                            string='Kind of sheet', default='lasting')
 
     _company_fingerprint_uniq = models.Constraint(
         'UNIQUE(company_id, fingerprint)',
@@ -89,16 +94,19 @@ class PbUpdatesLayout(models.Model):
         return data if isinstance(data, dict) else {}
 
     @api.model
-    def remember(self, headings_to_targets):
+    def remember(self, headings_to_targets, kind='lasting'):
         """Upsert this company's matching for one set of headings.
 
         `headings_to_targets` is `[(heading, target)]` in file order. The
         latest matching is the truth: the map is replaced, not merged, and the
-        use count goes up by one."""
+        use count goes up by one. `kind` (UPDATES P2d): a one-off sheet's
+        matching is its own, under its own fingerprint."""
         pairs = [(h, t) for h, t in headings_to_targets if _norm(h) and t]
         if not pairs:
             return self.browse()
         fingerprint = heading_fingerprint([h for h, _t in headings_to_targets])
+        if kind == 'oneoff':
+            fingerprint = 'oneoff:' + fingerprint
         company = self.env.company
         mapping = {_norm(h): t for h, t in pairs}
         layout = self.search([('company_id', '=', company.id),
@@ -111,7 +119,8 @@ class PbUpdatesLayout(models.Model):
             layout.write(vals)
             return layout
         vals.update({'company_id': company.id, 'fingerprint': fingerprint,
-                     'use_count': 1})
+                     'use_count': 1,
+                     'kind': 'oneoff' if kind == 'oneoff' else 'lasting'})
         return self.create(vals)
 
 

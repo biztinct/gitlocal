@@ -2645,3 +2645,1272 @@ msgid ""
 "What is waiting for approval changes nothing until it is approved. Each part"
 " is listed below."
 msgstr "Phần đang chờ phê duyệt sẽ không thay đổi gì cho đến khi được duyệt. Từng phần được liệt kê bên dưới."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(amounts)s for %(people)s"
+msgstr "%(amounts)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid ""
+"%(item)s for %(month)s is already in pay run %(run)s, so it is not paid "
+"again here."
+msgstr "%(item)s của %(month)s đã nằm trong kỳ tính lương %(run)s nên không được trả lại lần nữa ở đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "%(item)s for %(month)s is already in pay run %(run)s. Change it there."
+msgstr "%(item)s của %(month)s đã nằm trong kỳ tính lương %(run)s. Hãy thay đổi tại đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "%(item)s for %(name)s: %(amount)s is paid in pay run %(run)s."
+msgstr "%(item)s của %(name)s: %(amount)s được trả trong kỳ tính lương %(run)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid ""
+"%(item)s for %(name)s: %(updates)s from Updates, %(file)s in the pay data "
+"file. Choose which one to pay in this pay run."
+msgstr "%(item)s của %(name)s: %(updates)s từ Cập nhật, %(file)s trong tệp dữ liệu lương. Hãy chọn số tiền sẽ trả trong kỳ tính lương này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid ""
+"%(item)s for %(name)s: %(updates)s from Updates, %(other)s from the "
+"connected system. Remove one of them, then calculate again."
+msgstr "%(item)s của %(name)s: %(updates)s từ Cập nhật, %(other)s từ hệ thống được kết nối. Hãy bỏ một trong hai, rồi tính lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(month)s · pay run %(run)s"
+msgstr "%(month)s · kỳ tính lương %(run)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid ""
+"%(n)s one-off pay items from Updates are not included in a pay run from "
+"application data. A run with a pay data file, or without one, includes them."
+msgstr "%(n)s khoản lương một lần từ Cập nhật không được đưa vào kỳ tính lương từ dữ liệu ứng dụng. Kỳ tính lương có tệp dữ liệu lương, hoặc không có tệp, sẽ đưa chúng vào."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid ""
+"%(n)s one-off pay items from Updates will be included for %(people)s people "
+"(%(total)s)."
+msgstr "%(n)s khoản lương một lần từ Cập nhật sẽ được đưa vào cho %(people)s người (%(total)s)."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(n)s people already paid for %(month)s"
+msgstr "%(n)s người đã được trả lương cho %(month)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "%(product)s one-off pay items %(month)s.xlsx"
+msgstr "%(product)s khoản lương một lần %(month)s.xlsx"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "%(sentence)s Until then this payslip cannot be finished."
+msgstr "%(sentence)s Cho đến lúc đó, phiếu lương này không thể hoàn tất."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s are waiting for approval. %(pay)s"
+msgstr "%(what)s đang chờ phê duyệt. %(pay)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s are waiting with %(who)s. %(pay)s"
+msgstr "%(what)s đang chờ %(who)s. %(pay)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s for %(people)s are approved. %(pay)s"
+msgstr "%(what)s cho %(people)s đã được duyệt. %(pay)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"%(who)s is not in any pay scheme for %(month)s, so a one-off pay item cannot"
+" be paid to them."
+msgstr "%(who)s không thuộc chương trình lương nào trong %(month)s nên không thể trả khoản lương một lần cho người này."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s added to pay"
+msgstr "%s cộng vào lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s amounts were cancelled."
+msgstr "%s khoản tiền đã bị hủy."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "%s are already in a pay run and stay there."
+msgstr "%s khoản đã nằm trong một kỳ tính lương và được giữ nguyên ở đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s in a pay run"
+msgstr "%s khoản trong một kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid "%s more are waiting for a choice."
+msgstr "Còn %s khoản nữa đang chờ chọn."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s not used: already in a pay run"
+msgstr "%s khoản không được dùng: đã nằm trong một kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s one-off amounts"
+msgstr "%s khoản tiền một lần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s one-off pay items"
+msgstr "%s khoản lương một lần"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "%s one-off pay items cancelled before a pay run took them."
+msgstr "Đã hủy %s khoản lương một lần trước khi kỳ tính lương sử dụng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid ""
+"%s one-off pay items from Updates are not included in this kind of pay run. "
+"Run it with a pay data file, or without one, to include them."
+msgstr "%s khoản lương một lần từ Cập nhật không được đưa vào loại kỳ tính lương này. Hãy chạy với tệp dữ liệu lương, hoặc không có tệp, để đưa chúng vào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/payrun_oneoff.js:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s pay items have two amounts"
+msgstr "%s khoản lương có hai số tiền"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s taken from pay"
+msgstr "%s trừ vào lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "'%s' is not an amount. Type a number, like 1,500,000."
+msgstr "'%s' không phải là số tiền. Hãy nhập một con số, ví dụ 1,500,000."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 amount was cancelled."
+msgstr "1 khoản tiền đã bị hủy."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 in a pay run"
+msgstr "1 khoản trong một kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "1 is already in a pay run and stays there."
+msgstr "1 khoản đã nằm trong một kỳ tính lương và được giữ nguyên ở đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 not used: already in a pay run"
+msgstr "1 khoản không được dùng: đã nằm trong một kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 one-off amount"
+msgstr "1 khoản tiền một lần"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "1 one-off pay item cancelled before a pay run took it."
+msgstr "Đã hủy 1 khoản lương một lần trước khi kỳ tính lương sử dụng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid ""
+"1 one-off pay item from Updates is not included in a pay run from "
+"application data. A run with a pay data file, or without one, includes it."
+msgstr "1 khoản lương một lần từ Cập nhật không được đưa vào kỳ tính lương từ dữ liệu ứng dụng. Kỳ tính lương có tệp dữ liệu lương, hoặc không có tệp, sẽ đưa khoản này vào."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid ""
+"1 one-off pay item from Updates is not included in this kind of pay run. Run"
+" it with a pay data file, or without one, to include it."
+msgstr "1 khoản lương một lần từ Cập nhật không được đưa vào loại kỳ tính lương này. Hãy chạy với tệp dữ liệu lương, hoặc không có tệp, để đưa khoản này vào."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid "1 one-off pay item from Updates will be included (%s)."
+msgstr "1 khoản lương một lần từ Cập nhật sẽ được đưa vào (%s)."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 person already paid for %s"
+msgstr "1 người đã được trả lương cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"A blank cell changes nothing. Type amounts without a minus sign: each pay "
+"item already says whether it adds to pay or takes from pay. CLEAR takes back"
+" an amount waiting for that month."
+msgstr "Ô trống không thay đổi gì. Hãy nhập số tiền không có dấu trừ: mỗi khoản lương đã cho biết là cộng vào hay trừ vào lương. CLEAR rút lại số tiền đang chờ cho tháng đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"A bonus, a one-time deduction, an overtime amount. Paid once, in that "
+"month's pay run."
+msgstr "Một khoản thưởng, một khoản khấu trừ một lần, một khoản tiền làm thêm giờ. Trả một lần, trong kỳ tính lương của tháng đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"A one-off amount cannot be negative. %(item)s already %(way)s: type the "
+"amount without a minus sign."
+msgstr "Khoản tiền một lần không thể là số âm. %(item)s đã %(way)s: hãy nhập số tiền không có dấu trừ."
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_oneoff_amount_positive
+msgid "A one-off amount must be more than zero."
+msgstr "Khoản tiền một lần phải lớn hơn không."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "A pay run found two amounts for one pay item"
+msgstr "Một kỳ tính lương phát hiện hai số tiền cho một khoản lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__net_role__earning
+msgid "Adds to pay"
+msgstr "Cộng vào lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Already paid for %s"
+msgstr "Đã trả lương cho %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Already paid for %s; this will wait for another pay run in that month, or "
+"never be paid."
+msgstr "Đã trả lương cho %s; khoản này sẽ chờ một kỳ tính lương khác trong tháng đó, hoặc sẽ không bao giờ được trả."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__amount
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_file_amount
+msgid "Amount in the pay data file"
+msgstr "Số tiền trong tệp dữ liệu lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"An amount already in the sheet is waiting for that pay run. Change it to "
+"replace it, or type CLEAR to take it back. A blank cell changes nothing."
+msgstr "Số tiền đã có trong bảng đang chờ kỳ tính lương đó. Hãy sửa để thay thế, hoặc nhập CLEAR để rút lại. Ô trống không thay đổi gì."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__apply_id
+msgid "Approval proposal"
+msgstr "Đề xuất phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Approved, but it could not be made."
+msgstr "Đã duyệt, nhưng không thể thực hiện."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_history.py:0
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Approved, but it could not be made: %s"
+msgstr "Đã duyệt, nhưng không thể thực hiện: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Approved. Waits for the %s pay run."
+msgstr "Đã duyệt. Chờ kỳ tính lương %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancel them"
+msgstr "Hủy chúng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Cancelled before a pay run took it."
+msgstr "Đã hủy trước khi kỳ tính lương sử dụng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Cancelled before it was approved."
+msgstr "Đã hủy trước khi được duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Change job details, contracts, bank details and ongoing pay items for the "
+"whole team from one spreadsheet, any day of the month, and add one-off pay "
+"items like a bonus to a pay month. You see every change before it happens."
+msgstr "Thay đổi thông tin công việc, hợp đồng, thông tin ngân hàng và các khoản lương định kỳ cho cả nhóm từ một bảng tính, vào bất kỳ ngày nào trong tháng, và thêm các khoản lương một lần như tiền thưởng vào một tháng lương. Bạn xem trước mọi thay đổi trước khi chúng diễn ra."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Choosing which amount is paid needs the right to run payroll."
+msgstr "Muốn chọn số tiền được trả cần có quyền chạy tính lương."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_choice
+msgid "Chosen"
+msgstr "Đã chọn"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_at
+msgid "Chosen at"
+msgstr "Chọn lúc"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_by
+msgid "Chosen by"
+msgstr "Người chọn"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Chosen for pay run %(run)s: %(what)s (Updates %(upd)s, file %(file)s)."
+msgstr "Đã chọn cho kỳ tính lương %(run)s: %(what)s (Cập nhật %(upd)s, tệp %(file)s)."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_file_key
+msgid "Column in the pay data file"
+msgstr "Cột trong tệp dữ liệu lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+#: code:addons/pb_updates/models/updates_history.py:0
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Could not be made"
+msgstr "Không thể thực hiện"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Each amount is paid once, by the first pay run of %s for the person's pay "
+"scheme. If the pay data file of that run has a different amount, the run "
+"stops and asks which one to pay."
+msgstr "Mỗi khoản tiền được trả một lần, bởi kỳ tính lương đầu tiên của %s theo chương trình lương của người đó. Nếu tệp dữ liệu lương của kỳ đó có số tiền khác, kỳ tính lương sẽ dừng lại và hỏi nên trả số nào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Each paid once, in %s."
+msgstr "Mỗi khoản trả một lần, trong %s."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__net_role
+msgid "Effect on pay"
+msgstr "Ảnh hưởng đến lương"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Every amount in this sheet is paid once, in the %s pay run of the person's "
+"pay scheme."
+msgstr "Mọi số tiền trong bảng này được trả một lần, trong kỳ tính lương %s theo chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Every one-off amount in it that no pay run has taken yet is cancelled and "
+"will not be paid. Amounts already in a pay run stay there."
+msgstr "Mọi khoản tiền một lần trong đó mà chưa kỳ tính lương nào sử dụng sẽ bị hủy và không được trả. Các khoản đã nằm trong kỳ tính lương được giữ nguyên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "From Updates"
+msgstr "Từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Grey cells are pay items that are not in that person's pay scheme. Anything "
+"typed there is left out."
+msgstr "Ô màu xám là các khoản lương không có trong chương trình lương của người đó. Mọi thứ nhập vào đó sẽ bị bỏ qua."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Hide the list"
+msgstr "Ẩn danh sách"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__note
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Identity — used to match the row to a person. It is never imported."
+msgstr "Định danh — dùng để khớp dòng với một người. Không bao giờ được nhập vào."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__state__reserved
+msgid "In a pay run"
+msgstr "Trong một kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "In pay run %s"
+msgstr "Trong kỳ tính lương %s"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__reserved_slip_id
+msgid "In payslip"
+msgstr "Trong phiếu lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "In the pay data file"
+msgstr "Trong tệp dữ liệu lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "In this update"
+msgstr "Trong lần cập nhật này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Job details, contracts, bank details and ongoing pay items. They stay until "
+"changed again."
+msgstr "Thông tin công việc, hợp đồng, thông tin ngân hàng và các khoản lương định kỳ. Giữ nguyên cho đến khi được thay đổi lần nữa."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Keep them"
+msgstr "Giữ lại"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__kind
+msgid "Kind of sheet"
+msgstr "Loại bảng tính"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__kind
+msgid "Kind of update"
+msgstr "Loại cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_batch__kind__lasting
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_layout__kind__lasting
+msgid "Lasting changes"
+msgstr "Thay đổi lâu dài"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "None of your pay schemes has a one-off pay item yet"
+msgstr "Chưa có chương trình lương nào của bạn có khoản lương một lần"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"None of your pay schemes has a one-off pay item yet (an amount entered for "
+"one month, like a bonus). Add one to a pay scheme first."
+msgstr "Chưa có chương trình lương nào của bạn có khoản lương một lần (số tiền nhập cho một tháng, như tiền thưởng). Hãy thêm một khoản vào chương trình lương trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "None of your pay schemes has a one-off pay item yet."
+msgstr "Chưa có chương trình lương nào của bạn có khoản lương một lần."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid ""
+"Not paid: the pay data file's amount (%(file)s) was used instead in pay run "
+"%(run)s."
+msgstr "Không trả: số tiền trong tệp dữ liệu lương (%(file)s) đã được dùng thay thế trong kỳ tính lương %(run)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid ""
+"Not used: %(item)s for %(month)s is already in pay run %(run)s. Change it "
+"there."
+msgstr "Không được dùng: %(item)s của %(month)s đã nằm trong kỳ tính lương %(run)s. Hãy thay đổi tại đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Nothing here can be cancelled: a pay run has already taken it. Change it in "
+"that pay run."
+msgstr "Không có gì ở đây có thể hủy: một kỳ tính lương đã sử dụng nó. Hãy thay đổi trong kỳ tính lương đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Nothing was sent: every amount in this file is already waiting for %s, or "
+"could not be used."
+msgstr "Chưa gửi gì: mọi số tiền trong tệp này đã đang chờ cho %s, hoặc không thể sử dụng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/payrun_oneoff.js:0
+msgid "One pay item has two amounts"
+msgstr "Một khoản lương có hai số tiền"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"One row per person and one column per one-off pay item of their pay scheme. "
+"Type amounts without a minus sign: each item already says whether it adds to"
+" pay or takes from pay."
+msgstr "Mỗi người một dòng và mỗi khoản lương một lần trong chương trình lương của họ một cột. Hãy nhập số tiền không có dấu trừ: mỗi khoản đã cho biết là cộng vào hay trừ vào lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "One-off amounts"
+msgstr "Khoản tiền một lần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"One-off amounts approved for a pay month. Each is paid once, by the first "
+"pay run of that month for the person's pay scheme."
+msgstr "Các khoản tiền một lần đã duyệt cho một tháng lương. Mỗi khoản được trả một lần, bởi kỳ tính lương đầu tiên của tháng đó theo chương trình lương của người đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "One-off pay"
+msgstr "Lương một lần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "One-off pay for %s"
+msgstr "Lương một lần cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "One-off pay for %s."
+msgstr "Lương một lần cho %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "One-off pay for a month"
+msgstr "Lương một lần cho một tháng"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_oneoff
+msgid "One-off pay item for a pay month"
+msgstr "Khoản lương một lần cho một tháng lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__oneoff_ids
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__updates_oneoff
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__oneoff_ids
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_batch__kind__oneoff
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_layout__kind__oneoff
+msgid "One-off pay items"
+msgstr "Các khoản lương một lần"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"One-off pay items are cancelled, not undone: use Cancel. What a pay run has "
+"already taken stays in that pay run."
+msgstr "Khoản lương một lần được hủy chứ không hoàn tác: hãy dùng Hủy. Những gì kỳ tính lương đã sử dụng sẽ ở lại trong kỳ tính lương đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "One-off pay items for %s"
+msgstr "Khoản lương một lần cho %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "One-off pay items for a pay month"
+msgstr "Khoản lương một lần cho một tháng lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__state__paid
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Paid in pay run %s."
+msgstr "Đã trả trong kỳ tính lương %s."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__paid_slip_id
+msgid "Paid in payslip"
+msgstr "Đã trả trong phiếu lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Paid in the %s pay run"
+msgstr "Trả trong kỳ tính lương %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Paid once, in the %s pay run of each person's pay scheme. Amounts already "
+"waiting for that month are in the sheet."
+msgstr "Trả một lần, trong kỳ tính lương %s theo chương trình lương của từng người. Các số tiền đang chờ cho tháng đó đã có sẵn trong bảng."
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_batch_id
+msgid "Pay data file that had another amount"
+msgstr "Tệp dữ liệu lương có số tiền khác"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__label
+msgid "Pay item"
+msgstr "Khoản lương"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__code
+msgid "Pay item code"
+msgstr "Mã khoản lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__period_month
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__period_month
+msgid "Pay month"
+msgstr "Tháng lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Pay run %(run)s stopped: the pay data file says %(file)s."
+msgstr "Kỳ tính lương %(run)s đã dừng: tệp dữ liệu lương ghi %(file)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid ""
+"Pay run %s is already finished, so the choice cannot be used there. The one-"
+"off waits for the next pay run of that month."
+msgstr "Kỳ tính lương %s đã hoàn tất nên không thể dùng lựa chọn tại đó. Khoản lương một lần sẽ chờ kỳ tính lương tiếp theo của tháng đó."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__clash_run_id
+msgid "Pay run that found two amounts"
+msgstr "Kỳ tính lương phát hiện hai số tiền"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__config_id
+msgid "Pay scheme"
+msgstr "Chương trình lương"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__config_name
+msgid "Pay scheme name"
+msgstr "Tên chương trình lương"
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__action__set
+msgid "Pay this amount"
+msgstr "Trả số tiền này"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_payrun_wizard
+msgid "Payobook Run Payroll wizard orchestration"
+msgstr "Điều phối trình chạy tính lương Payobook"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_hr_payroll_import_batch
+msgid "Payroll Import Batch"
+msgstr "Lô nhập dữ liệu lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Payslip %s no longer uses it."
+msgstr "Phiếu lương %s không còn sử dụng khoản này."
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr "Các kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Pick a pay month from 2 months back to 12 months ahead. %s is outside that."
+msgstr "Hãy chọn một tháng lương từ 2 tháng trước đến 12 tháng tới. %s nằm ngoài khoảng đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Pick at least one column that goes to a one-off pay item."
+msgstr "Hãy chọn ít nhất một cột đưa vào một khoản lương một lần."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Pick one of the two amounts."
+msgstr "Hãy chọn một trong hai số tiền."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Pick the pay month these one-off pay items are for."
+msgstr "Hãy chọn tháng lương cho các khoản lương một lần này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Read me"
+msgstr "Đọc trước"
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__action__clear
+msgid "Remove"
+msgstr "Gỡ bỏ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__state__cleared
+msgid "Removed"
+msgstr "Đã gỡ bỏ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Removed the amount waiting for this month."
+msgstr "Đã gỡ bỏ số tiền đang chờ cho tháng này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__state__replaced
+msgid "Replaced by a later update"
+msgstr "Đã được thay bằng một lần cập nhật sau"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Replaced by “%s”."
+msgstr "Đã được thay bằng “%s”."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__replaces_id
+msgid "Replaces"
+msgstr "Thay thế cho"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_hr_payroll_preparation
+msgid "Saved payroll preparation"
+msgstr "Bảng chuẩn bị tính lương đã lưu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s one-off amounts"
+msgstr "Gửi %s khoản tiền một lần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 one-off amount"
+msgstr "Gửi 1 khoản tiền một lần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending %s one-off amounts…"
+msgstr "Đang gửi %s khoản tiền một lần…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending 1 one-off amount…"
+msgstr "Đang gửi 1 khoản tiền một lần…"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Sent back."
+msgstr "Đã trả lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Sent in “%s”."
+msgstr "Đã gửi trong “%s”."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Show the list"
+msgstr "Xem danh sách"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+msgid "Someone who runs payroll can choose."
+msgstr "Người chạy tính lương có thể chọn."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Taken back by “%s”."
+msgstr "Đã được rút lại bởi “%s”."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Taken into pay run %s."
+msgstr "Đã đưa vào kỳ tính lương %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__net_role__deduction
+msgid "Takes from pay"
+msgstr "Trừ vào lương"
+
+#. module: pb_updates
+#: model:ir.model.fields,help:pb_updates.field_pb_updates_oneoff__period_month
+msgid "The 1st of the month it is paid in."
+msgstr "Ngày 1 của tháng được trả."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__clash_choice__updates
+msgid "The Updates amount"
+msgstr "Số tiền từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/payrun_oneoff.js:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The choice could not be saved. Nothing has changed."
+msgstr "Không thể lưu lựa chọn. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__clash_choice__file
+msgid "The file's amount"
+msgstr "Số tiền trong tệp"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"There is nothing to send: no amount in this file would change anything."
+msgstr "Không có gì để gửi: không số tiền nào trong tệp này làm thay đổi điều gì."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "These will be included in the %s pay run."
+msgstr "Các khoản này sẽ được đưa vào kỳ tính lương %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "This change was cancelled, so nothing was written."
+msgstr "Thay đổi này đã bị hủy nên chưa có gì được ghi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid ""
+"This choice has already been made, or the pay run that asked it is gone."
+msgstr "Lựa chọn này đã được thực hiện, hoặc kỳ tính lương đã hỏi không còn nữa."
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_oneoff_live_unique
+msgid "This person already has this one-off pay item for that month."
+msgstr "Người này đã có khoản lương một lần này cho tháng đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This sheet sends %(amounts)s for %(people)s, paid in %(month)s."
+msgstr "Bảng này gửi %(amounts)s cho %(people)s, trả trong %(month)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"This sheet was made for %(sheet)s, so it is used for %(sheet)s, not "
+"%(picked)s."
+msgstr "Bảng này được tạo cho %(sheet)s nên sẽ dùng cho %(sheet)s, không phải %(picked)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "To take back the %s waiting for this month, type CLEAR."
+msgstr "Để rút lại %s đang chờ cho tháng này, hãy nhập CLEAR."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__state__rejected
+msgid "Turned down"
+msgstr "Đã từ chối"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Turned down."
+msgstr "Đã bị từ chối."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_payrun.py:0
+msgid "Two amounts for one pay item"
+msgstr "Hai số tiền cho một khoản lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "Two amounts: choose one"
+msgstr "Hai số tiền: hãy chọn một"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"Type amounts without a minus sign. Each pay item already says whether it "
+"adds to pay or takes from pay."
+msgstr "Hãy nhập số tiền không có dấu trừ. Mỗi khoản lương đã cho biết là cộng vào hay trừ vào lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Updates and the pay data file disagree. The pay run waits until you choose; "
+"the two are never added up."
+msgstr "Cập nhật và tệp dữ liệu lương không khớp nhau. Kỳ tính lương sẽ chờ cho đến khi bạn chọn; hai số tiền không bao giờ được cộng lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+msgid ""
+"Updates and the pay data file each give an amount for the same person and "
+"month. Choose which one is paid: that payslip is worked out again straight "
+"away. Nothing is paid twice and the two are never added up."
+msgstr "Cập nhật và tệp dữ liệu lương đều có một số tiền cho cùng một người và cùng một tháng. Hãy chọn số tiền được trả: phiếu lương đó sẽ được tính lại ngay. Không có gì được trả hai lần và hai số tiền không bao giờ được cộng lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Use the Updates amount"
+msgstr "Dùng số tiền từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Use the file's amount"
+msgstr "Dùng số tiền trong tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_oneoff__state__approved
+msgid "Waiting for a pay run"
+msgstr "Đang chờ kỳ tính lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "Waiting for a pay run again: %s"
+msgstr "Lại đang chờ kỳ tính lương: %s"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_oneoff__action
+msgid "What it does"
+msgstr "Tác dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What kind of update"
+msgstr "Loại cập nhật nào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"You can cancel these from the Updates home until a pay run has taken them. "
+"If your company asks for approval, no pay run reads them until they are "
+"approved."
+msgstr "Bạn có thể hủy các khoản này từ trang chính Cập nhật cho đến khi một kỳ tính lương sử dụng chúng. Nếu công ty bạn yêu cầu phê duyệt, không kỳ tính lương nào đọc chúng cho đến khi được duyệt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid ""
+"You can look through these amounts, but you do not have permission to change"
+" employee records. Ask an administrator for the HR or Payroll Officer role."
+msgstr "Bạn có thể xem các số tiền này, nhưng không có quyền sửa hồ sơ nhân viên. Hãy nhờ quản trị viên cấp vai trò Nhân sự hoặc Cán bộ tính lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "adds it to pay"
+msgstr "cộng vào lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_oneoff.xml:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "or"
+msgstr "hoặc"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "pay run %s is closed."
+msgstr "kỳ tính lương %s đã đóng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "pay run deleted."
+msgstr "kỳ tính lương đã bị xóa."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "payslip cancelled."
+msgstr "phiếu lương đã bị hủy."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "payslip deleted."
+msgstr "phiếu lương đã bị xóa."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff_desk.py:0
+msgid "takes it from pay"
+msgstr "trừ vào lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "the Updates amount"
+msgstr "số tiền từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "the file's amount"
+msgstr "số tiền trong tệp"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "%s amounts"
+msgstr "%s khoản tiền"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "1 amount"
+msgstr "1 khoản tiền"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Cancel it"
+msgstr "Hủy"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"It was approved but could not be made, so nothing has been changed. Once "
+"cancelled, the %s in it are never written."
+msgstr "Thay đổi đã được duyệt nhưng không thể thực hiện nên chưa có gì thay đổi. Sau khi hủy, %s trong đó sẽ không bao giờ được ghi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_oneoff.py:0
+msgid "One-off pay items for %(month)s · %(amounts)s"
+msgstr "Khoản lương một lần cho %(month)s · %(amounts)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "new"
+msgstr "mới"

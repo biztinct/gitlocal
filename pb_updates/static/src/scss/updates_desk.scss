@@ -646,6 +646,87 @@ $pbu-who-w: 210px;
         color: var(--pbim-primary); svg { flex: none; }
     }
 
+    // ------------------------------------------------------------ one-off pay (P2d)
+    .pbu-kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+    .pbu-kind-card {
+        display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 14px 16px;
+        border: 1px solid var(--pbim-line); border-radius: 14px; background: var(--pbim-surface);
+        font: inherit; color: inherit; cursor: pointer;
+        transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .15s ease;
+        &:hover:not([disabled]) { border-color: var(--pbim-primary); transform: translateY(-1px); }
+        &[aria-checked="true"] { border-color: var(--pbim-primary); background: var(--pbim-soft);
+                                 box-shadow: 0 0 0 3px var(--pbim-ring); }
+        &[disabled] { cursor: not-allowed; opacity: .7; }
+    }
+    .pbu-kind-t { display: flex; flex-direction: column; gap: 3px; min-width: 0;
+                  b { color: var(--pbim-ink); font-size: 14.5px; } }
+    .pbu-month {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+        padding: 12px 16px; border-radius: 12px; background: var(--pbim-soft);
+        border: 1px solid var(--pbim-line); animation: pbu-open .18s ease-out;
+        .pbu-label { margin: 0; }
+    }
+    .pbu-month-pick { width: auto; min-width: 220px; max-width: 320px; flex: 0 0 auto; font-weight: 700; }
+    .pbu-month-line { display: inline-flex; gap: 6px; align-items: center; margin: 0;
+                      svg { flex: none; color: var(--pbim-primary); } }
+    .pbu-tile--oneoff:hover { border-color: var(--pbim-primary); }
+
+    .pbu-totals, .pbu-oneoff-strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .pbu-oneoff-strip {
+        padding: 10px 14px; border-radius: 12px; background: var(--pbim-surface);
+        border: 1px solid var(--pbim-line);
+    }
+    .pbu-oneoff-month { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--pbim-ink);
+                        margin-right: auto; svg { color: var(--pbim-primary); } }
+    .pbu-total {
+        display: inline-flex; flex-direction: column; gap: 1px; padding: 6px 12px; border-radius: 10px;
+        min-width: 130px;
+        small { font-size: 11px; font-weight: 700; letter-spacing: .02em; color: var(--pbim-muted); }
+        b { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        &.is-earn { background: var(--pbim-green-soft); b { color: var(--pbim-green); } }
+        &.is-take { background: var(--pbim-slate-soft); b { color: var(--pbim-ink); } }
+    }
+    .pbu-coltag {
+        display: block; margin-top: 2px; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums;
+        &.is-earn { color: var(--pbim-green); }
+        &.is-take { color: var(--pbim-slate); }
+    }
+
+    // Home — "Waiting for a pay run"
+    .pbu-waiting .pbu-h2 { display: inline-flex; gap: 8px; align-items: center; svg { color: var(--pbim-primary); } }
+    .pbu-cal-day--month b { display: grid; place-items: center; padding: 3px 0 1px; color: var(--pbim-primary); }
+    .pbu-wait { list-style: none; }
+    .pbu-wait-money { font-size: 12.5px; font-weight: 700; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbu-wait-list { padding: 0 22px 14px 90px; animation: pbu-open .16s ease-out; }
+    .pbu-wait-t {
+        width: 100%; border-collapse: collapse; font-size: 13px;
+        th { text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+             color: var(--pbim-muted); padding: 6px 8px; border-bottom: 1px solid var(--pbim-line); }
+        td { padding: 7px 8px; border-bottom: 1px solid var(--pbim-line); color: var(--pbim-ink); }
+        .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    }
+    .pbu-wait-batches { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
+    .pbu-wait-b { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--pbim-muted);
+                  svg { color: var(--pbim-primary); } }
+
+    // D11 — two amounts for one pay item
+    .pbu-clash { margin: 0 22px 12px; border: 1px solid var(--pbim-amber); border-radius: 14px;
+                 background: var(--pbim-amber-soft); overflow: hidden; }
+    .pbu-clash-h { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px;
+                   b { display: block; color: var(--pbim-ink); } }
+    .pbu-clash-list { list-style: none; margin: 0; padding: 0; background: var(--pbim-surface); }
+    .pbu-clash-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px;
+                     border-top: 1px solid var(--pbim-line); }
+    .pbu-clash-amts { display: inline-flex; align-items: center; gap: 8px; }
+    .pbu-amt {
+        display: inline-flex; flex-direction: column; padding: 5px 10px; border-radius: 10px;
+        border: 1px solid var(--pbim-line); min-width: 120px;
+        small { font-size: 10.5px; font-weight: 700; color: var(--pbim-muted); }
+        b { font-size: 14px; font-weight: 800; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+        &.is-upd { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+    }
+    .pbu-amt-vs { font-size: 11px; font-weight: 800; color: var(--pbim-muted); text-transform: uppercase; }
+
     // ------------------------------------------------------------ narrow
     @media (max-width: 720px) {
         padding: 14px 12px 32px;
@@ -659,6 +740,8 @@ $pbu-who-w: 210px;
         .pbu-select { min-width: 170px; }
         .pbu-apply { grid-template-columns: minmax(0, 1fr); }
         .pbu-grid tbody th.pbu-who { min-width: 150px; }
+        .pbu-wait-list { padding: 0 14px 12px; }
+        .pbu-clash { margin: 0 12px 12px; }
     }
 }
 
@@ -675,3 +758,43 @@ $pbu-who-w: 210px;
 @media (prefers-reduced-motion: reduce) {
     .pbim.pbu-root, .pbim.pbu-root * { animation: none !important; transition: none !important; }
 }
+
+// =====================================================================
+//  UPDATES P2d — on the Run Payroll screen (pb_payrun_wizard), outside the
+//  Updates root: one line under the pay scheme, and the D11 choice on the
+//  review step. Same tokens as the wizard (indigo, amber for "choose").
+// =====================================================================
+.pbu-pw-line {
+    display: flex; gap: 7px; align-items: flex-start; margin: 8px 0 0;
+    font-size: 12.5px; font-weight: 600; line-height: 1.45; color: #3B3470;
+    padding: 8px 10px; border-radius: 10px; background: #F3F1FB; border: 1px solid #E2DDF5;
+    .pbu-pw-line__ic { flex: none; color: #5A4BB0; display: inline-flex; margin-top: 1px; }
+    &.is-application { background: #F6F7F9; border-color: #E4E7EC; color: #475467;
+                       .pbu-pw-line__ic { color: #667085; } }
+}
+.pbu-pw-clash {
+    margin: 0 0 14px; border: 1px solid #F2C46D; border-radius: 14px; background: #FFF8EB; overflow: hidden;
+    animation: pbu-in .2s ease-out;
+    h3 { margin: 0 0 2px; font-size: 15px; font-weight: 800; color: #1E1B2E; }
+    p { margin: 0; }
+}
+.pbu-pw-clash__h { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; }
+.pbu-pw-clash__ic { flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
+                    background: #FDEBC8; color: #B54708; }
+.pbu-pw-clash__row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px;
+    background: #fff; border-top: 1px solid #F3E3BF;
+}
+.pbu-pw-clash__who { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+                     b { color: #1E1B2E; } span { font-size: 12.5px; color: #667085; } }
+.pbu-pw-clash__amts { display: inline-flex; align-items: center; gap: 8px; }
+.pbu-pw-amt {
+    display: inline-flex; flex-direction: column; padding: 5px 10px; border-radius: 10px;
+    border: 1px solid #E4E7EC; min-width: 120px;
+    small { font-size: 10.5px; font-weight: 700; color: #667085; }
+    b { font-size: 14px; font-weight: 800; color: #1E1B2E; font-variant-numeric: tabular-nums; }
+    &.is-upd { border-color: #5A4BB0; background: #F3F1FB; }
+}
+.pbu-pw-amt__vs { font-size: 11px; font-weight: 800; color: #98A2B3; text-transform: uppercase; }
+.pbu-pw-clash__act { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+@media (prefers-reduced-motion: reduce) { .pbu-pw-clash { animation: none; } }

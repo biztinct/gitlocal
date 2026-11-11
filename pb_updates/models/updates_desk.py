@@ -370,8 +370,12 @@ class PbUpdatesDesk(models.AbstractModel):
         return best if best_ratio >= GUESS_RATIO else ''
 
     @api.model
-    def read_columns(self, file_b64='', filename=''):
+    def read_columns(self, file_b64='', filename='', kind='lasting', month=None):
         """What each column of the file is, and where it most likely goes.
+
+        UPDATES P2d: `kind='oneoff'` reads a sheet of one-off pay items for a
+        pay month (`updates_oneoff_desk.py`); the lasting-change reading below
+        is untouched.
 
         Placement, best first: the desk's own (a Payobook sheet's hidden ids,
         its identity headings, a heading equal to a field's name); then this
@@ -379,6 +383,8 @@ class PbUpdatesDesk(models.AbstractModel):
         any matching that knows the heading); then a careful guess. A card a
         memory or a guess points at that is no longer in the catalogue is
         dropped. The same field is never offered to two columns."""
+        if kind == 'oneoff':
+            return self._oneoff_read_columns(file_b64, filename, month)
         desk = self._gate()
         res, body = desk._import_columns(0, file_b64, filename)
         if not res.get('ok'):
@@ -392,7 +398,8 @@ class PbUpdatesDesk(models.AbstractModel):
         columns = res['columns']
         fingerprint = heading_fingerprint([c['head'] for c in columns])
         Layout = self.env['pb.updates.layout']
-        layouts = Layout.search([('company_id', '=', self.env.company.id)],
+        layouts = Layout.search([('company_id', '=', self.env.company.id),
+                                 ('kind', '!=', 'oneoff')],
                                 order='last_used desc, id desc', limit=50)
         exact = layouts.filtered(lambda l: l.fingerprint == fingerprint)[:1]
         maps = ([exact.get_map()] if exact else []) + \
@@ -521,14 +528,19 @@ class PbUpdatesDesk(models.AbstractModel):
     # Review
     # =================================================================
     @api.model
-    def review(self, file_b64='', filename='', columns=None):
+    def review(self, file_b64='', filename='', columns=None, kind='lasting',
+               month=None):
         """The peek, as a person × column grid in the file's own row order.
 
         Writes nothing. A matched row's cell that has no value in the file is
         simply absent. When the same person is in the file twice the desk
         would write both values in file order, so the LOWER row's value is the
         one that stays; the earlier cell is shown as overridden and is not sent
-        back, which leaves the result exactly what the desk would have made."""
+        back, which leaves the result exactly what the desk would have made.
+
+        UPDATES P2d: `kind='oneoff'` reviews one-off pay items for `month`."""
+        if kind == 'oneoff':
+            return self._oneoff_review(file_b64, filename, columns, month)
         desk = self._gate()
         cols = self._clean_columns(columns)
         if not cols['identity']:
@@ -731,10 +743,12 @@ class PbUpdatesDesk(models.AbstractModel):
         return out
 
     @api.model
-    def recheck(self, changes=None):
+    def recheck(self, changes=None, kind='lasting', month=None):
         """After an on-screen fix or a row bound by hand: the desk's verdict,
         and — for a pay item — whether it is in the person's pay scheme at all
         (the same verdict `review` gives, UPDATES P2b)."""
+        if kind == 'oneoff':
+            return self._oneoff_recheck(changes, month)
         desk = self._gate()
         changes = self._clear_words(desk, changes)
         answer = desk.preview_changes(0, changes)
@@ -789,7 +803,8 @@ class PbUpdatesDesk(models.AbstractModel):
 
     @api.model
     def apply(self, name='', file_b64='', filename='', columns=None,
-              changes=None, stats=None, start_date=None, hold_scope='pay'):
+              changes=None, stats=None, start_date=None, hold_scope='pay',
+              kind='lasting', month=None):
         """Name the update, keep the file, and hand the changes to the desk.
 
         One transaction. The desk re-evaluates every change (whitelist, company
@@ -803,7 +818,13 @@ class PbUpdatesDesk(models.AbstractModel):
         plus one with no date for today's values; with `hold_scope='pay'` a
         future date holds back only contract and pay-item values, and the
         personal and bank values of those rows go in today's apply. With no
-        date anywhere this is exactly the call it always was."""
+        date anywhere this is exactly the call it always was.
+
+        UPDATES P2d: `kind='oneoff'` sends one-off pay items for `month`
+        (`updates_oneoff_desk.py`): one named update, one approval."""
+        if kind == 'oneoff':
+            return self._oneoff_apply(name, file_b64, filename, columns,
+                                      changes, stats, month)
         desk = self._gate()
         name = (name or '').strip()
         if not name:
@@ -905,6 +926,11 @@ class PbUpdatesDesk(models.AbstractModel):
         live = applies.filtered(lambda a: a.state != 'cancelled')
         if not live:
             return 'cancelled', _("Cancelled")
+        # UPDATES P2d (P2c report, item 3) — approved, but the change could not
+        # be written: say so, with the reason, instead of "Waiting for
+        # approval". Display only: the approval engine is unchanged.
+        if live.filtered(lambda a: a._blocked_reason()):
+            return 'blocked', _("Could not be made")
         if any(a.state == 'pending' for a in live):
             return 'pending', labels.get('pending') or _("Waiting for approval")
         scheduled = live.filtered(lambda a: a.state == 'scheduled')
@@ -928,6 +954,9 @@ class PbUpdatesDesk(models.AbstractModel):
 
     @api.model
     def _batch_row(self, batch, may_write):
+        if batch.kind == 'oneoff':
+            # UPDATES P2d — a sheet of one-off pay items reads its own rows.
+            return self._oneoff_batch_row(batch, may_write)
         applies = batch.apply_ids.sudo()
         state, label = self._batch_state(applies)
         undone = applies.filtered('undone')[:1]
@@ -966,7 +995,9 @@ class PbUpdatesDesk(models.AbstractModel):
         row.update({
             'state_date': fields.Date.to_string(scheduled[:1].start_date)
             if scheduled else '',
-            'state_reason': (returned[:1].block_note or '') if state == 'returned' else '',
+            'state_reason': (returned[:1].block_note or '') if state == 'returned'
+            else (next((a._blocked_reason() for a in applies if a._blocked_reason()), '')
+                  if state == 'blocked' else ''),
             'scheduled': [{
                 'apply_id': a.id, 'date': fields.Date.to_string(a.start_date),
                 'values': a.values_count, 'people': a.people_count,

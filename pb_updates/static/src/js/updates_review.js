@@ -199,7 +199,37 @@ export function cellFromItem(item, value) {
         new: item.status === "off_scheme" ? text : (item.new_label || (item.cleared ? "" : text)),
         why: item.status === "refused" || item.status === "off_scheme" ? item.why : "",
         value: item.cleared ? "" : value, cleared: !!item.cleared,
+        // UPDATES P2d — a one-off amount carries its number and its effect.
+        amount: item.amount, role: item.role,
     };
+}
+
+// ---------------------------------------------------------------------------
+//  UPDATES P2d — one-off pay items: totals per pay item and for the month
+// ---------------------------------------------------------------------------
+/** A number in the review's money: "1,500,000 ₫" / "$ 12.50". */
+export function moneyLabel(rv, n) {
+    const cur = (rv && rv.currency) || {};
+    const digits = Number.isInteger(cur.digits) ? cur.digits : 0;
+    const text = Number(n || 0).toLocaleString(undefined, {
+        minimumFractionDigits: digits, maximumFractionDigits: digits });
+    if (!cur.symbol) { return text; }
+    return cur.position === "before" ? `${cur.symbol} ${text}` : `${text} ${cur.symbol}`;
+}
+
+/** `{byCol: {field_id: n}, earn, take}` over the amounts Apply would send. */
+export function oneoffTotals(rv) {
+    const out = { byCol: {}, earn: 0, take: 0 };
+    const roles = Object.fromEntries((rv.columns || []).map((c) => [c.field_id, c.role]));
+    for (const row of rv.rows || []) {
+        for (const [fid, cell] of Object.entries(row.cells || {})) {
+            if (cellKind(cell) !== "change" || cell.cleared) { continue; }
+            const n = Number(cell.amount || 0);
+            out.byCol[fid] = (out.byCol[fid] || 0) + n;
+            if ((cell.role || roles[fid]) === "deduction") { out.take += n; } else { out.earn += n; }
+        }
+    }
+    return out;
 }
 
 /** The changes Apply sends: every cell the desk said yes to, not left out.
@@ -418,9 +448,14 @@ export class UpdReview extends Component {
                      tail: _t("There is nothing to change."), tone: "fine" };
         }
         const lead = c.changes
-            ? _t("This file will make %(changes)s for %(people)s.", {
-                changes: plural(c.changes, _t("1 change"), _t("%s changes")),
-                people: plural(c.people, _t("1 person"), _t("%s people")) })
+            ? (this.rv.oneoff
+                ? _t("This sheet sends %(amounts)s for %(people)s, paid in %(month)s.", {
+                    amounts: plural(c.changes, _t("1 one-off amount"), _t("%s one-off amounts")),
+                    people: plural(c.people, _t("1 person"), _t("%s people")),
+                    month: this.rv.month_label || "" })
+                : _t("This file will make %(changes)s for %(people)s.", {
+                    changes: plural(c.changes, _t("1 change"), _t("%s changes")),
+                    people: plural(c.people, _t("1 person"), _t("%s people")) }))
             : _t("Nothing in this file can go in yet.");
         if (!c.attention) {
             return { lead, tail: _t("Everything checks out."), tone: "fine" };
@@ -464,6 +499,26 @@ export class UpdReview extends Component {
         if (c.past) { out.push({ key: "past", label: _t("Dated in the past"), count: c.past, when: "past" }); }
         return out;
     }
+
+    // ------------------------------------------------------------- one-offs (P2d)
+    get totals() { return oneoffTotals(this.rv); }
+    money(n) { return moneyLabel(this.rv, n); }
+    colTotal(col) {
+        const n = this.totals.byCol[col.field_id] || 0;
+        return n ? this.money(n) : "";
+    }
+    roleLabel(col) {
+        if (!col.role) { return ""; }
+        return col.role === "deduction" ? _t("Takes from pay") : _t("Adds to pay");
+    }
+    get paidMonthRows() { return (this.rv.rows || []).filter((r) => r.paid_month).length; }
+    get stripMonthLine() { return _t("One-off pay for %s", this.rv.month_label || ""); }
+    get paidMonthChip() {
+        const n = this.paidMonthRows;
+        return n === 1 ? _t("1 person already paid for %s", this.rv.month_label || "")
+            : _t("%(n)s people already paid for %(month)s", { n, month: this.rv.month_label || "" });
+    }
+    get paidTag() { return _t("Already paid for %s", this.rv.month_label || ""); }
 
     // ------------------------------------------------------------- start dates
     get showStarts() { return showsStarts(this.rv); }

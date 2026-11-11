@@ -35,7 +35,7 @@ import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { grouped } from "@pb_records/js/records_review";
 import {
     UpdReview, icon, plural, reviewCounts, changesToSend, PAGE_ROWS,
-    dayLabel, rowStart, startBuckets,
+    dayLabel, rowStart, startBuckets, oneoffTotals, moneyLabel,
 } from "@pb_updates/js/updates_review";
 
 const MODEL = "pb.updates.desk";
@@ -49,6 +49,13 @@ const MAX_DATES = 6;
 /** The default name: "November 2026 update", the month in the reader's language. */
 export function defaultName() {
     return _t("%s update", luxon.DateTime.now().toFormat("LLLL yyyy"));
+}
+
+/** UPDATES P2d — "November 2026" from `YYYY-MM-01`. */
+export function monthLabel(iso) {
+    if (!iso) { return ""; }
+    const day = luxon.DateTime.fromISO(iso);
+    return day.isValid ? day.toFormat("LLLL yyyy") : iso;
 }
 
 /** "11 Nov 2026, 14:05" in the reader's own time zone. */
@@ -96,7 +103,16 @@ export class PbUpdatesDesk extends Component {
             view: "home",
             loading: true,
             error: "",
-            home: { can_write: false, can_export: false, people_count: 0, topics: [], history: [], coming_up: [], today: "" },
+            home: { can_write: false, can_export: false, people_count: 0, topics: [], history: [], coming_up: [], today: "",
+                    oneoff: { available: false, items: 0, months: [], this_month: "" },
+                    waiting: { months: [], clashes: [], can_choose: false } },
+            // UPDATES P2d — which kind of sheet: lasting changes, or one-off
+            // pay items for one pay month.
+            kind: "lasting",
+            month: "",
+            monthNote: "",
+            openMonth: "",
+            choosing: "",
             historyAll: false,
             historyTotal: 0,
             picked: {},
@@ -144,13 +160,15 @@ export class PbUpdatesDesk extends Component {
     }
 
     async loadHistory() {
-        const [res, coming] = await Promise.all([
+        const [res, coming, waiting] = await Promise.all([
             this.orm.call(MODEL, "get_history", [], { limit: this.state.historyAll ? 200 : 8 }),
             this.orm.call(MODEL, "get_coming_up", []),
+            this.orm.call(MODEL, "get_waiting", []),
         ]);
         this.state.home.history = res.batches || [];
         this.state.historyTotal = res.total || 0;
         this.state.home.coming_up = coming.items || [];
+        this.state.home.waiting = waiting || { months: [], clashes: [] };
     }
 
     async showAllHistory() {
@@ -162,7 +180,7 @@ export class PbUpdatesDesk extends Component {
     get canExport() { return !!this.state.home.can_export; }
 
     get heroBody() {
-        return _t("Change job details, contracts, bank details and ongoing pay items for the whole team from one spreadsheet, any day of the month. You see every change before it happens, and you can undo it afterwards.");
+        return _t("Change job details, contracts, bank details and ongoing pay items for the whole team from one spreadsheet, any day of the month, and add one-off pay items like a bonus to a pay month. You see every change before it happens.");
     }
 
     get noWriteNote() {
@@ -171,12 +189,19 @@ export class PbUpdatesDesk extends Component {
 
     historyTone(h) {
         return { applied: "ok", pending: "info", undone: "muted", rejected: "err", returned: "warn",
-                 scheduled: "pri", mixed: "pri", cancelled: "muted" }[h.state] || "muted";
+                 scheduled: "pri", mixed: "pri", cancelled: "muted", blocked: "err",
+                 waiting_run: "pri", in_run: "info", paid: "ok", clash: "warn",
+                 replaced: "muted" }[h.state] || "muted";
     }
 
     historyIcon(h) {
+        if (h.kind === "oneoff") {
+            return { pending: "clock", blocked: "alert", clash: "scale", cancelled: "ban",
+                     rejected: "xCircle", returned: "rotate" }[h.state] || "coins";
+        }
         return { applied: "check", pending: "clock", undone: "undo", rejected: "xCircle", returned: "rotate",
-                 scheduled: "calendarClock", mixed: "calendarClock", cancelled: "ban" }[h.state] || "info";
+                 scheduled: "calendarClock", mixed: "calendarClock", cancelled: "ban",
+                 blocked: "alert" }[h.state] || "info";
     }
 
     /** The chip's words — the new states in the reader's own date form. */
@@ -252,16 +277,18 @@ export class PbUpdatesDesk extends Component {
 
     /** Cancel what has not been written: one scheduled part, or the whole
      *  waiting part of a named update. */
-    cancelParts({ applyId = 0, batchId = 0, name = "", values = 0, date = "", pending = false }) {
+    cancelParts({ applyId = 0, batchId = 0, name = "", values = 0, date = "", pending = false, blocked = false }) {
         const what = plural(values, _t("1 value"), _t("%s values"));
-        const body = pending
+        const body = blocked
+            ? _t("It was approved but could not be made, so nothing has been changed. Once cancelled, the %s in it are never written.", what)
+            : pending
             ? _t("The approval request is withdrawn and the %s waiting in it are never written. Nothing has been changed, so nothing needs putting back.", what)
             : _t("The %(what)s scheduled for %(date)s are never written. Nothing has been changed yet, so nothing needs putting back. To do it later, upload the file again.", {
                 what, date: dayLabel(date) });
         this.dialog.add(ConfirmationDialog, {
             title: _t("Cancel “%s”?", name),
             body,
-            confirmLabel: pending ? _t("Cancel and withdraw") : _t("Cancel the scheduled change"),
+            confirmLabel: blocked ? _t("Cancel it") : pending ? _t("Cancel and withdraw") : _t("Cancel the scheduled change"),
             cancelLabel: _t("Keep it"),
             confirm: async () => {
                 try {
@@ -284,18 +311,30 @@ export class PbUpdatesDesk extends Component {
     }
 
     cancelBatch(h) {
+        if (h.kind === "oneoff") { return this.cancelOneoff(h); }
         const pending = h.state === "pending";
+        const blocked = h.state === "blocked";
         const values = h.open_values || (h.scheduled || []).reduce((n, s) => n + s.values, 0);
         const date = (h.scheduled || [])[0] ? h.scheduled[0].date : "";
-        this.cancelParts({ batchId: h.id, name: h.name, values, date, pending });
+        this.cancelParts({ batchId: h.id, name: h.name, values, date, pending, blocked });
     }
 
     cancelLabel(h) {
+        if (h.kind === "oneoff") { return _t("Cancel"); }
+        if (h.state === "blocked") { return _t("Cancel it"); }
         return h.state === "pending" ? _t("Withdraw") : _t("Cancel the scheduled part");
     }
 
     historyLine(h) {
         const bits = [whenLabel(h.date)];
+        if (h.kind === "oneoff") {
+            if (h.month_label) { bits.push(h.month_label); }
+            bits.push(_t("%(amounts)s for %(people)s", {
+                amounts: plural(h.values, _t("1 one-off amount"), _t("%s one-off amounts")),
+                people: plural(h.people, _t("1 person"), _t("%s people")) }));
+            if (h.user) { bits.push(_t("by %s", h.user)); }
+            return bits.filter(Boolean).join(" · ");
+        }
         if (h.values) {
             bits.push(_t("%(changes)s for %(people)s", {
                 changes: plural(h.values, _t("1 change"), _t("%s changes")),
@@ -306,6 +345,23 @@ export class PbUpdatesDesk extends Component {
     }
 
     historyNote(h) {
+        if (h.state === "blocked") {
+            return h.state_reason || _t("Approved, but it could not be made.");
+        }
+        if (h.kind === "oneoff") {
+            const bits = [];
+            if (h.state === "pending") {
+                bits.push(h.with_whom ? _t("Waiting for approval with %s.", h.with_whom) : _t("Waiting for approval."));
+            } else if (h.state_note) {
+                bits.push(h.state_note);
+            }
+            if (h.values_refused) { bits.push(plural(h.values_refused, _t("1 value from the file was left out."), _t("%s values from the file were left out."))); }
+            if (h.values_off_scheme) { bits.push(offSchemeLine(h.values_off_scheme)); }
+            if (h.cancelled_values && h.state !== "cancelled") {
+                bits.push(plural(h.cancelled_values, _t("1 amount was cancelled."), _t("%s amounts were cancelled.")));
+            }
+            return bits.join(" ");
+        }
         if (h.state === "pending") {
             return h.with_whom ? _t("Waiting for approval with %s.", h.with_whom) : _t("Waiting for approval.");
         }
@@ -370,12 +426,125 @@ export class PbUpdatesDesk extends Component {
         if (el) { el.scrollTop = 0; }
     }
 
-    newUpdate() {
+    newUpdate(kind = "lasting") {
         this.resetFlow();
+        this.setKind(kind);
         this.go("start");
     }
 
+    // =================================================================
+    //  UPDATES P2d — the kind of sheet and its pay month
+    // =================================================================
+    get oneoffInfo() { return this.state.home.oneoff || { available: false, months: [] }; }
+    get isOneoff() { return this.state.kind === "oneoff"; }
+
+    setKind(kind) {
+        if (kind === "oneoff" && !this.oneoffInfo.available) { return; }
+        this.state.kind = kind === "oneoff" ? "oneoff" : "lasting";
+        if (this.isOneoff && !this.state.month) {
+            this.state.month = this.oneoffInfo.this_month || "";
+        }
+        Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
+        this.state.file.error = "";
+    }
+
+    onMonth(ev) {
+        this.state.month = ev.target.value || "";
+        this.state.monthNote = "";
+        Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
+    }
+
+    get monthLabel() { return monthLabel(this.state.month); }
+
+    get oneoffMatchLead() { return _t("One-off pay for %s.", this.monthLabel); }
+    get oneoffEachLine() { return _t("Each paid once, in %s.", this.monthLabel); }
+    get monthCardTitle() { return _t("Paid in the %s pay run", this.monthLabel); }
+    get monthCardBody() {
+        return _t("Each amount is paid once, by the first pay run of %s for the person's pay scheme. If the pay data file of that run has a different amount, the run stops and asks which one to pay.", this.monthLabel);
+    }
+    get clashTitle() {
+        const n = this.clashes.length;
+        return n === 1 ? _t("A pay run found two amounts for one pay item")
+            : _t("%s pay items have two amounts", n);
+    }
+    clashWhere(c) { return _t("%(month)s · pay run %(run)s", { month: c.month, run: c.run }); }
+
+    /** "Paid once, in the November 2026 pay run of each person's pay scheme." */
+    get monthLine() {
+        return _t("Paid once, in the %s pay run of each person's pay scheme. Amounts already waiting for that month are in the sheet.", this.monthLabel);
+    }
+
+    // ------------------------------------------------------- Waiting for a pay run
+    get waiting() { return this.state.home.waiting || { months: [], clashes: [] }; }
+    get waitingMonths() { return this.waiting.months || []; }
+    get clashes() { return this.waiting.clashes || []; }
+
+    waitingLine(m) {
+        const bits = [plural(m.people, _t("1 person"), _t("%s people")),
+                      plural(m.items, _t("1 one-off amount"), _t("%s one-off amounts"))];
+        return bits.join(" · ");
+    }
+
+    waitingMoney(m) {
+        const bits = [];
+        if (m.earn_label) { bits.push(_t("%s added to pay", m.earn_label)); }
+        if (m.take_label) { bits.push(_t("%s taken from pay", m.take_label)); }
+        return bits.join(" · ");
+    }
+
+    waitingChips(m) {
+        const out = [];
+        if (m.pending) { out.push({ key: "p", tone: "info", label: plural(m.pending, _t("1 waiting for approval"), _t("%s waiting for approval")) }); }
+        if (m.in_run) { out.push({ key: "r", tone: "pri", label: plural(m.in_run, _t("1 in a pay run"), _t("%s in a pay run")) }); }
+        return out;
+    }
+
+    monthDay(m) {
+        const day = luxon.DateTime.fromISO(m.month);
+        return day.isValid ? { m: day.toFormat("LLL"), y: day.toFormat("yyyy") } : { m: "", y: "" };
+    }
+
+    toggleMonth(m) { this.state.openMonth = this.state.openMonth === m.month ? "" : m.month; }
+
+    rowTone(r) {
+        return { pending: "info", approved: "pri", reserved: "ok" }[r.state] || "muted";
+    }
+
+    cancelOneoff(h) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Cancel “%s”?", h.name),
+            body: _t("Every one-off amount in it that no pay run has taken yet is cancelled and will not be paid. Amounts already in a pay run stay there."),
+            confirmLabel: _t("Cancel them"),
+            cancelLabel: _t("Keep them"),
+            confirm: async () => {
+                try {
+                    const res = await this.orm.call(MODEL, "cancel", [], { batch_id: h.id });
+                    this.notif.add(res.msg, { type: res.ok ? "success" : "warning" });
+                    await this.loadHistory();
+                } catch (e) {
+                    this.notif.add(e.data?.message || _t("The update could not be cancelled. Nothing has changed."), { type: "danger" });
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
+    async chooseAmount(c, choice) {
+        if (this.state.choosing) { return; }
+        this.state.choosing = `${c.id}:${choice}`;
+        try {
+            const res = await this.orm.call("pb.updates.oneoff", "resolve_clash", [], { row_id: c.id, choice });
+            this.notif.add(res.msg, { type: res.ok ? "success" : "warning" });
+            await this.loadHistory();
+        } catch (e) {
+            this.notif.add(e.data?.message || _t("The choice could not be saved. Nothing has changed."), { type: "danger" });
+        } finally {
+            this.state.choosing = "";
+        }
+    }
+
     resetFlow() {
+        this.state.monthNote = "";
         Object.assign(this.state.file, { name: "", b64: "", busy: false, rows: 0, phase: "", error: "", over: 0 });
         Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
         this.state.match = null;
@@ -423,6 +592,12 @@ export class PbUpdatesDesk extends Component {
     }
 
     get downloadHint() {
+        if (this.isOneoff) {
+            if (!this.canExport) {
+                return _t("Downloading a sheet needs permission to export employee records. You can still upload a file of your own.");
+            }
+            return _t("One row per person and one column per one-off pay item of their pay scheme. Type amounts without a minus sign: each item already says whether it adds to pay or takes from pay.");
+        }
         if (!this.canExport) {
             return _t("Downloading a sheet needs permission to export employee records. You can still upload a file of your own.");
         }
@@ -438,11 +613,13 @@ export class PbUpdatesDesk extends Component {
 
     async downloadSheet() {
         const d = this.state.download;
-        if (d.busy || !this.canExport || !this.pickedTopics.length) { return; }
+        if (d.busy || !this.canExport || (!this.isOneoff && !this.pickedTopics.length)) { return; }
         Object.assign(d, { busy: true, msg: "", tone: "" });
         try {
-            const res = await this.orm.call(MODEL, "download_sheet", [], {
-                topic_keys: this.pickedTopics.map((t) => t.key) });
+            const res = this.isOneoff
+                ? await this.orm.call(MODEL, "download_oneoff_sheet", [], { month: this.state.month })
+                : await this.orm.call(MODEL, "download_sheet", [], {
+                    topic_keys: this.pickedTopics.map((t) => t.key) });
             if (!res.ok) {
                 Object.assign(d, { msg: res.msg, tone: "err" });
                 return;
@@ -518,12 +695,19 @@ export class PbUpdatesDesk extends Component {
             const probe = await this.orm.call("pb.records.desk", "import_probe", [], {
                 file_b64: b64, filename: file.name }).catch(() => null);
             if (probe && probe.ok) { f.rows = probe.rows || 0; }
-            const res = await this.orm.call(MODEL, "read_columns", [], { file_b64: b64, filename: file.name });
+            const res = await this.orm.call(MODEL, "read_columns", [], this.kindArgs({
+                file_b64: b64, filename: file.name }));
             if (!res.ok) {
                 Object.assign(f, { busy: false, error: res.msg });
                 return;
             }
             f.rows = res.rows;
+            if (this.isOneoff && res.sheet_month && res.sheet_month !== this.state.month) {
+                // A downloaded sheet says which month it is for: that month wins.
+                this.state.monthNote = _t("This sheet was made for %(sheet)s, so it is used for %(sheet)s, not %(picked)s.", {
+                    sheet: monthLabel(res.sheet_month), picked: monthLabel(this.state.month) });
+                this.state.month = res.sheet_month;
+            }
             this.state.match = this.buildMatch(res);
             if (res.from_sheet) {
                 // A Payobook sheet: every column already knows where it goes.
@@ -536,6 +720,11 @@ export class PbUpdatesDesk extends Component {
         } catch (e) {
             Object.assign(f, { busy: false, error: e.data?.message || _t("The file could not be read. Nothing has changed.") });
         }
+    }
+
+    /** The extra arguments a one-off sheet sends with every call. */
+    kindArgs(args) {
+        return this.isOneoff ? Object.assign(args, { kind: "oneoff", month: this.state.month }) : args;
     }
 
     // =================================================================
@@ -590,8 +779,11 @@ export class PbUpdatesDesk extends Component {
         const m = this.state.match;
         if (!m) { return []; }
         const out = [];
+        const tag = (f) => (f.role
+            ? `${f.label} · ${f.role === "deduction" ? _t("takes from pay") : _t("adds to pay")}`
+            : f.label);
         for (const t of m.fields) {
-            if (t.key !== "component") {
+            if (t.key !== "component" && t.key !== "oneoff") {
                 out.push({ key: t.key, label: t.label, options: t.fields.map((f) => ({ id: f.id, label: f.label })) });
                 continue;
             }
@@ -601,18 +793,18 @@ export class PbUpdatesDesk extends Component {
             const kept = [];
             for (const f of t.fields) {
                 const schemes = f.schemes || [];
-                if (!schemes.length) { kept.push({ id: f.id, label: f.label }); continue; }
+                if (!schemes.length) { kept.push({ id: f.id, label: tag(f) }); continue; }
                 if (schemes.length > 1) {
                     const names = schemes.map((s) => s.name);
                     const shown = names.length > 3
                         ? _t("%(list)s and %(n)s more", { list: names.slice(0, 3).join(", "), n: names.length - 3 })
                         : names.join(", ");
-                    several.push({ id: f.id, label: `${f.label} · ${shown}` });
+                    several.push({ id: f.id, label: `${tag(f)} · ${shown}` });
                     continue;
                 }
                 const s = schemes[0];
                 if (!single.has(s.id)) { single.set(s.id, { scheme: s, options: [] }); }
-                single.get(s.id).options.push({ id: f.id, label: f.label });
+                single.get(s.id).options.push({ id: f.id, label: tag(f) });
             }
             const groups = [...single.values()];
             const inFile = groups.filter((g) => present.has(g.scheme.id))
@@ -643,7 +835,7 @@ export class PbUpdatesDesk extends Component {
     /** The quiet line and chips under the "Match your columns" heading. */
     get matchSchemes() {
         const m = this.state.match;
-        if (!m || !m.fields.some((t) => t.key === "component" && t.fields.length)) { return null; }
+        if (!m || !m.fields.some((t) => (t.key === "component" || t.key === "oneoff") && t.fields.length)) { return null; }
         const chips = (m.schemes || []).map((s) => ({ key: `s${s.id}`, label: s.name, count: s.count, tone: "pri" }));
         if (m.noScheme) {
             chips.push({ key: "none", label: _t("No pay scheme yet"), count: m.noScheme, tone: "warn" });
@@ -676,8 +868,12 @@ export class PbUpdatesDesk extends Component {
         const seq = (this._schemeSeq = (this._schemeSeq || 0) + 1);
         const { identity } = this.matchColumns();
         try {
-            const res = await this.orm.silent.call(MODEL, "file_schemes", [], {
-                file_b64: this.state.file.b64, filename: this.state.file.name, identity });
+            const res = this.isOneoff
+                ? await this.orm.silent.call(MODEL, "oneoff_file_schemes", [], {
+                    file_b64: this.state.file.b64, filename: this.state.file.name, identity,
+                    month: this.state.month })
+                : await this.orm.silent.call(MODEL, "file_schemes", [], {
+                    file_b64: this.state.file.b64, filename: this.state.file.name, identity });
             if (seq !== this._schemeSeq || !res.ok || this.state.match !== m) { return; }
             m.schemes = res.schemes || [];
             m.noScheme = res.no_scheme || 0;
@@ -705,6 +901,7 @@ export class PbUpdatesDesk extends Component {
             contract: { label: _t("Contract"), tone: "contract", icon: "fileText" },
             bank: { label: _t("Bank details"), tone: "bank", icon: "creditCard" },
             component: { label: _t("Ongoing pay"), tone: "pay", icon: "banknote" },
+            oneoff: { label: _t("One-off pay"), tone: "pay", icon: "coins" },
         }[group] || { label: "", tone: "none", icon: "" };
     }
 
@@ -806,8 +1003,8 @@ export class PbUpdatesDesk extends Component {
         this.state.matchError = "";
         const columns = this.matchColumns();
         try {
-            const res = await this.orm.call(MODEL, "review", [], {
-                file_b64: f.b64, filename: f.name, columns });
+            const res = await this.orm.call(MODEL, "review", [], this.kindArgs({
+                file_b64: f.b64, filename: f.name, columns }));
             if (!res.ok || res.empty) {
                 if (fromSheet) {
                     Object.assign(f, { busy: false, error: res.msg });
@@ -835,7 +1032,12 @@ export class PbUpdatesDesk extends Component {
                 // today, and the default picked on the Apply step.
                 dated: !!res.dated,
                 today: res.today || this.state.home.today || "",
-                defaultStart: this.defaultStart,
+                defaultStart: this.isOneoff ? "" : this.defaultStart,
+                // UPDATES P2d — a sheet of one-off pay items for one month.
+                oneoff: !!res.oneoff,
+                month: res.month || "",
+                month_label: res.month_label || "",
+                currency: res.currency || null,
                 scheme: null,
                 filter: rows.length > 300 ? "chg" : "all",
                 allCols: false,
@@ -853,7 +1055,7 @@ export class PbUpdatesDesk extends Component {
     }
 
     recheck(changes) {
-        return this.orm.call(MODEL, "recheck", [], { changes });
+        return this.orm.call(MODEL, "recheck", [], this.kindArgs({ changes }));
     }
 
     lookup(term) {
@@ -876,7 +1078,9 @@ export class PbUpdatesDesk extends Component {
 
     toApply() {
         const a = this.state.apply;
-        if (!a.touched) { a.name = defaultName(); }
+        if (!a.touched) {
+            a.name = this.isOneoff ? _t("%s one-off pay items", this.monthLabel) : defaultName();
+        }
         a.error = "";
         this.go("apply");
         this.refreshPaid();
@@ -1016,6 +1220,11 @@ export class PbUpdatesDesk extends Component {
 
     get applyLabel() {
         const n = this.applyCounts.changes;
+        if (this.isOneoff) {
+            return this.state.apply.busy
+                ? plural(n, _t("Sending 1 one-off amount…"), _t("Sending %s one-off amounts…"))
+                : plural(n, _t("Send 1 one-off amount"), _t("Send %s one-off amounts"));
+        }
         const later = this.laterCount;
         const now = this.nowCount;
         if (this.state.apply.busy) {
@@ -1026,7 +1235,14 @@ export class PbUpdatesDesk extends Component {
         return plural(n, _t("Apply 1 change"), _t("Apply %s changes"));
     }
 
-    get applyIcon() { return this.laterCount && !this.nowCount ? "calendarClock" : "check"; }
+    get applyIcon() {
+        if (this.isOneoff) { return "coins"; }
+        return this.laterCount && !this.nowCount ? "calendarClock" : "check";
+    }
+
+    /** UPDATES P2d — the month's totals on the Apply step. */
+    get applyTotals() { return this.state.rv ? oneoffTotals(this.state.rv) : { earn: 0, take: 0 }; }
+    money(n) { return moneyLabel(this.state.rv, n); }
 
     onName(ev) {
         this.state.apply.name = ev.target.value;
@@ -1045,7 +1261,7 @@ export class PbUpdatesDesk extends Component {
             a.error = _t("Give this update a name so you can find it later in Past updates.");
             return;
         }
-        if (this.whenDateError || this.tooManyDates) {
+        if (!this.isOneoff && (this.whenDateError || this.tooManyDates)) {
             a.error = this.whenDateError || this.tooManyDatesLine;
             return;
         }
@@ -1053,7 +1269,7 @@ export class PbUpdatesDesk extends Component {
         const counts = this.applyCounts;
         a.busy = true;
         try {
-            const answer = await this.orm.call(MODEL, "apply", [], {
+            const answer = await this.orm.call(MODEL, "apply", [], this.kindArgs({
                 name: a.name.trim(),
                 file_b64: this.state.file.b64,
                 filename: this.state.file.name,
@@ -1061,9 +1277,9 @@ export class PbUpdatesDesk extends Component {
                 changes: changesToSend(rv),
                 stats: { rows: rv.stats.rows, unmatched: counts.rowsOpen + rv.unmatched.filter((u) => u.skipped).length,
                          left_out: counts.leftOut, off_scheme: counts.offScheme },
-                start_date: this.defaultStart || false,
+                start_date: this.isOneoff ? false : (this.defaultStart || false),
                 hold_scope: this.state.when.scope,
-            });
+            }));
             if (!answer.ok) {
                 a.error = answer.msg;
                 return;
@@ -1093,6 +1309,7 @@ export class PbUpdatesDesk extends Component {
     get doneTitle() {
         const d = this.state.done;
         if (d.nothing) { return _t("Nothing needed changing"); }
+        if (d.kind === "oneoff") { return d.pending ? _t("Sent for approval") : _t("Approved"); }
         if (d.pending && this.doneParts.some((p) => !p.pending)) { return _t("Sent, part of it for approval"); }
         if (d.pending) { return _t("Sent for approval"); }
         if (this.doneOnlyLater) {
@@ -1105,6 +1322,14 @@ export class PbUpdatesDesk extends Component {
 
     /** "12 values changed today · 30 are scheduled for 1 Dec 2026" */
     get doneWhenLine() {
+        const d = this.state.done;
+        if (d && d.kind === "oneoff") {
+            const bits = [];
+            if (d.earn) { bits.push(_t("%s added to pay", d.earn)); }
+            if (d.take) { bits.push(_t("%s taken from pay", d.take)); }
+            if (d.not_used) { bits.push(plural(d.not_used, _t("1 not used: already in a pay run"), _t("%s not used: already in a pay run"))); }
+            return bits.join(" · ");
+        }
         const bits = [];
         for (const p of this.doneParts) {
             if (p.pending) {
@@ -1135,6 +1360,17 @@ export class PbUpdatesDesk extends Component {
     get doneLine() {
         const d = this.state.done;
         if (d.nothing) { return d.msg; }
+        if (d.kind === "oneoff") {
+            const what = plural(d.values, _t("1 one-off amount"), _t("%s one-off amounts"));
+            const pay = _t("These will be included in the %s pay run.", d.month_label);
+            if (d.pending) {
+                return d.with_whom
+                    ? _t("%(what)s are waiting with %(who)s. %(pay)s", { what, who: d.with_whom, pay })
+                    : _t("%(what)s are waiting for approval. %(pay)s", { what, pay });
+            }
+            return _t("%(what)s for %(people)s are approved. %(pay)s", {
+                what, people: plural(d.people, _t("1 person"), _t("%s people")), pay });
+        }
         if (d.pending && this.doneParts.some((p) => !p.pending)) {
             return _t("What is waiting for approval changes nothing until it is approved. Each part is listed below.");
         }
