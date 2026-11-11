@@ -1056,18 +1056,19 @@ class TestWorkflowStudio(TransactionCase):
         self.assertTrue(route.get('detail'))
         self.assertEqual((route['settings'] or {}).get('action'), 'pb_approval_config.action_pb_approval_matrix')
         shapes = {(e['stage'], e['kind'], e['audience']) for e in rows}
-        for shape in (('submitted', 'message', 'approver'), ('submitted', 'reminder', 'approver'),
-                      ('draft', 'message', 'requester')):
+        for shape in (('submitted', 'message', 'approver'), ('submitted', 'reminder', 'approver')):
             self.assertIn(shape, shapes)
         # WF2 P2b (D6): Expenses tells the employee "approved" and "refused"
         # itself now, so the route's own copy is no longer listed; the
         # area's rows say it (and a repeat email step is still warned about).
-        for shape in (('approved', 'message', 'requester'), ('refused', 'message', 'requester')):
+        # WF2 P5a (D28): "sent back" too.
+        for shape in (('approved', 'message', 'requester'), ('refused', 'message', 'requester'),
+                      ('draft', 'message', 'requester')):
             self.assertNotIn(shape, shapes)
         own = {(e['stage'], e['kind'], e['audience']) for e in self.service.existing_behaviour(self.CLAIM)
                if e['source'] == 'area'}
         for shape in (('approved', 'message', 'requester'), ('refused', 'message', 'requester'),
-                      ('paid', 'message', 'requester')):
+                      ('paid', 'message', 'requester'), ('draft', 'message', 'requester')):
             self.assertIn(shape, own)
         self.env['biz.approval.binding'].search([('company_id', '=', self.company.id),
                                                  ('process_id', '=', process.id)]).write({'active': False})
@@ -3159,3 +3160,249 @@ class TestWorkflowStudio(TransactionCase):
             '# ================================================================ D19', 1)[0]
         for s in re.findall(r"_\('([^']*)'", part):
             self.assertNotRegex(s, r'(?i)odoo|\bstep\b|\brun\b|\bnode\b', s)
+
+    # ------------------------------------------------------------------
+    # WORKFLOW-2 P5a: the instant email re-check (P2b leftover) and
+    # "Start on a schedule".
+    # ------------------------------------------------------------------
+    def test_wf2p5a_t4b_candidate_email_saved_sends_the_link_at_once(self):
+        self.need('pb.hiring', 'hr.applicant')
+        self.recruiter()
+        recruiter = self.staffer('WF2 P5a recruiter', ['hr_recruitment.group_hr_recruitment_user'])
+        confirm = {'id': 'agree', 'type': 'confirm', 'title': 'Confirm your details', 'stage': 0, 'due': 2,
+                   'owner': {'kind': 'participant', 'key': 'candidate'}, 'text': 'My details are right.'}
+        w, d = self.workflow([confirm], model='hr.applicant')
+        self.publish(w, d)
+        quiet = self.env['hr.applicant'].create({'partner_name': 'WF2 P5a no email', 'company_id': self.company.id,
+                                                 'user_id': recruiter.id})
+        run = self.start(w, quiet)
+        step = self.step(run, 'agree')
+        self.assertEqual(step.assignee_id, recruiter)
+        todo = step.activity_id
+        # the recruiter types the address: no worker pass in between
+        quiet.with_user(self.admin).write({'email_from': 'p5a.cand@example.com'})
+        step = self.step(run, 'agree')
+        self.assertEqual(step.sudo().link_email, 'p5a.cand@example.com')
+        self.assertFalse(step.assignee_id)
+        self.assertFalse(todo.exists())
+        self.assertEqual(len(self.env['mail.mail'].sudo().search([('email_to', '=', 'p5a.cand@example.com')])), 1)
+        # the worker afterwards changes nothing (sent once)
+        self.env['pb.workflow.studio'].sudo()._cron_workflows()
+        self.assertEqual(len(self.env['mail.mail'].sudo().search([('email_to', '=', 'p5a.cand@example.com')])), 1)
+        # a save that is not about the email never looks
+        with patch.object(type(self.env['pb.workflow.studio']), '_recheck_awaiting_email') as spy:
+            quiet.write({'partner_name': 'WF2 P5a renamed'})
+            spy.assert_not_called()
+
+    def test_wf2p5a_t5_schedule_maths(self):
+        from datetime import datetime
+        from odoo.addons.pb_lifecycle.models import workflow_schedule as WS
+        at = datetime(2026, 11, 11, 3, 0)
+        nxt = lambda s, tz='UTC', n=5, working=None: WS.next_ticks(dict(s), tz, at, n, working)
+        # every day / every Monday (Sydney: 9:00 local = 22:00 UTC the day before)
+        self.assertEqual(nxt({'every': 'day', 'at': '09:00'}, n=2),
+                         [datetime(2026, 11, 11, 9, 0), datetime(2026, 11, 12, 9, 0)])
+        self.assertEqual(nxt({'every': 'week', 'at': '09:00', 'weekdays': [0]}, 'Australia/Sydney', 2),
+                         [datetime(2026, 11, 15, 22, 0), datetime(2026, 11, 22, 22, 0)])
+        # "31st" in a 30-day month = the last day; "last"
+        self.assertEqual([t.date().isoformat() for t in nxt({'every': 'month', 'at': '12:00', 'day': 31}, n=4)],
+                         ['2026-11-30', '2026-12-31', '2027-01-31', '2027-02-28'])
+        self.assertEqual([t.day for t in nxt({'every': 'month', 'at': '12:00', 'day': 'last'}, n=3)], [30, 31, 31])
+        # leap day: 28 Feb in common years, 29 Feb in 2028
+        self.assertEqual([t.date().isoformat() for t in nxt({'every': 'year', 'at': '08:00', 'day': 29, 'month': 2}, n=3)],
+                         ['2027-02-28', '2028-02-29', '2029-02-28'])
+        # once: exactly one start, none after it has passed
+        self.assertEqual(nxt({'every': 'once', 'at': '08:00', 'date': '2026-11-20'}), [datetime(2026, 11, 20, 8, 0)])
+        self.assertEqual(nxt({'every': 'once', 'at': '08:00', 'date': '2026-11-01'}), [])
+        # working days only: Saturday and Sunday move to Monday, once
+        weekdays = lambda day: day.weekday() < 5
+        got = WS.next_ticks({'every': 'day', 'at': '07:00', 'working_days': True}, 'UTC',
+                            datetime(2026, 11, 13, 12, 0), 3, weekdays)
+        self.assertEqual(got, [datetime(2026, 11, 16, 7, 0), datetime(2026, 11, 17, 7, 0), datetime(2026, 11, 18, 7, 0)])
+        # clocks forward (Sydney, 4 Oct 2026): 2:30 does not exist → 3:30, once
+        got = WS.next_ticks({'every': 'day', 'at': '02:30'}, 'Australia/Sydney', datetime(2026, 10, 2, 0, 0), 3)
+        self.assertEqual(got, [datetime(2026, 10, 2, 16, 30), datetime(2026, 10, 3, 16, 30), datetime(2026, 10, 4, 15, 30)])
+        # clocks back (Sydney, 5 Apr 2026): 2:30 happens twice → once, the first
+        got = WS.ticks({'every': 'day', 'at': '02:30'}, 'Australia/Sydney', datetime(2026, 4, 4, 0, 0), datetime(2026, 4, 5, 12, 0))
+        self.assertEqual(got, [datetime(2026, 4, 4, 15, 30)])
+        # the worker's window: (after, until], latest last
+        got = WS.ticks({'every': 'day', 'at': '09:00'}, 'UTC', datetime(2026, 11, 1, 9, 0), datetime(2026, 11, 8, 9, 0))
+        self.assertEqual(len(got), 7)
+        self.assertEqual(got[-1], datetime(2026, 11, 8, 9, 0))
+        # words and checks
+        self.assertEqual(WS.words({'every': 'week', 'at': '09:00', 'weekdays': [0]}), 'Every Monday at 9:00')
+        self.assertEqual(WS.words({'every': 'week', 'at': '08:30', 'weekdays': [0, 1, 2, 3, 4]}), 'Every weekday at 8:30')
+        self.assertEqual(WS.words({'every': 'month', 'at': '17:30', 'day': 'last'}), 'On the last day of each month at 17:30')
+        self.assertEqual(WS.words({'every': 'year', 'at': '09:00', 'day': 1, 'month': 7}), 'Every year on 1 July at 9:00')
+        codes = {c for c, _t in WS.issues({'every': 'week', 'at': '9', 'weekdays': [], 'starts': 'process'}, True)}
+        self.assertEqual(codes, {'schedule_time', 'schedule_weekdays', 'schedule_starts'})
+        self.assertFalse(WS.issues(WS.fresh(True), True))
+        self.assertFalse(WS.issues(WS.fresh(False), False))
+
+    def scheduled(self, nodes, model='', schedule=None, scope=None):
+        w, d = self.workflow(nodes, model=model)
+        d['trigger'] = {'kind': 'schedule', 'fields': [], 'date_field': '', 'delay': 0, 'unit': 'day',
+                        'schedule': dict({'every': 'day', 'at': '09:00', 'working_days': False,
+                                          'starts': 'each_record' if model else 'process'}, **(schedule or {}))}
+        if scope:
+            d['scope'] = scope
+        return w, d
+
+    def runs_of(self, w):
+        return self.env['pb.workflow.run'].sudo().search([('workflow_id', '=', w.id)])
+
+    def test_wf2p5a_t6_scheduled_new_process_starts_once_per_tick(self):
+        node = self.todo('check', owner={'kind': 'user', 'id': self.staff.id}, title='Month-end checks')
+        w, d = self.scheduled([node])
+        self.publish(w, d)
+        w = w.sudo()
+        self.assertTrue(w.last_tick_at, 'switching on sets the clock to now')
+        self.assertFalse(w.automation_id.active if w.automation_id else False, 'no rule, no new job')
+        Studio = self.env['pb.workflow.studio'].sudo()
+        # nothing due yet: nothing starts and nothing is written
+        Studio._cron_workflows()
+        self.assertFalse(self.runs_of(w))
+        # a week with the system off: it starts once, and says so
+        w.last_tick_at = fields.Datetime.now() - timedelta(days=7, hours=1)
+        Studio._cron_workflows()
+        runs = self.runs_of(w)
+        self.assertEqual(len(runs), 1)
+        self.assertTrue(runs.scheduled_at)
+        self.assertGreaterEqual(w.schedule_log[0]['missed'], 6)
+        self.assertEqual(self.step(runs, 'check').assignee_id, self.staff)
+        self.assertEqual(self.service.runs(w.id)[0]['initiator'], 'Started on schedule')
+        rows = self.service.schedule_history(w.id)['rows']
+        self.assertIn('earlier starts were missed while the system was off; it started once.', rows[0]['text'])
+        # the same pass again (a retried job): nothing more
+        Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 1)
+        # a window that reaches the same start again: its key makes no second run
+        w.last_tick_at = fields.Datetime.now() - timedelta(hours=25)
+        Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 1)
+        stamp = fields.Datetime.to_string(runs.scheduled_at)
+        Studio._enqueue(w, 0, SUPERUSER_ID, 'schedule:%s:%s' % (w.id, stamp))
+        Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 1)
+        # the next start (tomorrow's) is a new run
+        w.last_tick_at = runs.scheduled_at - timedelta(days=1)
+        w.schedule_log = []
+        from odoo.addons.pb_lifecycle.models import workflow_schedule as WS
+        with patch.object(WS, 'ticks', lambda *a, **k: [runs.scheduled_at + timedelta(days=1)]):
+            Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 2)
+
+    def test_wf2p5a_t7_scheduled_each_record_filters_cap_pause(self):
+        from odoo.addons.pb_lifecycle.models import workflow_schedule as WS
+        node = self.todo('look', owner={'kind': 'user', 'id': self.staff.id}, title='Look at it')
+        records = [self.generic('WF2 P5a sched %s' % n) for n in range(3)]
+        self.generic('Not this one')
+        scope = {'match': 'all', 'rules': [{'field': 'name', 'op': 'icontains', 'value': 'WF2 P5a sched'}]}
+        w, d = self.scheduled([node], model=self.GENERIC, scope=scope)
+        self.publish(w, d)
+        w = w.sudo()
+        Studio = self.env['pb.workflow.studio'].sudo()
+        # preview: the same maths and the same filter as the worker
+        preview = self.service.schedule_preview(w.id)
+        self.assertTrue(preview['ok'])
+        self.assertEqual(preview['count'], 3)
+        self.assertEqual(len(preview['next']), 5)
+        self.assertEqual(preview['names'][0], records[0].display_name)
+        w.last_tick_at = fields.Datetime.now() - timedelta(hours=25)
+        Studio._cron_workflows()
+        runs = self.runs_of(w)
+        self.assertEqual(sorted(runs.mapped('source_id')), sorted(r.id for r in records))
+        self.assertTrue(all(runs.mapped('scheduled_at')))
+        keys = self.env['pb.workflow.event'].sudo().search([('workflow_id', '=', w.id)]).mapped('key')
+        self.assertTrue(all(k.startswith('schedule:%s:' % w.id) for k in keys))
+        # the same start reached again: nothing more, no second history row
+        w.last_tick_at = fields.Datetime.now() - timedelta(hours=25)
+        Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 3)
+        self.assertEqual(len(w.schedule_log), 1)
+        # the next start: each record still has its run going → none twice
+        tick = runs[0].scheduled_at
+
+        def later(*args, **kwargs):
+            later.n += 1
+            return [tick + timedelta(days=later.n)]
+        later.n = 0
+        with patch.object(WS, 'ticks', later):
+            Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 3)
+        self.assertEqual(w.schedule_log[0]['reason'], 'already_running')
+        # over the cap: nothing started, the reason kept, the publisher told once
+        self.generic('WF2 P5a sched 4')
+        with patch.object(WS, 'FAN_OUT_CAP', 3), patch.object(WS, 'ticks', later):
+            Studio._cron_workflows()
+            self.assertEqual(len(self.runs_of(w)), 3)
+            self.assertEqual(w.schedule_log[0]['reason'], 'over_cap')
+            told = self.outbox('schedule_problem', self.admin)
+            self.assertEqual(len(told), 1)
+            self.assertIn('4 records matched', told.payload['body'])
+            # the same start looked at again: told once
+            later.n -= 1
+            Studio._cron_workflows()
+            self.assertEqual(len(self.outbox('schedule_problem', self.admin)), 1)
+            rows = self.service.schedule_history(w.id)['rows']
+            self.assertTrue(rows[0]['problem'])
+            told._deliver()
+            note = self.env['mail.message'].sudo().search([
+                ('model', '=', 'res.partner'), ('res_id', '=', self.admin.partner_id.id)], limit=1)
+            self.assertIn('did not start on schedule', note.subject)
+        # paused: nothing; switched on again: no catch-up
+        self.service.activate(w.id, False)
+        w.last_tick_at = fields.Datetime.now() - timedelta(days=3)
+        Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 3)
+        self.service.activate(w.id, True)
+        self.assertGreater(w.last_tick_at, fields.Datetime.now() - timedelta(minutes=5))
+        Studio._cron_workflows()
+        self.assertEqual(len(self.runs_of(w)), 3)
+
+    def test_wf2p5a_t8_scheduled_design_rules_and_review(self):
+        # nobody "starts" a scheduled workflow
+        mine = self.todo('mine', title='Do it')   # owner: the person who starts it
+        w, d = self.scheduled([mine])
+        codes = {i['code'] for i in self.service._validate(w.sudo(), d)}
+        self.assertIn('schedule_initiator', codes)
+        # a record workflow starts for each record, a new process once
+        node = self.todo('ok', owner={'kind': 'user', 'id': self.staff.id})
+        w2, d2 = self.scheduled([node], model=self.GENERIC, schedule={'starts': 'process'})
+        self.assertIn('schedule_starts', {i['code'] for i in self.service._validate(w2.sudo(), d2)})
+        w3, d3 = self.scheduled([node], schedule={'every': 'week', 'weekdays': []})
+        self.assertIn('schedule_weekdays', {i['code'] for i in self.service._validate(w3.sudo(), d3)})
+        # Review: the twin on the same records with the same pattern
+        scope = {'match': 'all', 'rules': [{'field': 'name', 'op': 'icontains', 'value': 'P5a twin'}]}
+        a, da = self.scheduled([node], model=self.GENERIC, scope=scope)
+        self.publish(a, da)
+        b, db = self.scheduled([node], model=self.GENERIC, scope=scope)
+        self.service.save_draft(b.id, b.revision, db)
+        panel = self.service.review(b.id)['schedule']
+        self.assertEqual(panel['words'], 'Every day at 9:00')
+        self.assertIn('schedule_twin', {x['code'] for x in panel['warnings']})
+        # the clock switched off (as on sudima): said plainly
+        job = self.env.ref('pb_lifecycle.cron_workflow_progress').sudo()
+        job.active = False
+        panel = self.service.review(b.id)['schedule']
+        texts = [x['text'] for x in panel['warnings']]
+        self.assertIn("This site's workflow clock is switched off. Scheduled workflows here do not start "
+                      "until it is switched on.", texts)
+        job.active = True
+        # an area that already chases on its own timetable (time off's carry-forward warning)
+        if 'hr.leave' in self.env and 'hr.leave' in {r['key'] for r in self.service._models()}:
+            c, dc = self.scheduled([node], model='hr.leave')
+            self.service.save_draft(c.id, c.revision, dc)
+            codes = {x['code'] for x in self.service.review(c.id)['schedule']['warnings']}
+            self.assertIn('schedule_area_chaser', codes)
+        # plain words only
+        for text in texts + [panel['words']]:
+            self.assertNotRegex(text, r'(?i)odoo|cron|expression|iteration|\bindex\b')
+
+    def test_wf2p5a_t17_new_strings_are_plain(self):
+        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        for name in ('workflow_schedule_run.py', 'workflow_schedule.py'):
+            source = open(os.path.join(root, 'pb_lifecycle/models', name), encoding='utf-8').read()
+            strings = re.findall(r"_\(\s*'([^']*)'", source) + re.findall(r"return '([^']*)'", source)
+            for s in strings:
+                self.assertNotRegex(s, r'(?i)odoo|\bcron\b|schedule expression|sub-run|\bloop\b|iteration|\bindex\b|\bnode\b', s)

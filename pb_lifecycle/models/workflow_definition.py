@@ -5,6 +5,8 @@ import json
 import math
 import re
 
+from .workflow_schedule import issues as schedule_issues
+
 SCHEMA = 'payobook.workflow/1'
 GROUPS = ('branch', 'parallel', 'subprocess')
 TYPES = ('trigger', 'task', 'input', 'matrix', 'email', 'wait', 'branch',
@@ -646,8 +648,18 @@ def _validate(d, source_fields=None, actions=None):
         for rule in scope['rules']:
             condition(rule, base, 'trigger')
     trigger = d.get('trigger', {})
-    if not isinstance(trigger, dict) or trigger.get('kind') not in ('manual', 'created', 'changed', 'date', 'approval_applied'):
+    if not isinstance(trigger, dict) or trigger.get('kind') not in ('manual', 'created', 'changed', 'date', 'approval_applied', 'schedule'):
         error('trigger', 'bad_trigger', 'Choose when this workflow starts.')
+    elif trigger['kind'] == 'schedule':
+        # WF2 P5a: start on a schedule. Whether it starts for records or as a
+        # new process is checked by the studio, which knows the record type.
+        for code, text in schedule_issues(trigger.get('schedule'), None):
+            error('trigger', code, text)
+        for n in raw:
+            if isinstance(n, dict) and n.get('type') in PEOPLE + ('notify',) and \
+                    (n.get('owner') or {}).get('kind', 'initiator') in (None, 'initiator'):
+                error(n.get('id'), 'schedule_initiator', 'Nobody starts a scheduled workflow. '
+                      'Choose who does this step, for example a named person or a responsibility.')
     elif trigger['kind'] == 'changed' and (not isinstance(trigger.get('fields'), list) or not trigger['fields'] or any(not isinstance(f, str) or f not in base for f in trigger['fields'])):
         error('trigger', 'trigger_fields', 'Choose the specific fields that start this workflow.')
     if trigger.get('before'):

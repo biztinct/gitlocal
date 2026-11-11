@@ -99,6 +99,11 @@ class Workflow(models.Model):
     component = fields.Boolean(default=False)
     notes = fields.Text()
     starter_group_ids = fields.Many2many('res.groups', string='Who can start this workflow')
+    # WF2 P5a: start on a schedule. The last moment the worker looked (set
+    # when the workflow is switched on, so resuming never catches up), and
+    # the last few starts it made or could not make (Activity shows them).
+    last_tick_at = fields.Datetime(copy=False)
+    schedule_log = fields.Json(default=list, copy=False)
 
     def _lock(self):
         self.ensure_one()
@@ -114,7 +119,8 @@ class Workflow(models.Model):
         d = self.published_id.definition
         t = d['trigger']
         kind = t['kind']
-        if kind in ('manual', 'approval_applied'):
+        # WF2 P5a: a scheduled start is the Studio worker's own (no rule).
+        if kind in ('manual', 'approval_applied', 'schedule'):
             return
         model = self.env['ir.model'].sudo()._get(self.source_model)
         if not model:
@@ -198,6 +204,8 @@ class WorkflowEvent(models.Model):
     run_id = fields.Many2one('pb.workflow.run', ondelete='restrict')
     approval_request_id = fields.Many2one('biz.approval.request', ondelete='restrict')
     initial_values = fields.Json(default=dict)
+    # WF2 P5a: the scheduled start this event is for (empty otherwise).
+    scheduled_at = fields.Datetime()
     _unique_event = models.Constraint('unique(key)', 'This event has already been captured.')
 
     def _process(self):
@@ -224,7 +232,8 @@ class WorkflowEvent(models.Model):
                     'source_id': self.source_id, 'initiator_id': self.initiator_id.id,
                     # Kept only to fill the stored column; nothing reads it.
                     'execution_user_id': self.execution_user_id.id, 'facts': facts,
-                    'source_approval_id': self.approval_request_id.id})
+                    'source_approval_id': self.approval_request_id.id,
+                    'scheduled_at': self.scheduled_at or False})
                 internal(self).write({'state': 'done', 'run_id': run.id, 'error': False})
                 run._initialize()
                 run._advance()
@@ -264,6 +273,9 @@ class WorkflowRun(models.Model):
     # (`passed`), and where it waits now (`section`, `reason`). Only gates
     # are kept here; steps store nothing new.
     gate = fields.Json(default=dict)
+    # WF2 P5a: started by the schedule (the start it was for); shown as
+    # "Started on schedule", never as the system account (R7).
+    scheduled_at = fields.Datetime(index=True)
 
     def _lock(self):
         self.ensure_one()

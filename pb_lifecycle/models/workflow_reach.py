@@ -17,6 +17,7 @@ role (resolved in the run's company) → the publisher.
 
 No local is called `user` or `uid` in a method that calls `_()` (ledger G12).
 """
+import logging
 from datetime import timedelta
 
 from odoo import api, fields, models, _
@@ -26,6 +27,8 @@ from odoo.tools.misc import format_date
 from . import workflow_definition as D
 from .workflow_models import internal
 from .workflow_people import EMAIL, LINK_UNSUPPORTED
+
+_logger = logging.getLogger(__name__)
 
 
 class WorkflowReach(models.AbstractModel):
@@ -290,6 +293,42 @@ class WorkflowReach(models.AbstractModel):
         run._log(_('An email address for %s was added.', name), step)
         self._send_link(run, step, email, name)
         return True
+
+    def _recheck_awaiting_email(self, records):
+        """WF2 P5a (P2b weak point): the moment an address is saved on a
+        record that a workflow is waiting on, send the link at once instead
+        of at the worker's next pass. Called by the area right after its own
+        write (Hiring: the candidate's email). Each run is worked in its own
+        company as the system (G1), in its own savepoint; nothing here may
+        break the save that called it. The worker still checks every minute,
+        so a failure here only costs that minute."""
+        if not records:
+            return 0
+        done = 0
+        try:
+            steps = internal(self.env['pb.workflow.step']).search([
+                ('state', '=', 'waiting'),
+                ('run_id.source_model', '=', records._name),
+                ('run_id.source_id', 'in', records.ids),
+                ('run_id.state', 'in', ['running', 'waiting', 'failed'])])
+        except Exception:   # noqa: BLE001
+            _logger.exception('Workflow: could not look for steps waiting on an email')
+            return 0
+        for step in steps.filtered(self._awaiting):
+            run = step.run_id
+            try:
+                with self.env.cr.savepoint():
+                    service = run._service()
+                    run = service.env['pb.workflow.run'].browse(run.id)
+                    run._lock()
+                    fresh = run.step_ids.filtered(lambda s: s.id == step.id)
+                    if fresh.state == 'waiting' and service._check_waiting_step(run, fresh):
+                        done += 1
+                        run._advance()
+            except Exception:   # noqa: BLE001
+                _logger.exception('Workflow run %s: the instant email re-check failed; '
+                                  'the worker will try again', run.id)
+        return done
 
     def _task_card(self, step, mine=True):
         card = super()._task_card(step, mine)

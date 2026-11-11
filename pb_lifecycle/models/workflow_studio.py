@@ -281,7 +281,7 @@ class WorkflowStudio(models.AbstractModel):
             error('trigger', 'approval_process_missing', _('Choose the existing approval process for this record.'))
         if not w.source_model and any(n.get('mode') == 'follow' for n in matrix):
             error(matrix[0]['id'], 'follow_needs_record', _('A new process has no record of its own to follow. Choose “Send it for approval”.'))
-        if trigger['kind'] != 'manual' and not w.source_model:
+        if trigger['kind'] not in ('manual', 'schedule') and not w.source_model:
             error('trigger', 'automatic_needs_record', _('Choose an existing record for an automatic start.'))
         if trigger['kind'] == 'approval_applied' and not w.process_id:
             error('trigger', 'trigger_process_missing', _('Choose the approval process this follows.'))

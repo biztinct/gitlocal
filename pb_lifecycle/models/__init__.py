@@ -32,3 +32,4 @@ from . import workflow_home
 from . import workflow_strip
 from . import workflow_time
 from . import workflow_reach
+from . import workflow_schedule_run

@@ -277,3 +277,31 @@ body.dragging,body.dragging *{cursor:grabbing!important;user-select:none!importa
 .time-filter{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:8px 12px;border-radius:10px;background:#f0ecff;color:#3d2f86;font-size:13.5px}.time-filter .ui-icon{width:15px;height:15px}
 .setting-late{margin-top:6px}
 @media(max-width:760px){.time-row{grid-template-columns:minmax(120px,1.6fr) repeat(2,minmax(64px,1fr));}.time-row>:nth-child(3),.time-row>:nth-child(4){display:none}.time-step{grid-template-columns:24px minmax(0,1fr) auto}.time-step .time-late,.time-step>.time-gone{display:none}.time-step>button{grid-column:2/4;justify-self:start}}
+/* WF2 P5a — start on a schedule */
+.sched-word{display:inline-flex;align-items:center;gap:6px}.sched-word .ui-icon{width:16px;height:16px;color:#5A4BB0}
+.sched{display:block}.sched .segmented.sched-every{flex-wrap:wrap}.sched .segmented.sched-every button{flex:1 1 auto;min-width:0;white-space:nowrap}
+.sched .segmented.sched-every button.on,.sched-day.on{background:#fff;color:#5A4BB0;box-shadow:0 1px 3px #2b23571a,inset 0 0 0 1px #cfc6f1}
+.sched-days{display:flex;gap:6px;flex-wrap:wrap}.sched-day{border-radius:999px;min-width:46px;padding:7px 10px;font-size:13px;background:#f4f2fb;border-color:#e3ddf6}
+.sched-day.on{background:#5A4BB0;color:#fff;box-shadow:none;border-color:#5A4BB0}
+.sched-pair{gap:8px}.sched-pair select{flex:1;min-width:0}
+.sched-check{display:flex!important;align-items:center;gap:8px;margin-top:14px;font-weight:600}.sched-check input{width:auto;margin:0}
+.sched-next{margin-top:16px;padding:14px 16px;border-radius:14px;background:#f7f6fd;border:1px solid #e8e4f7}
+.sched-next h4{margin:0 0 8px;font-size:13px;letter-spacing:.02em;color:#5f5a78;text-transform:none}
+.sched-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.sched-list li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;align-items:center;gap:10px;padding:6px 2px;font-size:14px;border-bottom:1px dashed #e6e2f3}
+.sched-list li:last-child{border-bottom:0}.sched-list li.is-first{font-weight:600;color:#3e3474}
+.sched-dot{width:8px;height:8px;border-radius:50%;background:#cfc6f1}.sched-list li.is-first .sched-dot{background:#5A4BB0;box-shadow:0 0 0 4px #5a4bb01f}
+.sched-at{font-variant-numeric:tabular-nums;color:#5f5a78}
+.sched-count,.sched-off,.sched-fix{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:13px;line-height:1.5}
+.sched-count .ui-icon,.sched-off .ui-icon,.sched-fix .ui-icon{width:16px;height:16px;flex-shrink:0;margin-top:2px;color:#6a55c4}
+.sched-off,.sched-fix{color:#8a4b0f}.sched-off .ui-icon,.sched-fix .ui-icon{color:#c27a1a}
+.sched-try{margin-bottom:20px}.sched-try-head{display:flex;gap:12px;align-items:flex-start}.sched-try-head>.ui-icon{width:22px;height:22px;color:#5A4BB0;margin-top:2px;flex-shrink:0}.sched-try-head p{margin:2px 0 0}
+.sched-chip{display:inline-flex;align-items:center;gap:6px;background:#EDEAF8;color:#5A4BB0;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;white-space:nowrap}.sched-chip .ui-icon{width:14px;height:14px}
+.sched-history{background:#fff;border:1px solid #e1e5f0;border-radius:18px;padding:18px 22px;margin:0 0 22px;box-shadow:0 5px 20px #24224b05}
+.sched-history h3{margin:0 0 10px;font-size:16px}.sched-history ul{list-style:none;margin:0;padding:0}
+.sched-history li{display:grid;grid-template-columns:18px minmax(110px,auto) minmax(0,1fr);gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid #f0eef6;font-size:14px}
+.sched-history li:first-child{border-top:0}.sched-history li .ui-icon{width:15px;height:15px;color:#8a80b8;align-self:center}
+.sched-history li.is-problem{color:#9a3412}.sched-history li.is-problem .ui-icon{color:#c2410c}
+.sched-when{color:#5f5a78;font-variant-numeric:tabular-nums;white-space:nowrap}
+.review-schedule{margin-top:18px}.review-schedule h3{margin:0 0 4px}
+@media (max-width:520px){.sched-history li{grid-template-columns:18px minmax(0,1fr)}.sched-history li>span:last-child{grid-column:2}.sched .segmented.sched-every button{flex-basis:30%}}

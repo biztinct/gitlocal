@@ -10,12 +10,16 @@ runs exactly as when a recruiter drags the card) and renaming a shared stage
 (through `stage_rename`). Nothing here changes how Hiring behaves. Studio
 reads this through a duck-typed hook.
 """
+import logging
+
 from odoo import _, api, models
 from odoo.exceptions import UserError
 
 from .automation_p8 import BUILTINS, _days_words
 from .hiring_common import P_LEAD_LATE_DAYS, P_WEEK_BEFORE_DAYS, flag, number
 from .stage_add import OWN, retired_keys
+
+_logger = logging.getLogger(__name__)
 
 #: Stages a workflow may not move a candidate into. Joined comes from
 #: confirming the person started, on their offer.
@@ -238,6 +242,19 @@ class HiringApplicantWorkflowContract(models.Model):
         if not result.get('moved'):
             raise UserError(result.get('warning') or result.get('note') or _('Hiring did not move this candidate.'))
         return result
+
+    def write(self, vals):
+        """WF2 P5a: a workflow step waiting for this candidate's email
+        address (D24) sends its link the moment the address is saved, not at
+        the worker's next pass. Asked only when the email is in the save;
+        never breaks the save."""
+        res = super().write(vals)
+        if 'email_from' in vals or 'partner_id' in vals:
+            try:
+                self.env['pb.workflow.studio'].sudo()._recheck_awaiting_email(self)
+            except Exception:   # noqa: BLE001
+                _logger.exception('pb_hiring: the workflow email re-check failed')
+        return res
 
     @api.model
     def _workflow_rename_stage(self, stage_id, name, revision):
