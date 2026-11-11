@@ -459,7 +459,8 @@ class PbMeExpense(models.AbstractModel):
             'submitted': (_('Waiting approval'), 'wait'),
             'approved': (_('Approved — being paid'), 'ok'),
             'paid': (_('Paid'), 'ok'),
-            'refused': (_('Refused — see why'), 'act'),
+            # WF2 P2b (D22): one word for both employee pages
+            'refused': (_('Refused — your turn'), 'act'),
         }
 
     @api.model

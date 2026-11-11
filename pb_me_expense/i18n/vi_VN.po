@@ -35,6 +35,8 @@ msgid "1 expense claim refused — fix and resend"
 msgstr "1 đề nghị hoàn chi phí bị từ chối — sửa và gửi lại"
 
 #. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
 #: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
 msgid "1 receipt"
 msgstr "1 hoá đơn"
@@ -1080,3 +1082,138 @@ msgstr "đang chờ"
 #: code:addons/pb_me_expense/models/me_expense.py:0
 msgid "your HR team"
 msgstr "bộ phận Nhân sự"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was approved"
+msgstr "Đề nghị hoàn chi phí của bạn đã được duyệt"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was refused"
+msgstr "Đề nghị hoàn chi phí của bạn đã bị từ chối"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was paid"
+msgstr "Đề nghị hoàn chi phí của bạn đã được thanh toán"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "%s receipts"
+msgstr "%s hoá đơn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was approved"
+msgstr "Đề nghị của bạn đã được duyệt"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s for %(total)s (%(what)s) was approved."
+msgstr "Đề nghị hoàn chi phí %(ref)s trị giá %(total)s (%(what)s) của bạn đã được duyệt."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Finance pays it next. We will email you again when it has been paid."
+msgstr "Bộ phận tài chính sẽ thanh toán tiếp theo. Chúng tôi sẽ gửi email cho bạn khi khoản này đã được thanh toán."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was refused"
+msgstr "Đề nghị của bạn đã bị từ chối"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s for %(total)s (%(what)s) was refused."
+msgstr "Đề nghị hoàn chi phí %(ref)s trị giá %(total)s (%(what)s) của bạn đã bị từ chối."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "You can fix it and send it again from your claim."
+msgstr "Bạn có thể sửa và gửi lại từ trang đề nghị của mình."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "No reason was given."
+msgstr "Không có lý do nào được đưa ra."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was paid"
+msgstr "Đề nghị của bạn đã được thanh toán"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s was paid: %(total)s on %(day)s."
+msgstr "Đề nghị hoàn chi phí %(ref)s của bạn đã được thanh toán: %(total)s vào ngày %(day)s."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Hello %s,"
+msgstr "Xin chào %s,"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Hello,"
+msgstr "Xin chào,"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The reason given"
+msgstr "Lý do"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Open your claim"
+msgstr "Mở đề nghị của bạn"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The employee gets an email that their claim was approved, with a link to it."
+msgstr "Nhân viên nhận email báo đề nghị đã được duyệt, kèm đường dẫn tới đề nghị."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The employee gets an email that their claim was refused, with the reason and a link to fix it."
+msgstr "Nhân viên nhận email báo đề nghị bị từ chối, kèm lý do và đường dẫn để sửa."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The employee gets an email that their claim was paid, with the amount and the date."
+msgstr "Nhân viên nhận email báo đề nghị đã được thanh toán, kèm số tiền và ngày."
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_approved
+msgid "Expense claim: approved (to the employee)"
+msgstr "Đề nghị hoàn chi phí: đã duyệt (gửi nhân viên)"
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_refused
+msgid "Expense claim: refused (to the employee)"
+msgstr "Đề nghị hoàn chi phí: bị từ chối (gửi nhân viên)"
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_paid
+msgid "Expense claim: paid (to the employee)"
+msgstr "Đề nghị hoàn chi phí: đã thanh toán (gửi nhân viên)"

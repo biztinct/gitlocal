@@ -4,3 +4,5 @@ from . import hr_expense
 from . import me_expense
 from . import pb_me_home
 from . import workflow_contract
+# WF2 P2b (D6): approved / refused / paid emails to the employee.
+from . import expense_messages
