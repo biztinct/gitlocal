@@ -1160,16 +1160,11 @@ export const SCREENS = {
                         "reads 3 pay components from a spreadsheet. Load the file for this period.",
                         "đọc 3 thành phần lương từ một bảng tính. Hãy tải tệp của kỳ này.")))}</p>
                     <div class="lrn-file">${ic("file-text")}<b>${esc(pd.file)}</b></div>
+                    <!-- UPDATES P3a (D1): a pay data file is for its pay run only. -->
                     <div data-coach="pw-paymode">
-                        <h4>${esc(tx(B("What should these values do?", "Các giá trị này dùng để làm gì?")))}</h4>
-                        <button class="lrn-choice on" aria-pressed="true"><b>${esc(tx(B("Update Payobook", "Cập nhật Payobook")))}</b>
-                            <span class="lrn-sub2">${esc(tx(B(
-                                "Values are saved to employee and contract records and used from now on.",
-                                "Các giá trị được lưu vào hồ sơ nhân viên và hợp đồng, và được dùng từ nay về sau.")))}</span></button>
-                        <button class="lrn-choice" aria-pressed="false"><b>${esc(tx(B("This run only", "Chỉ đợt này")))}</b>
-                            <span class="lrn-sub2">${esc(tx(B(
-                                "Used just this once — good for a one-off bonus or a correction. Nothing in Payobook changes except each person's manager, when the file has a manager column.",
-                                "Chỉ dùng một lần này — hợp với một khoản thưởng một lần hoặc một lần sửa. Không có gì trong Payobook thay đổi, trừ người quản lý của từng người khi tệp có cột người quản lý.")))}</span></button>
+                        <p class="lrn-note">${ic("info")}${esc(tx(B(
+                            "This file is used for this pay run only. To change employee, contract or bank records, use People › Updates.",
+                            "Tệp này chỉ dùng cho đợt trả lương này. Để thay đổi hồ sơ nhân viên, hợp đồng hoặc tài khoản ngân hàng, hãy dùng Nhân sự › Cập nhật.")))}</p>
                     </div>
                     <div class="lrn-strip">
                         <button class="lrn-btn ghost" data-coach="pw-skipsheet">${esc(tx(B("Run without a spreadsheet", "Chạy không cần bảng tính")))}</button>
@@ -1430,7 +1425,8 @@ export const SCREENS = {
         const tiles = [
             ["plug", B("Load From Connected System", "Tải từ hệ thống đã kết nối")],
             ["grid", B("Set up columns from Excel", "Thiết lập cột từ Excel")],
-            ["user-plus", B("Import Employees", "Nhập nhân viên")],
+            // UPDATES P3a — the old employee import is retired; the tile opens Updates.
+            ["users", B("Update employees from a sheet", "Cập nhật nhân viên từ bảng tính")],
             ["layers", B("Set up a scheme from a file", "Thiết lập chương trình lương từ tệp")],
         ].map(([icon, label]) => `<button class="lrn-btn sm">${ic(icon)}${esc(tx(label))}</button>`).join("");
         return `

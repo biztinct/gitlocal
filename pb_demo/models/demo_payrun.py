@@ -378,6 +378,24 @@ class PbPayrunWizardDemo(models.AbstractModel):
                     on_fail(item, ex)
             return done
 
+    # ------------------------------------------------ UPDATES P3a — one-offs
+    @api.model
+    def _pb_demo_oneoffs(self, slip, config, iv):
+        """`(iv, token)` — the generated inputs with any approved one-off pay
+        item from Updates merged in (P2d's reader, `pb_updates`). A soft seam:
+        without `pb_updates` (or with nothing waiting for this person and
+        month) the inputs come back unchanged and the token is None."""
+        merge = getattr(slip, '_pb_updates_merge_inputs', None)
+        if merge is None or not config:
+            return iv, None
+        return merge(config, iv)
+
+    @api.model
+    def _pb_demo_oneoffs_done(self, slip, token):
+        done = getattr(slip, '_pb_updates_merge_done', None)
+        if done is not None and token:
+            done(token)
+
     @api.model
     def compute_batch(self, payload):
         key = self._demo_division_for(payload)
@@ -436,10 +454,13 @@ class PbPayrunWizardDemo(models.AbstractModel):
                 'formula_config_id': end_cfg.id,
                 'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else payload.get('name')),
             })
+            # UPDATES P3a — an approved one-off from Updates lands here too.
+            iv, oneoff_token = self._pb_demo_oneoffs(slip, end_cfg, iv)
             vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
             slip.with_context(pb_salary_rule_cache=rule_cache)._create_payslip_lines_from_formulas(end_rules, vc)
             if has_fiv:
                 slip.formula_input_values = json.dumps(iv)
+            self._pb_demo_oneoffs_done(slip, oneoff_token)
 
         def failed(item, ex):
             _logger.warning('pb_demo run payroll: compute fail %s: %s', item[0].name, ex)
@@ -567,10 +588,13 @@ class PbPayrunWizardDemo(models.AbstractModel):
                         'formula_config_id': end_cfg.id,
                         'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else name),
                     })
+                    # UPDATES P3a — an approved one-off from Updates lands here too.
+                    iv, oneoff_token = self._pb_demo_oneoffs(slip, end_cfg, iv)
                     vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
                     slip._create_payslip_lines_from_formulas(end_rules, vc)
                     if has_fiv:
                         slip.formula_input_values = json.dumps(iv)
+                    self._pb_demo_oneoffs_done(slip, oneoff_token)
                 computed += 1
             except Exception as ex:  # pragma: no cover
                 _logger.warning('pb_demo run payroll: compute fail %s: %s', e.name, ex)

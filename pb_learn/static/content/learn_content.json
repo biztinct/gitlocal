@@ -3757,8 +3757,8 @@
     },
     {
       "definition": {
-        "en": "Use the file's values once, for this run, and change nothing in Payobook except each person's manager, when the file has one. The other answer, Update Payobook, saves them onto people's records from now on.",
-        "vi": "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook trừ người quản lý của từng người, khi tệp có cột đó. Câu trả lời còn lại, Cập nhật Payobook, lưu chúng vào hồ sơ từ nay về sau."
+        "en": "Use the file's values once, for this run, and change nothing in Payobook except each person's manager, when the file has one. Every pay data file works this way: lasting changes to people's records go through People › Updates.",
+        "vi": "Dùng các giá trị trong tệp một lần, cho đợt này, và không thay đổi gì trong Payobook trừ người quản lý của từng người, khi tệp có cột đó. Mọi tệp dữ liệu lương đều như vậy: thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
       },
       "key": "thisRunOnly",
       "match": {
@@ -5948,8 +5948,8 @@
         },
         {
           "body": {
-            "en": "\"Update Payobook\" is different: it saves values onto people's records, so it reaches every run computed from then on. Use This run only for a one-off.",
-            "vi": "\"Cập nhật Payobook\" thì khác: nó lưu giá trị vào hồ sơ của từng người, nên ảnh hưởng tới mọi đợt được tính từ đó về sau. Hãy dùng Chỉ đợt này cho khoản chỉ có một lần."
+            "en": "A value that should last — a new allowance, a new wage — is changed in People › Updates, so it reaches every run computed from then on. The pay data file is for this run only.",
+            "vi": "Một giá trị cần giữ lâu dài — một khoản phụ cấp mới, một mức lương mới — được thay đổi trong Nhân sự › Cập nhật, nên ảnh hưởng tới mọi đợt được tính từ đó về sau. Tệp dữ liệu lương chỉ dùng cho đợt này."
           },
           "capability": "any",
           "kind": "warn",
@@ -8309,8 +8309,8 @@
             {
               "anchor": "pw-paymode",
               "text": {
-                "en": "If the scheme reads a spreadsheet, load the file and choose Update Payobook or This run only",
-                "vi": "Nếu chương trình đọc bảng tính, tải tệp lên và chọn Cập nhật Payobook hoặc Chỉ đợt này"
+                "en": "If the scheme reads a spreadsheet, load the file: it is used for this run only",
+                "vi": "Nếu chương trình đọc bảng tính, tải tệp lên: tệp chỉ dùng cho đợt này"
               }
             },
             {
@@ -10267,8 +10267,8 @@
       "blocks": [
         {
           "body": {
-            "en": "<b>Update Payobook</b> saves the file's values onto employee and contract records and uses them from now on. <b>This run only</b> uses them once, for this run, and changes nothing in Payobook except managers from the file. The batch then says \"This run only — nothing saved but managers\".",
-            "vi": "<b>Cập nhật Payobook</b> lưu các giá trị trong tệp vào hồ sơ nhân viên và hợp đồng, và dùng chúng từ nay về sau. <b>Chỉ đợt này</b> dùng chúng một lần, cho đợt này, và không thay đổi gì trong Payobook ngoài người quản lý từ tệp. Đợt nhập khi đó ghi \"Chỉ đợt này — chỉ lưu người quản lý\"."
+            "en": "A pay data file is used <b>for this run only</b>: its values are used once and nothing in Payobook changes except managers from the file. The batch then says \"This run only — nothing saved but managers\". To change employee, contract or bank records for good, use <b>People › Updates</b>.",
+            "vi": "Tệp dữ liệu lương được dùng <b>chỉ cho đợt này</b>: các giá trị được dùng một lần và không thay đổi gì trong Payobook ngoài người quản lý từ tệp. Đợt nhập khi đó ghi \"Chỉ đợt này — chỉ lưu người quản lý\". Để thay đổi lâu dài hồ sơ nhân viên, hợp đồng hoặc tài khoản ngân hàng, hãy dùng <b>Nhân sự › Cập nhật</b>."
           },
           "capability": "any",
           "kind": "p",
@@ -10277,8 +10277,8 @@
         },
         {
           "body": {
-            "en": "A one-off bonus or a correction: This run only. A new allowance everyone keeps getting: Update Payobook.",
-            "vi": "Một khoản thưởng một lần hoặc một lần sửa: Chỉ đợt này. Một khoản phụ cấp mới mà mọi người sẽ tiếp tục nhận: Cập nhật Payobook."
+            "en": "A one-off bonus or a correction: the pay data file, for this run. A new allowance everyone keeps getting: People › Updates.",
+            "vi": "Một khoản thưởng một lần hoặc một lần sửa: tệp dữ liệu lương, cho đợt này. Một khoản phụ cấp mới mà mọi người sẽ tiếp tục nhận: Nhân sự › Cập nhật."
           },
           "capability": "any",
           "kind": "ok",
@@ -10299,8 +10299,8 @@
       "dynamic": "none",
       "key": "thisrunonly",
       "label": {
-        "en": "Update Payobook or This run only?",
-        "vi": "Cập nhật Payobook hay Chỉ đợt này?"
+        "en": "Is a pay data file kept?",
+        "vi": "Tệp dữ liệu lương có được lưu lại không?"
       },
       "offer": true,
       "phrases": [
@@ -10311,8 +10311,8 @@
         "chi dot nay",
         "chỉ đợt này",
         "cap nhat payobook",
-        "Update Payobook or This run only?",
-        "Cập nhật Payobook hay Chỉ đợt này?"
+        "Is a pay data file kept?",
+        "Tệp dữ liệu lương có được lưu lại không?"
       ],
       "practice_key": "",
       "screens": "import,runpayroll,importwizard",
@@ -13632,8 +13632,8 @@
             "vi": "Các giá trị này dùng để làm gì?"
           },
           "means": {
-            "en": "Update Payobook saves the file's values onto people's records from now on. This run only uses them once.",
-            "vi": "Cập nhật Payobook lưu các giá trị của tệp vào hồ sơ từ nay về sau. Chỉ đợt này dùng chúng một lần."
+            "en": "The pay data file is used for this run only. Lasting changes to people's records go through People › Updates.",
+            "vi": "Tệp dữ liệu lương chỉ dùng cho đợt này. Thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
           },
           "modes": [
             "try"
@@ -13643,8 +13643,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Update Payobook, or This run only",
-            "vi": "Cập nhật Payobook, hoặc Chỉ đợt này"
+            "en": "For this run only",
+            "vi": "Chỉ cho đợt này"
           },
           "value": ""
         },
@@ -20547,8 +20547,8 @@
         "pb_payrun_wizard.action_pb_payrun_wizard"
       ],
       "next_step": {
-        "en": "Pick the pay scheme under \"Pay run for\" and check the month. If the scheme reads a spreadsheet, load the file and choose Update Payobook or This run only. Computing makes drafts only — nothing is paid, sent or approved.",
-        "vi": "Chọn chương trình lương trong mục \"Đợt lương cho\" và kiểm tra tháng. Nếu chương trình đọc một bảng tính, hãy tải tệp và chọn Cập nhật Payobook hoặc Chỉ đợt này. Tính chỉ tạo bản nháp — chưa có gì được chi, gửi hay phê duyệt."
+        "en": "Pick the pay scheme under \"Pay run for\" and check the month. If the scheme reads a spreadsheet, load the file: it is used for this run only. Computing makes drafts only — nothing is paid, sent or approved.",
+        "vi": "Chọn chương trình lương trong mục \"Đợt lương cho\" và kiểm tra tháng. Nếu chương trình đọc một bảng tính, hãy tải tệp lên: tệp chỉ dùng cho đợt này. Tính chỉ tạo bản nháp — chưa có gì được chi, gửi hay phê duyệt."
       },
       "open": "",
       "places": [
@@ -20772,8 +20772,8 @@
         {
           "key": "thisrunonly",
           "label": {
-            "en": "Update Payobook or This run only?",
-            "vi": "Cập nhật Payobook hay Chỉ đợt này?"
+            "en": "Is a pay data file kept?",
+            "vi": "Tệp dữ liệu lương có được lưu lại không?"
           }
         },
         {
@@ -31266,20 +31266,20 @@
               },
               "lines": [],
               "look": {
-                "en": "What should these values do?, with Update Payobook and This run only.",
-                "vi": "Các giá trị này dùng để làm gì?, với Cập nhật Payobook và Chỉ đợt này."
+                "en": "The line saying the file is used for this pay run only, with the way to People › Updates.",
+                "vi": "Dòng cho biết tệp chỉ dùng cho đợt trả lương này, kèm lối vào Nhân sự › Cập nhật."
               },
               "means": {
-                "en": "Update Payobook saves the file's values to employee and contract records from now on. This run only uses them once.",
-                "vi": "Cập nhật Payobook lưu các giá trị của tệp vào hồ sơ nhân viên và hợp đồng từ nay về sau. Chỉ đợt này dùng chúng một lần."
+                "en": "The pay data file is used for this run only. Lasting changes to people's records go through People › Updates.",
+                "vi": "Tệp dữ liệu lương chỉ dùng cho đợt này. Thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
               },
               "moment_chain": "",
               "moment_from": "",
               "moment_to": "",
               "moment_which": "",
               "press": {
-                "en": "This run only, or Update Payobook, then continue with the file.",
-                "vi": "Chỉ đợt này, hoặc Cập nhật Payobook, rồi tiếp tục với tệp."
+                "en": "Continue with the file: it is used for this run only.",
+                "vi": "Tiếp tục với tệp: tệp chỉ dùng cho đợt này."
               },
               "screen": "runpayroll",
               "tip": {
@@ -31492,8 +31492,8 @@
             "vi": "Chọn nhầm chương trình lương. Cuối tháng là quyết toán cả tháng; Tạm ứng giữa tháng là trả trước một phần. Đó không phải hai cách nhìn của cùng một thứ."
           },
           {
-            "en": "Choosing Update Payobook for a one-off amount. That saves the value onto the person's records for every month after. A one-off bonus belongs in This run only.",
-            "vi": "Chọn Cập nhật Payobook cho một khoản chỉ có một lần. Làm vậy là lưu giá trị đó vào hồ sơ của người đó cho mọi tháng sau. Một khoản thưởng một lần thuộc về Chỉ đợt này."
+            "en": "Putting a lasting change, such as a new allowance, only in the pay data file. The file is used for this run only, so next month it is gone. Lasting changes go through People › Updates.",
+            "vi": "Chỉ đưa một thay đổi lâu dài, như một khoản phụ cấp mới, vào tệp dữ liệu lương. Tệp chỉ dùng cho đợt này, nên tháng sau nó không còn. Thay đổi lâu dài được thực hiện qua Nhân sự › Cập nhật."
           },
           {
             "en": "Reading \"Need review\" as \"nothing else to check\". It flags take-home pay that moved more than 30% on the person's last payslip — not a single line that jumped. Hùng's overtime nearly quadrupled and his take-home rose 26%, under the line.",
@@ -32771,8 +32771,8 @@
               },
               "lines": [],
               "look": {
-                "en": "What should these values do? Two choices: Update Payobook, or This run only.",
-                "vi": "Các giá trị này dùng để làm gì? Hai lựa chọn: Cập nhật Payobook, hoặc Chỉ đợt này."
+                "en": "What should these values do? Two choices: For this run only.",
+                "vi": "Các giá trị này dùng để làm gì? Hai lựa chọn: Chỉ cho đợt này."
               },
               "means": {
                 "en": "Asked when the scheme reads a spreadsheet.",
@@ -32788,12 +32788,12 @@
               },
               "screen": "runpayroll",
               "tip": {
-                "en": "Update Payobook saves the values onto employee and contract records. This run only uses them once.",
-                "vi": "Cập nhật Payobook lưu các giá trị vào hồ sơ nhân viên và hợp đồng. Chỉ đợt này dùng chúng một lần."
+                "en": "The pay data file is used for this run only. Lasting changes to people's records go through People › Updates.",
+                "vi": "Tệp dữ liệu lương chỉ dùng cho đợt này. Thay đổi lâu dài trong hồ sơ được thực hiện qua Nhân sự › Cập nhật."
               },
               "title": {
-                "en": "Update Payobook, or This run only",
-                "vi": "Cập nhật Payobook, hoặc Chỉ đợt này"
+                "en": "For this run only",
+                "vi": "Chỉ cho đợt này"
               },
               "uses": [
                 {
