@@ -25,3 +25,4 @@ from . import test_calendar_notifications
 from . import test_google_calendar_scopes
 from . import test_calendar_connection
 from . import test_filters_w3
+from . import test_wf2p2b_joining

@@ -1261,7 +1261,34 @@ class HiringOfferJoining(models.Model):
                 "joined; %(first)s is the buddy on day one.",
                 names=', '.join(buddies.mapped('name')), who=employee.name or '',
                 first=first.name or ''))
+        leg(self.env, 'saying on the buddy step who chose them on %s' % self.id,
+            self._say_buddy_chosen_in_hiring)
         return 'done'
+
+    def _say_buddy_chosen_in_hiring(self):
+        """WF2 P2b (D7): the joining checklist's buddy step, ticked from
+        Hiring's answer, says where the answer came from — "Chosen in Hiring by
+        … on …" — so nobody wonders whether to ask again. Only the step of the
+        checklist this offer opened, only when it is done, never twice."""
+        self.ensure_one()
+        case = self.case_id.sudo()
+        if not case:
+            return False
+        step = case.task_ids.filtered(
+            lambda t: getattr(t, 'automation_key', '') == 'buddy_invite'
+            and t.state == 'done')[:1]
+        if not step:
+            return False
+        ask = self.sudo().prejoin_ids.filtered(
+            lambda p: p.kind == 'buddy' and p.state == 'done')[:1]
+        who = (ask.answered_by if ask else '') or _('the hiring manager')
+        day = _words(self.env, (ask.done_on.date() if ask and ask.done_on
+                                else fields.Date.context_today(self)), 'd MMM yyyy')
+        line = _("Chosen in Hiring by %(who)s on %(day)s.", who=who, day=day)
+        if line in (step.note or ''):
+            return False
+        step.write({'note': ((step.note + '\n\n') if step.note else '') + line})
+        return True
 
     def _onboarding_ready(self, employee):
         """Is the onboarding module here (the buddy field and the
