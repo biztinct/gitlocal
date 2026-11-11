@@ -49,8 +49,13 @@ lands on three or more people into one counted row, the drawer's footer keeps
 clear of the floating helpers other modules pin to the same corner, the header's
 export/import controls fold into one File menu under 1440px, and a dropped file
 says how many rows it is matching while it matches them.
+
+UPDATES P1 adds two read-only seams for the Updates front door (`pb_updates`):
+`import_columns` says what each column of a file is and where the desk would
+put it, and `import_peek(columns=...)` lets a person's own column matching
+replace the desk's five automatic ways. Neither writes; Apply is unchanged.
 """,
-    'version': '19.0.1.8.3',
+    'version': '19.0.1.8.4',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

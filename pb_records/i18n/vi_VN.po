@@ -1715,3 +1715,9 @@ msgstr "Theo nguồn cấp dữ liệu lương, có thể khác với hồ sơ n
 #: code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "people"
 msgstr "người"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_io.py:0
+msgid "Column %s"
+msgstr "Cột %s"

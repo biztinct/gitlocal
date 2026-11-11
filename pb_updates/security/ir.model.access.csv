@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_updates_batch_hr,pb.updates.batch hr,model_pb_updates_batch,hr.group_hr_user,1,1,1,0
+access_pb_updates_batch_officer,pb.updates.batch payroll officer,model_pb_updates_batch,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_updates_batch_editor,pb.updates.batch records editor,model_pb_updates_batch,pb_records.group_records_editor,1,1,1,0
+access_pb_updates_batch_system,pb.updates.batch system,model_pb_updates_batch,base.group_system,1,1,1,1
+access_pb_updates_batch_viewer,pb.updates.batch records viewer,model_pb_updates_batch,pb_records.group_records_viewer,1,0,0,0
+access_pb_updates_layout_hr,pb.updates.layout hr,model_pb_updates_layout,hr.group_hr_user,1,1,1,0
+access_pb_updates_layout_officer,pb.updates.layout payroll officer,model_pb_updates_layout,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,0
+access_pb_updates_layout_editor,pb.updates.layout records editor,model_pb_updates_layout,pb_records.group_records_editor,1,1,1,0
+access_pb_updates_layout_system,pb.updates.layout system,model_pb_updates_layout,base.group_system,1,1,1,1
+access_pb_updates_layout_viewer,pb.updates.layout records viewer,model_pb_updates_layout,pb_records.group_records_viewer,1,0,0,0

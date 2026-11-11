@@ -1,0 +1,1783 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-11 12:00+1100\n"
+"Last-Translator: Payobook Translation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(changes)s for %(people)s"
+msgstr "%(changes)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(changes)s in for %(people)s"
+msgstr "Đã cập nhật %(changes)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(field)s goes from %(old)s to %(new)s."
+msgstr "%(field)s đổi từ %(old)s thành %(new)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(field)s is empty today and becomes %(new)s."
+msgstr "%(field)s hiện đang trống và sẽ thành %(new)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(list)s and %(n)s more"
+msgstr "%(list)s và %(n)s mục khác"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "%(product)s update sheet %(date)s.xlsx"
+msgstr "Bảng cập nhật %(product)s %(date)s.xlsx"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%(shown)s of %(total)s people are in the sheet. That is the most one file "
+"holds, so do the rest in a second update."
+msgstr ""
+"Bảng có %(shown)s trên %(total)s người. Đó là mức tối đa một tệp chứa được, "
+"vì vậy hãy làm phần còn lại trong một lần cập nhật thứ hai."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s are waiting with %(who)s. Nothing changes until they approve."
+msgstr ""
+"%(what)s đang chờ %(who)s. Chưa có gì thay đổi cho đến khi họ phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s are matched already"
+msgstr "%s cột đã được ghép"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s are waiting for approval. Nothing changes until it is approved."
+msgstr ""
+"%s đang chờ phê duyệt. Chưa có gì thay đổi cho đến khi được phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s best guesses to check."
+msgstr "%s gợi ý cần bạn kiểm tra."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s cells"
+msgstr "%s ô"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s changes"
+msgstr "%s thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s changes are"
+msgstr "%s thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s columns"
+msgstr "%s cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s need your attention."
+msgstr "%s cần bạn xem lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s needs your attention."
+msgstr "%s cần bạn xem lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s rows"
+msgstr "%s dòng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s update"
+msgstr "Cập nhật %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values are back as they were."
+msgstr "%s giá trị đã trở lại như trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values from the file were left out."
+msgstr "%s giá trị trong tệp đã được bỏ qua."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s values waiting"
+msgstr "%s giá trị đang chờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s were left alone because someone changed them since."
+msgstr "%s giá trị được giữ nguyên vì đã có người sửa sau đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 best guess to check."
+msgstr "1 gợi ý cần bạn kiểm tra."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 cell"
+msgstr "1 ô"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 change"
+msgstr "1 thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 change is"
+msgstr "1 thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 column"
+msgstr "1 cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 is matched already"
+msgstr "1 cột đã được ghép"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 row"
+msgstr "1 dòng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value from the file was left out."
+msgstr "1 giá trị trong tệp đã được bỏ qua."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value is back as it was."
+msgstr "1 giá trị đã trở lại như trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 value waiting"
+msgstr "1 giá trị đang chờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 was left alone because someone changed it since."
+msgstr "1 giá trị được giữ nguyên vì đã có người sửa sau đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "A blank cell means \"leave it alone\"."
+msgstr "Ô trống nghĩa là \"giữ nguyên\"."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "A row with no name or code"
+msgstr "Một dòng không có tên hoặc mã"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "About the person"
+msgstr "Thông tin về người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Already set to this. Nothing changes."
+msgstr "Đã là giá trị này. Không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Already used by “%s”. Only that one is brought in."
+msgstr "Đã được cột “%s” dùng. Chỉ cột đó được đưa vào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Any layout, any column names. Match the columns once and they are remembered"
+" next time."
+msgstr ""
+"Bố cục nào, tên cột nào cũng được. Ghép cột một lần và lần sau hệ thống sẽ "
+"nhớ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Applied"
+msgstr "Đã áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply %s changes"
+msgstr "Áp dụng %s thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply 1 change"
+msgstr "Áp dụng 1 thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Applying %s changes…"
+msgstr "Đang áp dụng %s thay đổi…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Applying 1 change…"
+msgstr "Đang áp dụng 1 thay đổi…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Back to Updates"
+msgstr "Về trang Cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Bank details"
+msgstr "Thông tin ngân hàng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Best guess. Please check"
+msgstr "Gợi ý gần đúng. Vui lòng kiểm tra"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Blank in your file"
+msgstr "Để trống trong tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Blank in your file, so nothing changes."
+msgstr "Ô này để trống trong tệp, nên không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Bring it back"
+msgstr "Đưa vào lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Building the sheet…"
+msgstr "Đang tạo bảng…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid ""
+"Cells and rows that still need attention are simply not applied. Nothing is "
+"lost: they stay as they are now."
+msgstr ""
+"Các ô và dòng còn cần xem lại sẽ không được áp dụng. Không mất gì cả: chúng "
+"giữ nguyên như hiện tại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Change job details, contracts, bank details and ongoing pay items for the "
+"whole team from one spreadsheet, any day of the month. You see every change "
+"before it happens, and you can undo it afterwards."
+msgstr ""
+"Thay đổi thông tin công việc, hợp đồng, ngân hàng và các khoản lương định kỳ"
+" cho cả đội từ một bảng tính, vào bất kỳ ngày nào trong tháng. Bạn xem trước"
+" mọi thay đổi và có thể hoàn tác sau đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Change the matching"
+msgstr "Đổi cách ghép cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Changes"
+msgstr "Thay đổi"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__apply_ids
+msgid "Changes applied"
+msgstr "Các thay đổi đã áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Changes on apply. Press Enter to leave it out or change it."
+msgstr "Sẽ thay đổi khi áp dụng. Nhấn Enter để bỏ qua hoặc sửa."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Check this value"
+msgstr "Kiểm tra giá trị này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Checking %s rows against your people…"
+msgstr "Đang đối chiếu %s dòng với nhân viên của bạn…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Checking 1 row against your people…"
+msgstr "Đang đối chiếu 1 dòng với nhân viên của bạn…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Checking the file against your people…"
+msgstr "Đang đối chiếu tệp với nhân viên của bạn…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Choose a file"
+msgstr "Chọn tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Choose another file"
+msgstr "Chọn tệp khác"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Choose at least one column to bring in."
+msgstr "Hãy chọn ít nhất một cột để đưa vào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Choose which column finds the person: Employee code, Employee name or Work "
+"email."
+msgstr ""
+"Hãy chọn cột dùng để tìm người: Mã nhân viên, Tên nhân viên hoặc Email công "
+"việc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Click a red cell to sort it out here, with no need to go back to Excel. "
+"Click a changed cell to leave it out. Grey values are what is on file today "
+"and are not touched."
+msgstr ""
+"Bấm vào ô màu đỏ để xử lý ngay tại đây, không cần quay lại Excel. Bấm vào ô "
+"có thay đổi để bỏ qua nó. Giá trị màu xám là dữ liệu hiện có và không bị "
+"đụng đến."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Close (Esc)"
+msgstr "Đóng (Esc)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Column in your file"
+msgstr "Cột trong tệp của bạn"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__map_json
+msgid "Column matching"
+msgstr "Cách ghép cột"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__company_id
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Confirmed by you"
+msgstr "Bạn đã xác nhận"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Continue without the %s that need attention"
+msgstr "Tiếp tục, bỏ qua %s mục cần xem lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Contract"
+msgstr "Hợp đồng"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__create_uid
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__create_date
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__display_name
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__display_name
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_desk__display_name
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Don't bring this column in"
+msgstr "Không đưa cột này vào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Download a ready-to-fill sheet"
+msgstr "Tải bảng có sẵn để điền"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Download the sheet"
+msgstr "Tải bảng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Downloaded “%(file)s” with %(people)s. Change what you need, save it, then "
+"drop it back here."
+msgstr ""
+"Đã tải “%(file)s” với %(people)s. Sửa những gì cần, lưu lại, rồi thả tệp vào"
+" đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Downloading a sheet needs permission to export employee records. Ask an "
+"administrator, or upload a file of your own."
+msgstr ""
+"Tải bảng cần quyền xuất hồ sơ nhân viên. Hãy hỏi quản trị viên, hoặc tải lên"
+" tệp của riêng bạn."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Downloading a sheet needs permission to export employee records. You can "
+"still upload a file of your own."
+msgstr ""
+"Tải bảng cần quyền xuất hồ sơ nhân viên. Bạn vẫn có thể tải lên tệp của "
+"riêng mình."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Drop it to check it"
+msgstr "Thả vào để kiểm tra"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Drop your filled-in file here"
+msgstr "Thả tệp đã điền vào đây"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Each one is recorded with its old value."
+msgstr "Mỗi giá trị được ghi lại cùng giá trị cũ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Each update you apply shows up here with its name, who sent it, how many "
+"people and values it changed, and the file it came from. You can undo it "
+"from here too."
+msgstr ""
+"Mỗi lần cập nhật bạn áp dụng sẽ hiện ở đây với tên, người gửi, số người và "
+"giá trị đã thay đổi, và tệp gốc. Bạn cũng có thể hoàn tác tại đây."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Employee code"
+msgstr "Mã nhân viên"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Employee name"
+msgstr "Tên nhân viên"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Empty column"
+msgstr "Cột trống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Every update is kept with who sent it, what changed and the original file."
+msgstr ""
+"Mọi lần cập nhật được lưu lại cùng người gửi, những gì đã thay đổi và tệp "
+"gốc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Every value in this file is already on record."
+msgstr "Mọi giá trị trong tệp này đã có sẵn trong hồ sơ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Every value this update changed goes back to what it was before. A value "
+"someone has changed since is left as it is."
+msgstr ""
+"Mọi giá trị mà lần cập nhật này đã đổi sẽ trở lại như trước. Giá trị nào đã "
+"có người sửa sau đó sẽ được giữ nguyên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Everyone"
+msgstr "Tất cả"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Everyone you can see (%s)"
+msgstr "Tất cả người bạn xem được (%s)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Everything checks out."
+msgstr "Mọi thứ đều hợp lệ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Example"
+msgstr "Ví dụ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Excel or CSV. Your own layout works too."
+msgstr "Excel hoặc CSV. Bố cục riêng của bạn cũng được."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__filename
+msgid "File name"
+msgstr "Tên tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Find person"
+msgstr "Tìm người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Find person…"
+msgstr "Tìm người…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Find the right person, or skip the row. Nobody is ever created from a file."
+msgstr ""
+"Hãy tìm đúng người, hoặc bỏ qua dòng này. Không ai được tạo mới từ tệp."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Finds the person"
+msgstr "Dùng để tìm người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "For example: November pay changes, Jakarta office"
+msgstr "Ví dụ: Thay đổi lương tháng 11, văn phòng Jakarta"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "For whom"
+msgstr "Cho ai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "From a Payobook sheet"
+msgstr "Từ bảng Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Give this update a name first, so you can find it later in Past updates."
+msgstr ""
+"Hãy đặt tên cho lần cập nhật này trước, để sau này tìm lại trong Các lần cập"
+" nhật trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Give this update a name so you can find it later in Past updates."
+msgstr ""
+"Hãy đặt tên cho lần cập nhật này để sau này tìm lại trong Các lần cập nhật "
+"trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Goes to"
+msgstr "Đưa vào"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__fingerprint
+msgid "Headings fingerprint"
+msgstr "Dấu nhận dạng tiêu đề"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "How it was matched"
+msgstr "Cách đã ghép"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__id
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__id
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_desk__id
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "In the file twice"
+msgstr "Xuất hiện hai lần trong tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__write_uid
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__write_date
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__last_used
+msgid "Last used"
+msgstr "Dùng lần cuối"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__user_id
+msgid "Last used by"
+msgstr "Người dùng lần cuối"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Leave this one out"
+msgstr "Bỏ qua giá trị này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Left out"
+msgstr "Đã bỏ qua"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Left out unless you pick it, so a sheet you send around carries no account "
+"numbers."
+msgstr ""
+"Không có trong bảng trừ khi bạn chọn, để bảng bạn gửi đi không chứa số tài "
+"khoản."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Left out. It stays as it is now."
+msgstr "Đã bỏ qua. Giá trị giữ nguyên như hiện tại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Looks right"
+msgstr "Đúng rồi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Match columns"
+msgstr "Ghép cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Match your columns"
+msgstr "Ghép các cột của bạn"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Matched by name"
+msgstr "Ghép theo tên cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Matched by you"
+msgstr "Bạn đã ghép"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Name it and apply it"
+msgstr "Đặt tên và áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Name this update"
+msgstr "Đặt tên cho lần cập nhật"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_batch
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__updates_batch_id
+msgid "Named update"
+msgstr "Lần cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Needs a fix"
+msgstr "Cần sửa"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Needs attention"
+msgstr "Cần xem lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Needs permission to export employee records"
+msgstr "Cần quyền xuất hồ sơ nhân viên"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "New update"
+msgstr "Cập nhật mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No rows in this view. Pick another filter above."
+msgstr "Không có dòng nào trong chế độ xem này. Hãy chọn bộ lọc khác ở trên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No updates yet"
+msgstr "Chưa có lần cập nhật nào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Nobody you can see matches “"
+msgstr "Không có ai bạn xem được khớp với “"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Not brought in"
+msgstr "Không đưa vào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Not brought in, as last time"
+msgstr "Không đưa vào, như lần trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Not brought in: %s."
+msgstr "Không đưa vào: %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Nothing in this file can go in yet."
+msgstr "Chưa có giá trị nào trong tệp này có thể đưa vào."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Nothing in this update can be undone."
+msgstr "Không có gì trong lần cập nhật này có thể hoàn tác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Nothing is changed while it is read."
+msgstr "Không có gì thay đổi trong lúc đọc tệp."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Nothing needed changing"
+msgstr "Không có gì cần thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Nothing to apply yet"
+msgstr "Chưa có gì để áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Nothing to change"
+msgstr "Không có gì thay đổi"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Nothing was changed: every value in this file is already on record, or could"
+" not be used."
+msgstr ""
+"Không có gì thay đổi: mọi giá trị trong tệp này đã có sẵn trong hồ sơ, hoặc "
+"không dùng được."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Nothing was changed: the update could not be sent. Try again."
+msgstr "Không có gì thay đổi: không gửi được lần cập nhật. Hãy thử lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"One click in Past updates puts every value back the way it was, unless "
+"someone has changed it since. If your company asks for approval, nothing "
+"changes until it is approved."
+msgstr ""
+"Một cú bấm trong Các lần cập nhật trước sẽ đưa mọi giá trị về như cũ, trừ "
+"khi đã có người sửa sau đó. Nếu công ty bạn yêu cầu phê duyệt, chưa có gì "
+"thay đổi cho đến khi được duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"One row per person, %s columns, filled with today's values. Leave a cell as "
+"it is, or blank, and nothing changes for it."
+msgstr ""
+"Mỗi người một dòng, %s cột, điền sẵn giá trị hiện tại. Giữ nguyên hoặc để "
+"trống một ô thì ô đó không thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Ongoing pay"
+msgstr "Lương định kỳ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Ongoing pay items"
+msgstr "Các khoản lương định kỳ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Only cells with something in them can change anything. Nothing is written "
+"until you apply, and you can undo it afterwards."
+msgstr ""
+"Chỉ những ô có dữ liệu mới có thể thay đổi. Không có gì được ghi cho đến khi"
+" bạn áp dụng, và bạn có thể hoàn tác sau đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Only columns with changes"
+msgstr "Chỉ các cột có thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Opening Updates…"
+msgstr "Đang mở Cập nhật…"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__attachment_id
+msgid "Original file"
+msgstr "Tệp gốc"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Past updates"
+msgstr "Các lần cập nhật trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "People"
+msgstr "Người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Personal and job details"
+msgstr "Thông tin cá nhân và công việc"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Pick at least one column to bring in. Only the columns that find the person "
+"are matched so far."
+msgstr ""
+"Hãy chọn ít nhất một cột để đưa vào. Hiện mới chỉ ghép các cột dùng để tìm "
+"người."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Pick at least one topic above."
+msgstr "Hãy chọn ít nhất một nhóm ở trên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Pick at least one topic first, so the sheet has columns to fill in."
+msgstr "Hãy chọn ít nhất một nhóm trước, để bảng có cột để điền."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Pick the column that finds the person: an employee code, a name or a work "
+"email."
+msgstr ""
+"Hãy chọn cột dùng để tìm người: mã nhân viên, tên hoặc email công việc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Pick the topics. The sheet you download has exactly these columns, filled "
+"with today's values."
+msgstr ""
+"Chọn các nhóm thông tin. Bảng bạn tải về sẽ có đúng các cột này, điền sẵn "
+"giá trị hiện tại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Put back on %(when)s by %(who)s."
+msgstr "Đã hoàn tác lúc %(when)s bởi %(who)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Put back on %s."
+msgstr "Đã hoàn tác lúc %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Reading %s rows…"
+msgstr "Đang đọc %s dòng…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Reading 1 row…"
+msgstr "Đang đọc 1 dòng…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Reading “%s”…"
+msgstr "Đang đọc “%s”…"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_records_apply
+msgid "Records Desk Apply"
+msgstr "Lần áp dụng hồ sơ"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_layout
+msgid "Remembered column matching"
+msgstr "Cách ghép cột đã nhớ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Remembered from last time"
+msgstr "Đã nhớ từ lần trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Review changes"
+msgstr "Xem lại thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Row"
+msgstr "Dòng"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__rows_total
+msgid "Rows in the file"
+msgstr "Số dòng trong tệp"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__rows_unmatched
+msgid "Rows that matched nobody"
+msgstr "Số dòng không khớp với ai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Rows were matched to people by employee code."
+msgstr "Các dòng được khớp với người theo mã nhân viên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Rows were matched to people by name."
+msgstr "Các dòng được khớp với người theo tên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Rows were matched to people by work email."
+msgstr "Các dòng được khớp với người theo email công việc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Safest way"
+msgstr "Cách an toàn nhất"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Saved as “%s”. You will find it under Past updates, with the original file."
+msgstr ""
+"Đã lưu với tên “%s”. Bạn sẽ thấy nó trong Các lần cập nhật trước, kèm tệp "
+"gốc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "See at least one change."
+msgstr "Có ít nhất một thay đổi."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__user_id
+msgid "Sent by"
+msgstr "Người gửi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sent for approval"
+msgstr "Đã gửi phê duyệt"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__date
+msgid "Sent on"
+msgstr "Gửi lúc"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Show %(n)s more (%(left)s not shown yet)"
+msgstr "Hiện thêm %(n)s (còn %(left)s chưa hiện)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Show all %s columns"
+msgstr "Hiện tất cả %s cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Show me the changes"
+msgstr "Cho tôi xem các thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Showing the latest %(shown)s of %(total)s."
+msgstr "Đang hiện %(shown)s lần gần nhất trên tổng %(total)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Skip this row"
+msgstr "Bỏ qua dòng này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Skipped"
+msgstr "Đã bỏ qua"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Stay exactly as they are now."
+msgstr "Giữ nguyên như hiện tại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Stays the same"
+msgstr "Giữ nguyên"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "That file cannot be used yet"
+msgstr "Chưa dùng được tệp này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"That file could not be read from this computer. Save it again and drop it "
+"back."
+msgstr "Không đọc được tệp này từ máy tính. Hãy lưu lại rồi thả vào lần nữa."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "That update is not on record in the companies you are working in."
+msgstr "Không có lần cập nhật này trong các công ty bạn đang làm việc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The file could not be checked. Nothing has changed."
+msgstr "Không kiểm tra được tệp. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The file could not be read. Nothing has changed."
+msgstr "Không đọc được tệp. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "The name is how you will find this update later in Past updates."
+msgstr "Tên này giúp bạn tìm lại lần cập nhật trong Các lần cập nhật trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The sheet could not be built. Nothing has changed."
+msgstr "Không tạo được bảng. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The update could not be undone. Nothing has changed."
+msgstr "Không hoàn tác được lần cập nhật. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"There is nothing to apply: no value in this file would change anything."
+msgstr ""
+"Không có gì để áp dụng: không giá trị nào trong tệp này làm thay đổi gì."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "There is nothing to change."
+msgstr "Không có gì cần thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "These could not be saved, so they stay as they are"
+msgstr "Những giá trị này không lưu được, nên được giữ nguyên"
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_layout_company_fingerprint_uniq
+msgid "This company already remembers a matching for these headings."
+msgstr "Công ty này đã nhớ cách ghép cho các tiêu đề này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "This file has headings only — fill it in and drop it again."
+msgstr "Tệp này chỉ có tiêu đề — hãy điền dữ liệu rồi thả vào lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"This file has more than 10,000 rows. Only the first 10,000 are checked and "
+"can be applied. Put the rest in a second file."
+msgstr ""
+"Tệp này có hơn 10.000 dòng. Chỉ 10.000 dòng đầu được kiểm tra và có thể áp "
+"dụng. Hãy đưa phần còn lại vào tệp thứ hai."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file will make %(changes)s for %(people)s."
+msgstr "Tệp này sẽ tạo %(changes)s cho %(people)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "This is a Payobook sheet, so every column was matched for you."
+msgstr "Đây là bảng Payobook, nên mọi cột đã được ghép sẵn cho bạn."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"This person is in the file again further down, and that row's value is the "
+"one used."
+msgstr ""
+"Người này còn xuất hiện ở dòng bên dưới, và giá trị của dòng đó sẽ được "
+"dùng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "This update has already been undone."
+msgstr "Lần cập nhật này đã được hoàn tác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"This update is still waiting for approval, so there is nothing to undo yet."
+msgstr "Lần cập nhật này vẫn đang chờ phê duyệt, nên chưa có gì để hoàn tác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This value cannot be used as it is."
+msgstr "Không dùng được giá trị này như hiện tại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This value could not be checked. Try again."
+msgstr "Không kiểm tra được giá trị này. Hãy thử lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "This value could not be checked. Try it again."
+msgstr "Không kiểm tra được giá trị này. Hãy thử lại."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_layout__use_count
+msgid "Times used"
+msgstr "Số lần dùng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Type a different value"
+msgstr "Nhập giá trị khác"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Type a name or a code…"
+msgstr "Nhập tên hoặc mã…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Type a value first, or leave this one out."
+msgstr "Hãy nhập giá trị trước, hoặc bỏ qua giá trị này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Undo the update"
+msgstr "Hoàn tác lần cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Undo this update"
+msgstr "Hoàn tác lần cập nhật này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Undo “%s”?"
+msgstr "Hoàn tác “%s”?"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"Undoing an update needs permission to change employee records. Ask an "
+"administrator for the HR or Payroll Officer role."
+msgstr ""
+"Hoàn tác cần quyền sửa hồ sơ nhân viên. Hãy hỏi quản trị viên để được cấp "
+"vai trò Nhân sự hoặc Chuyên viên tính lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Undone"
+msgstr "Đã hoàn tác"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Update file"
+msgstr "Tệp cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Update many people at once"
+msgstr "Cập nhật nhiều người cùng lúc"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: model:ir.actions.client,name:pb_updates.action_pb_updates_desk
+#: model:ir.model,name:pb_updates.model_pb_updates_desk
+msgid "Updates"
+msgstr "Cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Updates could not be opened"
+msgstr "Không mở được trang Cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Updates could not be opened."
+msgstr "Không mở được trang Cập nhật."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Upload your own file"
+msgstr "Tải lên tệp của bạn"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Used further down"
+msgstr "Dùng giá trị ở dòng dưới"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__values_refused
+msgid "Values left out"
+msgstr "Giá trị đã bỏ qua"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Values that change"
+msgstr "Giá trị thay đổi"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Waiting for approval with %s."
+msgstr "Đang chờ %s phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Waiting for approval."
+msgstr "Đang chờ phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What do you want to update?"
+msgstr "Bạn muốn cập nhật gì?"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What kind of value"
+msgstr "Loại giá trị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Will change"
+msgstr "Sẽ thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "With changes"
+msgstr "Có thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Work email"
+msgstr "Email công việc"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"You can check a file and see exactly what it would change. Applying it needs"
+" the HR or Payroll Officer role."
+msgstr ""
+"Bạn có thể kiểm tra một tệp và xem chính xác nó sẽ thay đổi gì. Để áp dụng, "
+"bạn cần vai trò Nhân sự hoặc Chuyên viên tính lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"You can look through these changes, but applying them needs permission to "
+"change employee records. Ask an administrator for the HR or Payroll Officer "
+"role."
+msgstr ""
+"Bạn có thể xem các thay đổi này, nhưng để áp dụng cần quyền sửa hồ sơ nhân "
+"viên. Hãy hỏi quản trị viên để được cấp vai trò Nhân sự hoặc Chuyên viên "
+"tính lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_desk.py:0
+msgid ""
+"You can look through these changes, but you do not have permission to change"
+" employee records. Ask an administrator for the HR or Payroll Officer role."
+msgstr ""
+"Bạn có thể xem các thay đổi này, nhưng bạn không có quyền sửa hồ sơ nhân "
+"viên. Hãy hỏi quản trị viên để được cấp vai trò Nhân sự hoặc Chuyên viên "
+"tính lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "You can read these but not change them."
+msgstr "Bạn xem được nhưng không sửa được các mục này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "You can undo this."
+msgstr "Bạn có thể hoàn tác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "You chose to leave this value out. It stays as it is now."
+msgstr "Bạn đã chọn bỏ qua giá trị này. Nó giữ nguyên như hiện tại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "You have used these headings before, so the matching is remembered."
+msgstr "Bạn đã dùng các tiêu đề này trước đây, nên cách ghép đã được nhớ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Your file has %(cols)s and %(rows)s."
+msgstr "Tệp của bạn có %(cols)s và %(rows)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Your people and their current values are already in it. Change what you need"
+" and send it back."
+msgstr ""
+"Bảng đã có sẵn nhân viên và giá trị hiện tại. Sửa những gì cần rồi gửi lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "by %s"
+msgstr "bởi %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "empty"
+msgstr "trống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "row matches nobody"
+msgstr "dòng không khớp với ai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "rows match nobody"
+msgstr "dòng không khớp với ai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "the file"
+msgstr "tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "“%(name)s” is undone. %(back)s%(kept)s"
+msgstr "Đã hoàn tác “%(name)s”. %(back)s%(kept)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Continue without the 1 that needs attention"
+msgstr "Tiếp tục, bỏ qua 1 mục cần xem lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "None of them is matched yet: choose where each one goes."
+msgstr "Chưa cột nào được ghép: hãy chọn nơi đưa vào cho từng cột."

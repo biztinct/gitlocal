@@ -453,7 +453,7 @@ class PbRecordsDeskIo(models.AbstractModel):
         return [list(r) for r in csv.reader(io.StringIO(text), dialect)]
 
     @api.model
-    def _io_columns(self, header, comments, meta, cards):
+    def _io_columns(self, header, comments, meta, cards, with_how=False):
         """Which field each column carries, asked five ways, best first.
 
             1. the header cell's COMMENT (`id: f:hr.contract:shuipart`)
@@ -473,8 +473,14 @@ class PbRecordsDeskIo(models.AbstractModel):
         is the safe reading: it can only ever MATCH a row, never write one.
         An exported data column is unaffected — its comment answers at step 1,
         whatever its heading says.
+
+        `with_how=True` (UPDATES P1) adds a fourth return, `{idx: how}`, saying
+        WHICH way placed each column — `'id'` (steps 1-2), `'identity'` (steps
+        3 and 5) or `'label'` (step 4). The placement order is untouched; the
+        three-tuple every existing caller unpacks is what it always was.
         """
         used, ignored, identity_cols = {}, [], {}
+        how = {}
         by_label = {}
         for card in cards.values():
             by_label.setdefault(_norm(card['label']), card['id'])
@@ -490,21 +496,25 @@ class PbRecordsDeskIo(models.AbstractModel):
             field_id = match.group(1).strip() if match else ''
             if field_id and field_id in cards:
                 used[idx] = field_id
+                how[idx] = 'id'
                 continue
             from_meta = meta.get('by_index', {}).get(idx)
             if from_meta and from_meta in cards:
                 used[idx] = from_meta
+                how[idx] = 'id'
                 continue
             if not head:
                 continue
             key = id_labels.get(head)
             if key and key not in identity_cols:
                 identity_cols[key] = idx
+                how[idx] = 'identity'
                 continue
             if key:
                 continue
             if head in by_label:
                 used[idx] = by_label[head]
+                how[idx] = 'label'
                 continue
             if head in code_headers:
                 key = 'code'
@@ -514,10 +524,70 @@ class PbRecordsDeskIo(models.AbstractModel):
                 key = 'email'
             if key and key not in identity_cols:
                 identity_cols[key] = idx
+                how[idx] = 'identity'
                 continue
             if key:
                 continue
             ignored.append(str(raw_head).strip())
+        if with_how:
+            return used, identity_cols, ignored, how
+        return used, identity_cols, ignored
+
+    @api.model
+    def _io_given_columns(self, header, cards, columns):
+        """UPDATES P1 — the column placement a PERSON chose, instead of the five
+        ways `_io_columns` asks.
+
+        `columns = {'used': {"3": "f:hr.employee:job_title"}, 'identity':
+        {'code': 1, 'name': 2, 'email': 0}}`. Keys arrive as strings over
+        JSON-RPC and are read as 1-based column numbers. A card id this view
+        does not offer is IGNORED by heading, never raised — the choice came
+        from a screen that may be older than the catalogue. The same card on two
+        columns: the first (leftmost) wins and the second is ignored. A column
+        that finds the person is never also a value: identity is the safe
+        reading, for the same reason `_io_columns` puts it first.
+        """
+        columns = columns if isinstance(columns, dict) else {}
+
+        def as_index(value):
+            try:
+                idx = int(value)
+            except (TypeError, ValueError):
+                return 0
+            return idx if 1 <= idx <= len(header) else 0
+
+        def heading(idx):
+            text = str(header[idx - 1] if header[idx - 1] is not None else '').strip()
+            return text or _("Column %s") % idx
+
+        identity_cols = {}
+        ident_in = columns.get('identity') if isinstance(columns.get('identity'), dict) else {}
+        for key, _label in IDENTITY_COLS:
+            idx = as_index(ident_in.get(key))
+            if idx and idx not in identity_cols.values():
+                identity_cols[key] = idx
+
+        used, ignored, seen = {}, [], set()
+        used_in = columns.get('used') if isinstance(columns.get('used'), dict) else {}
+        placed = sorted(((as_index(k), str(v or '')) for k, v in used_in.items()),
+                        key=lambda pair: pair[0])
+        for idx, field_id in placed:
+            if not idx or idx in identity_cols.values():
+                continue
+            if field_id not in cards or field_id in seen:
+                ignored.append(heading(idx))
+                continue
+            used[idx] = field_id
+            seen.add(field_id)
+        # Everything else with a heading was not brought in, and the summary
+        # names it the way it names a column `_io_columns` could not place.
+        taken = set(used) | set(identity_cols.values())
+        for idx in range(1, len(header) + 1):
+            if idx in taken or not _norm(header[idx - 1]):
+                continue
+            label = heading(idx)
+            if label not in ignored:
+                ignored.append(label)
         return used, identity_cols, ignored
 
     @api.model
@@ -722,19 +792,20 @@ class PbRecordsDeskIo(models.AbstractModel):
         return seen
 
     @api.model
-    def import_peek(self, config_id=0, file_b64='', filename=''):
-        """Read a file and say what it WOULD do. Writes nothing, ever.
+    def _io_open(self, file_b64, filename):
+        """The parse prologue `import_peek` and `import_columns` share.
 
-        Every failure is a sentence a person can act on, returned as
-        `{'ok': False, 'msg': …}` — the `import_test_samples` contract
-        (`pb_formula_studio.py:12197`): a bad file is a thing that happens, not
-        an exception for somebody else to catch.
+        `(refusal, header, rows, comments, meta, name)` — `refusal` is the
+        `{'ok': False, 'msg': …}` answer when the file cannot be read, else
+        `None`. `rows` is `[(file_row_number, cells)]` with blank rows dropped
+        and the heading row FIRST. Same sentences, same order, as the peek has
+        always given: a file refused by one door is refused by the other in the
+        same words.
         """
-        self._check_read()
         name = (filename or '').strip()
         raw, is_csv, refusal = self._io_probe_guard(file_b64, name)
         if refusal:
-            return {'ok': False, 'msg': refusal}
+            return {'ok': False, 'msg': refusal}, [], [], {}, {}, name
 
         meta = {'config_id': 0, 'by_index': {}}
         comments = {}
@@ -748,7 +819,7 @@ class PbRecordsDeskIo(models.AbstractModel):
                          name, err)
             return {'ok': False, 'msg': _(
                 "That file could not be opened as a spreadsheet. If it was "
-                "renamed, save it again as .xlsx or .csv.")}
+                "renamed, save it again as .xlsx or .csv.")}, [], [], {}, {}, name
 
         # Blank rows are dropped, but their POSITION is kept: "Row 7" on screen
         # has to be row 7 in the file the person is looking at, or the sentence
@@ -756,14 +827,85 @@ class PbRecordsDeskIo(models.AbstractModel):
         rows = [(i, r) for i, r in enumerate(rows, start=1)
                 if r and any(v not in (None, '') for v in r)]
         if not rows:
-            return {'ok': False, 'msg': _("This file has no heading row.")}
+            return {'ok': False, 'msg': _("This file has no heading row.")}, \
+                [], [], comments, meta, name
         header = rows[0][1]
         if not any(_norm(h) for h in header):
-            return {'ok': False, 'msg': _("This file has no heading row.")}
+            return {'ok': False, 'msg': _("This file has no heading row.")}, \
+                [], [], comments, meta, name
+        return None, header, rows, comments, meta, name
+
+    @api.model
+    def import_columns(self, config_id=0, file_b64='', filename=''):
+        """UPDATES P1 — what each column of a file IS, before anything is matched.
+
+        Reads only. One entry per column with a heading, in file order: its
+        heading, up to three sample values (as the peek would read them), and
+        where the desk would put it on its own — `how` is `'id'` (a header
+        comment or the hidden `_payobook` sheet), `'label'`, `'identity'` or
+        `''` (unplaced). A person then confirms or changes that, and the peek
+        is asked again with `columns=` saying what they chose.
+        """
+        self._check_read()
+        refusal, header, rows, comments, meta, name = self._io_open(
+            file_b64, filename)
+        if refusal:
+            return refusal
+        cards = self._cards(config_id)
+        used, identity_cols, _ignored, how = self._io_columns(
+            header, comments, meta, cards, with_how=True)
+        identity_at = {idx: key for key, idx in identity_cols.items()}
+        body = rows[1:]
+        out = []
+        for idx, raw_head in enumerate(header, start=1):
+            head = str(raw_head if raw_head is not None else '').strip()
+            if not head:
+                continue
+            samples = []
+            for _offset, row in body:
+                text = self._io_text(self._io_cell(row, idx))
+                if text:
+                    samples.append(text)
+                    if len(samples) >= 3:
+                        break
+            out.append({
+                'idx': idx, 'head': head, 'samples': samples,
+                'field_id': used.get(idx, ''),
+                'identity': identity_at.get(idx, ''),
+                'how': how.get(idx, ''),
+            })
+        return {'ok': True, 'filename': name, 'rows': len(body),
+                'truncated': len(body) > MAX_ROWS, 'columns': out}
+
+    @api.model
+    def import_peek(self, config_id=0, file_b64='', filename='', columns=None):
+        """Read a file and say what it WOULD do. Writes nothing, ever.
+
+        Every failure is a sentence a person can act on, returned as
+        `{'ok': False, 'msg': …}` — the `import_test_samples` contract
+        (`pb_formula_studio.py:12197`): a bad file is a thing that happens, not
+        an exception for somebody else to catch.
+
+        `columns` (UPDATES P1) is the placement a person chose on the Updates
+        screen — see `_io_given_columns`. When it is given it REPLACES the five
+        ways `_io_columns` asks; everything after that line is unchanged. The
+        answer also carries `matched` — `[{'row', 'emp_id', 'method', 'cells'}]`
+        in file order, `cells` being how many of `changes` that row produced —
+        so a grid can show the file's rows with the file's row numbers.
+        """
+        self._check_read()
+        refusal, header, rows, comments, meta, name = self._io_open(
+            file_b64, filename)
+        if refusal:
+            return refusal
 
         cards = self._cards(config_id)
-        used, identity_cols, ignored = self._io_columns(
-            header, comments, meta, cards)
+        if columns is not None:
+            used, identity_cols, ignored = self._io_given_columns(
+                header, cards, columns)
+        else:
+            used, identity_cols, ignored = self._io_columns(
+                header, comments, meta, cards)
         if not used:
             return {'ok': False, 'msg': _(
                 "None of the headings match a field this pay scheme maps — "
@@ -789,14 +931,14 @@ class PbRecordsDeskIo(models.AbstractModel):
                             'cells_blank': 0,
                             'columns_used': len(used),
                             'columns_ignored': ignored},
-                'changes': [], 'unmatched': [], 'items': [],
+                'changes': [], 'unmatched': [], 'items': [], 'matched': [],
                 'identity': '', 'filename': name, 'truncated': False,
                 'wrong_scheme': wrong_scheme}
 
         employees = self._matching({}, ctx={})
         index = self._io_index(employees)
 
-        changes, unmatched = [], []
+        changes, unmatched, matched = [], [], []
         matched_ids, blank = set(), 0
         methods = {}
         for offset, row in body:
@@ -821,6 +963,8 @@ class PbRecordsDeskIo(models.AbstractModel):
                 })
                 continue
             matched_ids.add(emp_id)
+            matched.append({'row': offset, 'emp_id': emp_id, 'method': method,
+                            'cells': len(values)})
             methods[method] = methods.get(method, 0) + 1
             for field_id, value in values.items():
                 changes.append({'emp_id': emp_id, 'field_id': field_id,
@@ -853,6 +997,7 @@ class PbRecordsDeskIo(models.AbstractModel):
             'changes': changes,
             'items': preview['items'],
             'unmatched': unmatched,
+            'matched': matched,
         }
 
     # =================================================================
