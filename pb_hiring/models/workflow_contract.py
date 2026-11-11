@@ -76,7 +76,32 @@ class HiringApplicantWorkflowContract(models.Model):
             # headings on candidates and sends people to Hiring set-up for
             # a new stage; it never keeps a stage layer of its own here.
             'own_stage_rows': True,
+            # WF2 P3b (D10): a new candidate stage is a real Hiring stage,
+            # added through Hiring's own `stage_add` door.
+            'adds_stages': True,
+            # WF2 P3b: the one value a workflow's "Update the record" step
+            # may set on a candidate, the evaluation stars.
+            'safe_fields': [
+                {'key': 'priority', 'label': _('Evaluation'), 'type': 'choice',
+                 'options': [{'key': k, 'label': _(v)} for k, v in
+                             self.env['hr.applicant']._fields['priority']._description_selection(self.env)]},
+            ],
         }
+
+    def _workflow_update(self, key, value):
+        """Studio's "Update the record" step: one declared value only."""
+        self.ensure_one()
+        allowed = {f['key'] for f in self._workflow_capabilities().get('safe_fields', [])}
+        if key not in allowed:
+            raise UserError(_('Hiring has not opened this value to workflows.'))
+        self.write({key: value})
+        return True
+
+    @api.model
+    def _workflow_add_stage(self, name, after_stage_id):
+        """A new candidate stage, made by Hiring itself (D10): the talent
+        lead's own door, with Hiring's own write permission."""
+        return self.env['pb.hiring'].act('stage_add', {'name': name, 'after_stage_id': after_stage_id})
 
     @api.model
     def _workflow_stage_options(self, record=None):

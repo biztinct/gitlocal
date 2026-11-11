@@ -70,3 +70,5 @@ from . import calendar_connection
 from . import filters_w3   # FILTER W3 — the four Hiring lists on the shared filter panel; LAST: it adds the mixin
 # WF2 P2: what Hiring tells Workflow Studio (declarations and two existing doors).
 from . import workflow_contract
+# WF2 P3b (D10): a talent lead adds a stage of their own (add-only).
+from . import stage_add

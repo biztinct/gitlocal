@@ -8,6 +8,7 @@ reads this through a duck-typed hook, so this module does not depend on it.
 """
 
 from odoo import api, models
+from odoo.exceptions import UserError
 
 
 class PbExpenseClaimWorkflowContract(models.Model):
@@ -58,7 +59,24 @@ class PbExpenseClaimWorkflowContract(models.Model):
                            'receipts can be changed and sent again.')},
             ],
             'screen': 'pb_expenses_hub',
+            # WF2 P3b: the values a workflow's "Update the record" step may
+            # set. Declared modestly: the claim's note only. Never the
+            # status, never money.
+            'safe_fields': [
+                {'key': 'note', 'label': _('Note'), 'type': 'text'},
+            ],
         }
+
+    def _workflow_update(self, key, value):
+        """Studio's "Update the record" step: one declared value, nothing
+        else. The status and every undeclared field are refused here as well
+        as in Studio's own checks."""
+        self.ensure_one()
+        allowed = {f['key'] for f in self._workflow_capabilities().get('safe_fields', [])}
+        if key not in allowed:
+            raise UserError(self.env._('Expenses has not opened this value to workflows.'))
+        self.write({key: value or False})
+        return True
 
     def _workflow_subject(self):
         """The employee the claim is for, and their manager by Expenses' own

@@ -19,3 +19,5 @@ from . import seed_helper
 from . import generic_request
 from . import chain_shim
 from . import ir_http
+# WF2 P3b: what an "Other request" tells Workflow Studio (read-only).
+from . import workflow_contract

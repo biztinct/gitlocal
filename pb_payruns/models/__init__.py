@@ -8,3 +8,5 @@ from . import pb_payrun_reject
 from . import pb_payruns_learn
 from . import payslip_report
 from . import payslip_money
+# WF2 P3b: what a pay run tells Workflow Studio (read-only).
+from . import workflow_contract
