@@ -478,6 +478,7 @@ msgstr "Nghỉ hôm nay"
 #. odoo-python
 #: code:addons/pb_timeoff/models/pb_timeoff.py:0
 #: code:addons/pb_timeoff/static/src/js/pb_timeoff.js:0
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.hr_leave_view_kanban_pb_words
 msgid "Waiting for approval"
 msgstr "Đang chờ duyệt"
 
@@ -816,6 +817,7 @@ msgstr "Loại nghỉ phép này dành cho nhân viên ở quốc gia khác."
 #. module: pb_timeoff
 #. odoo-python
 #: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.hr_leave_view_kanban_pb_words
 msgid "Second approval"
 msgstr "Duyệt cấp 2"
 

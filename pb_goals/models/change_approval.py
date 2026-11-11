@@ -28,7 +28,7 @@ from odoo.addons.biz_approval_workflow.models.chain_shim import (
 )
 
 from .goals_common import (
-    CHANGE_KIND_LABEL, GROUP_MANAGER, P_ESCALATE_DAYS, P_SLA_DAYS, number,
+    CHANGE_KIND_LABEL, GROUP_MANAGER, P_ESCALATE_DAYS, P_SLA_DAYS, leg, number,
 )
 
 _logger = logging.getLogger(__name__)
@@ -71,8 +71,9 @@ class PbGoalChangeApproval(models.Model):
     _approval_process_key = CHANGE_PROCESS_KEY
 
     #: WF2 P2b (D6): a goal change tells the employee itself when it is
-    #: agreed and when it is turned down; "sent back" stays the engine's.
-    _approval_requester_notice = ('approved', 'rejected')
+    #: agreed and when it is turned down; since WF2 P5a (D28) also when it is
+    #: sent back (`_approval_return` below), so the engine's copy stops.
+    _approval_requester_notice = ('approved', 'rejected', 'returned')
 
     def _approval_area_tells_requester(self, request, result):
         """Only when there is somewhere to send it."""
@@ -268,6 +269,27 @@ class PbGoalChangeApproval(models.Model):
         if written and not self.sudo().refuse_note:
             self.sudo().write({'refuse_note': written})
         return super()._approval_reject(request, reason)
+
+    def _approval_return(self, request, reason):
+        """Sent back (WF2 P5a, D28): a request still being written again, and
+        one email to the employee with the reason. Sent only when the change
+        really went back (a retried hook never sends twice)."""
+        self.ensure_one()
+        going_back = self.state != 'draft'
+        res = super()._approval_return(request, reason)
+        if going_back and self.state == 'draft':
+            leg(self.env, 'the sent-back email for change %s' % self.id,
+                lambda: self._notify('pb_goals.mail_goals_change_returned'))
+        return res
+
+    def _pb_sent_back_note(self):
+        """The reason the approver gave, as written on the request."""
+        self.ensure_one()
+        request = self.env['biz.approval.request'].sudo().search([
+            ('res_model', '=', self._name), ('res_id', '=', self.id),
+            ('state', '=', 'returned')], order='attempt desc, id desc',
+            limit=1)
+        return (request.return_note or '').strip()
 
     # THE CHANGE IS NOT CARRIED OUT HERE, AND THAT IS DELIBERATE (R204).
     # `_approval_apply` is the route's half of the story and is never called

@@ -41,15 +41,44 @@ class PbResignationApproval(models.Model):
 
     #: WF2 P2b (D6): an agreed resignation emails the employee itself
     #: ("resignation approved"). A turned-down one is emailed only from the
-    #: Refuse button, not when it is turned down in the approvals inbox, and
-    #: there is no sent-back email: those two stay the approval engine's.
-    _approval_requester_notice = ('approved',)
+    #: Refuse button, not when it is turned down in the approvals inbox, so
+    #: that stays the approval engine's. Sent back: emailed by this module
+    #: since WF2 P5a (D28, `_approval_return` below).
+    _approval_requester_notice = ('approved', 'returned')
 
     def _approval_area_tells_requester(self, request, result):
         """Only when resignation emails are on and there is an address."""
         self.ensure_one()
+        # sudo (WF2 P5a): the approver deciding often may not read the
+        # employee's private address; the question must not fail for that
         return bool(flag(self.env, P_RESIGN_MAIL)
-                    and self._employee_address())
+                    and self.sudo()._employee_address())
+
+    def _approval_return(self, request, reason):
+        """Sent back (WF2 P5a, D28): back with the employee, and one email to
+        them with the reason. Only when it really went back (a retried hook
+        never sends twice); resignation emails switched off → none (and the
+        engine keeps its own copy, see `_approval_area_tells_requester`)."""
+        self.ensure_one()
+        before = self.state
+        res = super()._approval_return(request, reason)
+        if self.state != before:
+            try:
+                self.sudo()._notify_employee(
+                    'pb_offboarding.mail_template_resignation_returned')
+            except Exception:   # noqa: BLE001 — a decision never fails over mail
+                _logger.exception('pb_offboarding: the sent-back email for '
+                                  'resignation %s failed', self.id)
+        return res
+
+    def _pb_sent_back_note(self):
+        """The reason the approver gave, as written on the request."""
+        self.ensure_one()
+        request = self.env['biz.approval.request'].sudo().search([
+            ('res_model', '=', self._name), ('res_id', '=', self.id),
+            ('state', '=', 'returned')], order='attempt desc, id desc',
+            limit=1)
+        return (request.return_note or '').strip()
 
     def _chain_title(self):
         self.ensure_one()

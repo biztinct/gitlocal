@@ -19,12 +19,14 @@ msgstr ""
 #. module: pb_timeoff
 #. odoo-python
 #: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.hr_leave_view_kanban_pb_words
 msgid "Second approval"
 msgstr "Persetujuan kedua"
 
 #. module: pb_timeoff
 #. odoo-python
 #: code:addons/pb_timeoff/models/pb_timeoff.py:0
+#: model_terms:ir.ui.view,arch_db:pb_timeoff.hr_leave_view_kanban_pb_words
 msgid "Waiting for approval"
 msgstr "Menunggu persetujuan"
 

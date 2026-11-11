@@ -162,3 +162,38 @@ msgstr "Klaim pengeluaran: ditolak (ke karyawan)"
 #: model:mail.template,name:pb_me_expense.mail_template_claim_paid
 msgid "Expense claim: paid (to the employee)"
 msgstr "Klaim pengeluaran: dibayar (ke karyawan)"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was sent back"
+msgstr "Klaim pengeluaran Anda dikembalikan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was sent back"
+msgstr "Klaim Anda dikembalikan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s for %(total)s (%(what)s) was sent back to you."
+msgstr "Klaim pengeluaran %(ref)s sebesar %(total)s (%(what)s) dikembalikan kepada Anda."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Change what is asked below, then send it again from your claim."
+msgstr "Ubah sesuai yang diminta di bawah, lalu kirim lagi dari klaim Anda."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "When a claim is sent back, the employee gets an email with the reason and a link to fix it."
+msgstr "Saat klaim dikembalikan, karyawan menerima email beserta alasan dan tautan untuk memperbaikinya."
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_returned
+msgid "Expense claim: sent back (to the employee)"
+msgstr "Klaim pengeluaran: dikembalikan (ke karyawan)"

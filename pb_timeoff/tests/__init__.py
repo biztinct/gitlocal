@@ -12,3 +12,4 @@ from . import test_rize_policy
 
 from . import test_policy_year_opening
 from . import test_wf2p2b_timeoff
+from . import test_wf2p5a_timeoff

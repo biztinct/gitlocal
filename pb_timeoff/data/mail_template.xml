@@ -86,5 +86,40 @@
       <field name="auto_delete" eval="False"/>
     </record>
 
+    <!-- WF2 P5a (D28): sent back, to the person it is about. The reason is
+         the whole point of the email. Recipient passed at send time (R6). -->
+    <record id="mail_template_leave_returned" model="mail.template">
+      <field name="name">Time off: sent back (to the employee)</field>
+      <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+      <field name="subject">Your time off request was sent back</field>
+      <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+      <field name="email_to">{{ object._pb_employee_address() }}</field>
+      <field name="lang">{{ object._pb_mail_lang() }}</field>
+      <field name="body_html" type="html">
+        <div style="margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;">
+          <div style="max-width:520px;margin:0 auto;">
+            <p style="margin:0 0 6px;font-size:13px;color:#6b6f80;" t-out="object.holiday_status_id.name or ''">Annual leave</p>
+            <h2 style="margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;">Your request was sent back</h2>
+            <p style="margin:0 0 12px;">Hello <t t-out="object.employee_id.name or ''">Lan</t>,</p>
+            <p style="margin:0 0 12px;">
+              Your request for <strong t-out="object.holiday_status_id.name or ''">Annual leave</strong>
+              from <t t-out="object.request_date_from or ''">2026-11-20</t>
+              to <t t-out="object.request_date_to or ''">2026-11-21</t>
+              was sent back to you.
+            </p>
+            <div style="margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;">
+              <div style="font-size:12px;color:#6b6f80;margin-bottom:2px;">The reason given</div>
+              <div t-out="object._pb_sent_back_note() or 'No reason was given.'">Please pick a different week.</div>
+            </div>
+            <p style="margin:0 0 12px;">Change what is asked, then ask for it again.</p>
+            <p style="margin:20px 0 8px;">
+              <a t-att-href="object._pb_sent_back_url()" style="display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;">Open your requests</a>
+            </p>
+          </div>
+        </div>
+      </field>
+      <field name="auto_delete" eval="False"/>
+    </record>
+
   </data>
 </odoo>

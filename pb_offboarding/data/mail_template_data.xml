@@ -132,6 +132,42 @@
         </field>
     </record>
 
+    <!-- ============ sent back (WF2 P5a, D28) ============
+         An approver wants something changed before deciding. Same voice as
+         its siblings; the reason is the point of it. -->
+    <record id="mail_template_resignation_returned" model="mail.template">
+        <field name="name">Offboarding: resignation sent back</field>
+        <field name="model_id" ref="model_pb_resignation"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your resignation was sent back to you</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.greeting() or ''"/>,</p>
+                <p>
+                    Your resignation was sent back to you before a decision,
+                    so nothing has been changed on your record yet.
+                </p>
+                <div style="border-left:3px solid #5A4BB0; padding:8px 14px; margin:14px 0; background:#F4F2FB;">
+                    <t t-out="object._pb_sent_back_note() or 'No reason was given.'"/>
+                </div>
+                <p>
+                    Change what is asked and send it again from your own page
+                    under <strong>My resignation</strong>.
+                </p>
+                <p>
+                    <a t-attf-href="/my/resignation"
+                       style="display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my resignation
+                    </a>
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
     <!-- ============ the fifteen-day handover reminder ============ -->
     <record id="mail_template_kt_ping" model="mail.template">
         <field name="name">Offboarding: handover still open</field>

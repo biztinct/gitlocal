@@ -28,7 +28,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
     # it: a published revision is FROZEN (requests under way keep the rules
     # they were given), so the migration publishes a new revision instead of
     # writing over the old one. Found live; see the ledger.
-    'version': '19.0.1.9.0',
+    'version': '19.0.1.10.0',
     'category': 'Human Resources/Time Off',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -56,6 +56,7 @@ om_hr_payroll.group_hr_payroll_manager). No ESS/self-service (Phase I).
         'views/pb_timeoff_action.xml',
         'views/hr_leave_type_views.xml',
         'views/portal_holidays.xml',
+        'views/hr_leave_kanban_words.xml',
         'data/pb_sidebar.xml',
         'data/mail_template.xml',
         'data/pb_timeoff_config.xml',

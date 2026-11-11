@@ -5,7 +5,7 @@ With a live route the approval engine tells the approver ("Your approval is
 needed" + a to-do on the request); the standard "time off to approve" to-do
 is then left out for exactly that person. The employee hears "accepted" /
 "refused" from time off itself, so the engine leaves its own copy of those
-two out; "sent back" stays the engine's.
+two out; "sent back" is time off's own since WF2 P5a (D28).
 """
 
 from datetime import date, timedelta
@@ -135,14 +135,14 @@ class TestWf2p2bTimeOff(SingleNoticeMixin, TransactionCase):
         self.assertTrue(leave.message_ids.filtered(
             lambda m: self.staff_user.partner_id in m.partner_ids
             and 'refused' in (m.body or '')))
-        # sent back: time off has no message of its own for it, so the
-        # engine's stays
+        # sent back: since WF2 P5a (D28) time off emails it itself and the
+        # engine's copy stops (full proof: P5a T3, test_wf2p5a_timeoff)
         other = self._leave(weeks=2)
         request = other.approval_request_id
         step = request.step_ids.filtered(lambda s: s.status == 'active')
         self.env['biz.approval.engine'].with_user(self.boss_user).decide(
             request.id, step.key, 'return', reason='Pick another day')
-        self.assertEqual(len(self.sn_requester(other, 'returned')), 1)
+        self.assertFalse(self.sn_requester(other, 'returned'))
 
     def test_wf2p2b_t11c_switch_off_engine_tells_again(self):
         self.sn_route('leave', self.boss_user)

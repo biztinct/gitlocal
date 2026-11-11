@@ -42,5 +42,16 @@
         <field name="auto_delete" eval="False"/>
         <field name="body_html" type="html"><div><t t-out="object._pb_mail_body('paid')"/></div></field>
     </record>
+    <!-- WF2 P5a (D28): sent back, with the reason. Same shape as the three
+         above; the words come from `_pb_mail_subject` / `_pb_mail_body`. -->
+    <record id="mail_template_claim_returned" model="mail.template">
+        <field name="name">Expense claim: sent back (to the employee)</field>
+        <field name="model_id" ref="model_pb_expense_claim"/>
+        <field name="email_to">{{ object._pb_employee_address() }}</field>
+        <field name="lang">{{ object._pb_mail_lang() }}</field>
+        <field name="subject">{{ object._pb_mail_subject('returned') }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html"><div><t t-out="object._pb_mail_body('returned')"/></div></field>
+    </record>
 </data>
 </odoo>

@@ -171,6 +171,43 @@
         </field>
     </record>
 
+    <!-- ====================== a change was sent back ======================
+         WF2 P5a (D28): the approver wants something changed before deciding.
+         The reason is the email; the button goes to the employee's goals. -->
+    <record id="mail_goals_change_returned" model="mail.template">
+        <field name="name">Goals: a change was sent back</field>
+        <field name="model_id" ref="model_pb_goal_change"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goal change was sent back — {{ object.summary }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    The change you asked for on your goals was sent back to
+                    you before a decision, so your goals stay as they are for
+                    now.
+                </p>
+                <div style="border-left:3px solid #5A4BB0; padding:8px 14px; margin:14px 0; background:#F4F2FB;">
+                    <strong><t t-out="object.summary or ''"/></strong>
+                    <br/><t t-out="object._pb_sent_back_note() or 'No reason was given.'"/>
+                </div>
+                <p>
+                    Change what is asked and send it again.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
     <!-- ====================== the year has been closed ====================== -->
     <record id="mail_goals_year_end" model="mail.template">
         <field name="name">Goals: what the year came out at</field>

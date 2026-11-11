@@ -125,14 +125,16 @@ class TestWf2p2bExpenseMessages(SingleNoticeMixin, ExpenseFixtures,
         self.assertEqual(len(self._mails(
             claim, 'Your expense claim was refused')), 2)
 
-    def test_wf2p2b_t12d_sent_back_stays_the_engines(self):
+    def test_wf2p2b_t12d_sent_back_is_the_areas_since_p5a(self):
+        # WF2 P5a (D28, owner 11 Nov): Expenses emails "sent back" itself and
+        # the engine's own copy stops (was: the engine's only). The full
+        # proof is P5a T2 (test_wf2p5a_expense_returned).
         claim = self.sent_claim(user=self.plain, emp=self.plain_emp)
         self.decide(claim, self.manager, 'return', 'P2b: add the taxi')
         self.assertEqual(claim.state, 'draft')
-        self.assertEqual(len(self.sn_requester(claim, 'returned')), 1)
-        self.assertFalse(self.env['mail.mail'].sudo().search([
-            ('model', '=', 'pb.expense.claim'), ('res_id', '=', claim.id),
-            ('subject', 'like', 'Your expense claim')]))
+        self.assertFalse(self.sn_requester(claim, 'returned'))
+        self.assertEqual(len(self._mails(
+            claim, 'Your expense claim was sent back')), 1)
 
     def test_wf2p2b_t12e_no_address_no_mail_and_the_engine_keeps_it(self):
         self.plain_emp.work_email = False

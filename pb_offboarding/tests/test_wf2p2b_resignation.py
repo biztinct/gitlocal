@@ -98,7 +98,8 @@ class TestWf2p2bResignation(SingleNoticeMixin, TransactionCase):
             'subject_uids': [self.boss_user.id]})
         self.assertTrue(engine._area_tells_requester(request, res, 'approved'))
         self.assertFalse(engine._area_tells_requester(request, res, 'rejected'))
-        self.assertFalse(engine._area_tells_requester(request, res, 'returned'))
+        # WF2 P5a (D28): sent back is offboarding's own email now
+        self.assertTrue(engine._area_tells_requester(request, res, 'returned'))
         # emails switched off in Offboarding: the engine keeps its copy
         self.env['ir.config_parameter'].sudo().set_param(
             'pb_offboarding.resign_mail', '0')

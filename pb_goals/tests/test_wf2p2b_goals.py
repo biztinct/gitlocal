@@ -6,8 +6,8 @@ switch) is left out for a manager the live route already asks; without a
 route, or with the switch off, it goes exactly as before.
 T11: an agreed sheet ("locked" email) and an agreed / turned-down goal change
 tell the employee themselves; the engine leaves its own copy of those out.
-Everything else (a sheet sent back or turned down, a change sent back) stays
-the engine's.
+A sheet turned down stays the engine's; "sent back" is the area's own since
+WF2 P5a (D28).
 """
 
 from odoo.tests import tagged
@@ -94,11 +94,13 @@ class TestWf2p2bGoals(SingleNoticeMixin, YearCase):
             ('email_to', 'ilike', 'demo.goals.staff@example.com')])
         self.assertEqual(len(locked), 1)
 
-    def test_wf2p2b_t11b_sent_back_and_turned_down_stay_the_engines(self):
+    def test_wf2p2b_t11b_sent_back_is_the_sheets_since_p5a(self):
+        # WF2 P5a (D28): the sheet's own "have come back" email tells the
+        # employee; the engine's copy stops (full proof: P5a T3 goals)
         self.sn_route('goal_set', self.boss_user, company=self.company)
         sheet = self._send_in()
         self._decide(sheet, self.boss_user, 'return', 'DEMO add a target')
-        self.assertEqual(len(self.sn_requester(sheet, 'returned')), 1)
+        self.assertFalse(self.sn_requester(sheet, 'returned'))
 
     def test_wf2p2b_t11c_goal_change_agreed_and_turned_down(self):
         self.sn_route('goal_change', self.boss_user, company=self.company)

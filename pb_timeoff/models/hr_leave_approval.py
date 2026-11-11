@@ -63,8 +63,9 @@ class HrLeaveApproval(models.Model):
     #: WF2 P2b (D6): time off itself tells the employee "has been accepted"
     #: and "has been refused" (hr_holidays' own messages, which also reach an
     #: employee-home login), so the approval engine leaves its own copy of
-    #: those two out when the employee sent it in. "Sent back" stays the
-    #: engine's: time off has no sent-back message of its own.
+    #: those two out when the employee sent it in. "Sent back": since WF2 P5a
+    #: (D28) time off emails it itself — see `leave_messages.py`, which
+    #: extends this tuple.
     _approval_requester_notice = ('approved', 'rejected')
 
     #: WF2 P2b (D22, owner 11 Nov): the two waiting statuses read the same

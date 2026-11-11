@@ -35,6 +35,10 @@ CLAIM_MESSAGES = {
     'refused': ('pb_me_expense.mail_template_claim_refused',
                 'pb_told_refused_at'),
     'paid': ('pb_me_expense.mail_template_claim_paid', 'pb_told_paid_at'),
+    # WF2 P5a (D28): sent back, with the reason. Once per send-back; sending
+    # the claim in again clears it so a later send-back is told too.
+    'returned': ('pb_me_expense.mail_template_claim_returned',
+                 'pb_told_returned_at'),
 }
 
 BRAND = '#5A4BB0'
@@ -43,10 +47,10 @@ BRAND = '#5A4BB0'
 class PbExpenseClaimMessages(models.Model):
     _inherit = 'pb.expense.claim'
 
-    #: The engine leaves its own "Approved" / "Turned down" out for the person
-    #: who sent the claim in: these emails tell them. "Sent back" stays the
-    #: engine's (the claim page shows the reason).
-    _approval_requester_notice = ('approved', 'rejected')
+    #: The engine leaves its own "Approved" / "Turned down" / "Sent back" out
+    #: for the person who sent the claim in: these emails tell them (sent back
+    #: since WF2 P5a, owner decision D28).
+    _approval_requester_notice = ('approved', 'rejected', 'returned')
 
     pb_told_approved_at = fields.Datetime(
         string='Employee told it was approved', readonly=True, copy=False)
@@ -54,6 +58,8 @@ class PbExpenseClaimMessages(models.Model):
         string='Employee told it was refused', readonly=True, copy=False)
     pb_told_paid_at = fields.Datetime(
         string='Employee told it was paid', readonly=True, copy=False)
+    pb_told_returned_at = fields.Datetime(
+        string='Employee told it was sent back', readonly=True, copy=False)
 
     # ------------------------------------------------------------ the hooks
     def _after_approval_transition(self, to_state):
@@ -61,6 +67,19 @@ class PbExpenseClaimMessages(models.Model):
         if to_state in ('approved', 'refused'):
             for claim in self:
                 claim._pb_tell_employee(to_state)
+        elif to_state == 'submitted':
+            # sent in again: a later send-back is a new one to tell (D28)
+            stamped = self.sudo().filtered('pb_told_returned_at')
+            if stamped:
+                stamped.write({'pb_told_returned_at': False})
+        return res
+
+    def _approval_return(self, request, reason):
+        """Sent back by an approver (D28): after the claim is a draft again
+        with the reason on it, the employee gets one email saying so."""
+        res = super()._approval_return(request, reason)
+        for claim in self:
+            claim._pb_tell_employee('returned')
         return res
 
     def _sync_paid(self):
@@ -156,6 +175,7 @@ class PbExpenseClaimMessages(models.Model):
             'approved': _('Your expense claim was approved'),
             'refused': _('Your expense claim was refused'),
             'paid': _('Your expense claim was paid'),
+            'returned': _('Your expense claim was sent back'),
         }.get(result, '')
 
     def _pb_mail_body(self, result):
@@ -186,6 +206,16 @@ class PbExpenseClaimMessages(models.Model):
                 _('Your expense claim %(ref)s for %(total)s (%(what)s) was '
                   'refused.', ref=claim.name, total=total, what=what),
                 _('You can fix it and send it again from your claim.'),
+            ]
+            reason = claim.refusal_reason or _('No reason was given.')
+        elif result == 'returned':
+            title = _('Your claim was sent back')
+            lines = [
+                _('Your expense claim %(ref)s for %(total)s (%(what)s) was '
+                  'sent back to you.', ref=claim.name, total=total,
+                  what=what),
+                _('Change what is asked below, then send it again from your '
+                  'claim.'),
             ]
             reason = claim.refusal_reason or _('No reason was given.')
         else:
@@ -251,5 +281,9 @@ class PbExpenseClaimMessages(models.Model):
              'owner': area, 'settings': settings,
              'text': _('The employee gets an email that their claim was '
                        'paid, with the amount and the date.')},
+            {'stage': 'draft', 'kind': 'message', 'audience': 'requester',
+             'owner': area, 'settings': settings,
+             'text': _('When a claim is sent back, the employee gets an '
+                       'email with the reason and a link to fix it.')},
         ]
         return caps
