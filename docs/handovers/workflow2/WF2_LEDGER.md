@@ -43,8 +43,8 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | P1 | Backend unblock: system-level execution, approval step follows instead of forcing, coexistence, one timing rule, error codes | `WF2_P1_HANDOVER.md` → `WF2_P1_REPORT.md` | done (see report) |
 | P2 | Module contract (stages, transitions, existing effects, subject person) for Expense, Leave, Hiring + workflow stage layer + "already happens" data and double-up warnings + sudima brought up to date | `WF2_P2_HANDOVER.md` → `WF2_P2_REPORT.md` | done (see report) |
 | P2b | Message clean-up in the areas themselves (D5 approvers told once, D6 requester gaps incl. employee-home logins, D7 new-joiner split by date) — after P4 | — | — |
-| P3a | Screens on the existing workbench: "When…" sentence, By stage view, one Stages screen, stage headers + "Gets here when" + "already happens" on every view incl. the canvas, record progress strip with user-made stages, touch drag | `WF2_P3A_HANDOVER.md` → `WF2_P3A_REPORT.md` | done (see report) |
-| P3b | New step types (move to a stage, send back, update the record, create something, in-app notice, confirm, repeat, start another workflow, stop), richer step settings, Hiring `stage_add` (D10) | — | — |
+| P3a | Screens on the existing workbench: "When…" sentence, By stage view, one Stages screen, stage headers + "Gets here when" + "already happens" on every view incl. the canvas, record progress strip with user-made stages, touch drag | `WF2_P3A_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.12.0, 80 tests, U1–U16) — `WF2_P3A_REPORT.md` |
+| P3b | Task buttons; step types move to a stage, send back, update the record, create a letter/announcement, in-app notice, confirm, start another workflow, stop; manager's manager; wait time-out choice; duplicate; Hiring `stage_add` (D10); contracts for Other request and Pay run. "Repeat for each line" deferred. | `WF2_P3B_HANDOVER.md` | running |
 | P4 | Progress on the record, one "My work" list, portal employees and token links, where time goes | — | — |
 | P5 | Vietnamese and Indonesian, schedule trigger, consolidation, closeout | — | — |
 
