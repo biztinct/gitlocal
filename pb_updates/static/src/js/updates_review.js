@@ -32,6 +32,8 @@ const ICONS = {};
 /** Lucide glyphs this screen needs that the shared kit does not carry yet
  *  (same 24-unit grid, same stroke): `eraser` marks a value a file CLEARs. */
 const LOCAL_GLYPHS = {
+    // UPDATES P3a — the personal-details lane (Lucide `user-round`).
+    userRound: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
     eraser: '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
 };
 /** One markup object per icon and size, reused on every render (OWL t-out
@@ -136,6 +138,39 @@ export function cellKind(cell) {
  * is every value in the file that will NOT go in (refused, left out, or on a
  * row that matched nobody) — the honest third count on the Apply step.
  */
+/** UPDATES P3a — the three lanes one file is split into, in order. */
+export const LANES = ["details", "pay", "bank"];
+export const LANE_ICON = { details: "userRound", pay: "banknote", bank: "landmark" };
+export function laneLabel(lane) {
+    return {
+        details: _t("Personal details"),
+        pay: _t("Pay and contract"),
+        bank: _t("Bank details"),
+    }[lane] || "";
+}
+/** What each lane does in one short phrase, for the legend. */
+export function laneHint(lane) {
+    return {
+        details: _t("Change at once where your company allows it"),
+        pay: _t("Follow your company's approval route"),
+        bank: _t("Always need a second person"),
+    }[lane] || "";
+}
+
+/** `{details: n, pay: n, bank: n}` — values that will change, per lane. */
+export function laneCounts(rv) {
+    const out = { details: 0, pay: 0, bank: 0 };
+    const laneOf = {};
+    for (const c of rv.columns || []) { laneOf[c.field_id] = c.lane; }
+    for (const row of rv.rows || []) {
+        for (const [fid, cell] of Object.entries(row.cells || {})) {
+            const lane = laneOf[fid];
+            if (lane && cellKind(cell) === "change") { out[lane] += 1; }
+        }
+    }
+    return out;
+}
+
 export function reviewCounts(rv) {
     const out = { changes: 0, people: 0, cells: 0, rowsOpen: 0, attention: 0,
                   leftOut: 0, offScheme: 0, cleared: 0,
@@ -630,6 +665,21 @@ export class UpdReview extends Component {
     }
 
     get hiddenColumns() { return this.rv.columns.length - this.columns.length; }
+
+    // ------------------------------------------------- UPDATES P3a — lanes
+    laneIcon(lane) { return LANE_ICON[lane] || "pencil"; }
+    laneLabel(lane) { return laneLabel(lane); }
+
+    /** The legend strip: each lane in this file, its count and its rule. */
+    get laneStrip() {
+        if (this.rv.oneoff) { return []; }
+        const counts = laneCounts(this.rv);
+        const present = new Set((this.rv.columns || []).map((c) => c.lane).filter(Boolean));
+        return LANES.filter((l) => present.has(l)).map((lane) => ({
+            lane, label: laneLabel(lane), hint: laneHint(lane), count: counts[lane],
+            icon: LANE_ICON[lane],
+        }));
+    }
 
     get columnsToggleLabel() {
         return this.rv.allCols

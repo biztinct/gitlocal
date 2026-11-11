@@ -177,12 +177,19 @@ class PbUpdatesDates(models.AbstractModel):
             answers.append((day, res))
         made = [(d, a) for d, a in answers if a.get('apply_id')]
         first = made[0][1] if made else (answers[0][1] if answers else {})
-        now = [a for d, a in made if not a.get('pending') and not a.get('scheduled')]
+        # UPDATES P3a — every part of every date, each lane its own line.
+        lanes = [dict(part, date=fields.Date.to_string(d) if d else '',
+                      kind='' if not d else ('past' if d < today else 'future'))
+                 for d, a in made for part in (a.get('lanes') or [])]
+        # An unwritten part answers `written` 0 (and a split answer counts
+        # only its written parts), so every part can simply be summed.
+        now = [a for d, a in made]
         waiting = [a for d, a in made if a.get('pending')]
         answer = {
             'ok': True,
             'apply_id': first.get('apply_id') or 0,
-            'apply_ids': [a['apply_id'] for _d, a in made],
+            'apply_ids': [i for _d, a in made
+                          for i in (a.get('apply_ids') or [a['apply_id']])],
             'written': sum(a.get('written') or 0 for a in now),
             'people': sum(a.get('people') or 0 for a in now),
             'items': [i for _d, a in answers for i in (a.get('items') or [])],
@@ -206,6 +213,8 @@ class PbUpdatesDates(models.AbstractModel):
                 'pending': bool(a.get('pending')),
                 'scheduled': bool(a.get('scheduled')),
             } for d, a in made],
+            'lanes': lanes,
+            'details_now': any(a.get('details_now') for _d, a in made),
         }
         return answer, answers
 

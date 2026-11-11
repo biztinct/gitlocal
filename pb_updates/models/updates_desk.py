@@ -32,6 +32,7 @@ from odoo import _, api, fields, models
 from odoo.tools.misc import format_date
 
 from odoo.addons.pb_records.models.pb_records_io import _norm, XLSX_MIME
+from odoo.addons.pb_records.models.records_approval import lane_of
 from odoo.addons.pb_updates.models.updates_batch import heading_fingerprint
 
 try:  # WHITELABEL — the tenant's own name for the product
@@ -52,7 +53,12 @@ CON = 'hr.contract'
 DOOR_CONTEXT = {'records_scheme_items': True, 'records_strict_clear': True,
                 # UPDATES P2c: values come from a file, so a sentence about a
                 # manager named twice says what to type, not where to click.
-                'records_from_file': True}
+                'records_from_file': True,
+                # UPDATES P3a (D3): a file is split into three lanes —
+                # personal details, pay and contract, bank details — and its
+                # personal details apply at once where the company allows it.
+                'records_lanes': True,
+                'records_details_at_once': True}
 
 #: UPDATES P2c — the "Goes to" target of the column that says when a row's
 #: changes start. It is never a value to write: Updates reads it itself.
@@ -576,7 +582,9 @@ class PbUpdatesDesk(models.AbstractModel):
             seen.add(fid)
             out_columns.append({'field_id': fid, 'label': by_id[fid]['label'],
                                 'group': by_id[fid]['group'], 'idx': idx,
-                                'head': cols['heads'].get(idx, '')})
+                                'head': cols['heads'].get(idx, ''),
+                                # UPDATES P3a — the lane this column goes in.
+                                'lane': lane_of(fid)})
         pay_codes = {c['field_id'][2:] for c in out_columns
                      if c['group'] == 'component'}
         base = {
@@ -904,7 +912,10 @@ class PbUpdatesDesk(models.AbstractModel):
             })
             batch.attachment_id = attachment
         # The desk files its applies under sudo; the back-link follows it.
-        apply_ids = [a.get('apply_id') for _day, a in answers if a.get('apply_id')]
+        # UPDATES P3a: one desk answer can carry several parts (lanes).
+        apply_ids = []
+        for _day, a in answers:
+            apply_ids += a.get('apply_ids') or ([a['apply_id']] if a.get('apply_id') else [])
         self.env['pb.records.apply'].sudo().browse(apply_ids).write(
             {'updates_batch_id': batch.id})
         answer['batch_id'] = batch.id

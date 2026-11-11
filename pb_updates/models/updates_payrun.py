@@ -123,6 +123,45 @@ class HrPayslipUpdatesOneoff(models.Model):
                 used[row.id] = verdict
         return values
 
+    # ------------------------------------------- UPDATES P3a — demo shortcut
+    def _pb_updates_merge_inputs(self, config, values):
+        """A ready-made input dict, with this payslip's one-off pay items
+        from Updates merged in: `(values, token)`.
+
+        For callers that compute a payslip WITHOUT either seam — the demo
+        generator's own shortcut on payobook (`pb_demo`, P2d deviation 1).
+        Same reader (`_for_slip`), same paid-once bookkeeping: hand the token
+        back to `_pb_updates_merge_done` once the payslip is computed. With
+        no one-off for this person and month the dict comes back unchanged
+        and the token is None — byte-identical to before.
+
+        A generated demo figure for the same pay item is not a pay data file
+        (there is nobody to ask, D11), so the approved one-off replaces it."""
+        self.ensure_one()
+        rows = self.env['pb.updates.oneoff'].sudo()._for_slip(
+            self.employee_id, config, self.date_to, self.id, self.payslip_run_id)
+        if not rows:
+            return values, None
+        token = used_start(self.env)
+        used = self.env.cr.cache[USED_KEY][token]
+        values = dict(values)
+        for code, row in rows.items():
+            if row.clash_run_id or row.clash_batch_id:
+                continue
+            other = values.get(code)
+            used[row.id] = 'agreed' if (not _blank(other) and _same_amount(
+                other, row.amount)) else 'updates'
+            values[code] = row.amount
+        return values, token
+
+    def _pb_updates_merge_done(self, token):
+        """Reserve what `_pb_updates_merge_inputs` used for this payslip."""
+        self.ensure_one()
+        if token:
+            self.env['pb.updates.oneoff'].sudo()._sync_slip(
+                self, used_end(self.env, token))
+        return True
+
     # ------------------------------------------------------------ wrappers
     def _pb_compute_sheet_with_formulas(self):
         Oneoff = self.env['pb.updates.oneoff'].sudo()

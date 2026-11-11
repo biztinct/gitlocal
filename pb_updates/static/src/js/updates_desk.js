@@ -36,6 +36,7 @@ import { grouped } from "@pb_records/js/records_review";
 import {
     UpdReview, icon, plural, reviewCounts, changesToSend, PAGE_ROWS,
     dayLabel, rowStart, startBuckets, oneoffTotals, moneyLabel,
+    LANE_ICON, laneLabel,
 } from "@pb_updates/js/updates_review";
 
 const MODEL = "pb.updates.desk";
@@ -129,6 +130,10 @@ export class PbUpdatesDesk extends Component {
             done: null,
             undoing: 0,
             starting: 0,
+            // UPDATES P3a — what each lane of this file will do (Apply step).
+            lanes: [],
+            lanesBusy: false,
+            switching: false,
         });
         onWillStart(() => this.loadHome());
     }
@@ -345,6 +350,10 @@ export class PbUpdatesDesk extends Component {
     }
 
     historyNote(h) {
+        // UPDATES P3a — an update split into lanes says it lane by lane.
+        if (h.lanes && h.lanes.length > 1 && ["pending", "mixed", "scheduled", "blocked"].includes(h.state)) {
+            return "";
+        }
         if (h.state === "blocked") {
             return h.state_reason || _t("Approved, but it could not be made.");
         }
@@ -1084,6 +1093,113 @@ export class PbUpdatesDesk extends Component {
         a.error = "";
         this.go("apply");
         this.refreshPaid();
+        this.refreshLanes();
+    }
+
+    // =================================================================
+    //  UPDATES P3a — lanes
+    // =================================================================
+    /** Ask the server, once per visit to Apply, what each lane will do. */
+    async refreshLanes() {
+        this.state.lanes = [];
+        if (this.isOneoff || !this.state.rv) { return; }
+        this.state.lanesBusy = true;
+        try {
+            const res = await this.orm.silent.call(MODEL, "lane_outlook", [], {
+                changes: changesToSend(this.state.rv) });
+            this.state.lanes = res.lanes || [];
+        } catch {
+            // a forecast, never a gate: Apply still answers for itself
+            this.state.lanes = [];
+        } finally {
+            this.state.lanesBusy = false;
+        }
+    }
+
+    laneValues(l) {
+        return _t("%(values)s for %(people)s", {
+            values: plural(l.values, _t("1 value"), _t("%s values")),
+            people: plural(l.people, _t("1 person"), _t("%s people")) });
+    }
+
+    laneOutIcon(l) {
+        return { now: "check", approval: "clock", second: "users", nobody: "alert" }[l.outcome] || "info";
+    }
+
+    /** "Apply 42 and send 15 for approval" — from the lanes, when no date splits it. */
+    get laneSplit() {
+        const lanes = this.state.lanes || [];
+        if (!lanes.length || this.laterCount) { return null; }
+        const now = lanes.filter((l) => l.outcome === "now").reduce((n, l) => n + l.values, 0);
+        const send = lanes.filter((l) => l.outcome !== "now").reduce((n, l) => n + l.values, 0);
+        return { now, send };
+    }
+
+    laneIcon(lane) { return LANE_ICON[lane] || "pencil"; }
+    laneName(lane) { return laneLabel(lane) || _t("Changes"); }
+
+    /** One line of a Past-updates lane: what happened to that part. */
+    hlaneLine(l) {
+        const bits = [plural(l.values, _t("1 value"), _t("%s values"))];
+        if (l.state === "pending") {
+            bits.push(l.lane === "bank"
+                ? (l.with_whom ? _t("waiting for a second person: %s", l.with_whom) : (l.note || _t("waiting for a second person")))
+                : (l.with_whom ? _t("waiting for approval with %s", l.with_whom) : _t("waiting for approval")));
+        } else if (l.state === "scheduled" && l.start_date) {
+            bits.push(_t("scheduled for %s", dayLabel(l.start_date)));
+        } else if (l.note && (l.state === "blocked" || l.state === "returned")) {
+            bits.push(l.note);
+        }
+        return bits.join(" · ");
+    }
+
+    hlaneTone(l) {
+        return { applied: "ok", pending: "info", scheduled: "pri", cancelled: "muted", undone: "muted",
+                 rejected: "err", returned: "warn", blocked: "err" }[l.state] || "muted";
+    }
+
+    undoLane(h, l) {
+        this.undoBatch(h.id, `${h.name} · ${l.label}`, false, false, l.apply_id);
+    }
+
+    cancelLane(h, l) {
+        this.cancelParts({ applyId: l.apply_id, name: `${h.name} · ${l.label}`, values: l.values,
+                           date: l.start_date, pending: l.state === "pending" });
+    }
+
+    // ------------------------------------------------------------ the switch
+    get detailsNow() { return this.state.home.details_now || null; }
+
+    get detailsNowNote() {
+        const d = this.detailsNow;
+        if (!d) { return ""; }
+        if (d.route === "custom") {
+            return _t("Your company has its own approval route for record changes, so personal details follow it either way.");
+        }
+        return d.on
+            ? _t("Job titles, phone numbers and other personal details change as soon as you apply. Pay and bank details still follow their own rules.")
+            : _t("Personal details go to the same approval as pay changes.");
+    }
+
+    async toggleDetailsNow() {
+        const d = this.detailsNow;
+        if (!d || !d.can_set || this.state.switching) { return; }
+        this.state.switching = true;
+        try {
+            const res = await this.orm.call(MODEL, "set_details_now", [], { on: !d.on });
+            if (res.ok) {
+                this.state.home.details_now = res;
+                this.notif.add(res.on
+                    ? _t("Personal details from a sheet now apply without approval.")
+                    : _t("Personal details from a sheet now go for approval."), { type: "success" });
+            } else {
+                this.notif.add(res.msg, { type: "warning" });
+            }
+        } catch (e) {
+            this.notif.add(e.data?.message || _t("The setting could not be changed."), { type: "danger" });
+        } finally {
+            this.state.switching = false;
+        }
     }
 
     // =================================================================
@@ -1232,6 +1348,14 @@ export class PbUpdatesDesk extends Component {
         }
         if (later && now) { return plural(n, _t("Apply and schedule 1 change"), _t("Apply and schedule %s changes")); }
         if (later) { return plural(n, _t("Schedule 1 change"), _t("Schedule %s changes")); }
+        const split = this.laneSplit;
+        if (split && split.now && split.send) {
+            return _t("Apply %(now)s and send %(send)s for approval", {
+                now: grouped(split.now), send: grouped(split.send) });
+        }
+        if (split && split.send && !split.now) {
+            return plural(split.send, _t("Send 1 change for approval"), _t("Send %s changes for approval"));
+        }
         return plural(n, _t("Apply 1 change"), _t("Apply %s changes"));
     }
 
@@ -1301,6 +1425,37 @@ export class PbUpdatesDesk extends Component {
 
     get doneScheduled() { return this.doneParts.filter((p) => p.scheduled); }
 
+    /** UPDATES P3a — the lanes of what was just sent (more than one only). */
+    get doneLanes() {
+        const lanes = (this.state.done && this.state.done.lanes) || [];
+        return lanes.length > 1 || (lanes.length === 1 && lanes[0].lane === "bank") ? lanes : [];
+    }
+
+    doneLaneLine(l) {
+        const what = plural(l.values, _t("1 value"), _t("%s values"));
+        if (l.pending) {
+            if (l.lane === "bank") {
+                return l.with_whom
+                    ? _t("%(what)s waiting for a second person: %(who)s", { what, who: l.with_whom })
+                    : _t("%(what)s waiting: %(why)s", { what, why: l.block_note || _t("nobody else can approve bank details yet") });
+            }
+            return l.with_whom
+                ? _t("%(what)s waiting for approval with %(who)s", { what, who: l.with_whom })
+                : _t("%s waiting for approval", what);
+        }
+        if (l.scheduled) {
+            return _t("%(what)s scheduled for %(date)s", { what, date: dayLabel(l.start_date || l.date) });
+        }
+        return l.details_now
+            ? plural(l.written, _t("1 value changed now, no approval needed"), _t("%s values changed now, no approval needed"))
+            : plural(l.written, _t("1 value changed"), _t("%s values changed"));
+    }
+
+    doneLaneTone(l) {
+        if (l.pending) { return l.lane === "bank" && !l.with_whom ? "warn" : "info"; }
+        return l.scheduled ? "pri" : "ok";
+    }
+
     get doneOnlyLater() {
         const d = this.state.done;
         return !!(d && !d.pending && !d.written && this.doneScheduled.length);
@@ -1311,6 +1466,7 @@ export class PbUpdatesDesk extends Component {
         if (d.nothing) { return _t("Nothing needed changing"); }
         if (d.kind === "oneoff") { return d.pending ? _t("Sent for approval") : _t("Approved"); }
         if (d.pending && this.doneParts.some((p) => !p.pending)) { return _t("Sent, part of it for approval"); }
+        if (d.pending && this.doneLanes.some((l) => !l.pending)) { return _t("Sent, part of it for approval"); }
         if (d.pending) { return _t("Sent for approval"); }
         if (this.doneOnlyLater) {
             return _t("Scheduled for %s", dayLabel(this.doneScheduled[0].date));
@@ -1371,7 +1527,7 @@ export class PbUpdatesDesk extends Component {
             return _t("%(what)s for %(people)s are approved. %(pay)s", {
                 what, people: plural(d.people, _t("1 person"), _t("%s people")), pay });
         }
-        if (d.pending && this.doneParts.some((p) => !p.pending)) {
+        if (d.pending && (this.doneParts.some((p) => !p.pending) || this.doneLanes.length > 1)) {
             return _t("What is waiting for approval changes nothing until it is approved. Each part is listed below.");
         }
         if (d.pending) {
@@ -1428,7 +1584,7 @@ export class PbUpdatesDesk extends Component {
     // =================================================================
     //  Undo (home and done)
     // =================================================================
-    undoBatch(batchId, name, thenHome = false, mixed = false) {
+    undoBatch(batchId, name, thenHome = false, mixed = false, applyId = 0) {
         return new Promise((resolve) => {
             this.dialog.add(ConfirmationDialog, {
                 title: _t("Undo “%s”?", name),
@@ -1440,7 +1596,7 @@ export class PbUpdatesDesk extends Component {
                 confirm: async () => {
                     this.state.undoing = batchId;
                     try {
-                        const res = await this.orm.call(MODEL, "undo", [], { batch_id: batchId });
+                        const res = await this.orm.call(MODEL, "undo", [], { batch_id: batchId, apply_id: applyId });
                         if (!res.ok) {
                             this.notif.add(res.msg, { type: "warning" });
                         } else {

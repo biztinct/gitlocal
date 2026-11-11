@@ -798,3 +798,109 @@ $pbu-who-w: 210px;
 .pbu-pw-amt__vs { font-size: 11px; font-weight: 800; color: #98A2B3; text-transform: uppercase; }
 .pbu-pw-clash__act { display: inline-flex; flex-wrap: wrap; gap: 8px; }
 @media (prefers-reduced-motion: reduce) { .pbu-pw-clash { animation: none; } }
+
+// =====================================================================
+//  UPDATES P3a — three lanes: personal details (teal), pay and contract
+//  (indigo), bank details (amber: always a second person).
+// =====================================================================
+.pbim.pbu-root {
+    --pbu-lane-details: var(--pbim-teal);
+    --pbu-lane-details-soft: var(--pbim-teal-soft);
+    --pbu-lane-pay: var(--pbim-primary);
+    --pbu-lane-pay-soft: var(--pbim-soft);
+    --pbu-lane-bank: var(--pbim-amber);
+    --pbu-lane-bank-soft: var(--pbim-amber-soft);
+
+    // Review — the legend strip
+    .pbu-lanes { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pbu-lane {
+        flex: 1 1 220px; min-width: 0; display: flex; align-items: center; gap: 10px;
+        padding: 10px 12px; border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+        animation: pbu-in .18s ease-out;
+    }
+    .pbu-lane-ic { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; }
+    .pbu-lane-t { min-width: 0; display: flex; flex-direction: column; gap: 1px;
+                  b { font-size: 13px; color: var(--pbim-ink); }
+                  .pbu-sub { font-size: 12px; } }
+    .pbu-lane-n { display: inline-block; margin-left: 4px; padding: 0 7px; border-radius: 999px;
+                  font-size: 11.5px; font-variant-numeric: tabular-nums; background: var(--pbim-line-2); }
+    @each $lane in details, pay, bank {
+        .pbu-lane--#{$lane} .pbu-lane-ic { background: var(--pbu-lane-#{$lane}-soft); color: var(--pbu-lane-#{$lane}); }
+        .pbu-lanetag--#{$lane} { color: var(--pbu-lane-#{$lane}); }
+        .pbu-hlane--#{$lane} .pbu-hlane-ic { background: var(--pbu-lane-#{$lane}-soft); color: var(--pbu-lane-#{$lane}); }
+        .pbu-lanecard--#{$lane} .pbu-lanecard-ic { background: var(--pbu-lane-#{$lane}-soft); color: var(--pbu-lane-#{$lane}); }
+    }
+    .pbu-lanetag {
+        display: inline-flex; align-items: center; gap: 4px; margin-top: 3px;
+        font-size: 10.5px; font-weight: 700; letter-spacing: .01em; white-space: nowrap;
+        svg { flex: none; }
+    }
+
+    // Apply — one card per lane, saying what will happen
+    .pbu-lanecards { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .pbu-lanecards-h { grid-column: 1 / -1; }
+    @media (max-width: 1100px) { .pbu-lanecards { grid-template-columns: minmax(0, 1fr); } }
+    .pbu-lanecards-h { margin: 0; font-size: 13px; font-weight: 800; color: var(--pbim-ink); }
+    .pbu-lanecard {
+        display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 12px;
+        padding: 12px 14px; border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+        animation: pbu-in .18s ease-out;
+        &.is-warn { border-color: #F2C46D; background: #FFF8EB; }
+    }
+    .pbu-lanecard-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
+    .pbu-lanecard-t { min-width: 0; display: flex; flex-direction: column; gap: 1px;
+                      b { font-size: 14px; color: var(--pbim-ink); } }
+    .pbu-lanecard-out {
+        grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 6px;
+        padding-top: 8px; border-top: 1px solid var(--pbim-line-2);
+        font-size: 12.5px; font-weight: 700;
+        &.is-now { color: var(--pbim-green); }
+        &.is-approval { color: var(--pbim-primary-strong); }
+        &.is-second { color: var(--pbu-lane-bank); }
+        &.is-nobody { color: #B54708; font-weight: 600; }
+        svg { flex: none; margin-top: 2px; }
+    }
+
+    // Done and Past updates — one line per lane, with its own state
+    .pbu-hlanes { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .pbu-hlane {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+        padding: 7px 10px; border-radius: 10px; background: var(--pbim-line-2);
+    }
+    .pbu-hlane-ic { flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; }
+    .pbu-hlane-t { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column;
+                   b { font-size: 12.5px; color: var(--pbim-ink); }
+                   .pbu-sub { font-size: 12px; } }
+    .pbu-done .pbu-hlanes { max-width: 640px; margin: 4px 0 0; text-align: left; }
+
+    // Home — the company switch
+    .pbu-switch {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+        border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+    }
+    .pbu-switch-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+                    b { font-size: 13.5px; color: var(--pbim-ink); } }
+    .pbu-toggle {
+        flex: none; position: relative; width: 40px; height: 22px; border-radius: 999px; border: 0;
+        background: #D0D5DD; cursor: pointer; transition: background .15s ease;
+        &::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+                   border-radius: 50%; background: #fff; transition: transform .15s ease;
+                   box-shadow: 0 1px 2px rgba(16, 24, 40, .2); }
+        &[aria-checked="true"] { background: var(--pbim-primary); &::after { transform: translateX(18px); } }
+        &:disabled { opacity: .55; cursor: default; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary-light); outline-offset: 2px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pbu-lane, .pbu-lanecard { animation: none; }
+        .pbu-toggle, .pbu-toggle::after { transition: none; }
+    }
+}
+
+// UPDATES P3a (D1) — the month-only line on the pay-file screens.
+.pbu-monthonly { margin: 10px 0 0; }
+.pbu-monthonly__go {
+    border: 0; background: none; padding: 0 0 0 4px; font: inherit; font-weight: 800;
+    color: #5A4BB0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 2px; border-radius: 4px; }
+}
+.pbu-monthonly__nobody { margin: 8px 0 0; font-size: 12.5px; color: #667085; }

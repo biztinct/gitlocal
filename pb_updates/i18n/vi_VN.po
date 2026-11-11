@@ -3914,3 +3914,328 @@ msgstr "Khoản lương một lần cho %(month)s · %(amounts)s"
 #: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
 msgid "new"
 msgstr "mới"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "%(names)s and %(n)s more"
+msgstr "%(names)s và %(n)s người khác"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s scheduled for %(date)s"
+msgstr "%(what)s được lên lịch vào %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s waiting for a second person: %(who)s"
+msgstr "%(what)s đang chờ người thứ hai: %(who)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s waiting for approval with %(who)s"
+msgstr "%(what)s đang chờ %(who)s phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(what)s waiting: %(why)s"
+msgstr "%(what)s đang chờ: %(why)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values changed"
+msgstr "Đã thay đổi %s giá trị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s values changed now, no approval needed"
+msgstr "Đã thay đổi ngay %s giá trị, không cần phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value changed"
+msgstr "Đã thay đổi 1 giá trị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 value changed now, no approval needed"
+msgstr "Đã thay đổi ngay 1 giá trị, không cần phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Always need a second person"
+msgstr "Luôn cần người thứ hai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply %(now)s and send %(send)s for approval"
+msgstr "Áp dụng %(now)s và gửi %(send)s đi phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Change at once where your company allows it"
+msgstr "Thay đổi ngay nếu công ty bạn cho phép"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Change now"
+msgstr "Thay đổi ngay"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Changed now"
+msgstr "Đã thay đổi ngay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Each part of this update"
+msgstr "Từng phần của bản cập nhật này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Follow your company's approval route"
+msgstr "Theo quy trình phê duyệt của công ty bạn"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Go for approval"
+msgstr "Gửi đi phê duyệt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Go to %s for approval"
+msgstr "Gửi %s phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Job titles, phone numbers and other personal details change as soon as you "
+"apply. Pay and bank details still follow their own rules."
+msgstr "Chức danh, số điện thoại và các thông tin cá nhân khác thay đổi ngay khi bạn áp dụng. Lương và tài khoản ngân hàng vẫn theo quy tắc riêng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Need a second person: %s"
+msgstr "Cần người thứ hai: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_managers.py:0
+msgid ""
+"No manager is recorded for the people this is about, so nobody can be asked."
+msgstr "Chưa ghi nhận người quản lý cho những người liên quan, nên không thể hỏi ai."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/monthonly.xml:0
+msgid "Nobody matches? Add the employee first, then load the file again."
+msgstr "Không khớp với ai? Hãy thêm nhân viên trước, rồi tải lại tệp."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Nothing in this part has been changed, so there is nothing to undo."
+msgstr "Chưa có gì trong phần này được thay đổi, nên không có gì để hoàn tác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Only someone who looks after approvals can change this."
+msgstr "Chỉ người phụ trách phê duyệt mới có thể thay đổi mục này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/monthonly.xml:0
+msgid "Open Updates"
+msgstr "Mở Cập nhật"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_managers.py:0
+msgid "Open the employee record"
+msgstr "Mở hồ sơ nhân viên"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Pay and contract"
+msgstr "Lương và hợp đồng"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Personal details"
+msgstr "Thông tin cá nhân"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Personal details from a sheet apply without approval"
+msgstr "Thông tin cá nhân từ bảng tính được áp dụng không cần phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Personal details from a sheet now apply without approval."
+msgstr "Thông tin cá nhân từ bảng tính giờ được áp dụng không cần phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Personal details from a sheet now go for approval."
+msgstr "Thông tin cá nhân từ bảng tính giờ được gửi đi phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Personal details go to the same approval as pay changes."
+msgstr "Thông tin cá nhân được gửi cùng quy trình phê duyệt như thay đổi lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Scheduled"
+msgstr "Đã lên lịch"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s changes for approval"
+msgstr "Gửi %s thay đổi đi phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 change for approval"
+msgstr "Gửi 1 thay đổi đi phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The setting could not be changed."
+msgstr "Không thể thay đổi thiết lập này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_retire.py:0
+msgid ""
+"This employee import has been retired. Use People › Updates to change many "
+"people from one spreadsheet."
+msgstr "Chức năng nhập nhân viên này đã ngừng sử dụng. Hãy dùng Nhân sự › Cập nhật để thay đổi nhiều người từ một bảng tính."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/monthonly.xml:0
+msgid ""
+"This file is used for this pay run only. To change employee, contract or "
+"bank records, use People › Updates."
+msgstr "Tệp này chỉ dùng cho đợt trả lương này. Để thay đổi hồ sơ nhân viên, hợp đồng hoặc tài khoản ngân hàng, hãy dùng Nhân sự › Cập nhật."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "This part has already been undone."
+msgstr "Phần này đã được hoàn tác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/monthonly.js:0
+msgid "Updates is not available on this database."
+msgstr "Cập nhật không có trên cơ sở dữ liệu này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Waiting"
+msgstr "Đang chờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What happens to each kind of value"
+msgstr "Điều gì xảy ra với từng loại giá trị"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What happens to each part"
+msgstr "Điều gì xảy ra với từng phần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Working out who approves what…"
+msgstr "Đang xác định ai phê duyệt phần nào…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Your company has its own approval route for record changes, so personal "
+"details follow it either way."
+msgstr "Công ty bạn có quy trình phê duyệt riêng cho thay đổi hồ sơ, nên thông tin cá nhân vẫn theo quy trình đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "nobody else can approve bank details yet"
+msgstr "chưa có ai khác có thể phê duyệt tài khoản ngân hàng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "scheduled for %s"
+msgstr "được lên lịch vào %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "waiting for a second person"
+msgstr "đang chờ người thứ hai"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "waiting for a second person: %s"
+msgstr "đang chờ người thứ hai: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "waiting for approval"
+msgstr "đang chờ phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "waiting for approval with %s"
+msgstr "đang chờ %s phê duyệt"

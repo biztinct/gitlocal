@@ -38,9 +38,17 @@ application data, which say so), paid once and released when the payslip or
 run is cancelled or deleted. When the pay data file carries a different
 amount for the same person, item and month, the pay run stops and asks.
 
-UPDATES programme, phases 1-2d. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+UPDATES P3a: a file is split into three lanes — personal details (applied at
+once where the company allows it), pay and contract (the records approval
+route) and bank details (always a second person). A manager or coach whose
+login is employee self-service only can be named without their login
+changing. Every pay data file a person uploads for a pay run is used for that
+run only. The old employee import is retired; its doors open Updates. The
+demo pay runs on the demo database read one-off pay items from Updates.
+
+UPDATES programme, phases 1-3a. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -58,6 +66,12 @@ UPDATES programme, phases 1-2d. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
         # templates. Installed on every live database.
         'pb_payrun_wizard',
         'pb_payroll_templates',
+        # UPDATES P3a (D1): the guided "Load Pay Data" screen carries the
+        # month-only line. Already in this module's dependency tree on every
+        # live database (through pb_import).
+        'pb_import_wizard',
+        # UPDATES P3a: the old employee import's doors lead to Updates.
+        'pb_hr_payroll_base',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -73,6 +87,9 @@ UPDATES programme, phases 1-2d. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
             # UPDATES P2d — one line and the D11 choice on the Run Payroll screen.
             'pb_updates/static/src/js/payrun_oneoff.js',
             'pb_updates/static/src/xml/payrun_oneoff.xml',
+            # UPDATES P3a (D1) — the month-only line on the pay-file screens.
+            'pb_updates/static/src/js/monthonly.js',
+            'pb_updates/static/src/xml/monthonly.xml',
         ],
     },
     'installable': True,

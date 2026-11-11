@@ -6,3 +6,7 @@ from . import updates_oneoff
 from . import updates_payrun
 from . import updates_oneoff_desk
 from . import updates_history
+from . import updates_lanes
+from . import updates_monthonly
+from . import updates_managers
+from . import updates_retire

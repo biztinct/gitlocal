@@ -186,6 +186,20 @@
               </ul>
             </section>
 
+            <!-- UPDATES P3a — the company switch, for whoever looks after approvals. -->
+            <div t-if="detailsNow and detailsNow.can_set" class="pbu-switch">
+              <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('userRound', 16)"/></span>
+              <div class="pbu-switch-t">
+                <b>Personal details from a sheet apply without approval</b>
+                <span class="pbu-sub" t-esc="detailsNowNote"/>
+              </div>
+              <button type="button" class="pbu-toggle" role="switch"
+                      t-att-aria-checked="detailsNow.on ? 'true' : 'false'"
+                      aria-label="Personal details from a sheet apply without approval"
+                      t-att-disabled="state.switching or detailsNow.route === 'custom'"
+                      t-on-click="toggleDetailsNow"/>
+            </div>
+
             <section class="pbu-card">
               <header class="pbu-card-h">
                 <div>
@@ -207,6 +221,25 @@
                     <b t-esc="h.name"/>
                     <span class="pbu-sub" t-esc="historyLine(h)"/>
                     <span t-if="historyNote(h)" class="pbu-sub" t-esc="historyNote(h)"/>
+                    <!-- UPDATES P3a — each lane its own line, state, Undo and Cancel. -->
+                    <ul t-if="h.lanes and h.lanes.length > 1" class="pbu-hlanes">
+                      <li t-foreach="h.lanes" t-as="l" t-key="l.apply_id" t-attf-class="pbu-hlane pbu-hlane--{{ l.lane }}">
+                        <span class="pbu-hlane-ic"><t t-out="icon(laneIcon(l.lane), 13)"/></span>
+                        <div class="pbu-hlane-t">
+                          <b t-esc="l.label"/>
+                          <span class="pbu-sub" t-esc="hlaneLine(l)"/>
+                        </div>
+                        <span t-attf-class="pbu-chip pbu-chip--{{ hlaneTone(l) }}" t-esc="l.state_label"/>
+                        <button t-if="l.can_undo" type="button" class="pbim-btn ghost pbim-btn-sm"
+                                t-att-disabled="state.undoing === h.id" t-on-click="() => this.undoLane(h, l)">
+                          <t t-out="icon('undo', 13)"/> Undo
+                        </button>
+                        <button t-if="l.can_cancel" type="button" class="pbim-btn ghost pbim-btn-sm"
+                                t-on-click="() => this.cancelLane(h, l)">
+                          <t t-out="icon('x', 13)"/> Cancel
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                   <a t-if="h.file_id" class="pbu-file" t-att-href="fileUrl(h)" t-att-title="h.filename">
                     <t t-out="icon('fileSpreadsheet', 14)"/><span t-esc="h.filename"/>
@@ -474,6 +507,23 @@
               </div>
               <p t-if="applyOffScheme" class="pbu-inline-note pbu-apply-off"><t t-out="icon('ban', 14)"/><span t-esc="applyOffScheme"/></p>
 
+              <!-- UPDATES P3a — one card per lane: what will happen to it. -->
+              <section t-if="!isOneoff and state.lanes.length" class="pbu-lanecards" aria-labelledby="pbu-lanes-h" aria-live="polite">
+                <h3 id="pbu-lanes-h" class="pbu-lanecards-h">What happens to each part</h3>
+                <div t-foreach="state.lanes" t-as="l" t-key="l.lane"
+                     t-attf-class="pbu-lanecard pbu-lanecard--{{ l.lane }} {{ l.outcome === 'nobody' ? 'is-warn' : '' }}">
+                  <span class="pbu-lanecard-ic"><t t-out="icon(l.icon, 17)"/></span>
+                  <div class="pbu-lanecard-t">
+                    <b t-esc="l.label"/>
+                    <span class="pbu-sub" t-esc="laneValues(l)"/>
+                  </div>
+                  <span t-attf-class="pbu-lanecard-out is-{{ l.outcome }}">
+                    <t t-out="icon(laneOutIcon(l), 14)"/><span t-esc="l.line"/>
+                  </span>
+                </div>
+              </section>
+              <p t-elif="!isOneoff and state.lanesBusy" class="pbu-sub"><span class="pbu-spin sm"/> Working out who approves what…</p>
+
               <!-- UPDATES P2d — the pay month and its totals. -->
               <section t-if="isOneoff" class="pbu-when-card pbu-month-card" aria-labelledby="pbu-month-h">
                 <div class="pbu-when-head">
@@ -567,6 +617,18 @@
             <h1 class="pbu-h1" t-esc="doneTitle"/>
             <p class="pbu-lead" t-esc="doneLine"/>
             <p t-if="doneWhenLine" class="pbu-when-sum"><t t-out="icon(state.done.kind === 'oneoff' ? 'coins' : 'calendarClock', 14)"/><span t-esc="doneWhenLine"/></p>
+            <ul t-if="doneLanes.length" class="pbu-hlanes" aria-label="Each part of this update">
+              <li t-foreach="doneLanes" t-as="l" t-key="l.apply_id" t-attf-class="pbu-hlane pbu-hlane--{{ l.lane }}">
+                <span class="pbu-hlane-ic"><t t-out="icon(laneIcon(l.lane), 14)"/></span>
+                <div class="pbu-hlane-t">
+                  <b t-esc="laneName(l.lane)"/>
+                  <span class="pbu-sub" t-esc="doneLaneLine(l)"/>
+                </div>
+                <span t-attf-class="pbu-chip pbu-chip--{{ doneLaneTone(l) }}">
+                  <t t-if="l.pending">Waiting</t><t t-elif="l.scheduled">Scheduled</t><t t-else="">Done</t>
+                </span>
+              </li>
+            </ul>
             <p t-if="doneLaterNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="doneLaterNote"/></p>
             <p t-if="doneOffScheme" class="pbu-inline-note"><t t-out="icon('ban', 14)"/><span t-esc="doneOffScheme"/></p>
             <ol t-if="state.done.pending and state.done.route and state.done.route.length" class="pbu-route">
@@ -700,6 +762,17 @@
         </span>
       </div>
 
+      <!-- UPDATES P3a — the three lanes this file is split into. -->
+      <div t-if="laneStrip.length" class="pbu-lanes" role="group" aria-label="What happens to each kind of value">
+        <div t-foreach="laneStrip" t-as="l" t-key="l.lane" t-attf-class="pbu-lane pbu-lane--{{ l.lane }}">
+          <span class="pbu-lane-ic"><t t-out="icon(l.icon, 15)"/></span>
+          <div class="pbu-lane-t">
+            <b><t t-esc="l.label"/> <span class="pbu-lane-n" t-esc="grouped(l.count)"/></b>
+            <span class="pbu-sub" t-esc="l.hint"/>
+          </div>
+        </div>
+      </div>
+
       <div class="pbu-toolbar">
         <div class="pbu-filters" role="group" aria-label="Show">
           <button t-foreach="filters" t-as="f" t-key="f.key" type="button"
@@ -729,6 +802,10 @@
               <th t-foreach="columns" t-as="col" t-key="col.field_id" scope="col">
                 <span t-esc="col.label"/>
                 <small t-if="col.head and col.head !== col.label" t-esc="col.head"/>
+                <small t-if="!rv.oneoff and col.lane" t-attf-class="pbu-lanetag pbu-lanetag--{{ col.lane }}"
+                       t-att-title="laneLabel(col.lane)">
+                  <t t-out="icon(laneIcon(col.lane), 11)"/><t t-esc="laneLabel(col.lane)"/>
+                </small>
                 <small t-if="rv.oneoff" t-attf-class="pbu-coltag {{ col.role === 'deduction' ? 'is-take' : 'is-earn' }}">
                   <t t-esc="roleLabel(col)"/><t t-if="colTotal(col)"> · <t t-esc="colTotal(col)"/></t>
                 </small>

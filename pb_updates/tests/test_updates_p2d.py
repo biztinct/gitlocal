@@ -711,6 +711,9 @@ class TestUpdatesP2dRoute(P2dFixture):
 
     def test_X1_could_not_be_made(self):
         """An approved lasting change that could not be written says so."""
+        # UPDATES P3a (D3): personal details from a sheet now apply at once
+        # under the shipped route; this case needs one that waits.
+        self.company.pb_records_sheet_details_now = False
         rows = [['Code', 'Job title'], ['P2D0001', 'After']]
         cols = {'used': {'2': 'f:hr.employee:job_title'}, 'identity': {'code': 1}, 'heads': {}}
         rv = self.Upd.review(csv_b64(rows), 'j.csv', cols)
