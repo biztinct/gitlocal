@@ -46,9 +46,16 @@ changing. Every pay data file a person uploads for a pay run is used for that
 run only. The old employee import is retired; its doors open Updates. The
 demo pay runs on the demo database read one-off pay items from Updates.
 
-UPDATES programme, phases 1-3a. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+UPDATES P3b: rows that match nobody can be added as new employees with a
+first contract — only when switched on for that file, and only through the
+existing new-hire path and its approval; a "Pay scheme" column is a check
+against the team. An unfinished update is saved as a private draft and can be
+continued or discarded from the Updates home. A pay run's "Review pay data"
+says which people had changes since their last finished pay run.
+
+UPDATES programme, phases 1-3b. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -72,6 +79,10 @@ UPDATES programme, phases 1-3a. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
         'pb_import_wizard',
         # UPDATES P3a: the old employee import's doors lead to Updates.
         'pb_hr_payroll_base',
+        # UPDATES P3b: new employees from a sheet go through the existing
+        # new-hire path (`pb.people.onboard.wizard.create_employee`) and its
+        # approval. Installed on every live database.
+        'pb_people_advanced',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -90,6 +101,9 @@ UPDATES programme, phases 1-3a. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
             # UPDATES P3a (D1) — the month-only line on the pay-file screens.
             'pb_updates/static/src/js/monthonly.js',
             'pb_updates/static/src/xml/monthonly.xml',
+            # UPDATES P3b — "Since the last pay run" on Review pay data.
+            'pb_updates/static/src/js/payrun_since.js',
+            'pb_updates/static/src/xml/payrun_since.xml',
         ],
     },
     'installable': True,

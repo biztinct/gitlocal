@@ -4239,3 +4239,1250 @@ msgstr "đang chờ phê duyệt"
 #: code:addons/pb_updates/static/src/js/updates_desk.js:0
 msgid "waiting for approval with %s"
 msgstr "đang chờ %s phê duyệt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "%(item)s %(amount)s for %(month)s · %(state)s"
+msgstr "%(item)s %(amount)s cho %(month)s · %(state)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%(item)s is not in %(scheme)s, so it is left out for %(name)s."
+msgstr "%(item)s không có trong %(scheme)s, nên được bỏ qua cho %(name)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "%(item)s: %(old)s → %(new)s, %(date)s (changed on the contract)"
+msgstr "%(item)s: %(old)s → %(new)s, %(date)s (thay đổi trên hợp đồng)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid ""
+"%(label)s becomes %(new)s on %(date)s. Scheduled: not in this pay run unless"
+" it is started now."
+msgstr "%(label)s thành %(new)s vào %(date)s. Đã lên lịch: không có trong kỳ lương này trừ khi bắt đầu ngay."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "%(label)s: %(old)s → %(new)s, %(date)s"
+msgstr "%(label)s: %(old)s → %(new)s, %(date)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "%(n)s %(what)s"
+msgstr "%(n)s %(what)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"%(n)s pay schemes are called '%(name)s'. Leave the pay scheme column empty, "
+"or use a name that is unique."
+msgstr "Có %(n)s chế độ lương tên '%(name)s'. Hãy để trống cột chế độ lương, hoặc dùng tên duy nhất."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(name)s (row %(row)s)"
+msgstr "%(name)s (dòng %(row)s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%(name)s is already waiting for approval (%(ref)s)."
+msgstr "%(name)s đang chờ phê duyệt (%(ref)s)."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"%(name)s is in this file twice (also row %(rows)s). Keep one row and drop it"
+" again."
+msgstr "%(name)s có hai lần trong tệp (cả dòng %(rows)s). Giữ một dòng rồi tải lại tệp."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%(product)s new employees %(date)s"
+msgstr "%(product)s nhân viên mới %(date)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"%(team)s is paid under %(scheme)s, not %(named)s. Change the team or the pay"
+" scheme column."
+msgstr "%(team)s được trả lương theo %(scheme)s, không phải %(named)s. Hãy đổi bộ phận hoặc cột chế độ lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "%(text)s, by %(who)s"
+msgstr "%(text)s, bởi %(who)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%s (archived)"
+msgstr "%s (đã lưu trữ)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%s cannot be typed in here."
+msgstr "Không thể nhập %s tại đây."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%s fixes you made could not be put back: their cells are no longer in the "
+"file."
+msgstr "Không thể khôi phục %s chỉnh sửa của bạn: các ô đó không còn trong tệp."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%s is set on the contract once it exists."
+msgstr "%s được đặt trên hợp đồng khi hợp đồng đã có."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s new employees"
+msgstr "%s nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s new employees added"
+msgstr "Đã thêm %s nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s new-hire requests sent"
+msgstr "Đã gửi %s yêu cầu tuyển mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s rows could not be added and were left out."
+msgstr "%s dòng không thể thêm và đã được bỏ qua."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s things need your attention."
+msgstr "%s mục cần bạn chú ý."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%s values could not be used."
+msgstr "%s giá trị không thể sử dụng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s will be added"
+msgstr "%s người sẽ được thêm"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "%s: the values from the sheet are sent."
+msgstr "%s: các giá trị từ bảng tính đã được gửi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"'%s' is not a positive amount. Type the monthly pay as a number, like "
+"15000000."
+msgstr "'%s' không phải số tiền dương. Nhập lương tháng dạng số, ví dụ 15000000."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "'%s' is not an email address."
+msgstr "'%s' không phải địa chỉ email."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"1 fix you made could not be put back: its cell is no longer in the file."
+msgstr "Không thể khôi phục 1 chỉnh sửa của bạn: ô đó không còn trong tệp."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 new employee"
+msgstr "1 nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 new employee added"
+msgstr "Đã thêm 1 nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 new-hire request sent"
+msgstr "Đã gửi 1 yêu cầu tuyển mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 row could not be added and was left out."
+msgstr "1 dòng không thể thêm và đã được bỏ qua."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 thing needs your attention."
+msgstr "1 mục cần bạn chú ý."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 will be added"
+msgstr "1 người sẽ được thêm"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"A contract start date can be up to a year back or a year ahead. %s is "
+"further away than that."
+msgstr "Ngày bắt đầu hợp đồng có thể lùi hoặc tiến tối đa một năm. %s xa hơn mức đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "A new employee needs a name."
+msgstr "Nhân viên mới cần có tên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Add %s new employees"
+msgstr "Thêm %s nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Add 1 new employee"
+msgstr "Thêm 1 nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Add after all"
+msgstr "Vẫn thêm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Add these %s people as new employees"
+msgstr "Thêm %s người này làm nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Add this person as a new employee"
+msgstr "Thêm người này làm nhân viên mới"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_joiner__state__created
+msgid "Added"
+msgstr "Đã thêm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Added from a sheet. The rest of each row follows by itself once the person "
+"exists."
+msgstr "Được thêm từ bảng tính. Phần còn lại của mỗi dòng sẽ tự động áp dụng khi nhân viên đã có hồ sơ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Added now, each with a first contract. No approval needed."
+msgstr "Thêm ngay, mỗi người kèm hợp đồng đầu tiên. Không cần phê duyệt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Added, starts %s"
+msgstr "Đã thêm, bắt đầu %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Adding a new employee cannot be undone here."
+msgstr "Không thể hoàn tác việc thêm nhân viên mới tại đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Adding a person cannot be undone from Updates. Check the review before you "
+"apply."
+msgstr "Không thể hoàn tác việc thêm một người từ Cập nhật. Hãy kiểm tra kỹ trước khi áp dụng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Adding a person cannot be undone from here. Undo puts back the other changes"
+" only."
+msgstr "Không thể hoàn tác việc thêm một người tại đây. Hoàn tác chỉ khôi phục các thay đổi khác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Adding new employees is for HR. Ask somebody in HR to send this file, or to "
+"give you the HR permission."
+msgstr "Việc thêm nhân viên mới thuộc về bộ phận Nhân sự. Hãy nhờ người bên Nhân sự gửi tệp này, hoặc cấp cho bạn quyền Nhân sự."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Already here"
+msgstr "Đã có trong hệ thống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Apply %(changes)s and add %(people)s"
+msgstr "Áp dụng %(changes)s và thêm %(people)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Apply now"
+msgstr "Áp dụng ngay"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Approved, but the new employee could not be found."
+msgstr "Đã duyệt, nhưng không tìm thấy nhân viên mới."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Blank sheet for new employees"
+msgstr "Bảng trống cho nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Cannot be added"
+msgstr "Không thể thêm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Checks new employees"
+msgstr "Kiểm tra nhân viên mới"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__draft_choices
+msgid "Choices (draft)"
+msgstr "Lựa chọn (bản nháp)"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__draft_columns
+msgid "Column choice (draft)"
+msgstr "Cách ghép cột (bản nháp)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Continue where you left off"
+msgstr "Tiếp tục từ chỗ bạn dừng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Continued from your draft, read again against today's records."
+msgstr "Tiếp tục từ bản nháp, đã đọc lại theo dữ liệu hôm nay."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__start_date
+msgid "Contract starts"
+msgstr "Hợp đồng bắt đầu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Discard"
+msgstr "Bỏ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Discard the draft"
+msgstr "Bỏ bản nháp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Discard the draft of “%s”?"
+msgstr "Bỏ bản nháp của “%s”?"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Dismiss"
+msgstr "Đóng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Don't add"
+msgstr "Không thêm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "Download as a sheet"
+msgstr "Tải về dạng bảng tính"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Download the blank sheet"
+msgstr "Tải bảng trống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Downloaded “%s”. One row per new person; then drop it back here and switch "
+"on adding new employees on the review."
+msgstr "Đã tải “%s”. Mỗi người mới một dòng; sau đó thả lại tệp vào đây và bật thêm nhân viên mới ở bước xem lại."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_batch__state__draft
+msgid "Draft"
+msgstr "Bản nháp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Draft saved at %s"
+msgstr "Đã lưu bản nháp lúc %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_drafts.py:0
+msgid "Draft “%s” discarded."
+msgstr "Đã bỏ bản nháp “%s”."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Each one gets a first contract and goes through your company's new-hire "
+"approval, exactly like Add employee. Nobody who is already here is added "
+"twice, and teams or jobs are never created."
+msgstr "Mỗi người có hợp đồng đầu tiên và đi qua quy trình duyệt tuyển mới của công ty, giống hệt Thêm nhân viên. Không ai đã có trong hệ thống bị thêm hai lần, và không tạo mới bộ phận hay vị trí."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Each row needs a name, a team that already exists and a contract start date."
+" A wage gives the person a first contract."
+msgstr "Mỗi dòng cần tên, một bộ phận đã có sẵn và ngày bắt đầu hợp đồng. Có mức lương thì người đó sẽ có hợp đồng đầu tiên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Fewer drafts"
+msgstr "Ít bản nháp hơn"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "Find a person or a change"
+msgstr "Tìm người hoặc thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Find the right person, or skip the row. Nobody is created from a file unless"
+" you switch on adding new employees above."
+msgstr "Tìm đúng người, hoặc bỏ qua dòng. Không ai được tạo từ tệp trừ khi bạn bật thêm nhân viên mới ở trên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "For new employees"
+msgstr "Cho nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid ""
+"For your information. Nothing here changes a figure or stops the pay run."
+msgstr "Chỉ để bạn biết. Không mục nào ở đây thay đổi số liệu hay dừng kỳ lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "From “%s”"
+msgstr "Từ “%s”"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Headings only: name, team, contract start, wage and the pay items of a pay "
+"scheme. Fill one row per new person."
+msgstr "Chỉ có tiêu đề: tên, bộ phận, ngày bắt đầu hợp đồng, lương và các khoản lương của một chế độ lương. Mỗi người mới một dòng."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_joiner__state__needs_attention
+msgid "Hired, values still to apply"
+msgstr "Đã tuyển, còn giá trị chưa áp dụng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Hired. %(n)s values from the sheet are still to apply: %(why)s"
+msgstr "Đã tuyển. Còn %(n)s giá trị từ bảng tính chưa áp dụng: %(why)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Hired. %s values from the sheet are still to apply."
+msgstr "Đã tuyển. Còn %s giá trị từ bảng tính chưa áp dụng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "How to fill in this sheet for new employees"
+msgstr "Cách điền bảng này cho nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "It also adds %s new employees."
+msgstr "Tệp cũng thêm %s nhân viên mới."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "It also adds 1 new employee."
+msgstr "Tệp cũng thêm 1 nhân viên mới."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Kept as a draft. Continue it from the Updates home whenever you like."
+msgstr "Đã giữ làm bản nháp. Tiếp tục từ trang Cập nhật bất cứ lúc nào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "Kinds of change"
+msgstr "Loại thay đổi"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__wage
+msgid "Monthly pay"
+msgstr "Lương tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "More drafts (%s)"
+msgstr "Thêm bản nháp (%s)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Needs a fix first"
+msgstr "Cần sửa trước"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_joiner
+msgid "New employee from an update"
+msgstr "Nhân viên mới từ bản cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "New employees"
+msgstr "Nhân viên mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "New employees added by it stay: adding a person cannot be undone here."
+msgstr "Nhân viên mới được thêm vẫn giữ nguyên: không thể hoàn tác việc thêm người tại đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"New employees cannot be added yet: nobody has set up who approves new people"
+" in %s. Ask whoever looks after approvals."
+msgstr "Chưa thể thêm nhân viên mới: chưa ai thiết lập người duyệt tuyển mới tại %s. Hãy hỏi người phụ trách phê duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "New employees waiting"
+msgstr "Nhân viên mới đang chờ"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__proposal_id
+msgid "New-hire request"
+msgstr "Yêu cầu tuyển mới"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "New: %(name)s, starts %(date)s"
+msgstr "Mới: %(name)s, bắt đầu %(date)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"No %(what)s called '%(value)s' exists. New employees are only added to what "
+"is already set up, never created from a file."
+msgstr "Không có %(what)s nào tên '%(value)s'. Nhân viên mới chỉ được thêm vào những gì đã thiết lập, không bao giờ tạo mới từ tệp."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No contract yet: no wage in the file"
+msgstr "Chưa có hợp đồng: tệp không có lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "No contract yet: there is no wage in the file, so this cannot be set."
+msgstr "Chưa có hợp đồng: tệp không có lương, nên không thể đặt giá trị này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No pay items"
+msgstr "Không có khoản lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"No pay scheme covers %s yet. Pay items are still saved on the contract."
+msgstr "Chưa có chế độ lương nào áp dụng cho %s. Các khoản lương vẫn được lưu trên hợp đồng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"No pay scheme is called '%s'. Check the spelling, or leave the pay scheme "
+"column empty."
+msgstr "Không có chế độ lương nào tên '%s'. Hãy kiểm tra chính tả, hoặc để trống cột chế độ lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Nobody can be added from this file yet: %s"
+msgstr "Chưa thể thêm ai từ tệp này: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Nobody is added until the request is approved. The rest of each row follows "
+"by itself once the person exists."
+msgstr "Không ai được thêm cho đến khi yêu cầu được duyệt. Phần còn lại của mỗi dòng sẽ tự động áp dụng khi nhân viên đã có hồ sơ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "Nobody matches. Clear the search or pick another kind."
+msgstr "Không ai khớp. Xóa tìm kiếm hoặc chọn loại khác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Not added"
+msgstr "Không thêm"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Nothing was changed: %(name)s could not be added. %(why)s"
+msgstr "Không có gì thay đổi: không thể thêm %(name)s. %(why)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "One new-hire request each, for approval"
+msgstr "Mỗi người một yêu cầu tuyển mới, chờ phê duyệt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "One new-hire request each, to %s"
+msgstr "Mỗi người một yêu cầu tuyển mới, gửi %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"One row per new person. Each row needs at least a Name, a Team that already "
+"exists, and a Contract start date (shaded columns)."
+msgstr "Mỗi người mới một dòng. Mỗi dòng cần ít nhất Tên, một Bộ phận đã có sẵn và Ngày bắt đầu hợp đồng (các cột tô màu)."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pay items of"
+msgstr "Khoản lương của"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Pay scheme (a check for new employees)"
+msgstr "Chế độ lương (kiểm tra cho nhân viên mới)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Pay scheme is a check only: it must be the scheme the team is paid under. It"
+" never changes who is paid by what."
+msgstr "Chế độ lương chỉ dùng để kiểm tra: phải đúng chế độ mà bộ phận đang được trả. Cột này không bao giờ thay đổi ai được trả theo chế độ nào."
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_newhire_proposal
+msgid "Proposed new hire"
+msgstr "Đề xuất tuyển mới"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__reference
+msgid "Reference"
+msgstr "Mã tham chiếu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Row %s could not be matched again to the person you chose. Find the person "
+"again."
+msgstr "Dòng %s không thể khớp lại với người bạn đã chọn. Hãy tìm lại người đó."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__row
+msgid "Row in the file"
+msgstr "Dòng trong tệp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Saved as you worked. Only you can see these. Continuing reads the file again"
+" against today's records."
+msgstr "Được lưu khi bạn làm việc. Chỉ bạn thấy được. Khi tiếp tục, tệp được đọc lại theo dữ liệu hôm nay."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__draft_saved_at
+msgid "Saved at (draft)"
+msgstr "Lưu lúc (bản nháp)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s new-hire requests"
+msgstr "Gửi %s yêu cầu tuyển mới"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 new-hire request"
+msgstr "Gửi 1 yêu cầu tuyển mới"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Sending these values needs permission to change employee records. Ask an "
+"administrator for the HR or Payroll Officer role."
+msgstr "Gửi các giá trị này cần quyền thay đổi hồ sơ nhân viên. Hãy đề nghị quản trị viên cấp vai trò Nhân sự hoặc Chuyên viên tính lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending…"
+msgstr "Đang gửi…"
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_batch__state__sent
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "Show them"
+msgstr "Xem danh sách"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/payrun_since.xml:0
+msgid "Since the last pay run"
+msgstr "Kể từ kỳ lương trước"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "Since the last pay run: %(n)s people have changes (%(parts)s)"
+msgstr "Kể từ kỳ lương trước: %(n)s người có thay đổi (%(parts)s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "Since the last pay run: 1 person has changes (%s)"
+msgstr "Kể từ kỳ lương trước: 1 người có thay đổi (%s)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Since this draft was saved, %(n)s people are no longer on record or no "
+"longer match their rows: %(list)s."
+msgstr "Từ khi lưu bản nháp, %(n)s người không còn trong hồ sơ hoặc không còn khớp với dòng của họ: %(list)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Since this draft was saved, %s is no longer on record or no longer matches "
+"that row. The row now matches nobody."
+msgstr "Từ khi lưu bản nháp, %s không còn trong hồ sơ hoặc không còn khớp với dòng đó. Dòng này giờ không khớp với ai."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Spreadsheets cannot be written on this server yet. Ask an administrator to "
+"install the spreadsheet library."
+msgstr "Máy chủ chưa thể tạo bảng tính. Hãy đề nghị quản trị viên cài thư viện bảng tính."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__state
+msgid "Stage"
+msgstr "Giai đoạn"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__draft_step
+msgid "Step reached (draft)"
+msgstr "Bước đã đến (bản nháp)"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Stopped at: Apply"
+msgstr "Dừng ở: Áp dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Stopped at: Match columns"
+msgstr "Dừng ở: Ghép cột"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Stopped at: Review changes"
+msgstr "Dừng ở: Xem lại thay đổi"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__department_id
+msgid "Team"
+msgstr "Bộ phận"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Team, Job, Manager, Country and Working hours must already exist: nothing is"
+" created from this sheet. A manager can be given by name, employee code or "
+"work email."
+msgstr "Bộ phận, Vị trí, Quản lý, Quốc gia và Giờ làm việc phải có sẵn: không có gì được tạo từ bảng này. Quản lý có thể ghi bằng tên, mã nhân viên hoặc email công việc."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_drafts.py:0
+msgid "That draft is not there any more, or it is not yours to discard."
+msgstr "Bản nháp đó không còn, hoặc bạn không có quyền bỏ nó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_drafts.py:0
+msgid ""
+"That draft is not there any more. It may have been applied or discarded."
+msgstr "Bản nháp đó không còn. Có thể nó đã được áp dụng hoặc đã bị bỏ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"That new employee is not on record in the companies you are working in."
+msgstr "Nhân viên mới đó không có trong các công ty bạn đang làm việc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"The column “%s” no longer has the place it was going to. Choose where it "
+"goes again."
+msgstr "Cột “%s” không còn nơi đích trước đây. Hãy chọn lại nơi đưa cột vào."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "The contract could not be made: %s"
+msgstr "Không thể tạo hợp đồng: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "The contract end date must be after its start date."
+msgstr "Ngày kết thúc hợp đồng phải sau ngày bắt đầu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"The draft and its copy of the file are thrown away. Nothing was changed by "
+"it, so nothing needs putting back."
+msgstr "Bản nháp và bản sao tệp sẽ bị bỏ. Bản nháp chưa thay đổi gì, nên không cần khôi phục."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The draft could not be opened. Nothing has changed."
+msgstr "Không mở được bản nháp. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"The employee code %(code)s could not be saved (%(why)s). Add it on the "
+"employee record."
+msgstr "Không lưu được mã nhân viên %(code)s (%(why)s). Hãy thêm mã trên hồ sơ nhân viên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "The pay items are those of %s. A pay item left blank is not set."
+msgstr "Các khoản lương là của %s. Khoản lương để trống sẽ không được đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "The values could not be sent."
+msgstr "Không gửi được các giá trị."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The values could not be sent. Nothing has changed."
+msgstr "Không gửi được các giá trị. Chưa có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "There is nothing left to apply for %s."
+msgstr "Không còn gì cần áp dụng cho %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"These cannot be added as new employees. Find the right person, or skip the "
+"row."
+msgstr "Những dòng này không thể thêm làm nhân viên mới. Hãy tìm đúng người, hoặc bỏ qua dòng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "This column cannot be filled in for a new employee."
+msgstr "Không thể điền cột này cho nhân viên mới."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_drafts.py:0
+msgid "This draft has lost its file. Discard it and start again."
+msgstr "Bản nháp này đã mất tệp. Hãy bỏ và bắt đầu lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file adds %s new employees."
+msgstr "Tệp này thêm %s nhân viên mới."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file adds 1 new employee."
+msgstr "Tệp này thêm 1 nhân viên mới."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"This file has %(n)s rows to add as new employees. At most %(max)s can be "
+"added from one file: split it into smaller files."
+msgstr "Tệp này có %(n)s dòng cần thêm làm nhân viên mới. Mỗi tệp chỉ thêm được tối đa %(max)s người: hãy chia thành các tệp nhỏ hơn."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "This is not a date."
+msgstr "Đây không phải ngày."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_drafts.py:0
+msgid "This is not a draft any more."
+msgstr "Đây không còn là bản nháp."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"This looks like %s, who is already here. Nobody is added twice: find the "
+"person instead, or skip the row."
+msgstr "Dòng này giống %s, người đã có trong hệ thống. Không ai được thêm hai lần: hãy tìm người đó, hoặc bỏ qua dòng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"To add %s as a new employee, the row needs a team and a contract start date."
+msgstr "Để thêm %s làm nhân viên mới, dòng cần có bộ phận và ngày bắt đầu hợp đồng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Type a Wage to give the person a first contract. Leave it blank and the "
+"person is added without a contract."
+msgstr "Nhập Lương để người đó có hợp đồng đầu tiên. Để trống thì người đó được thêm mà chưa có hợp đồng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Undo puts back the changes to people who were already here. A person added "
+"from this file stays; to remove them, end their employment on their record."
+msgstr "Hoàn tác khôi phục các thay đổi của những người đã có. Người được thêm từ tệp này vẫn giữ nguyên; muốn xóa, hãy chấm dứt làm việc trên hồ sơ của họ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_drafts.py:0
+msgid "Unfinished update"
+msgstr "Bản cập nhật chưa xong"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__values_count
+msgid "Values in the row"
+msgstr "Giá trị trong dòng"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__cells_done
+msgid "Values sent"
+msgstr "Đã gửi giá trị"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__cells_json
+msgid "Values still to send"
+msgstr "Giá trị còn chờ gửi"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Waiting for approval (%(ref)s) with %(who)s"
+msgstr "Đang chờ %(who)s phê duyệt (%(ref)s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Waiting for approval (%s)"
+msgstr "Đang chờ phê duyệt (%s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"When you upload it, choose \"Add these people as new employees\" on the "
+"review. Each person goes through your company's new-hire approval, exactly "
+"like Add employee."
+msgstr "Khi tải lên, hãy chọn \"Thêm những người này làm nhân viên mới\" ở bước xem lại. Mỗi người đi qua quy trình duyệt tuyển mới của công ty, giống hệt Thêm nhân viên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Will be added"
+msgstr "Sẽ được thêm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Working out who approves new people…"
+msgstr "Đang xác định ai duyệt người mới…"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "bank"
+msgstr "ngân hàng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "contract"
+msgstr "hợp đồng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "country"
+msgstr "quốc gia"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "date not set"
+msgstr "chưa có ngày"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "job"
+msgstr "vị trí"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "one-off"
+msgstr "khoản một lần"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "pay"
+msgstr "lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "personal details"
+msgstr "thông tin cá nhân"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved %s days ago"
+msgstr "lưu %s ngày trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved %s hours ago"
+msgstr "lưu %s giờ trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved %s minutes ago"
+msgstr "lưu %s phút trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved 1 hour ago"
+msgstr "lưu 1 giờ trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved 1 minute ago"
+msgstr "lưu 1 phút trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved just now"
+msgstr "vừa lưu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "saved yesterday"
+msgstr "lưu hôm qua"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_sincerun.py:0
+msgid "scheduled"
+msgstr "đã lên lịch"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "team"
+msgstr "bộ phận"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "this person"
+msgstr "người này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "working hours"
+msgstr "giờ làm việc"

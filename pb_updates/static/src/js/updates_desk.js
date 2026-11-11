@@ -25,7 +25,7 @@
  * (registered at the bottom of this file, after Records) and as its own client
  * action `pb_updates_desk`.
  */
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -37,6 +37,7 @@ import {
     UpdReview, icon, plural, reviewCounts, changesToSend, PAGE_ROWS,
     dayLabel, rowStart, startBuckets, oneoffTotals, moneyLabel,
     LANE_ICON, laneLabel,
+    SCHEME_TARGET, joinersToSend, bindRow, cellFromItem, newRowFrom, unmatchedPayload,
 } from "@pb_updates/js/updates_review";
 
 const MODEL = "pb.updates.desk";
@@ -47,6 +48,11 @@ const WHEN = "when:start";
 const REACH_DAYS = 366;
 /** At most this many different start dates in one update. */
 const MAX_DATES = 6;
+/** UPDATES P3b — drafts shown before "More drafts", and when one turns amber. */
+const DRAFTS_SHOWN = 5;
+const DRAFT_OLD_DAYS = 30;
+/** A draft is saved this long after the last thing a person did. */
+const DRAFT_DEBOUNCE = 900;
 /** The default name: "November 2026 update", the month in the reader's language. */
 export function defaultName() {
     return _t("%s update", luxon.DateTime.now().toFormat("LLLL yyyy"));
@@ -134,8 +140,26 @@ export class PbUpdatesDesk extends Component {
             lanes: [],
             lanesBusy: false,
             switching: false,
+            // UPDATES P3b — the draft this flow saves into, and what changed
+            // since it was saved; the blank new-employee sheet; Apply now.
+            draftId: 0,
+            draftSavedAt: "",
+            draftNotice: [],
+            draftsAll: false,
+            opening: 0,
+            joinerSheet: { open: false, schemes: null, scheme: "", busy: false, msg: "", tone: "" },
+            joinerOutlook: null,
+            applyingNow: 0,
         });
+        this._draftTimer = null;
         onWillStart(() => this.loadHome());
+        onWillUnmount(() => {
+            if (this._draftTimer) {
+                clearTimeout(this._draftTimer);
+                this._draftTimer = null;
+                this.saveDraft();
+            }
+        });
     }
 
     icon(name, size) { return icon(name, size); }
@@ -165,15 +189,19 @@ export class PbUpdatesDesk extends Component {
     }
 
     async loadHistory() {
-        const [res, coming, waiting] = await Promise.all([
+        const [res, coming, waiting, drafts, joiners] = await Promise.all([
             this.orm.call(MODEL, "get_history", [], { limit: this.state.historyAll ? 200 : 8 }),
             this.orm.call(MODEL, "get_coming_up", []),
             this.orm.call(MODEL, "get_waiting", []),
+            this.orm.call(MODEL, "list_drafts", []),
+            this.orm.call(MODEL, "get_joiners_waiting", []),
         ]);
         this.state.home.history = res.batches || [];
         this.state.historyTotal = res.total || 0;
         this.state.home.coming_up = coming.items || [];
         this.state.home.waiting = waiting || { months: [], clashes: [] };
+        this.state.home.drafts = drafts.drafts || [];
+        this.state.home.joiners_waiting = joiners.items || [];
     }
 
     async showAllHistory() {
@@ -345,6 +373,10 @@ export class PbUpdatesDesk extends Component {
                 changes: plural(h.values, _t("1 change"), _t("%s changes")),
                 people: plural(h.people, _t("1 person"), _t("%s people")) }));
         }
+        // UPDATES P3b — new employees from the file.
+        if (h.joiners && h.joiners.length) {
+            bits.push(plural(h.joiners.length, _t("1 new employee"), _t("%s new employees")));
+        }
         if (h.user) { bits.push(_t("by %s", h.user)); }
         return bits.filter(Boolean).join(" · ");
     }
@@ -427,12 +459,94 @@ export class PbUpdatesDesk extends Component {
     }
 
     // =================================================================
+    //  UPDATES P3b — drafts on the home
+    // =================================================================
+    get drafts() { return this.state.home.drafts || []; }
+    get draftsShown() { return this.state.draftsAll ? this.drafts : this.drafts.slice(0, DRAFTS_SHOWN); }
+    get draftsMore() { return Math.max(0, this.drafts.length - DRAFTS_SHOWN); }
+    get draftsMoreLabel() { return _t("More drafts (%s)", grouped(this.draftsMore)); }
+
+    /** "Draft saved 14:05" under the stepper while a draft is being kept. */
+    get draftSavedLine() {
+        if (!this.state.draftId || !this.state.draftSavedAt) { return ""; }
+        return _t("Draft saved at %s", whenLabel(this.state.draftSavedAt).split(", ").pop());
+    }
+
+    draftKind(d) {
+        return d.kind === "oneoff"
+            ? _t("One-off pay for %s", d.month_label || monthLabel(d.month))
+            : _t("Lasting changes");
+    }
+
+    draftStep(d) {
+        return { match: _t("Stopped at: Match columns"), review: _t("Stopped at: Review changes"),
+                 apply: _t("Stopped at: Apply") }[d.step] || _t("Stopped at: Match columns");
+    }
+
+    draftAge(d) {
+        if (!d.saved_at) { return { label: "", old: false }; }
+        let saved;
+        try { saved = deserializeDateTime(d.saved_at); } catch { return { label: "", old: false }; }
+        const mins = Math.max(0, Math.round(luxon.DateTime.now().diff(saved, "minutes").minutes));
+        const days = Math.floor(mins / 1440);
+        let label;
+        if (mins < 1) { label = _t("saved just now"); }
+        else if (mins < 60) { label = plural(mins, _t("saved 1 minute ago"), _t("saved %s minutes ago")); }
+        else if (mins < 1440) { label = plural(Math.round(mins / 60), _t("saved 1 hour ago"), _t("saved %s hours ago")); }
+        else { label = plural(days, _t("saved yesterday"), _t("saved %s days ago")); }
+        return { label, old: days > DRAFT_OLD_DAYS };
+    }
+
+    discardDraft(d) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Discard the draft of “%s”?", d.filename),
+            body: _t("The draft and its copy of the file are thrown away. Nothing was changed by it, so nothing needs putting back."),
+            confirmLabel: _t("Discard the draft"),
+            cancelLabel: _t("Keep it"),
+            confirm: async () => {
+                const res = await this.orm.call(MODEL, "discard_draft", [], { draft_id: d.id });
+                this.notif.add(res.msg, { type: res.ok ? "success" : "warning" });
+                await this.loadHistory();
+            },
+            cancel: () => {},
+        });
+    }
+
+    // ------------------------------------------------- new employees waiting
+    get joinersWaiting() { return this.state.home.joiners_waiting || []; }
+
+    joinerFrom(j) { return _t("From “%s”", j.batch || ""); }
+
+    joinerTone(j) {
+        return { waiting: "info", created: "ok", needs_attention: "warn", turned_down: "err" }[j.state] || "muted";
+    }
+
+    joinerIcon(j) {
+        return { waiting: "clock", created: "userCheck", needs_attention: "alert", turned_down: "userX" }[j.state] || "userPlus";
+    }
+
+    async applyNowJoiner(j) {
+        if (this.state.applyingNow) { return; }
+        this.state.applyingNow = j.id;
+        try {
+            const res = await this.orm.call(MODEL, "apply_now", [], { joiner_id: j.id });
+            this.notif.add(res.msg, { type: res.ok ? "success" : "warning" });
+            await this.loadHistory();
+        } catch (e) {
+            this.notif.add(e.data?.message || _t("The values could not be sent. Nothing has changed."), { type: "danger" });
+        } finally {
+            this.state.applyingNow = 0;
+        }
+    }
+
+    // =================================================================
     //  Navigation
     // =================================================================
     go(view) {
         this.state.view = view;
         const el = document.querySelector(".pbu-root");
         if (el) { el.scrollTop = 0; }
+        if (["match", "review", "apply"].includes(view)) { this.queueDraft(0); }
     }
 
     newUpdate(kind = "lasting") {
@@ -553,6 +667,11 @@ export class PbUpdatesDesk extends Component {
     }
 
     resetFlow() {
+        if (this._draftTimer) { clearTimeout(this._draftTimer); this._draftTimer = null; }
+        this.state.draftId = 0;
+        this.state.draftSavedAt = "";
+        this.state.draftNotice = [];
+        this.state.joinerOutlook = null;
         this.state.monthNote = "";
         Object.assign(this.state.file, { name: "", b64: "", busy: false, rows: 0, phase: "", error: "", over: 0 });
         Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
@@ -565,8 +684,17 @@ export class PbUpdatesDesk extends Component {
     }
 
     async close() {
+        const saved = this.state.draftId && this.state.view !== "done";
+        if (saved && this._draftTimer) {
+            clearTimeout(this._draftTimer);
+            this._draftTimer = null;
+            await this.saveDraft();
+        }
         this.resetFlow();
         this.go("home");
+        if (saved) {
+            this.notif.add(_t("Kept as a draft. Continue it from the Updates home whenever you like."), { type: "info" });
+        }
         await this.loadHistory();
     }
 
@@ -648,6 +776,44 @@ export class PbUpdatesDesk extends Component {
         }
     }
 
+    // ------------------------------------- UPDATES P3b — blank new-employee sheet
+    get canHire() { return !!(this.state.home.can_hire && this.canWrite); }
+
+    async openJoinerSheet() {
+        const j = this.state.joinerSheet;
+        j.open = !j.open;
+        if (j.open && j.schemes === null) {
+            try {
+                const res = await this.orm.call(MODEL, "joiner_sheet_schemes", []);
+                j.schemes = res.schemes || [];
+            } catch {
+                j.schemes = [];
+            }
+        }
+    }
+
+    onJoinerScheme(ev) { this.state.joinerSheet.scheme = ev.target.value || ""; }
+
+    async downloadJoinerSheet() {
+        const j = this.state.joinerSheet;
+        if (j.busy) { return; }
+        Object.assign(j, { busy: true, msg: "", tone: "" });
+        try {
+            const res = await this.orm.call(MODEL, "download_joiner_sheet", [], {
+                config_id: j.scheme ? parseInt(j.scheme) : 0 });
+            if (!res.ok) {
+                Object.assign(j, { msg: res.msg, tone: "err" });
+                return;
+            }
+            saveFile(res);
+            Object.assign(j, { tone: "ok", msg: _t("Downloaded “%s”. One row per new person; then drop it back here and switch on adding new employees on the review.", res.filename) });
+        } catch (e) {
+            Object.assign(j, { tone: "err", msg: e.data?.message || _t("The sheet could not be built. Nothing has changed.") });
+        } finally {
+            j.busy = false;
+        }
+    }
+
     // =================================================================
     //  Start — the file
     // =================================================================
@@ -718,6 +884,8 @@ export class PbUpdatesDesk extends Component {
                 this.state.month = res.sheet_month;
             }
             this.state.match = this.buildMatch(res);
+            // UPDATES P3b — from here on, this unfinished update is a draft.
+            this.saveDraft("match", true);
             if (res.from_sheet) {
                 // A Payobook sheet: every column already knows where it goes.
                 await this.toReview(true);
@@ -766,9 +934,13 @@ export class PbUpdatesDesk extends Component {
     /** UPDATES P2c — the start-date destination, first in "Goes to". */
     get whenOption() { return { value: WHEN, label: _t("Start date for this row") }; }
 
+    /** UPDATES P3b — "Pay scheme" for new employees: a check, never a value. */
+    get schemeOption() { return { value: SCHEME_TARGET, label: _t("Pay scheme (a check for new employees)") }; }
+
     get fieldLabels() {
         const out = {};
         out[WHEN] = this.whenOption.label;
+        out[SCHEME_TARGET] = this.schemeOption.label;
         for (const o of this.identityOptions) { out[o.value] = o.label; }
         for (const t of (this.state.match ? this.state.match.fields : [])) {
             for (const f of t.fields) { out[f.id] = f.label; }
@@ -865,6 +1037,7 @@ export class PbUpdatesDesk extends Component {
         col.target = value;
         col.how = value && value !== "ignore" ? "you" : "";
         this.state.matchError = "";
+        this.queueDraft();
         if (wasIdentity || (value || "").startsWith("identity:")) { this.refreshSchemes(); }
     }
 
@@ -904,6 +1077,7 @@ export class PbUpdatesDesk extends Component {
         if (!t || t === "ignore") { return { label: "", tone: "none", icon: "" }; }
         if (t.startsWith("identity:")) { return { label: _t("Finds the person"), tone: "key", icon: "link" }; }
         if (t === WHEN) { return { label: _t("When it starts"), tone: "when", icon: "calendarClock" }; }
+        if (t === SCHEME_TARGET) { return { label: _t("Checks new employees"), tone: "when", icon: "shieldCheck" }; }
         const group = this.fieldGroups[t];
         return {
             employee: { label: _t("About the person"), tone: "person", icon: "user" },
@@ -941,7 +1115,7 @@ export class PbUpdatesDesk extends Component {
             placed: placed.length,
             guesses: cols.filter((c) => c.how === "guess").length,
             identity: placed.filter((c) => c.target.startsWith("identity:")).length,
-            values: placed.filter((c) => !c.target.startsWith("identity:") && c.target !== WHEN).length,
+            values: placed.filter((c) => !c.target.startsWith("identity:") && c.target !== WHEN && c.target !== SCHEME_TARGET).length,
             dated: placed.some((c) => c.target === WHEN),
         };
     }
@@ -1026,6 +1200,8 @@ export class PbUpdatesDesk extends Component {
             const rows = (res.rows || []).map((r, i) => Object.assign(r, { key: `r${i}` }));
             const unmatched = (res.unmatched || []).map((u) => Object.assign(u, { skipped: false, bound: false }));
             this.state.rv = {
+                // UPDATES P3b — rows that match nobody, added as new employees.
+                addNew: false, newRows: [], newOutlook: null,
                 filename: res.filename,
                 summary: res.summary || {},
                 identity: res.identity,
@@ -1056,6 +1232,8 @@ export class PbUpdatesDesk extends Component {
             };
             f.busy = false;
             this.go("review");
+            this.saveDraft("review", false, { matched: this.matchedMap() });
+            return true;
         } catch (e) {
             f.busy = false;
             const msg = e.data?.message || _t("The file could not be checked. Nothing has changed.");
@@ -1065,6 +1243,11 @@ export class PbUpdatesDesk extends Component {
 
     recheck(changes) {
         return this.orm.call(MODEL, "recheck", [], this.kindArgs({ changes }));
+    }
+
+    /** UPDATES P3b — rows judged as new employees (never written). */
+    judgeNew(rows) {
+        return this.orm.call(MODEL, "judge_joiners", [], { rows });
     }
 
     lookup(term) {
@@ -1094,6 +1277,38 @@ export class PbUpdatesDesk extends Component {
         this.go("apply");
         this.refreshPaid();
         this.refreshLanes();
+        this.refreshJoinerOutlook();
+    }
+
+    // =================================================================
+    //  UPDATES P3b — new employees on the Apply step
+    // =================================================================
+    get newCount() { return this.state.rv ? reviewCounts(this.state.rv).newPeople : 0; }
+
+    async refreshJoinerOutlook() {
+        this.state.joinerOutlook = null;
+        const n = this.newCount;
+        if (this.isOneoff || !n) { return; }
+        try {
+            this.state.joinerOutlook = await this.orm.silent.call(MODEL, "joiner_outlook", [], { count: n });
+        } catch {
+            this.state.joinerOutlook = { count: n, outcome: "approval", line: "" };
+        }
+    }
+
+    get joinerCardLine() {
+        const o = this.state.joinerOutlook;
+        if (!o) { return _t("Working out who approves new people…"); }
+        return o.line;
+    }
+
+    get joinerOutIcon() {
+        const o = this.state.joinerOutlook;
+        return { now: "check", approval: "clock", none: "alert" }[o && o.outcome] || "clock";
+    }
+
+    get joinerCount() {
+        return plural(this.newCount, _t("1 new employee"), _t("%s new employees"));
     }
 
     // =================================================================
@@ -1239,6 +1454,7 @@ export class PbUpdatesDesk extends Component {
     }
 
     setWhenMode(mode) {
+        this.queueDraft();
         this.state.when.mode = mode;
         if (mode === "date" && !this.state.when.date) {
             this.state.when.date = luxon.DateTime.fromISO(this.todayIso).plus({ months: 1 }).startOf("month").toISODate();
@@ -1247,11 +1463,12 @@ export class PbUpdatesDesk extends Component {
     }
 
     onWhenDate(ev) {
+        this.queueDraft();
         this.state.when.date = ev.target.value || "";
         this.syncDefault();
     }
 
-    setScope(scope) { this.state.when.scope = scope; }
+    setScope(scope) { this.state.when.scope = scope; this.queueDraft(); }
 
     /** Every row-date and default-date bucket, held as the person chose. */
     get buckets() { return startBuckets(this.state.rv || { rows: [] }, this.state.when.scope); }
@@ -1343,8 +1560,21 @@ export class PbUpdatesDesk extends Component {
         }
         const later = this.laterCount;
         const now = this.nowCount;
+        // UPDATES P3b — new employees, alone or with changes.
+        const fresh = this.newCount;
         if (this.state.apply.busy) {
-            return plural(n, _t("Applying 1 change…"), _t("Applying %s changes…"));
+            return !n && fresh ? _t("Sending…") : plural(n, _t("Applying 1 change…"), _t("Applying %s changes…"));
+        }
+        if (fresh) {
+            const waits = !(this.state.joinerOutlook && this.state.joinerOutlook.outcome === "now");
+            if (!n) {
+                return waits
+                    ? plural(fresh, _t("Send 1 new-hire request"), _t("Send %s new-hire requests"))
+                    : plural(fresh, _t("Add 1 new employee"), _t("Add %s new employees"));
+            }
+            return _t("Apply %(changes)s and add %(people)s", {
+                changes: plural(n, _t("1 change"), _t("%s changes")),
+                people: plural(fresh, _t("1 new employee"), _t("%s new employees")) });
         }
         if (later && now) { return plural(n, _t("Apply and schedule 1 change"), _t("Apply and schedule %s changes")); }
         if (later) { return plural(n, _t("Schedule 1 change"), _t("Schedule %s changes")); }
@@ -1372,6 +1602,7 @@ export class PbUpdatesDesk extends Component {
         this.state.apply.name = ev.target.value;
         this.state.apply.touched = true;
         this.state.apply.error = "";
+        this.queueDraft();
     }
 
     onNameKey(ev) { if (ev.key === "Enter") { ev.preventDefault(); this.applyNow(); } }
@@ -1392,6 +1623,8 @@ export class PbUpdatesDesk extends Component {
         const rv = this.state.rv;
         const counts = this.applyCounts;
         a.busy = true;
+        if (this._draftTimer) { clearTimeout(this._draftTimer); this._draftTimer = null; }
+        if (this._draftFirst) { try { await this._draftFirst; } catch { /* quiet */ } }
         try {
             const answer = await this.orm.call(MODEL, "apply", [], this.kindArgs({
                 name: a.name.trim(),
@@ -1399,15 +1632,20 @@ export class PbUpdatesDesk extends Component {
                 filename: this.state.file.name,
                 columns: this.matchColumns(),
                 changes: changesToSend(rv),
-                stats: { rows: rv.stats.rows, unmatched: counts.rowsOpen + rv.unmatched.filter((u) => u.skipped).length,
+                stats: { rows: rv.stats.rows, unmatched: counts.rowsOpen + rv.unmatched.filter((u) => u.skipped && !u.asNew).length,
                          left_out: counts.leftOut, off_scheme: counts.offScheme },
                 start_date: this.isOneoff ? false : (this.defaultStart || false),
                 hold_scope: this.state.when.scope,
+                // UPDATES P3b — the draft becomes this update; new employees.
+                draft_id: this.state.draftId || 0,
+                joiners: this.isOneoff ? [] : joinersToSend(rv),
             }));
             if (!answer.ok) {
                 a.error = answer.msg;
                 return;
             }
+            if (this._draftTimer) { clearTimeout(this._draftTimer); this._draftTimer = null; }
+            if (answer.batch_id) { this.state.draftId = 0; }
             this.state.done = answer;
             this.go("done");
         } catch (e) {
@@ -1461,9 +1699,29 @@ export class PbUpdatesDesk extends Component {
         return !!(d && !d.pending && !d.written && this.doneScheduled.length);
     }
 
+    /** UPDATES P3b — each new employee of what was just sent. */
+    get doneJoiners() { return (this.state.done && this.state.done.joiners) || []; }
+
+    /** Only new-hire requests went out: nothing is done yet. */
+    get doneOnlyWaitingHires() {
+        const d = this.state.done;
+        return !!(d && d.joiners_waiting && !d.joiners_added && !d.written && !d.pending);
+    }
+
+    get doneNotAddedLine() {
+        const n = (this.state.done && this.state.done.joiners_not_added) || 0;
+        return n ? plural(n, _t("1 row could not be added and was left out."),
+                          _t("%s rows could not be added and were left out.")) : "";
+    }
+
     get doneTitle() {
         const d = this.state.done;
         if (d.nothing) { return _t("Nothing needed changing"); }
+        if (this.doneJoiners.length && !d.written && !d.pending && !(d.apply_ids || []).length) {
+            return d.joiners_waiting
+                ? plural(d.joiners_waiting, _t("1 new-hire request sent"), _t("%s new-hire requests sent"))
+                : plural(d.joiners_added, _t("1 new employee added"), _t("%s new employees added"));
+        }
         if (d.kind === "oneoff") { return d.pending ? _t("Sent for approval") : _t("Approved"); }
         if (d.pending && this.doneParts.some((p) => !p.pending)) { return _t("Sent, part of it for approval"); }
         if (d.pending && this.doneLanes.some((l) => !l.pending)) { return _t("Sent, part of it for approval"); }
@@ -1516,6 +1774,11 @@ export class PbUpdatesDesk extends Component {
     get doneLine() {
         const d = this.state.done;
         if (d.nothing) { return d.msg; }
+        if (this.doneJoiners.length && !d.written && !d.pending && !(d.apply_ids || []).length) {
+            return d.joiners_waiting
+                ? _t("Nobody is added until the request is approved. The rest of each row follows by itself once the person exists.")
+                : _t("Saved as “%s”. You will find it under Past updates, with the original file.", d.batch_name || this.state.apply.name);
+        }
         if (d.kind === "oneoff") {
             const what = plural(d.values, _t("1 one-off amount"), _t("%s one-off amounts"));
             const pay = _t("These will be included in the %s pay run.", d.month_label);
@@ -1574,7 +1837,7 @@ export class PbUpdatesDesk extends Component {
         const d = this.state.done;
         if (!d || !d.batch_id) { return; }
         await this.undoBatch(d.batch_id, d.batch_name || this.state.apply.name, true,
-                             this.doneScheduled.length > 0);
+                             this.doneScheduled.length > 0, 0, this.doneJoiners.length > 0);
     }
 
     get undoDoneLabel() {
@@ -1584,13 +1847,16 @@ export class PbUpdatesDesk extends Component {
     // =================================================================
     //  Undo (home and done)
     // =================================================================
-    undoBatch(batchId, name, thenHome = false, mixed = false, applyId = 0) {
+    undoBatch(batchId, name, thenHome = false, mixed = false, applyId = 0, joiners = false) {
         return new Promise((resolve) => {
+            const base = mixed
+                ? _t("Every value this update has already changed goes back to what it was before. A value someone has changed since is left as it is. The scheduled part is not touched: cancel it separately.")
+                : _t("Every value this update changed goes back to what it was before. A value someone has changed since is left as it is.");
             this.dialog.add(ConfirmationDialog, {
                 title: _t("Undo “%s”?", name),
-                body: mixed
-                    ? _t("Every value this update has already changed goes back to what it was before. A value someone has changed since is left as it is. The scheduled part is not touched: cancel it separately.")
-                    : _t("Every value this update changed goes back to what it was before. A value someone has changed since is left as it is."),
+                body: joiners
+                    ? base + " " + _t("New employees added by it stay: adding a person cannot be undone here.")
+                    : base,
                 confirmLabel: mixed ? _t("Undo what was applied") : _t("Undo the update"),
                 cancelLabel: _t("Keep it"),
                 confirm: async () => {
@@ -1623,6 +1889,290 @@ export class PbUpdatesDesk extends Component {
         });
     }
 }
+
+// ---------------------------------------------------------------------------
+//  UPDATES P3b — drafts: saved as a person works, continued from the home
+// ---------------------------------------------------------------------------
+Object.assign(PbUpdatesDesk.prototype, {
+    /** Save soon (debounced): the next thing a person does saves it all. */
+    queueDraft(delay = DRAFT_DEBOUNCE) {
+        if ((!this.state.draftId && !this._draftFirst) || this.state.view === "done" || this._restoring) { return; }
+        if (this._draftTimer) { clearTimeout(this._draftTimer); }
+        this._draftTimer = setTimeout(() => {
+            this._draftTimer = null;
+            this.saveDraft();
+        }, delay);
+    },
+
+    /** `{row: [emp_id, name]}` of the review as read now. */
+    matchedMap() {
+        const out = {};
+        for (const row of (this.state.rv && this.state.rv.rows) || []) {
+            if (!row.bound) { out[row.row] = [row.emp_id, row.name]; }
+        }
+        return out;
+    },
+
+    /** Everything a person chose on screen — never a verdict. */
+    draftChoices() {
+        const rv = this.state.rv;
+        const out = {
+            when: { mode: this.state.when.mode, date: this.state.when.date, scope: this.state.when.scope },
+            name: this.state.apply.touched ? this.state.apply.name : "",
+        };
+        if (!rv) { return out; }
+        const fixes = [];
+        for (const row of [...rv.rows, ...(rv.newRows || [])]) {
+            for (const [fid, cell] of Object.entries(row.cells || {})) {
+                if (cell.fixed || cell.left) {
+                    fixes.push({ row: row.row, emp_id: row.emp_id || 0, new: !!row.isNew,
+                                 field_id: fid, value: cell.fixed ? cell.value : null, left: !!cell.left });
+                }
+            }
+        }
+        out.fixes = fixes;
+        out.binds = (rv.unmatched || []).filter((u) => u.bound && u.boundTo).map((u) => {
+            const row = rv.rows.find((r) => r.row === u.row && r.bound);
+            return { row: u.row, emp_id: u.boundTo, label: (row && row.boundLabel) || "" };
+        });
+        out.skipped = (rv.unmatched || []).filter((u) => u.skipped && !u.asNew).map((u) => u.row);
+        out.addNew = !!rv.addNew;
+        out.newSkipped = (rv.newRows || []).filter((r) => r.skipped).map((r) => r.row);
+        return out;
+    },
+
+    /** One quiet RPC. The file goes with the first save only. */
+    async saveDraft(step = "", withFile = false, extra = null) {
+        if (this.state.view === "done" || this._restoring) { return; }
+        const first = !this.state.draftId;
+        if (first && !withFile) {
+            // The first save (with the file) is still on its way: wait for it.
+            if (this._draftFirst) {
+                await this._draftFirst;
+                if (this.state.draftId) { return this.saveDraft(step, false, extra); }
+            }
+            return;
+        }
+        if (first) {
+            this._draftFirst = this._saveDraftNow(step, true, extra);
+            try { await this._draftFirst; } finally { this._draftFirst = null; }
+            return;
+        }
+        // One save at a time: two writes of the same draft at once would
+        // only make the database retry one of them.
+        const run = () => this._saveDraftNow(step, false, extra);
+        this._draftChain = (this._draftChain || Promise.resolve()).then(run, run);
+        return this._draftChain;
+    },
+
+    async _saveDraftNow(step, first, extra) {
+        const view = step || (["match", "review", "apply"].includes(this.state.view) ? this.state.view : "match");
+        const choices = Object.assign(this.draftChoices(), extra || {});
+        try {
+            const res = await this.orm.silent.call(MODEL, "save_draft", [], {
+                draft_id: this.state.draftId || 0,
+                kind: this.state.kind, month: this.state.month || false,
+                filename: this.state.file.name,
+                file_b64: first ? this.state.file.b64 : "",
+                columns: this.state.match ? this.matchColumns() : null,
+                choices, step: view,
+            });
+            if (res && res.ok) {
+                this.state.draftId = res.draft_id;
+                this.state.draftSavedAt = res.saved_at || "";
+            }
+        } catch {
+            // a draft is a convenience, never a gate
+        }
+    },
+
+    /** Continue a draft: read the file again against today's records, put
+     *  back what the person chose where it still fits, and say what does not. */
+    async continueDraft(d) {
+        if (this.state.opening) { return; }
+        this.state.opening = d.id;
+        this._restoring = true;
+        try {
+            const res = await this.orm.call(MODEL, "open_draft", [], { draft_id: d.id });
+            if (!res.ok) {
+                this.notif.add(res.msg, { type: "warning" });
+                await this.loadHistory();
+                return;
+            }
+            this.resetFlow();
+            this.setKind(res.kind);
+            if (res.kind === "oneoff" && res.month) { this.state.month = res.month; }
+            const f = this.state.file;
+            Object.assign(f, { name: res.filename, b64: res.file_b64, busy: true, phase: "read", error: "" });
+            this.go("start");
+            this.state.draftId = res.id;
+            const read = await this.orm.call(MODEL, "read_columns", [], this.kindArgs({
+                file_b64: res.file_b64, filename: res.filename }));
+            if (!read.ok) {
+                Object.assign(f, { busy: false, error: read.msg });
+                return;
+            }
+            f.rows = read.rows;
+            this.state.match = this.buildMatch(read);
+            const notice = this.restoreColumns(res.columns || {});
+            const choices = res.choices || {};
+            if (res.step === "match") {
+                f.busy = false;
+                this.state.draftNotice = notice;
+                this.go("match");
+                return;
+            }
+            const ok = await this.toReview(!!read.from_sheet);
+            if (!ok) {
+                f.busy = false;
+                this.state.draftNotice = notice;
+                this.go("match");
+                return;
+            }
+            notice.push(...await this.restoreChoices(choices));
+            this.state.draftNotice = notice;
+            if (res.step === "apply" && reviewCounts(this.state.rv).changes + reviewCounts(this.state.rv).newPeople) {
+                const w = choices.when || {};
+                Object.assign(this.state.when, { mode: w.mode || "today", date: w.date || "", scope: w.scope || "pay" });
+                if (choices.name) { Object.assign(this.state.apply, { name: choices.name, touched: true }); }
+                this.syncDefault();
+                this.toApply();
+            }
+        } catch (e) {
+            this.notif.add(e.data?.message || _t("The draft could not be opened. Nothing has changed."), { type: "danger" });
+            this.state.file.busy = false;
+        } finally {
+            this.state.opening = 0;
+            this._restoring = false;
+        }
+        if (this.state.draftId && ["match", "review", "apply"].includes(this.state.view)) {
+            await this.saveDraft();
+        }
+    },
+
+    /** The saved column choice, where each column still says the same and
+     *  its destination is still offered. */
+    restoreColumns(saved) {
+        const notice = [];
+        const m = this.state.match;
+        const heads = saved.heads || {};
+        const used = saved.used || {};
+        const identity = saved.identity || {};
+        const labels = this.fieldLabels;
+        for (const col of m.columns) {
+            const idx = String(col.idx);
+            if (heads[idx] !== undefined && heads[idx] !== col.head) { continue; }
+            let target = "";
+            for (const [key, at] of Object.entries(identity)) {
+                if (String(at) === idx) { target = `identity:${key}`; }
+            }
+            if (!target && used[idx]) { target = used[idx]; }
+            if (!target) { continue; }
+            if (target.startsWith("identity:") || target === WHEN || labels[target]) {
+                if (target !== col.target) { col.target = target; col.how = "you"; }
+            } else {
+                notice.push(_t("The column “%s” no longer has the place it was going to. Choose where it goes again.", col.head));
+            }
+        }
+        return notice;
+    },
+
+    /** Fixes, people found by hand, skipped rows and new employees, put back
+     *  where the cell still exists; what no longer fits, in sentences. */
+    async restoreChoices(choices) {
+        const rv = this.state.rv;
+        const notice = [];
+        const matched = choices.matched || {};
+        const now = Object.fromEntries(rv.rows.map((r) => [String(r.row), r]));
+        const gone = [];
+        for (const [row, pair] of Object.entries(matched)) {
+            const [empId, name] = Array.isArray(pair) ? pair : [pair, ""];
+            const r = now[String(row)];
+            if (!r || r.emp_id !== empId) { gone.push(_t("%(name)s (row %(row)s)", { row, name: name || "?" })); }
+        }
+        if (gone.length === 1) {
+            notice.push(_t("Since this draft was saved, %s is no longer on record or no longer matches that row. The row now matches nobody.", gone[0]));
+        } else if (gone.length) {
+            notice.push(_t("Since this draft was saved, %(n)s people are no longer on record or no longer match their rows: %(list)s.", {
+                n: gone.length, list: gone.slice(0, 8).join(", ") + (gone.length > 8 ? "…" : "") }));
+        }
+        for (const b of choices.binds || []) {
+            const u = (rv.unmatched || []).find((x) => x.row === b.row && !x.bound);
+            if (!u) { continue; }
+            try {
+                await bindRow(rv, u, { id: b.emp_id, label: b.label }, (c) => this.recheck(c));
+            } catch {
+                notice.push(_t("Row %s could not be matched again to the person you chose. Find the person again.", b.row));
+            }
+        }
+        const skipped = new Set(choices.skipped || []);
+        for (const u of rv.unmatched || []) { if (skipped.has(u.row) && !u.bound) { u.skipped = true; } }
+        if (choices.addNew && this.canHire) {
+            const open = (rv.unmatched || []).filter((u) => !u.bound && !u.skipped);
+            const res = await this.judgeNew(open.map(unmatchedPayload));
+            if (res.ok) {
+                const byRow = Object.fromEntries((res.rows || []).map((j) => [j.row, j]));
+                const rows = [];
+                for (const u of open) {
+                    const j = byRow[u.row];
+                    if (!j) { continue; }
+                    if (j.block) { u.newWhy = j.block; } else { u.asNew = true; rows.push(newRowFrom(j)); }
+                }
+                const newSkipped = new Set(choices.newSkipped || []);
+                for (const r of rows) { if (newSkipped.has(r.row)) { r.skipped = true; } }
+                Object.assign(rv, { newRows: rows, addNew: true, newOutlook: res.outlook || null });
+            } else {
+                notice.push(res.msg);
+            }
+        }
+        let lost = 0;
+        const fixesByRow = {};
+        for (const fx of choices.fixes || []) {
+            const row = fx.new
+                ? (rv.newRows || []).find((r) => r.row === fx.row)
+                : rv.rows.find((r) => r.row === fx.row && r.emp_id === fx.emp_id);
+            const cell = row && row.cells[fx.field_id];
+            if (!cell) { lost += 1; continue; }
+            if (fx.left) { cell.left = true; continue; }
+            if (fx.value === null || fx.value === undefined) { continue; }
+            if (row.isNew) {
+                (fixesByRow[`n${row.row}`] = fixesByRow[`n${row.row}`] || { row, values: {} }).values[fx.field_id] = fx.value;
+                continue;
+            }
+            (fixesByRow[`e${row.row}`] = fixesByRow[`e${row.row}`] || { row, changes: [] }).changes.push(
+                { emp_id: row.emp_id, field_id: fx.field_id, value: fx.value });
+        }
+        for (const slot of Object.values(fixesByRow)) {
+            if (slot.changes) {
+                const res = await this.recheck(slot.changes);
+                for (const change of slot.changes) {
+                    const item = (res.items || []).find((i) => i.field_id === change.field_id);
+                    if (!item) { lost += 1; continue; }
+                    const next = cellFromItem(item, change.value);
+                    Object.assign(slot.row.cells[change.field_id], next, { left: false, fixed: next.status === "ok" || next.status === "same" });
+                }
+            } else {
+                const payload = { row: slot.row.row, code: slot.row.code, name: slot.row.fileName || slot.row.name,
+                                  email: slot.row.email, scheme: slot.row.schemeText, start: slot.row.start || {},
+                                  values: Object.fromEntries(Object.entries(slot.row.cells).filter(([, c]) => !c.left).map(([fid, c]) => [fid, c.value])) };
+                Object.assign(payload.values, slot.values);
+                const res = await this.judgeNew([payload]);
+                const j = res.ok ? (res.rows || [])[0] : null;
+                if (!j) { lost += Object.keys(slot.values).length; continue; }
+                const fresh = newRowFrom(j, slot.row);
+                for (const fid of Object.keys(slot.values)) { if (fresh.cells[fid]) { fresh.cells[fid].fixed = true; } }
+                Object.assign(slot.row, fresh);
+            }
+        }
+        if (lost) {
+            notice.push(plural(lost, _t("1 fix you made could not be put back: its cell is no longer in the file."),
+                               _t("%s fixes you made could not be put back: their cells are no longer in the file.")));
+        }
+        return notice;
+    },
+
+    dismissDraftNotice() { this.state.draftNotice = []; },
+});
 
 registry.category("actions").add("pb_updates_desk", PbUpdatesDesk);
 

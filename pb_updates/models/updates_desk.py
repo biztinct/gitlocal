@@ -63,6 +63,9 @@ DOOR_CONTEXT = {'records_scheme_items': True, 'records_strict_clear': True,
 #: UPDATES P2c — the "Goes to" target of the column that says when a row's
 #: changes start. It is never a value to write: Updates reads it itself.
 WHEN_TARGET = 'when:start'
+#: UPDATES P3b — the "Goes to" target of a "Pay scheme" column: a CHECK of a
+#: new employee's team, never a value to write (`updates_joiners.py`).
+SCHEME_TARGET = 'check:scheme'
 #: At most this many different start dates in one file (keeps approvals
 #: readable): more is refused before the review.
 MAX_START_DATES = 6
@@ -424,7 +427,7 @@ class PbUpdatesDesk(models.AbstractModel):
                 col.update(how='identity', identity=key, field_id='')
 
         taken = {c['field_id'] for c in columns if c['field_id']}
-        when_taken = False
+        when_taken = scheme_taken = False
         for col in columns:
             col['target'] = col['field_id'] or (
                 'identity:%s' % col['identity'] if col['identity'] else '')
@@ -441,6 +444,12 @@ class PbUpdatesDesk(models.AbstractModel):
                     if not when_taken:
                         when_taken = True
                         col.update(how='memory', target=WHEN_TARGET)
+                    continue
+                if remembered == SCHEME_TARGET:
+                    # UPDATES P3b — the new employees' pay scheme check.
+                    if not scheme_taken:
+                        scheme_taken = True
+                        col.update(how='memory', target=SCHEME_TARGET)
                     continue
                 if remembered.startswith('identity:'):
                     key = remembered.split(':', 1)[1]
@@ -559,12 +568,16 @@ class PbUpdatesDesk(models.AbstractModel):
                 "find the person are matched so far.")}
         # `clear_word`: a cell saying CLEAR empties that value (decision D6).
         start_col = cols.get('start') or 0
+        # UPDATES P3b — a "Pay scheme" column is read by Updates itself, for
+        # rows that may be added as new employees; never a value to write.
+        scheme_col = cols.get('scheme') or 0
+        extras = [c for c in (start_col, scheme_col) if c]
         peek = desk.import_peek(
             0, file_b64, filename,
             columns={'used': {str(k): v for k, v in cols['used'].items()},
                      'identity': cols['identity']},
             clear_word=True,
-            extra_columns=[start_col] if start_col else None)
+            extra_columns=extras or None)
         if not peek.get('ok'):
             return peek
         # UPDATES P2c — each row's own start date, read and judged once.
@@ -729,9 +742,12 @@ class PbUpdatesDesk(models.AbstractModel):
             base.update(self._strip(scheme_ctx, [m['emp_id'] for m in matched]))
         unmatched = peek.get('unmatched') or []
         for entry in unmatched:
-            entry.pop('extra', None)
+            extra = entry.pop('extra', None) or {}
             if start_col:
                 entry['start'] = starts.get(entry['row']) or {}
+            if scheme_col:
+                value = extra.get(scheme_col)
+                entry['scheme'] = '' if value in (None, False) else str(value).strip()
         base.update(rows=rows, unmatched=unmatched, changes=ok_changes)
         return base
 
@@ -810,9 +826,52 @@ class PbUpdatesDesk(models.AbstractModel):
         return self.env['pb.updates.layout'].remember(pairs)
 
     @api.model
+    def _own_draft(self, draft_id):
+        """The caller's own draft with this id, or an empty recordset. A
+        search, so another person's draft is simply not found (record rule)
+        and an id that is not a draft never is."""
+        try:
+            draft_id = int(draft_id or 0)
+        except (TypeError, ValueError):
+            draft_id = 0
+        if not draft_id:
+            return self.env['pb.updates.batch']
+        return self.env['pb.updates.batch'].search(
+            [('id', '=', draft_id), ('state', '=', 'draft'),
+             ('user_id', '=', self.env.uid),
+             ('company_id', 'in', self.env.companies.ids)], limit=1)
+
+    @api.model
+    def _new_batch(self, vals, file_b64='', filename='', draft_id=0):
+        """The named update an apply files its parts under (UPDATES P3b).
+
+        With the caller's own draft, the SAME record becomes the real update
+        — no second batch, and the file it already keeps is kept once.
+        Otherwise a new one, with the file, exactly as before."""
+        draft = self._own_draft(draft_id)
+        if draft:
+            vals = dict(vals, state='sent', date=fields.Datetime.now(),
+                        draft_columns=False, draft_choices=False,
+                        draft_saved_at=False, draft_step=False)
+            draft.write(vals)
+            batch = draft
+        else:
+            batch = self.env['pb.updates.batch'].create(vals)
+        if file_b64 and not batch.attachment_id:
+            batch.attachment_id = self.env['ir.attachment'].create({
+                'name': (filename or '').strip() or _("Update file"),
+                'datas': file_b64,
+                'res_model': 'pb.updates.batch',
+                'res_id': batch.id,
+                'mimetype': 'text/csv' if (filename or '').lower().endswith('.csv')
+                else XLSX_MIME,
+            })
+        return batch
+
+    @api.model
     def apply(self, name='', file_b64='', filename='', columns=None,
               changes=None, stats=None, start_date=None, hold_scope='pay',
-              kind='lasting', month=None):
+              kind='lasting', month=None, draft_id=0, joiners=None):
         """Name the update, keep the file, and hand the changes to the desk.
 
         One transaction. The desk re-evaluates every change (whitelist, company
@@ -829,10 +888,22 @@ class PbUpdatesDesk(models.AbstractModel):
         date anywhere this is exactly the call it always was.
 
         UPDATES P2d: `kind='oneoff'` sends one-off pay items for `month`
-        (`updates_oneoff_desk.py`): one named update, one approval."""
+        (`updates_oneoff_desk.py`): one named update, one approval.
+
+        UPDATES P3b: `draft_id` — the caller's own draft becomes this update
+        (same record, file kept once). `joiners` — rows that match nobody,
+        which the person chose to add as new employees for THIS file
+        (`updates_joiners.py`): each is judged again here and goes through
+        the new-hire path and its approval. Left out (the default), this is
+        exactly the call it always was."""
         if kind == 'oneoff':
             return self._oneoff_apply(name, file_b64, filename, columns,
-                                      changes, stats, month)
+                                      changes, stats, month, draft_id=draft_id)
+        joiners = [j for j in (joiners or []) if isinstance(j, dict)]
+        if joiners:
+            return self._apply_with_joiners(
+                name, file_b64, filename, columns, changes, stats,
+                start_date, hold_scope, draft_id, joiners)
         desk = self._gate()
         name = (name or '').strip()
         if not name:
@@ -893,24 +964,14 @@ class PbUpdatesDesk(models.AbstractModel):
                 "record, or could not be used."))
             return answer
 
-        batch = self.env['pb.updates.batch'].create({
+        batch = self._new_batch({
             'name': name[:200],
             'filename': (filename or '').strip() or False,
             'rows_total': count('rows'),
             'rows_unmatched': count('unmatched'),
             'values_refused': count('left_out') + len(answer.get('refused') or []),
             'values_off_scheme': off_scheme,
-        })
-        if file_b64:
-            attachment = self.env['ir.attachment'].create({
-                'name': (filename or '').strip() or _("Update file"),
-                'datas': file_b64,
-                'res_model': 'pb.updates.batch',
-                'res_id': batch.id,
-                'mimetype': 'text/csv' if (filename or '').lower().endswith('.csv')
-                else XLSX_MIME,
-            })
-            batch.attachment_id = attachment
+        }, file_b64, filename, draft_id)
         # The desk files its applies under sudo; the back-link follows it.
         # UPDATES P3a: one desk answer can carry several parts (lanes).
         apply_ids = []
@@ -1055,11 +1116,12 @@ class PbUpdatesDesk(models.AbstractModel):
     def get_history(self, limit=20):
         desk = self._gate()
         may_write = self._can_write(desk)
+        # UPDATES P3b — a draft is never a past update, nor counted as one.
+        domain = [('company_id', 'in', self.env.companies.ids),
+                  ('state', '!=', 'draft')]
         batches = self.env['pb.updates.batch'].search(
-            [('company_id', 'in', self.env.companies.ids)],
-            order='id desc', limit=int(limit or 20))
-        total = self.env['pb.updates.batch'].search_count(
-            [('company_id', 'in', self.env.companies.ids)])
+            domain, order='id desc', limit=int(limit or 20))
+        total = self.env['pb.updates.batch'].search_count(domain)
         return {'batches': [self._batch_row(b, may_write) for b in batches],
                 'total': total}
 
@@ -1077,8 +1139,8 @@ class PbUpdatesDesk(models.AbstractModel):
         # A search, not a browse: the record rules answer "not yours" with an
         # empty result instead of an access error.
         batch = self.env['pb.updates.batch'].search(
-            [('id', '=', batch_id), ('company_id', 'in', self.env.companies.ids)],
-            limit=1)
+            [('id', '=', batch_id), ('company_id', 'in', self.env.companies.ids),
+             ('state', '!=', 'draft')], limit=1)
         if not batch:
             return {'ok': False, 'msg': _(
                 "That update is not on record in the companies you are "

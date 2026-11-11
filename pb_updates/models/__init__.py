@@ -10,3 +10,6 @@ from . import updates_lanes
 from . import updates_monthonly
 from . import updates_managers
 from . import updates_retire
+from . import updates_joiners
+from . import updates_drafts
+from . import updates_sincerun

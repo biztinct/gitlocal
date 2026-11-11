@@ -698,7 +698,7 @@ class PbUpdatesOneoffDesk(models.AbstractModel):
     # =================================================================
     @api.model
     def _oneoff_apply(self, name='', file_b64='', filename='', columns=None,
-                      changes=None, stats=None, month=None):
+                      changes=None, stats=None, month=None, draft_id=0):
         """Name it, keep the file, and send ONE approval for every one-off in
         it. Every value is judged again here; the browser's list is trusted
         no more than the desk trusts it."""
@@ -776,19 +776,14 @@ class PbUpdatesOneoffDesk(models.AbstractModel):
             except (TypeError, ValueError):
                 return 0
 
-        batch = self.env['pb.updates.batch'].create({
+        # UPDATES P3b — the caller's own draft becomes this update.
+        batch = self._new_batch({
             'name': name[:200], 'kind': GROUP, 'period_month': month,
             'filename': (filename or '').strip() or False,
             'rows_total': count('rows'), 'rows_unmatched': count('unmatched'),
             'values_refused': count('left_out') + len(refused),
             'values_off_scheme': count('off_scheme') + off,
-        })
-        if file_b64:
-            batch.attachment_id = self.env['ir.attachment'].create({
-                'name': (filename or '').strip() or _("Update file"),
-                'datas': file_b64, 'res_model': 'pb.updates.batch', 'res_id': batch.id,
-                'mimetype': 'text/csv' if (filename or '').lower().endswith('.csv') else XLSX_MIME,
-            })
+        }, file_b64, filename, draft_id)
         Apply = self.env['pb.records.apply'].sudo()
         apply_rec = Apply.create({
             'name': '/', 'note': name, 'source': 'import', 'updates_oneoff': True,

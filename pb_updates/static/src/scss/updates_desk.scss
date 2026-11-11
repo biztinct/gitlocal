@@ -904,3 +904,190 @@ $pbu-who-w: 210px;
     &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 2px; border-radius: 4px; }
 }
 .pbu-monthonly__nobody { margin: 8px 0 0; font-size: 12.5px; color: #667085; }
+
+// =====================================================================
+//  UPDATES P3b — new employees (green: somebody joining), drafts, and the
+//  pay run's "Since the last pay run" panel.
+// =====================================================================
+.pbim.pbu-root {
+    --pbu-new: var(--pbim-green);
+    --pbu-new-soft: var(--pbim-green-soft);
+
+    // Review — the add-as-new choice
+    .pbu-newchoice {
+        display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+        border: 1px dashed #B7E4CB; border-radius: 14px; background: #FBFEFC;
+        transition: background .15s ease, border-color .15s ease;
+        &.is-on { border-style: solid; border-color: var(--pbu-new); background: var(--pbu-new-soft); }
+        .pbu-refuse { margin-top: 6px; }
+    }
+    .pbu-newchoice-ic {
+        flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+        background: var(--pbu-new-soft); color: var(--pbu-new);
+    }
+    .pbu-newchoice.is-on .pbu-newchoice-ic { background: #fff; }
+    .pbu-newchoice-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px;
+                       b { font-size: 14.5px; color: var(--pbim-ink); } }
+    .pbu-newchoice .pbu-toggle[aria-checked="true"] { background: var(--pbu-new); }
+    .pbu-um-new {
+        display: inline-flex; align-items: flex-start; gap: 5px; font-size: 12px; font-weight: 600;
+        color: #B54708; svg { flex: none; margin-top: 2px; }
+    }
+
+    // Review — the "New employees" group in the grid
+    .pbu-grid tr.pbu-grouprow th {
+        position: sticky; left: 0; text-align: left; padding: 9px 12px; background: var(--pbim-line-2);
+        font-size: 12.5px; color: var(--pbim-ink); border-bottom: 1px solid var(--pbim-line);
+        b { font-weight: 800; margin: 0 4px 0 2px; }
+        .pbu-sub { display: inline; margin-left: 8px; }
+    }
+    .pbu-grid tr.pbu-grouprow--new th { background: var(--pbu-new-soft); }
+    .pbu-grouprow-ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px;
+                       vertical-align: middle; background: #fff; color: var(--pbim-slate); }
+    .pbu-grouprow--new .pbu-grouprow-ic { color: var(--pbu-new); }
+    .pbu-grid tr.is-new th.pbu-who { box-shadow: inset 3px 0 0 var(--pbu-new); }
+    .pbu-grid tr.is-skipped td, .pbu-grid tr.is-skipped th.pbu-who > b { opacity: .45; }
+    .pbu-who--new {
+        .pbu-who-note { display: flex; align-items: flex-start; gap: 4px; margin-top: 3px; font-size: 11px;
+                        line-height: 1.4; color: var(--pbim-muted); white-space: normal;
+                        svg { flex: none; margin-top: 2px; }
+                        &.is-warn { color: #B54708; } &.is-err { color: #C01048; } }
+        .pbu-who-act { display: block; margin-top: 4px; font-size: 11.5px; }
+    }
+    .pbu-tag--new {
+        display: inline-flex; align-items: center; gap: 3px; color: var(--pbu-new);
+        &.is-fix { color: #C01048; } &.is-skipped, &.is-blocked { color: var(--pbim-slate); }
+    }
+
+    // Apply — the fourth card
+    .pbu-lanecards--new { margin-top: 0; }
+    .pbu-lanecard--new .pbu-lanecard-ic, .pbu-hlane--new .pbu-hlane-ic { background: var(--pbu-new-soft); color: var(--pbu-new); }
+    .pbu-hjoiners-note { display: flex; align-items: center; gap: 5px; padding: 2px 4px; font-size: 11.5px; color: var(--pbim-muted); }
+
+    // Start — the blank sheet for new employees
+    .pbu-newsheet {
+        border: 1px solid var(--pbim-line); border-radius: 14px; background: #fff; overflow: hidden;
+        &.is-open { border-color: #B7E4CB; }
+    }
+    .pbu-newsheet-h {
+        width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 0;
+        background: none; text-align: left; cursor: pointer; color: var(--pbim-muted);
+        &:hover { background: #FBFEFC; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary-light); outline-offset: -2px; }
+        .pbu-ib { background: var(--pbu-new-soft); color: var(--pbu-new); }
+    }
+    .pbu-newsheet-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+                      b { font-size: 14px; color: var(--pbim-ink); } }
+    .pbu-newsheet-b { padding: 4px 14px 14px 60px; display: flex; flex-direction: column; gap: 8px;
+                      .pbu-select { max-width: 360px; } }
+    @media (max-width: 720px) { .pbu-newsheet-b { padding-left: 14px; } }
+
+    // Home — drafts
+    .pbu-draftlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .pbu-draft {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 12px;
+        border: 1px solid var(--pbim-line); border-radius: 12px; background: #fff;
+        animation: pbu-in .18s ease-out;
+        .pbu-hrow-t { flex: 1 1 240px; min-width: 0; b { overflow-wrap: anywhere; } }
+    }
+    .pbu-draft-age {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--pbim-muted);
+        font-variant-numeric: tabular-nums;
+        &.is-old { color: #B54708; font-weight: 700; }
+    }
+    .pbu-draftsaved {
+        display: inline-flex; align-items: center; gap: 4px; margin-left: auto; margin-right: 8px;
+        font-size: 11.5px; color: var(--pbim-muted);
+    }
+    .pbu-note--draft {
+        align-items: flex-start;
+        ul { margin: 4px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--pbim-muted); }
+        .pbu-x { margin-left: auto; }
+    }
+    .pbu-joiners .pbu-hrow { align-items: center; }
+    @media (prefers-reduced-motion: reduce) {
+        .pbu-draft { animation: none; }
+        .pbu-newchoice { transition: none; }
+    }
+}
+
+// The pay run's "Review pay data" dialog — outside the Updates root, so the
+// palette is spelled out (indigo #5A4BB0, slate ink, semantic tints).
+.pr-review { position: relative; }
+.pbu-since-line .pr-link { margin-left: 6px; }
+.pbu-since {
+    position: absolute; top: 0; right: 0; bottom: 0; z-index: 20;
+    width: 440px; max-width: 100%; display: flex; flex-direction: column;
+    background: #fff; border-left: 1px solid #E4E7EC;
+    box-shadow: -18px 0 40px -24px rgba(16, 24, 40, .35);
+    animation: pbu-since-in .2s ease-out;
+}
+@keyframes pbu-since-in { from { transform: translateX(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pbu-since { animation: none; } }
+.pbu-since__h {
+    display: flex; align-items: flex-start; gap: 12px; padding: 16px 16px 12px; border-bottom: 1px solid #F2F4F7;
+}
+.pbu-since__ic {
+    flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+    background: #EEEBFA; color: #5A4BB0;
+}
+.pbu-since__t { flex: 1 1 auto; min-width: 0;
+    h3 { margin: 0; font-size: 15px; font-weight: 800; color: #101828; }
+    p { margin: 2px 0 0; font-size: 12.5px; color: #667085; line-height: 1.45; }
+}
+.pbu-since__x {
+    flex: none; border: 0; background: none; color: #667085; padding: 4px; border-radius: 8px; cursor: pointer;
+    &:hover { background: #F2F4F7; color: #101828; }
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 1px; }
+}
+.pbu-since__tools { padding: 12px 16px 8px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #F2F4F7; }
+.pbu-since__search {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px; margin: 0;
+    border: 1px solid #D0D5DD; border-radius: 10px; color: #667085;
+    &:focus-within { border-color: #5A4BB0; box-shadow: 0 0 0 3px #EEEBFA; }
+    input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; font-size: 13px; background: none; color: #101828; }
+}
+.pbu-since__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pbu-since__chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid #E4E7EC; background: #fff; font-size: 12px; font-weight: 600; color: #344054; cursor: pointer;
+    b { font-variant-numeric: tabular-nums; color: #667085; }
+    &[aria-pressed="true"] { background: #5A4BB0; border-color: #5A4BB0; color: #fff; b { color: #E4E0F7; } }
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: 1px; }
+}
+.pbu-since__shown { margin: 0; font-size: 11.5px; color: #667085; }
+.pbu-since__list { list-style: none; margin: 0; padding: 8px 10px 12px; flex: 1 1 auto; overflow-y: auto; }
+.pbu-since__person { border-radius: 12px; margin-bottom: 4px;
+    &.is-open { background: #F9FAFB; }
+}
+.pbu-since__who {
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px; border: 0; background: none;
+    border-radius: 10px; cursor: pointer; text-align: left; color: #667085;
+    b { flex: 1 1 auto; min-width: 0; font-size: 13px; color: #101828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    &:hover { background: #F2F4F7; }
+    &:focus-visible { outline: 2px solid #C9C1EE; outline-offset: -2px; }
+}
+.pbu-since__av {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: #EEEBFA; color: #5A4BB0; font-size: 12px; font-weight: 800; text-transform: uppercase;
+}
+.pbu-since__kinds { display: inline-flex; gap: 3px; }
+.pbu-since__dot { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; }
+.pbu-since__items { list-style: none; margin: 0; padding: 0 8px 8px 44px; display: flex; flex-direction: column; gap: 5px; }
+.pbu-since__item { display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; color: #344054; line-height: 1.45; }
+.pbu-since__iic { flex: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; margin-top: 1px; }
+$pbu-since-kinds: (pay: (#5A4BB0, #EEEBFA), contract: (#3E4784, #EEF0FA), bank: (#B54708, #FEF6E7),
+                   details: (#0E7090, #E7F6FA), oneoff: (#6941C6, #F4EBFF), scheduled: (#175CD3, #EFF8FF),
+                   new: (#067647, #ECFDF3));
+@each $kind, $pair in $pbu-since-kinds {
+    .pbu-since__dot.is-#{$kind}, .pbu-since__item.is-#{$kind} .pbu-since__iic {
+        color: nth($pair, 1); background: nth($pair, 2);
+    }
+}
+.pbu-since__none { padding: 18px 10px; font-size: 12.5px; color: #667085; text-align: center; }
+.pbu-since__f {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid #F2F4F7;
+    .pr-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+}
+.pbu-since__note { display: inline-flex; align-items: flex-start; gap: 5px; font-size: 11.5px; color: #667085;
+                   svg { flex: none; margin-top: 2px; } }

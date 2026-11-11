@@ -171,9 +171,72 @@ export function laneCounts(rv) {
     return out;
 }
 
+// ---------------------------------------------------------------------------
+//  UPDATES P3b — rows that match nobody, added as new employees
+// ---------------------------------------------------------------------------
+/** The "Goes to" target of a "Pay scheme" column: a check, never a value. */
+export const SCHEME_TARGET = "check:scheme";
+const NEW_TEAM = "f:hr.employee:department_id";
+const NEW_START = "f:hr.contract:date_start";
+
+/** What happens to a new-employee row: add · fix · blocked · skipped. */
+export function newRowState(row) {
+    if (row.block) { return "blocked"; }
+    if (row.skipped) { return "skipped"; }
+    for (const [fid, cell] of Object.entries(row.cells || {})) {
+        if (!cell.consumed) { continue; }
+        const kind = cellKind(cell);
+        if (kind === "fix") { return "fix"; }
+        if (kind === "left" && (fid === NEW_TEAM || fid === NEW_START)) { return "fix"; }
+    }
+    return "add";
+}
+
+/** A new-employee row as the server judges it: what is in its cells now. */
+export function newRowPayload(row) {
+    const values = {};
+    for (const [fid, cell] of Object.entries(row.cells || {})) {
+        if (cell.left || cell.status === "off_scheme") { continue; }
+        values[fid] = cell.value;
+    }
+    return { row: row.row, code: row.code || "", name: row.fileName || row.name || "",
+             email: row.email || "", values, scheme: row.schemeText || "",
+             start: row.start || {} };
+}
+
+/** A row that matches nobody, as the server judges it the first time. */
+export function unmatchedPayload(u) {
+    return { row: u.row, code: u.code || "", name: u.name || "", email: u.email || "",
+             values: u.values || {}, scheme: u.scheme || "", start: u.start || {} };
+}
+
+/** A judged row (`judge_joiners`) as a grid row. */
+export function newRowFrom(j, old = null) {
+    const cells = {};
+    for (const [fid, c] of Object.entries(j.cells || {})) {
+        const prev = old && old.cells ? old.cells[fid] : null;
+        cells[fid] = Object.assign({}, c, { fixed: !!(prev && prev.fixed), left: !!(prev && prev.left) });
+    }
+    return {
+        key: `n${j.row}`, row: j.row, emp_id: 0, isNew: true, name: j.name || "",
+        fileName: old ? old.fileName : (j.name || ""), code: j.code || "",
+        email: j.email || "", department: j.team || "", team: j.team || "",
+        scheme: j.scheme || "", schemeText: j.scheme_text || "",
+        schemeNote: j.scheme_note || "", noContract: !!j.no_contract,
+        block: j.block || "", start: j.start || undefined, skipped: old ? !!old.skipped : false,
+        cells,
+    };
+}
+
+/** The rows Apply sends as new employees: every row that can be added. */
+export function joinersToSend(rv) {
+    if (!rv || !rv.addNew) { return []; }
+    return (rv.newRows || []).filter((r) => newRowState(r) === "add").map(newRowPayload);
+}
+
 export function reviewCounts(rv) {
     const out = { changes: 0, people: 0, cells: 0, rowsOpen: 0, attention: 0,
-                  leftOut: 0, offScheme: 0, cleared: 0,
+                  leftOut: 0, offScheme: 0, cleared: 0, newPeople: 0, newFix: 0,
                   rows: { all: 0, chg: 0, att: 0, same: 0, off: 0, later: 0, past: 0 } };
     const people = new Set();
     for (const row of rv.rows || []) {
@@ -204,13 +267,65 @@ export function reviewCounts(rv) {
         if (!hasChange && !hasFix) { out.rows.same += 1; }
     }
     for (const u of rv.unmatched || []) {
-        if (u.bound) { continue; }
+        if (u.bound || u.asNew) { continue; }
         out.leftOut += Object.keys(u.values || {}).length;
         if (!u.skipped) { out.rowsOpen += 1; }
+    }
+    // UPDATES P3b — new employees: counted apart, never as changes.
+    if (rv.addNew) {
+        for (const row of rv.newRows || []) {
+            const state = newRowState(row);
+            if (state === "add") { out.newPeople += 1; }
+            if (state === "fix") {
+                out.newFix += 1;
+                out.cells += Object.values(row.cells || {}).filter((c) => cellKind(c) === "fix").length || 1;
+            }
+            if (state === "skipped") { out.leftOut += Object.keys(row.cells || {}).length; }
+        }
     }
     out.people = people.size;
     out.attention = out.cells + out.rowsOpen;
     return out;
+}
+
+/**
+ * Bind a row that matched nobody to a person, then let the desk judge its
+ * values like any other row. Shared by the grid ("Find person…") and by a
+ * draft being continued (UPDATES P3b).
+ */
+export async function bindRow(rv, u, person, recheck) {
+    const changes = Object.entries(u.values || {}).map(([fieldId, value]) => ({
+        emp_id: person.id, field_id: fieldId, value }));
+    const res = changes.length ? await recheck(changes) : { items: [] };
+    const cells = {};
+    const groups = Object.fromEntries(rv.columns.map((c) => [c.field_id, c.group]));
+    const badDate = u.start && u.start.error;
+    for (const change of changes) {
+        const item = (res.items || []).find((i) => i.field_id === change.field_id) || null;
+        const text = change.value === null || change.value === undefined ? "" : String(change.value);
+        if (badDate && DATED_GROUPS.includes(groups[change.field_id])) {
+            // UPDATES P2c: the row's start date cannot be read.
+            cells[change.field_id] = { status: "refused", date_refused: true, old: "",
+                                       new: text, value: change.value, why: u.start.error };
+            continue;
+        }
+        cells[change.field_id] = item
+            ? cellFromItem(item, change.value)
+            : { status: "refused", old: "", new: text, value: change.value,
+                why: _t("This value could not be checked. Try again.") };
+    }
+    const [name, rest] = String(person.label || "").split(" — ");
+    const scheme = (res.people || {})[String(person.id)] || {};
+    const row = { key: `u${u.row}`, row: u.row, emp_id: person.id, name: name || "",
+                  code: rest || "", department: "", twice: false, bound: true, cells,
+                  scheme: scheme.scheme || "", scheme_ids: scheme.scheme_ids || [],
+                  no_scheme: !!scheme.no_scheme, start: u.start || undefined,
+                  boundLabel: person.label || "" };
+    const at = rv.rows.findIndex((r) => r.row > u.row);
+    if (at === -1) { rv.rows.push(row); } else { rv.rows.splice(at, 0, row); }
+    u.bound = true;
+    u.boundTo = person.id;
+    return row;
 }
 
 /**
@@ -287,7 +402,7 @@ export function changesToSend(rv) {
 
 /** The Continue button's own promise. */
 export function continueLabel(counts) {
-    if (!counts.changes) { return _t("Nothing to apply yet"); }
+    if (!counts.changes && !counts.newPeople) { return _t("Nothing to apply yet"); }
     if (counts.attention === 1) { return _t("Continue without the 1 that needs attention"); }
     if (counts.attention) {
         return _t("Continue without the %s that need attention", grouped(counts.attention));
@@ -458,10 +573,15 @@ export class UpdReview extends Component {
         onBack: { type: Function },
         onContinue: { type: Function },
         onChangeMatching: { type: Function, optional: true },
+        // UPDATES P3b — judge rows as new employees (rows) => Promise<{ok, rows, msg}>
+        judgeNew: { type: Function, optional: true },
+        canHire: { type: Boolean, optional: true },
+        // Something the person did on this screen (a draft saves it).
+        onChanged: { type: Function, optional: true },
     };
 
     setup() {
-        this.ui = useState({ finder: -1, flash: "" });
+        this.ui = useState({ finder: -1, flash: "", newBusy: false, newError: "" });
         // Observe the review object the parent owns: every change made here
         // (a fix, a bound row, a filter) redraws this grid and the parent's
         // counts alike. A new review always mounts a new grid (the parent
@@ -476,13 +596,22 @@ export class UpdReview extends Component {
     get counts() { return reviewCounts(this.rv); }
 
     // ------------------------------------------------------------- the words
+    changed() { if (this.props.onChanged) { this.props.onChanged(); } }
+
     get heroParts() {
         const c = this.counts;
-        if (!c.changes && !c.attention) {
+        if (!c.changes && !c.attention && !c.newPeople) {
             return { lead: _t("Every value in this file is already on record."),
                      tail: _t("There is nothing to change."), tone: "fine" };
         }
-        const lead = c.changes
+        if (c.newPeople && !c.changes) {
+            const lead = plural(c.newPeople, _t("This file adds 1 new employee."),
+                                _t("This file adds %s new employees."));
+            if (!c.attention) { return { lead, tail: _t("Everything checks out."), tone: "fine" }; }
+            return { lead, tone: "att", tail: c.attention === 1 ? _t("1 thing needs your attention.")
+                                                               : _t("%s things need your attention.", grouped(c.attention)) };
+        }
+        const base = c.changes
             ? (this.rv.oneoff
                 ? _t("This sheet sends %(amounts)s for %(people)s, paid in %(month)s.", {
                     amounts: plural(c.changes, _t("1 one-off amount"), _t("%s one-off amounts")),
@@ -492,6 +621,9 @@ export class UpdReview extends Component {
                     changes: plural(c.changes, _t("1 change"), _t("%s changes")),
                     people: plural(c.people, _t("1 person"), _t("%s people")) }))
             : _t("Nothing in this file can go in yet.");
+        const lead = c.newPeople
+            ? base + " " + plural(c.newPeople, _t("It also adds 1 new employee."), _t("It also adds %s new employees."))
+            : base;
         if (!c.attention) {
             return { lead, tail: _t("Everything checks out."), tone: "fine" };
         }
@@ -643,6 +775,113 @@ export class UpdReview extends Component {
     }
 
     get pageRows() { return this.filteredRows.slice(0, this.rv.limit); }
+
+    // ------------------------------------------------- UPDATES P3b — new employees
+    get openUnmatchedCount() { return this.openUnmatched.length; }
+    get canAddNew() {
+        return !!(this.props.canHire && this.props.canWrite && this.props.judgeNew && !this.rv.oneoff
+                  && ((this.rv.unmatched || []).some((u) => !u.bound && !u.skipped) || this.rv.addNew));
+    }
+    get newChoiceCount() {
+        if (this.rv.addNew) { return (this.rv.newRows || []).length; }
+        return (this.rv.unmatched || []).filter((u) => !u.bound && !u.skipped).length;
+    }
+    get newChoiceTitle() {
+        return plural(this.newChoiceCount, _t("Add this person as a new employee"),
+                      _t("Add these %s people as new employees"));
+    }
+    get newRowsShown() {
+        if (!this.rv.addNew) { return []; }
+        const f = this.rv.filter;
+        const rows = this.rv.newRows || [];
+        if (f === "att") { return rows.filter((r) => newRowState(r) === "fix"); }
+        if (f === "all" || f === "chg") { return rows; }
+        return [];
+    }
+    newState(row) { return newRowState(row); }
+    newStateLabel(row) {
+        return { add: _t("Will be added"), fix: _t("Needs a fix first"), skipped: _t("Not added"),
+                 blocked: _t("Cannot be added") }[newRowState(row)] || "";
+    }
+    get newGroupLine() {
+        const rows = this.rv.newRows || [];
+        const add = rows.filter((r) => newRowState(r) === "add").length;
+        return plural(add, _t("1 will be added"), _t("%s will be added"));
+    }
+
+    async toggleNew() {
+        const rv = this.rv;
+        if (this.ui.newBusy) { return; }
+        this.ui.newError = "";
+        if (rv.addNew) {
+            rv.addNew = false;
+            rv.newRows = [];
+            for (const u of rv.unmatched || []) { u.asNew = false; u.newWhy = ""; }
+            rv.fix = null;
+            this.changed();
+            return;
+        }
+        const open = (rv.unmatched || []).filter((u) => !u.bound && !u.skipped);
+        this.ui.newBusy = true;
+        try {
+            const res = await this.props.judgeNew(open.map(unmatchedPayload));
+            if (!res.ok) {
+                this.ui.newError = res.msg;
+                return;
+            }
+            const byRow = Object.fromEntries((res.rows || []).map((j) => [j.row, j]));
+            const rows = [];
+            for (const u of open) {
+                const j = byRow[u.row];
+                if (!j) { continue; }
+                if (j.block) {
+                    u.newWhy = j.block;
+                    u.asNew = false;
+                } else {
+                    u.asNew = true;
+                    u.newWhy = "";
+                    rows.push(newRowFrom(j));
+                }
+            }
+            rv.newRows = rows;
+            rv.newOutlook = res.outlook || null;
+            rv.addNew = true;
+            this.changed();
+        } finally {
+            this.ui.newBusy = false;
+        }
+    }
+
+    skipNew(row) { row.skipped = true; this.rv.fix = null; this.changed(); }
+    unskipNew(row) { row.skipped = false; this.changed(); }
+
+    /** One new-employee row judged again after a fix (team, date, pay…). */
+    async recheckNew(row, fieldId, value) {
+        const payload = newRowPayload(row);
+        payload.values[fieldId] = value;
+        const res = await this.props.judgeNew([payload]);
+        const j = res && res.ok ? (res.rows || [])[0] : null;
+        if (!j) { return { ok: false, why: (res && res.msg) || _t("This value could not be checked. Try again.") }; }
+        const fresh = newRowFrom(j, row);
+        const cell = fresh.cells[fieldId];
+        if (cell && cell.status === "refused") {
+            Object.assign(row.cells[fieldId], { why: cell.why, value, new: value });
+            return { ok: false, why: cell.why };
+        }
+        for (const [fid, c] of Object.entries(fresh.cells)) {
+            if (row.cells[fid]) {
+                Object.assign(row.cells[fid], c, fid === fieldId ? { fixed: true, left: false } : {});
+            } else {
+                row.cells[fid] = c;
+            }
+        }
+        Object.assign(row, { block: fresh.block, scheme: fresh.scheme, schemeNote: fresh.schemeNote,
+                             noContract: fresh.noContract, team: fresh.team, department: fresh.team });
+        this.closeFix();
+        this.flash(row.key, fieldId);
+        this.changed();
+        return { ok: true };
+    }
     get moreRows() { return Math.max(0, this.filteredRows.length - this.rv.limit); }
     showMore() { this.rv.limit += PAGE_ROWS; }
     get moreLabel() {
@@ -654,7 +893,7 @@ export class UpdReview extends Component {
     get columns() {
         if (this.rv.allCols) { return this.rv.columns; }
         const live = new Set();
-        for (const row of this.rv.rows) {
+        for (const row of [...this.rv.rows, ...(this.rv.addNew ? (this.rv.newRows || []) : [])]) {
             for (const [fid, cell] of Object.entries(row.cells)) {
                 const kind = cellKind(cell);
                 if (kind === "change" || kind === "fix" || kind === "left" || kind === "off") { live.add(fid); }
@@ -774,6 +1013,7 @@ export class UpdReview extends Component {
     /** Ask the desk about one typed value; the cell takes its verdict. */
     async checkValue(row, value) {
         const fieldId = this.rv.fix.fieldId;
+        if (row.isNew) { return this.recheckNew(row, fieldId, value); }
         if (row.cells[fieldId] && row.cells[fieldId].date_refused) {
             // The VALUE is not the problem: this row's start date is.
             return { ok: false, why: row.cells[fieldId].why };
@@ -787,6 +1027,7 @@ export class UpdReview extends Component {
             Object.assign(cell, next, { left: false, fixed: next.status !== "off_scheme" });
             this.closeFix();
             this.flash(row.key, fieldId);
+            this.changed();
             return { ok: true };
         }
         Object.assign(cell, { why: item.why, value, new: value });
@@ -797,16 +1038,18 @@ export class UpdReview extends Component {
         const fieldId = this.rv.fix.fieldId;
         row.cells[fieldId].left = true;
         this.closeFix();
+        this.changed();
     }
 
     restore(row) {
         const fieldId = this.rv.fix.fieldId;
         row.cells[fieldId].left = false;
         this.closeFix();
+        this.changed();
     }
 
     // ------------------------------------------------------------- unmatched
-    get openUnmatched() { return (this.rv.unmatched || []).filter((u) => !u.bound); }
+    get openUnmatched() { return (this.rv.unmatched || []).filter((u) => !u.bound && !u.asNew); }
 
     unmatchedTitle(u) {
         const bits = [u.code, u.name, u.email].filter(Boolean);
@@ -824,47 +1067,20 @@ export class UpdReview extends Component {
 
     startFind(index) { this.ui.finder = this.ui.finder === index ? -1 : index; }
     cancelFind() { this.ui.finder = -1; }
-    skip(u) { u.skipped = true; this.ui.finder = -1; }
-    unskip(u) { u.skipped = false; }
+    skip(u) { u.skipped = true; this.ui.finder = -1; this.changed(); }
+    unskip(u) { u.skipped = false; this.changed(); }
 
     /** Bind the row, then let the desk judge its values like any other row. */
     async bind(u, person) {
         this.ui.finder = -1;
-        const changes = Object.entries(u.values || {}).map(([fieldId, value]) => ({
-            emp_id: person.id, field_id: fieldId, value }));
-        const res = changes.length ? await this.props.recheck(changes) : { items: [] };
-        const cells = {};
-        const groups = Object.fromEntries(this.rv.columns.map((c) => [c.field_id, c.group]));
-        const badDate = u.start && u.start.error;
-        for (const change of changes) {
-            const item = (res.items || []).find((i) => i.field_id === change.field_id) || null;
-            const text = change.value === null || change.value === undefined ? "" : String(change.value);
-            if (badDate && DATED_GROUPS.includes(groups[change.field_id])) {
-                // UPDATES P2c: the row's start date cannot be read.
-                cells[change.field_id] = { status: "refused", date_refused: true, old: "",
-                                           new: text, value: change.value, why: u.start.error };
-                continue;
-            }
-            cells[change.field_id] = item
-                ? cellFromItem(item, change.value)
-                : { status: "refused", old: "", new: text, value: change.value,
-                    why: _t("This value could not be checked. Try again.") };
-        }
-        const [name, rest] = String(person.label || "").split(" — ");
-        const scheme = (res.people || {})[String(person.id)] || {};
-        const row = { key: `u${u.row}`, row: u.row, emp_id: person.id, name: name || "",
-                      code: rest || "", department: "", twice: false, bound: true, cells,
-                      scheme: scheme.scheme || "", scheme_ids: scheme.scheme_ids || [],
-                      no_scheme: !!scheme.no_scheme, start: u.start || undefined };
-        const at = this.rv.rows.findIndex((r) => r.row > u.row);
-        if (at === -1) { this.rv.rows.push(row); } else { this.rv.rows.splice(at, 0, row); }
-        u.bound = true;
-        this.flash(row.key, Object.keys(cells)[0] || "");
+        const row = await bindRow(this.rv, u, person, this.props.recheck);
+        this.flash(row.key, Object.keys(row.cells)[0] || "");
+        this.changed();
     }
 
     // ------------------------------------------------------------- footer
     get continueLabel() { return continueLabel(this.counts); }
-    get canContinue() { return this.counts.changes > 0; }
+    get canContinue() { return this.counts.changes > 0 || this.counts.newPeople > 0; }
     get attentionNote() {
         const c = this.counts;
         if (!c.attention || !c.changes) { return ""; }

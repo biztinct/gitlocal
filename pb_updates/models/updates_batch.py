@@ -56,6 +56,22 @@ class PbUpdatesBatch(models.Model):
         string='Values not in the pay scheme',
         help="Pay-item values skipped because the item is not in that "
              "person's pay scheme.")
+    # UPDATES P3b — an unfinished update, saved as it is worked on. A draft
+    # is private to the person who made it (record rule), carries NO value
+    # that bypasses review (continuing it always reads the file again
+    # against today's records) and is never listed in Past updates or
+    # counted. Every batch made before this phase is `sent`; a non-draft
+    # batch's words are still read off its applies (`_batch_state`).
+    state = fields.Selection([('draft', 'Draft'), ('sent', 'Sent')],
+                             string='Stage', default='sent', required=True,
+                             index=True)
+    #: The column choice `_clean_columns` reads, as the screen last had it.
+    draft_columns = fields.Text(string='Column choice (draft)')
+    #: On-screen fixes and choices: fixes, rows found by hand, rows skipped,
+    #: start date, what waits, add-as-new, the step reached.
+    draft_choices = fields.Text(string='Choices (draft)')
+    draft_saved_at = fields.Datetime(string='Saved at (draft)')
+    draft_step = fields.Char(string='Step reached (draft)')
 
 
 class PbUpdatesLayout(models.Model):

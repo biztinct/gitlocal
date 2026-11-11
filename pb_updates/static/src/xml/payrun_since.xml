@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- UPDATES P3b — "Since the last pay run" on Review pay data: one line,
+       opening a side panel. Information only. Shown only when the worksheet
+       answer carries `since_last_run` (nothing to show: no line at all). -->
+  <t t-name="pb_updates.PayrollReviewSince" t-inherit="pb_payrun_wizard.PayrollReviewDialog" t-inherit-mode="extension">
+    <xpath expr="//div[@t-if='state.data.global_issues.length']" position="before">
+      <div class="pr-remind-line pbu-since-line" role="note" t-if="state.data.since_last_run">
+        <span class="pr-remind-icon" t-out="icons.remindLarge"/>
+        <span t-esc="state.data.since_last_run.line"/>
+        <button class="pr-link" t-on-click="() => this.pbuSinceOpen()">Show them</button>
+      </div>
+    </xpath>
+    <xpath expr="//div[@t-on-keydown='keydown']" position="inside">
+      <PbuSincePanel t-if="state.pbuSince and state.data and state.data.since_last_run"
+                     data="state.data.since_last_run" period="pbuSincePeriod"
+                     onClose="() => this.pbuSinceClose()"/>
+    </xpath>
+  </t>
+
+  <t t-name="pb_updates.SincePanel">
+    <aside class="pbu-since" role="dialog" aria-modal="false" aria-labelledby="pbu-since-h" t-on-keydown="onKey">
+      <header class="pbu-since__h">
+        <span class="pbu-since__ic" t-out="icon('history', 18)"/>
+        <div class="pbu-since__t">
+          <h3 id="pbu-since-h">Since the last pay run</h3>
+          <p t-esc="props.data.line"/>
+        </div>
+        <button type="button" class="pbu-since__x" aria-label="Close" title="Close (Esc)" t-on-click="props.onClose">
+          <t t-out="icon('x', 16)"/>
+        </button>
+      </header>
+      <div class="pbu-since__tools">
+        <label class="pbu-since__search">
+          <t t-out="icon('search', 14)"/>
+          <input type="search" placeholder="Find a person or a change" aria-label="Find a person or a change"
+                 t-model="ui.q"/>
+        </label>
+        <div class="pbu-since__chips" role="group" aria-label="Kinds of change">
+          <button type="button" class="pbu-since__chip" t-att-aria-pressed="!ui.kind ? 'true' : 'false'"
+                  t-on-click="() => this.setKind('')">All <b t-esc="props.data.people_count"/></button>
+          <button t-foreach="kinds" t-as="k" t-key="k.key" type="button"
+                  t-attf-class="pbu-since__chip is-{{ k.key }}"
+                  t-att-aria-pressed="ui.kind === k.key ? 'true' : 'false'"
+                  t-on-click="() => this.setKind(k.key)">
+            <t t-out="kindIcon(k.key)"/><t t-esc="k.label"/> <b t-esc="k.count"/>
+          </button>
+        </div>
+        <p t-if="shownLine" class="pbu-since__shown" role="status" t-esc="shownLine"/>
+      </div>
+      <ul class="pbu-since__list">
+        <li t-foreach="people" t-as="p" t-key="p.employee_id" class="pbu-since__person" t-att-class="{ 'is-open': isOpen(p) }">
+          <button type="button" class="pbu-since__who" t-att-aria-expanded="isOpen(p) ? 'true' : 'false'"
+                  t-on-click="() => this.toggle(p)">
+            <span class="pbu-since__av" t-esc="(p.name || '?').slice(0, 1)"/>
+            <b t-esc="p.name"/>
+            <span class="pbu-since__kinds">
+              <span t-foreach="p.kinds" t-as="k" t-key="k" t-attf-class="pbu-since__dot is-{{ k }}"
+                    t-att-title="kindLabel(k)" t-out="kindIcon(k)"/>
+            </span>
+            <t t-out="icon(isOpen(p) ? 'chevronUp' : 'chevronDown', 14)"/>
+          </button>
+          <ul t-if="isOpen(p)" class="pbu-since__items">
+            <li t-foreach="items(p)" t-as="i" t-key="i_index" t-attf-class="pbu-since__item is-{{ i.kind }}">
+              <span class="pbu-since__iic" t-out="kindIcon(i.kind)"/>
+              <span t-esc="i.text"/>
+            </li>
+          </ul>
+        </li>
+        <li t-if="!people.length" class="pbu-since__none">Nobody matches. Clear the search or pick another kind.</li>
+      </ul>
+      <footer class="pbu-since__f">
+        <span class="pbu-since__note"><t t-out="icon('info', 13)"/> For your information. Nothing here changes a figure or stops the pay run.</span>
+        <button type="button" class="pr-btn" t-on-click="download">
+          <t t-out="icon('download', 14)"/> Download as a sheet
+        </button>
+      </footer>
+    </aside>
+  </t>
+
+</templates>

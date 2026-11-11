@@ -13,6 +13,21 @@
         <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
+    <!-- UPDATES P3b — a draft is private to the person who made it. Global
+         (ANDs with the company rule above); a sent update is unaffected. -->
+    <record id="rule_pb_updates_batch_draft_owner" model="ir.rule">
+        <field name="name">Updates: a draft is seen only by its owner</field>
+        <field name="model_id" ref="model_pb_updates_batch"/>
+        <field name="domain_force">['|', ('state', '!=', 'draft'), ('user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- UPDATES P3b — a new employee row follows its update's company. -->
+    <record id="rule_pb_updates_joiner_company" model="ir.rule">
+        <field name="name">Updates: new employees from a sheet, of my companies</field>
+        <field name="model_id" ref="model_pb_updates_joiner"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
     <!-- UPDATES P2d — a one-off pay item belongs to the person's company. -->
     <record id="rule_pb_updates_oneoff_company" model="ir.rule">
         <field name="name">Updates: one-off pay items of my companies</field>

@@ -63,6 +63,69 @@
               </button>
             </div>
 
+            <!-- UPDATES P3b — unfinished updates, private to whoever made them. -->
+            <section t-if="drafts.length" class="pbu-card pbu-drafts" aria-labelledby="pbu-drafts-h">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 id="pbu-drafts-h" class="pbu-h2"><t t-out="icon('save', 18)"/> Continue where you left off</h2>
+                  <p class="pbu-sub">Saved as you worked. Only you can see these. Continuing reads the file again against today's records.</p>
+                </div>
+              </header>
+              <ul class="pbu-draftlist">
+                <li t-foreach="draftsShown" t-as="d" t-key="d.id" class="pbu-draft">
+                  <span t-attf-class="pbu-ib pbu-ib--{{ d.kind === 'oneoff' ? 'pri' : 'info' }} sm"><t t-out="icon(d.kind === 'oneoff' ? 'coins' : 'fileSpreadsheet', 16)"/></span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="d.filename"/>
+                    <span class="pbu-sub"><t t-esc="draftKind(d)"/> · <t t-esc="draftStep(d)"/></span>
+                  </div>
+                  <t t-set="age" t-value="draftAge(d)"/>
+                  <span t-attf-class="pbu-draft-age {{ age.old ? 'is-old' : '' }}"><t t-out="icon('clock', 12)"/><t t-esc="age.label"/></span>
+                  <div class="pbu-row">
+                    <button type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.opening"
+                            t-on-click="() => this.continueDraft(d)">
+                      <span t-if="state.opening === d.id" class="pbu-spin sm"/>
+                      <t t-else="" t-out="icon('play', 13)"/> Continue
+                    </button>
+                    <button type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.discardDraft(d)">
+                      <t t-out="icon('trash', 13)"/> Discard
+                    </button>
+                  </div>
+                </li>
+              </ul>
+              <footer t-if="draftsMore" class="pbu-card-f">
+                <button type="button" class="pbu-link" t-on-click="() => this.state.draftsAll = !this.state.draftsAll">
+                  <t t-if="state.draftsAll">Fewer drafts</t><t t-else="" t-esc="draftsMoreLabel"/>
+                </button>
+              </footer>
+            </section>
+
+            <!-- UPDATES P3b — new employees from a sheet: still with an
+                 approver, or hired with values still to apply. Hidden when empty. -->
+            <section t-if="joinersWaiting.length" class="pbu-card pbu-joiners" aria-labelledby="pbu-joiners-h">
+              <header class="pbu-card-h">
+                <div>
+                  <h2 id="pbu-joiners-h" class="pbu-h2"><t t-out="icon('userPlus', 18)"/> New employees waiting</h2>
+                  <p class="pbu-sub">Added from a sheet. The rest of each row follows by itself once the person exists.</p>
+                </div>
+              </header>
+              <ul class="pbu-hist">
+                <li t-foreach="joinersWaiting" t-as="j" t-key="j.id" class="pbu-hrow pbu-joiner">
+                  <span t-attf-class="pbu-ib pbu-ib--{{ joinerTone(j) }} sm"><t t-out="icon(joinerIcon(j), 16)"/></span>
+                  <div class="pbu-hrow-t">
+                    <b t-esc="j.name"/>
+                    <span class="pbu-sub"><t t-if="j.team"><t t-esc="j.team"/> · </t><t t-esc="j.line"/></span>
+                    <span class="pbu-sub" t-esc="joinerFrom(j)"/>
+                  </div>
+                  <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+                  <button t-if="j.can_apply_now" type="button" class="pbim-btn outline pbim-btn-sm"
+                          t-att-disabled="state.applyingNow" t-on-click="() => this.applyNowJoiner(j)">
+                    <span t-if="state.applyingNow === j.id" class="pbu-spin sm"/>
+                    <t t-else="" t-out="icon('send', 13)"/> Apply now
+                  </button>
+                </li>
+              </ul>
+            </section>
+
             <!-- UPDATES P2d — one-off amounts waiting for their pay run, and
                  the questions a pay run asked (decision D11). Hidden when empty. -->
             <section t-if="waitingMonths.length or clashes.length" class="pbu-card pbu-waiting">
@@ -221,6 +284,22 @@
                     <b t-esc="h.name"/>
                     <span class="pbu-sub" t-esc="historyLine(h)"/>
                     <span t-if="historyNote(h)" class="pbu-sub" t-esc="historyNote(h)"/>
+                    <!-- UPDATES P3b — each new employee, with their own state. -->
+                    <ul t-if="h.joiners and h.joiners.length" class="pbu-hlanes pbu-hjoiners">
+                      <li t-foreach="h.joiners" t-as="j" t-key="j.id" class="pbu-hlane pbu-hlane--new">
+                        <span class="pbu-hlane-ic"><t t-out="icon('userPlus', 13)"/></span>
+                        <div class="pbu-hlane-t">
+                          <b t-esc="j.name"/>
+                          <span class="pbu-sub" t-esc="j.line"/>
+                        </div>
+                        <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+                        <button t-if="j.can_apply_now" type="button" class="pbim-btn ghost pbim-btn-sm"
+                                t-att-disabled="state.applyingNow" t-on-click="() => this.applyNowJoiner(j)">
+                          <t t-out="icon('send', 13)"/> Apply now
+                        </button>
+                      </li>
+                      <li class="pbu-hjoiners-note"><t t-out="icon('info', 12)"/>Adding a person cannot be undone from here. Undo puts back the other changes only.</li>
+                    </ul>
                     <!-- UPDATES P3a — each lane its own line, state, Undo and Cancel. -->
                     <ul t-if="h.lanes and h.lanes.length > 1" class="pbu-hlanes">
                       <li t-foreach="h.lanes" t-as="l" t-key="l.apply_id" t-attf-class="pbu-hlane pbu-hlane--{{ l.lane }}">
@@ -247,7 +326,7 @@
                   <span t-attf-class="pbu-chip pbu-chip--{{ historyTone(h) }}" t-esc="historyLabel(h)"/>
                   <button t-if="h.can_undo" type="button" class="pbim-btn ghost pbim-btn-sm"
                           t-att-disabled="state.undoing === h.id"
-                          t-on-click="() => this.undoBatch(h.id, h.name, false, h.has_open)">
+                          t-on-click="() => this.undoBatch(h.id, h.name, false, h.has_open, 0, !!(h.joiners and h.joiners.length))">
                     <t t-out="icon('undo', 14)"/>
                     <t t-if="h.has_open"> Undo what was applied</t><t t-else=""> Undo</t>
                   </button>
@@ -315,6 +394,39 @@
               </button>
             </div>
 
+            <!-- UPDATES P3b — a third way in under Lasting changes. -->
+            <div t-if="!isOneoff and canHire" t-attf-class="pbu-newsheet {{ state.joinerSheet.open ? 'is-open' : '' }}">
+              <button type="button" class="pbu-newsheet-h" t-att-aria-expanded="state.joinerSheet.open ? 'true' : 'false'"
+                      t-on-click="openJoinerSheet">
+                <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('userPlus', 16)"/></span>
+                <span class="pbu-newsheet-t">
+                  <b>Blank sheet for new employees</b>
+                  <span class="pbu-sub">Headings only: name, team, contract start, wage and the pay items of a pay scheme. Fill one row per new person.</span>
+                </span>
+                <t t-out="icon(state.joinerSheet.open ? 'chevronUp' : 'chevronDown', 15)"/>
+              </button>
+              <div t-if="state.joinerSheet.open" class="pbu-newsheet-b">
+                <label for="pbu-newsheet-scheme" class="pbu-label">Pay items of</label>
+                <div class="pbu-row">
+                  <select id="pbu-newsheet-scheme" class="pbu-select" t-on-change="onJoinerScheme">
+                    <option value="" t-att-selected="!state.joinerSheet.scheme">No pay items</option>
+                    <t t-foreach="state.joinerSheet.schemes || []" t-as="sc" t-key="sc.id">
+                      <option t-att-value="sc.id" t-att-selected="(sc.id + '') === state.joinerSheet.scheme"
+                              t-esc="sc.name + ' · ' + sc.items"/>
+                    </t>
+                  </select>
+                  <button type="button" class="pbim-btn outline" t-att-disabled="state.joinerSheet.busy" t-on-click="downloadJoinerSheet">
+                    <span t-if="state.joinerSheet.busy" class="pbu-spin sm"/>
+                    <t t-else="" t-out="icon('download', 15)"/> Download the blank sheet
+                  </button>
+                </div>
+                <p class="pbu-hint">Each row needs a name, a team that already exists and a contract start date. A wage gives the person a first contract.</p>
+                <p t-if="state.joinerSheet.msg" t-attf-class="pbu-msg pbu-msg--{{ state.joinerSheet.tone }}" role="status">
+                  <t t-out="icon(state.joinerSheet.tone === 'ok' ? 'checkCircle' : 'alert', 14)"/><span t-esc="state.joinerSheet.msg"/>
+                </p>
+              </div>
+            </div>
+
             <div class="pbu-split">
               <div class="pbu-dl">
                 <h3 class="pbu-h3">For whom</h3>
@@ -372,6 +484,7 @@
           <!-- ======================================================= MATCH -->
           <section t-elif="state.view === 'match'" class="pbu-card pbu-flow">
             <t t-call="pb_updates.Steps"/>
+            <t t-call="pb_updates.DraftNotice"/>
             <div class="pbu-flow-h">
               <h2 class="pbu-h2">Match your columns</h2>
               <p class="pbu-sub"><t t-esc="matchLead"/> <b t-if="matchCheckLine" class="pbu-warn-text" t-esc="matchCheckLine"/></p>
@@ -418,6 +531,9 @@
                           <t t-foreach="identityOptions" t-as="o" t-key="o.value">
                             <option t-att-value="o.value" t-att-selected="col.target === o.value" t-esc="o.label"/>
                           </t>
+                        </optgroup>
+                        <optgroup t-if="!isOneoff" label="For new employees">
+                          <option t-att-value="schemeOption.value" t-att-selected="col.target === schemeOption.value" t-esc="schemeOption.label"/>
                         </optgroup>
                         <t t-foreach="goesTo" t-as="g" t-key="g.key">
                           <optgroup t-att-label="g.label" t-att-disabled="g.divider ? 'disabled' : undefined" t-att-class="g.divider ? 'pbu-divider' : undefined">
@@ -466,10 +582,13 @@
           <!-- ======================================================= REVIEW -->
           <section t-elif="state.view === 'review'" class="pbu-card pbu-flow">
             <t t-call="pb_updates.Steps"/>
+            <t t-call="pb_updates.DraftNotice"/>
             <UpdReview rv="state.rv" canWrite="canWrite"
                        recheck.bind="recheck" lookup.bind="lookup"
                        onBack.bind="backFromReview" onContinue.bind="toApply"
-                       onChangeMatching.bind="changeMatching"/>
+                       onChangeMatching.bind="changeMatching"
+                       judgeNew.bind="judgeNew" canHire="canHire"
+                       onChanged="() => this.queueDraft()"/>
           </section>
 
           <!-- ======================================================= APPLY -->
@@ -523,6 +642,20 @@
                 </div>
               </section>
               <p t-elif="!isOneoff and state.lanesBusy" class="pbu-sub"><span class="pbu-spin sm"/> Working out who approves what…</p>
+              <!-- UPDATES P3b — the fourth card: new employees. -->
+              <section t-if="!isOneoff and newCount" class="pbu-lanecards pbu-lanecards--new" aria-live="polite">
+                <h3 t-if="!state.lanes.length" class="pbu-lanecards-h">What happens to each part</h3>
+                <div t-attf-class="pbu-lanecard pbu-lanecard--new {{ state.joinerOutlook and state.joinerOutlook.outcome === 'none' ? 'is-warn' : '' }}">
+                  <span class="pbu-lanecard-ic"><t t-out="icon('userPlus', 17)"/></span>
+                  <div class="pbu-lanecard-t">
+                    <b>New employees</b>
+                    <span class="pbu-sub" t-esc="joinerCount"/>
+                  </div>
+                  <span t-attf-class="pbu-lanecard-out is-{{ state.joinerOutlook ? (state.joinerOutlook.outcome === 'none' ? 'nobody' : state.joinerOutlook.outcome) : 'approval' }}">
+                    <t t-out="icon(joinerOutIcon, 14)"/><span t-esc="joinerCardLine"/>
+                  </span>
+                </div>
+              </section>
 
               <!-- UPDATES P2d — the pay month and its totals. -->
               <section t-if="isOneoff" class="pbu-when-card pbu-month-card" aria-labelledby="pbu-month-h">
@@ -592,6 +725,10 @@
                 <t t-out="icon('undo', 16)"/>
                 <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.</div>
               </div>
+              <div t-if="!isOneoff and newCount" class="pbu-note pbu-note--warn">
+                <t t-out="icon('userPlus', 16)"/>
+                <div><b>Adding a new employee cannot be undone here.</b> Undo puts back the changes to people who were already here. A person added from this file stays; to remove them, end their employment on their record.</div>
+              </div>
             </div>
             <span t-if="state.apply.busy" class="pbu-prog pbu-prog--run"><i/></span>
             <p t-if="!canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these changes, but applying them needs permission to change employee records. Ask an administrator for the HR or Payroll Officer role.</span></p>
@@ -600,7 +737,7 @@
                 <t t-out="icon('back', 15)"/> Back
               </button>
               <button t-if="canWrite" type="button" class="pbim-btn primary"
-                      t-att-disabled="state.apply.busy or nameMissing or !applyCounts.changes or (!isOneoff and (whenDateError or tooManyDates))"
+                      t-att-disabled="state.apply.busy or nameMissing or (!applyCounts.changes and !newCount) or (!isOneoff and (whenDateError or tooManyDates)) or (newCount and state.joinerOutlook and state.joinerOutlook.outcome === 'none')"
                       t-on-click="applyNow">
                 <span t-if="state.apply.busy" class="pbu-spin sm on-dark"/>
                 <t t-else="" t-out="icon(applyIcon, 15)"/>
@@ -611,8 +748,8 @@
 
           <!-- ======================================================= DONE -->
           <section t-elif="state.view === 'done'" class="pbu-card pbu-flow pbu-done">
-            <span t-attf-class="pbu-done-ic pbu-ib pbu-ib--{{ state.done.pending ? 'info' : state.done.nothing ? 'muted' : doneOnlyLater ? 'pri' : 'ok' }}">
-              <t t-out="icon(state.done.pending ? 'clock' : state.done.nothing ? 'info' : state.done.kind === 'oneoff' ? 'coins' : doneOnlyLater ? 'calendarClock' : 'checkCircle', 26)"/>
+            <span t-attf-class="pbu-done-ic pbu-ib pbu-ib--{{ (state.done.pending or doneOnlyWaitingHires) ? 'info' : state.done.nothing ? 'muted' : doneOnlyLater ? 'pri' : 'ok' }}">
+              <t t-out="icon((state.done.pending or doneOnlyWaitingHires) ? 'clock' : state.done.nothing ? 'info' : state.done.kind === 'oneoff' ? 'coins' : doneOnlyLater ? 'calendarClock' : 'checkCircle', 26)"/>
             </span>
             <h1 class="pbu-h1" t-esc="doneTitle"/>
             <p class="pbu-lead" t-esc="doneLine"/>
@@ -629,6 +766,18 @@
                 </span>
               </li>
             </ul>
+            <ul t-if="doneJoiners.length" class="pbu-hlanes pbu-hjoiners" aria-label="New employees">
+              <li t-foreach="doneJoiners" t-as="j" t-key="j.id" class="pbu-hlane pbu-hlane--new">
+                <span class="pbu-hlane-ic"><t t-out="icon('userPlus', 14)"/></span>
+                <div class="pbu-hlane-t">
+                  <b t-esc="j.name"/>
+                  <span class="pbu-sub"><t t-if="j.team"><t t-esc="j.team"/> · </t><t t-esc="j.line"/></span>
+                  <span t-if="j.note and j.state !== 'needs_attention'" class="pbu-sub pbu-warn-text" t-esc="j.note"/>
+                </div>
+                <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+              </li>
+            </ul>
+            <p t-if="doneNotAddedLine" class="pbu-inline-note"><t t-out="icon('userX', 14)"/><span t-esc="doneNotAddedLine"/></p>
             <p t-if="doneLaterNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="doneLaterNote"/></p>
             <p t-if="doneOffScheme" class="pbu-inline-note"><t t-out="icon('ban', 14)"/><span t-esc="doneOffScheme"/></p>
             <ol t-if="state.done.pending and state.done.route and state.done.route.length" class="pbu-route">
@@ -674,9 +823,22 @@
           <span class="pbu-step-l" t-esc="s.label"/>
         </li>
       </ol>
+      <span t-if="draftSavedLine" class="pbu-draftsaved" role="status"><t t-out="icon('save', 12)"/><t t-esc="draftSavedLine"/></span>
       <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.apply.busy" t-on-click="close">
         <t t-out="icon('x', 14)"/> Close
       </button>
+    </div>
+  </t>
+
+  <!-- UPDATES P3b — what no longer fits, after a draft was continued. -->
+  <t t-name="pb_updates.DraftNotice">
+    <div t-if="state.draftNotice.length" class="pbu-note pbu-note--draft" role="status">
+      <t t-out="icon('history', 16)"/>
+      <div>
+        <b>Continued from your draft, read again against today's records.</b>
+        <ul><li t-foreach="state.draftNotice" t-as="n" t-key="n_index" t-esc="n"/></ul>
+      </div>
+      <button type="button" class="pbu-x" aria-label="Dismiss" t-on-click="dismissDraftNotice"><t t-out="icon('x', 14)"/></button>
     </div>
   </t>
 
@@ -704,13 +866,31 @@
         <div>This file has more than 10,000 rows. Only the first 10,000 are checked and can be applied. Put the rest in a second file.</div>
       </div>
 
+      <!-- UPDATES P3b — rows that match nobody can be added as new employees,
+           only when the person switches it on for this file (default off). -->
+      <section t-if="canAddNew" t-attf-class="pbu-newchoice {{ rv.addNew ? 'is-on' : '' }}" aria-live="polite">
+        <span class="pbu-newchoice-ic"><t t-out="icon('userPlus', 20)"/></span>
+        <div class="pbu-newchoice-t">
+          <b t-esc="newChoiceTitle"/>
+          <span class="pbu-sub">Each one gets a first contract and goes through your company's new-hire approval, exactly like Add employee. Nobody who is already here is added twice, and teams or jobs are never created.</span>
+          <span t-if="ui.newError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 14)"/><span t-esc="ui.newError"/></span>
+        </div>
+        <span t-if="ui.newBusy" class="pbu-spin sm"/>
+        <button type="button" class="pbu-toggle" role="switch"
+                t-att-aria-checked="rv.addNew ? 'true' : 'false'"
+                t-att-aria-label="newChoiceTitle" t-att-disabled="ui.newBusy"
+                t-on-click="toggleNew"/>
+      </section>
+
       <!-- Rows that matched nobody: their own band, above the grid. -->
       <section t-if="openUnmatched.length" class="pbu-band">
         <header class="pbu-band-h">
           <span class="pbu-ib pbu-ib--err sm"><t t-out="icon('userX', 15)"/></span>
           <div>
             <b><t t-esc="openUnmatched.length"/> <t t-if="openUnmatched.length === 1">row matches nobody</t><t t-else="">rows match nobody</t></b>
-            <span class="pbu-sub">Find the right person, or skip the row. Nobody is ever created from a file.</span>
+            <span t-if="canAddNew and rv.addNew" class="pbu-sub">These cannot be added as new employees. Find the right person, or skip the row.</span>
+            <span t-elif="canAddNew" class="pbu-sub">Find the right person, or skip the row. Nobody is created from a file unless you switch on adding new employees above.</span>
+            <span t-else="" class="pbu-sub">Find the right person, or skip the row. Nobody is ever created from a file.</span>
           </div>
         </header>
         <ul class="pbu-um">
@@ -719,6 +899,7 @@
               <span class="pbu-rowno">Row <t t-esc="u.row"/></span>
               <b t-esc="unmatchedTitle(u)"/>
               <span class="pbu-um-why" t-esc="u.why"/>
+              <span t-if="u.newWhy" class="pbu-um-new"><t t-out="icon('userX', 12)"/><t t-esc="u.newWhy"/></span>
               <span class="pbu-sub"><t t-esc="valuesWaiting(u)"/>: <t t-esc="unmatchedValues(u)"/></span>
             </div>
             <div class="pbu-um-act">
@@ -813,9 +994,73 @@
             </tr>
           </thead>
           <tbody>
+            <!-- UPDATES P3b — new employees, in their own group first. -->
+            <t t-if="newRowsShown.length">
+              <tr class="pbu-grouprow pbu-grouprow--new">
+                <th t-att-colspan="columns.length + (showStarts ? 2 : 1)" scope="rowgroup">
+                  <span class="pbu-grouprow-ic"><t t-out="icon('userPlus', 14)"/></span>
+                  <b>New employees</b> <span class="pbu-count-pill" t-esc="grouped(newRowsShown.length)"/>
+                  <span class="pbu-sub" t-esc="newGroupLine"/>
+                </th>
+              </tr>
+              <t t-foreach="newRowsShown" t-as="row" t-key="row.key">
+                <t t-call="pb_updates.UpdRow"/>
+              </t>
+              <tr t-if="pageRows.length" class="pbu-grouprow">
+                <th t-att-colspan="columns.length + (showStarts ? 2 : 1)" scope="rowgroup">
+                  <span class="pbu-grouprow-ic"><t t-out="icon('users', 14)"/></span>
+                  <b>Already here</b>
+                </th>
+              </tr>
+            </t>
             <t t-foreach="pageRows" t-as="row" t-key="row.key">
-              <tr t-att-class="{ 'is-bound': row.bound, 'is-open': rowOpen(row) }">
-                <th scope="row" class="pbu-who">
+              <t t-call="pb_updates.UpdRow"/>
+            </t>
+            <tr t-if="!pageRows.length and !newRowsShown.length">
+              <td t-att-colspan="columns.length + (showStarts ? 2 : 1)" class="pbu-empty-row">No rows in this view. Pick another filter above.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pbu-grid-foot">
+        <button t-if="moreRows" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="showMore" t-esc="moreLabel"/>
+        <button t-if="hiddenColumns or rv.allCols" type="button" class="pbu-link" t-on-click="() => this.rv.allCols = !this.rv.allCols" t-esc="columnsToggleLabel"/>
+      </div>
+      <p class="pbu-hint">Click a red cell to sort it out here, with no need to go back to Excel. Click a changed cell to leave it out. Grey values are what is on file today and are not touched.<t t-if="rv.pay_items"> Values crossed out with <t t-out="icon('ban', 12)"/> are pay items that are not in that person's pay scheme, so they are skipped.</t></p>
+
+      <p t-if="attentionNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="attentionNote"/></p>
+      <p t-if="!props.canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span t-esc="noWriteLine"/></p>
+      <div class="pbu-bar">
+        <button type="button" class="pbim-btn ghost" t-on-click="props.onBack">
+          <t t-out="icon('back', 15)"/> Back
+        </button>
+        <button t-if="props.canWrite" type="button" class="pbim-btn primary"
+                t-att-disabled="!canContinue" t-on-click="props.onContinue">
+          <t t-esc="continueLabel"/> <t t-out="icon('arrow', 15)"/>
+        </button>
+      </div>
+    </div>
+  </t>
+
+  <!-- One person's row of the grid (and its fix row), for people already
+       here and for new employees alike (UPDATES P3b). -->
+  <t t-name="pb_updates.UpdRow">
+              <tr t-att-class="{ 'is-bound': row.bound, 'is-open': rowOpen(row), 'is-new': row.isNew, 'is-skipped': row.isNew and row.skipped }">
+                <th t-if="row.isNew" scope="row" class="pbu-who pbu-who--new">
+                  <b><t t-esc="row.name"/></b>
+                  <span>
+                    <span class="pbu-rowno">Row <t t-esc="row.row"/></span>
+                    <t t-if="row.code"> · <t t-esc="row.code"/></t>
+                    · <span t-attf-class="pbu-tag pbu-tag--new is-{{ newState(row) }}"><t t-out="icon('userPlus', 11)"/><t t-esc="newStateLabel(row)"/></span>
+                  </span>
+                  <span t-if="row.scheme" class="pbu-who-sch" t-att-title="row.scheme"><t t-esc="row.scheme"/></span>
+                  <span t-if="row.schemeNote" class="pbu-who-note is-warn"><t t-out="icon('info', 11)"/><t t-esc="row.schemeNote"/></span>
+                  <span t-if="row.noContract" class="pbu-who-note"><t t-out="icon('fileText', 11)"/>No contract yet: no wage in the file</span>
+                  <span t-if="row.block" class="pbu-who-note is-err"><t t-out="icon('alert', 11)"/><t t-esc="row.block"/></span>
+                  <button t-if="!row.skipped" type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.skipNew(row)">Don't add</button>
+                  <button t-else="" type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.unskipNew(row)">Add after all</button>
+                </th>
+                <th t-else="" scope="row" class="pbu-who">
                   <b><t t-esc="row.name"/><span t-if="rv.pay_items and row.no_scheme" class="pbu-dot-amber" t-att-title="noSchemeTitle()" role="img" t-att-aria-label="noSchemeTitle()"/></b>
                   <span>
                     <span class="pbu-rowno">Row <t t-esc="row.row"/></span>
@@ -851,7 +1096,7 @@
                   </t>
                   <t t-elif="k === 'change'">
                     <span t-if="cell.old" class="pbu-was" t-esc="cell.old"/>
-                    <span t-elif="rv.oneoff" class="pbu-was pbu-was--empty">new</span>
+                    <span t-elif="rv.oneoff or row.isNew" class="pbu-was pbu-was--empty">new</span>
                     <span t-else="" class="pbu-was pbu-was--empty">empty</span>
                     <span class="pbu-now"><t t-esc="cell.new"/><t t-if="cell.fixed" t-out="icon('check', 12)"/></span>
                   </t>
@@ -883,31 +1128,6 @@
                              onClose.bind="closeFix"/>
                 </td>
               </tr>
-            </t>
-            <tr t-if="!pageRows.length">
-              <td t-att-colspan="columns.length + (showStarts ? 2 : 1)" class="pbu-empty-row">No rows in this view. Pick another filter above.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="pbu-grid-foot">
-        <button t-if="moreRows" type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="showMore" t-esc="moreLabel"/>
-        <button t-if="hiddenColumns or rv.allCols" type="button" class="pbu-link" t-on-click="() => this.rv.allCols = !this.rv.allCols" t-esc="columnsToggleLabel"/>
-      </div>
-      <p class="pbu-hint">Click a red cell to sort it out here, with no need to go back to Excel. Click a changed cell to leave it out. Grey values are what is on file today and are not touched.<t t-if="rv.pay_items"> Values crossed out with <t t-out="icon('ban', 12)"/> are pay items that are not in that person's pay scheme, so they are skipped.</t></p>
-
-      <p t-if="attentionNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="attentionNote"/></p>
-      <p t-if="!props.canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span t-esc="noWriteLine"/></p>
-      <div class="pbu-bar">
-        <button type="button" class="pbim-btn ghost" t-on-click="props.onBack">
-          <t t-out="icon('back', 15)"/> Back
-        </button>
-        <button t-if="props.canWrite" type="button" class="pbim-btn primary"
-                t-att-disabled="!canContinue" t-on-click="props.onContinue">
-          <t t-esc="continueLabel"/> <t t-out="icon('arrow', 15)"/>
-        </button>
-      </div>
-    </div>
   </t>
 
   <t t-name="pb_updates.UpdFixRow">
