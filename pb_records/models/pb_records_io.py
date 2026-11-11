@@ -643,6 +643,21 @@ class PbRecordsDeskIo(models.AbstractModel):
         return str(value).strip()
 
     @api.model
+    def _io_extra(self, value):
+        """A raw cell made JSON-safe for `extra_columns`: a real spreadsheet
+        date stays a date (as `YYYY-MM-DD`), numbers stay numbers, the rest
+        is text."""
+        if value is None:
+            return ''
+        if isinstance(value, datetime):
+            return value.date().isoformat()
+        if isinstance(value, date):
+            return value.isoformat()
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return value
+        return str(value).strip()
+
+    @api.model
     def _io_index(self, employees):
         """Every way a row could name a person, built once for the whole file.
 
@@ -927,7 +942,7 @@ class PbRecordsDeskIo(models.AbstractModel):
 
     @api.model
     def import_peek(self, config_id=0, file_b64='', filename='', columns=None,
-                    clear_word=False):
+                    clear_word=False, extra_columns=None):
         """Read a file and say what it WOULD do. Writes nothing, ever.
 
         Every failure is a sentence a person can act on, returned as
@@ -941,8 +956,22 @@ class PbRecordsDeskIo(models.AbstractModel):
         answer also carries `matched` — `[{'row', 'emp_id', 'method', 'cells'}]`
         in file order, `cells` being how many of `changes` that row produced —
         so a grid can show the file's rows with the file's row numbers.
+
+        `extra_columns` (UPDATES P2c, optional) — column numbers whose raw
+        cells are handed back per row (`matched[i]['extra']`,
+        `unmatched[i]['extra']`, `{column: cell}`), untouched: a value the
+        caller reads itself (a start date), never a value to write. The
+        Records screen never passes it, so its answer is unchanged.
         """
         self._check_read()
+        extra_cols = []
+        for value in (extra_columns or []):
+            try:
+                idx = int(value)
+            except (TypeError, ValueError):
+                continue
+            if idx > 0 and idx not in extra_cols:
+                extra_cols.append(idx)
         refusal, header, rows, comments, meta, name = self._io_open(
             file_b64, filename)
         if refusal:
@@ -964,6 +993,12 @@ class PbRecordsDeskIo(models.AbstractModel):
             return {'ok': False, 'msg': _(
                 "No employee code, name or email column was recognised, so no "
                 "row can be matched to a person.")}
+
+        if extra_cols:
+            # A column the caller reads itself is not "not brought in".
+            extra_heads = {str(header[idx - 1] if header[idx - 1] is not None else '').strip()
+                           for idx in extra_cols if idx <= len(header)}
+            ignored = [h for h in ignored if h not in extra_heads]
 
         wrong_scheme = bool(meta.get('config_id')) and bool(config_id) \
             and int(meta['config_id']) != int(config_id)
@@ -1018,16 +1053,27 @@ class PbRecordsDeskIo(models.AbstractModel):
                     'row': offset, 'code': code, 'name': person,
                     'email': email, 'why': why, 'values': values,
                 })
+                if extra_cols:
+                    unmatched[-1]['extra'] = {
+                        idx: self._io_extra(self._io_cell(row, idx))
+                        for idx in extra_cols}
                 continue
             matched_ids.add(emp_id)
             matched.append({'row': offset, 'emp_id': emp_id, 'method': method,
                             'cells': len(values)})
+            if extra_cols:
+                matched[-1]['extra'] = {
+                    idx: self._io_extra(self._io_cell(row, idx))
+                    for idx in extra_cols}
             methods[method] = methods.get(method, 0) + 1
             for field_id, value in values.items():
                 changes.append({'emp_id': emp_id, 'field_id': field_id,
                                 'value': value})
 
-        preview = self.preview_changes(config_id, changes) if changes else \
+        # A file's values are judged as a file's (UPDATES P2c: a manager
+        # typed in a file is told to use a code or an email, not a screen).
+        preview = self.with_context(records_from_file=True).preview_changes(
+            config_id, changes) if changes else \
             {'items': [], 'counts': {'ok': 0, 'same': 0, 'refused': 0,
                                      'people': 0}}
         counts = preview['counts']

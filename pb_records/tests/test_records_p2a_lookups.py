@@ -419,6 +419,20 @@ class TestRecordsP2aLookups(TransactionCase):
         if not bool_field:
             golden['scheme'] = [r for r in golden['scheme']
                                 if r['field_id'] != 'f:hr.employee:<bool>']
+        # UPDATES P2c — owner decision D9, the ONE intended difference: a
+        # manager name that matches nobody is refused, never proposed as a new
+        # employee. Exactly those golden rows are rewritten here (and counted),
+        # so any other difference still fails this test.
+        rewritten = 0
+        for row in golden['master']:
+            if row['field_id'] == MANAGER and row['new_label'].endswith(' (new)'):
+                name = row['new_label'][:-len(' (new)')]
+                row.update(status='refused', new_label='', why=(
+                    "Nobody is called '%s'. Check the spelling, or use their "
+                    "employee code or work email." % name))
+                rewritten += 1
+        self.assertEqual(rewritten, len([c for c in changes if c['field_id'] == MANAGER
+                                         and c['value'] == 'Nobody P2A']))
         self.assertEqual(len(got['master']), len(golden['master']))
         for mine, theirs in zip(got['master'], golden['master']):
             self.assertEqual(mine, theirs)

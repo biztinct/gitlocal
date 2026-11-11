@@ -4,3 +4,4 @@ from . import pb_records_desk
 from . import pb_records_io
 from . import records_learn
 from . import master_records
+from . import records_payrun

@@ -87,3 +87,7 @@ class PbRecordsChange(models.Model):
     new_json = fields.Text(string='After', readonly=True)
     old_label = fields.Char(string='Before (shown)', readonly=True)
     new_label = fields.Char(string='After (shown)', readonly=True)
+    # UPDATES P2c — the day this value is recorded as starting: the change's
+    # start date when it has one, the day it was written otherwise (an undo,
+    # or "Start now", is always today).
+    effective_date = fields.Date(string='Starts on', readonly=True)

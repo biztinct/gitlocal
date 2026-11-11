@@ -12,6 +12,7 @@
     <t t-elif="state.data">
     <div class="pr-summary"><div><b t-esc="state.data.issues"/><span>cells need attention</span></div><div><b t-esc="state.data.affected"/><span>employees affected</span></div><div><b t-esc="state.data.changes"/><span>saved corrections</span></div><p>Optional inputs can stay empty.<br/><b><t t-esc="state.data.optional"/> blank cells</b> leave saved records unchanged.</p><button class="pr-btn" t-on-click="nextIssue" t-att-disabled="!state.data.issues">Next issue →</button></div>
     <div class="pr-remind-line" role="note" t-if="finalMonthPeople"><span class="pr-remind-icon" t-out="icons.remindLarge"/><span t-esc="reminderText"/><button class="pr-link" t-on-click="showFinalMonth" t-att-disabled="state.pending || state.saving">Show them</button></div>
+    <div class="pr-remind-line" role="note" t-foreach="state.data.scheduled_changes || []" t-as="sch" t-key="sch.date"><span class="pr-remind-icon" t-out="icons.remindLarge"/><span t-esc="sch.message"/></div>
     <div class="pr-global" t-if="state.data.global_issues.length"><b>Period setup needs attention</b><p t-foreach="state.data.global_issues" t-as="issue" t-key="issue.reason" t-esc="issue.reason"/></div>
     <nav class="pr-tools" aria-label="Worksheet filters">
         <label class="pr-filter pr-employee-filter"><span>Employee</span><input type="search" placeholder="Find an employee…" aria-label="Find an employee" t-model="state.query" t-att-disabled="state.pending || state.saving"/></label>

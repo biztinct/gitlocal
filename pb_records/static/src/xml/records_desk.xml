@@ -766,7 +766,11 @@
                 <span t-if="h.undone" class="rd-tag amber">Already undone</span>
                 <!-- A change that has not happened yet wears its own word, so
                      nobody reads this list as a list of things that did. -->
-                <span t-if="!h.applied and h.state !== 'applied'"
+                <span t-if="h.scheduled" class="rd-tag rd-tag-when">
+                  <t t-out="ic('calendarClock',11)"/> <t t-esc="scheduledTag(h)"/>
+                </span>
+                <span t-elif="h.cancelled" class="rd-tag muted" t-esc="h.state_label"/>
+                <span t-elif="!h.applied and h.state !== 'applied'"
                       t-attf-class="rd-tag {{ h.pending ? 'amber' : '' }}"
                       t-esc="h.state_label"/>
               </div>
@@ -781,11 +785,16 @@
                 <t t-out="ic('external',13)"/>
                 See the request
               </button>
+              <button type="button" t-elif="h.can_cancel" class="pbim-btn outline pbim-btn-sm"
+                      t-on-click="() => this.cancelApply(h)">
+                <t t-out="ic('x',13)"/>
+                Cancel
+              </button>
               <button type="button" t-else="" class="pbim-btn outline pbim-btn-sm"
                       t-att-disabled="h.undone or !h.applied"
                       t-on-click="() => this.undoApply(h.id)">
                 <t t-out="ic('rotate',13)"/>
-                <t t-if="h.undone">Already undone</t><t t-else="">Undo</t>
+                <t t-if="h.undone">Already undone</t><t t-elif="h.cancelled">Nothing to undo</t><t t-else="">Undo</t>
               </button>
             </div>
           </div>

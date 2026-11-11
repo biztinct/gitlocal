@@ -1757,3 +1757,333 @@ msgstr "CLEAR"
 #: code:addons/pb_records/models/pb_records_io.py:0
 msgid "Read me"
 msgstr "Đọc trước"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"%(n)s people are called '%(value)s'. Type the employee code or work email of"
+" the right one instead."
+msgstr "Có %(n)s người tên là '%(value)s'. Hãy nhập mã nhân viên hoặc email công việc của đúng người."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"%(n)s people have the employee code '%(value)s'. Type the work email of the "
+"right one instead."
+msgstr "Có %(n)s người cùng mã nhân viên '%(value)s'. Hãy nhập email công việc của đúng người."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"%(n)s people use the work email '%(value)s'. Type the employee code of the "
+"right one instead."
+msgstr "Có %(n)s người dùng email công việc '%(value)s'. Hãy nhập mã nhân viên của đúng người."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_payrun.py:0
+msgid ""
+"%(n)s scheduled changes start on %(date)s, inside this pay period. They are "
+"not in this pay run unless you start them now."
+msgstr "%(n)s thay đổi đã lên lịch bắt đầu từ %(date)s, nằm trong kỳ lương này. Các thay đổi này không có trong kỳ tính lương này trừ khi bạn bắt đầu chúng ngay."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_payrun.py:0
+msgid ""
+"%(n)s scheduled changes were due on %(date)s and have not been written yet. "
+"They are not in this pay run unless you start them now."
+msgstr "%(n)s thay đổi đã lên lịch cho ngày %(date)s nhưng chưa được ghi. Các thay đổi này không có trong kỳ tính lương này trừ khi bạn bắt đầu chúng ngay."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "'%s' is not a date. Use a date like 1 Dec 2026."
+msgstr "'%s' không phải là ngày. Hãy dùng một ngày như 1 Dec 2026."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_payrun.py:0
+msgid ""
+"1 scheduled change starts on %(date)s, inside this pay period. It is not in "
+"this pay run unless you start it now."
+msgstr "1 thay đổi đã lên lịch bắt đầu từ %(date)s, nằm trong kỳ lương này. Thay đổi này không có trong kỳ tính lương này trừ khi bạn bắt đầu nó ngay."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_payrun.py:0
+msgid ""
+"1 scheduled change was due on %(date)s and has not been written yet. It is "
+"not in this pay run unless you start it now."
+msgstr "1 thay đổi đã lên lịch cho ngày %(date)s nhưng chưa được ghi. Thay đổi này không có trong kỳ tính lương này trừ khi bạn bắt đầu nó ngay."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "A scheduled change was not made: %s"
+msgstr "Một thay đổi đã lên lịch không được thực hiện: %s"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"A start date can be up to a year back or a year ahead. %s is further away "
+"than that."
+msgstr "Ngày bắt đầu chỉ có thể lùi hoặc tiến tối đa một năm. %s xa hơn mức đó."
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/xml/records_desk.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "Cancel %s?"
+msgstr "Hủy %s?"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "Cancel the change"
+msgstr "Hủy thay đổi"
+
+#. module: pb_records
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__cancelled_at
+msgid "Cancelled at"
+msgstr "Hủy lúc"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "Cancelled before anything was changed."
+msgstr "Đã hủy trước khi có bất kỳ thay đổi nào."
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__cancelled_by_id
+msgid "Cancelled by"
+msgstr "Người hủy"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__applied
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__state__applied
+msgid "Carried out"
+msgstr "Đã thực hiện"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Could not be started on %s; it will be tried again."
+msgstr "Không thể bắt đầu vào %s; hệ thống sẽ thử lại."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid ""
+"Could not be started on three different days, so nothing was written. "
+"Propose it again."
+msgstr "Không thể bắt đầu trong ba ngày khác nhau nên chưa có gì được ghi. Hãy đề xuất lại."
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__start_fail_days
+msgid "Days it could not start"
+msgstr "Số ngày không thể bắt đầu"
+
+#. module: pb_records
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__hold_scope__all
+msgid "Everything waits"
+msgstr "Mọi thứ đều chờ"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__start_last_fail
+msgid "Last day it could not start"
+msgstr "Ngày gần nhất không thể bắt đầu"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"Nobody is called '%(value)s'. Check the spelling, or use their employee code"
+" or work email."
+msgstr "Không có ai tên là '%(value)s'. Hãy kiểm tra chính tả, hoặc dùng mã nhân viên hay email công việc của họ."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Nothing was written, because these could not be saved: %s."
+msgstr "Chưa có gì được ghi vì không thể lưu các mục sau: %s."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "Only a scheduled change can be started early."
+msgstr "Chỉ thay đổi đã lên lịch mới có thể bắt đầu sớm."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"Only the person who proposed this change, someone asked to approve it, or an"
+" HR manager can cancel it."
+msgstr "Chỉ người đề xuất thay đổi này, người được yêu cầu phê duyệt, hoặc quản lý nhân sự mới có thể hủy."
+
+#. module: pb_records
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__hold_scope__pay
+msgid "Pay and contract changes wait"
+msgstr "Thay đổi lương và hợp đồng chờ đến ngày"
+
+#. module: pb_records
+#: model:ir.actions.server,name:pb_records.ir_cron_records_start_scheduled_ir_actions_server
+msgid "Records: start scheduled changes"
+msgstr "Hồ sơ: bắt đầu các thay đổi đã lên lịch"
+
+#. module: pb_records
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__state__scheduled
+msgid "Scheduled"
+msgstr "Đã lên lịch"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid "Scheduled for %s"
+msgstr "Đã lên lịch cho %s"
+
+#. module: pb_records
+#: model:ir.model.fields.selection,name:pb_records.selection__pb_records_apply__state__returned
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__started_by_job
+msgid "Started automatically"
+msgstr "Tự động bắt đầu"
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__started_by_id
+msgid "Started by"
+msgstr "Người bắt đầu"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"Starting a change needs permission to change employee records. Ask an "
+"administrator for the HR or Payroll Officer role."
+msgstr "Muốn bắt đầu một thay đổi cần có quyền sửa hồ sơ nhân viên. Hãy nhờ quản trị viên cấp vai trò Nhân sự hoặc Cán bộ tính lương."
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__start_date
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_change__effective_date
+msgid "Starts on"
+msgstr "Bắt đầu từ"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_payrun.py:0
+msgid ""
+"The saved record change was cancelled. Restore the source value, or enter "
+"the correction again."
+msgstr "Thay đổi hồ sơ đã lưu đã bị hủy. Hãy khôi phục giá trị gốc, hoặc nhập lại chỉnh sửa."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid ""
+"These can no longer be written as they were proposed, so nothing was "
+"written: %s."
+msgstr "Các mục sau không thể ghi như đã đề xuất nên chưa có gì được ghi: %s."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "This change can no longer be cancelled."
+msgstr "Thay đổi này không thể hủy được nữa."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "This change has already been cancelled."
+msgstr "Thay đổi này đã được hủy."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"This change has already been made, so it cannot be cancelled. Use Undo to "
+"put it back."
+msgstr "Thay đổi này đã được thực hiện nên không thể hủy. Hãy dùng Hoàn tác để đưa về như cũ."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "This change has already been made."
+msgstr "Thay đổi này đã được thực hiện."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"This change has just been made, so it cannot be cancelled. Use Undo to put "
+"it back."
+msgstr "Thay đổi này vừa được thực hiện nên không thể hủy. Hãy dùng Hoàn tác để đưa về như cũ."
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/js/records_desk.js:0
+msgid ""
+"This change has not been made yet, so nothing needs putting back. Once "
+"cancelled it will never be written."
+msgstr "Thay đổi này chưa được thực hiện nên không có gì cần đưa về. Sau khi hủy, nó sẽ không bao giờ được ghi."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "This change is being written right now. Look again in a minute."
+msgstr "Thay đổi này đang được ghi. Hãy xem lại sau một phút."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "This change is no longer scheduled."
+msgstr "Thay đổi này không còn được lên lịch."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "This change was cancelled, so nothing was written."
+msgstr "Thay đổi này đã bị hủy nên chưa có gì được ghi."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid ""
+"This change was turned down, so nothing was written and there is nothing to "
+"cancel."
+msgstr "Thay đổi này đã bị từ chối nên chưa có gì được ghi và không có gì để hủy."
+
+#. module: pb_records
+#: model:ir.model.fields,field_description:pb_records.field_pb_records_apply__hold_scope
+msgid "What waits for the start date"
+msgstr "Những gì chờ đến ngày bắt đầu"
+
+#. module: pb_records
+#. odoo-javascript
+#: code:addons/pb_records/static/src/xml/records_desk.xml:0
+msgid "Nothing to undo"
+msgstr "Không có gì để hoàn tác"

@@ -28,6 +28,7 @@ import {
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { ic } from "@pb_import_kit/js/import_icons";
 import { RdCellEditor } from "@pb_records/js/records_cells";
 import {
@@ -56,6 +57,7 @@ export class PbRecordsDesk extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notif = useService("notification");
+        this.dialog = useService("dialog");
 
         this.state = useState({
             loading: true,
@@ -676,6 +678,13 @@ export class PbRecordsDesk extends Component {
             this.notif.add(res.msg, { type: "warning" });
             return;
         }
+        if (res.cancelled) {
+            // UPDATES P2c: nothing had been written, so it was cancelled.
+            this.notif.add(res.msg, { type: "success" });
+            this.state.toast = null;
+            await this.loadHistory();
+            return;
+        }
         const bits = [this.n(res.restored, "Put 1 value back", "Put %s values back")];
         if (res.skipped_changed_since) {
             bits.push(this.n(res.skipped_changed_since,
@@ -695,6 +704,31 @@ export class PbRecordsDesk extends Component {
     }
 
     closeHistory() { this.state.history = false; }
+
+    /** "Scheduled for 1 Dec 2026" — UPDATES P2c. */
+    scheduledTag(h) {
+        const day = h.start_date ? luxon.DateTime.fromISO(h.start_date) : null;
+        return day && day.isValid
+            ? _t("Scheduled for %s", day.toFormat("d LLL yyyy"))
+            : h.state_label;
+    }
+
+    /** Cancel a change that is waiting for its day. Nothing has been written,
+     *  so nothing needs putting back. */
+    cancelApply(h) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Cancel %s?", h.name),
+            body: _t("This change has not been made yet, so nothing needs putting back. Once cancelled it will never be written."),
+            confirmLabel: _t("Cancel the change"),
+            cancelLabel: _t("Keep it"),
+            confirm: async () => {
+                const res = await this.orm.call("pb.records.desk", "cancel_apply", [h.id]);
+                this.notif.add(res.msg, { type: res.ok ? "success" : "warning" });
+                await this.loadHistory();
+            },
+            cancel: () => {},
+        });
+    }
 
     histLine(h) {
         return this.n(h.count_values, "1 value", "%s values") + " "

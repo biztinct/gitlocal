@@ -61,8 +61,18 @@ the companies in use, a department's full path; two records with the name are
 refused, and a slashed path never becomes a new record. Look-ups, labels and
 component lines are remembered for one call only, which takes a full-roster
 review from about 110 s to about 11 s with identical answers.
+
+UPDATES P2c: a change can carry a start date. A past date is written now and
+recorded as starting that day (nothing is recalculated); a future date is
+approved as usual and then held as "Scheduled" until an hourly job writes it
+on the day, through the same all-or-none write. "Start now" writes it early;
+"Cancel" stops a change that has not been written (and an Undo pressed on one
+now cancels it for real). A manager or coach can be typed as a name, an
+employee code or a work email; a name that matches nobody is refused, never
+created. A pay run's preparation mentions a scheduled change that starts
+inside its pay period.
 """,
-    'version': '19.0.1.8.6',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -84,6 +94,7 @@ review from about 110 s to about 11 s with identical answers.
         'security/ir.model.access.csv',
         'security/records_approval_rules.xml',
         'views/pb_records_action.xml',
+        'data/records_cron.xml',
     ],
     'assets': {
         'web.assets_backend': [

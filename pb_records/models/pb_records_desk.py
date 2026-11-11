@@ -37,11 +37,14 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 from odoo.tools import float_compare
+from odoo.tools.misc import format_date
 
 from odoo.addons.pb_hr_payroll_formula.models.payroll_import_batch import (
     m2o_creates_missing, m2o_resolution_key)
 from odoo.addons.pb_hr_payroll_formula.models.bank_account_util import (
     acc_numbers_match, sanitize_acc_number, sanitize_bank_text)
+from odoo.addons.pb_records.models.records_approval import (
+    LOCK_ERRORS, START_DATE_REACH)
 
 _logger = logging.getLogger(__name__)
 
@@ -1171,6 +1174,8 @@ class PbRecordsDesk(models.AbstractModel):
         if 'company_id' in Model._fields:
             scope = ['|', ('company_id', '=', False),
                      ('company_id', 'in', self.env.companies.ids)]
+        if comodel._name == EMP:
+            return self._m2o_employee(Model, text, scope)
         # Rung 2 — one exact match inside the companies in scope (archived
         # records stay out: the default active filter applies).
         fname = key
@@ -1213,6 +1218,72 @@ class PbRecordsDesk(models.AbstractModel):
         # Deliberately NOT created during a preview — the create happens in
         # `_write_cell`, inside the apply transaction.
         return {'create': text}, _("%s (new)") % text, None
+
+    #: The fields a person's employee code can live in — the row matcher's
+    #: own list (`pb_records_io.CODE_FIELDS`), so "the code" means the same
+    #: thing for finding a row's person and for naming their manager.
+    EMPLOYEE_CODE_FIELDS = ('barcode', 'employee_id', 'pb_source_ref',
+                            'identification_id')
+
+    @api.model
+    def _m2o_count(self, Model, fname, text, scope, hits):
+        count = len(hits)
+        if count >= 3 and not ('%' in text or '_' in text):
+            count = max(count, Model.search_count([(fname, '=ilike', text)] + scope))
+        return count
+
+    @api.model
+    def _m2o_employee(self, Model, text, scope):
+        """UPDATES P2c (owner decision D9) — a manager or coach, typed.
+
+        After "it is already this person" (rung 1, in `_coerce`):
+          2. an employee CODE, exact and case-insensitive, across the code
+             fields the row matcher uses — one person wins, two are refused;
+          3. a WORK EMAIL, exact and case-insensitive — one person wins;
+          4. the NAME, exactly as before — namesakes are refused, and a file
+             is told what to type instead;
+          5. nobody — refused. A file never creates an employee.
+        Company scope as every other look-up."""
+        codes = Model.browse()
+        for fname in self.EMPLOYEE_CODE_FIELDS:
+            field = Model._fields.get(fname)
+            if field is not None and field._description_searchable:
+                codes |= self._m2o_hits(Model, fname, text, scope)
+        if len(codes) == 1:
+            return codes.id, codes.display_name or text, None
+        if len(codes) > 1:
+            return None, '', _(
+                "%(n)s people have the employee code '%(value)s'. Type the "
+                "work email of the right one instead.") % {
+                    'n': len(codes), 'value': text}
+        if '@' in text and 'work_email' in Model._fields:
+            mails = self._m2o_hits(Model, 'work_email', text, scope)
+            if len(mails) == 1:
+                return mails.id, mails.display_name or text, None
+            if len(mails) > 1:
+                return None, '', _(
+                    "%(n)s people use the work email '%(value)s'. Type the "
+                    "employee code of the right one instead.") % {
+                        'n': self._m2o_count(Model, 'work_email', text, scope,
+                                             mails), 'value': text}
+        names = self._m2o_hits(Model, 'name', text, scope)
+        if len(names) == 1:
+            return names.id, names.display_name or text, None
+        if len(names) > 1:
+            count = self._m2o_count(Model, 'name', text, scope, names)
+            if self.env.context.get('records_from_file'):
+                return None, '', _(
+                    "%(n)s people are called '%(value)s'. Type the employee "
+                    "code or work email of the right one instead.") % {
+                        'n': count, 'value': text}
+            what = (self.env['ir.model'].sudo()._get(EMP).name or EMP).lower()
+            return None, '', _(
+                "%(n)s %(what)s records are called '%(value)s'. Pick the right "
+                "one on the Records screen, or use a name that is unique."
+            ) % {'n': count, 'what': what, 'value': text}
+        return None, '', _(
+            "Nobody is called '%(value)s'. Check the spelling, or use their "
+            "employee code or work email.") % {'value': text}
 
     @api.model
     def _field_required(self, field):
@@ -1745,15 +1816,35 @@ class PbRecordsDesk(models.AbstractModel):
             'new_amount': new_amount or 0.0,
             'old_text_value': old_text or False,
             'new_text_value': new_text or False,
-            'effective_date': fields.Date.context_today(self),
+            'effective_date': self._effective_date(apply_rec),
             'change_source': 'manual',
             'notes': _("Records Desk apply #%s") % apply_rec.id,
         })
 
     @api.model
+    def _effective_date(self, apply_rec):
+        """UPDATES P2c — the day a written value is recorded as starting.
+
+        A scheduled write passes it in the context (`records_effective_date`:
+        the start date when the job writes it, today for "Start now"). A
+        change with a start date that has come (a past date) carries that
+        date. Everything else — no date, and every undo — is today, exactly
+        as before. It is a RECORD: nothing is recalculated from it."""
+        forced = self.env.context.get('records_effective_date')
+        if forced:
+            return fields.Date.to_date(forced)
+        today = fields.Date.context_today(self)
+        start = apply_rec.start_date if apply_rec and 'start_date' in apply_rec._fields \
+            and apply_rec.source != 'undo' else False
+        if start and start <= today:
+            return start
+        return today
+
+    @api.model
     def _log(self, apply_rec, employee, model, res_id, card, old, new,
              old_label, new_label):
         self.env['pb.records.change'].sudo().create({
+            'effective_date': self._effective_date(apply_rec),
             'apply_id': apply_rec.id,
             'employee_id': employee.id,
             'employee_name': employee.display_name or '',
@@ -1841,6 +1932,34 @@ class PbRecordsDesk(models.AbstractModel):
         return moved
 
     @api.model
+    def _door_for(self, apply_rec):
+        """The desk a proposal must be judged with. The Records screen's own
+        desk here; Updates reopens its door (`pb_updates`)."""
+        return self
+
+    @api.model
+    def _plan_drift(self, apply_rec):
+        """UPDATES P2c — `(lost, extra)` between the stored plan and what the
+        evaluation would write NOW: planned values it would refuse (a person
+        out of scope, a right withdrawn) and values it would add that nobody
+        planned. A scheduled write needs both empty — it writes exactly what
+        was approved or nothing."""
+        items, _plan, _counts = self._evaluate(apply_rec.config_id.id or 0,
+                                               apply_rec.requested())
+        planned = {(int(r.get('emp_id') or 0), r.get('field_id'))
+                   for r in apply_rec.plan()}
+        lost, extra, seen = [], [], set()
+        for item in items:
+            key = (item['emp_id'], item['field_id'])
+            if key in planned and item['status'] != 'ok' and key not in seen:
+                lost.append(item)
+                seen.add(key)
+            elif key not in planned and item['status'] == 'ok' and key not in seen:
+                extra.append(item)
+                seen.add(key)
+        return lost, extra
+
+    @api.model
     def _write_plan(self, apply_rec):
         """Carry out a proposal. Returns (written, people, refused)."""
         config_id = apply_rec.config_id.id or 0
@@ -1893,7 +2012,34 @@ class PbRecordsDesk(models.AbstractModel):
         return bank, salary
 
     @api.model
-    def apply_changes(self, config_id=0, changes=None, note='', source='desk'):
+    def _start_date_of(self, value):
+        """UPDATES P2c — `(date or None, refusal)` for a requested start date.
+
+        Empty, or today in the company's own time zone, is None: "today, as
+        before" — the proposal is made exactly as it always was. More than a
+        year back or ahead is refused in a sentence."""
+        if not value:
+            return None, ''
+        try:
+            day = fields.Date.to_date(value)
+        except (TypeError, ValueError):
+            day = None
+        if not day:
+            return None, _("'%s' is not a date. Use a date like 1 Dec 2026.") \
+                % value
+        today = self.env['pb.records.apply']._today_for(self.env.company,
+                                                        self.env.user)
+        if day == today:
+            return None, ''
+        if abs((day - today).days) > START_DATE_REACH:
+            return None, _(
+                "A start date can be up to a year back or a year ahead. "
+                "%s is further away than that.") % format_date(self.env, day)
+        return day, ''
+
+    @api.model
+    def apply_changes(self, config_id=0, changes=None, note='', source='desk',
+                      start_date=None, hold_scope='pay'):
         """Evaluate, write the plan down, and ask.
 
         `source` says where the values came from — the grid (`desk`) or a
@@ -1906,10 +2052,22 @@ class PbRecordsDesk(models.AbstractModel):
         published "No approval needed" it applies in the same breath and the
         answer looks exactly as it always did, plus a reference; where a real
         route is published the answer says who it is with.
+
+        UPDATES P2c: `start_date` (optional) — empty or today takes exactly
+        the path above; a past date is written as above and recorded as
+        starting that day; a future date is proposed and approved as above
+        and then held as "Scheduled" until its day. `hold_scope` is kept as
+        the record of what the person chose to hold back (`pay` / `all`).
         """
         self._check_read()
         source = source if source in ('desk', 'import') else 'desk'
-        items, plan, counts = self._evaluate(config_id, changes or [])
+        start, refusal = self._start_date_of(start_date)
+        if refusal:
+            return {'ok': False, 'msg': refusal, 'apply_id': 0, 'written': 0,
+                    'people': 0, 'items': [], 'refused': [], 'pending': False}
+        desk = self.with_context(records_from_file=True) \
+            if source == 'import' else self
+        items, plan, counts = desk._evaluate(config_id, changes or [])
         if not plan:
             return {'ok': True, 'apply_id': 0, 'written': 0, 'people': 0,
                     'items': items, 'counts': counts, 'pending': False,
@@ -1932,6 +2090,8 @@ class PbRecordsDesk(models.AbstractModel):
             'touches_bank': touches_bank,
             'touches_salary': touches_salary,
             'company_id': self.env.company.id,
+            'start_date': start or False,
+            'hold_scope': 'all' if hold_scope == 'all' else 'pay',
         })
         apply_rec.name = 'RD%05d' % apply_rec.id
 
@@ -1950,7 +2110,12 @@ class PbRecordsDesk(models.AbstractModel):
             'written': apply_rec.count_values, 'people': apply_rec.count_people,
             'items': items, 'counts': counts, 'refused': refused,
             'skipped_same': counts['same'], 'reference': apply_rec.name,
-            'pending': not apply_rec.applied,
+            # A scheduled change is approved and waiting for its DAY, not for
+            # anybody's decision — it says so in its own key.
+            'pending': not apply_rec.applied and apply_rec.state != 'scheduled',
+            'scheduled': apply_rec.state == 'scheduled',
+            'start_date': fields.Date.to_string(apply_rec.start_date)
+            if apply_rec.start_date else '',
             'request_id': (payload or {}).get('id') or 0,
             'state': apply_rec.state,
             'with_whom': apply_rec._waiting_for(),
@@ -1988,6 +2153,16 @@ class PbRecordsDesk(models.AbstractModel):
             return {'ok': False, 'msg': _("That change is no longer on record.")}
         if source.undone:
             return {'ok': False, 'msg': _("This one has already been undone.")}
+        if not source.applied and source.source != 'undo':
+            # UPDATES P2c — THE DEFECT FIX. A change that has not been written
+            # has nothing to put back. It used to get an empty undo row and an
+            # "undone" mark that the approval ignored, so it was still written
+            # later. It is now cancelled — for real — and says so.
+            answer = self.cancel_apply(source.id)
+            if answer.get('ok'):
+                answer.update(restored=0, skipped_changed_since=0,
+                              skipped_missing=0, apply_id=0)
+            return answer
 
         config_id = source.config_id.id or 0
         cards = self._cards(config_id)
@@ -2082,6 +2257,93 @@ class PbRecordsDesk(models.AbstractModel):
                 'skipped_missing': missing, 'apply_id': undo_rec.id}
 
     # =================================================================
+    # UPDATES P2c — Cancel and Start now
+    # =================================================================
+    @api.model
+    def cancel_apply(self, apply_id):
+        """Stop a change that has not been written: waiting for approval,
+        scheduled, or sent back. Its approval request is withdrawn through
+        the engine's own `cancel`, and from then on neither an approval nor
+        the job can write it. Allowed for whoever proposed it, anybody asked
+        to decide it, or an HR / payroll manager."""
+        self._check_read()
+        try:
+            apply_id = int(apply_id or 0)
+        except (TypeError, ValueError):
+            apply_id = 0
+        rec = self.env['pb.records.apply'].sudo().browse(apply_id).exists()
+        if not rec:
+            return {'ok': False, 'msg': _("That change is no longer on record.")}
+        if rec.applied:
+            return {'ok': False, 'msg': _(
+                "This change has already been made, so it cannot be cancelled. "
+                "Use Undo to put it back.")}
+        if rec.state == 'cancelled' or rec.undone:
+            return {'ok': False, 'msg': _("This change has already been cancelled.")}
+        if rec.state not in ('pending', 'scheduled', 'returned'):
+            return {'ok': False, 'msg': _(
+                "This change was turned down, so nothing was written and there "
+                "is nothing to cancel.") if rec.state == 'rejected' else _(
+                "This change can no longer be cancelled.")}
+        if not rec.with_env(self.env)._may_cancel():
+            return {'ok': False, 'msg': _(
+                "Only the person who proposed this change, someone asked to "
+                "approve it, or an HR manager can cancel it.")}
+        if not rec._lock_row(wait=True):
+            return {'ok': False, 'msg': _(
+                "This change is being written right now. Look again in a "
+                "minute.")}
+        if rec.applied:
+            return {'ok': False, 'msg': _(
+                "This change has just been made, so it cannot be cancelled. "
+                "Use Undo to put it back.")}
+        request = rec.approval_request_id
+        if request and request.state in ('pending', 'blocked'):
+            self.env['biz.approval.engine'].sudo().cancel(
+                request.id, _("Cancelled before anything was changed."))
+        rec.write({'state': 'cancelled', 'block_note': False,
+                   'cancelled_at': fields.Datetime.now(),
+                   'cancelled_by_id': self.env.uid})
+        return {'ok': True, 'cancelled': True, 'apply_id': rec.id,
+                'msg': _("Cancelled before anything was changed.")}
+
+    @api.model
+    def start_now(self, apply_id):
+        """Write a scheduled change today instead of on its day. The same
+        gate as applying (write rights on employee or contract records), the
+        same all-or-none write as the job, recorded as starting today."""
+        self._check_read()
+        try:
+            apply_id = int(apply_id or 0)
+        except (TypeError, ValueError):
+            apply_id = 0
+        rec = self.env['pb.records.apply'].sudo().browse(apply_id).exists()
+        if not rec:
+            return {'ok': False, 'msg': _("That change is no longer on record.")}
+        if rec.applied:
+            return {'ok': False, 'msg': _("This change has already been made.")}
+        if rec.state != 'scheduled' or rec.undone:
+            return {'ok': False, 'msg': _(
+                "Only a scheduled change can be started early.")}
+        if not (self._may_write(EMP) or self._may_write(CON)):
+            return {'ok': False, 'msg': _(
+                "Starting a change needs permission to change employee "
+                "records. Ask an administrator for the HR or Payroll Officer "
+                "role.")}
+        try:
+            outcome, sentence = rec.with_env(self.env)._start_scheduled(
+                by_job=False)
+        except LOCK_ERRORS:
+            outcome, sentence = 'busy', _(
+                "This change is being written right now. Look again in a "
+                "minute.")
+        if outcome != 'started':
+            return {'ok': False, 'outcome': outcome, 'msg': sentence}
+        rec.invalidate_recordset()
+        return {'ok': True, 'apply_id': rec.id, 'written': rec.count_values,
+                'people': rec.count_people, 'reference': rec.name}
+
+    # =================================================================
     # History
     # =================================================================
     @api.model
@@ -2113,5 +2375,15 @@ class PbRecordsDesk(models.AbstractModel):
                 'with_whom': rec._waiting_for(),
                 'request_id': rec.approval_request_id.id,
                 'block_note': rec.block_note or '',
+                # UPDATES P2c — a change held for its day, and one stopped
+                # before anything was written. "Cancel" stands where "Undo"
+                # would have marked an unwritten change undone (the defect).
+                'start_date': fields.Date.to_string(rec.start_date)
+                if rec.start_date else '',
+                'scheduled': rec.state == 'scheduled',
+                'cancelled': rec.state == 'cancelled',
+                'can_cancel': bool(
+                    rec.state == 'scheduled' and not rec.applied
+                    and not rec.undone and rec.with_env(self.env)._may_cancel()),
             })
         return {'applies': out}

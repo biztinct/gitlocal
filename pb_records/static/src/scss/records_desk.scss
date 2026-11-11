@@ -525,6 +525,10 @@ $rd-w-data: 194px;
         font-size: 10px; font-weight: 800; border-radius: 999px; padding: 2px 8px;
         background: var(--pbim-soft); color: var(--pbim-primary-strong);
         &.amber { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+        &.muted { background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+        // UPDATES P2c — waiting for its day: indigo, with its calendar clock.
+        &.rd-tag-when { display: inline-flex; align-items: center; gap: 4px;
+                        svg { flex: none; } }
     }
 
     // -------------------------------------------------------- set-for modal

@@ -27,13 +27,32 @@ marked applied, so the trail exists either way.
 import json
 import logging
 
+import pytz
+from psycopg2 import errors as pg_errors
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.modules import module as odoo_module
+from odoo.tools.misc import format_date
 
 _logger = logging.getLogger(__name__)
 
 #: The catalogue key this model is approved under.
 RECORDS_PROCESS_KEY = 'records'
+
+#: UPDATES P2c — a start date can be at most this many days back or ahead.
+START_DATE_REACH = 366
+
+#: Row-lock failures: somebody else is writing this proposal right now.
+LOCK_ERRORS = (pg_errors.LockNotAvailable, pg_errors.SerializationFailure)
+
+
+class _WriteRefused(Exception):
+    """A scheduled write found a row it could not write: nothing is kept."""
+
+    def __init__(self, refused):
+        super().__init__('refused while writing')
+        self.refused = refused
 
 
 
@@ -59,12 +78,43 @@ class PbRecordsApply(models.Model):
     state = fields.Selection([
         ('draft', 'Being prepared'),
         ('pending', 'Waiting for approval'),
+        # UPDATES P2c — approved, and waiting for its start date.
+        ('scheduled', 'Scheduled'),
         ('applied', 'Carried out'),
         ('returned', 'Sent back'),
         ('rejected', 'Turned down'),
+        # UPDATES P2c — stopped before anything was written.
+        ('cancelled', 'Cancelled'),
     ], default='draft', required=True, index=True, readonly=True, copy=False)
     block_note = fields.Text(string='Why it could not be carried out',
                              readonly=True, copy=False)
+
+    # ------------------------------------------------ UPDATES P2c — dates
+    #: Empty = "today, as before". A past date is a RECORD of when the change
+    #: started (written now, history stamped with it); a future date holds the
+    #: approved change as "Scheduled" until the job writes it on the day.
+    start_date = fields.Date(string='Starts on', readonly=True, copy=False,
+                             index=True)
+    #: What a future date holds back. Updates splits a file by it; the desk
+    #: keeps it as the record of what was asked.
+    hold_scope = fields.Selection([
+        ('pay', 'Pay and contract changes wait'),
+        ('all', 'Everything waits'),
+    ], string='What waits for the start date', default='pay', readonly=True,
+        copy=False)
+    started_by_job = fields.Boolean(string='Started automatically',
+                                    readonly=True, copy=False)
+    started_by_id = fields.Many2one('res.users', string='Started by',
+                                    readonly=True, copy=False)
+    cancelled_at = fields.Datetime(string='Cancelled at', readonly=True,
+                                   copy=False)
+    cancelled_by_id = fields.Many2one('res.users', string='Cancelled by',
+                                      readonly=True, copy=False)
+    #: Days the scheduled job could not start it (one bad day counts once).
+    start_fail_days = fields.Integer(string='Days it could not start',
+                                     readonly=True, copy=False)
+    start_last_fail = fields.Date(string='Last day it could not start',
+                                  readonly=True, copy=False)
     #: The rows the WRITE itself refused — a contract component already kept as
     #: text, a badge id somebody else holds. They are found only while writing,
     #: so they cannot be in the plan; they are kept here because the desk's
@@ -122,6 +172,9 @@ class PbRecordsApply(models.Model):
         self.ensure_one()
         if self.applied:
             raise UserError(_("This change has already been carried out."))
+        if self.state == 'cancelled' or self.undone:
+            raise UserError(_("This change was cancelled, so nothing was "
+                              "written."))
         if self.state == 'pending':
             raise UserError(_("This change has already been sent in."))
         if not self.plan():
@@ -320,26 +373,56 @@ class PbRecordsApply(models.Model):
         self.sudo().write({'state': 'rejected'})
         return True
 
+    def _approval_withdraw(self, request, reason):
+        """UPDATES P2c — the request was withdrawn: the change stops waiting
+        and can never be written later (the cancel defect, P2b §R7.3)."""
+        self.ensure_one()
+        if not self.applied and self.state != 'cancelled':
+            self.sudo().write({'state': 'cancelled',
+                               'cancelled_at': fields.Datetime.now(),
+                               'cancelled_by_id': self.env.uid,
+                               'block_note': False})
+        return True
+
+    def _moved_sentence(self, moved):
+        """The existing "somebody else changed it" sentence, for block_note."""
+        names = '; '.join(moved[:5])
+        more = _(" and %s more", len(moved) - 5) if len(moved) > 5 else ''
+        return _("These have been changed by somebody else since this was "
+                 "proposed, so nothing was written: %(names)s%(more)s.",
+                 names=names, more=more), names, more
+
     def _approval_apply(self, request):
-        """Write the plan — all of it, or none of it."""
+        """Write the plan — all of it, or none of it.
+
+        UPDATES P2c: a change that was cancelled (or "undone" before it was
+        written — the old defect) is refused here, so a late approval can
+        never write it. A change whose start date is still ahead is checked
+        exactly as before and then HELD as "Scheduled": nothing is written
+        until the job (or a person pressing "Start now") writes it.
+        """
         self.ensure_one()
         if self.applied:
+            return True
+        if self.state == 'cancelled' or self.undone:
+            raise UserError(_("This change was cancelled, so nothing was "
+                              "written."))
+        if self.state == 'scheduled':
             return True
         Desk = self.env['pb.records.desk']
         moved = Desk._plan_moved_since(self)
         if moved:
-            names = '; '.join(moved[:5])
-            more = _(" and %s more", len(moved) - 5) if len(moved) > 5 else ''
-            self.sudo().write({'block_note': _(
-                "These have been changed by somebody else since this was "
-                "proposed, so nothing was written: %(names)s%(more)s.",
-                names=names, more=more)})
+            note, names, more = self._moved_sentence(moved)
+            self.sudo().write({'block_note': note})
             raise UserError(_(
                 "Nothing was changed. Somebody else has already changed "
                 "%(n)s of these values since this was proposed: "
                 "%(names)s%(more)s. Send this back and propose it again "
                 "against what is there now.",
                 n=len(moved), names=names, more=more))
+        if self.start_date and self.start_date > self._company_today():
+            self.sudo().write({'state': 'scheduled', 'block_note': False})
+            return True
         written, people, refused = Desk._write_plan(self)
         self.sudo().write({
             'applied': True,
@@ -351,6 +434,264 @@ class PbRecordsApply(models.Model):
             'block_note': '; '.join(r['why'] for r in refused)[:1024] or False,
         })
         return True
+
+    # ==================================================================
+    # UPDATES P2c — the start date, the job, "Start now" and Cancel
+    # ==================================================================
+    @api.model
+    def _records_now(self):
+        """UTC now. One seam, so a test can freeze the clock."""
+        return fields.Datetime.now()
+
+    @api.model
+    def _today_for(self, company=None, user=None):
+        """The date it is for a company: its address's time zone, else the
+        person's, else UTC. "Is it the day yet" is the COMPANY's question —
+        a change for a Jakarta office starts on Jakarta's morning."""
+        company = company or self.env.company
+        user = user or self.env.user
+        zone = 'UTC'
+        for tz in ((company.partner_id.tz if company else False),
+                   (user.tz if user else False)):
+            if tz and tz in pytz.all_timezones_set:
+                zone = tz
+                break
+        now = pytz.utc.localize(self._records_now())
+        return now.astimezone(pytz.timezone(zone)).date()
+
+    def _company_today(self):
+        self.ensure_one()
+        return self._today_for(self.company_id or self.env.company,
+                               self.user_id or self.env.user)
+
+    def _start_user(self):
+        """Who a scheduled write runs as: the proposer, so the audit names a
+        person; the last approver if the proposer's login is gone; else the
+        person running the job."""
+        self.ensure_one()
+        if self.user_id and self.user_id.active:
+            return self.user_id
+        request = self.approval_request_id
+        if request:
+            decisions = self.env['biz.approval.decision'].sudo().search(
+                [('request_id', '=', request.id)], order='id desc')
+            for decision in decisions:
+                user = decision.create_uid
+                if user and user.active and not user._is_public():
+                    return user
+        return self.env.user
+
+    def _lock_row(self, wait=False):
+        """Take this proposal's row lock. True when it is ours; False when
+        somebody else (the job, or a person pressing Start now or Cancel) is
+        on it this very moment. The job never waits (SKIP LOCKED); a person
+        never waits either (NOWAIT) — they are told to look again."""
+        self.ensure_one()
+        self.env.flush_all()
+        query = ('SELECT id FROM pb_records_apply WHERE id = %s FOR UPDATE '
+                 + ('NOWAIT' if wait else 'SKIP LOCKED'))
+        try:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute(query, [self.id])
+                got = self.env.cr.fetchone()
+        except LOCK_ERRORS:
+            return False
+        self.invalidate_recordset()
+        return bool(got)
+
+    def _notify_proposer(self, note):
+        """An activity for whoever proposed it — on the approval request, the
+        proposal's mail-capable twin. Never an email: the activity is created
+        quietly (`mail_activity_quick_update`), so a demo database with fake
+        addresses sends nothing."""
+        self.ensure_one()
+        request = self.approval_request_id
+        user = self.user_id
+        if not request or not user or not user.active:
+            return False
+        todo = self.env.ref('mail.mail_activity_data_todo',
+                            raise_if_not_found=False)
+        try:
+            with self.env.cr.savepoint():
+                self.env['mail.activity'].sudo().with_context(
+                    mail_activity_quick_update=True).create({
+                        'res_model_id': self.env['ir.model']._get_id(
+                            'biz.approval.request'),
+                        'res_id': request.id,
+                        'activity_type_id': todo.id if todo else False,
+                        'summary': _("A scheduled change was not made: %s",
+                                     self.name),
+                        'note': self.block_note or '',
+                        'user_id': user.id,
+                        'date_deadline': self._company_today(),
+                    })
+        except Exception:   # noqa: BLE001 — a reminder must never undo the state
+            _logger.exception('pb_records: no activity for %s', self.name)
+            return False
+        return True
+
+    def _send_back(self, note):
+        """Nothing written; the proposal is sent back with the reason and the
+        proposer is told."""
+        self.ensure_one()
+        self.sudo().write({'state': 'returned', 'block_note': note})
+        self.sudo()._notify_proposer(note)
+        return True
+
+    def _start_scheduled(self, by_job=False):
+        """Write a scheduled change now. `(outcome, sentence)`.
+
+        Shared by the hourly job (`by_job=True`) and "Start now". The SAME
+        write as an approval: the moved-since check, then `_write_plan`, in
+        one transaction — all of it or none of it. Three extra promises:
+
+          * never twice: the row is locked first and the state read again,
+            so the job and a person pressing "Start now" cannot both write;
+          * never a subset: if the evaluation would now refuse a planned value
+            (or add one nobody planned), or the write itself refuses one,
+            nothing is kept;
+          * never a guess: on the day, a conflict sends the change back with
+            the reason; when a PERSON presses "Start now" a conflict only
+            answers the reason and leaves it scheduled.
+
+        Outcomes: `started`, `busy` (locked by somebody else), `gone` (no
+        longer scheduled), `returned` (sent back), `refused` (Start now only).
+        """
+        self.ensure_one()
+        if not self._lock_row(wait=not by_job):
+            return 'busy', _("This change is being written right now. Look "
+                             "again in a minute.")
+        rec = self.sudo()
+        if rec.applied or rec.undone or rec.state != 'scheduled':
+            return 'gone', _("This change is no longer scheduled.")
+        if by_job:
+            actor = rec._start_user()
+            effective = rec.start_date
+        else:
+            actor = self.env.user
+            effective = rec._company_today()
+        # The proposal's company first, then the actor's other companies —
+        # never a company the actor may not use (a person moved since is
+        # simply out of scope, and the change is sent back for it).
+        mine = actor.sudo().company_ids.ids
+        companies = [rec.company_id.id] if rec.company_id.id in mine else []
+        companies += [c for c in mine if c not in companies]
+        ctx = {'records_effective_date': fields.Date.to_string(effective)}
+        if companies:
+            ctx['allowed_company_ids'] = companies
+        me = rec.with_user(actor).with_context(**ctx)
+        Desk = me.env['pb.records.desk']._door_for(rec)
+
+        moved = Desk._plan_moved_since(rec)
+        problem = ''
+        if moved:
+            problem = rec._moved_sentence(moved)[0]
+        else:
+            lost, extra = Desk._plan_drift(rec)
+            if lost or extra:
+                bits = ['%s · %s: %s' % (i.get('emp_name') or '',
+                                          i.get('field_label') or '',
+                                          i.get('why') or '') for i in lost[:5]]
+                bits += ['%s · %s' % (i.get('emp_name') or '',
+                                      i.get('field_label') or '')
+                         for i in extra[:5]]
+                problem = _("These can no longer be written as they were "
+                            "proposed, so nothing was written: %s.",
+                            '; '.join(bits))
+        if not problem:
+            try:
+                with self.env.cr.savepoint():
+                    written, people, refused = Desk._write_plan(rec)
+                    if refused:
+                        raise _WriteRefused(refused)
+            except _WriteRefused as exc:
+                self.env.invalidate_all()
+                problem = _("Nothing was written, because these could not be "
+                            "saved: %s.", '; '.join(
+                                r.get('why') or '' for r in exc.refused[:5]))
+        if problem:
+            if by_job:
+                rec._send_back(problem)
+                return 'returned', problem
+            return 'refused', problem
+        rec.write({
+            'applied': True,
+            'applied_at': fields.Datetime.now(),
+            'state': 'applied',
+            'count_values': written,
+            'count_people': len(people),
+            'refused_json': json.dumps([]),
+            'block_note': False,
+            'started_by_job': bool(by_job),
+            'started_by_id': actor.id,
+            'start_fail_days': 0,
+        })
+        return 'started', ''
+
+    def _record_start_failure(self, error):
+        """Something unexpected stopped the job on this one: it stays
+        scheduled with a note and is tried again; on the third bad DAY it is
+        sent back and the proposer is told. Never silent."""
+        self.ensure_one()
+        rec = self.sudo()
+        today = rec._company_today()
+        days = rec.start_fail_days or 0
+        if rec.start_last_fail != today:
+            days += 1
+        vals = {'start_fail_days': days, 'start_last_fail': today,
+                'block_note': _("Could not be started on %s; it will be tried "
+                                "again.", format_date(self.env, today))}
+        rec.write(vals)
+        if days >= 3:
+            rec._send_back(_(
+                "Could not be started on three different days, so nothing "
+                "was written. Propose it again."))
+        return days
+
+    @api.model
+    def _cron_start_scheduled(self, limit=200):
+        """The hourly job: write every scheduled change whose day has come,
+        oldest first, one transaction per change."""
+        # A test may not commit; everywhere else each change is its own
+        # transaction, so one bad change never takes the others with it.
+        testing = bool(odoo_module.current_test)
+        todo = self.sudo().search([
+            ('state', '=', 'scheduled'), ('applied', '=', False),
+            ('start_date', '!=', False)], order='start_date, id',
+            limit=int(limit or 200))
+        tally = {}
+        for rec in todo:
+            if rec.start_date > rec._company_today():
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    outcome, _sentence = rec._start_scheduled(by_job=True)
+            except LOCK_ERRORS:
+                self.env.invalidate_all()
+                outcome = 'busy'
+            except Exception as error:     # noqa: BLE001 — one never stops the rest
+                self.env.invalidate_all()
+                _logger.exception('pb_records: could not start %s', rec.name)
+                rec._record_start_failure(error)
+                outcome = 'failed'
+            tally[outcome] = tally.get(outcome, 0) + 1
+            if not testing:
+                self.env.cr.commit()
+        if tally:
+            _logger.info('pb_records: scheduled changes %s', tally)
+        return tally
+
+    def _may_cancel(self):
+        """The proposer, anybody asked to decide it, or an HR / payroll
+        manager."""
+        self.ensure_one()
+        user = self.env.user
+        if self.user_id == user or user in self.sudo().seat_user_ids:
+            return True
+        return any(user.has_group(g) for g in (
+            'hr.group_hr_manager',
+            'pb_hr_payroll_base.group_payroll_base_manager',
+            'base.group_system'))
 
     # ------------------------------------------------------------- the seed
     @api.model
