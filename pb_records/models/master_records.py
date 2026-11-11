@@ -84,4 +84,30 @@ class MasterRecords(models.AbstractModel):
                 'editable': True, 'model': 'hr.contract', 'code': code,
                 '_template': template,
             }
+        if self.env.context.get('records_scheme_items'):
+            self._add_scheme_items(cards)
+        return cards
+
+    @api.model
+    def _add_scheme_items(self, cards):
+        """UPDATES P2b — every pay item of every pay scheme in scope.
+
+        Opt-in (`records_scheme_items`, set only by the Updates screen): the
+        Records screen never sets it, so its Master catalogue is exactly what
+        it was. A pay item that already has a card (a line on some contract)
+        keeps that card; any other one gets the scheme catalogue's own card,
+        the first rule by id deciding its name and whether it is text or an
+        amount — the desk's usual tie-break (`_mappings`, `order='id asc'`).
+        One search for all schemes, not one per scheme."""
+        configs = self._configs(0)
+        if not configs:
+            return cards
+        rules = self.env['hr.formula.rule'].sudo().search(
+            [('config_id', 'in', configs.ids),
+             '|', ('is_contract_component', '=', True),
+             ('is_text_component', '=', True)], order='id asc')
+        for rule in rules:
+            code = (rule.code or '').strip()
+            if code and 'c:%s' % code not in cards:
+                cards['c:%s' % code] = self._component_card(rule, code)
         return cards

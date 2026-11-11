@@ -62,7 +62,7 @@ refused, and a slashed path never becomes a new record. Look-ups, labels and
 component lines are remembered for one call only, which takes a full-roster
 review from about 110 s to about 11 s with identical answers.
 """,
-    'version': '19.0.1.8.5',
+    'version': '19.0.1.8.6',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

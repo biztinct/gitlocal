@@ -1733,3 +1733,27 @@ msgstr "người"
 #: code:addons/pb_records/models/pb_records_io.py:0
 msgid "Column %s"
 msgstr "Cột %s"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "%s cannot be empty."
+msgstr "%s không được để trống."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_desk.py:0
+msgid "Bank details cannot be removed from a file. Change them on the employee record."
+msgstr "Không thể xóa thông tin ngân hàng từ một tệp. Hãy sửa trên hồ sơ nhân viên."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_io.py:0
+msgid "CLEAR"
+msgstr "CLEAR"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/pb_records_io.py:0
+msgid "Read me"
+msgstr "Đọc trước"

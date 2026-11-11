@@ -371,28 +371,38 @@ class PbRecordsDesk(models.AbstractModel):
             card_id = 'c:%s' % code
             if card_id in cards:
                 continue
-            is_text = bool(rule.is_text_component)
-            cards[card_id] = {
-                'id': card_id, 'group': 'component',
-                'label': rule.name or code,
-                'sub': _("Contract component · %s") % code,
-                'ttype': 'text_component' if is_text else 'amount',
-                'selection': [], 'm2o': None,
-                'hint': {
-                    'text': (_("Text kept on the contract")
-                             if is_text else _("Amount kept on the contract")),
-                    'title': _("Contract components live on the person's "
-                               "contract, one line per component. Changing one "
-                               "here writes that line and records the change."),
-                    'tone': ''},
-                'component': {'id': rule.id, 'code': code,
-                              'name': rule.name or ''},
-                'editable': True,
-                'model': CON,
-                'code': code,
-                '_rule': rule,
-            }
+            cards[card_id] = self._component_card(rule, code)
         return cards
+
+    @api.model
+    def _component_card(self, rule, code):
+        """The `c:<CODE>` card for one contract-component rule.
+
+        UPDATES P2b: one builder, shared by the scheme catalogue above and
+        the Updates-only "every pay item of every scheme" seam in
+        `master_records.py`, so the two can never describe a pay item
+        differently."""
+        is_text = bool(rule.is_text_component)
+        return {
+            'id': 'c:%s' % code, 'group': 'component',
+            'label': rule.name or code,
+            'sub': _("Contract component · %s") % code,
+            'ttype': 'text_component' if is_text else 'amount',
+            'selection': [], 'm2o': None,
+            'hint': {
+                'text': (_("Text kept on the contract")
+                         if is_text else _("Amount kept on the contract")),
+                'title': _("Contract components live on the person's "
+                           "contract, one line per component. Changing one "
+                           "here writes that line and records the change."),
+                'tone': ''},
+            'component': {'id': rule.id, 'code': code,
+                          'name': rule.name or ''},
+            'editable': True,
+            'model': CON,
+            'code': code,
+            '_rule': rule,
+        }
 
     @api.model
     def _public_card(self, card):
@@ -1205,6 +1215,18 @@ class PbRecordsDesk(models.AbstractModel):
         return {'create': text}, _("%s (new)") % text, None
 
     @api.model
+    def _field_required(self, field):
+        """Is this destination required on the record it lives on?
+
+        `hr.employee` delegates much of its data to `hr.version`, and a
+        related field does not always carry its target's `required`, so the
+        target is asked too."""
+        if field.required:
+            return True
+        target = getattr(field, 'related_field', None) if field.related else None
+        return bool(target is not None and target.required)
+
+    @api.model
     def _coerce(self, probe, card, value, employee, contract, memo=None):
         """`(coerced, label, why)` — `why` is a plain sentence and means refused.
 
@@ -1220,11 +1242,19 @@ class PbRecordsDesk(models.AbstractModel):
                 "%s cannot be changed here — it is read-only on the record.") \
                 % card['label']
 
+        # UPDATES P2b — an explicit CLEAR from a file (`records_strict_clear`,
+        # set only by the Updates screen). The Records screen never sets it,
+        # so its own "Clear for selected" keeps exactly today's behaviour.
+        strict = bool(self.env.context.get('records_strict_clear'))
+        emptied = value is None or (isinstance(value, str) and not value.strip())
+
         if kind == 'c':
             if card['ttype'] == 'text_component':
                 text = '' if value is None else str(value).strip()
                 return text, text, None
             if value in (None, ''):
+                if strict:
+                    return 0.0, self._word_label(card, 0.0), None
                 return 0.0, '', None
             rule = card.get('_rule')
             try:
@@ -1243,6 +1273,10 @@ class PbRecordsDesk(models.AbstractModel):
             return amount, self._word_label(card, amount), None
 
         if kind == 'b':
+            if strict and emptied:
+                return None, '', _(
+                    "Bank details cannot be removed from a file. Change them "
+                    "on the employee record.")
             text = '' if value is None else str(value).strip()
             if card['bank_role'] == 'acc_number' and text:
                 # `sanitize_acc_number` returns `(number, damaged)` — the second
@@ -1265,6 +1299,8 @@ class PbRecordsDesk(models.AbstractModel):
             ) % (employee.display_name or _("This person"))
 
         ftype = field.type
+        if strict and emptied and self._field_required(field):
+            return None, '', _("%s cannot be empty.") % card['label']
         if value in (None, ''):
             # An emptied cell clears the destination. Numbers go to zero because
             # a numeric column on a record is not nullable; everything else goes
@@ -1378,6 +1414,7 @@ class PbRecordsDesk(models.AbstractModel):
         items, plan = [], []
         # UPDATES P2a: typed-name look-ups, remembered for THIS call only.
         memo = {}
+        strict_clear = bool(self.env.context.get('records_strict_clear'))
         # Bank changes for one person are ONE write: four roles assemble a single
         # `res.partner.bank`, so they are collected and judged together.
         bank_by_emp = {}
@@ -1425,6 +1462,16 @@ class PbRecordsDesk(models.AbstractModel):
             if card['id'][:1] == 'b':
                 bank_by_emp.setdefault(emp_id, []).append(
                     (card, coerced, new_label, current, base))
+                continue
+
+            if strict_clear and change.get('value') == '' \
+                    and current['v'] in (None, False, ''):
+                # UPDATES P2b: clearing a value that is already empty —
+                # including a pay item the contract has no line for — is
+                # "stays the same", never a new zero line.
+                items.append(dict(base, old_label=current['label'],
+                                  new_label=new_label, status='same',
+                                  why=_("Already set to this.")))
                 continue
 
             if self._same(card, current['v'], coerced):

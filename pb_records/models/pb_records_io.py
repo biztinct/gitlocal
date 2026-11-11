@@ -220,6 +220,13 @@ class PbRecordsDeskIo(models.AbstractModel):
         `ORDER BY`, because PostgreSQL sorts NULLs LAST ascending while that
         method sorts a date-less contract FIRST, and the two disagree exactly
         for the person whose contract has no start date.
+
+        THE TIE, TOO (UPDATES P2b, ledger G16). `contract_ids` is in id order
+        and Python's reverse sort is stable, so of two contracts with the same
+        start date that method keeps the LOWER id. This used to keep the
+        higher one, so a sheet could show one contract and the check judge
+        another. Rows are read in id order and only a strictly LATER start
+        date replaces the winner, which keeps the lower id on a tie.
         """
         if not employees:
             return {}
@@ -232,7 +239,7 @@ class PbRecordsDeskIo(models.AbstractModel):
             if not row.get('employee_id'):
                 continue
             emp_id = row['employee_id'][0]
-            key = (row.get('date_start') or floor, row['id'])
+            key = row.get('date_start') or floor
             if emp_id not in best or key > best[emp_id][0]:
                 best[emp_id] = (key, row['id'])
         latest = {emp_id: entry[1] for emp_id, entry in best.items()}
@@ -253,12 +260,17 @@ class PbRecordsDeskIo(models.AbstractModel):
 
     @api.model
     def export_records(self, config_id=0, filters=None, field_ids=None,
-                       mode='data'):
+                       mode='data', blank_cells=None, notes=None):
         """The current desk view as an `.xlsx` — with the values, or blank.
 
         Same scoping as `search_people`, on purpose and not by coincidence: the
         export reuses `_matching`, so a file can never contain a person the desk
         would not have shown.
+
+        UPDATES P2b, both optional and off for the Records screen:
+        `blank_cells` `{employee_id: {card id, …}}` — cells left empty with a
+        light grey fill (a pay item that is not in that person's pay scheme);
+        `notes` — lines written to a small second sheet a person reads first.
         """
         self._check_read()
         if not self._may_export():
@@ -337,14 +349,22 @@ class PbRecordsDeskIo(models.AbstractModel):
 
         empty_contract = self.env[CON]
         memo = {}       # UPDATES P2a: per-call reads, gone with this call
+        blank_cells = blank_cells if isinstance(blank_cells, dict) else {}
+        grey = PatternFill('solid', fgColor='EEEEF2') if blank_cells else None
         for r, emp in enumerate(employees, start=2):
             contract = contracts.get(emp.id) or empty_contract
             ws.cell(row=r, column=1, value=emp.barcode or emp.employee_id or '')
             ws.cell(row=r, column=2, value=emp.display_name or emp.name or '')
             ws.cell(row=r, column=3, value=emp.work_email or '')
-            if mode == 'template':
+            skip = blank_cells.get(emp.id) or ()
+            if mode == 'template' and not skip:
                 continue
             for offset, card in enumerate(picked):
+                if card['id'] in skip:
+                    ws.cell(row=r, column=first_data_col + offset).fill = grey
+                    continue
+                if mode == 'template':
+                    continue
                 value, numfmt = self._io_export_value(probe, card, emp,
                                                       contract, memo)
                 if value is None:
@@ -369,6 +389,18 @@ class PbRecordsDeskIo(models.AbstractModel):
             meta.cell(row=3 + offset, column=2, value=card['id'])
             meta.cell(row=3 + offset, column=3, value=card['label'])
         meta.sheet_state = 'hidden'
+
+        lines = [str(n) for n in (notes or []) if n]
+        if lines:
+            # A visible sheet AFTER the data sheet: the import reads the
+            # "Records" sheet by name, and a renamed one still comes first.
+            guide = wb.create_sheet(title=_("Read me")[:31])
+            guide.column_dimensions['A'].width = 110
+            for idx, line in enumerate(lines, start=1):
+                cell = guide.cell(row=idx, column=1, value=line)
+                cell.alignment = Alignment(wrap_text=True, vertical='top')
+                if idx == 1:
+                    cell.font = bold
 
         out = io.BytesIO()
         wb.save(out)
@@ -848,11 +880,19 @@ class PbRecordsDeskIo(models.AbstractModel):
         `''` (unplaced). A person then confirms or changes that, and the peek
         is asked again with `columns=` saying what they chose.
         """
+        return self._import_columns(config_id, file_b64, filename)[0]
+
+    @api.model
+    def _import_columns(self, config_id=0, file_b64='', filename=''):
+        """`(answer, body)` — `import_columns`' answer, plus the file's data
+        rows `[(file_row_number, cells)]` for a server-side caller that needs
+        to read them once more (UPDATES P2b: which people, and so which pay
+        schemes, a file is about) without parsing the file twice."""
         self._check_read()
         refusal, header, rows, comments, meta, name = self._io_open(
             file_b64, filename)
         if refusal:
-            return refusal
+            return refusal, []
         cards = self._cards(config_id)
         used, identity_cols, _ignored, how = self._io_columns(
             header, comments, meta, cards, with_how=True)
@@ -877,10 +917,17 @@ class PbRecordsDeskIo(models.AbstractModel):
                 'how': how.get(idx, ''),
             })
         return {'ok': True, 'filename': name, 'rows': len(body),
-                'truncated': len(body) > MAX_ROWS, 'columns': out}
+                'truncated': len(body) > MAX_ROWS, 'columns': out}, body
 
     @api.model
-    def import_peek(self, config_id=0, file_b64='', filename='', columns=None):
+    def _io_clear_words(self):
+        """UPDATES P2b — the words that mean "empty this value" in a file:
+        CLEAR in any case, and its translation in the reader's language."""
+        return {'clear', (_("CLEAR") or '').strip().lower()} - {''}
+
+    @api.model
+    def import_peek(self, config_id=0, file_b64='', filename='', columns=None,
+                    clear_word=False):
         """Read a file and say what it WOULD do. Writes nothing, ever.
 
         Every failure is a sentence a person can act on, returned as
@@ -939,6 +986,11 @@ class PbRecordsDeskIo(models.AbstractModel):
 
         employees = self._matching({}, ctx={})
         index = self._io_index(employees)
+        # UPDATES P2b: `clear_word=True` (the Updates screen only) reads a
+        # cell saying CLEAR as "empty this value" — a change with value ''.
+        # Off by default, so the Records screen's import keeps reading the
+        # word as text. A blank cell is still never a clear.
+        clear_words = self._io_clear_words() if clear_word else set()
 
         changes, unmatched, matched = [], [], []
         matched_ids, blank = set(), 0
@@ -956,6 +1008,9 @@ class PbRecordsDeskIo(models.AbstractModel):
                 if text in (None, ''):
                     blank += 1
                     continue
+                if clear_words and isinstance(text, str) \
+                        and text.strip().lower() in clear_words:
+                    text = ''
                 values[field_id] = text
             emp_id, method, why = self._io_match(index, code, person, email)
             if not emp_id:
