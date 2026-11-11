@@ -155,7 +155,8 @@ session's last deploy line was P3a's own at 14:20); START 15:53 / DONE lines in
 - Assets: signal row + `/web/assets/%` purge + `web.assets.version` bump on all five.
 - **Downtime 1 min 29 s** (service stopped 15:55:10, listening again 15:56:39). **No test in the
   stopped window** (G19).
-- Sites after start: payobook.com, p0clone, rize, sudima 200. Server log since start: 0 ERROR.
+- Sites after start: payobook.com, p0clone, rize, sudima 200. Server log since start: no error
+  from this module; two `400 /?` bad-request lines on payobook's front page (outside traffic).
 - payobook pay-run totals (every run's line count and sum): hash `ecc1827c…` before = after.
 - Employees, contracts, Updates batches and outgoing-mail counts before = after on all five
   (payobook 4,575 / 4,534 / 8 / 610; template 3 / 0 / 0 / 0; p0clone 14 / 7 / 0 / 34; rize 258 /
