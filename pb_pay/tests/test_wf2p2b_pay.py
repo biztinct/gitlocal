@@ -40,7 +40,9 @@ class TestWf2p2bPay(SingleNoticeMixin, TransactionCase):
                     'group_ids': [(6, 0, [cls.env.ref(g).id for g in groups])]})
         mgr = ['base.group_user', 'pb_pay.group_pay_manager']
         fin = ['base.group_user', 'pb_pay.group_pay_finance']
-        cls.preparer = user('p2b_pay_prep', mgr)
+        # an HR officer as well: reading an employee's own record (not the
+        # public profile) needs it on databases with the full people modules
+        cls.preparer = user('p2b_pay_prep', mgr + ['hr.group_hr_user'])
         cls.hr_lead = user('p2b_pay_lead', mgr)
         cls.pm2 = user('p2b_pay_pm2', mgr)
         cls.fin_lead = user('p2b_pay_fin', fin)
@@ -59,11 +61,13 @@ class TestWf2p2bPay(SingleNoticeMixin, TransactionCase):
         self.sn_outbox_job(True)
 
     def _change(self):
-        change = self.env['pb.pay.change'].with_user(self.preparer).create({
+        # made by the test user (reading the person behind an employee needs
+        # HR rights on some databases), sent in by the preparer
+        change = self.env['pb.pay.change'].create({
             'employee_id': self.emp.id, 'kind': 'market',
             'new_wage': 2060.0, 'effective_date': date.today(),
             'reason': 'P2b market move'})
-        change.action_submit()
+        change.with_user(self.preparer).action_submit()
         self.sn_settle()
         self.assertEqual(change.state, 'proposed')
         return change.sudo()
