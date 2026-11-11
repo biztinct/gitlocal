@@ -57,3 +57,17 @@ function svgIcon(name){return `<svg class="ui-icon" viewBox="0 0 24 24" fill="no
 function hydrateIcons(root=document){root.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=svgIcon(el.dataset.icon);el.removeAttribute('data-icon')});}
 
 UI_ICONS.matrix=UI_ICONS.shield;UI_ICONS.action=UI_ICONS.state;UI_ICONS.reference=UI_ICONS.templates;
+/* WF2 P3b: the eight new steps and their settings (Lucide-style strokes). */
+Object.assign(UI_ICONS,{
+ stage_move:'<path d="M5 21V4m0 0h10l-2 3.5 2 3.5H5"/><path d="M14 17h7m-3-3 3 3-3 3"/>',
+ send_back:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+ update:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+ create:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6m-3-3h6"/>',
+ notify:'<path d="M6 16v-5a6 6 0 0 1 9-5.2"/><path d="M18 11v5l2 2H4"/><path d="M10 21h4"/><circle cx="18.5" cy="5.5" r="2.5"/>',
+ confirm:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/>',
+ start:'<rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/><path d="M7 11v2.5a3 3 0 0 0 3 3h3m-2-2 2 2-2 2"/>',
+ end:'<path d="M8 3h8l5 5v8l-5 5H8l-5-5V8z"/><path d="M9 12h6"/>',
+ copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4"/>',
+ note:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8m-8 4h5"/>',
+ buttons:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/>'
+});

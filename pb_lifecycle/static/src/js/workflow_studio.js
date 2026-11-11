@@ -15,7 +15,7 @@ export class WorkflowStudio extends Component {
     setup() {
         this.action = useService("action");
         this.frame = useRef("frame");
-        const q = new URLSearchParams({v: "wf2-p3a2", company: (user.context.allowed_company_ids || [])[0] || "",
+        const q = new URLSearchParams({v: "wf2-p3b", company: (user.context.allowed_company_ids || [])[0] || "",
             origin: this.props.action?.context?.pb_workflow_origin ? JSON.stringify(this.props.action.context.pb_workflow_origin) : "",
             workflow: this.props.action?.context?.pb_workflow_id || "",
             template: this.props.action?.context?.pb_workflow_template_id || "",

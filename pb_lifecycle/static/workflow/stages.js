@@ -149,7 +149,8 @@ function whenWords(){
   const date=fields.find(f=>f.key===t.date_field)?.label,unit={minutes:'minute',hour:'hour',day:'day',month:'month'}[t.unit]||'day';
   verb=!date?'reaches a date you choose':Number(t.delay)?`is ${plural(Number(t.delay),unit)} ${t.mode==='before'?'before':'after'} its ${date}`:`reaches its ${date}`;
  }
- const ruled=d.scope?.rules?.length;
+ /* A rule still being written (no value yet) is left out (WF2 P3b). */
+ const ruled=conditionLeaves(d.scope).filter(r=>['set','unset'].includes(r.op)||!(r.value===''||r.value===null||r.value===undefined||(Array.isArray(r.value)&&!r.value.length))).length;
  return {subject:`${article(label)} ${label}`,verb:verb||'is started by a person',scope:ruled?`for ${softLower(w.scope_summary||'matching records')}`:'for everyone'};
 }
 function whenSentence(){
@@ -164,7 +165,7 @@ function byStage(d){
  const columns=d.stages.map((st,i)=>{
   const info=sectionInfo(i,d),ids=d.order.filter(k=>byId(d,k).stage===i),next=d.order.find(k=>byId(d,k).stage>i)||null;
   const end=ts.find(t=>t.key==='main'&&t.stage===i&&t.before===next),empty=!ids.some(k=>k!=='trigger');
-  return `<section class="stage-column kind-${info.kind}" aria-label="Stage ${i+1}: ${esc(info.name)}"><header class="column-head"><div class="stage-head"><span class="stage-number">${i+1}</span><h3>${esc(info.name)}</h3><span class="column-count" aria-label="${plural(info.steps,'step')}">${info.steps}</span></div>${sectionMeta(info,2)}</header><div class="column-body">${journeySeq(d,ts,ids,'main',i,next)}${empty?'<p class="column-empty">No steps here yet. Add one, or drag a card in.</p>':''}${end?btn('add-at','Add a step','plus','column-add',`data-id="${esc(end.id)}"`):''}</div></section>`;
+  return `<section class="stage-column kind-${info.kind}" aria-label="Stage ${i+1}: ${esc(info.name)}"><header class="column-head"><div class="stage-head"><span class="stage-number">${i+1}</span><h3>${esc(info.name)}</h3><span class="column-count" aria-label="${plural(info.steps,'step')}">${info.steps}</span></div>${sectionMeta(info,3)}</header><div class="column-body">${journeySeq(d,ts,ids,'main',i,next)}${empty?'<p class="column-empty">No steps here yet. Add one, or drag a card in.</p>':''}${end?btn('add-at','Add a step','plus','column-add',`data-id="${esc(end.id)}"`):''}</div></section>`;
  }).join('');
  return `<div class="stage-board">${columns}<button class="stage-column add-stage-column" data-act="stages" data-at="end">${svgIcon('plus')}<strong>Add a stage</strong><small>${isRecordFlow()&&!ownRows()?`Your own, or one of ${esc(possessive(areaName()))}`:'Give your steps a new place'}</small></button></div>${exitsNote()}`;
 }
@@ -275,7 +276,7 @@ async function realignStages(){
 function openSheet(at=null){
  const sheet=$('#sheet');
  S.sheetReturn=document.activeElement;
- S.sheetBlocked=null;S.sheetRename=null;
+ S.sheetBlocked=null;S.sheetRename=null;S.sheetError=null;
  S.stageForm=at===null?null:newStageForm(at==='end'?S.w.definition.stages.length:Number(at));
  renderSheet();
  if(!sheet.open)sheet.showModal();
@@ -288,8 +289,11 @@ function sheetClosed(){
  back?.focus();S.sheetReturn=null;
 }
 /* A real stage needs one of the record's own stages before it (or a new process). */
+function areaAdds(){return ownRows()&&!!contract().adds_stages;}
+const openStage=key=>(contract().stages||[]).find(c=>String(c.key)===String(key))?.family==='open';
 function canRealAt(at,anchor){
- if(ownRows())return false;if(!isRecordFlow())return true;
+ if(ownRows()){if(!areaAdds())return false;return anchor!==null&&anchor!==undefined?openStage(anchor):anchorChoices(S.w.definition.stages,at).some(s=>openStage(s.key));}
+ if(!isRecordFlow())return true;
  return anchor!==null&&anchor!==undefined||anchorChoices(S.w.definition.stages,at).length>0;
 }
 function newStageForm(at,stage=null){
@@ -298,10 +302,11 @@ function newStageForm(at,stage=null){
  return {mode:stage?'edit':'add',at,stageId:stage?.key||null,name:stage?.name||'',
   kind:stage||canRealAt(at,anchor)?'real':'heading',enter:stage?.enter||'auto',owner:clone(stage?.enter_owner&&Object.keys(stage.enter_owner).length?stage.enter_owner:{kind:'initiator'}),
   rule:stage?.enter_rule?.rules?.length?clone(stage.enter_rule):undefined,target:stage?.target_hours||0,
-  anchor:stage?String(stage.anchor||''):anchor??(choices.at(-1)?String(choices.at(-1).key):null),anchorFixed:!!stage||anchor!==null,error:''};
+  anchor:stage?String(stage.anchor||''):anchor??(()=>{const pick=areaAdds()?choices.filter(c=>openStage(c.key)):choices;return pick.at(-1)?String(pick.at(-1).key):null;})(),anchorFixed:!!stage||anchor!==null,error:''};
 }
 function sheetIntro(){
  if(!isRecordFlow())return 'This is your own process, so every stage is yours.';
+ if(areaAdds())return `${contract().label||'Record'} stages belong to ${areaName()}. A stage you add here is made in ${areaName()}, so it also shows on the ${areaName()} board.`;
  if(ownRows())return `${contract().label||'Record'} stages belong to ${areaName()}. Here you can use them and group steps under headings.`;
  if(!catalogue().some(s=>s.kind==='core'))return `${contract().label||'These'} records have no stages of their own, so this workflow groups its steps under headings.`;
  return `Stages with a lock belong to ${areaName()}. You can add your own between them, here, with no set-up by anyone else.`;
@@ -312,10 +317,13 @@ function stageForm(){
  const anchorName=catalogue().find(s=>s.kind==='core'&&String(s.key)===String(f.anchor))?.name;
  const choices=anchorChoices(sections,f.at),canReal=f.mode==='edit'||canRealAt(f.at,f.anchorFixed?f.anchor:null);
  const radio=(name,value,current,icon,title,text)=>`<label class="choice-card"><input type="radio" name="${name}" value="${value}" data-form="${name}" ${current===value?'checked':''}><span class="choice-icon">${svgIcon(icon)}</span><span><strong>${title}</strong><small>${text}</small></span></label>`;
- const real=isRecordFlow()?`People see it on the record. ${anchorName?`It sits after ${esc(anchorName)}, and ${esc(areaName())} still treats the record as ${esc(anchorName)}`:`${esc(areaName())} still treats the record as the stage before it`}, so its reports and rules keep working.`:'People see where each request is, and the work waits for it.';
- const heading=f.mode==='edit'?'':`<fieldset><legend>What is it?</legend>${canReal?radio('kind','real',f.kind,'flag','A real stage',real):''}${radio('kind','heading',f.kind,'heading','Just a heading','Groups steps in this picture only.')}${!canReal&&!ownRows()&&isRecordFlow()&&catalogue().some(s=>s.kind==='core')?`<p class="form-note">${svgIcon('info')}<span>A real stage here must come after one of ${esc(possessive(areaName()))} stages. Add theirs first, or add it further down.</span></p>`:''}</fieldset>`;
+ const real=areaAdds()?`It is added to ${esc(areaName())}, so it shows on the ${esc(areaName())} board and in ${esc(areaName())} set-up${anchorName?`, after ${esc(anchorName)}`:''}. Rename or hide it there.`:isRecordFlow()?`People see it on the record. ${anchorName?`It sits after ${esc(anchorName)}, and ${esc(areaName())} still treats the record as ${esc(anchorName)}`:`${esc(areaName())} still treats the record as the stage before it`}, so its reports and rules keep working.`:'People see where each request is, and the work waits for it.';
+ const heading=f.mode==='edit'?'':`<fieldset><legend>What is it?</legend>${canReal?radio('kind','real',f.kind,'flag',areaAdds()?`A real ${esc(areaName())} stage`:'A real stage',real):''}${radio('kind','heading',f.kind,'heading','Just a heading','Groups steps in this picture only.')}${!canReal&&!ownRows()&&isRecordFlow()&&catalogue().some(s=>s.kind==='core')?`<p class="form-note">${svgIcon('info')}<span>A real stage here must come after one of ${esc(possessive(areaName()))} stages. Add theirs first, or add it further down.</span></p>`:''}</fieldset>`;
  let more='';
- if(f.kind==='real'&&canReal){
+ if(f.kind==='real'&&canReal&&areaAdds()){
+  if(!f.anchorFixed)more+=field(`<span id="sf-anchor-label">Which ${esc(areaName())} stage does it come after?</span>`,`<select id="sf-anchor" data-form="anchor" aria-labelledby="sf-anchor-label">${opts(choices.filter(s=>openStage(s.key)).map(s=>[String(s.key),s.name]),f.anchor,null)}</select>`);
+  more+=`<p class="form-note">${svgIcon('people')}<span>A recruiter moves candidates into it, as with every ${esc(areaName())} stage.</span></p>`;
+ }else if(f.kind==='real'&&canReal){
   if(isRecordFlow()&&!f.anchorFixed)more+=field(`<span id="sf-anchor-label">Which ${esc(areaName())} stage does it come after?</span>`,`<select id="sf-anchor" data-form="anchor" aria-labelledby="sf-anchor-label">${opts(choices.map(s=>[String(s.key),s.name]),f.anchor,null)}</select>`);
   const thing=isRecordFlow()?'record':'request';
   more+=`<fieldset><legend>How does a ${thing} get here?</legend>${radio('enter','auto',f.enter,'arrow','By itself','When the steps before are finished.')}${radio('enter','person',f.enter,'people','A person moves it',`They get a “Move to” button on the ${thing}.`)}${isRecordFlow()?radio('enter','rule',f.enter,'branch','When a rule is true','For example: the amount is over a limit.'):''}</fieldset>`;
@@ -325,7 +333,7 @@ function stageForm(){
   more+=field('<span id="sf-target-label">Target time in this stage</span>',`<select id="sf-target" data-form="target" aria-labelledby="sf-target-label">${opts(rows,f.target,null)}</select>`,'Shown beside the stage. Late work is chased by the approval reminders, never twice.');
  }
  const title=f.mode==='edit'?`Change “${esc(f.name)}”`:prevName?`New stage after “${esc(prevName)}”`:'New stage at the start';
- return `<li class="stage-form-wrap"><div class="stage-form" role="group" aria-labelledby="sf-title"><h3 id="sf-title">${title}</h3>${field('<span id="sf-name-label">Name</span>',`<input id="sf-name" data-form="name" maxlength="40" value="${esc(f.name)}" placeholder="For example: Payment scheduled" aria-labelledby="sf-name-label" autocomplete="off">`)}${ownRows()?`<p class="form-note">${svgIcon('lock')}<span>${esc(contract().label||'Record')} stages are managed in ${esc(areaName())}. This adds a heading.</span></p>`:''}${heading}${more}${f.error?`<p class="form-error" role="alert">${svgIcon('alert')}<span>${esc(f.error)}</span></p>`:''}<div class="row form-buttons">${btn('sf-cancel','Cancel','','plain')}${btn('sf-save',f.mode==='edit'?'Save changes':f.kind==='heading'?'Add this heading':'Add this stage','check','primary')}</div></div></li>`;
+ return `<li class="stage-form-wrap"><div class="stage-form" role="group" aria-labelledby="sf-title"><h3 id="sf-title">${title}</h3>${field('<span id="sf-name-label">Name</span>',`<input id="sf-name" data-form="name" maxlength="40" value="${esc(f.name)}" placeholder="For example: Payment scheduled" aria-labelledby="sf-name-label" autocomplete="off">`)}${ownRows()&&f.kind==='heading'?`<p class="form-note">${svgIcon('lock')}<span>${esc(contract().label||'Record')} stages are managed in ${esc(areaName())}. This adds a heading.</span></p>`:''}${heading}${more}${f.error?`<p class="form-error" role="alert">${svgIcon('alert')}<span>${esc(f.error)}</span></p>`:''}<div class="row form-buttons">${btn('sf-cancel','Cancel','','plain')}${btn('sf-save',f.mode==='edit'?'Save changes':f.kind==='heading'?'Add this heading':'Add this stage','check','primary')}</div></div></li>`;
 }
 function stageRow(i){
  const d=S.w.definition,info=sectionInfo(i),n=d.stages.length,row=info.row;
@@ -348,8 +356,9 @@ function stageRow(i){
   act.push(btn('section-remove','Remove','','small plain',`data-index="${i}"`));
  }
  const name=S.sheetRename===i?`<input class="rename-input" data-heading-name="${i}" value="${esc(d.stages[i].name)}" maxlength="60" aria-label="Heading name">`:`<strong class="stage-row-name">${esc(info.name)}</strong>`;
+ const refused=S.sheetError?.index===i?`<div class="row-blocked is-error" role="alert">${svgIcon('alert')}<span>${esc(S.sheetError.text)}</span>${btn('sheet-error-close','','close','small plain','aria-label="Dismiss"')}</div>`:'';
  const blocked=S.sheetBlocked===i?`<div class="row-blocked" role="alert">${svgIcon('info')}<span>${info.steps===1?'Move its step first.':`Move its ${steps} first.`}</span>${btn('section-move-steps',`Move ${info.steps===1?'it':'them'} to “${esc(sectionInfo(i?i-1:1).name)}”`,'arrow','small',`data-index="${i}"`)}</div>`:'';
- return `<li class="stage-row kind-${info.kind}" data-row="${i}"><div class="stage-row-main"><span class="row-grip" data-section-drag="${i}" title="Drag to reorder" aria-hidden="true">${svgIcon('grip')}</span><span class="stage-number">${i+1}</span><div class="grow"><div class="row wrap stage-row-title">${name}${stageTag(info)}</div><p class="stage-row-facts">${facts.filter(Boolean).join(' · ')}</p></div><div class="row-move">${btn('section-up','','up','small plain',`data-index="${i}" aria-label="Move ${esc(info.name)} earlier" ${i===0?'disabled':''}`)}${btn('section-down','','down','small plain',`data-index="${i}" aria-label="Move ${esc(info.name)} later" ${i===n-1?'disabled':''}`)}</div></div><div class="row wrap stage-row-actions">${act.join('')}</div>${blocked}</li>`;
+ return `<li class="stage-row kind-${info.kind}" data-row="${i}"><div class="stage-row-main"><span class="row-grip" data-section-drag="${i}" title="Drag to reorder" aria-hidden="true">${svgIcon('grip')}</span><span class="stage-number">${i+1}</span><div class="grow"><div class="row wrap stage-row-title">${name}${stageTag(info)}</div><p class="stage-row-facts">${facts.filter(Boolean).join(' · ')}</p></div><div class="row-move">${btn('section-up','','up','small plain',`data-index="${i}" aria-label="Move ${esc(info.name)} earlier" ${i===0?'disabled':''}`)}${btn('section-down','','down','small plain',`data-index="${i}" aria-label="Move ${esc(info.name)} later" ${i===n-1?'disabled':''}`)}</div></div><div class="row wrap stage-row-actions">${act.join('')}</div>${blocked}${refused}</li>`;
 }
 function addSlot(at){
  if(S.stageForm&&S.stageForm.mode==='add'&&S.stageForm.at===at)return stageForm();
@@ -397,6 +406,13 @@ async function saveStageForm(){
    S.w.metadata.stage_catalogue=await rpc('stage_update',[f.stageId,values]);
    const i=f.index;if(S.w.definition.stages[i].name!==name)mutate(()=>{S.w.definition.stages[i].name=name;},false);
    S.stageForm=null;S.sheetFocus=`[data-row="${i}"] [data-act="sf-edit"]`;notify(`“${name}” is saved.`);
+  }else if(f.kind==='real'&&areaAdds()&&canRealAt(f.at,f.anchorFixed?f.anchor:null)){
+   const cat=await rpc('stage_add_area',[model,name,f.anchor]);S.w.metadata.stage_catalogue=cat;
+   const key=cat.added?.key,made=catalogue().find(s=>s.kind==='core'&&String(s.key)===String(key));
+   mutate(()=>insertSection(S.w.definition,f.at,{name:made?.name||name,bind:{kind:'core',value:key}}),false);
+   S.stageForm=null;S.sheetFocus=`[data-row="${f.at}"] [data-act="section-remove"]`;S.flash=f.at;
+   notify(`“${made?.name||name}” is added to ${areaName()}. It shows on the ${areaName()} board too.`);
+   loadExisting();
   }else if(f.kind==='heading'||!canRealAt(f.at,f.anchorFixed?f.anchor:null)){
    mutate(()=>insertSection(S.w.definition,f.at,{name}),false);
    S.stageForm=null;S.sheetFocus=`[data-row="${f.at}"] [data-act="heading-rename"]`;S.flash=f.at;
@@ -456,7 +472,8 @@ async function stageAction(name,el){
  if(name==='sf-save'){await saveStageForm();return true;}
  if(name==='sf-edit'){const info=sectionInfo(i);S.stageForm=Object.assign(newStageForm(i+1,info.row),{index:i,kind:'real'});S.sheetFocus='#sf-name';renderSheet();return true;}
  if(name==='heading-rename'){S.sheetRename=i;S.sheetFocus=`[data-heading-name="${i}"]`;renderSheet();$(`[data-heading-name="${i}"]`)?.select();return true;}
- if(name==='section-up'||name==='section-down'){const to=name==='section-up'?i-1:i+1,last=d.stages.length-1;S.sheetMoveAct=name==='section-up'&&to===0?'section-down':name==='section-down'&&to===last?'section-up':name;try{await moveSection(i,to);}catch(e){notify(e.message,true);}return true;}
+ if(name==='sheet-error-close'){const at=S.sheetError?.index;S.sheetError=null;S.sheetFocus=`[data-row="${at}"] [data-act]`;renderSheet();return true;}
+ if(name==='section-up'||name==='section-down'){const to=name==='section-up'?i-1:i+1,last=d.stages.length-1;S.sheetMoveAct=name==='section-up'&&to===0?'section-down':name==='section-down'&&to===last?'section-up':name;S.sheetError=null;try{await moveSection(i,to);}catch(e){S.sheetError={index:i,text:e.message};S.sheetFocus=`[data-row="${i}"] [data-act="${name}"]`;renderSheet();notify(e.message,true);}return true;}
  if(name==='section-remove'){
   const info=sectionInfo(i);
   if(info.steps){S.sheetBlocked=i;S.sheetFocus='.row-blocked button';renderSheet();return true;}
@@ -481,7 +498,7 @@ async function stageAction(name,el){
  if(name==='stage-delete-confirm'){
   const info=sectionInfo(i);close();
   try{S.w.metadata.stage_catalogue=await rpc('stage_delete',[info.row.key]);}
-  catch(e){S.sheetFocus=`[data-row="${i}"] [data-act="stage-delete"]`;renderSheet();notify(e.message,true);return true;}
+  catch(e){S.sheetError={index:i,text:e.message};S.sheetFocus=`[data-row="${i}"] [data-act="stage-delete"]`;renderSheet();notify(e.message,true);return true;}
   mutate(()=>{const dd=S.w.definition;if(info.steps){dd.stages[i]={name:info.name};}else removeSection(dd,i);},false);
   notify(info.steps?`“${info.name}” is deleted. Its steps here are now under a heading.`:`“${info.name}” is deleted.`);
   loadExisting();refreshWork();renderSheet();return true;
@@ -493,8 +510,9 @@ async function stageAction(name,el){
  }
  if(name==='shared-rename-save'){
   const r=S.renamingShared,value=$('#shared-stage-name').value.trim();
-  S.w.metadata.stage_catalogue=await rpc('stage_rename_shared',[S.w.source_model,r.row.stage_id||r.row.key,value,r.row.revision]);
-  close();mutate(()=>{S.w.definition.stages[r.index].name=sectionInfo(r.index).name;},false);
+  try{S.w.metadata.stage_catalogue=await rpc('stage_rename_shared',[S.w.source_model,r.row.stage_id||r.row.key,value,r.row.revision]);}
+  catch(e){close();S.sheetError={index:r.index,text:e.message};S.sheetFocus=`[data-row="${r.index}"] [data-act="shared-rename"]`;renderSheet();return true;}
+  close();S.sheetError=null;mutate(()=>{S.w.definition.stages[r.index].name=sectionInfo(r.index).name;},false);
   S.sheetFocus=`[data-row="${r.index}"] [data-act="shared-rename"]`;refreshWork();renderSheet();return true;
  }
  if(name==='move-record'){
@@ -560,11 +578,18 @@ function recordTrack(p){
 }
 
 /* ------------------------------------------------------------- review */
-function reviewAlready(){
- const rows=existingRows();if(!rows.length)return S.existing?.state==='error'?existingProblem():'';
+function reviewAlready(r={}){
+ const rows=existingRows(),others=r.other_workflows||[],rules=(r.automations||[]).filter(a=>!rows.some(e=>e.ref==='rule:'+a.id));
+ if(!rows.length&&!others.length&&!rules.length)return S.existing?.state==='error'?existingProblem():'';
  const groups=[],seen=new Set();
  for(const s of catalogue()){const key=s.kind==='core'?String(s.key):'yours:'+s.key,hit=rows.filter(e=>e.stage!==null&&e.stage!==undefined&&String(e.stage)===key);hit.forEach(e=>seen.add(e));if(hit.length)groups.push([s.name,hit]);}
  const other=rows.filter(e=>e.stage!==null&&e.stage!==undefined&&!seen.has(e));if(other.length)groups.push(['Other stages',other]);
  const any=rows.filter(e=>e.stage===null||e.stage===undefined);if(any.length)groups.push(['Any time',any]);
- return `<section class="review-already"><h3>Already happens for these records</h3><p class="muted small">These keep running as they are. Your steps add to them.</p>${groups.map(([name,list])=>`<div class="already-group"><h4>${esc(name)}</h4>${list.map(effectRow).join('')}</div>`).join('')}</section>`;
+ /* The two older banners ("Existing automation to review", "Also active
+    for these records") now live here, with one confirmation box (WF2 P3b). */
+ const wfRow=w=>`<div class="already-row"><span class="already-icon">${svgIcon('flow')}</span><div class="grow"><p>${esc(w.name)}</p><div class="already-foot"><small>${esc(w.trigger_label||'')}${w.scope_summary?' · '+esc(w.scope_summary):''}</small>${btn('open-workflow','Open','external','small link',`data-id="${Number(w.id)}" aria-label="Open ${esc(w.name)}"`)}</div></div></div>`;
+ const ruleRow=a=>`<div class="already-row"><span class="already-icon">${svgIcon('state')}</span><div class="grow"><p>${esc(a.name)}</p><div class="already-foot"><small>Automated rules</small></div></div></div>`;
+ const extra=(others.length?`<div class="already-group"><h4>Other workflows that start for these records</h4>${others.map(wfRow).join('')}</div>`:'')+(rules.length?`<div class="already-group"><h4>Automated rules</h4>${rules.map(ruleRow).join('')}</div>`:'');
+ const ack=others.length||(r.automations||[]).length?`<label class="check already-ack"><input type="checkbox" id="ack-automation"> I checked these; this workflow adds different work.</label>`:'';
+ return `<section class="review-already"><h3>Already happens for these records</h3><p class="muted small">These keep running as they are. Your steps add to them.</p>${groups.map(([name,list])=>`<div class="already-group"><h4>${esc(name)}</h4>${list.map(effectRow).join('')}</div>`).join('')}${extra}${ack}</section>`;
 }

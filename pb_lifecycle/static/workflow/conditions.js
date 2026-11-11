@@ -2,6 +2,8 @@
 function availableFields(){
  const fields=[...S.w.metadata.fields];
  for(const n of S.w.definition.nodes)for(const f of n.form?.fields||[])if(f.type!=='section')fields.push({...f,key:`step.${n.id}.${f.id}`,label:n.title+' · '+f.label});
+ /* WF2 P3b: the button a person chose is a value later steps can use. */
+ for(const n of S.w.definition.nodes)if(n.type==='task'&&n.buttons?.length>1)fields.push({key:`step.${n.id}.outcome`,label:n.title+' · answer',type:'selection',options:n.buttons.map(b=>[b.key,b.label])});
  return [...fields,{key:'person.user_id',label:'Started by · person',type:'many2one',options:S.w.metadata.users.map(u=>[u.id,u.name])},
   {key:'person.group_ids',label:'Started by · access role',type:'ids',options:S.w.metadata.starter_groups.map(g=>[g.id,g.name])},
   {key:'workflow.stage',label:'This workflow · current section',type:'integer',options:S.w.definition.stages.map((s,i)=>[i,s.name])},
