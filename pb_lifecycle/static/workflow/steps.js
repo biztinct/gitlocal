@@ -239,7 +239,7 @@ async function stepAction(name,el){
   const comment=$('#task-note')?.value?.trim();
   const r=await rpc('answer',[S.task.id,{outcome:el.dataset.id,...(comment?{comment}:{})},true]);
   if(!r.ok){S.errors={_form:r.errors?._outcome||'Choose one of the buttons.'};render();return true;}
-  notify(S.task.kind==='confirm'?'Confirmed. Thank you.':`Saved: ${el.textContent.trim()}.`);return action('tasks'),true;
+  notify(S.task.kind==='confirm'?'Confirmed. Thank you.':`Saved: ${el.textContent.trim()}.`);return taskFinished(),true;
  }
  if(name==='open-made'){
   if(el.dataset.model==='pb.workflow.run'){await loadProgress(el.dataset.id);return true;}
@@ -250,7 +250,7 @@ async function stepAction(name,el){
 
 /* ------------------------------------------------- the person's screen */
 function taskExtras(t){
- const back=t.sent_back?`<div class="sent-back" role="note">${svgIcon('send_back')}<div><strong>Sent back${t.sent_back.by?` by ${esc(t.sent_back.by)}`:''} for changes</strong>${t.sent_back.note?`<p>“${esc(t.sent_back.note)}”</p>`:'<p>Check your answers, change what is needed and send it again.</p>'}</div></div>`:'';
+ const back=peopleExtras(t)+(t.sent_back?`<div class="sent-back" role="note">${svgIcon('send_back')}<div><strong>Sent back${t.sent_back.by?` by ${esc(t.sent_back.by)}`:''} for changes</strong>${t.sent_back.note?`<p>“${esc(t.sent_back.note)}”</p>`:'<p>Check your answers, change what is needed and send it again.</p>'}</div></div>`:'');
  if(t.kind==='confirm')return back+`<div class="confirm-read" tabindex="0" aria-label="What you are asked to confirm">${esc(t.text)}</div>`;
  return back;
 }

@@ -344,6 +344,7 @@ function stageRow(i){
  const owner=areaOwner(),act=[];
  if(info.kind==='area'){
   if(row.renamable)act.push(btn('shared-rename','Rename','design','small plain',`data-index="${i}"`));
+  if(row.removable)act.push(btn('area-stage-remove',`Remove from ${esc(areaName())}`,'trash','small plain danger',`data-index="${i}"`));
   if(owner)act.push(btn('resource',`Open in ${esc(areaName())}`,'external','small plain',`data-key="${esc(owner.key)}"`));
   act.push(btn('section-remove','Stop using here','','small plain',`data-index="${i}"`));
  }else if(info.kind==='yours'){

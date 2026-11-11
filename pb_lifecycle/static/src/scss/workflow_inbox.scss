@@ -1,0 +1,41 @@
+// WF2 P4a (D1) — the Tasks group and task drawer in the one inbox. Uses the
+// inbox's own card, badge and drawer pieces; only the group frame, the team
+// strip, the leave motion and the embedded task page are new.
+
+.pbam-inbox {
+    .pbwfi-group { margin: 0 0 18px; }
+    .pbwfi-group-head {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 10px;
+        h3 { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; font-weight: 800;
+             letter-spacing: .01em; color: var(--pbim-ink, #1f1d2b); }
+    }
+    .pbwfi-count {
+        min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; display: inline-grid; place-items: center;
+        font-size: 12px; font-weight: 700; background: #efedfa; color: #5A4BB0;
+    }
+    .pbwfi-hint { font-size: 12px; color: var(--pbim-muted, #6b6880); margin-left: auto; }
+    .pbwfi-task {
+        border-left: 3px solid #5A4BB0;
+        transition: opacity .3s ease, transform .3s ease, max-height .3s ease;
+        &:focus-visible { outline: 3px solid rgba(90, 75, 176, .35); outline-offset: 2px; }
+        &.is-team { border-left-color: #2f7d9a; }
+        &.is-leaving { opacity: 0; transform: translateX(24px); pointer-events: none; }
+        .pbam-reqright { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    }
+    .pbwfi-noapprovals {
+        display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-radius: 12px;
+        background: var(--pbim-soft, #f6f7fc); color: var(--pbim-muted, #6b6880); font-size: 13px;
+    }
+    @media (prefers-reduced-motion: reduce) { .pbwfi-task { transition: none; } }
+}
+
+.pbwfi-drawer {
+    .pbwfi-take {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 20px;
+        background: #e8f3f7; color: #1f4f61; border-bottom: 1px solid var(--pbim-line, #e6e4f2);
+        span { flex: 1 1 220px; }
+        &.is-mine { background: #efedfa; color: #3d3380; }
+    }
+    .pbwfi-cover { margin: 12px 20px 0; }
+    .pbwfi-frame { flex: 1 1 auto; width: 100%; min-height: 0; border: 0; background: #f6f7fc; }
+}

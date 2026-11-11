@@ -255,3 +255,12 @@ body.dragging,body.dragging *{cursor:grabbing!important;user-select:none!importa
 .choice-card.compact{grid-template-columns:auto minmax(0,1fr)}
 .choice-card.compact{align-items:center}.choice-card.compact input{margin:0}
 .drawer>.row:last-child{flex-wrap:wrap}.drawer>.row:last-child button{white-space:nowrap}
+/* WF2 P4a — teams, cover, links, the task page inside the Approvals inbox. */
+.is-embed body{background:#f6f7fc}.is-embed .form-page{padding:20px 16px}.is-embed .form-page .card{padding:24px}.is-embed .page{padding:20px 16px}.is-embed .progress-wrap{height:calc(100vh - 170px)}
+.embed-done .card{text-align:center;padding:40px 24px}.embed-done .type-icon{width:58px;height:58px;margin-bottom:12px;animation:pop .35s cubic-bezier(.2,.9,.3,1.4)}@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.task-chips{margin:14px 0 4px;gap:6px}.task-card .row.wrap:last-child{margin-top:14px;gap:8px}.task-card.is-late{border-color:#efc9cf}.pill .ui-icon{width:13px;height:13px}.pill.team{background:#e3f1f6;color:#1f5a70}
+.team-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#e8f3f7;border-color:#cde5ee;color:#1f4f61}.team-banner>div{flex:1 1 240px}.team-banner p{margin:4px 0 0}.team-banner.is-mine{background:#efeaff;border-color:#e0d8f7;color:#4b3c8e}
+.task-due{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6c6b80;margin:4px 0 10px}.task-due.is-late{color:#aa3e4f}.task-due .ui-icon{width:15px;height:15px}
+.progress-chip{display:flex;align-items:center;gap:8px;font-size:13px;color:#4f4b67;background:#f4f2fb;border-radius:10px;padding:8px 10px;margin:8px 0}.progress-chip .ui-icon{width:15px;height:15px;color:#6a55c4}
+.link-box{border:1px solid #e1e5f0;border-radius:12px;padding:12px;margin:10px 0;background:#fbfbff}.link-box p{display:flex;gap:8px;align-items:flex-start;margin:0 0 10px;font-size:13px}.link-box .ui-icon{width:16px;height:16px;color:#6a55c4;margin-top:2px}.link-box small{display:block;margin-top:6px}
+.review-people{margin:22px 0 0;padding:18px 0 0;border-top:1px solid #ececf3}.review-people .checkrow.is-warning .check-icon{color:#9b5c0b}
