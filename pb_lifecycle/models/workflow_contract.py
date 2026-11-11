@@ -269,9 +269,15 @@ class WorkflowContract(models.AbstractModel):
                         text=_('A late approver is reminded, and then it is passed up.'))]
         outcomes = self._approval_outcomes(model, contract)
         note = _('People who only use the employee home are not told this way.')
+        # WF2 P2b (D6): a result the area tells the person itself is the
+        # area's message (its own row says so); the route leaves its copy out.
+        own = set(getattr(self.env[model], '_approval_requester_notice', None) or ()) \
+            if engine._single_notice_switch() else set()
         for key, text in (('approved', _('The person who sent it in is told it is approved.')),
                           ('returned', _('The person who sent it in is told it was sent back.')),
                           ('rejected', _('The person who sent it in is told it was turned down.'))):
+            if key in own:
+                continue
             effects.append(dict(base, stage=outcomes.get(key), kind='message', audience='requester',
                                 text=text, detail=note))
         return effects

@@ -75,8 +75,12 @@
           <div class="pbms-dock__clear"
                t-if="!state.loading and !state.failed and hasTeam and !items.length">
             <span class="pbms-dock__clearic" t-out="ic('checkCircle', 26)"/>
-            <b>All clear</b>
-            <p>Nothing is waiting on you right now.</p>
+            <b t-if="!taskCount">All clear</b>
+            <!-- WF2 P2b (D25): with workflow tasks on the line above, the
+                 empty list below speaks only for approvals, so both are
+                 true at once. -->
+            <p t-if="taskCount">No approvals are waiting on you.</p>
+            <p t-else="">Nothing is waiting on you right now.</p>
           </div>
 
           <!-- ==== empty state 2: this user manages nobody ==== -->

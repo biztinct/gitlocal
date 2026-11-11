@@ -216,6 +216,12 @@ class WorkflowTimeReport(models.AbstractModel):
                     [field], ['selection'])[field].get('selection') or []
                 for key, label in selection:
                     labels.setdefault(str(label), key)
+            # WF2 P2b: a status renamed later keeps its old history readable
+            # (time off "To Approve" -> "Waiting for approval", D22)
+            former = getattr(self.env[model], '_workflow_former_labels', None) or {}
+            for key, olds in former.items():
+                for label in olds:
+                    labels.setdefault(str(label), key)
 
         def value(char, integer):
             if info.type == 'many2one':

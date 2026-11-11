@@ -15,6 +15,7 @@ import { patch } from "@web/core/utils/patch";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { onMounted, onWillUnmount } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 import { PbInbox } from "@pb_approval_config/js/inbox";
 import { day } from "@pb_approval_config/js/sentence";
 
@@ -26,6 +27,7 @@ patch(PbInbox.prototype, {
     setup() {
         super.setup(...arguments);
         this.taskDay = day;
+        this.taskActions = useService("action");
         Object.assign(this.state, {
             tasks: [], taskCounts: { mine: 0, late: 0 }, taskOpen: null,
             taskLeaving: {}, taskBusy: false,
@@ -74,7 +76,18 @@ patch(PbInbox.prototype, {
         return WORKBENCH + "?" + params.toString();
     },
 
-    openTask(card) { this.state.taskOpen = card; },
+    openTask(card) {
+        // WF2 P2b (D24): "Add an email for …" opens the record itself, where
+        // the address is typed; the link then goes out by itself.
+        if (card.open && card.open.type === "record") {
+            this.taskActions.doAction({
+                type: "ir.actions.act_window", res_model: card.open.model,
+                res_id: card.open.id, views: [[false, "form"]], target: "current",
+            });
+            return;
+        }
+        this.state.taskOpen = card;
+    },
     onTaskKey(ev, card) {
         if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); this.openTask(card); }
     },

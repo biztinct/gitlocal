@@ -17,11 +17,14 @@ role (resolved in the run's company) → the publisher.
 
 No local is called `user` or `uid` in a method that calls `_()` (ledger G12).
 """
+from datetime import timedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import format_date
 
 from . import workflow_definition as D
+from .workflow_models import internal
 from .workflow_people import EMAIL, LINK_UNSUPPORTED
 
 
@@ -167,7 +170,9 @@ class WorkflowReach(models.AbstractModel):
         name = str(person.get('name') or '').strip() or found['label']
         email = str(person.get('email') or '').strip()
         if not EMAIL.match(email):
-            raise UserError(_('%s has no email address on the record, so this cannot reach them.', name))
+            # WF2 P2b (D24, owner 11 Nov): the step waits and somebody is
+            # asked to add the address (`_await_email`), instead of stopping.
+            return {'mode': 'await_email', 'name': name, 'key': found['key'], 'label': found['label']}
         return {'mode': 'link', 'email': email, 'name': name, 'employee': self.env['hr.employee']}
 
     def _page_data(self, step, unsupported):
@@ -177,6 +182,134 @@ class WorkflowReach(models.AbstractModel):
         if ((step.sudo().config or {}).get('owner') or {}).get('kind') == 'participant':
             data.update(workflow=data.get('company') or '', record='')
         return data
+
+    # ================================================================ D24
+    # "The candidate" has no email address: the step waits, and the person
+    # the record names for it (Hiring's subject: the recruiter) gets a task
+    # in the Approvals inbox — "Add an email for …", which opens the record.
+    # Cover and teams apply as for any task. Nobody named → the workflow's
+    # late-task role (D19) → whoever published it. Once the address is on the
+    # record the worker sends the link once and the helper task closes.
+
+    @staticmethod
+    def _awaiting(step):
+        return ((step.sudo().answers or {}).get('_await_email') or None) if step else None
+
+    def _assign_person_step(self, run, step, node):
+        owner = node.get('owner') or {}
+        if owner.get('kind') == 'participant':
+            who = self._resolve_people(run, owner)
+            if who.get('mode') == 'await_email':
+                return self._await_email(run, step, node, who)
+        return super()._assign_person_step(run, step, node)
+
+    def _email_keepers(self, run):
+        """(person, team role) who is asked to add the address."""
+        company = run.company_id
+        source = run._source() if run.source_model else None
+        if source is not None and hasattr(source, '_workflow_subject'):
+            keeper = (self._subject(source).get('user') or self.env['res.users'])[:1]
+            if keeper and keeper.active and not keeper.share and company in keeper.company_ids:
+                return keeper, self.env['biz.approval.role']
+        role = self._late_role(run.sudo().version_id.definition)
+        if role and role.is_pool:
+            if self._team_members(role, company, run):
+                return self.env['res.users'], role
+        elif role:
+            holder = self._late_role_people(role, run)[:1]
+            if holder:
+                return holder, self.env['biz.approval.role']
+        owner = self._workflow_owner(run)
+        return (owner or self.env['res.users']), self.env['biz.approval.role']
+
+    def _await_email(self, run, step, node, who):
+        name = who['name']
+        person, role = self._email_keepers(run)
+        if not person and not role:
+            raise UserError(_('%s has no email address on the record, and nobody could be found to add one.', name))
+        try:
+            deadline = self._task_deadline(run, node)
+        except UserError:
+            deadline = fields.Date.today() + timedelta(days=int(node.get('due', 2) or 2))
+        answers = dict(step.sudo().answers or {})
+        answers['_await_email'] = {'key': who['key'], 'name': name}
+        vals = {'state': 'waiting', 'due_at': self._due_at(deadline), 'reminded_at': False,
+                'passed_up_at': False, 'team_user_ids': [(5, 0, 0)], 'covered_user_id': False,
+                'person_employee_id': False, 'answers': answers}
+        step._cancel_activity()
+        if role:
+            members = self._team_members(role, run.company_id, run)
+            vals.update(assignee_id=False, activity_id=False, team_user_ids=[(6, 0, members.ids)])
+            internal(step).write(vals)
+            run._log(_('%(who)s has no email address on the record. Waiting for someone on the team '
+                       '%(team)s to add one.', who=name, team=role.name), step)
+            stamp = fields.Datetime.to_string(step.started_at or fields.Datetime.now())
+            for member in members:
+                self.env['biz.approval.outbox'].sudo()._queue(
+                    'task_reminder', member, payload=self._task_payload(run, step, 'new_team'),
+                    dedupe='wf-team-new-%s-%s-%s' % (step.id, stamp, member.id))
+            return True
+        cover = self._covering(person, run.company_id)
+        doer = cover or person
+        activity = self._email_activity(run, step, doer, name, deadline)
+        vals.update(assignee_id=doer.id, activity_id=activity.id if activity else False,
+                    covered_user_id=person.id if cover else False)
+        internal(step).write(vals)
+        run._log(_('%(who)s has no email address on the record. Waiting for %(keeper)s to add one.',
+                   who=name, keeper=doer.name), step)
+        return True
+
+    def _email_activity(self, run, step, doer, name, deadline):
+        """The to-do sits on the record itself, so it opens the record."""
+        source = run._source() if run.source_model else None
+        model, res_id = (source._name, source.id) if source is not None else ('pb.workflow.run', run.id)
+        return internal(self.env['mail.activity']).create({
+            'res_model_id': self.env['ir.model']._get_id(model), 'res_id': res_id,
+            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+            'user_id': doer.id, 'summary': _('Add an email for %s', name),
+            'note': _('A workflow needs to reach %s by email. Add their email address here; '
+                      'the link then goes out by itself.', name),
+            'date_deadline': deadline, 'workflow_step_id': step.id})
+
+    def _check_waiting_step(self, run, step):
+        waiting = self._awaiting(step)
+        if not waiting:
+            return super()._check_waiting_step(run, step)
+        source = run._source() if run.source_model else None
+        person = source.sudo()._workflow_participant(waiting.get('key')) or {} \
+            if source is not None and hasattr(source, '_workflow_participant') else {}
+        email = str(person.get('email') or '').strip()
+        if not EMAIL.match(email):
+            return False
+        name = str(person.get('name') or '').strip() or waiting.get('name') or ''
+        answers = dict(step.sudo().answers or {})
+        answers.pop('_await_email', None)
+        step._cancel_activity()
+        internal(step).write({'answers': answers, 'assignee_id': False, 'activity_id': False,
+                              'team_user_ids': [(5, 0, 0)], 'covered_user_id': False})
+        run._log(_('An email address for %s was added.', name), step)
+        self._send_link(run, step, email, name)
+        return True
+
+    def _task_card(self, step, mine=True):
+        card = super()._task_card(step, mine)
+        waiting = self._awaiting(step)
+        if waiting:
+            run = step.sudo().run_id
+            card.update(title=_('Add an email for %s', waiting.get('name') or ''),
+                        verb=_('Add an email'), task_kind='await_email')
+            if mine and run.source_model:
+                card['open'] = {'type': 'record', 'model': run.source_model, 'id': run.source_id}
+        return card
+
+    @api.model
+    def answer(self, task_id, values=None, complete=True):
+        step = self.env['pb.workflow.step'].sudo().browse(int(task_id or 0)).exists()
+        waiting = self._awaiting(step)
+        if waiting:
+            raise UserError(_('This task is to add an email address for %s on the record. '
+                              'The link then goes out by itself.', waiting.get('name') or _('them')))
+        return super().answer(task_id, values, complete)
 
     # ================================================================ D19
     def _late_role(self, definition):

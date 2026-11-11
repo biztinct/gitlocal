@@ -1851,3 +1851,9 @@ msgid ""
 "<i class=\"fa fa-fw fa-home me-1 small text-primary-emphasis\"/> My Home"
 msgstr ""
 "<i class=\"fa fa-fw fa-home me-1 small text-primary-emphasis\"/> Trang của tôi"
+
+#. module: pb_me_portal
+#. odoo-python
+#: code:addons/pb_me_portal/models/pb_me_home.py:0
+msgid "Waiting for approval"
+msgstr "Đang chờ duyệt"

@@ -417,7 +417,10 @@ class WorkflowStrip(models.AbstractModel):
         rows = [r for r in rows if r['state'] in LIVE] or rows[:1]
         return {'model': model, 'record_id': record.id, 'track': track, 'exits': exits, 'compact': compact,
                 'workflows': rows[:2], 'moves': moves,
-                'sentence': '' if rows else service._position_sentence(position, stage_data)}
+                'sentence': '' if rows else service._position_sentence(position, stage_data),
+                # WF2 P2b (D23): does the strip say more than the page's own
+                # "With X" box? (a workflow person step, or a user-made stage)
+                'adds': bool(position) or any(r.get('who') for r in rows if r['state'] in LIVE)}
 
     def _home_strip_safe(self, *args, **kwargs):
         try:
@@ -480,7 +483,14 @@ class WorkflowStripHome(models.AbstractModel):
             words = getattr(self, page['words'])()
         except Exception:  # noqa: BLE001
             words = {}
-        return studio._home_strip_safe(person, page['model'], record_id, words=words)
+        strip = studio._home_strip_safe(person, page['model'], record_id, words=words)
+        # WF2 P2b (D23, owner 11 Nov): on a request page the strip shows only
+        # when it adds something — a workflow step for a person, or a stage
+        # the company made. A request that is only waiting for approval keeps
+        # the page's own "With X" box alone.
+        if strip and not strip.get('adds'):
+            return None
+        return strip
 
     @api.model
     def _my_requests_rows(self, src, emp):

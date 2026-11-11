@@ -775,8 +775,10 @@ class PbMeHome(models.AbstractModel):
                 'icon': 'umbrella', 'employee_field': 'employee_id',
                 'date_field': 'date_from', 'state_field': 'state',
                 'states': {
-                    'confirm': (_('Waiting approval'), 'wait'),
-                    'validate1': (_('Waiting approval'), 'wait'),
+                    # WF2 P2b (D22): "Waiting for approval" for time off
+                    # everywhere; the employee is not told which round.
+                    'confirm': (_('Waiting for approval'), 'wait'),
+                    'validate1': (_('Waiting for approval'), 'wait'),
                     'validate': (_('Approved'), 'ok'),
                     'refuse': (_('Refused'), 'no'),
                     'cancel': (_('Cancelled'), 'off'),

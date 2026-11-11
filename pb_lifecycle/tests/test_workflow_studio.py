@@ -1057,9 +1057,18 @@ class TestWorkflowStudio(TransactionCase):
         self.assertEqual((route['settings'] or {}).get('action'), 'pb_approval_config.action_pb_approval_matrix')
         shapes = {(e['stage'], e['kind'], e['audience']) for e in rows}
         for shape in (('submitted', 'message', 'approver'), ('submitted', 'reminder', 'approver'),
-                      ('approved', 'message', 'requester'), ('draft', 'message', 'requester'),
-                      ('refused', 'message', 'requester')):
+                      ('draft', 'message', 'requester')):
             self.assertIn(shape, shapes)
+        # WF2 P2b (D6): Expenses tells the employee "approved" and "refused"
+        # itself now, so the route's own copy is no longer listed; the
+        # area's rows say it (and a repeat email step is still warned about).
+        for shape in (('approved', 'message', 'requester'), ('refused', 'message', 'requester')):
+            self.assertNotIn(shape, shapes)
+        own = {(e['stage'], e['kind'], e['audience']) for e in self.service.existing_behaviour(self.CLAIM)
+               if e['source'] == 'area'}
+        for shape in (('approved', 'message', 'requester'), ('refused', 'message', 'requester'),
+                      ('paid', 'message', 'requester')):
+            self.assertIn(shape, own)
         self.env['biz.approval.binding'].search([('company_id', '=', self.company.id),
                                                  ('process_id', '=', process.id)]).write({'active': False})
         rows = [e for e in self.service.existing_behaviour(self.CLAIM) if e['source'] == 'approvals']
@@ -2744,7 +2753,8 @@ class TestWorkflowStudio(TransactionCase):
         home = self.env['pb.me.home'].with_user(portal)
         strip = home._wf_page_strip('expense_claim', claim.id)
         self.assertTrue(strip)
-        self.assertEqual(set(strip), {'model', 'record_id', 'track', 'exits', 'compact', 'workflows', 'moves', 'sentence'})
+        self.assertEqual(set(strip), {'model', 'record_id', 'track', 'exits', 'compact', 'workflows', 'moves', 'sentence',
+                                      'adds'})
         row = strip['workflows'][0]
         self.assertLessEqual(set(row), {'state', 'sentence', 'meta', 'tone', 'task_id', 'late', 'who', 'url'})
         self.assertEqual(row['sentence'], 'Waiting for %s: Check receipt' % self.staff.name)
@@ -2918,11 +2928,12 @@ class TestWorkflowStudio(TransactionCase):
         page = self.env['pb.workflow.studio'].sudo()._page_data(step, ('file', 'lookup'))
         self.assertEqual(page['record'], '')
         self.assertNotIn(w.name, page['workflow'])
-        # No email: the step stops with a plain reason.
+        # No email: since WF2 P2b (D24) the step waits and somebody is asked
+        # to add the address (test_wf2p2b_t16); it no longer stops.
         quiet = self.env['hr.applicant'].create({'partner_name': 'WF2 P4b no email', 'company_id': self.company.id})
-        failed = self.step(self.start(w, quiet), 'agree')
-        self.assertEqual(failed.state, 'failed')
-        self.assertEqual(failed.error, 'WF2 P4b no email has no email address on the record, so this cannot reach them.')
+        waiting = self.step(self.start(w, quiet), 'agree')
+        self.assertEqual(waiting.state, 'waiting', waiting.error)
+        self.assertFalse(waiting.sudo().link_email)
         # A form with a file is refused; a notice too.
         form = self.form('papers', fields_=[{'id': 'cv', 'type': 'file', 'label': 'CV', 'required': True}],
                          owner={'kind': 'participant', 'key': 'candidate'})
@@ -3037,3 +3048,110 @@ class TestWorkflowStudio(TransactionCase):
         Home = self.env['pb.me.home'].with_user(self.staff)
         self.assertIsNone(Home._wf_page_strip('my_requests', 1))
         self.assertIsNone(self.env['pb.workflow.studio'].sudo()._home_strip(self.env.ref('base.public_user'), self.CLAIM, 1))
+
+    # ================================================================ WF2 P2b
+    def own_stage(self, name, anchor):
+        self.service.stage_create(self.CLAIM, None, {'name': name, 'anchor_value': anchor})
+        return self.env['pb.workflow.stage'].sudo().search([
+            ('source_model', '=', self.CLAIM), ('name', '=', name), ('company_id', '=', self.company.id)], limit=1)
+
+    def test_wf2p2b_t15_the_claim_page_strip_only_when_it_adds_something(self):
+        self.need(self.CLAIM)
+        portal, emp = self.portal_person('WF2 P2b claimant')
+        w, claim, run = self.claim_flow([self.todo('check', owner={'kind': 'user', 'id': self.staff.id}, title='Check')],
+                                        employee=emp)
+        home = self.env['pb.me.home'].with_user(portal)
+        # a person's step is involved: the strip shows
+        self.assertTrue(home._wf_page_strip('expense_claim', claim.id))
+        # nothing but the workflow's end (or an approval) left: the page's own
+        # "With X" box is enough, so no strip
+        internal(run).write({'state': 'done', 'ended_at': fields.Datetime.now()})
+        self.assertIsNone(home._wf_page_strip('expense_claim', claim.id))
+        # staff screens are unchanged: they still show the finished workflow
+        self.assertTrue(self.strip(self.admin, self.CLAIM, claim.id))
+        # a stage the company made is involved: the strip shows again
+        stage = self.own_stage('WF2 P2b Booked', 'approved')
+        self.service._set_position(self.CLAIM, claim.id, stage, self.company)
+        shown = home._wf_page_strip('expense_claim', claim.id)
+        self.assertTrue(shown and shown['adds'])
+
+    def test_wf2p2b_t16_candidate_without_email_asks_the_recruiter(self):
+        self.need('pb.hiring', 'hr.applicant')
+        self.recruiter()
+        recruiter = self.staffer('WF2 P2b recruiter', ['hr_recruitment.group_hr_recruitment_user'])
+        confirm = {'id': 'agree', 'type': 'confirm', 'title': 'Confirm your details', 'stage': 0, 'due': 2,
+                   'owner': {'kind': 'participant', 'key': 'candidate'}, 'text': 'My details are right.'}
+        w, d = self.workflow([confirm], model='hr.applicant')
+        self.publish(w, d)
+        quiet = self.env['hr.applicant'].create({'partner_name': 'WF2 P2b no email', 'company_id': self.company.id,
+                                                 'user_id': recruiter.id})
+        run = self.start(w, quiet)
+        step = self.step(run, 'agree')
+        self.assertEqual(step.state, 'waiting', step.error)
+        self.assertEqual(step.assignee_id, recruiter)
+        self.assertFalse(step.sudo().link_email)
+        todo = step.activity_id
+        self.assertEqual((todo.res_model, todo.res_id, todo.user_id), ('hr.applicant', quiet.id, recruiter))
+        self.assertEqual(todo.summary, 'Add an email for WF2 P2b no email')
+        summary = todo.summary
+        # one task in the Approvals inbox, that opens the candidate
+        cards = [c for c in self.inbox(recruiter)._extra_items('me') if c['id'] == step.id]
+        self.assertEqual(len(cards), 1)
+        self.assertEqual(cards[0]['title'], 'Add an email for WF2 P2b no email')
+        self.assertEqual(cards[0]['open'], {'type': 'record', 'model': 'hr.applicant', 'id': quiet.id})
+        # it cannot be "answered" on the candidate's behalf
+        with self.assertRaises(UserError):
+            self.service.with_user(recruiter).answer(step.id, {})
+        # the worker looks again: still no email, nothing changes
+        self.env['pb.workflow.studio'].sudo()._cron_workflows()
+        self.assertEqual(self.step(run, 'agree').assignee_id, recruiter)
+        # the email is added: the link goes out once and the helper task closes
+        quiet.email_from = 'late.cand@example.com'
+        self.env['pb.workflow.studio'].sudo()._cron_workflows()
+        step = self.step(run, 'agree')
+        self.assertEqual(step.state, 'waiting')
+        self.assertEqual(step.sudo().link_email, 'late.cand@example.com')
+        self.assertFalse(step.assignee_id)
+        self.assertFalse(todo.exists())
+        mails = self.env['mail.mail'].sudo().search([('email_to', '=', 'late.cand@example.com')])
+        self.assertEqual(len(mails), 1)
+        self.env['pb.workflow.studio'].sudo()._cron_workflows()
+        self.assertEqual(len(self.env['mail.mail'].sudo().search([('email_to', '=', 'late.cand@example.com')])), 1,
+                         'sent once')
+        # nobody named on the record: whoever published the workflow is asked
+        nobody = self.env['hr.applicant'].create({'partner_name': 'WF2 P2b nobody', 'company_id': self.company.id})
+        other = self.step(self.start(w, nobody), 'agree')
+        self.assertEqual(other.state, 'waiting', other.error)
+        self.assertEqual(other.assignee_id, w.sudo().published_id.published_by)
+        for words in (summary, cards[0]['title'], cards[0]['verb']):
+            self.assertFalse(re.search(r'odoo', words, re.I), words)
+
+    def test_wf2p2b_t12_studio_warns_before_a_second_claim_email(self):
+        self.need(self.CLAIM)
+        template = self.env['mail.template'].create({
+            'name': 'WF2 P2b claim note', 'model_id': self.env['ir.model']._get_id(self.CLAIM),
+            'subject': 'Claim', 'body_html': '<p>Claim</p>'})
+        tell = {'id': 'tell', 'type': 'email', 'title': 'Tell them', 'stage': 1, 'audience': 'requester',
+                'template_id': template.id, 'purpose': 'A second note'}
+        w, d = self.staged(self.CLAIM, [('Approved', self.core('approved'))], [tell])
+        warning = next(i for i in self.service._validate(w, d) if i['code'] == 'repeats_existing')
+        self.assertIn('Expenses already does this here', warning['text'])
+        self.assertIn('approved', warning['text'])
+
+    def test_wf2p2b_t17_no_banned_words_in_this_phase(self):
+        root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        files = ['pb_me_expense/models/expense_messages.py', 'pb_me_expense/data/mail_template_data.xml',
+                 'biz_approval_workflow/models/single_notice.py']
+        for name in files:
+            path = os.path.join(root, name)
+            if not os.path.exists(path):
+                continue
+            text = open(path, encoding='utf-8').read()
+            strings = re.findall(r"_\('([^']*)'", text) + re.findall(r'_\("([^"]*)"', text)
+            for s in strings:
+                self.assertNotRegex(s, r'(?i)odoo', name)
+        reach = open(os.path.join(root, 'pb_lifecycle/models/workflow_reach.py'), encoding='utf-8').read()
+        part = reach.split('# ================================================================ D24', 1)[1].split(
+            '# ================================================================ D19', 1)[0]
+        for s in re.findall(r"_\('([^']*)'", part):
+            self.assertNotRegex(s, r'(?i)odoo|\bstep\b|\brun\b|\bnode\b', s)
