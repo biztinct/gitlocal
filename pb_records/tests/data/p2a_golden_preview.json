@@ -1,0 +1,2904 @@
+{
+ "master": [
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "100",
+   "old_label": "100",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-01",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Female",
+   "old_label": "Female",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Sales",
+   "old_label": "P2A Sales",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Boss",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,500",
+   "old_label": "1,000",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 40h",
+   "old_label": "P2A 40h",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "c:P2AAMT",
+   "new_label": "250,000",
+   "old_label": "500",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 0",
+   "old_label": "Kept",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "201",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Sales",
+   "old_label": "P2A Root / P2A Ops",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Same",
+   "old_label": "P2A Same",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'1,750.50' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-01-01",
+   "old_label": "2026-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "c:P2AAMT",
+   "new_label": "",
+   "old_label": "0",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Supervisor",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "202",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1990-01-01",
+   "old_label": "1990-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "",
+   "old_label": "Female",
+   "status": "refused",
+   "why": "'Maybe' is not one of the choices — use Male, Female, Other"
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "P2A Twin",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "Nobody P2A (new)",
+   "old_label": "P2A Boss",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "c:P2AAMT",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 2",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "203",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-04",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Twin",
+   "old_label": "P2A Twin",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Same",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,000",
+   "old_label": "1,000",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 40h",
+   "old_label": "P2A 40h",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "c:P2AAMT",
+   "new_label": "1,000",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "100",
+   "old_label": "100",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Female",
+   "old_label": "Female",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Nowhere (new)",
+   "old_label": "P2A Sales",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "",
+   "old_label": "P2A Boss",
+   "status": "refused",
+   "why": "2 employee records are called 'P2A Same'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,500",
+   "old_label": "1,000",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-01-01",
+   "old_label": "2026-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "c:P2AAMT",
+   "new_label": "500",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 4",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Supervisor",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "205",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1990-01-01",
+   "old_label": "1990-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "",
+   "old_label": "P2A Root / P2A Ops",
+   "status": "refused",
+   "why": "No department is called 'P2A Root / Nope'. Check the full name, including the part before the slash."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "Nobody P2A (new)",
+   "old_label": "P2A Same",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'1,750.50' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "c:P2AAMT",
+   "new_label": "250,000",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "206",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-07",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "",
+   "old_label": "Female",
+   "status": "refused",
+   "why": "'Maybe' is not one of the choices — use Male, Female, Other"
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Twin",
+   "old_label": "P2A Twin",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Boss",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 40h",
+   "old_label": "P2A 40h",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "c:P2AAMT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 6",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "207",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Sales",
+   "old_label": "P2A Twin",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Same",
+   "old_label": "P2A Same",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,000",
+   "old_label": "1,000",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-01-01",
+   "old_label": "2026-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "c:P2AAMT",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Supervisor",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "100",
+   "old_label": "100",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1990-01-01",
+   "old_label": "1990-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Female",
+   "old_label": "Female",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Sales",
+   "old_label": "P2A Sales",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "Nobody P2A (new)",
+   "old_label": "P2A Boss",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,500",
+   "old_label": "1,000",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "c:P2AAMT",
+   "new_label": "1,000",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 8",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "209",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-01",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "P2A Root / P2A Ops",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Same",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'1,750.50' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 40h",
+   "old_label": "P2A 40h",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "c:P2AAMT",
+   "new_label": "500",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "210",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "",
+   "old_label": "Female",
+   "status": "refused",
+   "why": "'Maybe' is not one of the choices — use Male, Female, Other"
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Twin",
+   "old_label": "P2A Twin",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "",
+   "old_label": "P2A Boss",
+   "status": "refused",
+   "why": "2 employee records are called 'P2A Same'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-01-01",
+   "old_label": "2026-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "c:P2AAMT",
+   "new_label": "250,000",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 10",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Supervisor",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "211",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1990-01-01",
+   "old_label": "1990-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Nowhere (new)",
+   "old_label": "P2A Twin",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "Nobody P2A (new)",
+   "old_label": "P2A Same",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,000",
+   "old_label": "1,000",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "c:P2AAMT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "100",
+   "old_label": "100",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-04",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Female",
+   "old_label": "Female",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "",
+   "old_label": "P2A Sales",
+   "status": "refused",
+   "why": "No department is called 'P2A Root / Nope'. Check the full name, including the part before the slash."
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Boss",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,500",
+   "old_label": "1,000",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 40h",
+   "old_label": "P2A 40h",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "c:P2AAMT",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 12",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "213",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "P2A Root / P2A Ops",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Same",
+   "old_label": "P2A Same",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'1,750.50' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-01-01",
+   "old_label": "2026-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "c:P2AAMT",
+   "new_label": "1,000",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Supervisor",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "214",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1990-01-01",
+   "old_label": "1990-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "",
+   "old_label": "Female",
+   "status": "refused",
+   "why": "'Maybe' is not one of the choices — use Male, Female, Other"
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Sales",
+   "old_label": "P2A Twin",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "Nobody P2A (new)",
+   "old_label": "P2A Boss",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "c:P2AAMT",
+   "new_label": "500",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 14",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "215",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-07",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Sales",
+   "old_label": "P2A Twin",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Same",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,000",
+   "old_label": "1,000",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 40h",
+   "old_label": "P2A 40h",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "c:P2AAMT",
+   "new_label": "250,000",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "100",
+   "old_label": "100",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Female",
+   "old_label": "Female",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "P2A Sales",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "",
+   "old_label": "P2A Boss",
+   "status": "refused",
+   "why": "2 employee records are called 'P2A Same'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "1,500",
+   "old_label": "1,000",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-01-01",
+   "old_label": "2026-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "c:P2AAMT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'abc' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "c:P2ATXT",
+   "new_label": "Note 16",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Supervisor",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "217",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1990-01-01",
+   "old_label": "1990-01-01",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "",
+   "old_label": "P2A Root / P2A Ops",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "Nobody P2A (new)",
+   "old_label": "P2A Same",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "1,000",
+   "status": "refused",
+   "why": "'1,750.50' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "2026-02-01",
+   "old_label": "2026-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "P2A 35h",
+   "old_label": "P2A 40h",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "c:P2AAMT",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "c:P2ATXT",
+   "new_label": "Kept",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Line Lead",
+   "old_label": "Operator",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "218",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "1991-05-01",
+   "old_label": "1990-01-01",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "",
+   "old_label": "Female",
+   "status": "refused",
+   "why": "'Maybe' is not one of the choices — use Male, Female, Other"
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "P2A Nowhere (new)",
+   "old_label": "P2A Twin",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Boss",
+   "old_label": "P2A Boss",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "c:P2AAMT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "c:P2ATXT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "Operator",
+   "old_label": "Operator",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:work_phone",
+   "new_label": "219",
+   "old_label": "100",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:birthday",
+   "new_label": "",
+   "old_label": "1990-01-01",
+   "status": "refused",
+   "why": "'not a date' is not a date — use a date like 2026-08-29."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:sex",
+   "new_label": "Male",
+   "old_label": "Male",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "",
+   "old_label": "P2A Twin",
+   "status": "refused",
+   "why": "No department is called 'P2A Root / Nope'. Check the full name, including the part before the slash."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:parent_id",
+   "new_label": "P2A Same",
+   "old_label": "P2A Same",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.contract:date_start",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.contract:resource_calendar_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "c:P2AAMT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "c:P2ATXT",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "OUT",
+   "emp_name": "P2A Outsider",
+   "field_id": "f:hr.employee:job_title",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "This person is not in the companies you are working in."
+  },
+  {
+   "emp_id": "OUT",
+   "emp_name": "P2A Outsider",
+   "field_id": "f:hr.employee:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "This person is not in the companies you are working in."
+  },
+  {
+   "emp_id": "OUT",
+   "emp_name": "P2A Outsider",
+   "field_id": "f:hr.contract:wage",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "This person is not in the companies you are working in."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "b:acc_number",
+   "new_label": "55500001",
+   "old_label": "55500001",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "P2A Bank",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "b:acc_number",
+   "new_label": "1234502",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "b:acc_holder_name",
+   "new_label": "Holder 2",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "b:bank_bic",
+   "new_label": "P2ABIC2",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "b:acc_number",
+   "new_label": "990003",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "b:acc_number",
+   "new_label": "1234505",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "b:acc_holder_name",
+   "new_label": "Holder 5",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "b:bank_bic",
+   "new_label": "P2ABIC5",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "b:acc_number",
+   "new_label": "990006",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "b:acc_number",
+   "new_label": "1234508",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "b:acc_holder_name",
+   "new_label": "Holder 8",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "b:bank_bic",
+   "new_label": "P2ABIC8",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "b:acc_number",
+   "new_label": "990009",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "b:acc_number",
+   "new_label": "1234511",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "b:acc_holder_name",
+   "new_label": "Holder 11",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "b:bank_bic",
+   "new_label": "P2ABIC11",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "b:acc_number",
+   "new_label": "990012",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "b:acc_number",
+   "new_label": "1234514",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "b:acc_holder_name",
+   "new_label": "Holder 14",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "b:bank_bic",
+   "new_label": "P2ABIC14",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "b:acc_number",
+   "new_label": "990015",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "b:acc_number",
+   "new_label": "1234517",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "b:acc_holder_name",
+   "new_label": "Holder 17",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "b:bank_bic",
+   "new_label": "P2ABIC17",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "b:acc_number",
+   "new_label": "990018",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "b:bank_name",
+   "new_label": "P2A Bank",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "b:bank_name",
+   "new_label": "Orphan Bank",
+   "old_label": "",
+   "status": "refused",
+   "why": "Bank details need an account number — add one in the same change."
+  }
+ ],
+ "scheme": [
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Lone",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P00",
+   "emp_name": "P2A Person 00",
+   "field_id": "c:P2ABONUS",
+   "new_label": "300",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "No",
+   "old_label": "No",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P01",
+   "emp_name": "P2A Person 01",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'x' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "",
+   "old_label": "No",
+   "status": "refused",
+   "why": "'perhaps' is not a yes or a no — use Yes or No"
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P02",
+   "emp_name": "P2A Person 02",
+   "field_id": "c:P2ABONUS",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Lone",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P03",
+   "emp_name": "P2A Person 03",
+   "field_id": "c:P2ABONUS",
+   "new_label": "300",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P04",
+   "emp_name": "P2A Person 04",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'x' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "No",
+   "old_label": "No",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P05",
+   "emp_name": "P2A Person 05",
+   "field_id": "c:P2ABONUS",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "",
+   "old_label": "No",
+   "status": "refused",
+   "why": "'perhaps' is not a yes or a no — use Yes or No"
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Lone",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P06",
+   "emp_name": "P2A Person 06",
+   "field_id": "c:P2ABONUS",
+   "new_label": "300",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P07",
+   "emp_name": "P2A Person 07",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'x' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P08",
+   "emp_name": "P2A Person 08",
+   "field_id": "c:P2ABONUS",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "No",
+   "old_label": "No",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Lone",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P09",
+   "emp_name": "P2A Person 09",
+   "field_id": "c:P2ABONUS",
+   "new_label": "300",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "",
+   "old_label": "No",
+   "status": "refused",
+   "why": "'perhaps' is not a yes or a no — use Yes or No"
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P10",
+   "emp_name": "P2A Person 10",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'x' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P11",
+   "emp_name": "P2A Person 11",
+   "field_id": "c:P2ABONUS",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Lone",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P12",
+   "emp_name": "P2A Person 12",
+   "field_id": "c:P2ABONUS",
+   "new_label": "300",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "No",
+   "old_label": "No",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P13",
+   "emp_name": "P2A Person 13",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'x' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "",
+   "old_label": "No",
+   "status": "refused",
+   "why": "'perhaps' is not a yes or a no — use Yes or No"
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P14",
+   "emp_name": "P2A Person 14",
+   "field_id": "c:P2ABONUS",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Lone",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P15",
+   "emp_name": "P2A Person 15",
+   "field_id": "c:P2ABONUS",
+   "new_label": "300",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "2 department records are called 'P2A Twin'. Pick the right one on the Records screen, or use a name that is unique."
+  },
+  {
+   "emp_id": "P16",
+   "emp_name": "P2A Person 16",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "'x' is not a number — type an amount like 1500000."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "No",
+   "old_label": "No",
+   "status": "same",
+   "why": "Already set to this."
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "P2A Root / P2A Ops",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P17",
+   "emp_name": "P2A Person 17",
+   "field_id": "c:P2ABONUS",
+   "new_label": "0",
+   "old_label": "",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "",
+   "old_label": "No",
+   "status": "refused",
+   "why": "'perhaps' is not a yes or a no — use Yes or No"
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P18",
+   "emp_name": "P2A Person 18",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 18 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.employee:<bool>",
+   "new_label": "Yes",
+   "old_label": "No",
+   "status": "ok",
+   "why": ""
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "f:hr.contract:department_id",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  },
+  {
+   "emp_id": "P19",
+   "emp_name": "P2A Person 19",
+   "field_id": "c:P2ABONUS",
+   "new_label": "",
+   "old_label": "",
+   "status": "refused",
+   "why": "P2A Person 19 has no contract, so there is nothing to change."
+  }
+ ]
+}

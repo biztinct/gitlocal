@@ -3,3 +3,4 @@ from . import test_records_r3_roundtrip
 from . import test_records_r4_polish
 from . import test_records_approval
 from . import test_records_capabilities
+from . import test_records_p2a_lookups

@@ -1016,12 +1016,124 @@ class PbRecordsDesk(models.AbstractModel):
         return None, _("'%(value)s' is not a yes or a no — use Yes or No") % {
             'value': value}
 
+    # -----------------------------------------------------------------
+    # Typed names for linked records (UPDATES P2a).
+    #
+    # The first version searched `[(key, '=ilike', text)], limit=1` with no
+    # company scope: first hit wins. On payobook an untouched full sheet read
+    # as 9,933 changes — namesake working hours and managers picked instead of
+    # the current one, and a department's full path ("A / B") proposed as a
+    # NEW department (ledger G11). The ladder below never guesses: the current
+    # value first, then one exact match inside the companies in scope (the
+    # full path for a department), and a sentence when there are two.
+    # -----------------------------------------------------------------
+    @staticmethod
+    def _m2o_norm(text):
+        return ' '.join(str(text if text is not None else '').split()).lower()
+
     @api.model
-    def _coerce(self, probe, card, value, employee, contract):
+    def _m2o_is_current(self, current, key, text):
+        """Does `text` name the record already there? Case- and
+        whitespace-insensitive, against what the screen shows (display
+        name), the matching key, and the full path where there is one."""
+        if not current:
+            return False
+        wanted = self._m2o_norm(text)
+        if not wanted:
+            return False
+        shown = [current.display_name, current[key]]
+        if 'complete_name' in current._fields:
+            shown.append(current.complete_name)
+        return any(self._m2o_norm(s) == wanted for s in shown if s)
+
+    @api.model
+    def _m2o_hits(self, Model, fname, text, scope):
+        """Records whose `fname` is `text`, case-insensitively, in scope.
+
+        `=ilike` is an exact match unless the text carries `%` or `_`, which
+        ILIKE reads as wildcards; then every candidate is fetched and only
+        the exact ones are kept, so "R_D" can never mean "RxD"."""
+        wild = '%' in text or '_' in text
+        hits = Model.search([(fname, '=ilike', text)] + scope,
+                            limit=None if wild else 3)
+        if wild:
+            low = text.lower()
+            hits = hits.filtered(lambda r: str(r[fname] or '').lower() == low)
+        return hits
+
+    @api.model
+    def _m2o_lookup(self, field, comodel, key, text, memo=None):
+        """Rungs 2-5 for one `(comodel, text)`, memoised in `memo` for the
+        life of ONE `_evaluate` call: 4,575 rows naming 30 departments ask
+        the database 30 times, not 4,575. The memo is a plain dict the caller
+        owns — never a cache that outlives the request."""
+        memo_key = ('m2o', comodel._name, text)
+        if memo is not None and memo_key in memo:
+            return memo[memo_key]
+        answer = self._m2o_ladder(field, comodel, key, text)
+        if memo is not None:
+            memo[memo_key] = answer
+        return answer
+
+    @api.model
+    def _m2o_ladder(self, field, comodel, key, text):
+        Model = comodel.sudo()
+        scope = []
+        if 'company_id' in Model._fields:
+            scope = ['|', ('company_id', '=', False),
+                     ('company_id', 'in', self.env.companies.ids)]
+        # Rung 2 — one exact match inside the companies in scope (archived
+        # records stay out: the default active filter applies).
+        fname = key
+        hits = self._m2o_hits(Model, fname, text, scope)
+        # Rung 3 — a department's full path, "Parent / Child". In this build
+        # `complete_name` is computed but searchable, so "searchable" is the
+        # test, not "stored".
+        path = Model._fields.get('complete_name')
+        has_path = path is not None
+        if not hits and has_path and key != 'complete_name' \
+                and (path.store or path.search):
+            fname = 'complete_name'
+            hits = self._m2o_hits(Model, fname, text, scope)
+        if len(hits) == 1:
+            return hits.id, hits.display_name or text, None
+        what = (self.env['ir.model'].sudo()._get(field.comodel_name).name
+                or field.comodel_name).lower()
+        if len(hits) > 1:
+            # Rung 4 — never pick. The count is the real one, not the limit.
+            count = len(hits)
+            if count >= 3 and not ('%' in text or '_' in text):
+                domain = [(fname, '=ilike', text)] + scope
+                count = max(count, Model.search_count(domain))
+            return None, '', _(
+                "%(n)s %(what)s records are called '%(value)s'. Pick the right "
+                "one on the Records screen, or use a name that is unique."
+            ) % {'n': count, 'what': what, 'value': text}
+        # Rung 5 — nothing. A slashed path is a full name somebody meant to
+        # exist; turning it into a new record would invent "A / B" as one
+        # department's name.
+        if has_path and '/' in text:
+            return None, '', _(
+                "No %(what)s is called '%(value)s'. Check the full name, "
+                "including the part before the slash."
+            ) % {'what': what, 'value': text}
+        if not m2o_creates_missing(comodel):
+            return None, '', _(
+                "No %(what)s called '%(value)s' exists, and %(what)s records "
+                "are not created here.") % {'what': what, 'value': text}
+        # Deliberately NOT created during a preview — the create happens in
+        # `_write_cell`, inside the apply transaction.
+        return {'create': text}, _("%s (new)") % text, None
+
+    @api.model
+    def _coerce(self, probe, card, value, employee, contract, memo=None):
         """`(coerced, label, why)` — `why` is a plain sentence and means refused.
 
         `''` is an explicit CLEAR (the column menu's "Clear for selected" and an
         emptied cell are the same gesture), not a missing value.
+
+        `memo` (UPDATES P2a, optional) is the caller's per-evaluation dict for
+        typed-name look-ups; without it every look-up asks the database.
         """
         kind = card['id'][:1]
         if not card.get('editable'):
@@ -1113,18 +1225,13 @@ class PbRecordsDesk(models.AbstractModel):
                 return None, '', _(
                     "%s has no name to match against, so it cannot be typed in "
                     "here.") % card['label']
-            existing = comodel.sudo().search([(key, '=ilike', text)], limit=1)
-            if existing:
-                return existing.id, existing.display_name or text, None
-            if not m2o_creates_missing(comodel):
-                what = (self.env['ir.model'].sudo()._get(field.comodel_name).name
-                        or field.comodel_name).lower()
-                return None, '', _(
-                    "No %(what)s called '%(value)s' exists, and %(what)s records "
-                    "are not created here.") % {'what': what, 'value': text}
-            # Deliberately NOT created during a preview — the create happens in
-            # `_write_cell`, inside the apply transaction.
-            return {'create': text}, _("%s (new)") % text, None
+            # UPDATES P2a, rung 1 — IT IS ALREADY THIS. Text that says what
+            # the record holds today keeps today's record, so a namesake can
+            # never displace the value that is already there (ledger G11).
+            current = record[card['field']]
+            if self._m2o_is_current(current, key, text):
+                return current.id, current.display_name or text, None
+            return self._m2o_lookup(field, comodel, key, text, memo)
 
         # char / text / numbers / date / datetime all go through the shared
         # coercer, which is what an import would do with the same cell.
@@ -1189,6 +1296,8 @@ class PbRecordsDesk(models.AbstractModel):
         can_write = {EMP: self._may_write(EMP), CON: self._may_write(CON)}
 
         items, plan = [], []
+        # UPDATES P2a: typed-name look-ups, remembered for THIS call only.
+        memo = {}
         # Bank changes for one person are ONE write: four roles assemble a single
         # `res.partner.bank`, so they are collected and judged together.
         bank_by_emp = {}
@@ -1226,7 +1335,8 @@ class PbRecordsDesk(models.AbstractModel):
                 continue
 
             coerced, new_label, why = self._coerce(
-                probe, card, change.get('value'), employee, contract)
+                probe, card, change.get('value'), employee, contract,
+                memo=memo)
             if why:
                 items.append(dict(base, old_label=current['label'],
                                   new_label='', status='refused', why=why))

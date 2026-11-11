@@ -241,6 +241,10 @@ class TestRecordsR2Desk(TransactionCase):
                             for c in applied.change_ids))
 
     def test_01a_get_fields_returns_mapped_and_standard_record_destinations(self):
+        # Commit 2e9777879 ("Separate master records from focused payroll
+        # inputs") made the split deliberate: a pay scheme's view lists ONLY
+        # what that scheme maps; the standard record fields live in Master
+        # records (`config_id = 0`). UPDATES P2a item 3 asserts both halves.
         data = self._cards()
         ids = self._card_ids(data)
         self.assertEqual(ids, {
@@ -250,13 +254,20 @@ class TestRecordsR2Desk(TransactionCase):
             'f:hr.employee:%s' % self.bool_field,
             'b:acc_number', 'b:bank_name',
             'c:RDBONUS',
+        })
+        groups = {g['key'] for g in data['groups']}
+        self.assertEqual(groups, {'employee', 'contract', 'bank', 'component'})
+        master = self._card_ids(self.Desk.get_fields(0))
+        standard = {
             'f:hr.employee:birthday', 'f:hr.employee:name',
             'f:hr.employee:mobile_phone', 'f:hr.employee:work_phone',
             'f:hr.employee:job_title', 'f:hr.employee:department_id',
             'f:hr.contract:wage', 'f:hr.contract:date_start', 'f:hr.contract:date_end',
-        })
-        groups = {g['key'] for g in data['groups']}
-        self.assertEqual(groups, {'employee', 'contract', 'bank', 'component'})
+            'b:acc_number', 'b:bank_name', 'b:bank_bic', 'b:acc_holder_name',
+        }
+        self.assertTrue(standard <= master, standard - master)
+        self.assertFalse(standard - {'b:acc_number', 'b:bank_name'} & ids,
+                         "a scheme's view must not carry the master fields")
 
     def test_01b_a_field_the_scheme_does_not_map_is_absent(self):
         ids = self._card_ids(self._cards())
