@@ -232,6 +232,21 @@ class PbRecordsApply(models.Model):
         return any(str((r or {}).get('field_id') or '').startswith('b:')
                    for r in rows if isinstance(r, dict))
 
+    def _bank_rule_applies(self, request=None):
+        """Is this proposal held to the second-person rule? Every bank
+        proposal made from P3a on (it carries a lane, which nobody can edit),
+        and every one travelling the bank route. A proposal sent in BEFORE
+        lanes existed keeps the route and the rules it was sent in under —
+        it is never changed under somebody's feet (sudima had one waiting on
+        the day this shipped)."""
+        self.ensure_one()
+        if not self._has_bank():
+            return False
+        if self.lane:
+            return True
+        request = request or self.approval_request_id
+        return not request or request.sudo().process_id.key == RECORDS_BANK_PROCESS_KEY
+
     def _approval_process_key_for(self):
         self.ensure_one()
         return RECORDS_BANK_PROCESS_KEY if self._has_bank() \
@@ -314,7 +329,7 @@ class PbRecordsApply(models.Model):
         manager. Nobody at all: the request waits, and says why."""
         self.ensure_one()
         rec = self.sudo()
-        if not rec._has_bank():
+        if not rec._bank_rule_applies():
             return people, issue
         proposer = rec._proposer()
         engine = self.env['biz.approval.engine']
@@ -349,7 +364,7 @@ class PbRecordsApply(models.Model):
         the person who proposed them — whatever seat they hold."""
         self.ensure_one()
         rec = self.sudo()
-        if rec._has_bank() and user == rec._proposer():
+        if rec._bank_rule_applies(request) and user == rec._proposer():
             return _("Bank details need a second person. You proposed this "
                      "change, so somebody else has to approve it.")
         return None
@@ -371,7 +386,7 @@ class PbRecordsApply(models.Model):
         whatever the route says (a "No approval needed" route on the bank
         key included), on its day, and on "Start now"."""
         self.ensure_one()
-        if self._has_bank() and not self._second_person_approved(request):
+        if self._bank_rule_applies(request) and not self._second_person_approved(request):
             return _("Bank details need a second person. Nobody other than "
                      "the person who proposed this change has approved it, "
                      "so nothing was written.")

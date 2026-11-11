@@ -1162,6 +1162,7 @@ export const SCREENS = {
                     <div class="lrn-file">${ic("file-text")}<b>${esc(pd.file)}</b></div>
                     <!-- UPDATES P3a (D1): a pay data file is for its pay run only. -->
                     <div data-coach="pw-paymode">
+                        <h4>${esc(tx(B("What should these values do?", "Các giá trị này dùng để làm gì?")))}</h4>
                         <p class="lrn-note">${ic("info")}${esc(tx(B(
                             "This file is used for this pay run only. To change employee, contract or bank records, use People › Updates.",
                             "Tệp này chỉ dùng cho đợt trả lương này. Để thay đổi hồ sơ nhân viên, hợp đồng hoặc tài khoản ngân hàng, hãy dùng Nhân sự › Cập nhật.")))}</p>

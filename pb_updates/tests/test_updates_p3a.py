@@ -312,6 +312,34 @@ class TestUpdatesP3aLanes(P3aCommon):
         self.assertFalse(bank.applied)
         self.assertEqual(self.account(self.ann), '')
 
+    def test_F4b_a_change_sent_before_lanes_keeps_its_rules(self):
+        """A bank change already waiting on the records route when this
+        shipped (no lane) is decided exactly as before (sudima, 2026-11-11)."""
+        own = {'schema_version': 1, 'steps': [
+            {'key': 's1', 'kind': 'approve', 'title': 'Our HR', 'who': {
+                'mode': 'people', 'user_ids': [self.proposer.id]},
+             'min_amount': 0, 'condition': None}],
+            'tiers': {'enabled': False, 'fact': None},
+            'safeguards': {'independent': False}}
+        self.publish_route(self.company, 'records', own)
+        rows = [{'emp_id': self.bob.id, 'field_id': ACC, 'value': '7778889990'}]
+        rec = self.Apply.sudo().create({
+            'name': 'RD-legacy', 'source': 'desk', 'user_id': self.proposer.id,
+            'company_id': self.company.id, 'touches_bank': True,
+            'plan_json': '[{"emp_id": %d, "field_id": "%s", "old": "", "old_label": "",'
+                         ' "new_label": "7778889990", "emp_name": "", "field_label": ""}]'
+                         % (self.bob.id, ACC),
+            'changes_json': '[{"emp_id": %d, "field_id": "%s", "value": "7778889990"}]'
+                            % (self.bob.id, ACC),
+            'people_count': 1, 'values_count': 1})
+        with patch.object(type(rec), '_approval_process_key_for', lambda r: 'records'):
+            self.Engine.with_user(self.proposer).submit(rec)
+        self.assertEqual(rec.approval_request_id.process_id.key, 'records')
+        self.assertFalse(rec._bank_rule_applies())
+        self.approve(rec, self.proposer)
+        self.fresh(rec)
+        self.assertTrue(rec.applied, rec.approval_request_id.block_reason)
+
     def test_F5_a_second_person_approves(self):
         bank = self.parts(self.mixed())['bank']
         self.approve(bank, self.second)
