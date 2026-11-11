@@ -156,12 +156,19 @@ class PbContractExtension(models.Model):
             'approve_by': fields.Date.today() + timedelta(days=days),
         })
         self._advance_state('pending')
+        # WF2 P2b (D5): with a live route the approval engine has just told
+        # the people it asks ("Your approval is needed" + a to-do); this
+        # area's ask email and to-do are left out for exactly those people.
+        # The history line below stays. Kill switch: biz_approval.single_notice
+        told = self._told_by_engine()
         self._notify('pb_contract_lifecycle.mail_template_extension_ask',
-                     self._approver_addresses())
+                     self._approver_addresses_except(told))
         self.message_post(body=_(
             "Asked. %(who)s has until %(when)s to agree it.",
             who=(approver.name if approver else _('The HR team')),
             when=self.approve_by))
+        if (approver or self.env.user) in told:
+            return True
         try:
             self.activity_schedule(
                 act_type_xmlid='mail.mail_activity_data_todo',
@@ -249,9 +256,14 @@ class PbContractExtension(models.Model):
         made = 0
         for row in rows:
             try:
+                # WF2 P2b (D5/D2): the approver already gets the approval
+                # engine's own reminder for a request on a live route, so
+                # this overdue email leaves them out (the HR team still gets
+                # it). Kill switch: biz_approval.single_notice
                 row._notify(
                     'pb_contract_lifecycle.mail_template_extension_overdue',
-                    row._hr_addresses() + row._approver_addresses())
+                    row._hr_addresses() + row._approver_addresses_except(
+                        row._told_by_engine()))
                 row.write({'escalated': True})
                 row.message_post(body=_(
                     "Nobody had agreed this by %(when)s, so the HR team has "
@@ -318,6 +330,43 @@ class PbContractExtension(models.Model):
     def _hr_addresses(self):
         self.ensure_one()
         return self.review_id._hr_addresses() if self.review_id else []
+
+    # ----------------------------------------------- WF2 P2b: told once (D5)
+    def _approver_users(self):
+        """The logins behind `_approver_addresses` (approver, manager)."""
+        self.ensure_one()
+        manager = self.employee_id.parent_id if self.employee_id else False
+        return (self.approver_user_id
+                | (manager.user_id if manager else self.env['res.users']))
+
+    def _told_by_engine(self):
+        """The approver logins the approval engine already tells."""
+        self.ensure_one()
+        try:
+            return self.env['biz.approval.engine'].told_by_engine(
+                self, self._approver_users())
+        except Exception:               # noqa: BLE001 — when in doubt, send
+            _logger.exception('pb_contract_lifecycle: could not tell who the '
+                              'engine asks on extension %s', self.id)
+            return self.env['res.users']
+
+    def _approver_addresses_except(self, told):
+        """`_approver_addresses`, without the people in `told`.
+
+        Exactly the same addresses, in the same order, when `told` is empty.
+        """
+        self.ensure_one()
+        if not told:
+            return self._approver_addresses()
+        out = []
+        if self.approver_user_id and self.approver_user_id.email \
+                and self.approver_user_id not in told:
+            out.append(self.approver_user_id.email)
+        manager = self.employee_id.parent_id if self.employee_id else False
+        if manager and manager.work_email \
+                and not (manager.user_id and manager.user_id in told):
+            out.append(manager.work_email)
+        return out
 
     def state_label(self):
         self.ensure_one()

@@ -558,9 +558,51 @@ class PbResignation(models.Model):
 
     def _notify_filed(self):
         self.ensure_one()
+        # WF2 P2b (D5): with a live route the approval engine has just told
+        # the person it asks first ("Your approval is needed" + a to-do);
+        # this email leaves out exactly the people it proves it told.
+        # Everyone else (the rest of HR) still gets it. Kill switch:
+        # biz_approval.single_notice
+        told = self._filed_told_by_engine()
+        if told:
+            self._mail('pb_offboarding.mail_template_resignation_filed',
+                       self._filed_addresses_except(told))
+            return True
         self._mail('pb_offboarding.mail_template_resignation_filed',
                    self._manager_address() + self._hr_addresses())
         return True
+
+    def _filed_people(self):
+        """The logins behind `_manager_address` and `_hr_addresses`."""
+        self.ensure_one()
+        manager = self.employee_id.parent_id
+        people = manager.user_id if manager else self.env['res.users']
+        try:
+            people |= self.env['pb.journey.case']._users_in_group(
+                GROUP_MANAGER, self.company_id or self.env.company, limit=0)
+        except Exception:               # noqa: BLE001
+            pass
+        return people
+
+    def _filed_told_by_engine(self):
+        self.ensure_one()
+        return self.env['biz.approval.engine'].told_by_engine(
+            self, self._filed_people())
+
+    def _filed_addresses_except(self, told):
+        """The filed email's addresses, without the people in `told`."""
+        self.ensure_one()
+        out = []
+        manager = self.employee_id.parent_id
+        if not (manager and manager.user_id and manager.user_id in told):
+            out += self._manager_address()
+        try:
+            hr = self.env['pb.journey.case']._users_in_group(
+                GROUP_MANAGER, self.company_id or self.env.company, limit=0)
+        except Exception:               # noqa: BLE001
+            hr = self.env['res.users'].browse()
+        out += [u.email for u in hr if u.email and u not in told]
+        return out
 
     def _notify_withdrawn(self):
         self.ensure_one()

@@ -306,6 +306,12 @@ class PbOrgChartPlan(models.Model):
             request = self.approval_request_id
             step = request.step_ids.filtered(lambda s: s.status == 'active')[:1] if request else None
             users = step.sudo().seat_ids.mapped('acting_user_id') if step else self.env['res.users']
+            # WF2 P2b (D5): the approval engine has already told these people
+            # ("Your approval is needed" + a to-do on the request); this
+            # to-do is left out for each of them it proves it told. Kill
+            # switch: biz_approval.single_notice
+            users = users - self.env['biz.approval.engine'].told_by_engine(
+                self, users)
             for user in users.filtered(lambda u: u.active and not u.share):
                 self.sudo().activity_schedule(
                     act_type_xmlid='mail.mail_activity_data_todo',

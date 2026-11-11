@@ -353,15 +353,23 @@ class PbPayChange(models.Model):
                 else record.user_ids
         except Exception:                       # noqa: BLE001
             return
-        for user in people.filtered(
-                lambda u: u.active and u.id != self.env.uid)[:10]:
-            try:
-                self.activity_schedule(
-                    act_type_xmlid='mail.mail_activity_data_todo',
-                    summary=_('A pay change is waiting for you'),
-                    note=self.name or '', user_id=user.id)
-            except Exception:                   # noqa: BLE001
-                pass
+        people = people.filtered(
+            lambda u: u.active and u.id != self.env.uid)[:10]
+
+        def send(users, self=self):   # `self` keeps _() on the env's language (G12)
+            for person in users:
+                try:
+                    self.activity_schedule(
+                        act_type_xmlid='mail.mail_activity_data_todo',
+                        summary=_('A pay change is waiting for you'),
+                        note=self.name or '', user_id=person.id)
+                except Exception:               # noqa: BLE001
+                    pass
+        # WF2 P2b (D5): with a live route the approval engine already tells
+        # the people it asks; only they are left out (everyone else in the
+        # group still gets this to-do). Kill switch: biz_approval.single_notice
+        self.env['biz.approval.engine'].notify_unless_told(
+            self, people, send, what='pay change %s' % self.id)
 
     # -------------------------------------------------------------- the doors
     def action_submit(self):

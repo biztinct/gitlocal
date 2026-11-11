@@ -424,8 +424,15 @@ class PbGoalSet(models.Model):
             leg(self.env, 'the sent-back email for %s' % self.id,
                 lambda: self._notify_returned())
         elif to_state == 'submitted' and flag(self.env, P_MANAGER_MAIL):
+            # WF2 P2b (D5): with a live route the approval engine tells the
+            # manager itself; this courtesy email is then left out for them
+            # (decided once the engine has opened its step). Kill switch:
+            # biz_approval.single_notice
             leg(self.env, 'the manager email for %s' % self.id,
-                lambda: self._notify_manager())
+                lambda: self.env['biz.approval.engine'].notify_unless_told(
+                    self, self.sudo().manager_user_id,
+                    lambda users, rec=self: rec._notify_manager(),
+                    what='goal sheet %s manager email' % self.id))
         return result
 
     def _stamp_rung(self, to_state):

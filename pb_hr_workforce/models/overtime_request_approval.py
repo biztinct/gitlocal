@@ -330,6 +330,10 @@ class OvertimeRequestApproval(models.Model):
             except Exception as exc:    # noqa: BLE001 — the request exists
                 _logger.warning('pb_hr_workforce: overtime %s could not be '
                                 'sent for approval: %s', rec.id, exc)
+            finally:
+                # WF2 P2b: the line manager's to-do waited for this answer
+                # (overtime_request.py); decide it now, engine asked or not
+                self.env['biz.approval.engine'].single_notice_flush(rec)
         return result
 
     def action_approve(self):

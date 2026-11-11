@@ -80,6 +80,17 @@ class PbGoalSetApproval(models.Model):
 
     _approval_process_key = GOALS_PROCESS_KEY
 
+    #: WF2 P2b (D6): the sheet tells the employee itself when it is agreed
+    #: and locked ("locked" email). Under a route a sent-back sheet goes to
+    #: draft without its "returned" email and a turned-down one sends none,
+    #: so those two stay the approval engine's.
+    _approval_requester_notice = ('approved',)
+
+    def _approval_area_tells_requester(self, request, result):
+        """Only when the sheet really has somewhere to send it."""
+        self.ensure_one()
+        return bool(self._employee_email())
+
     # ==================================================================
     #  What the engine is told
     # ==================================================================

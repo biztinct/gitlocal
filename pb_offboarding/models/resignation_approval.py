@@ -20,7 +20,7 @@ from odoo.addons.biz_approval_workflow.models.chain_shim import (
     manager_step, register_chain, role_step, route,
 )
 
-from .offboarding_common import GROUP_MANAGER
+from .offboarding_common import GROUP_MANAGER, P_RESIGN_MAIL, flag
 
 _logger = logging.getLogger(__name__)
 
@@ -38,6 +38,18 @@ class PbResignationApproval(models.Model):
     _inherit = 'pb.resignation'
 
     _approval_process_key = RESIGN_PROCESS_KEY
+
+    #: WF2 P2b (D6): an agreed resignation emails the employee itself
+    #: ("resignation approved"). A turned-down one is emailed only from the
+    #: Refuse button, not when it is turned down in the approvals inbox, and
+    #: there is no sent-back email: those two stay the approval engine's.
+    _approval_requester_notice = ('approved',)
+
+    def _approval_area_tells_requester(self, request, result):
+        """Only when resignation emails are on and there is an address."""
+        self.ensure_one()
+        return bool(flag(self.env, P_RESIGN_MAIL)
+                    and self._employee_address())
 
     def _chain_title(self):
         self.ensure_one()

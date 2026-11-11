@@ -503,23 +503,30 @@ class PbPayReview(models.Model):
         except Exception:                       # noqa: BLE001
             return
         people = people.filtered(lambda u: u.active and u.id != self.env.uid)
-        for user in people[:10]:
-            try:
-                self.activity_schedule(
-                    act_type_xmlid='mail.mail_activity_data_todo',
-                    summary=_('A pay review is waiting for you'),
-                    note=_('“%(name)s” covers %(people)s people and proposes '
-                           '%(amount)s for the year.',
-                           name=self.name or '',
-                           people=self.people,
-                           amount=self.env['pb.pay.bands']._money(
-                               self.allocated_amount,
-                               self.currency_id
-                               or self.env.company.currency_id)),
-                    user_id=user.id)
-            except Exception:                   # noqa: BLE001
-                _logger.info('pb_pay: could not raise a task for user %s',
-                             user.id)
+
+        def send(users, self=self):   # `self` keeps _() on the env's language (G12)
+            for person in users:
+                try:
+                    self.activity_schedule(
+                        act_type_xmlid='mail.mail_activity_data_todo',
+                        summary=_('A pay review is waiting for you'),
+                        note=_('“%(name)s” covers %(people)s people and '
+                               'proposes %(amount)s for the year.',
+                               name=self.name or '',
+                               people=self.people,
+                               amount=self.env['pb.pay.bands']._money(
+                                   self.allocated_amount,
+                                   self.currency_id
+                                   or self.env.company.currency_id)),
+                        user_id=person.id)
+                except Exception:               # noqa: BLE001
+                    _logger.info('pb_pay: could not raise a task for user %s',
+                                 person.id)
+        # WF2 P2b (D5): the people the approval engine already tells are left
+        # out; everyone else still gets the to-do. Kill switch:
+        # biz_approval.single_notice
+        self.env['biz.approval.engine'].notify_unless_told(
+            self, people[:10], send, what='pay review %s' % self.id)
 
     # ------------------------------------------------------------ the meters
     @api.depends('line_ids.annual_cost_delta', 'line_ids.chips',

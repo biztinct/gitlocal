@@ -70,6 +70,15 @@ class PbGoalChangeApproval(models.Model):
 
     _approval_process_key = CHANGE_PROCESS_KEY
 
+    #: WF2 P2b (D6): a goal change tells the employee itself when it is
+    #: agreed and when it is turned down; "sent back" stays the engine's.
+    _approval_requester_notice = ('approved', 'rejected')
+
+    def _approval_area_tells_requester(self, request, result):
+        """Only when there is somewhere to send it."""
+        self.ensure_one()
+        return bool(self.sudo().set_id._employee_email())
+
     # ==================================================================
     #  What the engine is told
     # ==================================================================

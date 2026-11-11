@@ -190,11 +190,21 @@ class OvertimeRequest(models.Model):
         for rec in self.filtered(lambda r: r.state == 'draft'):
             rec._ot_chain().write({'state': 'submitted'})
             if rec.manager_id and rec.manager_id.user_id:
-                rec.activity_schedule(
-                    'mail.mail_activity_data_todo',
-                    user_id=rec.manager_id.user_id.id,
-                    summary=_('Overtime Request to Approve: %s') % rec.name,
-                )
+                def send(users, self=rec):   # `self` for _() (G12)
+                    self.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        user_id=self.manager_id.user_id.id,
+                        summary=_('Overtime Request to Approve: %s') % self.name,
+                    )
+                # WF2 P2b (D5): when a live route is about to tell the line
+                # manager (the engine is asked right after this, in
+                # overtime_request_approval.py), this to-do is left out for
+                # them. Kill switch: biz_approval.single_notice
+                live = rec._ot_engine_managed() \
+                    if hasattr(rec, '_ot_engine_managed') else None
+                self.env['biz.approval.engine'].notify_unless_told(
+                    rec, rec.manager_id.user_id, send, submitting=True,
+                    live=live, what='overtime %s' % rec.id)
 
     def action_approve(self):
         Ceil = self.env['pb.ot.ceiling']
