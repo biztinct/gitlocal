@@ -97,7 +97,19 @@ class HiringApplicantWorkflowContract(models.Model):
             # a workflow section that waited for one becomes a heading.
             'removes_stages': True,
             'removed_keys': sorted(retired_keys(self.env)),
+            # WF2 P4b (D18): the candidate takes part in a workflow by the
+            # private email link — never a login, never a user.
+            'participants': [{'key': 'candidate', 'label': _('The candidate'), 'audience': 'candidate'}],
         }
+
+    def _workflow_participant(self, key):
+        """Name and email of someone this candidate record names (D18).
+        Only "the candidate" today; nobody else is ever returned."""
+        self.ensure_one()
+        if key != 'candidate':
+            return {}
+        app = self.sudo()
+        return {'name': app.partner_name or app.display_name or '', 'email': (app.email_from or '').strip()}
 
     def _workflow_update(self, key, value):
         """Studio's "Update the record" step: one declared value only. A tag
