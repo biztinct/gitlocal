@@ -42,6 +42,34 @@
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
 
+    <!-- UPDATES P5 — year-to-date figures, their set-up, the pay items that
+         receive them and the pay runs' questions belong to the company. -->
+    <record id="rule_pb_updates_ytd_line_company" model="ir.rule">
+        <field name="name">Updates: year-to-date figures of my companies</field>
+        <field name="model_id" ref="model_pb_updates_ytd_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_pb_updates_ytd_figure_company" model="ir.rule">
+        <field name="name">Updates: year-to-date figure set-up of my companies</field>
+        <field name="model_id" ref="model_pb_updates_ytd_figure"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_pb_updates_ytd_map_company" model="ir.rule">
+        <field name="name">Updates: pay items receiving year-to-date figures, of my companies</field>
+        <field name="model_id" ref="model_pb_updates_ytd_map"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_pb_updates_ytd_use_company" model="ir.rule">
+        <field name="name">Updates: year-to-date figures used by payslips of my companies</field>
+        <field name="model_id" ref="model_pb_updates_ytd_use"/>
+        <field name="domain_force">[('line_id.company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_pb_updates_ytd_ask_company" model="ir.rule">
+        <field name="name">Updates: year-to-date questions of my companies</field>
+        <field name="model_id" ref="model_pb_updates_ytd_ask"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
     <record id="rule_pb_updates_layout_company" model="ir.rule">
         <field name="name">Updates: column matchings of my companies</field>
         <field name="model_id" ref="model_pb_updates_layout"/>

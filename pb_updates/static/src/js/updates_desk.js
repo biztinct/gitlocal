@@ -116,6 +116,8 @@ export class PbUpdatesDesk extends Component {
                     waiting: { months: [], clashes: [], can_choose: false },
                     // UPDATES P4 — the third kind of sheet, and the attendance tile.
                     leave: { available: false, may_set: false, types: [], policy_people: 0, today: "", min: "" },
+                    // UPDATES P5 — the fourth kind: year-to-date figures before Payobook.
+                    ytd: { available: false, may_send: false, may_setup: false, figures: [] },
                     attendance: { available: false } },
             // UPDATES P2d — which kind of sheet: lasting changes, or one-off
             // pay items for one pay month.
@@ -127,6 +129,12 @@ export class PbUpdatesDesk extends Component {
             cutoverNote: "",
             leavePicked: {},
             leaveOutlook: null,
+            // UPDATES P5 — "Figures cover up to" (its year is the tax year),
+            // who approves them, and the year-to-date view.
+            ytdCovers: "",
+            ytdCoversNote: "",
+            ytdOutlook: null,
+            ytd: null,
             monthNote: "",
             openMonth: "",
             choosing: "",
@@ -230,7 +238,7 @@ export class PbUpdatesDesk extends Component {
     get canExport() { return !!this.state.home.can_export; }
 
     get heroBody() {
-        return _t("Change job details, contracts, bank details and ongoing pay items for the whole team from one spreadsheet, any day of the month, add one-off pay items like a bonus to a pay month, and set leave opening balances. You see every change before it happens.");
+        return _t("Change job details, contracts, bank details and ongoing pay items for the whole team from one spreadsheet, any day of the month, add one-off pay items like a bonus to a pay month, set leave opening balances, and load year-to-date figures from before Payobook. You see every change before it happens.");
     }
 
     get noWriteNote() {
@@ -245,6 +253,10 @@ export class PbUpdatesDesk extends Component {
     }
 
     historyIcon(h) {
+        if (h.kind === "ytd") {
+            return { pending: "clock", blocked: "alert", cancelled: "ban", undone: "undo",
+                     rejected: "xCircle", returned: "rotate" }[h.state] || "history";
+        }
         if (h.kind === "leave") {
             return { pending: "clock", blocked: "alert", cancelled: "ban", undone: "undo",
                      rejected: "xCircle", returned: "rotate" }[h.state] || "calendarRange";
@@ -366,7 +378,7 @@ export class PbUpdatesDesk extends Component {
 
     cancelBatch(h) {
         if (h.kind === "oneoff") { return this.cancelOneoff(h); }
-        if (h.kind === "leave") { return this.cancelLeave(h); }
+        if (h.kind === "leave" || h.kind === "ytd") { return this.cancelLeave(h); }
         const pending = h.state === "pending";
         const blocked = h.state === "blocked";
         const values = h.open_values || (h.scheduled || []).reduce((n, s) => n + s.values, 0);
@@ -376,13 +388,21 @@ export class PbUpdatesDesk extends Component {
 
     cancelLabel(h) {
         if (h.kind === "oneoff") { return _t("Cancel"); }
-        if (h.kind === "leave") { return _t("Withdraw"); }
+        if (h.kind === "leave" || h.kind === "ytd") { return _t("Withdraw"); }
         if (h.state === "blocked") { return _t("Cancel it"); }
         return h.state === "pending" ? _t("Withdraw") : _t("Cancel the scheduled part");
     }
 
     historyLine(h) {
         const bits = [whenLabel(h.date)];
+        if (h.kind === "ytd") {
+            if (h.covers_to) { bits.push(_t("tax year %(year)s, up to %(date)s", { year: h.tax_year, date: dayLabel(h.covers_to) })); }
+            bits.push(_t("%(figures)s for %(people)s", {
+                figures: plural(h.values, _t("1 figure"), _t("%s figures")),
+                people: plural(h.people, _t("1 person"), _t("%s people")) }));
+            if (h.user) { bits.push(_t("by %s", h.user)); }
+            return bits.filter(Boolean).join(" · ");
+        }
         if (h.kind === "leave") {
             if (h.cutover) { bits.push(_t("as at %s", dayLabel(h.cutover))); }
             bits.push(_t("%(balances)s for %(people)s", {
@@ -422,6 +442,7 @@ export class PbUpdatesDesk extends Component {
             return h.state_reason || _t("Approved, but it could not be made.");
         }
         if (h.kind === "leave") { return this.leaveHistoryNote(h); }
+        if (h.kind === "ytd") { return this.ytdHistoryNote(h); }
         if (h.kind === "oneoff") {
             const bits = [];
             if (h.state === "pending") {
@@ -506,6 +527,9 @@ export class PbUpdatesDesk extends Component {
     }
 
     draftKind(d) {
+        if (d.kind === "ytd") {
+            return _t("Year-to-date figures up to %s", dayLabel(d.covers_to) || d.covers_label);
+        }
         if (d.kind === "leave") {
             return _t("Leave balances as at %s", dayLabel(d.cutover) || d.cutover_label);
         }
@@ -515,7 +539,7 @@ export class PbUpdatesDesk extends Component {
     }
 
     draftIcon(d) {
-        return { oneoff: "coins", leave: "calendarRange" }[d.kind] || "fileSpreadsheet";
+        return { oneoff: "coins", leave: "calendarRange", ytd: "history" }[d.kind] || "fileSpreadsheet";
     }
 
     draftStep(d) {
@@ -603,13 +627,20 @@ export class PbUpdatesDesk extends Component {
     /** UPDATES P4 — the third kind: leave opening balances. */
     get leaveInfo() { return this.state.home.leave || { available: false, types: [] }; }
     get isLeave() { return this.state.kind === "leave"; }
+    /** UPDATES P5 — the fourth kind: year-to-date figures before Payobook. */
+    get ytdInfo() { return this.state.home.ytd || { available: false, figures: [] }; }
+    get isYtd() { return this.state.kind === "ytd"; }
     /** The first kind, the only one with start dates, lanes and new people. */
     get isLasting() { return this.state.kind === "lasting"; }
 
     setKind(kind) {
         if (kind === "oneoff" && !this.oneoffInfo.available) { return; }
         if (kind === "leave" && !this.leaveInfo.available) { return; }
-        this.state.kind = ["oneoff", "leave"].includes(kind) ? kind : "lasting";
+        if (kind === "ytd" && !this.ytdInfo.available) { return; }
+        this.state.kind = ["oneoff", "leave", "ytd"].includes(kind) ? kind : "lasting";
+        if (this.isYtd && !this.state.ytdCovers) {
+            this.state.ytdCovers = this.ytdInfo.default || this.ytdInfo.today || luxon.DateTime.now().toISODate();
+        }
         if (this.isOneoff && !this.state.month) {
             this.state.month = this.oneoffInfo.this_month || "";
         }
@@ -724,6 +755,8 @@ export class PbUpdatesDesk extends Component {
         this.state.monthNote = "";
         this.state.cutoverNote = "";
         this.state.leaveOutlook = null;
+        this.state.ytdOutlook = null;
+        this.state.ytdCoversNote = "";
         Object.assign(this.state.file, { name: "", b64: "", busy: false, rows: 0, phase: "", error: "", over: 0 });
         Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
         this.state.match = null;
@@ -780,6 +813,12 @@ export class PbUpdatesDesk extends Component {
     }
 
     get downloadHint() {
+        if (this.isYtd) {
+            if (!this.canExport) {
+                return _t("Downloading a sheet needs permission to export employee records. You can still upload a file of your own.");
+            }
+            return _t("One row per person and a column for each figure, plus Source. Figures already set are filled in and shaded. Leave a cell blank and nothing changes for it.");
+        }
         if (this.isLeave) {
             if (!this.canExport) {
                 return _t("Downloading a sheet needs permission to export employee records. You can still upload a file of your own.");
@@ -811,7 +850,9 @@ export class PbUpdatesDesk extends Component {
         if (d.busy || !this.canExport || !this.canDownload) { return; }
         Object.assign(d, { busy: true, msg: "", tone: "" });
         try {
-            const res = this.isLeave
+            const res = this.isYtd
+                ? await this.orm.call(MODEL, "download_ytd_sheet", [], { covers_to: this.state.ytdCovers })
+                : this.isLeave
                 ? await this.orm.call(MODEL, "download_leave_sheet", [], {
                     cutover: this.state.cutover, type_ids: this.pickedLeaveTypes.map((t) => t.id) })
                 : this.isOneoff
@@ -944,6 +985,12 @@ export class PbUpdatesDesk extends Component {
                     sheet: dayLabel(res.sheet_date), picked: dayLabel(this.state.cutover) });
                 this.state.cutover = res.sheet_date;
             }
+            if (this.isYtd && res.sheet_date && res.sheet_date !== this.state.ytdCovers) {
+                // A downloaded sheet says which date it covers up to: that date wins.
+                this.state.ytdCoversNote = _t("This sheet was made for figures up to %(sheet)s, so it is used for %(sheet)s, not %(picked)s.", {
+                    sheet: dayLabel(res.sheet_date), picked: dayLabel(this.state.ytdCovers) });
+                this.state.ytdCovers = res.sheet_date;
+            }
             if (this.isOneoff && res.sheet_month && res.sheet_month !== this.state.month) {
                 // A downloaded sheet says which month it is for: that month wins.
                 this.state.monthNote = _t("This sheet was made for %(sheet)s, so it is used for %(sheet)s, not %(picked)s.", {
@@ -968,6 +1015,7 @@ export class PbUpdatesDesk extends Component {
 
     /** The extra arguments a one-off sheet sends with every call. */
     kindArgs(args) {
+        if (this.isYtd) { return Object.assign(args, { kind: "ytd", cutover: this.state.ytdCovers }); }
         if (this.isLeave) { return Object.assign(args, { kind: "leave", cutover: this.state.cutover }); }
         return this.isOneoff ? Object.assign(args, { kind: "oneoff", month: this.state.month }) : args;
     }
@@ -1156,6 +1204,8 @@ export class PbUpdatesDesk extends Component {
             leave_avail: { label: _t("Leave balance"), tone: "leave", icon: "calendarRange" },
             leave_carry: { label: _t("Kept with the balance"), tone: "leave", icon: "history" },
             leave_taken: { label: _t("Kept with the balance"), tone: "leave", icon: "history" },
+            ytd: { label: _t("Year-to-date figure"), tone: "pay", icon: "history" },
+            ytd_source: { label: _t("Kept with the figures"), tone: "person", icon: "fileText" },
         }[group] || { label: "", tone: "none", icon: "" };
     }
 
@@ -1294,6 +1344,12 @@ export class PbUpdatesDesk extends Component {
                 cutover: res.cutover || "",
                 cutover_label: res.cutover_label || "",
                 policy_people: res.policy_people || 0,
+                // UPDATES P5 — year-to-date figures up to one date.
+                ytd: !!res.ytd,
+                covers_to: res.covers_to || "",
+                covers_label: res.covers_label || "",
+                tax_year: res.tax_year || 0,
+                late: res.late || 0,
                 // UPDATES P2d — a sheet of one-off pay items for one month.
                 oneoff: !!res.oneoff,
                 month: res.month || "",
@@ -1347,7 +1403,8 @@ export class PbUpdatesDesk extends Component {
     toApply() {
         const a = this.state.apply;
         if (!a.touched) {
-            a.name = this.isLeave ? _t("Leave opening balances as at %s", this.cutoverLabel)
+            a.name = this.isYtd ? _t("Year-to-date figures %(year)s, up to %(date)s", { year: this.ytdYear, date: this.ytdCoversLabel })
+                : this.isLeave ? _t("Leave opening balances as at %s", this.cutoverLabel)
                 : this.isOneoff ? _t("%s one-off pay items", this.monthLabel) : defaultName();
         }
         a.error = "";
@@ -1356,6 +1413,7 @@ export class PbUpdatesDesk extends Component {
         this.refreshLanes();
         this.refreshJoinerOutlook();
         this.refreshLeaveOutlook();
+        this.refreshYtdOutlook();
     }
 
     // =================================================================
@@ -1631,6 +1689,12 @@ export class PbUpdatesDesk extends Component {
 
     get applyLabel() {
         const n = this.applyCounts.changes;
+        if (this.isYtd) {
+            if (this.state.apply.busy) { return plural(n, _t("Sending 1 figure…"), _t("Sending %s figures…")); }
+            return this.state.ytdOutlook && this.state.ytdOutlook.outcome === "now"
+                ? plural(n, _t("Set 1 figure"), _t("Set %s figures"))
+                : plural(n, _t("Send 1 figure for approval"), _t("Send %s figures for approval"));
+        }
         if (this.isLeave) {
             // Balances, not values: "carried" and "taken" travel with one.
             const n = this.leaveApply ? this.leaveApply.balances : 0;
@@ -1678,6 +1742,7 @@ export class PbUpdatesDesk extends Component {
     }
 
     get applyIcon() {
+        if (this.isYtd) { return "history"; }
         if (this.isLeave) { return "calendarRange"; }
         if (this.isOneoff) { return "coins"; }
         return this.laterCount && !this.nowCount ? "calendarClock" : "check";
@@ -1700,7 +1765,7 @@ export class PbUpdatesDesk extends Component {
 
     async applyNow() {
         const a = this.state.apply;
-        if (a.busy || !this.canWrite) { return; }
+        if (a.busy || !(this.isYtd ? this.ytdInfo.may_send : this.canWrite)) { return; }
         if (this.nameMissing) {
             a.error = _t("Give this update a name so you can find it later in Past updates.");
             return;
@@ -1812,6 +1877,10 @@ export class PbUpdatesDesk extends Component {
                 : plural(d.joiners_added, _t("1 new employee added"), _t("%s new employees added"));
         }
         if (d.kind === "oneoff") { return d.pending ? _t("Sent for approval") : _t("Approved"); }
+        if (d.kind === "ytd") {
+            if (d.pending) { return _t("Sent for approval"); }
+            return plural(d.written, _t("1 figure set"), _t("%s figures set"));
+        }
         if (d.kind === "leave") {
             if (d.pending) { return _t("Sent for approval"); }
             return plural(d.written, _t("1 balance set"), _t("%s balances set"));
@@ -1830,6 +1899,13 @@ export class PbUpdatesDesk extends Component {
     /** "12 values changed today · 30 are scheduled for 1 Dec 2026" */
     get doneWhenLine() {
         const d = this.state.done;
+        if (d && d.kind === "ytd") {
+            const bits = [_t("Tax year %(year)s, up to %(date)s", { year: d.tax_year, date: dayLabel(d.covers_to) || d.covers_label })];
+            if (d.replaced) { bits.push(plural(d.replaced, _t("1 replaces an earlier figure"), _t("%s replace earlier figures"))); }
+            if (d.cleared) { bits.push(plural(d.cleared, _t("1 removed"), _t("%s removed"))); }
+            if (d.not_set) { bits.push(plural(d.not_set, _t("1 could not be set"), _t("%s could not be set"))); }
+            return bits.join(" · ");
+        }
         if (d && d.kind === "leave") {
             const bits = [_t("As at %s", dayLabel(d.cutover) || d.cutover_label)];
             if (d.days_label) { bits.push(_t("%s in total", d.days_label)); }
@@ -1878,6 +1954,16 @@ export class PbUpdatesDesk extends Component {
             return d.joiners_waiting
                 ? _t("Nobody is added until the request is approved. The rest of each row follows by itself once the person exists.")
                 : _t("Saved as “%s”. You will find it under Past updates, with the original file.", d.batch_name || this.state.apply.name);
+        }
+        if (d.kind === "ytd") {
+            const what = plural(d.values, _t("1 figure"), _t("%s figures"));
+            if (d.pending) {
+                return d.with_whom
+                    ? _t("%(what)s for %(people)s are waiting with %(who)s. Nothing is set until they approve.", {
+                        what, who: d.with_whom, people: plural(d.people, _t("1 person"), _t("%s people")) })
+                    : _t("%s are waiting for approval. Nothing is set until it is approved.", what);
+            }
+            return _t("Saved as “%s”. The figures are on the Year-to-date figures screen and on each person's tax summary. No pay run receives them until a payroll manager chooses which pay item does.", d.batch_name || this.state.apply.name);
         }
         if (d.kind === "leave") {
             const what = plural(d.values, _t("1 balance"), _t("%s balances"));
@@ -1946,6 +2032,10 @@ export class PbUpdatesDesk extends Component {
     async undoDone() {
         const d = this.state.done;
         if (!d || !d.batch_id) { return; }
+        if (d.kind === "ytd") {
+            await this.undoYtd({ id: d.batch_id, name: d.batch_name || this.state.apply.name }, true);
+            return;
+        }
         if (d.kind === "leave") {
             await this.undoLeave({ id: d.batch_id, name: d.batch_name || this.state.apply.name,
                                    permanent: d.permanent || 0 }, true);
@@ -1957,6 +2047,7 @@ export class PbUpdatesDesk extends Component {
 
     get undoDoneLabel() {
         if (this.state.done && this.state.done.kind === "leave") { return _t("Undo these balances"); }
+        if (this.state.done && this.state.done.kind === "ytd") { return _t("Undo these figures"); }
         return this.doneScheduled.length ? _t("Undo what was applied") : _t("Undo this update");
     }
 
@@ -2030,6 +2121,7 @@ export class PbUpdatesDesk extends Component {
     }
 
     get canDownload() {
+        if (this.isYtd) { return !this.ytdCoversError; }
         if (this.isLeave) { return this.pickedLeaveTypes.length > 0 && !this.cutoverError; }
         return this.isOneoff || this.pickedTopics.length > 0;
     }
@@ -2205,6 +2297,7 @@ export class PbUpdatesDesk extends Component {
 
     undoFromHistory(h) {
         if (h.kind === "leave") { return this.undoLeave(h); }
+        if (h.kind === "ytd") { return this.undoYtd(h); }
         return this.undoBatch(h.id, h.name, false, h.has_open, 0, !!(h.joiners && h.joiners.length));
     }
 
@@ -2300,7 +2393,7 @@ Object.assign(PbUpdatesDesk.prototype, {
             const res = await this.orm.silent.call(MODEL, "save_draft", [], {
                 draft_id: this.state.draftId || 0,
                 kind: this.state.kind,
-                month: (this.isLeave ? this.state.cutover : this.state.month) || false,
+                month: (this.isYtd ? this.state.ytdCovers : this.isLeave ? this.state.cutover : this.state.month) || false,
                 filename: this.state.file.name,
                 file_b64: first ? this.state.file.b64 : "",
                 columns: this.state.match ? this.matchColumns() : null,
@@ -2332,6 +2425,7 @@ Object.assign(PbUpdatesDesk.prototype, {
             this.setKind(res.kind);
             if (res.kind === "oneoff" && res.month) { this.state.month = res.month; }
             if (res.kind === "leave" && res.cutover) { this.state.cutover = res.cutover; }
+            if (res.kind === "ytd" && res.covers_to) { this.state.ytdCovers = res.covers_to; }
             const f = this.state.file;
             Object.assign(f, { name: res.filename, b64: res.file_b64, busy: true, phase: "read", error: "" });
             this.go("start");

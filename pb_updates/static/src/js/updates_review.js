@@ -649,7 +649,12 @@ export class UpdReview extends Component {
                                                                : _t("%s things need your attention.", grouped(c.attention)) };
         }
         const base = c.changes
-            ? (this.rv.leave
+            ? (this.rv.ytd
+                ? _t("This sheet sets %(figures)s for %(people)s: tax year %(year)s, before Payobook up to %(date)s.", {
+                    figures: plural(c.changes, _t("1 year-to-date figure"), _t("%s year-to-date figures")),
+                    people: plural(c.people, _t("1 person"), _t("%s people")),
+                    year: this.rv.tax_year || "", date: dayLabel(this.rv.covers_to) || this.rv.covers_label || "" })
+                : this.rv.leave
                 ? _t("This sheet sets %(balances)s for %(people)s, as at %(date)s.", {
                     balances: plural(this.leaveSums.balances, _t("1 opening balance"), _t("%s opening balances")),
                     people: plural(this.leaveSums.people, _t("1 person"), _t("%s people")),
@@ -844,7 +849,7 @@ export class UpdReview extends Component {
     // ------------------------------------------------- UPDATES P3b — new employees
     get openUnmatchedCount() { return this.openUnmatched.length; }
     get canAddNew() {
-        return !!(this.props.canHire && this.props.canWrite && this.props.judgeNew && !this.rv.oneoff && !this.rv.leave
+        return !!(this.props.canHire && this.props.canWrite && this.props.judgeNew && !this.rv.oneoff && !this.rv.leave && !this.rv.ytd
                   && ((this.rv.unmatched || []).some((u) => !u.bound && !u.skipped) || this.rv.addNew));
     }
     get newChoiceCount() {
@@ -976,7 +981,7 @@ export class UpdReview extends Component {
 
     /** The legend strip: each lane in this file, its count and its rule. */
     get laneStrip() {
-        if (this.rv.oneoff || this.rv.leave) { return []; }
+        if (this.rv.oneoff || this.rv.leave || this.rv.ytd) { return []; }
         const counts = laneCounts(this.rv);
         const present = new Set((this.rv.columns || []).map((c) => c.lane).filter(Boolean));
         return LANES.filter((l) => present.has(l)).map((lane) => ({

@@ -70,7 +70,25 @@
                 <span t-if="!leaveInfo.available" class="pbu-tile-off"><t t-out="icon('info', 13)"/> No leave type keeps a balance yet</span>
                 <span t-elif="!mayLeave" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Setting them needs the Time Off administrator role</span>
               </button>
+              <!-- UPDATES P5 — the fourth kind of sheet. -->
+              <button type="button" class="pbu-tile pbu-tile--ytd" t-att-class="{ 'is-off': !ytdInfo.available }"
+                      t-on-click="() => this.newUpdate('ytd')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('history', 20)"/></span>
+                <span class="pbu-tile-t">Year-to-date figures before Payobook</span>
+                <span class="pbu-tile-d">What each person was paid and taxed this year before your company started here. For tax summaries and the year-end tax step.</span>
+                <span t-if="!ytdInfo.available" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Seeing pay figures needs a payroll role</span>
+              </button>
             </div>
+
+            <!-- UPDATES P5 — the year-to-date view. -->
+            <button t-if="ytdInfo.available" type="button" class="pbu-ytd-door" t-on-click="openYtdView">
+              <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('history', 16)"/></span>
+              <span class="pbu-ytd-door-t">
+                <b>Year-to-date figures</b>
+                <span class="pbu-sub" t-esc="ytdDoorLine"/>
+              </span>
+              <t t-out="icon('arrowRight', 16)"/>
+            </button>
 
             <!-- UPDATES P3b — unfinished updates, private to whoever made them. -->
             <section t-if="drafts.length" class="pbu-card pbu-drafts" aria-labelledby="pbu-drafts-h">
@@ -141,7 +159,8 @@
               <header class="pbu-card-h">
                 <div>
                   <h2 class="pbu-h2"><t t-out="icon('coins', 18)"/> Waiting for a pay run</h2>
-                  <p class="pbu-sub">One-off amounts approved for a pay month. Each is paid once, by the first pay run of that month for the person's pay scheme.</p>
+                  <p t-if="waitingMonths.length" class="pbu-sub">One-off amounts approved for a pay month. Each is paid once, by the first pay run of that month for the person's pay scheme.</p>
+                  <p t-else="" class="pbu-sub">A pay run is waiting for you to choose between two amounts.</p>
                 </div>
               </header>
               <div t-if="clashes.length" class="pbu-clash">
@@ -316,6 +335,8 @@
                         <div class="pbu-hlane-t">
                           <b t-esc="l.label"/>
                           <span class="pbu-sub" t-esc="hlaneLine(l)"/>
+                          <t t-set="fix" t-value="l.fix"/>
+                          <t t-if="l.fix" t-call="pb_updates.WayOut"/>
                         </div>
                         <span t-attf-class="pbu-chip pbu-chip--{{ hlaneTone(l) }}" t-esc="l.state_label"/>
                         <button t-if="l.can_undo" type="button" class="pbim-btn ghost pbim-btn-sm"
@@ -352,6 +373,9 @@
             </section>
           </t>
 
+          <!-- ================================================ YEAR TO DATE -->
+          <t t-elif="state.view === 'ytd' and state.ytd" t-call="pb_updates.YtdView"/>
+
           <!-- ======================================================= START -->
           <section t-elif="state.view === 'start'" class="pbu-card pbu-flow">
             <t t-call="pb_updates.Steps"/>
@@ -387,6 +411,18 @@
                   <span t-elif="!mayLeave" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can check a sheet; setting balances needs the Time Off administrator role.</span>
                 </span>
               </button>
+              <!-- UPDATES P5 — the fourth kind. -->
+              <button type="button" role="radio" class="pbu-kind-card"
+                      t-att-aria-checked="isYtd ? 'true' : 'false'" t-att-disabled="!ytdInfo.available"
+                      t-on-click="() => this.setKind('ytd')">
+                <span class="pbu-ib pbu-ib--pri"><t t-out="icon('history', 20)"/></span>
+                <span class="pbu-kind-t">
+                  <b>Year-to-date figures before Payobook</b>
+                  <span class="pbu-sub">Gross pay, tax and contributions so far this year, from the payroll used before. Set once, replaced or cleared later.</span>
+                  <span t-if="!ytdInfo.available" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> Seeing pay figures needs a payroll role.</span>
+                  <span t-elif="!ytdInfo.may_send" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can check a sheet; sending it needs the Payroll Officer role.</span>
+                </span>
+              </button>
             </div>
             <!-- UPDATES P4 (D17) — attendance and timesheets have their own screen. -->
             <button t-if="attendance.available" type="button" class="pbu-attend" t-on-click="openAttendance">
@@ -397,6 +433,8 @@
               </span>
               <t t-out="icon('arrowRight', 16)"/>
             </button>
+            <!-- UPDATES P5 — the tax year and the date the figures cover up to. -->
+            <t t-if="isYtd" t-call="pb_updates.YtdStart"/>
             <!-- UPDATES P4 — the date and the leave types of a leave sheet. -->
             <div t-if="isLeave" class="pbu-month pbu-leave-date">
               <label for="pbu-cutover" class="pbu-label">Balances as at</label>
@@ -620,6 +658,10 @@
               <t t-out="icon('coins', 16)"/>
               <div><b t-esc="oneoffMatchLead"/> <span>A blank cell changes nothing. Type amounts without a minus sign: each pay item already says whether it adds to pay or takes from pay. CLEAR takes back an amount waiting for that month.</span></div>
             </div>
+            <div t-elif="isYtd" class="pbu-note">
+              <t t-out="icon('history', 16)"/>
+              <div><b t-esc="ytdMatchLead"/> <span>A blank cell changes nothing. Type amounts without a currency or a minus sign; months counted is a whole number from 0 to 12. CLEAR removes a figure that is set. A Source column is kept with the figures.</span></div>
+            </div>
             <div t-elif="isLeave" class="pbu-note">
               <t t-out="icon('calendarRange', 16)"/>
               <div><b t-esc="leaveMatchLead"/> <span>A blank cell changes nothing. Type days, or hours where the leave type is counted in hours. A balance can be set once per person and leave type.</span></div>
@@ -678,6 +720,7 @@
                   <span class="pbu-ib pbu-ib--pri"><t t-out="icon('pencil', 17)"/></span>
                   <div t-if="isOneoff"><b>One-off amounts</b><span class="pbu-sub" t-esc="oneoffEachLine"/></div>
                   <div t-elif="isLeave"><b>Values sent</b><span class="pbu-sub">Balances, and what is kept with them.</span></div>
+                  <div t-elif="isYtd"><b>Figures</b><span class="pbu-sub">Each kept with what it replaces.</span></div>
                   <div t-else=""><b>Values that change</b><span class="pbu-sub">Each one is recorded with its old value.</span></div>
                   <span class="pbu-n" t-esc="grouped(applyCounts.changes)"/>
                 </div>
@@ -702,6 +745,9 @@
                   <span t-attf-class="pbu-lanecard-out is-{{ l.outcome }}">
                     <t t-out="icon(laneOutIcon(l), 14)"/><span t-esc="l.line"/>
                   </span>
+                  <!-- UPDATES P5 (P6 deviation 1) — the way out. -->
+                  <t t-set="fix" t-value="l.fix"/>
+                  <t t-if="l.outcome === 'nobody' and l.fix" t-call="pb_updates.WayOut"/>
                 </div>
               </section>
               <p t-elif="isLasting and state.lanesBusy" class="pbu-sub"><span class="pbu-spin sm"/> Working out who approves what…</p>
@@ -752,6 +798,8 @@
                   <t t-else=""><span class="pbu-spin sm"/><span>Working out who approves these…</span></t>
                 </p>
               </section>
+              <!-- UPDATES P5 — the tax year, the totals, who decides. -->
+              <t t-if="isYtd" t-call="pb_updates.YtdApply"/>
               <!-- UPDATES P2c — when do these changes start? -->
               <section t-if="isLasting" class="pbu-when-card" aria-labelledby="pbu-when-h">
                 <div class="pbu-when-head">
@@ -802,6 +850,10 @@
                 <t t-out="icon('ban', 16)"/>
                 <div>You can cancel these from the Updates home until a pay run has taken them. If your company asks for approval, no pay run reads them until they are approved.</div>
               </div>
+              <div t-elif="isYtd" class="pbu-note">
+                <t t-out="icon('undo', 16)"/>
+                <div><b>You can undo this.</b> One click in Past updates takes these figures back and brings back any they replaced, unless a finished payslip has used one. If your company asks for approval, nothing is set until it is approved.</div>
+              </div>
               <div t-elif="isLeave" t-attf-class="pbu-note {{ leaveApply and leaveApply.policy ? 'pbu-note--warn' : '' }}">
                 <t t-out="icon(leaveApply and leaveApply.policy and !leaveApply.plain ? 'lock' : 'undo', 16)"/>
                 <div><b>What undo can do.</b> <span t-esc="leaveUndoLine"/></div>
@@ -817,12 +869,13 @@
             </div>
             <span t-if="state.apply.busy" class="pbu-prog pbu-prog--run"><i/></span>
             <p t-if="isLeave and !mayLeave" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these balances, but setting them needs the Time Off administrator role.</span></p>
-            <p t-elif="!isLeave and !canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these changes, but applying them needs permission to change employee records. Ask an administrator for the HR or Payroll Officer role.</span></p>
+            <p t-elif="isYtd and !ytdInfo.may_send" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these figures, but sending them needs the Payroll Officer role.</span></p>
+            <p t-elif="!isLeave and !isYtd and !canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these changes, but applying them needs permission to change employee records. Ask an administrator for the HR or Payroll Officer role.</span></p>
             <div class="pbu-bar">
               <button type="button" class="pbim-btn ghost" t-att-disabled="state.apply.busy" t-on-click="() => this.go('review')">
                 <t t-out="icon('back', 15)"/> Back
               </button>
-              <button t-if="isLeave ? mayLeave : canWrite" type="button" class="pbim-btn primary"
+              <button t-if="isLeave ? mayLeave : isYtd ? ytdInfo.may_send : canWrite" type="button" class="pbim-btn primary"
                       t-att-disabled="state.apply.busy or nameMissing or (!applyCounts.changes and !newCount) or (isLasting and (whenDateError or tooManyDates)) or (newCount and state.joinerOutlook and state.joinerOutlook.outcome === 'none')"
                       t-on-click="applyNow">
                 <span t-if="state.apply.busy" class="pbu-spin sm on-dark"/>
@@ -835,17 +888,19 @@
           <!-- ======================================================= DONE -->
           <section t-elif="state.view === 'done'" class="pbu-card pbu-flow pbu-done">
             <span t-attf-class="pbu-done-ic pbu-ib pbu-ib--{{ (state.done.pending or doneOnlyWaitingHires) ? 'info' : state.done.nothing ? 'muted' : doneOnlyLater ? 'pri' : 'ok' }}">
-              <t t-out="icon((state.done.pending or doneOnlyWaitingHires) ? 'clock' : state.done.nothing ? 'info' : state.done.kind === 'oneoff' ? 'coins' : state.done.kind === 'leave' ? 'calendarRange' : doneOnlyLater ? 'calendarClock' : 'checkCircle', 26)"/>
+              <t t-out="icon((state.done.pending or doneOnlyWaitingHires) ? 'clock' : state.done.nothing ? 'info' : state.done.kind === 'oneoff' ? 'coins' : state.done.kind === 'leave' ? 'calendarRange' : state.done.kind === 'ytd' ? 'history' : doneOnlyLater ? 'calendarClock' : 'checkCircle', 26)"/>
             </span>
             <h1 class="pbu-h1" t-esc="doneTitle"/>
             <p class="pbu-lead" t-esc="doneLine"/>
-            <p t-if="doneWhenLine" class="pbu-when-sum"><t t-out="icon(state.done.kind === 'oneoff' ? 'coins' : state.done.kind === 'leave' ? 'calendarRange' : 'calendarClock', 14)"/><span t-esc="doneWhenLine"/></p>
+            <p t-if="doneWhenLine" class="pbu-when-sum"><t t-out="icon(state.done.kind === 'oneoff' ? 'coins' : state.done.kind === 'leave' ? 'calendarRange' : state.done.kind === 'ytd' ? 'history' : 'calendarClock', 14)"/><span t-esc="doneWhenLine"/></p>
             <ul t-if="doneLanes.length" class="pbu-hlanes" aria-label="Each part of this update">
               <li t-foreach="doneLanes" t-as="l" t-key="l.apply_id" t-attf-class="pbu-hlane pbu-hlane--{{ l.lane }}">
                 <span class="pbu-hlane-ic"><t t-out="icon(laneIcon(l.lane), 14)"/></span>
                 <div class="pbu-hlane-t">
                   <b t-esc="laneName(l.lane)"/>
                   <span class="pbu-sub" t-esc="doneLaneLine(l)"/>
+                  <t t-set="fix" t-value="l.fix"/>
+                  <t t-if="l.fix" t-call="pb_updates.WayOut"/>
                 </div>
                 <span t-attf-class="pbu-chip pbu-chip--{{ doneLaneTone(l) }}">
                   <t t-if="l.pending">Waiting</t><t t-elif="l.scheduled">Scheduled</t><t t-else="">Done</t>
@@ -886,6 +941,11 @@
             </div>
             <div class="pbu-row">
               <button type="button" class="pbim-btn primary" t-on-click="close">Back to Updates</button>
+              <!-- UPDATES P5 — straight to the figures just set. -->
+              <button t-if="state.done.kind === 'ytd' and !state.done.nothing" type="button" class="pbim-btn outline"
+                      t-on-click="openYtdView">
+                <t t-out="icon('history', 15)"/> See the year-to-date figures
+              </button>
               <button t-if="canUndoDone" type="button" class="pbim-btn ghost"
                       t-on-click="undoDone">
                 <t t-out="icon('undo', 15)"/> <t t-esc="undoDoneLabel"/>
@@ -1014,6 +1074,13 @@
         <span t-if="leavePolicyChip" class="pbu-chip pbu-chip--pri"><t t-out="icon('shieldCheck', 12)"/><t t-esc="leavePolicyChip"/></span>
       </div>
 
+      <!-- UPDATES P5 — the tax year, the date and the totals. -->
+      <div t-if="rv.ytd" class="pbu-oneoff-strip pbu-ytd-strip" aria-live="polite">
+        <span class="pbu-oneoff-month"><t t-out="icon('history', 15)"/><b t-esc="ytdStripLine"/></span>
+        <span class="pbu-leave-sum" t-esc="ytdSummary"/>
+        <span t-if="ytdLateChip" class="pbu-chip pbu-chip--warn"><t t-out="icon('alert', 12)"/><t t-esc="ytdLateChip"/></span>
+      </div>
+
       <!-- UPDATES P2d — the month and its totals, before the grid. -->
       <div t-if="rv.oneoff" class="pbu-oneoff-strip" aria-live="polite">
         <span class="pbu-oneoff-month"><t t-out="icon('coins', 15)"/><b t-esc="stripMonthLine"/></span>
@@ -1082,6 +1149,7 @@
                   <t t-out="icon(laneIcon(col.lane), 11)"/><t t-esc="laneLabel(col.lane)"/>
                 </small>
                 <small t-if="rv.leave" t-attf-class="pbu-coltag {{ col.role === 'avail' ? 'is-earn' : 'is-take' }}" t-esc="leaveColTag(col)"/>
+                <small t-if="rv.ytd" class="pbu-coltag is-earn" t-esc="ytdColTag(col)"/>
                 <small t-if="rv.oneoff" t-attf-class="pbu-coltag {{ col.role === 'deduction' ? 'is-take' : 'is-earn' }}">
                   <t t-esc="roleLabel(col)"/><t t-if="colTotal(col)"> · <t t-esc="colTotal(col)"/></t>
                 </small>
@@ -1164,6 +1232,7 @@
                     <t t-if="row.twice"> · <span class="pbu-tag pbu-tag--warn">In the file twice</span></t>
                     <t t-if="row.paid_month"> · <span class="pbu-tag pbu-tag--warn" t-att-title="row.paid_note" t-esc="paidTag"/></t>
                     <t t-if="rv.leave and row.policy"> · <span class="pbu-tag">Absence policy</span></t>
+                    <t t-if="rv.ytd and row.late"> · <span class="pbu-tag pbu-tag--warn" t-att-title="row.late_note">Joined after this date</span></t>
                   </span>
                   <span t-if="rv.pay_items" class="pbu-who-sch" t-att-title="row.scheme or noSchemeTitle()">
                     <t t-if="row.scheme" t-esc="row.scheme"/>
@@ -1192,7 +1261,7 @@
                   </t>
                   <t t-elif="k === 'change'">
                     <span t-if="cell.old" class="pbu-was" t-esc="cell.old"/>
-                    <span t-elif="rv.oneoff or rv.leave or row.isNew" class="pbu-was pbu-was--empty">new</span>
+                    <span t-elif="rv.oneoff or rv.leave or rv.ytd or row.isNew" class="pbu-was pbu-was--empty">new</span>
                     <span t-else="" class="pbu-was pbu-was--empty">empty</span>
                     <span class="pbu-now"><t t-esc="cell.new"/><t t-if="cell.fixed" t-out="icon('check', 12)"/></span>
                   </t>

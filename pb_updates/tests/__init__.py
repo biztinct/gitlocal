@@ -6,3 +6,4 @@ from . import test_updates_p3a
 from . import test_updates_p3b
 from . import test_updates_p3c
 from . import test_updates_p4
+from . import test_updates_p5

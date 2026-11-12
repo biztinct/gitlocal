@@ -6993,3 +6993,1864 @@ msgstr "công ty này"
 #: code:addons/pb_updates/static/src/js/updates_desk.js:0
 msgid "“%(name)s”: %(msg)s"
 msgstr "“%(name)s”: %(msg)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "%(figure)s for %(who)s was used in pay run %(run)s, so it stays."
+msgstr ""
+"%(figure)s của %(who)s đã được dùng trong kỳ lương %(run)s, nên được giữ "
+"lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%(figure)s for %(who)s was used in pay run %(run)s. It can no longer be "
+"changed here."
+msgstr ""
+"%(figure)s của %(who)s đã được dùng trong kỳ lương %(run)s. Không thể thay "
+"đổi tại đây nữa."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%(figure)s is not a year-to-date figure in %(company)s, where %(who)s works."
+msgstr ""
+"%(figure)s không phải là số liệu lũy kế tại %(company)s, nơi %(who)s làm "
+"việc."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "%(figure)s · %(year)s, up to %(date)s"
+msgstr "%(figure)s · %(year)s, đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%(figures)s for %(people)s"
+msgstr "%(figures)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%(from)s–%(to)s of %(total)s people"
+msgstr "%(from)s–%(to)s trong %(total)s người"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_payrun.py:0
+msgid "%(item)s for %(name)s: %(amount)s is used in pay run %(run)s."
+msgstr "%(item)s của %(name)s: dùng %(amount)s trong kỳ lương %(run)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/models/updates_ytd_payrun.py:0
+msgid ""
+"%(item)s for %(name)s: %(updates)s from the year-to-date figures in Updates,"
+" %(file)s in the pay data file. Choose which one to use in this pay run."
+msgstr ""
+"%(item)s của %(name)s: %(updates)s theo số liệu lũy kế trong Cập nhật, "
+"%(file)s trong tệp dữ liệu lương. Hãy chọn số dùng cho kỳ lương này."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%(item)s receives %(figure)s · %(basis)s"
+msgstr "%(item)s nhận %(figure)s · %(basis)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%(n)s could not be set, for example %(who)s · %(what)s: %(why)s"
+msgstr "%(n)s số liệu không thể đặt, ví dụ %(who)s · %(what)s: %(why)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(product)s year to date %(year)s.xlsx"
+msgstr "%(product)s lũy kế năm %(year)s.xlsx"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(product)s year to date for %(scheme)s %(month)s.xlsx"
+msgstr "%(product)s lũy kế cho %(scheme)s %(month)s.xlsx"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(product)s year-to-date figures %(year)s.xlsx"
+msgstr "%(product)s số liệu lũy kế %(year)s.xlsx"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(scheme)s · pay period %(from)s to %(to)s"
+msgstr "%(scheme)s · kỳ lương từ %(from)s đến %(to)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(who)s's %(figure)s is already waiting for approval in “%(batch)s”."
+msgstr "%(figure)s của %(who)s đang chờ phê duyệt trong “%(batch)s”."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s figures"
+msgstr "%s số liệu"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s figures cancelled before they were set."
+msgstr "Đã hủy %s số liệu trước khi được đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "%s figures could not be set."
+msgstr "%s số liệu không thể đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s figures set"
+msgstr "Đã đặt %s số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s figures were taken back."
+msgstr "Đã gỡ lại %s số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s is no longer a figure."
+msgstr "%s không còn là một số liệu."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%s is too far ahead. Pick the last day before your first pay period on "
+"Payobook."
+msgstr ""
+"%s quá xa trong tương lai. Hãy chọn ngày cuối cùng trước kỳ lương đầu tiên "
+"trên Payobook."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s joined after this date"
+msgstr "%s người vào làm sau ngày này"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s months"
+msgstr "%s tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s months in total"
+msgstr "tổng cộng %s tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s months missing"
+msgstr "thiếu %s tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s on this page have months missing"
+msgstr "%s người trên trang này bị thiếu tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"%s people have a value that cannot be worked out yet: see the Check column."
+msgstr "%s người có giá trị chưa tính được: xem cột Kiểm tra."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s people with figures this year"
+msgstr "%s người có số liệu năm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s removed"
+msgstr "đã gỡ %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s replace earlier figures"
+msgstr "%s thay cho số liệu trước đó"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s were used by finished payslips and are locked."
+msgstr "%s số liệu đã được phiếu lương hoàn tất sử dụng và bị khóa."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s with figures before Payobook"
+msgstr "%s người có số liệu trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s year-to-date figures"
+msgstr "%s số liệu lũy kế"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s · before Payobook"
+msgstr "%s · trước Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s · paid in Payobook"
+msgstr "%s · đã trả trên Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s · total"
+msgstr "%s · tổng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s: months with no finished payslip"
+msgstr "%s: có tháng chưa có phiếu lương hoàn tất"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%s: paid in Payobook cannot be worked out — choose its pay items in Set up"
+msgstr ""
+"%s: không tính được phần đã trả trên Payobook — hãy chọn các khoản lương của"
+" nó trong Thiết lập"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s: saved."
+msgstr "%s: đã lưu."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "'%s' is not a number of months. Type a whole number from 0 to 12."
+msgstr "'%s' không phải số tháng. Hãy nhập số nguyên từ 0 đến 12."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"'%s' is not a number. Type the amount without a currency, like 125000000."
+msgstr ""
+"'%s' không phải là số. Hãy nhập số tiền không kèm đơn vị tiền tệ, ví dụ "
+"125000000."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 figure"
+msgstr "1 số liệu"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "1 figure cancelled before it was set."
+msgstr "Đã hủy 1 số liệu trước khi được đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "1 figure could not be set."
+msgstr "1 số liệu không thể đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 figure set"
+msgstr "Đã đặt 1 số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 figure was taken back."
+msgstr "Đã gỡ lại 1 số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 joined after this date"
+msgstr "1 người vào làm sau ngày này"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 month"
+msgstr "1 tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 month in total"
+msgstr "tổng cộng 1 tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 month missing"
+msgstr "thiếu 1 tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 on this page has months missing"
+msgstr "1 người trên trang này bị thiếu tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"1 person has a value that cannot be worked out yet: see the Check column."
+msgstr "1 người có giá trị chưa tính được: xem cột Kiểm tra."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 person with figures this year"
+msgstr "1 người có số liệu năm nay"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 removed"
+msgstr "đã gỡ 1"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 replaces an earlier figure"
+msgstr "1 thay cho số liệu trước đó"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 was used by a finished payslip and is locked."
+msgstr "1 số liệu đã được phiếu lương hoàn tất sử dụng và bị khóa."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 with figures before Payobook"
+msgstr "1 người có số liệu trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 year-to-date figure"
+msgstr "1 số liệu lũy kế"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"A blank cell changes nothing. Type amounts without a currency or a minus "
+"sign. Months counted is a whole number from 0 to 12."
+msgstr ""
+"Ô trống không thay đổi gì. Nhập số tiền không kèm đơn vị tiền tệ hay dấu "
+"trừ. Số tháng tính là số nguyên từ 0 đến 12."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"A blank cell changes nothing. Type amounts without a currency or a minus "
+"sign; months counted is a whole number from 0 to 12. CLEAR removes a figure "
+"that is set. A Source column is kept with the figures."
+msgstr ""
+"Ô trống không thay đổi gì. Nhập số tiền không kèm đơn vị tiền tệ hay dấu "
+"trừ; số tháng tính là số nguyên từ 0 đến 12. CLEAR gỡ một số liệu đã đặt. "
+"Cột Nguồn được lưu cùng số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"A later sheet replaces a figure; CLEAR removes one. A figure a finished "
+"payslip has used can no longer be changed here."
+msgstr ""
+"Bảng tính sau sẽ thay số liệu; CLEAR gỡ số liệu. Số liệu đã được phiếu lương"
+" hoàn tất sử dụng thì không thể thay đổi tại đây nữa."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_figure__item
+msgid "A pay item named as a figure"
+msgstr "Khoản lương được dùng làm số liệu"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "A pay item receives this figure. Take that off first."
+msgstr "Một khoản lương đang nhận số liệu này. Hãy gỡ liên kết đó trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "A pay run is waiting for you to choose between two amounts."
+msgstr "Một kỳ lương đang chờ bạn chọn giữa hai số tiền."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"A run from application data takes these pay items from Monthly adjustments. "
+"The “Monthly adjustments” sheet has one row per person and pay item, in the "
+"columns the Monthly adjustments list imports; each one still needs approving"
+" there, as today."
+msgstr ""
+"Kỳ lương lấy dữ liệu từ ứng dụng nhận các khoản này từ Điều chỉnh hằng "
+"tháng. Trang “Điều chỉnh hằng tháng” có một dòng cho mỗi người và mỗi khoản "
+"lương, theo các cột mà danh sách Điều chỉnh hằng tháng nhập được; mỗi dòng "
+"vẫn cần được duyệt ở đó như hiện nay."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"A run with a pay data file: copy these columns into the file, or leave them "
+"out — the pay run fills them by itself, and stops and asks when the file has"
+" a different number."
+msgstr ""
+"Kỳ lương có tệp dữ liệu lương: chép các cột này vào tệp, hoặc bỏ qua — kỳ "
+"lương tự điền, và dừng lại để hỏi khi tệp có số khác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_ytd_line_amount_not_negative
+msgid "A year-to-date figure cannot be negative."
+msgstr "Số liệu lũy kế không thể âm."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_figure__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Add"
+msgstr "Thêm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Add a pay item as a figure"
+msgstr "Thêm một khoản lương làm số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Add a pay item as a figure…"
+msgstr "Thêm một khoản lương làm số liệu…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Add a pay item…"
+msgstr "Thêm một khoản lương…"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Add a person to the bank details route"
+msgstr "Thêm người vào quy trình duyệt thông tin ngân hàng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Added as a figure."
+msgstr "Đã thêm làm số liệu."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Also before Payobook (up to %s)"
+msgstr "Cũng trước Payobook (đến ngày %s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Back in place: “%s” was undone."
+msgstr "Đã khôi phục: “%s” đã được hoàn tác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__amount
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_use__before
+msgid "Before Payobook"
+msgstr "Trước Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Before Payobook (up to %s)"
+msgstr "Trước Payobook (đến ngày %s)"
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_ytd_map__basis__opening
+msgid "Before Payobook only"
+msgstr "Chỉ phần trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"Before Payobook, plus paid in Payobook, for each person and figure. Nothing "
+"here changes how tax is calculated."
+msgstr ""
+"Trước Payobook, cộng phần đã trả trên Payobook, cho từng người và từng số "
+"liệu. Không có gì ở đây thay đổi cách tính thuế."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Before Payobook, plus paid in Payobook, per person · %s people with figures "
+"before Payobook this year."
+msgstr ""
+"Trước Payobook, cộng phần đã trả trên Payobook, cho từng người · %s người có"
+" số liệu trước Payobook năm nay."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Before Payobook, plus paid in Payobook, per person · 1 person with figures "
+"before Payobook this year."
+msgstr ""
+"Trước Payobook, cộng phần đã trả trên Payobook, cho từng người · 1 người có "
+"số liệu trước Payobook năm nay."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Before Payobook, plus paid in Payobook, per person."
+msgstr "Trước Payobook, cộng phần đã trả trên Payobook, cho từng người."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Before Payobook, up to %s"
+msgstr "Trước Payobook, đến ngày %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Change job details, contracts, bank details and ongoing pay items for the "
+"whole team from one spreadsheet, any day of the month, add one-off pay items"
+" like a bonus to a pay month, set leave opening balances, and load year-to-"
+"date figures from before Payobook. You see every change before it happens."
+msgstr ""
+"Thay đổi thông tin công việc, hợp đồng, thông tin ngân hàng và các khoản "
+"lương định kỳ cho cả nhóm từ một bảng tính, vào bất kỳ ngày nào trong tháng,"
+" thêm khoản lương một lần như tiền thưởng vào một tháng lương, đặt số dư "
+"phép đầu kỳ, và nạp số liệu lũy kế từ trước Payobook. Bạn xem trước mọi thay"
+" đổi trước khi chúng diễn ra."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Check"
+msgstr "Kiểm tra"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_payrun.py:0
+msgid "Choosing which amount is used needs the right to run payroll."
+msgstr "Chọn số tiền được dùng cần quyền chạy lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Download"
+msgstr "Tải xuống"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Download for the pay run"
+msgstr "Tải xuống cho kỳ lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Downloaded “%(file)s” for %(people)s. %(line)s"
+msgstr "Đã tải “%(file)s” cho %(people)s. %(line)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Downloaded “%(file)s” with %(people)s."
+msgstr "Đã tải “%(file)s” với %(people)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Downloading needs permission to export employee records. Ask an "
+"administrator."
+msgstr "Tải xuống cần quyền xuất hồ sơ nhân viên. Hãy hỏi quản trị viên."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Each figure this update set is taken back, and a figure it replaced comes "
+"back. A figure a finished payslip has used stays."
+msgstr ""
+"Mỗi số liệu do cập nhật này đặt sẽ được gỡ lại, và số liệu bị thay sẽ được "
+"khôi phục. Số liệu đã được phiếu lương hoàn tất sử dụng thì được giữ lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Each kept with what it replaces."
+msgstr "Mỗi số liệu được lưu kèm số liệu nó thay thế."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Each number is what the person was paid, or had taken off, from 1 January "
+"%(year)s up to %(date)s — before your company ran payroll on %(product)s. "
+"Take them from the previous payroll's year-to-date report."
+msgstr ""
+"Mỗi số là khoản người đó được trả, hoặc bị khấu trừ, từ ngày 1 tháng 1 năm "
+"%(year)s đến %(date)s — trước khi công ty bạn chạy lương trên %(product)s. "
+"Hãy lấy từ báo cáo lũy kế của hệ thống lương trước đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Employee social contributions"
+msgstr "Bảo hiểm xã hội người lao động đóng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Employer social contributions"
+msgstr "Bảo hiểm xã hội công ty đóng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Every value could be worked out."
+msgstr "Mọi giá trị đều tính được."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_ask__figure
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_figure__key
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__figure
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_map__figure
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_use__line_id
+msgid "Figure"
+msgstr "Số liệu"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__label
+msgid "Figure name"
+msgstr "Tên số liệu"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_ask__line_id
+msgid "Figure row"
+msgstr "Dòng số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Figures"
+msgstr "Số liệu"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Figures before Payobook cover up to"
+msgstr "Số liệu trước Payobook tính đến ngày"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Figures can be for this tax year (%(this)s) or last year (%(last)s). "
+"%(date)s is outside both."
+msgstr ""
+"Số liệu có thể cho năm tính thuế này (%(this)s) hoặc năm trước (%(last)s). "
+"%(date)s nằm ngoài cả hai."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Figures can be for this tax year or last year only."
+msgstr "Số liệu chỉ có thể cho năm tính thuế này hoặc năm trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__ytd_covers_to
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__covers_to
+msgid "Figures cover up to"
+msgstr "Số liệu tính đến ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Figures in the sheet"
+msgstr "Số liệu trong bảng tính"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Find a person"
+msgstr "Tìm người"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Find a person by name or code"
+msgstr "Tìm người theo tên hoặc mã"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"For each figure, the pay items of finished payslips that count towards it."
+msgstr ""
+"Với mỗi số liệu, các khoản lương trên phiếu lương hoàn tất được cộng vào số "
+"liệu đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "For the pay run"
+msgstr "Cho kỳ lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "From application data"
+msgstr "Từ dữ liệu ứng dụng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"From now on a pay run fills this pay item the way it did before. Payslips "
+"already calculated keep what they have until they are calculated again."
+msgstr ""
+"Từ nay kỳ lương điền khoản này như trước đây. Phiếu lương đã tính giữ nguyên"
+" cho đến khi được tính lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Give someone a role in Access"
+msgstr "Giao vai trò cho một người trong Quyền truy cập"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Gross pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Gross pay, tax and contributions so far this year, from the payroll used "
+"before. Set once, replaced or cleared later."
+msgstr ""
+"Tổng thu nhập, thuế và các khoản đóng góp từ đầu năm đến nay, lấy từ hệ "
+"thống lương dùng trước đây. Đặt một lần, sau này có thể thay hoặc gỡ."
+
+#. module: pb_updates
+#: model_terms:ir.ui.view,arch_db:pb_updates.portal_my_taxsheet_ytd
+msgid "Includes before Payobook"
+msgstr "Gồm cả phần trước Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Income tax withheld"
+msgstr "Thuế thu nhập đã khấu trừ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Joined after this date"
+msgstr "Vào làm sau ngày này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Joined on %(joined)s, after %(date)s. Are you sure there are figures before "
+"Payobook?"
+msgstr ""
+"Vào làm ngày %(joined)s, sau %(date)s. Bạn có chắc có số liệu trước "
+"Payobook?"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Kept with the figures"
+msgstr "Lưu cùng số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Load figures"
+msgstr "Nạp số liệu"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Monthly adjustments"
+msgstr "Điều chỉnh hằng tháng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Months"
+msgstr "Tháng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Months counted"
+msgstr "Số tháng tính"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Months counted must be a whole number from 0 to 12."
+msgstr "Số tháng tính phải là số nguyên từ 0 đến 12."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_ytd_map__basis__with_period
+msgid "Months so far this year, including this pay period"
+msgstr "Số tháng từ đầu năm, gồm cả kỳ lương này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Months with no finished payslip"
+msgstr "Tháng chưa có phiếu lương hoàn tất"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid "Name a Finance approver"
+msgstr "Chỉ định người duyệt Tài chính"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Next"
+msgstr "Tiếp"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "No active pay scheme has a pay item a pay run fills in."
+msgstr ""
+"Không có chế độ lương đang dùng nào có khoản lương được kỳ lương điền vào."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "No figures for %s yet"
+msgstr "Chưa có số liệu cho năm %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "No finished payslip for %s"
+msgstr "Chưa có phiếu lương hoàn tất cho %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"No pay item of %s receives a year-to-date figure yet. Choose one in Set up "
+"first."
+msgstr ""
+"Chưa có khoản lương nào của %s nhận số liệu lũy kế. Hãy chọn một khoản trong"
+" Thiết lập trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "No pay item of this scheme receives a figure."
+msgstr "Không có khoản lương nào của chế độ này nhận số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "None yet."
+msgstr "Chưa có."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Not counted yet"
+msgstr "Chưa được tính"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Nothing here changes how tax is calculated."
+msgstr "Không có gì ở đây thay đổi cách tính thuế."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Nothing here changes how tax is calculated. The figures are kept beside the "
+"payslips: they show on each person's tax summary, and a pay run receives one"
+" only where a payroll manager has chosen which pay item gets it."
+msgstr ""
+"Không có gì ở đây thay đổi cách tính thuế. Số liệu được lưu bên cạnh phiếu "
+"lương: chúng hiển thị trên bảng tóm tắt thuế của từng người, và kỳ lương chỉ"
+" nhận số liệu khi quản lý lương đã chọn khoản lương nhận số liệu đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"Nothing reaches any pay run until you choose here which pay item receives "
+"which figure. If the pay data file has a different number, the pay run stops"
+" and asks. A run from application data never receives them: use Download for"
+" the pay run."
+msgstr ""
+"Không có gì vào kỳ lương nào cho đến khi bạn chọn ở đây khoản lương nào nhận"
+" số liệu nào. Nếu tệp dữ liệu lương có số khác, kỳ lương dừng lại để hỏi. Kỳ"
+" lương lấy dữ liệu từ ứng dụng không bao giờ nhận các số liệu này: hãy dùng "
+"Tải xuống cho kỳ lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Nothing was sent: every figure in this file is already set, or could not be "
+"used."
+msgstr ""
+"Không gửi gì: mọi số liệu trong tệp này đã được đặt, hoặc không dùng được."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"One click in Past updates takes these figures back and brings back any they "
+"replaced, unless a finished payslip has used one. If your company asks for "
+"approval, nothing is set until it is approved."
+msgstr ""
+"Một cú nhấp trong Lịch sử cập nhật sẽ gỡ lại các số liệu này và khôi phục số"
+" liệu chúng đã thay, trừ khi phiếu lương hoàn tất đã dùng. Nếu công ty bạn "
+"yêu cầu phê duyệt, chưa có gì được đặt cho đến khi được duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"One row per person and a column for each figure, plus Source. Figures "
+"already set are filled in and shaded. Leave a cell blank and nothing changes"
+" for it."
+msgstr ""
+"Mỗi người một dòng và mỗi số liệu một cột, thêm cột Nguồn. Số liệu đã đặt "
+"được điền sẵn và tô màu. Để trống ô thì không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_lanes.py:0
+msgid ""
+"Only your administrator can add someone who may approve bank details. Ask "
+"them to add one — they can then try this again from here."
+msgstr ""
+"Chỉ quản trị viên của bạn mới có thể thêm người được duyệt thông tin ngân "
+"hàng. Hãy nhờ họ thêm — sau đó họ có thể thử lại từ đây."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Opening the set-up…"
+msgstr "Đang mở thiết lập…"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Optional: where these figures come from (the previous payroll's report, a "
+"certificate number). Kept with the figures."
+msgstr ""
+"Không bắt buộc: số liệu lấy từ đâu (báo cáo của hệ thống lương trước, số "
+"chứng từ). Được lưu cùng số liệu."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_use__paid
+msgid "Paid in Payobook"
+msgstr "Đã trả trên Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Paid in Payobook adds up"
+msgstr "Phần đã trả trên Payobook được cộng từ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Paid in Payobook is not counted yet for %s: choose which pay items make it "
+"up in Set up."
+msgstr ""
+"Phần đã trả trên Payobook chưa được tính cho %s: hãy chọn các khoản lương "
+"tạo nên nó trong Thiết lập."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_ask__clash_batch_id
+msgid "Pay data file"
+msgstr "Tệp dữ liệu lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Pay items as figures of their own"
+msgstr "Khoản lương làm số liệu riêng"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_figure__codes
+msgid "Pay items it adds up"
+msgstr "Các khoản lương được cộng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Pay period"
+msgstr "Kỳ lương"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_ask__clash_run_id
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_use__run_name
+msgid "Pay run"
+msgstr "Kỳ lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_payrun.py:0
+msgid "Pay run %s is already finished, so the choice cannot be used there."
+msgstr "Kỳ lương %s đã hoàn tất, nên không thể dùng lựa chọn ở đó."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_use__payslip_id
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"People show up here once they have figures from before Payobook, or a "
+"finished payslip this tax year."
+msgstr ""
+"Mọi người sẽ hiện ở đây khi có số liệu từ trước Payobook, hoặc có phiếu "
+"lương hoàn tất trong năm tính thuế này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Pick a pay item of one of your pay schemes."
+msgstr "Hãy chọn một khoản lương của một trong các chế độ lương của bạn."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Pick a pay item the pay run fills in (an input of %s)."
+msgstr ""
+"Hãy chọn một khoản lương mà kỳ lương điền vào (một khoản nhập của %s)."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Pick a pay scheme."
+msgstr "Hãy chọn một chế độ lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Pick at least one column that goes to a year-to-date figure."
+msgstr "Hãy chọn ít nhất một cột đưa vào số liệu lũy kế."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Pick one of the figures."
+msgstr "Hãy chọn một trong các số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Pick the date these figures cover up to: the last day before your first pay "
+"period on Payobook."
+msgstr ""
+"Hãy chọn ngày mà số liệu tính đến: ngày cuối cùng trước kỳ lương đầu tiên "
+"trên Payobook."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Previous"
+msgstr "Trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Reading the figures…"
+msgstr "Đang đọc số liệu…"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Ready"
+msgstr "Sẵn sàng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Removed by “%s”."
+msgstr "Đã gỡ bởi “%s”."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Removed the figure."
+msgstr "Đã gỡ số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Saved as “%s”. The figures are on the Year-to-date figures screen and on "
+"each person's tax summary. No pay run receives them until a payroll manager "
+"chooses which pay item does."
+msgstr ""
+"Đã lưu thành “%s”. Số liệu có trên màn hình Số liệu lũy kế và trên bảng tóm "
+"tắt thuế của từng người. Không kỳ lương nào nhận chúng cho đến khi quản lý "
+"lương chọn khoản lương nhận."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Saved. From now on, %s receives this figure in a pay run."
+msgstr "Đã lưu. Từ nay, %s nhận số liệu này trong kỳ lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "See the year-to-date figures"
+msgstr "Xem số liệu lũy kế"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Seeing pay figures needs a payroll role"
+msgstr "Xem số liệu lương cần vai trò lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Seeing pay figures needs a payroll role."
+msgstr "Xem số liệu lương cần vai trò lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s figures for approval"
+msgstr "Gửi %s số liệu để phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 figure for approval"
+msgstr "Gửi 1 số liệu để phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Send to a pay run"
+msgstr "Gửi vào kỳ lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending %s figures…"
+msgstr "Đang gửi %s số liệu…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending 1 figure…"
+msgstr "Đang gửi 1 số liệu…"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_figure__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Set %s figures"
+msgstr "Đặt %s số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Set 1 figure"
+msgstr "Đặt 1 số liệu"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_map__set_at
+msgid "Set at"
+msgstr "Thời điểm đặt"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_map__set_by_id
+msgid "Set by"
+msgstr "Người đặt"
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_ytd_line__action__set
+msgid "Set this figure"
+msgstr "Đặt số liệu này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Set up"
+msgstr "Thiết lập"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Set up year-to-date figures"
+msgstr "Thiết lập số liệu lũy kế"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Set."
+msgstr "Đã đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Setting up year-to-date figures needs a payroll manager role."
+msgstr "Thiết lập số liệu lũy kế cần vai trò quản lý lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Shaded cells with a number are already set: send them back as they are, type"
+" a new number to replace one, or type CLEAR to remove one. A figure a "
+"finished pay run has used can no longer be changed here."
+msgstr ""
+"Ô tô màu có số là đã được đặt: gửi lại nguyên như vậy, nhập số mới để thay, "
+"hoặc nhập CLEAR để gỡ. Số liệu đã được kỳ lương hoàn tất sử dụng thì không "
+"thể thay đổi tại đây nữa."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Some people have this figure, so it stays. Clear it from a sheet first."
+msgstr ""
+"Có người đang có số liệu này, nên được giữ lại. Hãy gỡ bằng bảng tính trước."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__source_note
+msgid "Source"
+msgstr "Nguồn"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Source (kept with the figures)"
+msgstr "Nguồn (lưu cùng số liệu)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Source is optional: where the figures come from, kept with them."
+msgstr "Nguồn không bắt buộc: số liệu lấy từ đâu, được lưu cùng số liệu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Stop"
+msgstr "Ngừng"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Stop sending a figure to %s?"
+msgstr "Ngừng gửi số liệu vào %s?"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Stop sending it"
+msgstr "Ngừng gửi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Stopped."
+msgstr "Đã ngừng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__tax_year
+msgid "Tax year"
+msgstr "Năm tính thuế"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Tax year %(year)s · before Payobook, up to %(date)s"
+msgstr "Năm tính thuế %(year)s · trước Payobook, đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Tax year %(year)s, before Payobook up to %(date)s"
+msgstr "Năm tính thuế %(year)s, trước Payobook đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Tax year %(year)s, up to %(date)s"
+msgstr "Năm tính thuế %(year)s, đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Tax year %(year)s: what each person was paid and taxed from 1 January to "
+"%(date)s, before your company ran payroll here."
+msgstr ""
+"Năm tính thuế %(year)s: khoản mỗi người được trả và bị khấu trừ thuế từ ngày"
+" 1 tháng 1 đến %(date)s, trước khi công ty bạn chạy lương tại đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Taxable pay"
+msgstr "Thu nhập chịu thuế"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "That could not be saved."
+msgstr "Không thể lưu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "That could not be saved. Nothing has changed."
+msgstr "Không thể lưu. Không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"That date is too far ahead. Pick the last day before your first pay period "
+"on Payobook."
+msgstr ""
+"Ngày đó quá xa trong tương lai. Hãy chọn ngày cuối cùng trước kỳ lương đầu "
+"tiên trên Payobook."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"The figures are kept beside the payslips: they show on the Year-to-date "
+"figures screen and on each person's tax summary. A pay run receives one only"
+" where a payroll manager has chosen which pay item gets it."
+msgstr ""
+"Số liệu được lưu bên cạnh phiếu lương: chúng hiển thị trên màn hình Số liệu "
+"lũy kế và trên bảng tóm tắt thuế của từng người. Kỳ lương chỉ nhận số liệu "
+"khi quản lý lương đã chọn khoản lương nhận số liệu đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"The pay items that receive a figure, with the value a payslip of that pay "
+"period gets."
+msgstr ""
+"Các khoản lương nhận số liệu, với giá trị mà phiếu lương của kỳ đó nhận "
+"được."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "The set-up could not be read."
+msgstr "Không đọc được thiết lập."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "The sheet could not be built."
+msgstr "Không thể tạo bảng tính."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "The six standard figures always stay."
+msgstr "Sáu số liệu chuẩn luôn được giữ lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "The year-to-date figures could not be read."
+msgstr "Không đọc được số liệu lũy kế."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"There is nothing to send: no figure in this file would change anything."
+msgstr "Không có gì để gửi: không số liệu nào trong tệp này thay đổi điều gì."
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_ytd_figure_company_key_uniq
+msgid "This company already has this figure."
+msgstr "Công ty này đã có số liệu này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "This is not a year-to-date figure here."
+msgstr "Đây không phải là số liệu lũy kế tại đây."
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_ytd_map_scheme_code_uniq
+msgid "This pay item already receives a figure."
+msgstr "Khoản lương này đã nhận một số liệu."
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_ytd_line_one_set
+msgid "This person already has this year-to-date figure for that tax year."
+msgstr "Người này đã có số liệu lũy kế này cho năm tính thuế đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid ""
+"This scheme runs from application data: its pay run takes these pay items "
+"from Monthly adjustments. The sheet has them ready, one row per person and "
+"pay item."
+msgstr ""
+"Chế độ này chạy từ dữ liệu ứng dụng: kỳ lương lấy các khoản này từ Điều "
+"chỉnh hằng tháng. Bảng tính đã chuẩn bị sẵn, mỗi người và mỗi khoản lương "
+"một dòng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid ""
+"This sheet sets %(figures)s for %(people)s: tax year %(year)s, before "
+"Payobook up to %(date)s."
+msgstr ""
+"Bảng tính này đặt %(figures)s cho %(people)s: năm tính thuế %(year)s, trước "
+"Payobook đến ngày %(date)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"This sheet was made for figures up to %(sheet)s, so it is used for "
+"%(sheet)s, not %(picked)s."
+msgstr ""
+"Bảng tính này được tạo cho số liệu đến ngày %(sheet)s, nên được dùng cho "
+"%(sheet)s, không phải %(picked)s."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_ytd_map__basis__before_period
+msgid "Total so far this year, before this pay period"
+msgstr "Tổng từ đầu năm, trước kỳ lương này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Undo the figures"
+msgstr "Hoàn tác số liệu"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Undo these figures"
+msgstr "Hoàn tác các số liệu này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Undoing year-to-date figures needs a payroll role."
+msgstr "Hoàn tác số liệu lũy kế cần vai trò lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Undoing year-to-date figures needs permission to change employee records."
+msgstr "Hoàn tác số liệu lũy kế cần quyền thay đổi hồ sơ nhân viên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Undone."
+msgstr "Đã hoàn tác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Updates year-to-date figures"
+msgstr "Số liệu lũy kế từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Use at most two decimals."
+msgstr "Chỉ dùng tối đa hai chữ số thập phân."
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_ytd_use__state__used
+msgid "Used by a finished payslip"
+msgstr "Đã được phiếu lương hoàn tất sử dụng"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__use_ids
+msgid "Used by payslips"
+msgstr "Được phiếu lương sử dụng"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_use__value
+msgid "Value sent"
+msgstr "Giá trị đã gửi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"What each person was paid and taxed this year before your company started "
+"here. For tax summaries and the year-end tax step."
+msgstr ""
+"Khoản mỗi người được trả và bị khấu trừ thuế trong năm nay trước khi công ty"
+" bạn bắt đầu tại đây. Dùng cho bảng tóm tắt thuế và bước quyết toán thuế "
+"cuối năm."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_map__basis
+msgid "What it receives"
+msgstr "Nhận gì"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Year to date"
+msgstr "Lũy kế năm"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Year-to-date figure"
+msgstr "Số liệu lũy kế"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_ytd_line
+msgid "Year-to-date figure before Payobook"
+msgstr "Số liệu lũy kế trước Payobook"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_ytd_map
+msgid "Year-to-date figure sent to a pay item"
+msgstr "Số liệu lũy kế gửi vào khoản lương"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_ytd_figure
+msgid "Year-to-date figure set-up"
+msgstr "Thiết lập số liệu lũy kế"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_ytd_use
+msgid "Year-to-date figure used by a payslip"
+msgstr "Số liệu lũy kế được phiếu lương sử dụng"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_ytd_ask
+msgid "Year-to-date figure: the pay run asks which amount"
+msgstr "Số liệu lũy kế: kỳ lương hỏi chọn số nào"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__updates_ytd
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__ytd_line_ids
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__ytd_line_ids
+msgid "Year-to-date figures"
+msgstr "Số liệu lũy kế"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Year-to-date figures %(year)s, up to %(date)s"
+msgstr "Số liệu lũy kế %(year)s, đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Year-to-date figures are pay data: seeing them needs a payroll role. Ask an "
+"administrator."
+msgstr ""
+"Số liệu lũy kế là dữ liệu lương: xem chúng cần vai trò lương. Hãy hỏi quản "
+"trị viên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Year-to-date figures before %(product)s, tax year %(year)s, up to %(date)s"
+msgstr ""
+"Số liệu lũy kế trước %(product)s, năm tính thuế %(year)s, đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_batch__kind__ytd
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_layout__kind__ytd
+msgid "Year-to-date figures before Payobook"
+msgstr "Số liệu lũy kế trước Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Year-to-date figures for %(who)s: none of %(who)s's finished payslips since "
+"%(date)s has the pay items that make up %(figure)s, so %(item)s cannot be "
+"worked out. Choose those pay items in Updates › Year-to-date figures › Set "
+"up, then calculate again."
+msgstr ""
+"Số liệu lũy kế của %(who)s: không phiếu lương hoàn tất nào của %(who)s kể từ"
+" %(date)s có các khoản lương tạo nên %(figure)s, nên không tính được "
+"%(item)s. Hãy chọn các khoản lương đó trong Cập nhật › Số liệu lũy kế › "
+"Thiết lập, rồi tính lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Year-to-date figures for %(who)s: there is no finished payslip for "
+"%(months)s, between the figures before Payobook (up to %(date)s) and this "
+"pay period, so %(item)s cannot be worked out. Finish that pay run, or load "
+"figures that cover up to a later date, then calculate again."
+msgstr ""
+"Số liệu lũy kế của %(who)s: chưa có phiếu lương hoàn tất cho %(months)s, "
+"giữa số liệu trước Payobook (đến ngày %(date)s) và kỳ lương này, nên không "
+"tính được %(item)s. Hãy hoàn tất kỳ lương đó, hoặc nạp số liệu tính đến ngày"
+" muộn hơn, rồi tính lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Year-to-date figures for %(year)s, up to %(date)s · %(n)s"
+msgstr "Số liệu lũy kế năm %(year)s, đến ngày %(date)s · %(n)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Year-to-date figures for %(year)s, up to %(date)s."
+msgstr "Số liệu lũy kế năm %(year)s, đến ngày %(date)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Year-to-date figures from Updates: %(before)s before Payobook (up to "
+"%(date)s) + %(paid)s paid in Payobook."
+msgstr ""
+"Số liệu lũy kế từ Cập nhật: %(before)s trước Payobook (đến ngày %(date)s) + "
+"%(paid)s đã trả trên Payobook."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Year-to-date figures up to %s"
+msgstr "Số liệu lũy kế đến ngày %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "You can check a sheet; sending it needs the Payroll Officer role."
+msgstr ""
+"Bạn có thể kiểm tra bảng tính; gửi bảng tính cần vai trò Chuyên viên lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"You can look through these figures, but sending them needs permission to "
+"change employee records. Ask an administrator for the Payroll Officer role."
+msgstr ""
+"Bạn có thể xem các số liệu này, nhưng gửi chúng cần quyền thay đổi hồ sơ "
+"nhân viên. Hãy xin quản trị viên vai trò Chuyên viên lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"You can look through these figures, but sending them needs the Payroll "
+"Officer role."
+msgstr ""
+"Bạn có thể xem các số liệu này, nhưng gửi chúng cần vai trò Chuyên viên "
+"lương."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "before Payobook up to %s"
+msgstr "trước Payobook đến ngày %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "no figures before Payobook"
+msgstr "không có số liệu trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "paid in Payobook"
+msgstr "đã trả trên Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "receives"
+msgstr "nhận"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "tax year %(year)s, up to %(date)s"
+msgstr "năm tính thuế %(year)s, đến ngày %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "total"
+msgstr "tổng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"“Check” says “Ready”, or which pay item cannot be worked out because a month"
+" has no finished payslip. Those values are left out of “Monthly "
+"adjustments”."
+msgstr ""
+"Cột “Kiểm tra” ghi “Sẵn sàng”, hoặc khoản lương nào không tính được vì có "
+"tháng chưa có phiếu lương hoàn tất. Các giá trị đó không được đưa vào “Điều "
+"chỉnh hằng tháng”."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"“For the pay run”: one column per pay item that receives a year-to-date "
+"figure, with the value a payslip of this pay period receives (before "
+"Payobook plus paid in Payobook, as chosen in Set up)."
+msgstr ""
+"“Cho kỳ lương”: mỗi khoản lương nhận số liệu lũy kế là một cột, với giá trị "
+"phiếu lương của kỳ này nhận được (trước Payobook cộng phần đã trả trên "
+"Payobook, theo lựa chọn trong Thiết lập)."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "“Including this pay period” is for months counted only."
+msgstr "“Gồm cả kỳ lương này” chỉ dùng cho số tháng tính."

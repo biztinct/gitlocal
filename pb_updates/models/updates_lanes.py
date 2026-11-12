@@ -138,6 +138,12 @@ class PbUpdatesLanes(models.AbstractModel):
                 else:
                     row.update(outcome='nobody', tone='warn',
                                line=sentence or probe._nobody_else_sentence())
+                    # UPDATES P5 (P6 deviation 1) — the way out, as in the
+                    # approvals inbox: links for whoever can use them, else
+                    # one sentence saying who to ask.
+                    row['fix'] = self._way_out(
+                        kind='route' if sentence and sentence == probe._nobody_named_sentence()
+                        else 'access', probe=probe)
             else:
                 go_now = lane == 'details' and probe._details_go_now()
                 kind, names, sentence = ('fast', [], '') if go_now else \
@@ -153,6 +159,84 @@ class PbUpdatesLanes(models.AbstractModel):
                                line=sentence or _("Go for approval"))
             out.append(row)
         return {'lanes': out}
+
+    # =================================================================
+    # UPDATES P5 (P6 deviation 1) — the way out of "Nobody else …"
+    # =================================================================
+    @api.model
+    def _way_out(self, request=None, kind='', probe=None):
+        """Under "Nobody else in <company> can approve bank details yet — add
+        one in Access" (or its named-route twin): the same links the approvals
+        inbox offers (`pb.approval.inbox._second_person_fix`, UPDATES P6),
+        shown only to someone who can use them; otherwise one plain sentence
+        saying who to ask. `None` where the approvals set-up is not installed.
+
+        With a request (Past updates, the Done screen) the inbox's own helper
+        answers. Before anything is sent there is no request yet, so the same
+        links are built here from the same two gates (Access managers; people
+        who set approvals up)."""
+        if 'pb.approval.inbox' not in self.env:
+            return None
+        Inbox = self.env['pb.approval.inbox']
+        if request:
+            try:
+                return Inbox._second_person_fix(request.sudo())
+            except Exception:   # noqa: BLE001 — a link never blocks a screen
+                return None
+        if kind not in ('access', 'route'):
+            return None
+        Actions = self.env['ir.actions.actions']
+        links = []
+        try:
+            can_access = 'pb.access' in self.env and bool(self.env['pb.access'].can_manage())
+        except Exception:   # noqa: BLE001
+            can_access = False
+        try:
+            can_setup = bool(Inbox._can_config())
+        except Exception:   # noqa: BLE001
+            can_setup = False
+        matrix = 'pb_approval_config.action_pb_approval_matrix'
+        try:
+            if kind == 'route' and can_setup:
+                action = Actions._for_xml_id(matrix)
+                workflow = self._bank_workflow(probe) if probe is not None else 0
+                action['params'] = {'workflow_id': workflow,
+                                    'process_key': RECORDS_BANK_PROCESS_KEY}
+                links.append({'key': 'route', 'icon': 'workflow',
+                              'label': _("Add a person to the bank details route"),
+                              'action': action})
+            if kind == 'access':
+                if can_access:
+                    action = Actions._for_xml_id('biz_access.action_pb_access_board')
+                    action['context'] = {'pb_lens': 'people'}
+                    links.append({'key': 'access', 'icon': 'users',
+                                  'label': _("Give someone a role in Access"),
+                                  'action': action})
+                if can_setup:
+                    action = Actions._for_xml_id(matrix)
+                    action['params'] = {'tab': 'people', 'role_key': 'finance'}
+                    links.append({'key': 'people', 'icon': 'userCheck',
+                                  'label': _("Name a Finance approver"),
+                                  'action': action})
+        except Exception:   # noqa: BLE001 — an action that is not there
+            links = []
+        return {'kind': kind, 'links': links, 'ask': '' if links else _(
+            "Only your administrator can add someone who may approve bank details. Ask them "
+            "to add one — they can then try this again from here.")}
+
+    @api.model
+    def _bank_workflow(self, probe):
+        """The bank details route this probe would travel (its workflow id)."""
+        try:
+            engine = self.env['biz.approval.engine'].sudo()
+            process = self.env['biz.approval.process']._by_key(RECORDS_BANK_PROCESS_KEY)
+            ctx = probe._approval_context()
+            company = self.env['res.company'].browse(int(ctx['company_id']))
+            _binding, version, _trace, _error = engine._resolve_binding(
+                company, process, ctx.get('scope_keys'), ctx.get('kind_key'))
+            return version.workflow_id.id if version else 0
+        except Exception:   # noqa: BLE001
+            return 0
 
     # =================================================================
     # The company switch
@@ -226,6 +310,9 @@ class PbUpdatesLanes(models.AbstractModel):
                 'start_date': fields.Date.to_string(rec.start_date)
                 if rec.start_date else '',
                 'details_now': rec.details_now,
+                # UPDATES P5 (P6 deviation 1) — the way out of "Nobody else …".
+                'fix': self._way_out(request=rec.approval_request_id)
+                if rec.lane == 'bank' and reason else None,
                 'can_undo': bool(may_write and rec.applied and not rec.undone),
                 'can_cancel': bool(
                     may_write and not rec.applied

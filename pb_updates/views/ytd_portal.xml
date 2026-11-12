@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- UPDATES P5 (D20) — the tax summary shows the figures before Payobook:
+         one extra row, added to the year's totals above (controller
+         `pb_updates/controllers/ytd_portal.py`). Nothing changes for a person
+         without such figures: `ytd_opening` is then not in the page. -->
+    <template id="portal_my_taxsheet_ytd" inherit_id="pb_me_portal.portal_my_taxsheet"
+              name="Tax Sheet: figures before Payobook">
+        <xpath expr="//t[@t-if='not rows']" position="attributes">
+            <attribute name="t-if">not rows and not ytd_opening</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('pbme-tile-y')]" position="after">
+            <div class="pbme-tile-y" t-if="ytd_opening and c in ytd_opening">Includes before Payobook</div>
+        </xpath>
+        <xpath expr="//table[hasclass('pbme-taxtable')]/tbody" position="inside">
+            <tr t-if="ytd_opening" class="pbme-taxrow-opening">
+                <td><b t-esc="ytd_opening_title"/></td>
+                <t t-foreach="codes" t-as="c">
+                    <td class="pbme-num">
+                        <t t-if="c in ytd_opening" t-out="ytd_opening[c]" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                        <t t-else="">—</t>
+                    </td>
+                </t>
+            </tr>
+        </xpath>
+        <xpath expr="//div[hasclass('pbme-tablewrap')]" position="after">
+            <div t-if="ytd_opening_apart" class="pbme-card pbme-taxnote">
+                <p><b t-esc="ytd_opening_also"/></p>
+                <p t-foreach="ytd_opening_apart" t-as="a"><t t-esc="a['label']"/>: <t t-out="a['amount']" t-options='{"widget": "monetary", "display_currency": currency}'/></p>
+            </div>
+        </xpath>
+    </template>
+</odoo>

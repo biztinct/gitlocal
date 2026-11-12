@@ -22,3 +22,13 @@ access_pb_updates_leave_line_hr,pb.updates.leave.line hr,model_pb_updates_leave_
 access_pb_updates_leave_line_officer,pb.updates.leave.line officer,model_pb_updates_leave_line,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
 access_pb_updates_leave_line_timeoff,pb.updates.leave.line timeoff,model_pb_updates_leave_line,hr_holidays.group_hr_holidays_user,1,0,0,0
 access_pb_updates_leave_line_system,pb.updates.leave.line system,model_pb_updates_leave_line,base.group_system,1,0,0,0
+access_pb_updates_ytd_line_officer,pb.updates.ytd.line officer,model_pb_updates_ytd_line,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_updates_ytd_line_system,pb.updates.ytd.line system,model_pb_updates_ytd_line,base.group_system,1,0,0,0
+access_pb_updates_ytd_figure_officer,pb.updates.ytd.figure officer,model_pb_updates_ytd_figure,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_updates_ytd_figure_system,pb.updates.ytd.figure system,model_pb_updates_ytd_figure,base.group_system,1,0,0,0
+access_pb_updates_ytd_map_officer,pb.updates.ytd.map officer,model_pb_updates_ytd_map,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_updates_ytd_map_system,pb.updates.ytd.map system,model_pb_updates_ytd_map,base.group_system,1,0,0,0
+access_pb_updates_ytd_use_officer,pb.updates.ytd.use officer,model_pb_updates_ytd_use,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_updates_ytd_use_system,pb.updates.ytd.use system,model_pb_updates_ytd_use,base.group_system,1,0,0,0
+access_pb_updates_ytd_ask_officer,pb.updates.ytd.ask officer,model_pb_updates_ytd_ask,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_updates_ytd_ask_system,pb.updates.ytd.ask system,model_pb_updates_ytd_ask,base.group_system,1,0,0,0

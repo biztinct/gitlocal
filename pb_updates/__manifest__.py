@@ -61,9 +61,18 @@ otherwise as one approved allocation. A balance is set once per person and
 leave type; undo takes back only what nothing has been taken against. The
 Start screen also carries a tile to the existing attendance file screen.
 
-UPDATES programme, phases 1-4. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+UPDATES P5: a fourth kind of sheet, "Year-to-date figures before Payobook"
+— what each person was paid and taxed this tax year before the company
+started on Payobook, approved on the pay route and kept in one store. A
+year-to-date view shows before Payobook + paid in Payobook = total per
+person, with a download; the employee's own tax summary includes them. A pay
+run receives a figure only where a payroll manager has chosen which input pay
+item of a scheme gets it; a run from application data gets a "Download for
+the pay run" sheet instead. No tax calculation is changed.
+
+UPDATES programme, phases 1-5. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -95,11 +104,16 @@ UPDATES programme, phases 1-4. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
         # allocations. Installed on every live database. The leave policy
         # layer (pb_timeoff) is reached by soft checks only.
         'hr_holidays',
+        # UPDATES P5: the employee's own tax summary (/my/taxsheet) shows the
+        # year-to-date figures before Payobook — a small controller and
+        # template override. Installed on every live database.
+        'pb_me_portal',
     ],
     'data': [
         'security/ir.model.access.csv',
         'security/updates_rules.xml',
         'views/updates_action.xml',
+        'views/ytd_portal.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -116,6 +130,9 @@ UPDATES programme, phases 1-4. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
             # UPDATES P3b — "Since the last pay run" on Review pay data.
             'pb_updates/static/src/js/payrun_since.js',
             'pb_updates/static/src/xml/payrun_since.xml',
+            # UPDATES P5 — year-to-date figures: the view and its set-up.
+            'pb_updates/static/src/js/updates_ytd.js',
+            'pb_updates/static/src/xml/updates_ytd.xml',
         ],
     },
     'installable': True,
