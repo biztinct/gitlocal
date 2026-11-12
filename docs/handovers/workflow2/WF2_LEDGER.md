@@ -54,6 +54,7 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | D31 | Areas' own date-based reminders (P5a overlap 2) | **Declared to Studio, the main three first**: contract end, probation, document expiry appear under "already happens" and a scheduled workflow that repeats one is warned. The reminders themselves do not change. Others later. (owner, 11 Nov) |
 | D32 | rize pay manager without Approvals › Everyone (Debalina De, `debalina@rize.farm`) | **Let her see Everyone in Approvals.** Today "Everyone" is only reachable through three broad rights (approval set-up, HR manager, payroll manager), each of which gives far more. So: P5c adds one narrow right "See everyone's approvals" (read only); the main loop then grants it to her on rize through Access (audit row) and tells the owner. Do not grant her any of the three broad rights. (owner, 11 Nov) |
 | D33 | Main-loop calls on P5a | Approvals' message job stays off on payobook/template (owner's demo-mail ruling). Time off "sent back" stays a refusal underneath. "Repeat for each line" is its own phase (P5c). |
+| D34 | Main-loop calls on P5c (12 Nov) | A click starts 25 lines, the job the rest (as built). The narrow right also widens "All I can see" (as built; the owner asked for Everyone). Team repeat and team step both stay. **D32 done 12 Nov 11:24 UTC**: on rize, role "See everyone's approvals" (`pb.role.profile` 462, the one ability) created and given to `debalina@rize.farm` (user 653) through `pb.access` as the platform admin — audit row, access request 30 (applied), approval request 384; nothing broader. Undo: remove the role from her on the Access screen. Where repeat reaches next = closeout open item. Studio editor translation is out of P5b (the workbench never had a mechanism) = closeout open item. |
 
 ## 2. Phases
 
@@ -69,7 +70,7 @@ Started 11 November 2026. Builds on the shipped Workflow Studio (`pb_lifecycle`,
 | P4b | Progress on the record's own screen and the employee home, "Move to…" there, status words compared (D12), where time goes, "The candidate" (D18), late-with-no-manager role (D19), dock count (D20) | `WF2_P4B_HANDOVER.md` | LIVE ×5 11 Nov (19.0.1.15.0, 122 tests) — `WF2_P4B_REPORT.md` |
 | P5a | Start on a schedule; "Repeat for each line"; D26 pay managers; D28 sent-back emails; small leftovers | `WF2_P5A_HANDOVER.md` | LIVE ×5 11 Nov for §3.1 + §3.2 (pb_lifecycle 19.0.1.17.0, 132 Studio tests, 55 area tests); §3.3 "Repeat for each line" NOT built — `WF2_P5A_REPORT.md` §9 |
 | P5c | "Repeat for each line"; D30 shortcut; D31 three reminder timetables; narrow "See everyone's approvals" right (D32); P2b's three unproven browser checks | `WF2_P5C_HANDOVER.md` | LIVE ×5 12 Nov (pb_lifecycle 19.0.1.18.0, 149 Studio tests; new right granted to nobody) — `WF2_P5C_REPORT.md` |
-| P5b | Vietnamese and Indonesian for everything WORKFLOW-2 added; consolidation; closeout report | — | — |
+| P5b | Vietnamese and Indonesian for everything people outside the editor see + server strings; small consolidation; closeout report | `WF2_P5B_HANDOVER.md` | building 12 Nov |
 
 ## 3. Standing engineering conventions
 
