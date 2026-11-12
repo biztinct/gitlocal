@@ -260,7 +260,7 @@ def main():
                 output = {'paired': True, 'name': result['config']['name']}
             elif args.command == 'check':
                 rows, info = extract(args.database, home, '1900-01-01')
-                output = {**info, 'unique_records': len({canonical(r) for r in rows}), 'source_unchanged': True}
+                output = {**info, 'unique_records': len({canonical(r) for r in rows}), 'read_only': True}
             elif args.command == 'replay':
                 config = load_config(home)
                 q = Queue(queue_home(home, config)); q.replay(); q.close()
