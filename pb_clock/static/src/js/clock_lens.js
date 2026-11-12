@@ -65,6 +65,7 @@ export class ClockLens extends Component {
 
     setup() {
         this.orm = useService("orm");
+        this.action = useService("action");
         this.notif = useService("notification");
         this.ctxSvc = useService("wf_context");
         this.wf = useState(this.ctxSvc.state);

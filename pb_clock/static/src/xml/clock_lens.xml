@@ -29,6 +29,7 @@
             </div>
           </div>
           <div class="pbck-hero__act">
+            <button class="pbck-btn ghost" t-on-click="() => this.action.doAction('pb_clock.action_clock_connectors')">Data connectors</button>
             <button class="pbck-btn ghost" t-if="heroActions" t-att-disabled="state.busy"
                     t-on-click="repairWeek" title="Rebuild this week's days from its punches">
               <span t-out="ic('refresh', 14)"/><span>Re-pair this week</span>

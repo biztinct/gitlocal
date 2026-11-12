@@ -54,7 +54,7 @@ class PbClockDevice(models.Model):
         'res.company', string='Company', required=True, index=True,
         default=lambda self: self.env.company)
     kind = fields.Selection(
-        [('upload', 'Files you upload'), ('terminal', 'Machine')],
+        [('upload', 'Files you upload'), ('terminal', 'Machine'), ('collection', 'Collection group')],
         string='Kind', required=True, default='terminal')
     state = fields.Selection(
         DEVICE_STATES, string='Status', required=True, default='allowed',

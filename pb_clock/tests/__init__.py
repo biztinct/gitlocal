@@ -9,3 +9,5 @@ from . import test_iclock_http
 from . import test_alerts
 from . import test_recheck
 from . import test_backfill
+
+from . import test_connector

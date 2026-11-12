@@ -9,3 +9,8 @@ access_pb_clock_command_officer,pb.clock.command officer,model_pb_clock_command,
 access_pb_clock_command_system,pb.clock.command system,model_pb_clock_command,base.group_system,1,1,1,1
 access_pb_clock_alert_officer,pb.clock.alert officer,model_pb_clock_alert,hr_attendance.group_hr_attendance_officer,1,0,0,0
 access_pb_clock_alert_system,pb.clock.alert system,model_pb_clock_alert,base.group_system,1,1,1,1
+access_clock_connector_officer,clock connector officer,model_pb_clock_connector,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_clock_connector_manager,clock connector manager,model_pb_clock_connector,hr_attendance.group_hr_attendance_manager,1,1,1,0
+access_clock_connector_event_officer,clock connector_event officer,model_pb_clock_connector_event,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_clock_connector_event_manager,clock connector_event manager,model_pb_clock_connector_event,hr_attendance.group_hr_attendance_manager,1,1,0,0
+access_clock_connector_pair,clock connector pairing,model_pb_clock_connector_pair,hr_attendance.group_hr_attendance_manager,1,1,1,1

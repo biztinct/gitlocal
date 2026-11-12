@@ -51,4 +51,9 @@
         <field name="interval_type">minutes</field>
         <field name="active" eval="True"/>
     </record>
-</odoo>
+<record id="cron_process_connector" model="ir.cron">
+<field name="name">Attendance connectors: review received records</field>
+<field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+<field name="state">code</field><field name="code">env['pb.clock.connector.event']._cron_process() if 'pb.clock.connector.event' in env else None</field>
+<field name="interval_number">5</field><field name="interval_type">minutes</field><field name="active" eval="True"/>
+</record></odoo>

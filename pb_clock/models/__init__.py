@@ -11,3 +11,5 @@ from . import clock_lens
 from . import clock_alert
 from . import clock_recheck
 from . import time_hub
+
+from . import clock_connector
