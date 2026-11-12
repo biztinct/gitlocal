@@ -159,6 +159,7 @@ class ClockConnector(models.Model):
                 seen.add(key)
         if vals:
             Event.create(vals)
+            self.env.ref('pb_clock.cron_process_connector')._trigger()
         status = payload.get('status', {})
         updates = {'last_contact': fields.Datetime.now(), 'client_version': str(status.get('version', ''))[:40],
                    'last_error': str(status.get('error', ''))[:2000]}
@@ -280,3 +281,5 @@ class ConnectorEvent(models.Model):
                 row.write({'state': 'review', 'note': str(exc)[:2000]})
         if rows:
             self.env.ref('pb_clock.cron_pair_punches')._trigger()
+        if len(rows) == 500:
+            self.env.ref('pb_clock.cron_process_connector')._trigger()
