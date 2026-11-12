@@ -3403,7 +3403,8 @@ class TestWorkflowStudio(TransactionCase):
         root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         for name in ('workflow_schedule_run.py', 'workflow_schedule.py'):
             source = open(os.path.join(root, 'pb_lifecycle/models', name), encoding='utf-8').read()
-            strings = re.findall(r"_\(\s*'([^']*)'", source) + re.findall(r"return '([^']*)'", source)
+            strings = re.findall(r"_\(\s*'([^']*)'", source) + re.findall(r"return '([^']*)'", source) \
+                + re.findall(r"_lt\(\s*'([^']*)'", source)     # P5b: the schedule's lazy sentences
             for s in strings:
                 self.assertNotRegex(s, r'(?i)odoo|\bcron\b|schedule expression|sub-run|\bloop\b|iteration|\bindex\b|\bnode\b', s)
 
@@ -3987,3 +3988,168 @@ class TestWorkflowStudio(TransactionCase):
                                            'inbox_200_tasks_s': round(inbox, 2), 'inbox_cards': len(items)}))
         self.assertLess(started, 120)
         self.assertLess(worker, 60)
+
+    # ================================================================ WF2 P5b
+    # Vietnamese and Indonesian. English must stay byte-identical: p1 renders
+    # every people surface in English and compares it with a golden file
+    # written by the code before this phase (WF2P5B_WRITE_GOLDEN=1 writes it).
+    # p2 runs only where vi_VN and id_ID are installed (a live database after
+    # the upgrade; a plain test database has no second language).
+    P5B_SCHEDULES = [
+        None, {}, {'every': 'day', 'at': '09:00'}, {'every': 'day', 'at': '7:05', 'working_days': True},
+        {'every': 'week', 'at': '09:00', 'weekdays': [0]}, {'every': 'week', 'at': '08:30', 'weekdays': [0, 1, 2, 3, 4]},
+        {'every': 'week', 'at': '18:00', 'weekdays': [0, 2, 4], 'working_days': True},
+        {'every': 'week', 'at': '06:00', 'weekdays': [0, 1, 2, 3, 4, 5, 6]}, {'every': 'week', 'at': '10:00', 'weekdays': []},
+        {'every': 'week', 'at': '10:00', 'weekdays': [5, 6]},
+        {'every': 'month', 'at': '17:30', 'day': 'last'}, {'every': 'month', 'at': '12:00', 'day': 1},
+        {'every': 'month', 'at': '12:00', 'day': 2}, {'every': 'month', 'at': '12:00', 'day': 3},
+        {'every': 'month', 'at': '12:00', 'day': 11}, {'every': 'month', 'at': '12:00', 'day': 22, 'working_days': True},
+        {'every': 'year', 'at': '09:00', 'day': 1, 'month': 7}, {'every': 'year', 'at': '09:00', 'day': 'last', 'month': 2},
+        {'every': 'year', 'at': '09:00', 'day': 5, 'month': 13}, {'every': 'once', 'at': '08:00', 'date': '2026-11-20'},
+        {'every': 'once', 'at': '08:00', 'date': '2027-05-02'}, {'every': 'once', 'at': '08:00', 'date': 'soon'},
+        {'every': 'fortnight', 'at': '09:00'},
+    ]
+    P5B_BAD_SCHEDULES = [
+        None, {'every': 'fortnight'}, {'every': 'week', 'at': '9', 'weekdays': [], 'starts': 'process'},
+        {'every': 'month', 'at': '09:00', 'day': 40, 'starts': 'each_record'},
+        {'every': 'year', 'at': '09:00', 'day': 1, 'month': 0, 'starts': 'process'},
+        {'every': 'once', 'at': '09:00', 'date': '', 'starts': 'process', 'working_days': 'yes'},
+        {'every': 'day', 'at': '09:00', 'starts': 'process'}, {'every': 'day', 'at': '09:00', 'starts': 'each_record'},
+    ]
+    P5B_MODELS = ('pb.expense.claim', 'hr.leave', 'hr.applicant', 'hr.payslip.run', 'biz.approval.generic.request',
+                  'hr.contract', 'hr.employee', 'pb.employee.document')
+
+    def _p5b_surfaces(self, lang):
+        """Every people surface this programme added, in `lang`, as plain
+        data. Works on the code before P5b too (English only there)."""
+        import inspect
+        from odoo.addons.pb_lifecycle.models import workflow_schedule as WS
+        from odoo.addons.pb_lifecycle.models.workflow_people import HOME_UNSUPPORTED
+        takes_lang = 'lang' in inspect.signature(WS.words).parameters
+        words = (lambda s: WS.words(s, lang)) if takes_lang else WS.words
+        issues = (lambda s, r: WS.issues(s, r, lang)) if takes_lang else WS.issues
+        out = {'schedule_words': [words(s) for s in self.P5B_SCHEDULES],
+               'schedule_issues': [[issues(s, r) for r in (None, True, False)] for s in self.P5B_BAD_SCHEDULES]}
+        service = self.service.with_context(lang=lang)
+        out['contracts'] = {m: service._contract(m) for m in self.P5B_MODELS if m in self.env}
+        out['existing'] = {m: service._existing(m, self.company) for m in self.P5B_MODELS if m in self.env}
+        out['durations'] = [service._duration_words(h, 8) for h in (0.5, 3, 8, 13, 40, 400)]
+        # a claim with three receipts and a check for each
+        w, d, claim = self.claim_repeat([self.check(buttons=self.BUTTONS)], receipts=3)
+        run = self.start(w, claim)
+        line = self.lines_of(run)[0]
+        step = self.step(line, 'check')
+        out['repeat_words'] = service._repeat_words(self.CLAIM, next(n for n in d['nodes'] if n['id'] == 'rep'), d)
+        out['inbox'] = self.env['pb.approval.inbox'].with_user(self.staff).with_context(lang=lang)._extra_items('me')
+        staff = self.env['pb.workflow.studio'].with_user(self.staff).with_company(self.company).with_context(lang=lang)
+        out['strip'] = staff.record_runs(self.CLAIM, claim.id)['strip']
+        page = staff._page_data(step, HOME_UNSUPPORTED)
+        out['page'] = page
+        out['task_body'] = str(self.env['ir.qweb'].with_context(lang=lang)._render('pb_lifecycle.workflow_task_body', {
+            't': page, 'mode': 'home', 'state': 'ok', 'errors': {}, 'values': {}, 'post_url': '/x'}))
+        system = self.env['pb.workflow.studio'].sudo().with_context(lang=lang)
+        out['payloads'] = [system._task_payload(line, step, why) for why in ('new_team', 'reminder', 'passed_up', 'other')]
+        out['progress'] = service.progress(run.id)
+        template = self.env.ref('pb_lifecycle.mail_template_workflow_link').with_context(
+            lang=lang, link_url='https://example.com/workflow/t/abc', link_company='Acme', link_name='Mai',
+            link_due='2026-11-20', link_until='2026-12-01')
+        out['link_mail'] = [template._render_field(f, [step.id])[step.id] for f in ('subject', 'body_html')]
+        # the employee's own claim page
+        portal, emp = self.portal_person('WF2 P5b claimant')
+        portal.lang = lang          # the employee home speaks its reader's language
+        _w2, claim2, _run2 = self.claim_flow([self.todo('look', owner={'kind': 'user', 'id': self.staff.id},
+                                                        title='Check receipt')], employee=emp)
+        home_strip = self.env['pb.me.home'].with_user(portal).with_context(lang=lang)._wf_page_strip('expense_claim', claim2.id)
+        out['home_strip'] = home_strip
+        out['home_strip_page'] = str(self.env['ir.qweb'].with_context(lang=lang)._render(
+            'pb_lifecycle.workflow_strip_page', {'s': home_strip, 'back': '/my/expenses/x'}))
+        return out
+
+    @staticmethod
+    def _p5b_norm(value):
+        text = json.dumps(value, sort_keys=True, ensure_ascii=False, default=str)
+        text = re.sub(r'wf-(?:publisher|test)-[0-9a-f-]{36}|wf2p4a-[\w-]+', 'LOGIN', text)
+        return re.sub(r'\d+', '#', text)
+
+    def test_wf2p5b_p1_english_is_byte_identical(self):
+        self.need(self.CLAIM)
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'wf2p5b_english_baseline.json')
+        now = {k: self._p5b_norm(v) for k, v in self._p5b_surfaces('en_US').items()}
+        if os.environ.get('WF2P5B_WRITE_GOLDEN'):
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(dict(now, _db=self.env.cr.dbname, _company=self.company.name), f,
+                          ensure_ascii=False, indent=0, sort_keys=True)
+            return
+        golden = json.load(open(path, encoding='utf-8'))
+        db, company = golden.pop('_db'), golden.pop('_company')
+        self.assertEqual(sorted(now), sorted(golden))
+        # What reads the database's own set-up (routes, reminders, Hiring
+        # rules, company stages, the inbox) is compared on the database the
+        # golden file was written on only; the rest everywhere.
+        own = ('contracts', 'existing', 'inbox', 'strip', 'progress', 'home_strip', 'home_strip_page')
+        for key in golden:
+            if key in own and self.env.cr.dbname != db:
+                continue
+            mine = now[key].replace(json.dumps(self.company.name)[1:-1], 'COMPANY')
+            self.assertEqual(mine, golden[key].replace(json.dumps(company)[1:-1], 'COMPANY'), key)
+
+    def test_wf2p5b_p2_vietnamese_and_indonesian_reach_the_surfaces(self):
+        self.need(self.CLAIM)
+        Lang = self.env['res.lang']
+        if not (Lang._lang_get('vi_VN') and Lang._lang_get('id_ID')):
+            self.skipTest('vi_VN and id_ID are not installed here')
+        english = self._p5b_surfaces('en_US')
+
+        def leaves(value, path=''):
+            if isinstance(value, dict):
+                for k, v in sorted(value.items()):
+                    yield from leaves(v, '%s.%s' % (path, k))
+            elif isinstance(value, (list, tuple)):
+                for i, v in enumerate(value):
+                    yield from leaves(v, '%s[%s]' % (path, i))
+            elif isinstance(value, str):
+                yield path, value
+        # every English sentence (three letters in a row), by where it sits
+        base = {p: v for p, v in leaves(english) if re.search(r'[A-Za-z]{3}', v)}
+        report = {}
+        for lang in ('vi_VN', 'id_ID'):
+            got = self._p5b_surfaces(lang)
+            mine = dict(leaves(got))
+            changed = {p for p, v in mine.items() if p in base and v != base[p]}
+            per_surface = {key: len([p for p in changed if p.startswith('.' + key)]) for key in english}
+            report[lang] = {'changed': len(changed), 'per_surface': per_surface}
+            if os.environ.get('WF2P5B_SHOW_ENGLISH'):
+                for p in sorted(set(base) - changed):
+                    print('WF2P5B_SAME %s %s %r' % (lang, p, base[p][:160]))
+            self.assertGreaterEqual(len(changed), 30, lang)
+            for key in ('schedule_words', 'schedule_issues', 'contracts', 'existing', 'inbox', 'strip', 'page',
+                        'task_body', 'payloads', 'progress', 'link_mail', 'home_strip', 'home_strip_page', 'durations'):
+                self.assertTrue(per_surface.get(key), '%s: nothing translated on %s' % (lang, key))
+            self.assertNotRegex(json.dumps(got, ensure_ascii=False, default=str), r'(?i)odoo')
+        print('WF2P5B_LANG=' + json.dumps(report))
+
+    def test_wf2p5b_p3_messages_go_out_in_the_readers_language(self):
+        """Reminders, pass-ups and team notes are written in the language of
+        the person they are for; the no-login link email in the language of
+        the contact with that address (else the company's)."""
+        w, _d, claim = self.claim_repeat([self.check()], receipts=1)
+        run = self.start(w, claim)
+        line = self.lines_of(run)[0]
+        step = self.step(line, 'check')
+        system = self.env['pb.workflow.studio'].sudo()
+        english = system._task_payload(line, step, 'reminder')
+        self.assertEqual(system._task_payload(line, step, 'reminder', self.staff), english, 'English reader: as before')
+        self.assertEqual(system._link_lang(self.company, 'nobody-%s@example.com' % uuid.uuid4().hex),
+                         self.company.partner_id.lang or 'en_US')
+        self.assertEqual(system._link_lang_prefix(self.company, 'en_US') if 'website' in self.env else '', '')
+        Lang = self.env['res.lang']
+        if not (Lang._lang_get('vi_VN') and Lang._lang_get('id_ID')):
+            return
+        self.staff.lang = 'vi_VN'
+        vi = system._task_payload(line, step, 'reminder', self.staff)
+        self.assertNotEqual(vi['summary'], english['summary'])
+        self.assertNotEqual(vi['body'], english['body'])
+        self.assertEqual(vi['res_id'], english['res_id'])
+        address = 'p5b-%s@example.com' % uuid.uuid4().hex
+        self.env['res.partner'].create({'name': 'P5b no login', 'email': address, 'lang': 'id_ID'})
+        self.assertEqual(system._link_lang(self.company, address), 'id_ID')
