@@ -279,8 +279,17 @@ class PbGoalChangeApproval(models.Model):
         res = super()._approval_return(request, reason)
         if going_back and self.state == 'draft':
             leg(self.env, 'the sent-back email for change %s' % self.id,
-                lambda: self._notify('pb_goals.mail_goals_change_returned'))
+                lambda: self.with_context(lang=self._pb_mail_lang())._notify(
+                    'pb_goals.mail_goals_change_returned'))
         return res
+
+    def _pb_mail_lang(self):
+        """The language the sent-back email is written in (WF2 P5b), as
+        time off does: the employee's own, else the company's."""
+        self.ensure_one()
+        employee = self.sudo().employee_id
+        return (employee.user_id.lang or employee.work_contact_id.lang
+                or self.sudo().company_id.partner_id.lang or 'en_US')
 
     def _pb_sent_back_note(self):
         """The reason the approver gave, as written on the request."""

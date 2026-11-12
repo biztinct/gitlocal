@@ -12,7 +12,7 @@ The paths are `/my/todo…`: `/my/tasks` belongs to the Projects portal.
 """
 import logging
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 from odoo.tools.misc import format_date
 
@@ -84,7 +84,7 @@ class WorkflowMyTasks(http.Controller):
             data = studio._page_data(step, HOME_UNSUPPORTED)
             # WF2 P5c: `data['name']` carries a repeat's line ("Check · Taxi").
             tasks.append({'id': step.id, 'name': data['name'], 'kind': step.kind,
-                          'verb': {'input': 'Fill in', 'confirm': 'Read and confirm'}.get(step.kind, 'To do'),
+                          'verb': {'input': _('Fill in'), 'confirm': _('Read and confirm')}.get(step.kind, _('To do')),
                           'workflow': data['workflow'], 'due': data['due'], 'late': data['late']})
         notices = [{'id': n.id, 'subject': n.subject or '', 'body': n.body or '',
                     'when': format_date(request.env, n.create_date.date()), 'read': bool(n.read_at)}

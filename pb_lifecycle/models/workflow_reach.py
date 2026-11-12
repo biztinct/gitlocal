@@ -249,7 +249,7 @@ class WorkflowReach(models.AbstractModel):
             stamp = fields.Datetime.to_string(step.started_at or fields.Datetime.now())
             for member in members:
                 self.env['biz.approval.outbox'].sudo()._queue(
-                    'task_reminder', member, payload=self._task_payload(run, step, 'new_team'),
+                    'task_reminder', member, payload=self._task_payload(run, step, 'new_team', member),
                     dedupe='wf-team-new-%s-%s-%s' % (step.id, stamp, member.id))
             return True
         cover = self._covering(person, run.company_id)

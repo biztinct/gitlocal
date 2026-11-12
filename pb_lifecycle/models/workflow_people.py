@@ -311,7 +311,7 @@ class WorkflowPeople(models.AbstractModel):
             stamp = fields.Datetime.to_string(step.started_at or fields.Datetime.now())
             for member in members:
                 self.env['biz.approval.outbox'].sudo()._queue(
-                    'task_reminder', member, payload=self._task_payload(run, step, 'new_team'),
+                    'task_reminder', member, payload=self._task_payload(run, step, 'new_team', member),
                     dedupe='wf-team-new-%s-%s-%s' % (step.id, stamp, member.id))
         elif mode == 'home':
             step._cancel_activity()
@@ -586,13 +586,24 @@ class WorkflowPeople(models.AbstractModel):
             'id': step.id, 'name': step.name, 'kind': step.kind, 'workflow': run.name,
             'record': self._record_name(run), 'instructions': (step.config or {}).get('notes', ''),
             'text': (step.config or {}).get('text', '') if step.kind == 'confirm' else '',
-            'buttons': D.buttons(step.config) if step.kind in ('task', 'confirm') else [],
+            'buttons': self._page_buttons(step) if step.kind in ('task', 'confirm') else [],
             'fields': self._page_fields(step, unsupported), 'values': self._page_values(step),
             'readonly': list(self._prefills_safe(step)), 'sent_back': back,
             'due': format_date(self.env, due) if due else '',
             'late': bool(step.due_at and step.due_at < fields.Datetime.now()),
             'company': run.company_id.name or '', 'company_id': run.company_id.id,
         }
+
+    def _page_buttons(self, step):
+        """The step's buttons; the two built-in ones ("I confirm", "Done")
+        in the reader's language (P5b). A designer's own buttons are their
+        words and stay as written."""
+        rows = D.buttons(step.config or {})
+        own = (step.config or {}).get('buttons')
+        if isinstance(own, list) and own:
+            return rows
+        words = {'confirm': _('I confirm'), 'done': _('Done')}
+        return [dict(r, label=words.get(r['key'], r['label'])) for r in rows]
 
     def _prefills_safe(self, step):
         try:
@@ -717,12 +728,14 @@ class WorkflowPeople(models.AbstractModel):
             expires = max(step.due_at + timedelta(days=LINK_AFTER_DUE_DAYS), now + timedelta(days=LINK_AFTER_DUE_DAYS))
         internal(step).write({'access_token': token, 'link_email': email, 'link_name': name,
                               'link_expires_at': expires, 'link_opened_at': False})
-        url = '%s/workflow/t/%s' % (step.get_base_url().rstrip('/'), token)
-        template = self.env.ref('pb_lifecycle.mail_template_workflow_link')
         company = run.company_id
+        lang = self._link_lang(company, email)
+        url = '%s%s/workflow/t/%s' % (step.get_base_url().rstrip('/'), self._link_lang_prefix(company, lang), token)
+        template = self.env.ref('pb_lifecycle.mail_template_workflow_link')
         sender = company.email_formatted or self.env['ir.mail_server'].sudo()._get_default_from_address() or ''
         due = (step.due_at - timedelta(days=1)).date() if step.due_at else None
         template.sudo().with_context(
+            lang=lang,
             link_url=url, link_company=company.name or '', link_name=name or '',
             link_due=fields.Date.to_string(due) if due else '',
             link_until=fields.Date.to_string(expires.date()),
@@ -732,6 +745,31 @@ class WorkflowPeople(models.AbstractModel):
             'model': False, 'res_id': False})
         run._log(_('Waiting for %(who)s: a link was sent to %(email)s.',
                    who=name or _('them'), email=mask_email(email)), step)
+
+    def _link_lang(self, company, email):
+        """The language the link email is written in (P5b): the person's own
+        (a contact with that address), else the company's, else English."""
+        Lang = self.env['res.lang'].sudo()
+        partner = self.env['res.partner'].sudo().search([
+            ('email', '=ilike', (email or '').strip()), ('lang', '!=', False),
+            ('company_id', 'in', [company.id, False])], limit=1) if email else None
+        for code in ((partner.lang if partner else None), company.partner_id.lang):
+            if code and Lang._lang_get(code):
+                return code
+        return 'en_US'
+
+    def _link_lang_prefix(self, company, lang):
+        """"/vi" when the link page should open in another language than
+        the site's own (P5b) — only for a language the site offers; the
+        site's own language keeps the plain link, as before."""
+        if 'website' not in self.env or not lang:
+            return ''
+        site = self.env['website'].sudo().search([('company_id', '=', company.id)], limit=1) \
+            or self.env['website'].sudo().search([], limit=1)
+        if not site or lang == site.default_lang_id.code:
+            return ''
+        offered = site.language_ids.filtered(lambda l: l.code == lang)
+        return '/%s' % offered.url_code if offered else ''
 
     @api.model
     def resend_link(self, step_id):
@@ -769,8 +807,11 @@ class WorkflowPeople(models.AbstractModel):
         return step, 'ok'
 
     # ===================================================== reminders, pass-up
-    def _task_payload(self, run, step, why):
-        """The words of a reminder / pass-up note (posted on the run)."""
+    def _task_payload(self, run, step, why, person=None):
+        """The words of a reminder / pass-up note (posted on the run), in
+        the language of the person it is for (P5b; none given: as before)."""
+        if person and person.lang and person.lang != self.env.lang:
+            return self.with_context(lang=person.lang)._task_payload(run, step, why)
         when = (step.due_at - timedelta(days=1)).date() if step.due_at else None
         record = self._record_name(run)
         what = '%s · %s' % (step.name, record) if record else step.name
@@ -838,7 +879,7 @@ class WorkflowPeople(models.AbstractModel):
                         people = (step.assignee_id or step.team_user_ids).filtered(
                             lambda p: p.active and not p.share)
                         for person in people:
-                            Outbox._queue('task_reminder', person, payload=self._task_payload(run, step, 'reminder'),
+                            Outbox._queue('task_reminder', person, payload=self._task_payload(run, step, 'reminder', person),
                                           dedupe='wf-task-reminder-%s-%s-%s' % (step.id, stamp, person.id))
                         internal(step).write({'reminded_at': now})
                         if people:
@@ -850,7 +891,7 @@ class WorkflowPeople(models.AbstractModel):
                         bosses, told = self._pass_up_people(step, run)
                         bosses = bosses.filtered(lambda b: b != step.assignee_id and b.id != SUPERUSER_ID)
                         for boss in bosses:
-                            Outbox._queue('task_passed_up', boss, payload=self._task_payload(run, step, 'passed_up'),
+                            Outbox._queue('task_passed_up', boss, payload=self._task_payload(run, step, 'passed_up', boss),
                                           dedupe='wf-task-passed-up-%s-%s-%s' % (step.id, stamp, boss.id))
                         if bosses:
                             run._log(_('%(step)s is late; %(who)s was told.', step=step.name,
@@ -878,11 +919,7 @@ class WorkflowPeople(models.AbstractModel):
                         continue
                     person, run = service._stage_waiting_for(row)
                     if person:
-                        payload = {'summary': _('Past its target time: %s', row.stage_id.name),
-                                   'body': _('This has been in “%(stage)s” longer than its target of %(hours)s hours.',
-                                             stage=row.stage_id.name, hours=row.stage_id.target_hours),
-                                   'res_model': 'pb.workflow.run' if run else row.res_model,
-                                   'res_id': run.id if run else row.res_id}
+                        payload = self._stage_late_payload(row, run, person)
                         Outbox._queue('stage_late', person, payload=payload,
                                       dedupe='wf-stage-late-%s-%s' % (row.id, fields.Datetime.to_string(row.entered_at)))
                         if run:
@@ -891,6 +928,17 @@ class WorkflowPeople(models.AbstractModel):
                     internal(row).write({'late_told_at': now})
             except Exception:  # noqa: BLE001
                 _logger.exception('Workflow stage position %s: late handling failed', row.id)
+
+    def _stage_late_payload(self, row, run, person):
+        """The words of a "past its target time" note, in the person's
+        language (P5b)."""
+        if person.lang and person.lang != self.env.lang:
+            return self.with_context(lang=person.lang)._stage_late_payload(row, run, person)
+        return {'summary': _('Past its target time: %s', row.stage_id.name),
+                'body': _('This has been in “%(stage)s” longer than its target of %(hours)s hours.',
+                          stage=row.stage_id.name, hours=row.stage_id.target_hours),
+                'res_model': 'pb.workflow.run' if run else row.res_model,
+                'res_id': run.id if run else row.res_id}
 
     def _stage_waiting_for(self, row):
         """(who the record waits for, the run) for a late stage position."""
