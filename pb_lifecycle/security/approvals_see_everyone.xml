@@ -41,7 +41,12 @@
     <field name="perm_unlink" eval="False"/>
   </record>
 
-  <!-- Granted from the Access screen (audit row), the way every ability is. -->
+  <!-- Granted from the Access screen (audit row), the way every ability is.
+       noupdate, as the other abilities (data/workflow_abilities.xml): once a
+       role that holds it is assigned, Access refuses any write to its
+       groups ("used by assigned roles"), and an upgrade that rewrote this
+       record failed on rize after D32 (ledger G80, WF2 P5b). -->
+  <data noupdate="1">
   <record id="ability_approvals_see_everyone" model="pb.role.ability">
     <field name="technical_key">approvals-see-everyone</field>
     <field name="name">See everyone's approvals</field>
@@ -49,4 +54,5 @@
     <field name="description">Look at every approval request in the company, under Everyone in the Approvals inbox. Read only: it does not let you decide, move, repair or cancel anything.</field>
     <field name="group_ids" eval="[(4, ref('group_approvals_see_everyone'))]"/>
   </record>
+  </data>
 </odoo>
