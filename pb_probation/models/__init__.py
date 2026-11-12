@@ -15,3 +15,6 @@ from . import pb_probation
 from . import verdict_approval
 
 from . import review_journey
+
+# WORKFLOW-2 P5c (D31): the trial-period timetable, declared to Workflow Studio.
+from . import workflow_timetable

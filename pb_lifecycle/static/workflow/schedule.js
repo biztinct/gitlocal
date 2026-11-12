@@ -205,3 +205,18 @@ action=async function(name,el){
  if(S.page==='editor'&&S.w&&((name==='tab'&&el?.dataset?.id==='runs')||name==='refresh-runs')&&schedOf()){await schedHistory();if(S.tab==='runs')render();}
  return r;
 };
+
+/* WF2 P5c (owner decision D30) — "Around a date" in the How often choices.
+   One engine: choosing it switches the workflow to the shipped "At a record
+   date" start and shows that start's own settings in place, with the same
+   How often row above them, so picking Every day / week / … switches back.
+   The schedule a person had set is kept in the draft while they look, so
+   going back restores it; filters are never touched. Record workflows only
+   (a new process has no date of its own). */
+function schedAroundOk(){return !!S.w?.source_model&&(S.w.metadata.fields||[]).some(f=>['date','datetime'].includes(f.type))}
+function schedAroundBtn(on){return `<button type="button" class="${on?'on':''}" data-sched-around="1" aria-pressed="${on}">Around a date</button>`}
+const _p5cSchedPicker=schedPicker;
+schedPicker=function(s){const html=_p5cSchedPicker(s);if(!schedAroundOk())return html;const k=html.indexOf('</div>');return k>0?html.slice(0,k)+schedAroundBtn(false)+html.slice(k):html};
+const _p5cAroundInspector=inspector;
+inspector=function(){const html=_p5cAroundInspector();const n=S.w&&byId(S.w.definition,S.selected);if(!n||n.type!=='trigger'||S.w.definition.trigger?.kind!=='date'||!schedAroundOk())return html;const back=SCHED_EVERY.map(([k,l])=>`<button type="button" data-sched-back="${k}" aria-pressed="false">${l}</button>`).join('');const row=`<div class="sched sched-around">${field('How often',`<div class="segmented sched-every" role="group" aria-label="How often">${back}${schedAroundBtn(true)}</div>`)}<p class="muted small">Starts a set number of days before or after a date on each record. Choose another option above to start on a calendar pattern instead.</p></div>`;const marker='<label>Record date</label>';return html.includes(marker)?html.replace(marker,row+marker):html};
+document.addEventListener('click',e=>{const b=e.target.closest?.('[data-sched-around],[data-sched-back]');if(!b||S.page!=='editor'||!S.w)return;e.preventDefault();e.stopImmediatePropagation();const tr=S.w.definition.trigger;if(b.dataset.schedAround){if(tr.kind==='date')return;mutate(()=>{tr.kind='date';const dates=S.w.metadata.fields.filter(f=>['date','datetime'].includes(f.type));if(!dates.some(f=>f.key===tr.date_field))tr.date_field=dates[0]?.key||'';if(typeof tr.delay!=='number')tr.delay=3;if(!tr.mode)tr.mode='before';if(!['minutes','hour','day','month'].includes(tr.unit))tr.unit='day'});setTimeout(()=>$('[data-sched-around]')?.focus({preventScroll:true}),0);return}const k=b.dataset.schedBack;mutate(()=>{tr.kind='schedule';const s=tr.schedule||(tr.schedule=schedDefaults());for(const[dk,dv]of Object.entries(schedDefaults()))if(s[dk]===undefined||s[dk]===null)s[dk]=dv;s.every=k;s.starts='each_record';if(k==='week'&&!(s.weekdays||[]).length)s.weekdays=[0];if(k==='once'&&!s.date)s.date=new Date(Date.now()+864e5).toISOString().slice(0,10)});setTimeout(()=>$(`[data-sched-every="${k}"]`)?.focus({preventScroll:true}),0)},true);

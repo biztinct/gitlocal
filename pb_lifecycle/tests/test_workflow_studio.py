@@ -3406,3 +3406,77 @@ class TestWorkflowStudio(TransactionCase):
             strings = re.findall(r"_\(\s*'([^']*)'", source) + re.findall(r"return '([^']*)'", source)
             for s in strings:
                 self.assertNotRegex(s, r'(?i)odoo|\bcron\b|schedule expression|sub-run|\bloop\b|iteration|\bindex\b|\bnode\b', s)
+
+    # ================================================================ WF2 P5c
+    # Small items first (D30, D31, D32), then "Repeat for each…".
+    def test_wf2p5c_s1_around_a_date_switches_both_ways(self):
+        """D30: "Around a date" switches to the shipped "At a record date"
+        start (and back) with a valid definition and no filter lost. The
+        screen does exactly these two edits (schedule.js)."""
+        node = self.todo('look', owner={'kind': 'user', 'id': self.staff.id})
+        scope = {'match': 'all', 'rules': [{'field': 'name', 'op': 'icontains', 'value': 'P5c around'}]}
+        w, d = self.scheduled([node], model=self.GENERIC, scope=scope)
+        self.service.save_draft(w.id, w.revision, d)
+        date_field = next(f['key'] for f in self.service._source_fields(self.GENERIC) if f['type'] in ('date', 'datetime'))
+        tr = d['trigger']
+        tr.update(kind='date', date_field=date_field, delay=3, mode='before', unit='day')   # "Around a date"
+        result = self.service.save_draft(w.id, w.revision, d)
+        self.assertFalse([i for i in result['issues'] if i['id'] == 'trigger' and i.get('severity') != 'warning'], result['issues'])
+        w.invalidate_recordset()
+        self.assertEqual(w.draft['scope'], scope)
+        self.assertEqual(w.draft['trigger']['schedule']['every'], 'day', 'the schedule is kept to go back to')
+        tr.update(kind='schedule')
+        tr['schedule'].update(every='week', weekdays=[0], starts='each_record')            # "Every week"
+        result = self.service.save_draft(w.id, w.revision, d)
+        self.assertFalse([i for i in result['issues'] if i['id'] == 'trigger' and i.get('severity') != 'warning'], result['issues'])
+        w.invalidate_recordset()
+        self.assertEqual(w.draft['scope'], scope)
+        self.assertEqual(w.draft['trigger']['kind'], 'schedule')
+
+    def test_wf2p5c_s2_area_timetables_declared_and_warned(self):
+        """D31: contract end, trial period end and document expiry are
+        declared from the areas' own settings, listed under "Already
+        happens", and a workflow started around the same date that tells
+        the same kind of person is warned. No job changes."""
+        crons = self.env['ir.cron'].sudo().search([('active', '=', True)]).ids
+        Param = self.env['ir.config_parameter'].sudo()
+        expected = {'hr.contract': ('pb_contract_lifecycle.nag_days', '9', 'date_end', '9 days'),
+                    'hr.employee': ('pb_probation.remind_days_far', '16', 'trial_date_end', '16 days'),
+                    'pb.employee.document': ('pb_employee_vault.expiry_warn_days', '31', 'expiry_date', '31 days')}
+        checked = 0
+        for model, (param, value, field, words) in expected.items():
+            if model not in self.env or not hasattr(self.env[model], '_workflow_effects') or \
+                    model not in {r['key'] for r in self.service._models()}:
+                continue
+            Param.set_param(param, value)
+            rows = [r for r in self.service._existing(model, self.company) if r['kind'] == 'reminder']
+            self.assertTrue(any(words in r['text'] for r in rows), (model, rows))
+            tables = self.service._timetables(model, self.company)
+            self.assertTrue(any(t['timing']['field'] == field for t in tables), model)
+            # a workflow around that date, giving a named person a task
+            w, d = self.workflow([self.todo('chase', owner={'kind': 'user', 'id': self.staff.id})], model=model)
+            d['trigger'].update(kind='date', date_field=field, delay=5, mode='before', unit='day')
+            issues = self.service._validate(w.sudo(), d)
+            hit = [i for i in issues if i['code'] == 'repeats_existing' and i['id'] == 'chase']
+            self.assertTrue(hit, (model, issues))
+            self.assertIn('already reminds people on its own timetable', hit[0]['text'])
+            self.assertNotRegex(hit[0]['text'], r'(?i)odoo|_id\b|date_end|expiry_date')
+            # another date: no warning; kept on purpose: acknowledged
+            other = next((f['key'] for f in self.service._source_fields(model)
+                          if f['type'] in ('date', 'datetime') and f['key'] != field), None)
+            if other:
+                d['trigger']['date_field'] = other
+                self.assertFalse([i for i in self.service._validate(w.sudo(), d)
+                                  if i['code'] == 'repeats_existing' and i['id'] == 'chase'])
+                d['trigger']['date_field'] = field
+            d['nodes'][-1]['ack_repeat'] = True
+            kept = [i for i in self.service._validate(w.sudo(), d) if i['code'] == 'repeats_existing' and i['id'] == 'chase']
+            self.assertTrue(kept[0]['acknowledged'])
+            # a start long before the window: no warning
+            d['nodes'][-1].pop('ack_repeat')
+            d['trigger']['delay'] = 300
+            self.assertFalse([i for i in self.service._validate(w.sudo(), d)
+                              if i['code'] == 'repeats_existing' and i['id'] == 'chase'])
+            checked += 1
+        self.assertGreaterEqual(checked, 2, 'at least two of the three areas are installed here')
+        self.assertEqual(self.env['ir.cron'].sudo().search([('active', '=', True)]).ids, crons)

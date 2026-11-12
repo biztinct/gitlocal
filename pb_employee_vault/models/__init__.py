@@ -10,3 +10,6 @@ from . import pb_people_360
 from . import employee_details
 
 from . import payroll_profile
+
+# WORKFLOW-2 P5c (D31): the document-expiry timetable, declared to Workflow Studio.
+from . import workflow_timetable

@@ -11,3 +11,6 @@ from . import contract_automation
 from . import zoho_pipeline_ext
 from . import pb_contractlife
 from . import contract_extension_approval
+
+# WORKFLOW-2 P5c (D31): the contract-end timetable, declared to Workflow Studio.
+from . import workflow_timetable

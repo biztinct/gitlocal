@@ -33,3 +33,6 @@ from . import workflow_strip
 from . import workflow_time
 from . import workflow_reach
 from . import workflow_schedule_run
+
+# WORKFLOW-2 P5c: the areas' date timetables (D31) and Repeat for each line.
+from . import workflow_timetable
