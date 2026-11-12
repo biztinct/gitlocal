@@ -28,3 +28,5 @@ from . import test_brand_rules
 # Approval Matrix P7 — two owners agree before a customer is paused.
 from . import test_p7_platform
 from . import test_backup_retention
+# UPDATES P3c — a new client's administrator approves its bank details.
+from . import test_p3c_bank_approver

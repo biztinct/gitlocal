@@ -1099,10 +1099,91 @@ class PbTenants(models.AbstractModel):
             # only safe moment to do this, and it is the moment that decides
             # what "administrator" means for the life of this tenant.
             self._apply_rails_to(env, admin, say)
+            # UPDATES P3c (D15): the client's own administrator approves the
+            # client's bank details — never the platform support login.
+            self._seat_bank_approver(env, admin, say)
         say('Credentials generated — shown once on completion, never stored.', 'warn')
         return {'credentials': {'url': self._tenant_url(slug),
                                 'login': tenant.admin_email,
                                 'password': password}}
+
+    # ============================================ UPDATES P3c — bank approver
+    #: The responsibility the bank-details route asks first (`pb_records`'
+    #: shipped "a second person" route reads Finance, whole company).
+    BANK_APPROVER_ROLE = 'finance'
+
+    def _seat_bank_approver(self, env, admin, say):
+        """Make the new tenant's own administrator the Finance holder of
+        every company in it, and take the platform support login off that
+        seat (holder, backup or pool).
+
+        WHY. The golden template ships the Finance responsibility held by the
+        platform recovery account (it is the only staff login there), so
+        every clone started with Payobook's support login as the person who
+        approves the CLIENT'S bank details (UPDATES P3a report §R15). Owner
+        decision D15 (2026-11-12): the client's own administrator is their
+        bank approver. Only a seat held by the support login, or nobody, is
+        changed — a real person already holding Finance is left alone.
+        Returns the number of seats written. Never raises: a tenant without
+        the approval engine simply has nothing to seat.
+        """
+        if 'biz.approval.responsibility' not in env.registry:
+            return 0
+        role = env['biz.approval.role'].sudo().search(
+            [('key', '=', self.BANK_APPROVER_ROLE)], limit=1)
+        if not role:
+            return 0
+        support = self._rails_param('pb_tenants.break_glass_login').lower()
+        Resp = env['biz.approval.responsibility'].sudo()
+        Users = env['res.users'].sudo().with_context(active_test=False)
+        support_user = Users.search([('login', '=', support)], limit=1) \
+            if support else Users.browse()
+        done, seated, kept = 0, [], []
+        try:
+            with env.cr.savepoint():
+                for company in env['res.company'].sudo().search([]):
+                    rows = Resp.search([('company_id', '=', company.id),
+                                        ('role_id', '=', role.id),
+                                        ('scope_key', '=', ''),
+                                        ('active', '=', True)])
+                    if not rows:
+                        Resp.create({
+                            'company_id': company.id, 'role_id': role.id,
+                            'scope_key': '', 'user_id': admin.id,
+                            'note': 'The client administrator approves bank '
+                                    'details (set when the tenant was '
+                                    'created)'})
+                        done += 1
+                        seated.append(company.name)
+                        continue
+                    for row in rows:
+                        vals = {}
+                        if not row.user_id or row.user_id == support_user:
+                            vals['user_id'] = admin.id
+                        if support_user and row.backup_user_id == support_user:
+                            vals['backup_user_id'] = False
+                        if support_user and support_user in row.pool_user_ids:
+                            vals['pool_user_ids'] = [(3, support_user.id)]
+                        if vals:
+                            row.write(vals)
+                            done += 1
+                        if (vals.get('user_id') or row.user_id.id) == admin.id:
+                            seated.append(company.name)
+                        else:
+                            kept.append('%s (%s)' % (company.name,
+                                                     row.user_id.login))
+        except Exception as e:                      # noqa: BLE001
+            _logger.warning('Bank approver could not be set: %s', e)
+            say('The client administrator could not be made the bank-details '
+                'approver: %s' % e, 'warn')
+            return 0
+        if seated:
+            say('%s approves bank details for %s; the platform support login '
+                'does not.' % (admin.login, ', '.join(sorted(set(seated)))))
+        if kept:
+            say('Bank details approver left as it was for %s.'
+                % ', '.join(kept), 'warn')
+        return done
 
     # ================================================ the tenant-admin rails
     def _rails_param(self, key):
