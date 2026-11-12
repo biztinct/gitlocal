@@ -72,7 +72,7 @@ the pay run" sheet instead. No tax calculation is changed.
 
 UPDATES programme, phases 1-5. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.7.1',
+    'version': '19.0.1.7.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

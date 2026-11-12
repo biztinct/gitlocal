@@ -1084,12 +1084,27 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         return emps.sorted(lambda e: (e.id not in before, (e.name or '').lower(), e.id)).ids
 
     @api.model
-    def _ytd_rows(self, year, emp_ids):
+    def _ytd_rows(self, year, emp_ids, detail=None):
         """Per person and figure: before / paid / total, the date the figures
-        cover up to, and the months with no finished payslip."""
+        cover up to, and the months with no finished month-end payslip.
+
+        "Paid in Payobook" is `pb.updates.ytd.line`'s one computation
+        (`_ledger` › `_person_window` › `_figure_paid`, UPDATES P5c): a total
+        only when every finished payslip that should carry the figure does,
+        signs as the pay engine stores them, and each month counted once
+        (a mid-month advance is never added to its month-end payslip).
+        `detail` = `(emp_id, key)` keeps the payslip list of that one cell for
+        "How this number was worked out"."""
         Line = self.env['pb.updates.ytd.line'].sudo()
+        Month = self.env['pb.updates.oneoff']
         emps = self.env['hr.employee'].sudo().browse(emp_ids)
         figures = self._ytd_figures(sorted(set(emps.mapped('company_id').ids)))
+        # Words are worked out once per call (a whole-roster download formats
+        # tens of thousands of cells; G14's lesson).
+        labels = self.env.context.get('pb_ytd_labels')
+        if labels is None:
+            labels = {}
+            self = self.with_context(pb_ytd_labels=labels)
         lines = Line.search([('employee_id', 'in', emps.ids), ('tax_year', '=', year),
                              ('state', '=', 'set')])
         by = {}
@@ -1100,73 +1115,203 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             codes_by_company[company.id] = {k: ([] if f['count'] else Line._figure_codes(company, k))
                                             for k, f in figures.items()}
         all_codes = sorted({c for d in codes_by_company.values() for cs in d.values() for c in cs})
-        # One grouped query for the whole page: each person's window starts the
-        # day after their figures end (else 1 January) — the query takes the
-        # whole year and the windows are cut in Python from the months.
-        Line._flush_for_sql()
-        cr = self.env.cr
-        months, sums = {}, {}
-        if emps:
-            cr.execute("""
-                SELECT s.employee_id, date_trunc('month', s.date_to)::date, s.date_from
-                  FROM hr_payslip s
-                 WHERE s.employee_id = ANY(%s) AND s.state IN %s
-                   AND s.date_to >= %s AND s.date_to <= %s""",
-                       [emps.ids, DONE_SLIP_STATES, first_of_year(year), last_of_year(year)])
-            for emp, month, start in cr.fetchall():
-                months.setdefault(emp, []).append((month, start))
-            for emp, start, code, total in Line._paid_sums(
-                    emps.ids, first_of_year(year), last_of_year(year), all_codes):
-                sums.setdefault(emp, []).append((start, code, total))
-        rows = []
+        ledger = Line._ledger(emps.ids, first_of_year(year), last_of_year(year), all_codes)
+        has_doj = 'date_of_joining' in emps._fields
+        rows, kept = [], None
         for emp in emps:
             mine = by.get(emp.id, {})
             covers = max((l.covers_to for l in mine.values()), default=None)
-            window = (covers + timedelta(days=1)) if covers else first_of_year(year)
-            had = sorted({m for m, start in months.get(emp.id, []) if start >= window})
-            latest = had[-1] if had else None
-            first_month = month_floor(window) if covers else (had[0] if had else None)
-            missing = [m for m in months_between(first_month, latest) if m not in had] \
-                if first_month and latest else []
             cur = emp.company_id.currency_id
             codes = codes_by_company.get(emp.company_id.id) or {}
+            windows = {}
+
+            def window_for(day):
+                if day not in windows:
+                    windows[day] = Line._person_window(ledger, emp.id, day)
+                return windows[day]
+
+            row_window = window_for(covers)
+            counted_months = sorted(row_window['months'])
+            latest = counted_months[-1] if counted_months else None
+            # Where the year is covered from: the day after the figures before
+            # Payobook end; without figures, 1 January (or the month the person
+            # joined, when the employee record says so).
+            joined = emp.date_of_joining if has_doj else False
+            if covers:
+                cover_from = month_floor(covers + timedelta(days=1))
+            else:
+                cover_from = first_of_year(year)
+                if joined and joined.year == year:
+                    cover_from = month_floor(joined)
+            start_missing = []
+            if not covers and counted_months and counted_months[0] > cover_from:
+                start_missing = months_between(cover_from, counted_months[0] - timedelta(days=1))
+            first_month = cover_from if covers else (counted_months[0] if counted_months else None)
+            missing = [m for m in months_between(first_month, latest)
+                       if m not in row_window['months']] if first_month and latest else []
+            row_open = bool(missing or start_missing)
+            twice = sorted({r['month'] for r in row_window['twice']})
+            row_bits = self._ytd_row_bits(missing, start_missing, twice)
             cells = {}
             for key, f in figures.items():
                 if f['company_id'] and f['company_id'] != emp.company_id.id:
                     continue
                 line = mine.get(key)
+                own_covers = line.covers_to if line else covers
+                window = window_for(own_covers)
                 before = float(line.amount) if line else 0.0
-                found = True
                 if f['count']:
-                    paid = float(len(had))
+                    months = Line._months_paid(window, own_covers)
+                    res = {'state': 'none' if not window['counted'] else 'complete',
+                           'paid': float(len(months)), 'have': 0, 'expected': 0,
+                           'below_zero': [], 'advance': 0.0, 'amounts': {}}
+                    if window['overlap']:
+                        res['state'] = 'overlap'
                 else:
-                    wanted = set(codes.get(key) or [])
-                    mine_rows = [(start, code, t) for start, code, t in sums.get(emp.id, [])
-                                 if code in wanted and start >= window]
-                    # No payslip of theirs carries any of these pay items:
-                    # "not known", never a confident 0.
-                    found = bool(mine_rows) or not had
-                    paid = sum(t for _start, _code, t in mine_rows)
+                    res = Line._figure_paid(ledger, window, codes.get(key) or [])
+                paid = res['paid']
+                state = res['state']
+                counted = state != 'unknown'
                 total = before + paid
+                year_total = state in ('complete', 'none') and not row_open
+                if state == 'none' and not line:
+                    year_total = False
+                note = self._ytd_cell_note(f, res, own_covers, row_bits, cur) \
+                    if (line or window['counted']) else ''
                 cells[key] = {
                     'before': before, 'paid': paid, 'total': total, 'has_before': bool(line),
                     'before_label': Line._value_label(key, before, cur) if line else '',
-                    'paid_label': Line._value_label(key, paid, cur) if (paid or (had and found)) else '',
-                    'total_label': Line._value_label(key, total, cur) if (line or paid or (had and found)) else '',
-                    'counted': bool(f['count'] or (codes.get(key) and found)),
+                    'paid_label': Line._value_label(key, paid, cur) if counted and (
+                        paid or window['counted']) else '',
+                    'total_label': Line._value_label(key, total, cur) if (
+                        line or (counted and window['counted'])) else '',
+                    'counted': counted,
                     'source': line.source_note or '' if line else '',
+                    # UPDATES P5c
+                    'state': state, 'have': res['have'], 'expected': res['expected'],
+                    'year_total': bool(year_total), 'note': note,
+                    'chip': self._ytd_cell_chip(dict(res, before_set=bool(line))),
+                    'below_zero': bool(res['below_zero']),
+                    'below_note': self._ytd_below_note(res['below_zero']),
+                    'advance': res['advance'],
+                    'advance_label': Line._value_label(key, res['advance'], cur)
+                    if state == 'split' and res['advance'] else '',
+                    'detail': state != 'unknown' and bool(window['rows']),
                 }
+                if detail and detail == (emp.id, key):
+                    kept = {'window': window, 'res': res, 'figure': f, 'line': line,
+                            'covers': own_covers, 'currency': cur, 'emp': emp,
+                            'codes': codes.get(key) or [], 'cell': cells[key]}
             rows.append({
                 'emp_id': emp.id, 'name': emp.name or '', 'code': emp.barcode or emp.employee_id or '',
                 'company': emp.company_id.name or '',
                 'covers_to': fields.Date.to_string(covers) if covers else '',
                 'covers_label': day_label(self.env, covers) if covers else '',
                 'missing': len(missing),
-                'missing_labels': [self.env['pb.updates.oneoff']._month_label(m) for m in missing][:12],
-                'latest': self.env['pb.updates.oneoff']._month_label(latest) if latest else '',
+                'missing_labels': [self._ytd_month(m) for m in missing][:12],
+                'start_missing': len(start_missing),
+                'start_label': self._ytd_span_label(start_missing),
+                'twice_labels': [self._ytd_month(m) for m in twice][:6],
+                'latest': self._ytd_month(latest) if latest else '',
                 'cells': cells,
             })
+        if detail is not None:
+            return figures, rows, kept
         return figures, rows
+
+    @api.model
+    def _ytd_memo(self, key, make):
+        labels = self.env.context.get('pb_ytd_labels')
+        if labels is None:
+            return make()
+        if key not in labels:
+            labels[key] = make()
+        return labels[key]
+
+    @api.model
+    def _ytd_month(self, month):
+        return self._ytd_memo(('m', month),
+                              lambda: self.env['pb.updates.oneoff']._month_label(month))
+
+    @api.model
+    def _ytd_span_label(self, months):
+        """"January to March 2026", "June 2026" or ''."""
+        if not months:
+            return ''
+        if len(months) == 1:
+            return self._ytd_month(months[0])
+        return self._ytd_memo(('span', months[0], months[-1]), lambda: _(
+            "%(first)s to %(last)s", first=self._ytd_month(months[0]),
+            last=self._ytd_month(months[-1])))
+
+    @api.model
+    def _ytd_row_bits(self, missing, start_missing, twice):
+        """The parts of a cell's sentence that belong to the whole row, worked
+        out once per person: `(start, missing, twice)`."""
+        start = self._ytd_memo(('start', tuple(start_missing)), lambda: _(
+            "Incomplete: no figures before Payobook for %s") % self._ytd_span_label(
+                start_missing)) if start_missing else ''
+        gaps = self._ytd_memo(('gap', tuple(missing[:4])), lambda: _(
+            "Incomplete: no finished payslip for %s") % ', '.join(
+                self._ytd_month(m) for m in missing[:4])) if missing else ''
+        both = self._ytd_memo(('twice', tuple(twice[:3])), lambda: _(
+            "Two finished payslips of the same pay scheme and pay period in %s, both "
+            "counted") % ', '.join(self._ytd_month(m) for m in twice[:3])) if twice else ''
+        return start, gaps, both
+
+    @api.model
+    def _ytd_cell_chip(self, res):
+        """The amber chip on a cell whose sum is not a total, or ''."""
+        state = res['state']
+        if state == 'partial':
+            return _("%(have)s of %(n)s payslips have this figure", have=res['have'],
+                     n=res['expected'])
+        if state == 'overlap':
+            return _("A payslip overlaps the figures before Payobook")
+        if state == 'split':
+            return _("Mid-month advance shown apart")
+        if state == 'unknown' and res.get('before_set'):
+            return _("Paid in Payobook not known")
+        return ''
+
+    @api.model
+    def _ytd_below_note(self, months):
+        if not months:
+            return ''
+        return self._ytd_memo(('below', tuple(months[:3])), lambda: _(
+            "Includes a month below zero (%s)") % ', '.join(
+                self._ytd_month(m) for m in months[:3]))
+
+    @api.model
+    def _ytd_cell_note(self, fig, res, covers, row_bits, currency):
+        """One plain sentence for the cell and the download's check column:
+        "Complete", or why the amount is not a year total."""
+        Line = self.env['pb.updates.ytd.line']
+        bits = []
+        state = res['state']
+        if state == 'unknown':
+            bits.append(self._ytd_memo('unknown', lambda: _(
+                "Not known: none of the finished payslips has the pay items that make up this "
+                "figure, or none is chosen in Set up")))
+        elif state == 'partial':
+            bits.append(_("Incomplete: %(have)s of %(n)s payslips have this figure",
+                          have=res['have'], n=res['expected']))
+        elif state == 'overlap':
+            bits.append(_("Incomplete: a payslip overlaps the figures before Payobook (up to "
+                          "%s)") % day_label(self.env, covers))
+        elif state == 'split':
+            bits.append(_("Incomplete: a mid-month advance could not be matched to its "
+                          "month-end payslip (shown apart: %s)") % Line._value_label(
+                              fig['key'], res['advance'], currency))
+        start, gaps, both = row_bits
+        bits += [b for b in (start, gaps) if b]
+        if res['below_zero']:
+            bits.append(self._ytd_below_note(res['below_zero']))
+        if both and not fig['count']:
+            bits.append(both)
+        if not bits:
+            return self._ytd_memo('complete', lambda: _("Complete"))
+        return ' · '.join(bits)
 
     @api.model
     def get_ytd_view(self, year=None, search='', offset=0, limit=VIEW_PAGE):
@@ -1206,9 +1351,91 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                          'item': f['item']} for f in figures.values()],
             'rows': rows, 'people_before': people_before, 'figures_before': with_before,
             'missing_people': sum(1 for r in rows if r['missing']),
+            # UPDATES P5c — people on this page with a figure that is not a
+            # year total yet (incomplete, overlapping, an advance shown apart).
+            'open_people': sum(1 for r in rows if any(
+                c.get('total_label') and not c.get('year_total') and c.get('state') not in
+                ('complete', 'none') for c in r['cells'].values())),
             'schemes': schemes, 'uncounted': uncounted,
             'may_setup': self._ytd_may_setup(),
             'months': self._ytd_months(today),
+        }
+
+    @api.model
+    def get_ytd_cell_detail(self, year=None, emp_id=0, key=''):
+        """UPDATES P5c — "How this number was worked out": the payslips one
+        "paid in Payobook" cell counted (pay run, pay period, amount) and the
+        ones it did not count, with why. Asked for one cell at a time, so the
+        view itself stays one fast page."""
+        self._ytd_gate()
+        today = self._ytd_today()
+        try:
+            year = int(year or today.year)
+            emp_id = int(emp_id or 0)
+        except (TypeError, ValueError):
+            return {'ok': False, 'msg': _("This figure could not be read. Try again.")}
+        if year not in (today.year, today.year - 1) or not emp_id or not \
+                self._desk()._matching({'employee_ids': [emp_id]}, ctx={}):
+            return {'ok': False, 'msg': _("This figure could not be read. Try again.")}
+        figures, rows, kept = self._ytd_rows(year, [emp_id], detail=(emp_id, str(key or '')))
+        if not kept:
+            return {'ok': False, 'msg': _("This figure could not be read. Try again.")}
+        Line = self.env['pb.updates.ytd.line']
+        Month = self.env['pb.updates.oneoff']
+        f, res, window, cur = kept['figure'], kept['res'], kept['window'], kept['currency']
+        why = {
+            'before': _("Already in the figures before Payobook (up to %s)")
+            % day_label(self.env, kept['covers']),
+            'advance': _("Mid-month advance: the month-end payslip carries the whole month and "
+                         "takes the advance back off, so it is not added"),
+            'advance_only': _("Mid-month advance: the month-end payslip is not finished yet, so "
+                              "the month is not counted"),
+            'split': _("Mid-month advance that could not be matched to its month-end payslip: "
+                       "shown apart, not added"),
+            'overlap': _("Overlaps the figures before Payobook (up to %s), so it is not added")
+            % day_label(self.env, kept['covers']),
+        }
+        counted, left = [], []
+        months_floor = month_floor(kept['covers']) if kept['covers'] else None
+        for r in window['rows']:
+            amount = res['amounts'].get(r['id'])
+            item = {
+                'id': r['id'], 'run': r['run'] or '',
+                'period': _("%(start)s to %(end)s", start=day_label(self.env, r['date_from']),
+                            end=day_label(self.env, r['date_to'])),
+                'month': Month._month_label(r['month']),
+                'amount': '' if f['count'] else (
+                    Line._value_label(f['key'], amount, cur) if amount is not None else ''),
+                'below': bool(amount is not None and amount < 0),
+            }
+            if r['state'] == 'counted':
+                if f['count']:
+                    in_months = not months_floor or r['month'] > months_floor
+                    item['why'] = '' if in_months else _(
+                        "Its month is already in the figures before Payobook")
+                elif amount is None:
+                    item['why'] = _("Does not have this figure")
+                    item['missing'] = True
+                else:
+                    item['why'] = ''
+                counted.append(item)
+            else:
+                item['why'] = why.get(r['state'], '')
+                left.append(item)
+        cell = kept['cell']
+        names = {}
+        if kept['codes']:
+            for rec in self.env['hr.formula.rule'].sudo().search_read(
+                    [('code', 'in', kept['codes']),
+                     ('config_id.company_id', '=', kept['emp'].company_id.id)], ['code', 'name']):
+                names.setdefault(rec['code'], rec['name'] or rec['code'])
+        return {
+            'ok': True, 'emp': kept['emp'].name or '', 'figure': f['label'], 'count': f['count'],
+            'year': year, 'before_label': cell['before_label'], 'paid_label': cell['paid_label'],
+            'total_label': cell['total_label'], 'year_total': cell['year_total'],
+            'note': cell['note'], 'state': cell['state'],
+            'items': [names.get(c) or c for c in kept['codes']], 'counted': counted, 'left': left,
+            'covers_label': day_label(self.env, kept['covers']) if kept['covers'] else '',
         }
 
     @api.model
@@ -1250,8 +1477,10 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         heads = [_("Employee code"), _("Employee name"), _("Figures before Payobook cover up to"),
                  _("Months with no finished payslip")]
         for f in figures.values():
+            # UPDATES P5c — a fourth column per figure says whether the total
+            # is complete; an incomplete one is never written as a bare total.
             heads += [_("%s · before Payobook") % f['label'], _("%s · paid in Payobook") % f['label'],
-                      _("%s · total") % f['label']]
+                      _("%s · total") % f['label'], _("%s · complete?") % f['label']]
         ws.append(heads)
         for cell in ws[1]:
             cell.font, cell.fill = bold, fill
@@ -1261,10 +1490,12 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             for key in figures:
                 c = r['cells'].get(key)
                 if not c:
-                    values += ['', '', '']
+                    values += ['', '', '', '']
                     continue
                 values += [c['before'] if c['has_before'] else '',
-                           c['paid'] if c['counted'] else '', c['total']]
+                           c['paid'] if c['counted'] else '',
+                           c['total'] if c['year_total'] else '',
+                           c['note'] or '']
             ws.append(values)
         ws.freeze_panes = 'C2'
         out = io.BytesIO()
@@ -1299,14 +1530,22 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             start = month_floor(self._ytd_today())
         end = (start.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
         Line = self.env['pb.updates.ytd.line'].sudo()
-        people = Line.search([('tax_year', '=', end.year), ('state', '=', 'set'),
-                              ('company_id', '=', config.company_id.id)]).mapped('employee_id')
-        visible = set(desk._matching({'employee_ids': people.ids}, ctx={}).ids)
+        with_figures = Line.search([('tax_year', '=', end.year), ('state', '=', 'set'),
+                                    ('company_id', '=', config.company_id.id)]).mapped('employee_id')
+        # UPDATES P5c — everyone the scheme pays this month is listed, people
+        # without figures before Payobook too (with a sentence instead of a
+        # value), so nobody is left out of the sheet without a word.
+        everyone = desk._matching({}, ctx={}).filtered(
+            lambda e: e.company_id == config.company_id)
+        visible = set(everyone.ids) | set(desk._matching(
+            {'employee_ids': with_figures.ids}, ctx={}).ids)
         cycle = config.cycle_type if config.cycle_type in ('mid_cycle', 'end_cycle') else 'any'
         answers = self.env['pb.scheme.map'].sudo().resolve_many(
-            list(visible), cycle, on_date=fields.Date.to_string(start)) if visible else {}
-        people = people.filtered(lambda e: e.id in visible and (answers.get(e.id) or {}).get(
-            'config_id') == config.id).sorted(lambda e: ((e.name or '').lower(), e.id))
+            sorted(visible), cycle, on_date=fields.Date.to_string(start)) if visible else {}
+        people = self.env['hr.employee'].sudo().browse(sorted(visible)).filtered(
+            lambda e: (answers.get(e.id) or {}).get('config_id') == config.id).sorted(
+            lambda e: (e.id not in with_figures.ids, (e.name or '').lower(), e.id))
+        has_figures = set(with_figures.ids)
         names = {r.code: r.name for r in config.rule_ids if r.code}
         items = list(dict.fromkeys(maps.mapped('code')))
         import openpyxl
@@ -1325,22 +1564,50 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         rule_ids = {r.code: r for r in config.rule_ids if r.code}
         gaps = 0
         for emp in people:
-            plan = Line._plan_for_slip(emp, config, start, end)
+            plan = Line._plan_for_slip(emp, config, start, end) if emp.id in has_figures else {}
             row = [emp.barcode or emp.employee_id or '', emp.name or '']
             notes = []
+            if emp.id not in has_figures:
+                notes.append(_("No figures before Payobook for %s, so nothing is worked out. If "
+                               "this person joined this year, load 0 for each figure so paid in "
+                               "Payobook can be counted.") % end.year)
             for code in items:
                 info = plan.get(code)
                 if not info:
                     row.append('')
                     continue
+                item = names.get(code) or code
+                blocked = Line._plan_blocked(info)
                 if info['gap']:
-                    notes.append(_("%s: months with no finished payslip") % (names.get(code) or code))
+                    notes.append(_("%s: months with no finished payslip") % item)
+                elif info.get('incomplete') == 'overlap':
+                    notes.append(_("%s: a payslip overlaps the figures before Payobook") % item)
+                elif info.get('incomplete') == 'split':
+                    notes.append(_("%s: a mid-month advance could not be matched to its month-end "
+                                   "payslip") % item)
                 elif info.get('unknown'):
                     notes.append(_("%s: paid in Payobook cannot be worked out — choose its pay items in "
-                                   "Set up") % (names.get(code) or code))
-                row.append(info['value'])
+                                   "Set up") % item)
+                elif info.get('incomplete') == 'partial':
+                    notes.append(_("%(item)s: only %(have)s of %(n)s finished payslips have this "
+                                   "figure, so the sum would be too low", item=item,
+                                   have=info.get('have', 0), n=info.get('expected', 0)))
+                if info.get('twice') and not blocked and not self.env[
+                        'pb.updates.ytd.line']._is_count(info['figure']):
+                    notes.append(_("%(item)s: two finished payslips of the same pay scheme and pay "
+                                   "period in %(months)s, both counted — check one is not a test",
+                                   item=item, months=', '.join(
+                                       self.env['pb.updates.oneoff']._month_label(
+                                           fields.Date.to_date(m)) for m in info['twice'][:3])))
+                if info.get('below_zero') and not blocked:
+                    notes.append(_("%(item)s: includes a month below zero (%(months)s)", item=item,
+                                   months=', '.join(self.env['pb.updates.oneoff']._month_label(
+                                       fields.Date.to_date(m)) for m in info['below_zero'][:3])))
+                # A value that cannot be worked out is left blank — never a
+                # number that looks like a total (P5c).
+                row.append('' if blocked else info['value'])
                 rule = rule_ids.get(code)
-                if rule and not (info['gap'] or info.get('unknown')):
+                if rule and not blocked:
                     kind = rule.value_kind or 'money'
                     adj.append([emp.id, config.id, rule.id, fields.Date.to_string(start),
                                 fields.Date.to_string(end), number_text(info['value']),
@@ -1352,7 +1619,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                                   paid=number_text(info['paid'])),
                                 _("Updates year-to-date figures"), emp.name or '',
                                 names.get(code) or code])
-            if notes:
+            if any(Line._plan_blocked(i) for i in plan.values()) or emp.id not in has_figures:
                 gaps += 1
             row.append(' · '.join(notes) or _("Ready"))
             ws.append(row)
@@ -1376,8 +1643,10 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                 _("A run with a pay data file: copy these columns into the file, or leave them "
                   "out — the pay run fills them by itself, and stops and asks when the file has a "
                   "different number."),
-                _("“Check” says “Ready”, or which pay item cannot be worked out because a month "
-                  "has no finished payslip. Those values are left out of “Monthly adjustments”."),
+                _("“Check” says “Ready”, or why a pay item cannot be worked out: a month with no "
+                  "finished payslip, payslips that do not all have the figure, a payslip that "
+                  "overlaps the figures before Payobook, or a mid-month advance that cannot be "
+                  "matched. Those values are left blank and out of “Monthly adjustments”."),
                 _("Nothing here changes how tax is calculated.")], start=1):
             cell = guide.cell(row=idx, column=1, value=text)
             cell.alignment = Alignment(wrap_text=True, vertical='top')

@@ -8872,3 +8872,407 @@ msgid ""
 msgstr ""
 "%(who)s làm việc tại %(company)s, nơi %(sender)s không còn làm việc, nên số "
 "dư này không được đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%(figure)s · %(who)s · %(year)s"
+msgstr "%(figure)s · %(who)s · %(year)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(first)s to %(last)s"
+msgstr "%(first)s đến %(last)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(have)s of %(n)s payslips have this figure"
+msgstr "%(have)s/%(n)s phiếu lương có số liệu này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(item)s: includes a month below zero (%(months)s)"
+msgstr "%(item)s: có tháng dưới 0 (%(months)s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%(item)s: only %(have)s of %(n)s finished payslips have this figure, so the "
+"sum would be too low"
+msgstr ""
+"%(item)s: chỉ %(have)s/%(n)s phiếu lương hoàn tất có số liệu này, nên tổng "
+"sẽ bị thấp"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s đến %(end)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s on this page have a figure that is not complete yet"
+msgstr "%s người trên trang này có số liệu chưa đầy đủ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "%s payslips not counted, and why"
+msgstr "%s phiếu lương không được tính, và lý do"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s · complete?"
+msgstr "%s · đã đầy đủ?"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s: a mid-month advance could not be matched to its month-end payslip"
+msgstr ""
+"%s: không khớp được khoản tạm ứng giữa tháng với phiếu lương cuối tháng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "%s: a payslip overlaps the figures before Payobook"
+msgstr "%s: có phiếu lương trùng với số liệu trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "+ %s in mid-month advances, shown apart and not added"
+msgstr "+ %s tạm ứng giữa tháng, hiển thị riêng và không cộng vào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 on this page has a figure that is not complete yet"
+msgstr "1 người trên trang này có số liệu chưa đầy đủ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "1 payslip not counted, and why"
+msgstr "1 phiếu lương không được tính, và lý do"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "A payslip overlaps the figures before Payobook"
+msgstr "Có phiếu lương trùng với số liệu trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Adds up: %s"
+msgstr "Cộng các khoản: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Already in the figures before Payobook (up to %s)"
+msgstr "Đã nằm trong số liệu trước Payobook (đến %s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Complete"
+msgstr "Đầy đủ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Does not have this figure"
+msgstr "Không có số liệu này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "How %(figure)s for %(who)s was worked out"
+msgstr "Cách tính %(figure)s của %(who)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "How this number was worked out"
+msgstr "Con số này được tính như thế nào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Includes a month below zero"
+msgstr "Có tháng dưới 0"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Includes a month below zero (%s)"
+msgstr "Có tháng dưới 0 (%s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Incomplete: %(have)s of %(n)s payslips have this figure"
+msgstr "Chưa đầy đủ: %(have)s/%(n)s phiếu lương có số liệu này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Incomplete: a mid-month advance could not be matched to its month-end "
+"payslip (shown apart: %s)"
+msgstr ""
+"Chưa đầy đủ: không khớp được khoản tạm ứng giữa tháng với phiếu lương cuối "
+"tháng (hiển thị riêng: %s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Incomplete: a payslip overlaps the figures before Payobook (up to %s)"
+msgstr "Chưa đầy đủ: có phiếu lương trùng với số liệu trước Payobook (đến %s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Incomplete: no figures before Payobook for %s"
+msgstr "Chưa đầy đủ: không có số liệu trước Payobook cho %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Incomplete: no finished payslip for %s"
+msgstr "Chưa đầy đủ: chưa có phiếu lương hoàn tất cho %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Its month is already in the figures before Payobook"
+msgstr "Tháng này đã nằm trong số liệu trước Payobook"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Known so far"
+msgstr "Biết đến nay"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Mid-month advance shown apart"
+msgstr "Tạm ứng giữa tháng hiển thị riêng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Mid-month advance that could not be matched to its month-end payslip: shown "
+"apart, not added"
+msgstr ""
+"Tạm ứng giữa tháng không khớp được với phiếu lương cuối tháng: hiển thị "
+"riêng, không cộng vào"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Mid-month advance: the month-end payslip carries the whole month and takes "
+"the advance back off, so it is not added"
+msgstr ""
+"Tạm ứng giữa tháng: phiếu lương cuối tháng đã gồm cả tháng và trừ lại khoản "
+"tạm ứng, nên không cộng vào"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Mid-month advance: the month-end payslip is not finished yet, so the month "
+"is not counted"
+msgstr ""
+"Tạm ứng giữa tháng: phiếu lương cuối tháng chưa hoàn tất, nên tháng này chưa"
+" được tính"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"No figures before Payobook and no finished payslip for %s, so the totals are"
+" not year totals."
+msgstr ""
+"Không có số liệu trước Payobook và chưa có phiếu lương hoàn tất cho %s, nên "
+"các tổng chưa phải là tổng cả năm."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"No figures before Payobook for %s, so nothing is worked out. If this person "
+"joined this year, load 0 for each figure so paid in Payobook can be counted."
+msgstr ""
+"Không có số liệu trước Payobook cho năm %s, nên chưa tính được gì. Nếu người"
+" này vào làm trong năm nay, hãy nhập 0 cho từng số liệu để có thể tính phần "
+"đã trả trên Payobook."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "No finished payslip counts towards this yet."
+msgstr "Chưa có phiếu lương hoàn tất nào được tính vào đây."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Not covered: %s"
+msgstr "Chưa có số liệu: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Not known: none of the finished payslips has the pay items that make up this"
+" figure, or none is chosen in Set up"
+msgstr ""
+"Chưa biết: không phiếu lương hoàn tất nào có các khoản lương tạo nên số liệu"
+" này, hoặc chưa chọn khoản nào trong Thiết lập"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Overlaps the figures before Payobook (up to %s), so it is not added"
+msgstr "Trùng với số liệu trước Payobook (đến %s), nên không cộng vào"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Payslips counted"
+msgstr "Phiếu lương được tính"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_ytd.xml:0
+msgid "Reading the payslips…"
+msgstr "Đang đọc phiếu lương…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "Same pay period twice"
+msgstr "Trùng kỳ lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid "The payslips could not be read."
+msgstr "Không đọc được phiếu lương."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "This figure could not be read. Try again."
+msgstr "Không đọc được số liệu này. Hãy thử lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Two finished payslips of the same pay scheme and pay period in %s, both "
+"counted"
+msgstr ""
+"Hai phiếu lương hoàn tất cùng chương trình lương và cùng kỳ lương trong %s, "
+"cả hai đều được tính"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_ytd.js:0
+msgid ""
+"Two finished payslips of the same pay scheme and pay period in %s. Both are "
+"counted; if one was a test or was replaced, cancel it."
+msgstr ""
+"Hai phiếu lương hoàn tất cùng chương trình lương và cùng kỳ lương trong %s. "
+"Cả hai đều được tính; nếu một phiếu là bản thử hoặc đã được thay thế, hãy "
+"hủy phiếu đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Year-to-date figures for %(who)s: only %(have)s of the %(expected)s finished"
+" payslips since %(date)s have the pay items that make up %(figure)s, so "
+"%(item)s would be too low and cannot be worked out. Check which pay items "
+"make up %(figure)s in Updates › Year-to-date figures › Set up, or load "
+"figures that cover up to a later date, then calculate again."
+msgstr ""
+"Số liệu lũy kế của %(who)s: chỉ %(have)s/%(expected)s phiếu lương hoàn tất "
+"từ %(date)s có các khoản lương tạo nên %(figure)s, nên %(item)s sẽ bị thấp "
+"và không thể tính. Hãy kiểm tra các khoản lương tạo nên %(figure)s trong Cập"
+" nhật › Số liệu lũy kế › Thiết lập, hoặc nhập số liệu đến một ngày muộn hơn,"
+" rồi tính lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Year-to-date figures for %(who)s: the mid-month advance for %(months)s "
+"cannot be matched to that month's month-end payslip, so it is not known "
+"whether the month is already counted in full and %(item)s cannot be worked "
+"out. Link the advance's pay scheme to its month-end pay scheme in Mid-Cycle "
+"to End-Cycle Mapping, then calculate again."
+msgstr ""
+"Số liệu lũy kế của %(who)s: khoản tạm ứng giữa tháng của %(months)s không "
+"khớp được với phiếu lương cuối tháng đó, nên chưa biết tháng này đã được "
+"tính đủ hay chưa và không thể tính %(item)s. Hãy liên kết chương trình lương"
+" tạm ứng với chương trình lương cuối tháng trong Giữa kỳ để Cuối kỳ Ánh xạ, "
+"rồi tính lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Year-to-date figures for %(who)s: the payslip for %(start)s to %(end)s "
+"(%(run)s) overlaps the figures before Payobook, which cover up to %(date)s, "
+"so part of it may be counted twice and %(item)s cannot be worked out. Load "
+"figures that cover up to the day before that payslip starts, then calculate "
+"again."
+msgstr ""
+"Số liệu lũy kế của %(who)s: phiếu lương từ %(start)s đến %(end)s (%(run)s) "
+"trùng với số liệu trước Payobook (đến %(date)s), nên một phần có thể bị tính"
+" hai lần và không thể tính %(item)s. Hãy nhập số liệu đến ngày trước khi "
+"phiếu lương đó bắt đầu, rồi tính lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"“Check” says “Ready”, or why a pay item cannot be worked out: a month with "
+"no finished payslip, payslips that do not all have the figure, a payslip "
+"that overlaps the figures before Payobook, or a mid-month advance that "
+"cannot be matched. Those values are left blank and out of “Monthly "
+"adjustments”."
+msgstr ""
+"“Kiểm tra” ghi “Sẵn sàng”, hoặc lý do một khoản lương không thể tính: một "
+"tháng chưa có phiếu lương hoàn tất, các phiếu lương không đều có số liệu, "
+"một phiếu lương trùng với số liệu trước Payobook, hoặc một khoản tạm ứng "
+"giữa tháng không khớp được. Các giá trị đó để trống và không có trong “Điều "
+"chỉnh hằng tháng”."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid "Paid in Payobook not known"
+msgstr "Chưa biết phần đã trả trên Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%(item)s: two finished payslips of the same pay scheme and pay period in "
+"%(months)s, both counted — check one is not a test"
+msgstr ""
+"%(item)s: hai phiếu lương hoàn tất cùng chương trình lương và cùng kỳ lương "
+"trong %(months)s, cả hai đều được tính — hãy kiểm tra không phải bản thử"

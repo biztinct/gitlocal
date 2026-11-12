@@ -67,6 +67,20 @@ BASES = ('opening', 'before_period', 'with_period')
 LIVE = ('waiting', 'set')
 #: Payslip states that mean "finished".
 DONE_SLIP_STATES = ('done', 'paid')
+#: P5c — pay roles whose amounts are money taken off pay or paid on top by the
+#: employer: counted as an amount, whatever sign the scheme writes them with
+#: (the one pay-band rule, `om_hr_payroll/models/pay_bands.py` `pb_pay_totals`).
+MAGNITUDE_ROLES = ('deduction', 'employer_cost')
+#: The same rule's fallback for a line written before pay roles existed.
+MAGNITUDE_CATEGORIES = ('DED', 'DEDUCTION', 'COMP')
+#: P5c — a scheme of this kind is a mid-month advance (`hr.formula.config.cycle_type`).
+ADVANCE_CYCLE = 'mid_cycle'
+#: A pay item code the stored-results reader may look for.
+CODE_RE = re.compile(r'[A-Za-z0-9_]+')
+#: Per-cursor cache of each scheme's usual sign for a pay item, and how many of
+#: the scheme's latest finished payslips of the tax year decide it.
+CONV_CACHE = 'pb_updates_ytd_conv'
+CONV_SAMPLE = 100
 #: How a value from Updates says so in a payslip's sources (`via`).
 YTD_VIA = 'updates_ytd'
 #: The furthest ahead a "Figures cover up to" date may be (a sheet made a few
@@ -415,73 +429,293 @@ class PbUpdatesYtdLine(models.Model):
     def _flush_for_sql(self):
         """The few fields the grouped queries read, written out first (a
         payslip finished in this transaction must count)."""
-        self.env['hr.payslip'].flush_model(['state', 'date_from', 'date_to', 'employee_id'])
-        self.env['hr.payslip.line'].flush_model(['code', 'total', 'slip_id'])
+        self.env['hr.payslip'].flush_model(['state', 'date_from', 'date_to', 'employee_id',
+                                            'formula_config_id', 'payslip_run_id', 'name',
+                                            'formula_computed_values'])
+        self.env['hr.payslip.line'].flush_model(['code', 'total', 'slip_id', 'pay_role',
+                                                 'category_id'])
+        self.env['hr.payslip.run'].flush_model(['name'])
+        self.env['hr.formula.rule'].flush_model(['code', 'config_id', 'net_role'])
         self.env['pb.updates.ytd.line'].flush_model()
 
+    # ------------------------------------------------------------ paid in Payobook (P5c)
+    #
+    # ONE computation behind every "paid in Payobook" number: the year-to-date
+    # view, its download, "Download for the pay run" and the value a mapped pay
+    # item receives in a pay run. Three rules (UPDATES P5c, report §1-§3):
+    #
+    #   1. COVERAGE. A sum is a total only when EVERY finished payslip that
+    #      should carry the figure does. A payslip should carry it when its pay
+    #      scheme has one of the figure's pay items (a payslip of a scheme that
+    #      does not have the item at all is not expected to). Fewer → the
+    #      amount is shown as incomplete ("3 of 11 payslips have this figure")
+    #      and a pay run refuses the person with a sentence.
+    #   2. SIGN. A payslip line and its stored result carry the same signed
+    #      number (`hr_payslip_formula.py` `_create_payslip_lines_from_formulas`,
+    #      `payroll_import_batch.py` `normalize_payslip_amount`). Money taken off
+    #      or paid on top by the employer (pay role deduction / employer cost)
+    #      counts as an amount, however the scheme signs it — the one pay-band
+    #      rule (`om_hr_payroll/models/pay_bands.py` `pb_pay_totals`) — but a
+    #      month whose sign is the OPPOSITE of the scheme's usual sign for that
+    #      pay item (a tax refund in a final month) reduces the year. Everything
+    #      else (gross, taxable pay, net, a pay item of its own) is summed with
+    #      its own sign; a month below zero is shown, never hidden.
+    #   3. ONCE. A mid-month advance (a scheme whose kind is mid-month advance,
+    #      `cycle_type = 'mid_cycle'`) is a part payment of the month: the
+    #      month-end payslip of the scheme it is carried to
+    #      (`hr.payroll.cycle.component.mapping`) carries the whole month and
+    #      takes the advance back off. Such an advance is never added. If the
+    #      two cannot be matched, the advance is shown apart, not added, and a
+    #      pay run refuses. Every other finished payslip (a top-up, an awards
+    #      or bonus run, full and final) is pay and is counted.
+
     @api.model
-    def _paid_rows(self, emp_ids, start, end, codes):
-        """`{(emp_id, code): total}` over DONE payslips that start on or after
-        `start` and end on or before `end` — one grouped query on the payslip
-        lines; `{emp_id: {month 1st, ...}}` too, for months counted and gaps."""
-        emp_ids = [int(e) for e in (emp_ids or []) if e]
-        sums, months = {}, {}
-        if not emp_ids or not start or not end or start > end:
-            return sums, months
+    def _ledger(self, emp_ids, first, last, codes):
+        """Everything "paid in Payobook" reads for `emp_ids`: their finished
+        payslips whose END date falls in `first`..`last`, the stored amounts of
+        `codes` on them, which pay items each scheme has, how advances are
+        carried, and each scheme's usual sign. A fixed number of queries, never
+        one per person."""
+        emp_ids = sorted({int(e) for e in (emp_ids or []) if e})
+        codes = sorted({c for c in (codes or []) if c and CODE_RE.fullmatch(c)})
+        out = {'slips': {}, 'by_emp': {}, 'values': {}, 'scheme_codes': {}, 'roles': {},
+               'links': set(), 'conv': {}, 'codes': codes}
+        if not emp_ids or not first or not last or first > last:
+            return out
         self._flush_for_sql()
         cr = self.env.cr
         cr.execute("""
-            SELECT s.employee_id, date_trunc('month', s.date_to)::date
+            SELECT s.id, s.employee_id, s.date_from, s.date_to, s.formula_config_id,
+                   COALESCE(fc.cycle_type, ''), s.payslip_run_id, COALESCE(r.name, ''),
+                   COALESCE(s.name, ''),
+                   COALESCE(s.formula_computed_values, '') NOT IN ('', '{}')
               FROM hr_payslip s
+              LEFT JOIN hr_formula_config fc ON fc.id = s.formula_config_id
+              LEFT JOIN hr_payslip_run r ON r.id = s.payslip_run_id
              WHERE s.employee_id = ANY(%s) AND s.state IN %s
-               AND s.date_from >= %s AND s.date_to <= %s
-             GROUP BY 1, 2""", [emp_ids, DONE_SLIP_STATES, start, end])
-        for emp, month in cr.fetchall():
-            months.setdefault(emp, set()).add(month)
-        for emp, _start, code, total in self._paid_sums(emp_ids, start, end, codes):
-            sums[(emp, code)] = sums.get((emp, code), 0.0) + total
-        return sums, months
+               AND s.date_to >= %s AND s.date_to <= %s
+             ORDER BY s.employee_id, s.date_to, s.id""",
+                   [emp_ids, DONE_SLIP_STATES, first, last])
+        for sid, emp, dfrom, dto, config, cycle, run, run_name, name, fcv in cr.fetchall():
+            slip = {'id': sid, 'emp': emp, 'date_from': dfrom or dto, 'date_to': dto,
+                    'month': month_floor(dto), 'config': config or 0, 'cycle': cycle,
+                    'run_id': run or 0, 'run': run_name or name or '', 'fcv': bool(fcv)}
+            out['slips'][sid] = slip
+            out['by_emp'].setdefault(emp, []).append(slip)
+        slip_ids = list(out['slips'])
+        configs = sorted({s['config'] for s in out['slips'].values() if s['config']})
+        if slip_ids and codes:
+            cr.execute("""
+                SELECT l.slip_id, l.code, l.total, COALESCE(l.pay_role, ''), COALESCE(c.code, '')
+                  FROM hr_payslip_line l
+                  LEFT JOIN hr_salary_rule_category c ON c.id = l.category_id
+                 WHERE l.slip_id = ANY(%s) AND l.code = ANY(%s)""", [slip_ids, codes])
+            for sid, code, total, role, category in cr.fetchall():
+                key = (sid, code)
+                old = out['values'].get(key)
+                amount = float(total or 0.0) + (old[0] if old else 0.0)
+                out['values'][key] = (amount, role or ('deduction' if (category or '').upper()
+                                                       in MAGNITUDE_CATEGORIES else ''))
+            # A pay item the payslip computes but does not print (a taxable
+            # base) is read from its stored results.
+            with_fcv = [sid for sid in slip_ids if out['slips'][sid]['fcv']]
+            for code in codes:
+                missing = [sid for sid in with_fcv if (sid, code) not in out['values']]
+                if not missing:
+                    continue
+                cr.execute("""
+                    SELECT s.id, substring(s.formula_computed_values from %s)
+                      FROM hr_payslip s
+                     WHERE s.id = ANY(%s) AND s.formula_computed_values LIKE %s""",
+                           [r'"%s":\s*(-?[0-9][0-9.eE+-]*)' % code, missing, '%%"%s"%%' % code])
+                for sid, text in cr.fetchall():
+                    try:
+                        out['values'][(sid, code)] = (float(text), None)
+                    except (TypeError, ValueError):
+                        continue
+        if configs and codes:
+            cr.execute("""
+                SELECT config_id, code, COALESCE(net_role, '') FROM hr_formula_rule
+                 WHERE config_id = ANY(%s) AND code = ANY(%s)""", [configs, codes])
+            for config, code, role in cr.fetchall():
+                out['scheme_codes'].setdefault(config, set()).add(code)
+                out['roles'][(config, code)] = role
+        advances = sorted({s['config'] for s in out['slips'].values()
+                           if s['cycle'] == ADVANCE_CYCLE and s['config']})
+        if advances:
+            # The engine's own link from an advance scheme to the month-end
+            # scheme it is carried to (an archived row still says so).
+            cr.execute("""
+                SELECT DISTINCT mid_cycle_config_id, end_cycle_config_id
+                  FROM hr_payroll_cycle_component_mapping
+                 WHERE mid_cycle_config_id = ANY(%s)""", [advances])
+            out['links'] = set(cr.fetchall())
+        out['conv'] = self._conventions(configs, codes, out, last.year)
+        return out
 
     @api.model
-    def _paid_sums(self, emp_ids, start, end, codes):
-        """`[(emp_id, payslip start, code, amount)]` over DONE payslips that
-        start on or after `start` and end on or before `end`.
+    def _conventions(self, configs, codes, ledger, year):
+        """`{(scheme, code): +1 | -1}` — the usual sign of a pay item that is
+        money taken off or paid on top: the sign most of the scheme's latest
+        `CONV_SAMPLE` finished payslips of the tax year carry for it, whoever
+        they belong to (so the view, the downloads and a pay run all read the
+        same answer). Absent when the scheme has no clear usual sign; such an
+        amount counts as its size (the one pay-band rule)."""
+        wanted = sorted({c for (cfg, c), r in ledger['roles'].items() if r in MAGNITUDE_ROLES}
+                        | {c for (_s, c), v in ledger['values'].items()
+                           if v[1] in MAGNITUDE_ROLES})
+        if not configs or not wanted:
+            return {}
+        cache = self.env.cr.cache.setdefault(CONV_CACHE, {})
+        todo = [(cfg, c) for cfg in configs for c in wanted if (year, cfg, c) not in cache]
+        if todo:
+            todo_cfgs = sorted({t[0] for t in todo})
+            todo_codes = sorted({t[1] for t in todo})
+            for key in todo:
+                cache[(year, key[0], key[1])] = 0
+            # The scheme's latest finished payslips of the tax year (a sample
+            # of CONV_SAMPLE each: a whole year of lines would cost a second
+            # per page), then their lines through the payslip index.
+            self.env.cr.execute("""
+                SELECT id, formula_config_id FROM (
+                    SELECT id, formula_config_id,
+                           row_number() OVER (PARTITION BY formula_config_id
+                                              ORDER BY date_to DESC, id DESC) AS rn
+                      FROM hr_payslip
+                     WHERE formula_config_id = ANY(%s) AND state IN %s
+                       AND date_to >= %s AND date_to <= %s) recent
+                 WHERE rn <= %s""", [todo_cfgs, DONE_SLIP_STATES, first_of_year(year),
+                                     last_of_year(year), CONV_SAMPLE])
+            config_of = dict(self.env.cr.fetchall())
+            counts = {}
+            if config_of:
+                self.env.cr.execute("""
+                    SELECT slip_id, code, total FROM hr_payslip_line
+                     WHERE slip_id = ANY(%s) AND code = ANY(%s) AND total <> 0""",
+                                    [list(config_of), todo_codes])
+                for sid, code, total in self.env.cr.fetchall():
+                    pair = counts.setdefault((config_of[sid], code), [0, 0])
+                    pair[0 if total > 0 else 1] += 1
+            for (cfg, code), (pos, neg) in counts.items():
+                cache[(year, cfg, code)] = 1 if pos > neg else (-1 if neg > pos else 0)
+        return {(cfg, c): cache[(year, cfg, c)] for cfg in configs for c in wanted
+                if cache.get((year, cfg, c))}
 
-        Amounts are what was paid or taken, so a deduction's line (stored as a
-        negative number) counts as a positive amount. A code with no payslip
-        line at all (a figure the payslip computes but does not print, like a
-        taxable base) is read from the payslip's computed values instead."""
-        codes = sorted({c for c in (codes or []) if c})
-        emp_ids = [int(e) for e in (emp_ids or []) if e]
-        if not codes or not emp_ids or not start or not end or start > end:
-            return []
-        cr = self.env.cr
-        cr.execute("""
-            SELECT s.employee_id, s.date_from, l.code, SUM(ABS(l.total))
-              FROM hr_payslip_line l JOIN hr_payslip s ON s.id = l.slip_id
-             WHERE s.employee_id = ANY(%s) AND s.state IN %s
-               AND s.date_from >= %s AND s.date_to <= %s AND l.code = ANY(%s)
-             GROUP BY 1, 2, 3""", [emp_ids, DONE_SLIP_STATES, start, end, codes])
-        rows = [(e, d, c, float(t or 0.0)) for e, d, c, t in cr.fetchall()]
-        lined = {r[2] for r in rows}
+    @api.model
+    def _slip_amount(self, ledger, slip, codes):
+        """`(amount or None, below zero?)` — what one finished payslip adds to a
+        figure made of `codes` (None: it carries none of them)."""
+        total, carried = 0.0, False
         for code in codes:
-            if code in lined or not re.fullmatch(r'[A-Za-z0-9_]+', code):
+            entry = ledger['values'].get((slip['id'], code))
+            if entry is None:
                 continue
-            cr.execute("""
-                SELECT s.employee_id, s.date_from,
-                       substring(s.formula_computed_values from %s)
-                  FROM hr_payslip s
-                 WHERE s.employee_id = ANY(%s) AND s.state IN %s
-                   AND s.date_from >= %s AND s.date_to <= %s
-                   AND s.formula_computed_values LIKE %s""",
-                       [r'"%s":\s*(-?[0-9][0-9.eE+-]*)' % code, emp_ids, DONE_SLIP_STATES,
-                        start, end, '%%"%s"%%' % code])
-            for emp, day, text in cr.fetchall():
-                try:
-                    rows.append((emp, day, code, abs(float(text))))
-                except (TypeError, ValueError):
-                    continue
-        return rows
+            carried = True
+            value, role = entry
+            if role is None:
+                role = ledger['roles'].get((slip['config'], code), '')
+            if role in MAGNITUDE_ROLES:
+                conv = ledger['conv'].get((slip['config'], code))
+                value = value * conv if conv else abs(value)
+            total += value
+        if not carried:
+            return None, False
+        total = round(total, 2)
+        return total, total < 0
+
+    @api.model
+    def _person_window(self, ledger, emp_id, covers_to=None, upper=None):
+        """How each finished payslip of one person stands for "paid in
+        Payobook": `{'rows': [...], 'counted': [...], 'months': {...},
+        'overlap': [...], 'split': [...], 'twice': [...]}`.
+
+        `covers_to` — the figures before Payobook cover up to this day: a
+        payslip that ends on or before it is already in those figures; one that
+        starts on or before it and ends after it overlaps them. `upper` — a pay
+        period's first day: only payslips that end before it count."""
+        rows, counted, overlap, split = [], [], [], []
+        slips = [s for s in ledger['by_emp'].get(emp_id, [])
+                 if not upper or s['date_to'] < upper]
+        regular = [s for s in slips if s['cycle'] != ADVANCE_CYCLE]
+        for slip in slips:
+            row = dict(slip, state='counted')
+            if covers_to and slip['date_to'] <= covers_to:
+                row['state'] = 'before'
+            elif slip['cycle'] == ADVANCE_CYCLE:
+                ends = [s for s in regular if s['month'] == slip['month']
+                        and not (covers_to and s['date_to'] <= covers_to)]
+                if any((slip['config'], s['config']) in ledger['links'] for s in ends):
+                    row['state'] = 'advance'
+                elif ends:
+                    row['state'] = 'split'
+                    split.append(row)
+                else:
+                    row['state'] = 'advance_only'
+            elif covers_to and slip['date_from'] <= covers_to:
+                row['state'] = 'overlap'
+                overlap.append(row)
+            else:
+                counted.append(row)
+            rows.append(row)
+        seen, twice = {}, []
+        for row in counted:
+            key = (row['config'], row['date_from'], row['date_to'])
+            if key in seen and row['config']:
+                twice.append(row)
+            seen.setdefault(key, row)
+        return {'rows': rows, 'counted': counted, 'overlap': overlap, 'split': split,
+                'twice': twice, 'months': {r['month'] for r in counted}}
+
+    @api.model
+    def _figure_paid(self, ledger, window, codes):
+        """One figure for one person: `{'state', 'paid', 'expected', 'have',
+        'below_zero', 'advance', 'amounts'}`.
+
+        state: `none` (no finished payslip counts yet), `complete`, `partial`
+        (some payslips that should carry it do not), `unknown` (none does, or
+        no pay item is chosen for it), `overlap`, `split` (see
+        `_person_window`)."""
+        amounts, below, expected, have, paid = {}, [], 0, 0, 0.0
+        for row in window['counted']:
+            amount, negative = self._slip_amount(ledger, row, codes) if codes else (None, False)
+            should = amount is not None or not row['config'] or bool(
+                set(codes) & ledger['scheme_codes'].get(row['config'], set()))
+            if should:
+                expected += 1
+            if amount is not None:
+                have += 1
+                paid += amount
+                amounts[row['id']] = amount
+                if negative:
+                    below.append(row['month'])
+        advance = 0.0
+        for row in window['split']:
+            amount, _neg = self._slip_amount(ledger, row, codes) if codes else (None, False)
+            if amount is not None:
+                amounts[row['id']] = amount
+                advance += amount
+        if not window['counted']:
+            state = 'none'
+        elif not codes or not have:
+            state = 'unknown'
+        elif have < expected:
+            state = 'partial'
+        else:
+            state = 'complete'
+        if state in ('none', 'complete', 'partial') and window['overlap']:
+            state = 'overlap'
+        if state in ('none', 'complete', 'partial') and window['split']:
+            state = 'split'
+        return {'state': state, 'paid': round(paid, 2), 'expected': expected, 'have': have,
+                'below_zero': sorted(set(below)), 'advance': round(advance, 2),
+                'amounts': amounts}
+
+    @api.model
+    def _months_paid(self, window, covers_to=None):
+        """Months counted in Payobook: each month once, after the month the
+        figures before Payobook end in (that month is already in them)."""
+        floor = month_floor(covers_to) if covers_to else None
+        return sorted(m for m in window['months'] if not floor or m > floor)
 
     @api.model
     def _maps_of(self, config):
@@ -518,6 +752,7 @@ class PbUpdatesYtdLine(models.Model):
             return {}
         by_figure = {l.figure: l for l in lines}
         out = {}
+        ledger = None
         for code, figure, basis, map_id in maps:
             line = by_figure.get(figure)
             if not line or not line.covers_to or line.covers_to >= date_from:
@@ -525,26 +760,50 @@ class PbUpdatesYtdLine(models.Model):
             info = {'code': code, 'figure': figure, 'basis': basis, 'map_id': map_id,
                     'line_id': line.id, 'covers_to': fields.Date.to_string(line.covers_to),
                     'before': float(line.amount or 0.0), 'paid': 0.0, 'gap': [], 'unknown': False,
+                    'incomplete': '', 'below_zero': [], 'slips': [],
                     'label': line.label or self._figure_label(figure, employee.company_id)}
             if basis != 'opening':
                 start = line.covers_to + timedelta(days=1)
                 end = date_from - timedelta(days=1)
-                codes = [] if self._is_count(figure) else self._figure_codes(
-                    employee.company_id, figure)
-                sums, months = self._paid_rows([employee.id], start, end, codes)
-                had = months.get(employee.id, set())
+                if ledger is None:
+                    # One read for every mapped figure of this payslip.
+                    wanted = set()
+                    for _c, fig, bas, _m in maps:
+                        if bas != 'opening' and not self._is_count(fig):
+                            wanted |= set(self._figure_codes(employee.company_id, fig))
+                    ledger = self._ledger([employee.id], first_of_year(year), end, wanted)
+                window = self._person_window(ledger, employee.id, line.covers_to, date_from)
                 info['gap'] = [fields.Date.to_string(m) for m in months_between(start, end)
-                               if m not in had]
+                               if m not in window['months']]
+                info['overlap'] = [{'from': fields.Date.to_string(r['date_from']),
+                                    'to': fields.Date.to_string(r['date_to']), 'run': r['run']}
+                                   for r in window['overlap']]
+                info['split'] = [fields.Date.to_string(r['month']) for r in window['split']]
+                # Two finished payslips of one scheme for the same dates: both
+                # are counted (a second run may be real pay) but never quietly.
+                info['twice'] = sorted({fields.Date.to_string(r['month'])
+                                        for r in window['twice']})
+                if window['overlap']:
+                    info['incomplete'] = 'overlap'
+                elif window['split'] and not self._is_count(figure):
+                    info['incomplete'] = 'split'
                 if self._is_count(figure):
-                    info['paid'] = float(len(had))
+                    info['paid'] = float(len(self._months_paid(window, line.covers_to)))
                     if basis == 'with_period':
                         info['paid'] += 1.0
                 else:
-                    info['paid'] = sum(sums.get((employee.id, c), 0.0) for c in codes)
+                    codes = self._figure_codes(employee.company_id, figure)
+                    res = self._figure_paid(ledger, window, codes)
+                    info['paid'] = res['paid']
+                    info['have'], info['expected'] = res['have'], res['expected']
+                    info['below_zero'] = [fields.Date.to_string(m) for m in res['below_zero']]
+                    info['slips'] = [r['id'] for r in window['counted']]
                     # Finished payslips, but none carries the figure's pay
                     # items: "paid in Payobook" is not known — never a silent 0.
-                    info['unknown'] = bool(had) and not any(
-                        (employee.id, c) in sums for c in codes)
+                    info['unknown'] = res['state'] == 'unknown'
+                    if res['state'] == 'partial' and not info['incomplete']:
+                        # Only some of them carry it: the sum would be too low.
+                        info['incomplete'] = 'partial'
             info['value'] = round(info['before'] + info['paid'], 2)
             out[code] = info
         return out
@@ -604,8 +863,44 @@ class PbUpdatesYtdLine(models.Model):
         return bool(row and row[0] < 0)
 
     @api.model
+    def _plan_blocked(self, info):
+        """True when a mapped pay item's value cannot be worked out, so a pay
+        run must stop for that person ("no silent zero", extended in P5c to an
+        incomplete or doubtful sum)."""
+        return bool(info.get('gap') or info.get('unknown') or info.get('incomplete'))
+
+    @api.model
     def _gap_sentence(self, employee, info):
         item = info.get('item_label') or info['code']
+        covers = day_label(self.env, fields.Date.to_date(info['covers_to']))
+        if info.get('incomplete') == 'overlap' and info.get('overlap'):
+            first = info['overlap'][0]
+            return _("Year-to-date figures for %(who)s: the payslip for %(start)s to %(end)s "
+                     "(%(run)s) overlaps the figures before Payobook, which cover up to %(date)s, "
+                     "so part of it may be counted twice and %(item)s cannot be worked out. Load "
+                     "figures that cover up to the day before that payslip starts, then calculate "
+                     "again.", who=employee.name or '',
+                     start=day_label(self.env, fields.Date.to_date(first['from'])),
+                     end=day_label(self.env, fields.Date.to_date(first['to'])),
+                     run=first.get('run') or '', date=covers, item=item)
+        if not info['gap'] and info.get('incomplete') == 'split':
+            months = ', '.join(format_date(self.env, fields.Date.to_date(m), date_format='MMMM y')
+                               for m in info.get('split', [])[:4])
+            return _("Year-to-date figures for %(who)s: the mid-month advance for %(months)s "
+                     "cannot be matched to that month's month-end payslip, so it is not known "
+                     "whether the month is already counted in full and %(item)s cannot be worked "
+                     "out. Link the advance's pay scheme to its month-end pay scheme in "
+                     "Mid-Cycle to End-Cycle Mapping, then calculate again.",
+                     who=employee.name or '', months=months, item=item)
+        if not info['gap'] and info.get('incomplete') == 'partial':
+            return _("Year-to-date figures for %(who)s: only %(have)s of the %(expected)s "
+                     "finished payslips since %(date)s have the pay items that make up "
+                     "%(figure)s, so %(item)s would be too low and cannot be worked out. Check "
+                     "which pay items make up %(figure)s in Updates › Year-to-date figures › Set "
+                     "up, or load figures that cover up to a later date, then calculate again.",
+                     who=employee.name or '', have=info.get('have', 0),
+                     expected=info.get('expected', 0), date=covers, figure=info['label'],
+                     item=item)
         if not info['gap'] and info.get('unknown'):
             return _("Year-to-date figures for %(who)s: none of %(who)s's finished payslips since "
                      "%(date)s has the pay items that make up %(figure)s, so %(item)s cannot be "

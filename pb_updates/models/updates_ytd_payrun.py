@@ -47,9 +47,19 @@ _logger = logging.getLogger(__name__)
 
 
 def ytd_parts(info):
-    return {'figure': info['figure'], 'basis': info['basis'], 'before': info['before'],
-            'paid': info['paid'], 'value': info['value'], 'line_id': info['line_id'],
-            'covers_to': info['covers_to'], 'map_id': info['map_id']}
+    parts = {'figure': info['figure'], 'basis': info['basis'], 'before': info['before'],
+             'paid': info['paid'], 'value': info['value'], 'line_id': info['line_id'],
+             'covers_to': info['covers_to'], 'map_id': info['map_id']}
+    # UPDATES P5c — which finished payslips "paid in Payobook" added up, and
+    # the months below zero it includes (kept only when there are any, so a
+    # payslip that used none of this reads exactly as before).
+    if info.get('slips'):
+        parts['slips'] = list(info['slips'])
+    if info.get('below_zero'):
+        parts['below_zero'] = list(info['below_zero'])
+    if info.get('twice'):
+        parts['twice'] = list(info['twice'])
+    return parts
 
 
 def ytd_entry(info, ignored=None):
@@ -139,7 +149,7 @@ class HrPayslipUpdatesYtd(models.Model):
             if src != 'none' and not _blank(other) and not (ask and ask.clash_choice == 'updates'):
                 # Another source supplies this item: it stands (handover §4.4).
                 continue
-            if info['gap'] or info.get('unknown'):
+            if self.env['pb.updates.ytd.line']._plan_blocked(info):
                 if computing:
                     raise UserError(self.env['pb.updates.ytd.line']._gap_sentence(
                         self.employee_id, info))
@@ -230,7 +240,7 @@ class PayrollImportBatchUpdatesYtd(models.Model):
                 # A source other than the file (a connected system, a record)
                 # supplies it: it stands.
                 continue
-            if info['gap'] or info.get('unknown'):
+            if self.env['pb.updates.ytd.line']._plan_blocked(info):
                 if not carried and computing:
                     raise UserError(self.env['pb.updates.ytd.line']._gap_sentence(person, info))
                 continue

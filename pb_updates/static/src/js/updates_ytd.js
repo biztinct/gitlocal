@@ -232,7 +232,7 @@ patch(PbUpdatesDesk.prototype, {
         if (!this.ytdInfo.available) { return; }
         this.state.ytd = {
             year: this.ytdInfo.this_year, search: "", offset: 0, data: null, busy: true,
-            msg: "", tone: "", setup: null, setupOpen: false, setupBusy: false, setupMsg: "",
+            msg: "", tone: "", setup: null, setupOpen: false, setupBusy: false, setupMsg: "", how: null,
             add: {}, itemPick: "", codePick: {},
             payrun: { config: "", month: "", busy: false, msg: "", tone: "" },
             downloading: false,
@@ -243,6 +243,7 @@ patch(PbUpdatesDesk.prototype, {
     async loadYtdView() {
         const y = this.state.ytd;
         if (!y) { return; }
+        if (y.how) { this.closeYtdHow(); }
         y.busy = true;
         try {
             const data = await this.orm.call(MODEL, "get_ytd_view", [], {
@@ -304,6 +305,10 @@ patch(PbUpdatesDesk.prototype, {
             out.push({ key: "m", tone: "warn", icon: "alert",
                        label: plural(v.missing_people, _t("1 on this page has months missing"), _t("%s on this page have months missing")) });
         }
+        if (v.open_people) {
+            out.push({ key: "o", tone: "warn", icon: "listChecks",
+                       label: plural(v.open_people, _t("1 on this page has a figure that is not complete yet"), _t("%s on this page have a figure that is not complete yet")) });
+        }
         return out;
     },
     get ytdEmptyTitle() { return _t("No figures for %s yet", this.state.ytd.year); },
@@ -329,6 +334,106 @@ patch(PbUpdatesDesk.prototype, {
         return _t("No finished payslip for %s", (r.missing_labels || []).join(", "));
     },
     ytdCell(r, f) { return (r.cells || {})[f.key] || null; },
+
+    // ------------------------------------------------ P5c: honest cells
+    ytdCellState(r, f) {
+        const c = this.ytdCell(r, f);
+        return c ? (c.state || "") : "";
+    },
+    ytdCellTone(r, f) {
+        // Amber only for a reason that belongs to the cell itself (payslips
+        // without the figure, an overlap, an advance shown apart); a row-level
+        // reason (months missing, not covered from January) is said once, by
+        // the row's chip, and the cell just reads "Known so far".
+        const c = this.ytdCell(r, f);
+        if (!c || !c.total_label) { return ""; }
+        if (c.year_total) { return "is-complete"; }
+        return ["partial", "overlap", "split", "unknown"].includes(c.state) ? "is-open" : "is-soft";
+    },
+    get ytdKnownWord() { return _t("Known so far"); },
+    get ytdBelowWord() { return _t("Includes a month below zero"); },
+    ytdAdvanceLine(c) {
+        return _t("+ %s in mid-month advances, shown apart and not added", c.advance_label);
+    },
+    ytdStartLabel(r) { return _t("Not covered: %s", r.start_label); },
+    ytdStartTitle(r) {
+        return _t("No figures before Payobook and no finished payslip for %s, so the totals are not year totals.", r.start_label);
+    },
+    ytdTwiceLabel() { return _t("Same pay period twice"); },
+    ytdTwiceTitle(r) {
+        return _t("Two finished payslips of the same pay scheme and pay period in %s. Both are counted; if one was a test or was replaced, cancel it.", (r.twice_labels || []).join(", "));
+    },
+
+    // ------------------------------------------------ P5c: "How this number was worked out"
+    ytdHowOpen(r, f) {
+        const h = this.state.ytd && this.state.ytd.how;
+        return !!(h && h.emp_id === r.emp_id && h.key === f.key);
+    },
+    ytdHowAria(r, f) {
+        return _t("How %(figure)s for %(who)s was worked out", { figure: f.label, who: r.name });
+    },
+    async openYtdHow(r, f, ev) {
+        const y = this.state.ytd;
+        if (this.ytdHowOpen(r, f)) { this.closeYtdHow(); return; }
+        const rect = ev && ev.currentTarget ? ev.currentTarget.getBoundingClientRect() : null;
+        const width = Math.min(380, window.innerWidth - 32);
+        let left = rect ? rect.right - width : 16;
+        left = Math.max(16, Math.min(left, window.innerWidth - width - 16));
+        let top = rect ? rect.bottom + 6 : 80;
+        if (top + 360 > window.innerHeight) { top = Math.max(16, (rect ? rect.top : 80) - 366); }
+        // The opener lives outside the reactive state (a DOM node in it would be proxied).
+        this._ytdHowOpener = ev && ev.currentTarget;
+        y.how = { emp_id: r.emp_id, key: f.key, who: r.name, figure: f.label, busy: true, msg: "",
+                  data: null, top, left, width };
+        if (!this._ytdHowAway) {
+            this._ytdHowAway = (e) => {
+                if (!e.target.closest || !e.target.closest(".pbu-ytd-pop, .pbu-ytd-how")) { this.closeYtdHow(); }
+            };
+            window.addEventListener("click", this._ytdHowAway, true);
+        }
+        const asked = y.how;
+        try {
+            const data = await this.orm.silent.call(MODEL, "get_ytd_cell_detail", [], {
+                year: y.year, emp_id: r.emp_id, key: f.key });
+            if (y.how !== asked) { return; }
+            if (!data.ok) { Object.assign(asked, { busy: false, msg: data.msg }); return; }
+            Object.assign(asked, { busy: false, data });
+        } catch (e) {
+            if (y.how === asked) {
+                Object.assign(asked, { busy: false, msg: e.data?.message || _t("The payslips could not be read.") });
+            }
+        }
+    },
+    closeYtdHow() {
+        const y = this.state.ytd;
+        const opener = this._ytdHowOpener;
+        this._ytdHowOpener = null;
+        if (y) { y.how = null; }
+        if (this._ytdHowAway) {
+            window.removeEventListener("click", this._ytdHowAway, true);
+            this._ytdHowAway = null;
+        }
+        if (opener && opener.focus) { opener.focus(); }
+    },
+    onYtdHowKey(ev) {
+        if (ev.key === "Escape") { ev.stopPropagation(); this.closeYtdHow(); }
+    },
+    get ytdHowStyle() {
+        const h = this.state.ytd && this.state.ytd.how;
+        return h ? `top:${h.top}px;left:${h.left}px;width:${h.width}px;` : "";
+    },
+    get ytdHowSubtitle() {
+        const h = this.state.ytd.how;
+        return _t("%(figure)s · %(who)s · %(year)s", { figure: h.figure, who: h.who, year: this.state.ytd.year });
+    },
+    get ytdHowItemsLine() {
+        const d = this.state.ytd.how && this.state.ytd.how.data;
+        return d ? _t("Adds up: %s", (d.items || []).join(", ")) : "";
+    },
+    get ytdHowLeftLine() {
+        const d = this.state.ytd.how && this.state.ytd.how.data;
+        return d ? plural(d.left.length, _t("1 payslip not counted, and why"), _t("%s payslips not counted, and why")) : "";
+    },
     get ytdUncountedLine() {
         const v = this.ytdView;
         if (!v || !(v.uncounted || []).length) { return ""; }
@@ -487,6 +592,7 @@ patch(PbUpdatesDesk.prototype, {
         });
     },
     backFromYtd() {
+        if (this.state.ytd && this.state.ytd.how) { this.closeYtdHow(); }
         this.state.ytd = null;
         this.go("home");
         this.loadHistory();

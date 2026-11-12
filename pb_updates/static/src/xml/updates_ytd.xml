@@ -268,15 +268,37 @@
                 <span t-if="r.missing" class="pbu-chip pbu-chip--warn" t-att-title="ytdMissingTitle(r)">
                   <t t-out="icon('alert', 11)"/><t t-esc="ytdMissingLabel(r)"/>
                 </span>
+                <span t-if="r.start_missing" class="pbu-chip pbu-chip--warn" t-att-title="ytdStartTitle(r)" data-p5c="start">
+                  <t t-out="icon('alert', 11)"/><t t-esc="ytdStartLabel(r)"/>
+                </span>
+                <span t-if="r.twice_labels and r.twice_labels.length" class="pbu-chip pbu-chip--info" t-att-title="ytdTwiceTitle(r)" data-p5c="twice">
+                  <t t-out="icon('copy', 11)"/><t t-esc="ytdTwiceLabel(r)"/>
+                </span>
               </th>
-              <td t-foreach="ytdView.figures" t-as="f" t-key="f.key" class="num">
+              <td t-foreach="ytdView.figures" t-as="f" t-key="f.key"
+                  t-attf-class="num pbu-ytd-cell {{ ytdCellTone(r, f) }}" t-att-data-state="ytdCellState(r, f)">
                 <t t-set="c" t-value="ytdCell(r, f)"/>
                 <t t-if="c and c.total_label">
-                  <b class="pbu-ytd-total" t-esc="c.total_label"/>
+                  <b t-if="c.year_total" class="pbu-ytd-total" t-esc="c.total_label"/>
+                  <span t-else="" class="pbu-ytd-total is-open" t-att-title="c.note">
+                    <small t-esc="ytdKnownWord"/><t t-esc="c.total_label"/>
+                  </span>
                   <span class="pbu-ytd-parts">
                     <span t-att-class="c.has_before ? 'is-before' : 'is-none'" t-att-title="c.source"><t t-esc="c.has_before ? c.before_label : '—'"/></span>
                     <span class="pbu-ytd-plus">+</span>
-                    <span t-att-class="c.counted ? 'is-paid' : 'is-none'"><t t-esc="c.counted ? (c.paid_label or '0') : '—'"/></span>
+                    <button t-if="c.detail" type="button" t-attf-class="pbu-ytd-how {{ c.counted ? 'is-paid' : 'is-none' }}"
+                            t-att-aria-expanded="ytdHowOpen(r, f) ? 'true' : 'false'" t-att-aria-label="ytdHowAria(r, f)"
+                            t-att-title="ytdHowAria(r, f)" t-on-click.stop="(ev) => this.openYtdHow(r, f, ev)">
+                      <t t-esc="c.counted ? (c.paid_label or '0') : '—'"/><t t-out="icon('listChecks', 11)"/>
+                    </button>
+                    <span t-else="" t-att-class="c.counted ? 'is-paid' : 'is-none'"><t t-esc="c.counted ? (c.paid_label or '0') : '—'"/></span>
+                  </span>
+                  <span t-if="c.chip" class="pbu-chip pbu-chip--warn pbu-ytd-chip" t-att-title="c.note">
+                    <t t-out="icon('alert', 11)"/><t t-esc="c.chip"/>
+                  </span>
+                  <span t-if="c.advance_label" class="pbu-ytd-adv" t-esc="ytdAdvanceLine(c)"/>
+                  <span t-if="c.below_zero" class="pbu-chip pbu-chip--info pbu-ytd-chip" t-att-title="c.below_note">
+                    <t t-out="icon('minusCircle', 11)"/><t t-esc="ytdBelowWord"/>
                   </span>
                 </t>
                 <span t-else="" class="pbu-faint">—</span>
@@ -285,6 +307,56 @@
           </tbody>
         </table>
       </div>
+      <!-- UPDATES P5c — "How this number was worked out", one cell at a time. -->
+      <div t-if="state.ytd.how" class="pbu-ytd-pop" role="dialog" aria-modal="false" aria-labelledby="pbu-ytd-pop-h"
+           t-att-style="ytdHowStyle" t-on-click.stop="() => {}" t-on-keydown="onYtdHowKey">
+        <div class="pbu-ytd-pop-head">
+          <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('listChecks', 15)"/></span>
+          <div class="pbu-ytd-pop-t">
+            <h3 id="pbu-ytd-pop-h" class="pbu-h3">How this number was worked out</h3>
+            <p class="pbu-sub" t-esc="ytdHowSubtitle"/>
+          </div>
+          <button type="button" class="pbu-ytd-pop-x" aria-label="Close" t-on-click="closeYtdHow">
+            <t t-out="icon('x', 14)"/>
+          </button>
+        </div>
+        <div t-if="state.ytd.how.busy" class="pbu-sub"><span class="pbu-spin sm"/> Reading the payslips…</div>
+        <p t-elif="state.ytd.how.msg" class="pbu-refuse" role="alert"><t t-out="icon('alert', 14)"/><span t-esc="state.ytd.how.msg"/></p>
+        <t t-else="">
+          <t t-set="hd" t-value="state.ytd.how.data"/>
+          <p t-if="hd.items and hd.items.length" class="pbu-ytd-pop-items">
+            <t t-out="icon('sigma', 12)"/><span t-esc="ytdHowItemsLine"/>
+          </p>
+          <div t-if="hd.counted.length" class="pbu-ytd-pop-list" role="list" aria-label="Payslips counted">
+            <div t-foreach="hd.counted" t-as="it" t-key="it.id" role="listitem"
+                 t-attf-class="pbu-ytd-pop-row {{ it.missing ? 'is-missing' : '' }} {{ it.below ? 'is-below' : '' }}">
+              <span class="pbu-ytd-pop-mark"><t t-out="icon(it.missing ? 'minus' : (it.why ? 'info' : 'check'), 12)"/></span>
+              <span class="pbu-ytd-pop-what">
+                <b t-esc="it.run"/>
+                <small t-esc="it.period"/>
+                <small t-if="it.why" class="pbu-ytd-pop-why" t-esc="it.why"/>
+              </span>
+              <span class="pbu-ytd-pop-amt" t-esc="it.amount or (hd.count ? it.month : '—')"/>
+            </div>
+          </div>
+          <p t-else="" class="pbu-sub">No finished payslip counts towards this yet.</p>
+          <div class="pbu-ytd-pop-sum">
+            <span t-if="hd.before_label"><small>Before Payobook</small><b class="is-before" t-esc="hd.before_label"/></span>
+            <span><small>Paid in Payobook</small><b class="is-paid" t-esc="hd.paid_label or '—'"/></span>
+            <span><small t-esc="hd.year_total ? ytdLegend.total : ytdKnownWord"/><b t-esc="hd.total_label or '—'"/></span>
+          </div>
+          <p t-if="hd.note and !hd.year_total" class="pbu-inline-note pbu-ytd-pop-note"><t t-out="icon('alert', 13)"/><span t-esc="hd.note"/></p>
+          <details t-if="hd.left.length" class="pbu-ytd-pop-left">
+            <summary><t t-out="icon('eyeOff', 12)"/><span t-esc="ytdHowLeftLine"/></summary>
+            <div t-foreach="hd.left" t-as="it" t-key="it.id" class="pbu-ytd-pop-row is-left">
+              <span class="pbu-ytd-pop-mark"><t t-out="icon('minus', 12)"/></span>
+              <span class="pbu-ytd-pop-what"><b t-esc="it.run"/><small t-esc="it.period"/><small class="pbu-ytd-pop-why" t-esc="it.why"/></span>
+              <span class="pbu-ytd-pop-amt is-none" t-esc="it.amount or ''"/>
+            </div>
+          </details>
+        </t>
+      </div>
+
       <div t-if="ytdView and ytdView.rows.length" class="pbu-ytd-foot">
         <span class="pbu-sub pbu-ytd-legend"><span class="is-before" t-esc="ytdLegend.before"/> + <span class="is-paid" t-esc="ytdLegend.paid"/> = <b t-esc="ytdLegend.total"/></span>
         <span class="pbu-ytd-gap"/>
