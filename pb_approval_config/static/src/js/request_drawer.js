@@ -51,6 +51,7 @@ export class RequestDrawer extends Component {
         this.when = when;
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.actionService = useService("action");
 
         this.state = useState({
             loading: true,
@@ -273,5 +274,11 @@ export class RequestDrawer extends Component {
 
     openMatrix() {
         if (this.props.onOpenMatrix) { this.props.onOpenMatrix(); }
+    }
+
+    /** UPDATES P6 — the server built the action, for a place this reader
+     *  can act in; the drawer only follows it. */
+    openFix(link) {
+        if (link && link.action) { this.actionService.doAction(link.action); }
     }
 }

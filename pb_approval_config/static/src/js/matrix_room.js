@@ -109,6 +109,11 @@ export class PbApprovalMatrix extends Component {
             if (!this.state.builderFor && processKey) {
                 this.state.search = row ? row.name : processKey;
             }
+            // UPDATES P6 — "Name a Finance approver" from a stuck request
+            // lands on People & backups, on that responsibility.
+            if (!this.state.builderFor && this.openTarget.tab === "people") {
+                this.openPeople(this.openTarget.role_key || "", "");
+            }
         });
         onMounted(() => {
             window.addEventListener("keydown", this.onEscape,

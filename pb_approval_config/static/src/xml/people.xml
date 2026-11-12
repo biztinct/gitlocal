@@ -91,6 +91,9 @@
                               <div t-if="cl.since" class="pbam-pvia">since <t t-esc="day(cl.since)"/></div>
                             </div>
                           </div>
+                          <div t-if="cl.support" class="pbam-bk pbam-bk-support" data-p6="support-seat">
+                            <t t-out="ic('info',11)"/> <span>Not one of your people — choose someone who works here.</span>
+                          </div>
                           <div t-if="cl.backup" class="pbam-bk">
                             <t t-out="ic('repeat',11)"/> <span>Backup: <t t-esc="cl.backup"/></span>
                           </div>

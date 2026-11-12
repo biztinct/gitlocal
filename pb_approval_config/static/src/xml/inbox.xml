@@ -318,6 +318,28 @@
             </span>
           </div>
 
+          <!-- UPDATES P6 — nobody else can approve bank details yet: the way
+               out, straight to the place the reader can add that person, or
+               one plain sentence saying who to ask. -->
+          <div t-if="request.blocked and request.second_person_fix"
+               class="pbam-fix" data-p6="second-person-fix">
+            <t t-if="request.second_person_fix.links.length">
+              <button t-foreach="request.second_person_fix.links" t-as="lk"
+                      t-key="lk.key" type="button"
+                      t-att-class="'pbam-fix-link' + (lk_first ? ' pbam-fix-pri' : '')"
+                      t-att-data-fix="lk.key"
+                      t-on-click="() => this.openFix(lk)">
+                <t t-out="ic(lk.icon, 14)"/>
+                <span t-esc="lk.label"/>
+                <t t-out="ic('arrowRight', 12)"/>
+              </button>
+            </t>
+            <span t-else="" class="pbam-fix-ask">
+              <t t-out="ic('info', 14)"/>
+              <span t-esc="request.second_person_fix.ask"/>
+            </span>
+          </div>
+
           <div t-if="request.state === 'returned'" class="pbim-note pbam-note-amber">
             <t t-out="ic('undo',14)"/>
             <span><b>Sent back:</b> <t t-esc="request.return_note"/></span>

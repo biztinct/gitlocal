@@ -682,6 +682,11 @@ TENANT_ADMIN_ABILITIES = (
     'announcements-admin',          # announcements, templates, audiences
     'where-they-work',              # split months, merged records
     'group-setup',                  # the group of companies and its currency
+    # 2026-11-12 (owner, UPDATES D22): who approves what in their own company
+    # — routes, who holds each step, backups. Publish, not "administrator":
+    # arranging somebody else's cover and moving a waiting step stay a
+    # separate role, given on purpose.
+    'approvals-publish',            # approval routes: write and publish
 )
 
 #: The abilities the owner added to an EXISTING Tenant administrator role on
@@ -693,12 +698,27 @@ TENANT_ADMIN_ADDED_20261001 = (
     'where-they-work', 'group-setup',
 )
 
+#: The ability the owner added to an EXISTING Tenant administrator role on
+#: 2026-11-12 (UPDATES D22): approvals set-up for their own company. Widened
+#: once, by migration 19.0.1.17.0, the 1.10.0 way.
+TENANT_ADMIN_ADDED_20261112 = ('approvals-publish',)
+
 TENANT_ADMIN_NAME = 'Tenant administrator'
-TENANT_ADMIN_DESCRIPTION = (
+#: The sentence the role carried from 2026-10-01 to 2026-11-12. The widening
+#: replaces it only where nobody has reworded it since.
+TENANT_ADMIN_DESCRIPTION_20261001 = (
     'Runs this whole application: pay, people, joining and leaving, budgets, '
     'reporting, the connected systems, the calculation rules, hiring, goals, '
     'training, announcements, and who here can do what. It does not include the system administrator permission, so it '
     'cannot switch developer mode on, open the raw permission table, or reach '
+    'anything belonging to the platform this runs on. Growth plans are '
+    'deliberately not part of it — give those to your head of HR separately.')
+TENANT_ADMIN_DESCRIPTION = (
+    'Runs this whole application: pay, people, joining and leaving, budgets, '
+    'reporting, the connected systems, the calculation rules, hiring, goals, '
+    'training, announcements, who approves what, and who here can do what. '
+    'It does not include the system administrator permission, so it cannot '
+    'switch developer mode on, open the raw permission table, or reach '
     'anything belonging to the platform this runs on. Growth plans are '
     'deliberately not part of it — give those to your head of HR separately.')
 

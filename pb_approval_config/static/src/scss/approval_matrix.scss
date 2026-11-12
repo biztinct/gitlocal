@@ -725,6 +725,8 @@
         color: var(--pbim-muted);
 
         &.pbam-bk-quiet { opacity: .7; }
+        // UPDATES P6 — the platform's support login holds this seat.
+        &.pbam-bk-support { color: var(--pbim-amber); font-weight: 600; }
     }
     .pbam-inh {
         font-size: 11.5px; color: var(--pbim-muted); font-style: italic;
@@ -792,6 +794,10 @@
 
         // the example panel is never sticky inside a drawer
         .pbam-ex { position: static; }
+        // UPDATES P6 walk: the people picker's search pill grew to fill the
+        // drawer's column (`flex: 1` is meant for a row of filters) and drew
+        // a giant ring. In a column it keeps its own height.
+        > .pbam-search { flex: none; max-width: none; }
     }
     .pbam-df {
         padding: 14px 20px; border-top: 1px solid var(--pbim-line);

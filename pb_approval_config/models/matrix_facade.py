@@ -29,6 +29,8 @@ from odoo.exceptions import AccessError, UserError
 from odoo.addons.biz_approval_workflow.models import definition as D
 from odoo.addons.biz_approval_workflow.models.seed_helper import NO_APPROVAL_NAME
 
+from . import setup_rails as R
+
 _logger = logging.getLogger(__name__)
 
 CONFIG_GROUP = 'biz_approval_workflow.group_approval_config'
@@ -226,7 +228,11 @@ class PbApprovalMatrix(models.AbstractModel):
             index[key] = entry
 
         attention = []
+        platform = R.is_platform_person(self.env)
         for process in processes:
+            if not platform and process.key in R.PLATFORM_HELD_PROCESSES:
+                # UPDATES P6 — the platform's own row is not a client's.
+                continue
             row = self._matrix_row(company, process,
                                    by_process.get(process.id) or [])
             index.setdefault(process.area or 'other', areas[-1])['rows'].append(
@@ -348,6 +354,7 @@ class PbApprovalMatrix(models.AbstractModel):
         process = self.env['biz.approval.process']._by_key(process_key)
         if not process:
             raise UserError(_("That kind of request is not in the list."))
+        R.check_process(self.env, process)
         preset = next((p for p in _preset_rows() if p['key'] == preset_key),
                       None)
         if not preset:
@@ -379,6 +386,7 @@ class PbApprovalMatrix(models.AbstractModel):
         workflow.check_access('read')
         if not workflow.exists():
             raise UserError(_("That workflow no longer exists."))
+        R.check_process(self.env, workflow.sudo().process_id)
         draft = workflow.draft_version_id
         if not draft:
             draft = workflow.action_new_draft()
@@ -515,7 +523,10 @@ class PbApprovalMatrix(models.AbstractModel):
 
     def _role_rows(self):
         rows = []
+        platform = R.is_platform_person(self.env)
         for role in self.env['biz.approval.role'].sudo().search([]):
+            if not platform and role.key in R.PLATFORM_HELD_ROLES:
+                continue
             rows.append({
                 'key': role.key, 'name': role.name,
                 'description': role.description or '',
@@ -548,6 +559,7 @@ class PbApprovalMatrix(models.AbstractModel):
         version.check_access('write')
         if not version.exists():
             raise UserError(_("That draft no longer exists."))
+        R.check_process(self.env, version.sudo().workflow_id.process_id)
         if version.status != 'draft':
             raise UserError(_(
                 "That version is in use and cannot be changed. Start a new "
@@ -584,6 +596,7 @@ class PbApprovalMatrix(models.AbstractModel):
         version = self.env['biz.approval.workflow.version'].browse(
             int(version_id))
         version.check_access('read')
+        R.check_process(self.env, version.sudo().workflow_id.process_id)
         ctx = dict(example or {})
         workflow = version.workflow_id
         ctx.setdefault('company_id', workflow.company_id.id)
@@ -605,6 +618,7 @@ class PbApprovalMatrix(models.AbstractModel):
         version = self.env['biz.approval.workflow.version'].browse(
             int(version_id))
         version.check_access('read')
+        R.check_process(self.env, version.sudo().workflow_id.process_id)
         scan = self._engine().coverage_scan(version.id)
         rows = []
         for row in scan.get('rows') or []:
@@ -644,6 +658,7 @@ class PbApprovalMatrix(models.AbstractModel):
         version = self.env['biz.approval.workflow.version'].browse(
             int(version_id))
         version.check_access('read')
+        R.check_process(self.env, version.sudo().workflow_id.process_id)
         workflow = version.workflow_id
         published = workflow.published_version_id
         checks = self._engine().validate_for_publish(version.id)
@@ -713,6 +728,9 @@ class PbApprovalMatrix(models.AbstractModel):
                 effective_from=None, reason=None, confirmations=None):
         """Make this draft the one future requests follow."""
         self._require_config()
+        R.check_process(self.env, self.env['biz.approval.workflow.version']
+                        .sudo().browse(int(version_id)).exists()
+                        .workflow_id.process_id)
         result = self._engine().publish(
             int(version_id), expected_draft_revision, effective_from,
             _clip(reason), confirmations or [])
@@ -754,7 +772,11 @@ class PbApprovalMatrix(models.AbstractModel):
         needed = self._roles_in_use(company)
 
         rows, gaps = [], []
+        platform = R.is_platform_person(self.env)
         for role in roles:
+            if not platform and role.key in R.PLATFORM_HELD_ROLES:
+                # UPDATES P6 — the platform's own seat is not a client's.
+                continue
             cells = []
             for scope in scopes:
                 seat = by_seat.get('%s|%s' % (role.key, scope['key']))
@@ -830,18 +852,38 @@ class PbApprovalMatrix(models.AbstractModel):
         cover = self._safe(
             lambda: self.env['biz.approval.delegation'].covering(
                 seat.user_id, company), default=None)
+        holder, holder_id = self._person_shown(seat.user_id)
+        backup, backup_id = self._person_shown(seat.backup_user_id)
+        cover_name = self._person_shown(cover)[0] if cover else ''
         return {
             'state': 'pool' if seat.role_id.is_pool else 'held',
             'id': seat.id,
-            'user_id': seat.user_id.id,
-            'name': seat.user_id.name or '',
-            'pool_names': seat.pool_user_ids.mapped('name'),
-            'backup_id': seat.backup_user_id.id,
-            'backup': seat.backup_user_id.name or '',
+            'user_id': holder_id,
+            'name': holder,
+            'pool_names': [self._person_shown(u)[0]
+                           for u in seat.pool_user_ids],
+            'backup_id': backup_id,
+            'backup': backup,
             'since': fields.Date.to_string(seat.date_from) or '',
-            'cover': cover.name if cover else '',
+            'cover': cover_name,
             'note': seat.note or '',
+            # UPDATES P6 — a seat the platform's support login holds: the
+            # screen says so, and asks for one of the company's own people.
+            'support': bool(not holder_id and seat.user_id),
         }
+
+    def _person_shown(self, user):
+        """`(name, id)` of a person as a set-up screen may show them.
+
+        UPDATES P6: the platform's support login is shown to a client's admin
+        only as "Platform support" — never its account, id or picture, the
+        way the Access screens hide it (`biz_access.visible_people`).
+        """
+        if not user:
+            return '', 0
+        if not R.is_platform_person(self.env) and R.is_recovery(self.env, user):
+            return _('Platform support'), 0
+        return user.name or '', user.id
 
     @api.model
     def set_responsibility(self, company_id, role_key, scope_key, user_id,
@@ -854,11 +896,27 @@ class PbApprovalMatrix(models.AbstractModel):
             [('key', '=', role_key)], limit=1)
         if not role:
             raise UserError(_("That responsibility is no longer in the list."))
+        R.check_role(self.env, role)
         user = self.env['res.users'].sudo().browse(int(user_id or 0)).exists()
         if not role.is_pool and (not user or user.share or not user.active):
             raise UserError(_("That person cannot hold a responsibility."))
         if user and company.id not in user.company_ids.ids:
             raise UserError(_("%s does not work in this company.", user.name))
+        pool_ids = [int(u) for u in (pool_user_ids or []) if u] \
+            if role.is_pool else []
+        R.check_people(self.env, [user.id if user else 0,
+                                  int(backup_user_id or 0)] + pool_ids)
+        if not R.is_platform_person(self.env):
+            # UPDATES P6 — a client's admin names people of THIS company: a
+            # backup or a group member from elsewhere could never decide.
+            others = self.env['res.users'].sudo().browse(
+                [int(backup_user_id or 0)] + pool_ids).exists()
+            for other in others:
+                if other.share or not other.active \
+                        or company.id not in other.company_ids.ids:
+                    raise UserError(_(
+                        "%s cannot stand in here: they need an active staff "
+                        "login in this company.", other.name))
 
         Responsibility = self.env['biz.approval.responsibility']
         scope_key = scope_key or ''
@@ -877,6 +935,12 @@ class PbApprovalMatrix(models.AbstractModel):
         if role.is_pool:
             values['pool_user_ids'] = [(6, 0, [int(u) for u in
                                                (pool_user_ids or []) if u])]
+        before = {
+            'user_id': existing.user_id.id if existing else 0,
+            'backup_user_id': existing.backup_user_id.id if existing else 0,
+            'pool_user_ids': existing.pool_user_ids.ids if existing else [],
+        }
+        before_backup = existing.backup_user_id if existing else None
         if existing:
             existing.write(values)
             seat = existing
@@ -884,14 +948,25 @@ class PbApprovalMatrix(models.AbstractModel):
             seat = Responsibility.create(dict(
                 values, company_id=company.id, role_id=role.id,
                 scope_key=scope_key))
+        summary = _("%(who)s made %(name)s the %(role)s for %(where)s",
+                    who=self.env.user.name,
+                    name=(user.name if user else _('a group of people')),
+                    role=role.name, where=label)
+        # UPDATES P6 — the trail says what changed about the backup too: a
+        # backup is who decides when the holder is away or proposed it.
+        backup_now = seat.sudo().backup_user_id
+        if backup_now != (before_backup or self.env['res.users']):
+            summary = '%s · %s' % (summary, (
+                _("backup: %s", backup_now.name) if backup_now
+                else _("no backup")))
         self.env['biz.approval.event']._log(
-            'responsibility_changed',
-            _("%(who)s made %(name)s the %(role)s for %(where)s",
-              who=self.env.user.name,
-              name=(user.name if user else _('a group of people')),
-              role=role.name, where=label),
+            'responsibility_changed', summary,
             company=company,
-            payload={'role_key': role.key, 'scope_key': scope_key})
+            payload={'role_key': role.key, 'scope_key': scope_key,
+                     'before': before,
+                     'after': {'user_id': seat.user_id.id,
+                               'backup_user_id': seat.backup_user_id.id,
+                               'pool_user_ids': seat.pool_user_ids.ids}})
         return {'id': seat.id}
 
     @api.model
@@ -903,6 +978,7 @@ class PbApprovalMatrix(models.AbstractModel):
             [('key', '=', role_key)], limit=1)
         if not role:
             raise UserError(_("That responsibility is no longer in the list."))
+        R.check_role(self.env, role)
         rows = self.env['biz.approval.responsibility'].sudo().search([
             ('company_id', '=', company.id), ('role_id', '=', role.id),
             ('scope_key', '=', scope_key or ''), ('active', '=', True)])
@@ -943,6 +1019,10 @@ class PbApprovalMatrix(models.AbstractModel):
         term = (term or '').strip()
         if term:
             domain += ['|', ('name', 'ilike', term), ('login', 'ilike', term)]
+        if not R.is_platform_person(self.env):
+            # UPDATES P6 — the platform's support login is not one of
+            # theirs (the Access screens hide it the same way).
+            domain += [('login', 'not in', list(R.recovery_logins(self.env)))]
         users = self.env['res.users'].sudo().search(
             domain, limit=MAX_PEOPLE, order='name')
         model = None
@@ -977,12 +1057,14 @@ class PbApprovalMatrix(models.AbstractModel):
         rows = []
         for row in self.env['biz.approval.delegation'].sudo().search(
                 [('company_id', '=', company.id)], limit=MAX_ROWS):
+            principal, principal_id = self._person_shown(row.principal_user_id)
+            delegate, delegate_id = self._person_shown(row.delegate_user_id)
             rows.append({
                 'id': row.id,
-                'principal': row.principal_user_id.name or '',
-                'principal_id': row.principal_user_id.id,
-                'delegate': row.delegate_user_id.name or '',
-                'delegate_id': row.delegate_user_id.id,
+                'principal': principal,
+                'principal_id': principal_id,
+                'delegate': delegate,
+                'delegate_id': delegate_id,
                 'roles': row.role_ids.mapped('name'),
                 'date_from': fields.Date.to_string(row.date_from) or '',
                 'date_to': fields.Date.to_string(row.date_to) or '',
@@ -1009,6 +1091,7 @@ class PbApprovalMatrix(models.AbstractModel):
         delegate = int(vals.get('delegate_user_id') or 0)
         if not delegate:
             raise UserError(_("Say who is covering."))
+        R.check_people(self.env, [principal, delegate])
         if not (vals.get('reason') or '').strip():
             raise UserError(_("Say why, so the trail makes sense later."))
         row = self.env['biz.approval.delegation'].create({
@@ -1066,15 +1149,19 @@ class PbApprovalMatrix(models.AbstractModel):
         events = self.env['biz.approval.event'].search(
             domain, limit=MAX_HISTORY, order='stamp desc, id desc')
         labels = dict(self.env['biz.approval.event']._fields['kind'].selection)
-        rows = [{
-            'id': event.id,
-            'when': fields.Datetime.to_string(event.stamp) or '',
-            'who': event.user_id.name or '',
-            'avatar': '/web/image/res.users/%s/avatar_128' % event.user_id.id,
-            'kind': event.kind,
-            'kind_label': labels.get(event.kind, ''),
-            'summary': event.summary or '',
-        } for event in events]
+        rows = []
+        for event in events:
+            who, who_id = self._person_shown(event.user_id)
+            rows.append({
+                'id': event.id,
+                'when': fields.Datetime.to_string(event.stamp) or '',
+                'who': who,
+                'avatar': ('/web/image/res.users/%s/avatar_128' % who_id)
+                if who_id else '',
+                'kind': event.kind,
+                'kind_label': labels.get(event.kind, ''),
+                'summary': event.summary or '',
+            })
         return {'rows': rows,
                 'cursor': rows[-1]['id'] if len(rows) == MAX_HISTORY else 0}
 
@@ -1086,7 +1173,9 @@ class PbApprovalMatrix(models.AbstractModel):
             if isinstance(key, str) and key and key not in keys:
                 keys.append(key)
         Process = self.env['biz.approval.process'].sudo()
-        return [p for p in (Process._by_key(k) for k in keys) if p]
+        platform = R.is_platform_person(self.env)
+        return [p for p in (Process._by_key(k) for k in keys) if p and (
+            platform or p.key not in R.PLATFORM_HELD_PROCESSES)]
 
     @api.model
     def bulk_no_approval_preview(self, process_keys, company_id=None):
@@ -1229,6 +1318,7 @@ class PbApprovalMatrix(models.AbstractModel):
                 note.get('process_key') or '')
             if not process:
                 continue
+            R.check_process(self.env, process)
             fast = mine([note.get('fast_binding')], process)
             if fast and not note.get('fast_was_active'):
                 fast.write({'active': False})
@@ -1266,6 +1356,7 @@ class PbApprovalMatrix(models.AbstractModel):
         process = self.env['biz.approval.process']._by_key(process_key)
         if not process:
             raise UserError(_("That kind of request is not in the list."))
+        R.check_process(self.env, process)
         scope_key = scope_key or ''
         Binding = self.env['biz.approval.binding'].sudo()
         rows = Binding.search([('company_id', '=', company.id),
@@ -1358,6 +1449,7 @@ class PbApprovalMatrix(models.AbstractModel):
         process = self.env['biz.approval.process']._by_key(process_key)
         if not process:
             raise UserError(_("That kind of request is not in the list."))
+        R.check_process(self.env, process)
         scope_key = scope_key or ''
         if not scope_key:
             raise UserError(_(

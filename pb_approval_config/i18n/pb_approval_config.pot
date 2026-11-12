@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-31 02:02+0000\n"
-"PO-Revision-Date: 2026-10-31 02:02+0000\n"
+"POT-Creation-Date: 2026-11-12 10:33+0000\n"
+"PO-Revision-Date: 2026-11-12 10:33+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -106,6 +106,14 @@ msgstr ""
 
 #. module: pb_approval_config
 #. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid ""
+"%(who)s made %(name)s the %(role)s for %(where)s (%(kind)s, from the "
+"spreadsheet)"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
 #: code:addons/pb_approval_config/models/matrix_facade.py:0
 msgid "%(who)s put %(where)s back on the route the rest of the company uses"
 msgstr ""
@@ -150,6 +158,21 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 msgid "%s and above"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid ""
+"%s cannot hold a responsibility here: they need an active staff login in "
+"this company."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"%s cannot stand in here: they need an active staff login in this company."
 msgstr ""
 
 #. module: pb_approval_config
@@ -490,6 +513,12 @@ msgid "Access team"
 msgstr ""
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Add a person to the bank details route"
+msgstr ""
+
+#. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
 msgid "Add a step"
@@ -514,10 +543,8 @@ msgid "After it is sent in, %s."
 msgstr ""
 
 #. module: pb_approval_config
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "All I can see"
 msgstr ""
 
@@ -695,6 +722,16 @@ msgid "Applies to"
 msgstr ""
 
 #. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_binding
+msgid "Approval Binding"
+msgstr ""
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_engine
+msgid "Approval Engine"
+msgstr ""
+
+#. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/matrix_room.js:0
 #: code:addons/pb_approval_config/static/src/js/palette.js:0
@@ -716,6 +753,26 @@ msgstr ""
 #. module: pb_approval_config
 #: model:ir.model,name:pb_approval_config.model_biz_approval_process
 msgid "Approval Process"
+msgstr ""
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_role
+msgid "Approval Responsibility"
+msgstr ""
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_responsibility
+msgid "Approval Responsibility Holder"
+msgstr ""
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_workflow
+msgid "Approval Workflow"
+msgstr ""
+
+#. module: pb_approval_config
+#: model:ir.model,name:pb_approval_config.model_biz_approval_workflow_version
+msgid "Approval Workflow Revision"
 msgstr ""
 
 #. module: pb_approval_config
@@ -1320,7 +1377,13 @@ msgid "Dismiss"
 msgstr ""
 
 #. module: pb_approval_config
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_binding__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_engine__display_name
 #: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_process__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_responsibility__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_role__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_workflow__display_name
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_workflow_version__display_name
 #: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_inbox__display_name
 #: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_matrix__display_name
 #: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_matrix_import__display_name
@@ -1370,10 +1433,8 @@ msgid "Due soonest"
 msgstr ""
 
 #. module: pb_approval_config
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Due today"
 msgstr ""
 
@@ -1512,7 +1573,6 @@ msgstr ""
 #. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/history_tab.js:0
-#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Everything"
 msgstr ""
 
@@ -1609,7 +1669,6 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 #: code:addons/pb_approval_config/static/src/xml/people.xml:0
 msgid "Finished"
 msgstr ""
@@ -1694,6 +1753,12 @@ msgid "Give it its own"
 msgstr ""
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Give someone a role in Access"
+msgstr ""
+
+#. module: pb_approval_config
 #: model:ir.model.fields.selection,name:pb_approval_config.selection__pb_approval_proposed_person__state__resolved
 msgid "Given to somebody"
 msgstr ""
@@ -1766,7 +1831,13 @@ msgid "How \"where\" works"
 msgstr ""
 
 #. module: pb_approval_config
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_binding__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_engine__id
 #: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_process__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_responsibility__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_role__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_workflow__id
+#: model:ir.model.fields,field_description:pb_approval_config.field_biz_approval_workflow_version__id
 #: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_inbox__id
 #: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_matrix__id
 #: model:ir.model.fields,field_description:pb_approval_config.field_pb_approval_matrix_import__id
@@ -1900,10 +1971,8 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: pb_approval_config
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Late"
 msgstr ""
 
@@ -2092,10 +2161,8 @@ msgid "My team"
 msgstr ""
 
 #. module: pb_approval_config
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "My turn"
 msgstr ""
 
@@ -2109,6 +2176,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
 msgid "Name"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Name a Finance approver"
 msgstr ""
 
 #. module: pb_approval_config
@@ -2440,6 +2513,12 @@ msgstr ""
 
 #. module: pb_approval_config
 #. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Not one of your people — choose someone who works here."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/builder.xml:0
 msgid "Not part of the sequence"
 msgstr ""
@@ -2656,6 +2735,14 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 msgid "Only when…"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"Only your administrator can add someone who may approve bank details. Ask "
+"them to add one — they can then try this again from here."
 msgstr ""
 
 #. module: pb_approval_config
@@ -2903,6 +2990,12 @@ msgid "Platform owner"
 msgstr ""
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Platform support"
+msgstr ""
+
+#. module: pb_approval_config
 #: model:biz.approval.process,description:pb_approval_config.process_recognition
 msgid "Praise for somebody's work, and any prize that goes with it."
 msgstr ""
@@ -3045,7 +3138,6 @@ msgstr ""
 
 #. module: pb_approval_config
 #. odoo-javascript
-#: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 #: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
 msgid "Reading your approvals…"
 msgstr ""
@@ -3164,7 +3256,7 @@ msgstr ""
 
 #. module: pb_approval_config
 #: model:biz.approval.process,name:pb_approval_config.process_resign
-msgid "Resignations and contract extensions"
+msgid "Resignations"
 msgstr ""
 
 #. module: pb_approval_config
@@ -3407,7 +3499,6 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_approval_config/models/inbox_facade.py:0
-#: code:addons/pb_approval_config/static/src/js/inbox.js:0
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "Sent back"
 msgstr ""
@@ -3748,6 +3839,14 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/builder.js:0
 msgid "Tell whoever sent it in"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/setup_rails.py:0
+msgid ""
+"That belongs to the platform this runs on, not to your company, so it is not"
+" set up here."
 msgstr ""
 
 #. module: pb_approval_config
@@ -4099,6 +4198,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_approval_config/models/matrix_facade.py:0
 msgid "The person who made a change never approves it."
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/setup_rails.py:0
+msgid ""
+"The platform's support login is not one of your people, so it cannot be "
+"named here. Choose somebody who works in this company."
 msgstr ""
 
 #. module: pb_approval_config
@@ -4548,6 +4655,15 @@ msgstr ""
 #. module: pb_approval_config
 #: model:biz.approval.process,name:pb_approval_config.process_timesheet
 msgid "Weekly timesheet"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/setup_rails.py:0
+msgid ""
+"What a kind of request is, and the list of responsibilities, are part of the"
+" product. You choose who decides; ask your provider if a kind of request or "
+"a responsibility itself is wrong."
 msgstr ""
 
 #. module: pb_approval_config
@@ -5129,6 +5245,18 @@ msgid "approves"
 msgstr ""
 
 #. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "backup"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "backup: %s"
+msgstr ""
+
+#. module: pb_approval_config
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/inbox.xml:0
 msgid "characters, so it means something to whoever reads it."
@@ -5192,6 +5320,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/js/sentence.js:0
 msgid "gives final approval"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "holder"
 msgstr ""
 
 #. module: pb_approval_config
@@ -5300,6 +5434,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_approval_config/static/src/xml/matrix_room.xml:0
 msgid "no approval needed"
+msgstr ""
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "no backup"
 msgstr ""
 
 #. module: pb_approval_config

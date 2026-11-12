@@ -13,3 +13,6 @@ from . import test_p7_matrix
 from . import test_p7_walk_fixes
 # Many processes switched to "No approval needed" in one press.
 from . import test_bulk_no_approval
+# UPDATES P6 — a client's own admin sets approvals up (D22).
+from . import test_p6_tenant_admin
+from . import test_p6_bank_rails

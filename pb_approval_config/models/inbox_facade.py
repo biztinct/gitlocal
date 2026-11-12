@@ -717,9 +717,15 @@ class PbApprovalInbox(models.AbstractModel):
             # the reason in `block_reason`, with no approver left to press
             # anything and no way back to it from this screen. (`rize`: a pay
             # data file approved twice over, and 0 payslips.)
-            'can_repair': bool(self._can_config() and (
-                request.state == 'blocked'
-                or (request.state == 'approved' and request.block_reason))),
+            # UPDATES P6 — each half follows the engine's own gate: finding
+            # people again is set-up work (`repair`); running the change
+            # again is the sender's or whoever looks after approvals
+            # (`retry_apply`). A button the engine then refuses is a dead end.
+            'can_repair': bool(
+                (request.state == 'blocked' and self._can_config())
+                or (request.state == 'approved' and request.block_reason
+                    and (self._engine()._is_admin()
+                         or request.submitter_uid.id == self.env.uid))),
             # WHAT THE APP WANTS TO SAY ABOUT WHO WAS ASKED. A backup took a
             # seat because the holder sent it in, or nobody can approve it
             # yet — warnings, never refusals, above the steps where a reader
@@ -729,14 +735,104 @@ class PbApprovalInbox(models.AbstractModel):
             'can_move_it': move,
             'move_people': self._move_candidates(request) if move['can']
                            else [],
+            # The engine's own rule (`biz.approval.engine.cancel`): the
+            # person who sent it in, or whoever looks after approvals.
+            # Setting routes up is not enough (UPDATES P6: a client's admin
+            # sets approvals up, and a button the engine then refuses is a
+            # dead end).
             'can_cancel': bool(request.state in ('pending', 'blocked')
                                and (request.submitter_uid.id == self.env.uid
-                                    or self._can_config())),
+                                    or self._engine()._is_admin())),
             'submitted_note': _(
                 "Approving records your name, the time, and exactly the facts "
                 "above as they were when this was sent in."),
+            # UPDATES P6 — "nobody else can approve bank details yet": the
+            # place where the reader can add that person, or who to ask.
+            'second_person_fix': self._safe(
+                lambda: self._second_person_fix(request), default=None),
         })
         return payload
+
+    # ---------------------------------------- UPDATES P6 — the way out
+    @api.model
+    def _second_person_kind(self, request):
+        """`'access'` when a bank change waits because nobody else in the
+        company can approve bank details; `'route'` when the bank route names
+        its approvers and none of them can be asked; else `''`.
+
+        Asked of the business record itself (duck-typed: this module never
+        imports the records module): its own two sentences, in every
+        language the database speaks, are compared with what the request
+        says — so nothing is guessed from a request that is stuck for some
+        other reason.
+        """
+        if request.state != 'blocked':
+            return ''
+        record = self._record_of(request)
+        if record is None:
+            return ''
+        said = ' '.join(filter(None, [request.block_reason or ''] + [
+            s.block_reason or '' for s in request.step_ids]))
+        if not said:
+            return ''
+        langs = self.env['res.lang'].sudo().search([]).mapped('code') or [
+            'en_US']
+        company = request.company_id
+        for kind, method in (('route', '_nobody_named_sentence'),
+                             ('access', '_nobody_else_sentence')):
+            if not hasattr(record, method):
+                continue
+            for lang in langs:
+                sentence = self._safe(lambda lg=lang, m=method: getattr(
+                    record.with_context(lang=lg), m)(company), default='')
+                if sentence and str(sentence) in said:
+                    return kind
+        return ''
+
+    @api.model
+    def _second_person_fix(self, request):
+        """What the drawer offers under "This cannot move." — links only to
+        places the reader can really act, else one plain sentence."""
+        kind = self._second_person_kind(request)
+        if not kind:
+            return None
+        Actions = self.env['ir.actions.actions']
+        links = []
+        can_access = 'pb.access' in self.env and self._safe(
+            lambda: self.env['pb.access'].can_manage(), default=False)
+        can_setup = self._can_config()
+        matrix = 'pb_approval_config.action_pb_approval_matrix'
+        if kind == 'route' and can_setup:
+            action = Actions._for_xml_id(matrix)
+            action['params'] = {
+                'workflow_id': request.version_id.workflow_id.id,
+                'process_key': request.process_id.key or ''}
+            links.append({'key': 'route', 'icon': 'workflow',
+                          'label': _("Add a person to the bank details "
+                                     "route"),
+                          'action': action})
+        if kind == 'access':
+            if can_access:
+                action = Actions._for_xml_id(
+                    'biz_access.action_pb_access_board')
+                action['context'] = {'pb_lens': 'people'}
+                links.append({'key': 'access', 'icon': 'users',
+                              'label': _("Give someone a role in Access"),
+                              'action': action})
+            if can_setup:
+                action = Actions._for_xml_id(matrix)
+                action['params'] = {'tab': 'people', 'role_key': 'finance'}
+                links.append({'key': 'people', 'icon': 'userCheck',
+                              'label': _("Name a Finance approver"),
+                              'action': action})
+        return {
+            'kind': kind,
+            'links': links,
+            'ask': '' if links else _(
+                "Only your administrator can add someone who may approve "
+                "bank details. Ask them to add one — they can then try this "
+                "again from here."),
+        }
 
     def _action_label(self, action):
         return {
@@ -1038,6 +1134,14 @@ class PbApprovalInbox(models.AbstractModel):
         request = self.env['biz.approval.request'].sudo().browse(
             int(request_id or 0))
         if not request.exists():
+            return {'can': False, 'step_key': '', 'seats': []}
+        # UPDATES P6 — the engine's own rule for `reassign`: whoever looks
+        # after approvals, or the route's owner. Setting routes up alone
+        # (a client's admin) is not enough, and a button the engine then
+        # refuses is a dead end. Read under sudo, after the group gate.
+        owner = request.version_id.workflow_id.owner_user_id
+        if not (self._engine()._is_admin()
+                or (owner and owner.id == self.env.uid)):
             return {'can': False, 'step_key': '', 'seats': []}
         step = request.step_ids.filtered(
             lambda s: s.key == request.current_step_key)[:1]

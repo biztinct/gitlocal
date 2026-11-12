@@ -5404,3 +5404,113 @@ msgstr "trên"
 #: code:addons/pb_approval_config/static/src/js/inbox.js:0
 msgid "requests"
 msgstr "yêu cầu"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid ""
+"%(who)s made %(name)s the %(role)s for %(where)s (%(kind)s, from the "
+"spreadsheet)"
+msgstr "%(who)s đã giao %(name)s làm %(role)s của %(where)s (%(kind)s, từ bảng tính)"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid ""
+"%s cannot hold a responsibility here: they need an active staff login in "
+"this company."
+msgstr "%s không thể giữ trách nhiệm ở đây: cần có tài khoản nhân viên đang hoạt động trong công ty này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid ""
+"%s cannot stand in here: they need an active staff login in this company."
+msgstr "%s không thể thay thế ở đây: cần có tài khoản nhân viên đang hoạt động trong công ty này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Add a person to the bank details route"
+msgstr "Thêm một người vào quy trình duyệt thông tin ngân hàng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Give someone a role in Access"
+msgstr "Giao vai trò cho một người trong mục Quyền truy cập"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid "Name a Finance approver"
+msgstr "Chọn người duyệt tài chính"
+
+#. module: pb_approval_config
+#. odoo-javascript
+#: code:addons/pb_approval_config/static/src/xml/people.xml:0
+msgid "Not one of your people — choose someone who works here."
+msgstr "Không phải người của công ty bạn — hãy chọn một người làm việc tại đây."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/inbox_facade.py:0
+msgid ""
+"Only your administrator can add someone who may approve bank details. Ask "
+"them to add one — they can then try this again from here."
+msgstr "Chỉ quản trị viên của bạn mới có thể thêm người được duyệt thông tin ngân hàng. Hãy nhờ họ thêm một người — sau đó họ có thể thử lại từ đây."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "Platform support"
+msgstr "Bộ phận hỗ trợ nền tảng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/setup_rails.py:0
+msgid ""
+"That belongs to the platform this runs on, not to your company, so it is not"
+" set up here."
+msgstr "Mục này thuộc về nền tảng mà hệ thống chạy trên đó, không thuộc về công ty bạn, nên không được thiết lập ở đây."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/setup_rails.py:0
+msgid ""
+"The platform's support login is not one of your people, so it cannot be "
+"named here. Choose somebody who works in this company."
+msgstr "Tài khoản hỗ trợ của nền tảng không phải người của công ty bạn, nên không thể chọn ở đây. Hãy chọn một người làm việc trong công ty này."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/setup_rails.py:0
+msgid ""
+"What a kind of request is, and the list of responsibilities, are part of the"
+" product. You choose who decides; ask your provider if a kind of request or "
+"a responsibility itself is wrong."
+msgstr "Loại yêu cầu và danh sách trách nhiệm là một phần của sản phẩm. Bạn chọn ai quyết định; nếu bản thân một loại yêu cầu hoặc một trách nhiệm bị sai, hãy hỏi nhà cung cấp của bạn."
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "backup"
+msgstr "người dự phòng"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "backup: %s"
+msgstr "người dự phòng: %s"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_import.py:0
+msgid "holder"
+msgstr "người giữ"
+
+#. module: pb_approval_config
+#. odoo-python
+#: code:addons/pb_approval_config/models/matrix_facade.py:0
+msgid "no backup"
+msgstr "không có người dự phòng"

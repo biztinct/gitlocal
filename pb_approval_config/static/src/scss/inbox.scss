@@ -322,3 +322,44 @@
     0%, 100% { opacity: 1; }
     50% { opacity: .55; }
 }
+
+/* ======================================================================
+   UPDATES P6 — THE WAY OUT OF "NOBODY ELSE CAN APPROVE BANK DETAILS"
+
+   Right under the rose "This cannot move." note: one solid button for the
+   place the sentence names, a quiet one beside it for the other place the
+   reader may act, or — for somebody who can do neither — one plain line
+   saying who to ask. Tokens only, so it follows the indigo system.
+   ====================================================================== */
+.pbam-drawer {
+    .pbam-fix {
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+        margin: -4px 0 14px;
+    }
+    .pbam-fix-link {
+        display: inline-flex; align-items: center; gap: 7px;
+        min-height: 34px; padding: 7px 12px; border-radius: 9px;
+        font-size: 12.5px; font-weight: 700; cursor: pointer;
+        color: var(--pbim-primary); background: var(--pbim-soft);
+        border: 1px solid transparent;
+        transition: background .15s ease, border-color .15s ease,
+                    transform .15s ease;
+        svg:last-child { opacity: .7; transition: transform .15s ease; }
+        &:hover {
+            border-color: var(--pbim-primary);
+            svg:last-child { transform: translateX(2px); }
+        }
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary); outline-offset: 2px;
+        }
+        &.pbam-fix-pri {
+            color: #fff; background: var(--pbim-primary);
+            &:hover { background: var(--pbim-primary-hover); }
+        }
+    }
+    .pbam-fix-ask {
+        display: flex; gap: 8px; align-items: flex-start;
+        padding: 10px 12px; border-radius: 9px; font-size: 12.5px;
+        background: var(--pbim-line-2); color: var(--pbim-text);
+    }
+}

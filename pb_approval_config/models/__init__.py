@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import seed
+# UPDATES P6 - a client's admin sets approvals up: the rails.
+from . import setup_rails
 from . import matrix_facade
 from . import inbox_facade
 # Approval Matrix P7 — read the matrix the business already wrote down.

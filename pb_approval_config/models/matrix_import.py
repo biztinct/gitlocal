@@ -39,6 +39,8 @@ import re
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from . import setup_rails as R
+
 _logger = logging.getLogger(__name__)
 
 #: The sheet this reads. Compared case-insensitively, with spaces squeezed.
@@ -533,6 +535,8 @@ class PbApprovalMatrixImport(models.AbstractModel):
             or self.env.company
         if not company.exists():
             company = self.env.company
+        # UPDATES P6 — the same company rule as every other set-up call.
+        company = self.env['pb.approval.matrix']._company(company.id)
         rows = self._rows_from_workbook(content)
         made, unresolved = [], []
         for row in rows:
@@ -562,6 +566,12 @@ class PbApprovalMatrixImport(models.AbstractModel):
         Process = self.env['biz.approval.process']
         process = Process._by_key(plan['process_key']) \
             or Process._by_key('generic')
+        if process and not R.is_platform_person(self.env) \
+                and process.key in R.PLATFORM_HELD_PROCESSES:
+            # UPDATES P6 — the platform's own row is not made from a
+            # client's spreadsheet.
+            return dict(plan, workflow_id=0, version_id=0,
+                        warnings=plan['warnings'] + [R.platform_refusal()])
         if not process:
             return dict(plan, workflow_id=0, version_id=0,
                         warnings=plan['warnings'] + [_(
@@ -657,6 +667,7 @@ class PbApprovalMatrixImport(models.AbstractModel):
         self._require_config()
         company = self.env['res.company'].browse(int(company_id or 0)) \
             or self.env.company
+        company = self.env['pb.approval.matrix']._company(company.id)
         rows = self.env['pb.approval.proposed.person'].sudo().search([
             ('company_id', '=', company.id), ('state', '=', 'proposed')])
         return rows.payload()
@@ -676,6 +687,17 @@ class PbApprovalMatrixImport(models.AbstractModel):
             [('key', '=', row.role_key)], limit=1)
         if not role:
             raise UserError(_("That responsibility is no longer in the list."))
+        # UPDATES P6 — the rails of People & backups, here too: the row's
+        # company is one of the caller's, the person works there with a staff
+        # login, and neither the platform's seat nor its support login.
+        self.env['pb.approval.matrix']._company(row.company_id.id)
+        R.check_role(self.env, role)
+        R.check_people(self.env, [user.id])
+        if user.sudo().share or not user.sudo().active \
+                or row.company_id.id not in user.sudo().company_ids.ids:
+            raise UserError(_("%s cannot hold a responsibility here: they "
+                              "need an active staff login in this company.",
+                              user.sudo().name))
         Responsibility = self.env['biz.approval.responsibility'].sudo()
         held = Responsibility.with_context(active_test=False).search([
             ('company_id', '=', row.company_id.id),
@@ -697,6 +719,17 @@ class PbApprovalMatrixImport(models.AbstractModel):
                           row.name_text),
             })
         row.write({'user_id': user.id, 'state': 'resolved'})
+        self.env['biz.approval.event']._log(
+            'responsibility_changed',
+            _("%(who)s made %(name)s the %(role)s for %(where)s "
+              "(%(kind)s, from the spreadsheet)",
+              who=self.env.user.name, name=user.sudo().name,
+              role=role.name, where=row.company_id.name,
+              kind=_('backup') if row.kind == 'backup' else _('holder')),
+            company=row.company_id,
+            payload={'role_key': role.key, 'scope_key': '',
+                     'proposed_id': row.id, 'kind': row.kind,
+                     'user_id': user.id})
         return row.payload()[0]
 
     @api.model
