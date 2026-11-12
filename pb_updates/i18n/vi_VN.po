@@ -5486,3 +5486,1510 @@ msgstr "người này"
 #: code:addons/pb_updates/models/updates_joiners.py:0
 msgid "working hours"
 msgstr "giờ làm việc"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"\"Carried from last year\" and \"already taken this year\" are kept on "
+"record with the balance for people on an absence policy. They do not add to "
+"or take from the days available."
+msgstr ""
+"\"Chuyển từ năm trước\" và \"đã nghỉ trong năm nay\" được lưu cùng số dư cho"
+" người áp dụng chính sách nghỉ phép. Chúng không cộng thêm hay trừ bớt số "
+"ngày còn lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(balances)s for %(people)s"
+msgstr "%(balances)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "%(carried)s carried, %(taken)s taken"
+msgstr "%(carried)s chuyển sang, %(taken)s đã nghỉ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(n)s could not be set, for example %(first)s"
+msgstr "%(n)s số dư không thể đặt, ví dụ %(first)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%(n)s stay. %(first)s"
+msgstr "%(n)s số dư được giữ lại. %(first)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(people)s · %(balances)s · %(total)s in total"
+msgstr "%(people)s · %(balances)s · tổng cộng %(total)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%(plain)s can be undone later from Past updates, unless leave has been taken"
+" or asked for against them. %(policy)s for people on an absence policy are "
+"permanent once set."
+msgstr ""
+"%(plain)s có thể hoàn tác sau tại Lịch sử cập nhật, trừ khi đã có ngày nghỉ "
+"được dùng hoặc xin trên số dư đó. %(policy)s của người áp dụng chính sách "
+"nghỉ phép là cố định sau khi đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%(product)s leave opening balances %(date)s.xlsx"
+msgstr "%(product)s số dư phép đầu kỳ %(date)s.xlsx"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(type)s belongs to an absence policy, and %(who)s is not on it. Put %(who)s"
+" on the policy first."
+msgstr ""
+"%(type)s thuộc một chính sách nghỉ phép, và %(who)s không áp dụng chính sách"
+" đó. Hãy đưa %(who)s vào chính sách trước."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%(type)s is for employees in another country."
+msgstr "%(type)s dành cho nhân viên ở quốc gia khác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%(type)s is not offered in %(company)s, where %(who)s works."
+msgstr "%(type)s không áp dụng tại %(company)s, nơi %(who)s làm việc."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(type)s is taken in half days, so this must be a whole or half number, like"
+" 12.5."
+msgstr ""
+"%(type)s được nghỉ theo nửa ngày, nên số này phải là số nguyên hoặc nửa, ví "
+"dụ 12.5."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(type)s is taken in whole days, so this must be a whole number of days, "
+"like 12."
+msgstr ""
+"%(type)s được nghỉ theo ngày trọn, nên số này phải là số ngày nguyên, ví dụ "
+"12."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "%(type)s · as at %(date)s"
+msgstr "%(type)s · tính đến %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%(what)s for %(people)s are waiting with %(who)s. Nothing is set until they "
+"approve."
+msgstr ""
+"%(what)s cho %(people)s đang chờ %(who)s. Chưa có gì được đặt cho đến khi họ"
+" phê duyệt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s already has %(type)s days from %(date)s; an opening balance cannot "
+"be added on top."
+msgstr ""
+"%(who)s đã có ngày %(type)s từ %(date)s; không thể thêm số dư đầu kỳ chồng "
+"lên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"%(who)s already has an opening balance for %(type)s. Nothing was added on "
+"top."
+msgstr "%(who)s đã có số dư đầu kỳ cho %(type)s. Không thêm gì chồng lên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s already has an opening balance of %(have)s for %(type)s, set through"
+" the absence policy on %(date)s. It cannot be replaced."
+msgstr ""
+"%(who)s đã có số dư đầu kỳ %(have)s cho %(type)s, được đặt qua chính sách "
+"nghỉ phép ngày %(date)s. Không thể thay thế."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s already has an opening balance of %(have)s for %(type)s. Undo that "
+"update first."
+msgstr ""
+"%(who)s đã có số dư đầu kỳ %(have)s cho %(type)s. Hãy hoàn tác cập nhật đó "
+"trước."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s already has this opening balance for %(type)s. Nothing was added on "
+"top."
+msgstr "%(who)s đã có số dư đầu kỳ này cho %(type)s. Không thêm gì chồng lên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"%(who)s has already taken or asked for %(qty)s of %(type)s against this "
+"balance, so it stays."
+msgstr ""
+"%(who)s đã nghỉ hoặc xin nghỉ %(qty)s %(type)s trên số dư này, nên số dư "
+"được giữ lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s is on an absence policy: only its annual leave opening balance can "
+"be set here."
+msgstr ""
+"%(who)s áp dụng chính sách nghỉ phép: tại đây chỉ đặt được số dư đầu kỳ của "
+"phép năm."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s was put on an absence policy, or taken off one, after this was sent."
+" Send the balance again."
+msgstr ""
+"%(who)s đã được đưa vào hoặc bỏ khỏi chính sách nghỉ phép sau khi gửi. Hãy "
+"gửi lại số dư."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%(who)s's %(type)s balance could not be taken off: %(error)s"
+msgstr "Không thể gỡ số dư %(type)s của %(who)s: %(error)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s's %(type)s balance is already waiting for approval in “%(batch)s”."
+msgstr "Số dư %(type)s của %(who)s đang chờ phê duyệt trong “%(batch)s”."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"%(who)s's %(type)s balance was set through the absence policy, which keeps "
+"it permanently. It cannot be undone here."
+msgstr ""
+"Số dư %(type)s của %(who)s được đặt qua chính sách nghỉ phép, nên được giữ "
+"cố định. Không thể hoàn tác tại đây."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s's absence policy does not cover %(date)s. Pick a \"balances as at\" "
+"date from %(start)s."
+msgstr ""
+"Chính sách nghỉ phép của %(who)s không áp dụng cho ngày %(date)s. Hãy chọn "
+"ngày \"số dư tính đến\" từ %(start)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "%(who)s's absence policy no longer covers %(date)s."
+msgstr "Chính sách nghỉ phép của %(who)s không còn áp dụng cho ngày %(date)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s's full-time eligibility for the absence policy has not been "
+"confirmed yet, so it cannot take an opening balance."
+msgstr ""
+"Điều kiện làm toàn thời gian của %(who)s theo chính sách nghỉ phép chưa được"
+" xác nhận, nên chưa thể đặt số dư đầu kỳ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s's opening balance for %(type)s is already set, with %(have)s here. "
+"It cannot be changed."
+msgstr ""
+"Số dư đầu kỳ %(type)s của %(who)s đã được đặt, với %(have)s ở đây. Không thể"
+" thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s are waiting for approval. Nothing is set until it is approved."
+msgstr "%s đang chờ phê duyệt. Chưa có gì được đặt cho đến khi được duyệt."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s balances"
+msgstr "%s số dư"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s balances cancelled before they were set."
+msgstr "Đã hủy %s số dư trước khi được đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "%s balances could not be set."
+msgstr "%s số dư không thể đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s balances set"
+msgstr "Đã đặt %s số dư"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s balances set through the absence policy are permanent and stay."
+msgstr "%s số dư đặt qua chính sách nghỉ phép là cố định và được giữ lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s balances today"
+msgstr "hiện có %s số dư"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s balances were taken off again."
+msgstr "Đã gỡ lại %s số dư."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s balances were taken off."
+msgstr "Đã gỡ %s số dư."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s could not be set"
+msgstr "%s không thể đặt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s could not be set."
+msgstr "%s không thể đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s hours"
+msgstr "%s giờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s in total"
+msgstr "tổng cộng %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"%s no longer has the Time Off administrator role, so no balance was set. Ask"
+" somebody who has it to send the sheet again."
+msgstr ""
+"%s không còn vai trò quản trị Nghỉ phép, nên không số dư nào được đặt. Hãy "
+"nhờ người có vai trò này gửi lại bảng tính."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s opening balances"
+msgstr "%s số dư đầu kỳ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"%s people are on an absence policy: their annual leave balance is set "
+"through the policy, can carry “carried from last year” and “already taken "
+"this year” with it, and is permanent once set."
+msgstr ""
+"%s người áp dụng chính sách nghỉ phép: số dư phép năm của họ được đặt qua "
+"chính sách, có thể kèm “chuyển từ năm trước” và “đã nghỉ trong năm nay”, và "
+"cố định sau khi đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%s people on an absence policy"
+msgstr "%s người áp dụng chính sách nghỉ phép"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s were set through the absence policy and are permanent."
+msgstr "%s số dư được đặt qua chính sách nghỉ phép và là cố định."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s · already taken this year"
+msgstr "%s · đã nghỉ trong năm nay"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s · carried from last year"
+msgstr "%s · chuyển từ năm trước"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s · days available"
+msgstr "%s · số ngày còn lại"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "%s · hours available"
+msgstr "%s · số giờ còn lại"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "'%(text)s' is not a number of %(unit)s. Type a number, like 12."
+msgstr "'%(text)s' không phải số %(unit)s. Hãy nhập một số, ví dụ 12."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 balance"
+msgstr "1 số dư"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "1 balance cancelled before it was set."
+msgstr "Đã hủy 1 số dư trước khi được đặt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "1 balance could not be set."
+msgstr "1 số dư không thể đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 balance set"
+msgstr "Đã đặt 1 số dư"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "1 balance set through the absence policy is permanent and stays."
+msgstr "1 số dư đặt qua chính sách nghỉ phép là cố định và được giữ lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 balance today"
+msgstr "hiện có 1 số dư"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 balance was taken off again."
+msgstr "Đã gỡ lại 1 số dư."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "1 balance was taken off."
+msgstr "Đã gỡ 1 số dư."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 could not be set"
+msgstr "1 không thể đặt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 could not be set."
+msgstr "1 không thể đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 could not be set: %s"
+msgstr "1 không thể đặt: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 hour"
+msgstr "1 giờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 opening balance"
+msgstr "1 số dư đầu kỳ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"1 person is on an absence policy: their annual leave balance is set through "
+"the policy, can carry “carried from last year” and “already taken this year”"
+" with it, and is permanent once set."
+msgstr ""
+"1 người áp dụng chính sách nghỉ phép: số dư phép năm được đặt qua chính "
+"sách, có thể kèm “chuyển từ năm trước” và “đã nghỉ trong năm nay”, và cố "
+"định sau khi đặt."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "1 person on an absence policy"
+msgstr "1 người áp dụng chính sách nghỉ phép"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "1 stays: %s"
+msgstr "1 số dư được giữ lại: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 was set through the absence policy and is permanent."
+msgstr "1 số dư được đặt qua chính sách nghỉ phép và là cố định."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"A balance can be set only once per person and leave type. Shaded cells with "
+"a number are already set: send them back as they are, or the change is "
+"refused. To correct one, undo the update that set it, then send it again."
+msgstr ""
+"Mỗi người và mỗi loại phép chỉ đặt số dư một lần. Ô tô màu có số là đã được "
+"đặt: hãy giữ nguyên khi gửi lại, nếu không thay đổi sẽ bị từ chối. Muốn sửa,"
+" hãy hoàn tác cập nhật đã đặt nó rồi gửi lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "A balance cannot be negative."
+msgstr "Số dư không thể âm."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "A balance of 0 sets nothing. Leave the cell blank."
+msgstr "Số dư 0 không đặt gì cả. Hãy để trống ô."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"A blank cell changes nothing. Type days (or hours, where the heading says "
+"hours). A leave type taken in whole days takes whole numbers; one taken in "
+"half days takes halves, like 12.5."
+msgstr ""
+"Ô trống không thay đổi gì. Nhập số ngày (hoặc số giờ, nếu tiêu đề ghi giờ). "
+"Loại phép nghỉ theo ngày trọn nhận số nguyên; loại nghỉ theo nửa ngày nhận "
+"số nửa, ví dụ 12.5."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"A blank cell changes nothing. Type days, or hours where the leave type is "
+"counted in hours. A balance can be set once per person and leave type."
+msgstr ""
+"Ô trống không thay đổi gì. Nhập số ngày, hoặc số giờ nếu loại phép tính theo"
+" giờ. Mỗi người và mỗi loại phép chỉ đặt số dư một lần."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"A leave balance cannot be cleared from a sheet. To take one back, undo the "
+"update that set it."
+msgstr ""
+"Không thể xóa số dư phép từ bảng tính. Muốn gỡ, hãy hoàn tác cập nhật đã đặt"
+" nó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__way__policy
+msgid "Absence policy"
+msgstr "Chính sách nghỉ phép"
+
+#. module: pb_updates
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__way__allocation
+msgid "Allocation"
+msgstr "Phân bổ"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__allocation_id
+msgid "Allocation made"
+msgstr "Phân bổ đã tạo"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__taken
+msgid "Already taken this year"
+msgstr "Đã nghỉ trong năm nay"
+
+#. module: pb_updates
+#: model:ir.model.constraint,message:pb_updates.constraint_pb_updates_leave_line_available_positive
+msgid "An opening balance must be more than zero."
+msgstr "Số dư đầu kỳ phải lớn hơn 0."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "As at %s"
+msgstr "Tính đến %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Attendance and timesheets"
+msgstr "Chấm công và bảng giờ"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__available
+msgid "Available"
+msgstr "Còn lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__leave_date
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__cutover_date
+msgid "Balances as at"
+msgstr "Số dư tính đến"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Balances as at %s"
+msgstr "Số dư tính đến %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Balances can be as at today or an earlier date, not a future one."
+msgstr ""
+"Số dư có thể tính đến hôm nay hoặc một ngày trước đó, không phải ngày trong "
+"tương lai."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Balances, and what is kept with them."
+msgstr "Các số dư, và những gì được lưu kèm."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Cancelling an update needs permission to change employee records."
+msgstr "Hủy một cập nhật cần quyền thay đổi hồ sơ nhân viên."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Carried and taken days are kept with a new balance only, and this row has "
+"none."
+msgstr ""
+"Ngày chuyển sang và ngày đã nghỉ chỉ được lưu kèm một số dư mới, và dòng này"
+" không có."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Carried and taken days are kept with a new balance only."
+msgstr "Ngày chuyển sang và ngày đã nghỉ chỉ được lưu kèm một số dư mới."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Carried and taken days are only kept for people on an absence policy. %s is "
+"not on one, so this is left out."
+msgstr ""
+"Ngày chuyển sang và ngày đã nghỉ chỉ được lưu cho người áp dụng chính sách "
+"nghỉ phép. %s không áp dụng, nên ô này được bỏ qua."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__carried
+msgid "Carried from last year"
+msgstr "Chuyển từ năm trước"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Change job details, contracts, bank details and ongoing pay items for the "
+"whole team from one spreadsheet, any day of the month, add one-off pay items"
+" like a bonus to a pay month, and set leave opening balances. You see every "
+"change before it happens."
+msgstr ""
+"Thay đổi thông tin công việc, hợp đồng, tài khoản ngân hàng và các khoản "
+"lương định kỳ cho cả đội từ một bảng tính, vào bất kỳ ngày nào trong tháng, "
+"thêm khoản lương một lần như thưởng vào một tháng lương, và đặt số dư phép "
+"đầu kỳ. Bạn xem trước mọi thay đổi trước khi áp dụng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__state__refused
+msgid "Could not be set"
+msgstr "Không thể đặt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Could not be set: %s"
+msgstr "Không thể đặt: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__unit__day
+msgid "Days"
+msgstr "Ngày"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Days available"
+msgstr "Số ngày còn lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Each balance is what the person can still take from that day. Leave already "
+"taken or asked for is not touched."
+msgstr ""
+"Mỗi số dư là số ngày người đó còn được nghỉ từ ngày đó. Các ngày đã nghỉ "
+"hoặc đã xin không bị thay đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Each balance this update set is taken off again, unless leave has been taken"
+" or asked for against it: that one stays."
+msgstr ""
+"Mỗi số dư cập nhật này đã đặt sẽ được gỡ lại, trừ khi đã có ngày nghỉ được "
+"dùng hoặc xin trên số dư đó: số dư đó được giữ lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Each balance this update set is taken off again, unless leave has been taken"
+" or asked for against it: that one stays. Balances set through an absence "
+"policy are permanent and stay too."
+msgstr ""
+"Mỗi số dư cập nhật này đã đặt sẽ được gỡ lại, trừ khi đã có ngày nghỉ được "
+"dùng hoặc xin trên số dư đó: số dư đó được giữ lại. Số dư đặt qua chính sách"
+" nghỉ phép là cố định và cũng được giữ lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Each number is how much of that leave the person still has available on %s. "
+"It becomes their balance from that day."
+msgstr ""
+"Mỗi số là số phép người đó còn lại vào ngày %s. Đó sẽ là số dư của họ từ "
+"ngày đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Each number is what the person still has available on %s. It becomes their "
+"balance from that day."
+msgstr ""
+"Mỗi số là số phép người đó còn lại vào ngày %s. Đó sẽ là số dư của họ từ "
+"ngày đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Fill in %s as well: carried and taken days are kept with a new balance."
+msgstr ""
+"Hãy điền cả %s: ngày chuyển sang và ngày đã nghỉ được lưu kèm một số dư mới."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"For people on an absence policy a balance is permanent once it is set: it "
+"cannot be undone from Updates."
+msgstr ""
+"Với người áp dụng chính sách nghỉ phép, số dư là cố định sau khi đặt: không "
+"thể hoàn tác từ Cập nhật."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Grey empty cells are leave types that person cannot have. Anything typed "
+"there is left out."
+msgstr ""
+"Ô xám trống là loại phép người đó không được hưởng. Mọi giá trị nhập vào đó "
+"sẽ bị bỏ qua."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__unit__half_day
+msgid "Half days"
+msgstr "Nửa ngày"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__unit__hour
+msgid "Hours"
+msgstr "Giờ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"How much leave each person still has on a date, for many people at once. Set"
+" once per person and leave type."
+msgstr ""
+"Số phép mỗi người còn lại vào một ngày, cho nhiều người cùng lúc. Mỗi người "
+"và mỗi loại phép đặt một lần."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"How much leave each person still has on a date. Set once per person and "
+"leave type."
+msgstr ""
+"Số phép mỗi người còn lại vào một ngày. Mỗi người và mỗi loại phép đặt một "
+"lần."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "In total"
+msgstr "Tổng cộng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"It could not be set. Nothing was changed for this person and leave type."
+msgstr "Không thể đặt. Không có thay đổi nào cho người này và loại phép này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "It could not be set: %s"
+msgstr "Không thể đặt: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "It had already been taken off on the Time Off screen."
+msgstr "Số dư đã được gỡ trên màn hình Nghỉ phép trước đó."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Kept with the balance"
+msgstr "Lưu kèm số dư"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Leave balance"
+msgstr "Số dư phép"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Leave balances as at %s"
+msgstr "Số dư phép tính đến %s"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_pb_updates_leave_line
+msgid "Leave opening balance from Updates"
+msgstr "Số dư phép đầu kỳ từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__leave_line_ids
+#: model:ir.model.fields,field_description:pb_updates.field_pb_records_apply__updates_leave
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__leave_line_ids
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_batch__kind__leave
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_layout__kind__leave
+msgid "Leave opening balances"
+msgstr "Số dư phép đầu kỳ"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Leave opening balances as at %(date)s · %(balances)s for %(people)s"
+msgstr "Số dư phép đầu kỳ tính đến %(date)s · %(balances)s cho %(people)s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Leave opening balances as at %(date)s · %(n)s"
+msgstr "Số dư phép đầu kỳ tính đến %(date)s · %(n)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Leave opening balances as at %s"
+msgstr "Số dư phép đầu kỳ tính đến %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Leave opening balances as at %s."
+msgstr "Số dư phép đầu kỳ tính đến %s."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__leave_type_id
+msgid "Leave type"
+msgstr "Loại phép"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__type_name
+msgid "Leave type name"
+msgstr "Tên loại phép"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Leave types"
+msgstr "Các loại phép"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Loaded on the Attendance screen, with its own checks."
+msgstr "Được tải trên màn hình Chấm công, với các bước kiểm tra riêng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"No leave type keeps a balance here yet. Set one up on the Time Off screen "
+"first."
+msgstr ""
+"Chưa có loại phép nào lưu số dư ở đây. Hãy thiết lập một loại trên màn hình "
+"Nghỉ phép trước."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No leave type keeps a balance yet"
+msgstr "Chưa có loại phép nào lưu số dư"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "No leave type keeps a balance yet."
+msgstr "Chưa có loại phép nào lưu số dư."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"None of the leave types you picked keeps a balance for these people. Pick "
+"another leave type."
+msgstr ""
+"Không loại phép nào bạn chọn có số dư cho những người này. Hãy chọn loại "
+"phép khác."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Not used for this person"
+msgstr "Không dùng cho người này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Nothing in this update is waiting for approval, so there is nothing to "
+"cancel."
+msgstr ""
+"Không có gì trong cập nhật này đang chờ phê duyệt, nên không có gì để hủy."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Nothing was sent: every balance in this file is already set, or could not be"
+" used."
+msgstr ""
+"Không gửi gì: mọi số dư trong tệp này đã được đặt, hoặc không thể sử dụng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"One row per person and a column for each leave type picked. A balance "
+"already set is filled in and shaded. Leave a cell blank and nothing changes "
+"for it."
+msgstr ""
+"Mỗi người một dòng và mỗi loại phép đã chọn một cột. Số dư đã đặt được điền "
+"sẵn và tô màu. Để trống ô thì không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Opening balance as at %(date)s, set from %(ref)s."
+msgstr "Số dư đầu kỳ tính đến %(date)s, được đặt từ %(ref)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Opening balance as at %s"
+msgstr "Số dư đầu kỳ tính đến %s"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_hr_leave_allocation__pb_updates_leave_line_id
+msgid "Opening balance from Updates"
+msgstr "Số dư đầu kỳ từ Cập nhật"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Partly undone"
+msgstr "Đã hoàn tác một phần"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Pick a date within the last year."
+msgstr "Hãy chọn một ngày trong vòng một năm qua."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Pick a date within the last year. %s is too far back."
+msgstr "Hãy chọn một ngày trong vòng một năm qua. %s quá xa."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Pick at least one column that goes to a leave balance."
+msgstr "Hãy chọn ít nhất một cột dẫn đến một số dư phép."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Pick at least one leave type above."
+msgstr "Hãy chọn ít nhất một loại phép ở trên."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Pick the date these balances are as at."
+msgstr "Hãy chọn ngày mà các số dư này được tính đến."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__posting_ref
+msgid "Policy posting"
+msgstr "Bút toán chính sách"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Saved as “%s”. Each balance is on the Time Off screen now, and the update is"
+" under Past updates with the original file."
+msgstr ""
+"Đã lưu thành “%s”. Mỗi số dư đã có trên màn hình Nghỉ phép, và cập nhật nằm "
+"trong Lịch sử cập nhật cùng tệp gốc."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s balances for approval"
+msgstr "Gửi %s số dư để phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 balance for approval"
+msgstr "Gửi 1 số dư để phê duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending %s balances…"
+msgstr "Đang gửi %s số dư…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Sending 1 balance…"
+msgstr "Đang gửi 1 số dư…"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Sent in again."
+msgstr "Đã gửi lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+#: model:ir.model.fields.selection,name:pb_updates.selection__pb_updates_leave_line__state__set
+msgid "Set"
+msgstr "Đã đặt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Set %s balances"
+msgstr "Đặt %s số dư"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Set 1 balance"
+msgstr "Đặt 1 số dư"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Set now: your company needs no approval for these."
+msgstr "Đặt ngay: công ty bạn không cần phê duyệt cho các số dư này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Set, %s could not be set"
+msgstr "Đã đặt, %s không thể đặt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Set: %(balance)s of %(type)s as at %(date)s."
+msgstr "Đã đặt: %(balance)s %(type)s tính đến %(date)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Setting leave balances needs the Time Off administrator role. You can still "
+"check a sheet and see what it would set."
+msgstr ""
+"Đặt số dư phép cần vai trò quản trị Nghỉ phép. Bạn vẫn có thể kiểm tra bảng "
+"tính và xem nó sẽ đặt những gì."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Setting them needs the Time Off administrator role"
+msgstr "Cần vai trò quản trị Nghỉ phép để đặt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Something changed since this was sent."
+msgstr "Đã có thay đổi kể từ khi gửi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "That is more than a year of leave (365 days). Check the number."
+msgstr "Con số này nhiều hơn một năm nghỉ phép (365 ngày). Hãy kiểm tra lại."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"The absence policy is no longer installed, so this balance cannot be set "
+"through it."
+msgstr ""
+"Chính sách nghỉ phép không còn được cài đặt, nên không thể đặt số dư này qua"
+" chính sách."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"The absence policy keeps balances in days, and %(type)s is counted in hours."
+msgstr ""
+"Chính sách nghỉ phép lưu số dư theo ngày, còn %(type)s được tính theo giờ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"The allocation for %(type)s needs a second approval in Time Off, so it was "
+"not set from the sheet. Set it on the Time Off screen."
+msgstr ""
+"Phân bổ cho %(type)s cần phê duyệt lần hai trong Nghỉ phép, nên không được "
+"đặt từ bảng tính. Hãy đặt trên màn hình Nghỉ phép."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"The approval request is withdrawn and the balances in it are never set. "
+"Nothing has been changed, so nothing needs putting back."
+msgstr ""
+"Yêu cầu phê duyệt được rút lại và các số dư trong đó sẽ không bao giờ được "
+"đặt. Chưa có gì thay đổi, nên không cần khôi phục."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"The sheet has a column for each one picked. Only leave types that keep a "
+"balance, for people who can have them."
+msgstr ""
+"Bảng tính có một cột cho mỗi loại được chọn. Chỉ các loại phép có lưu số dư,"
+" cho những người được hưởng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "The update could not be withdrawn. Nothing has changed."
+msgstr "Không thể rút lại cập nhật. Không có gì thay đổi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"There is nothing to send: no balance in this file would change anything."
+msgstr "Không có gì để gửi: không số dư nào trong tệp này thay đổi điều gì."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"These people are on an absence policy, which keeps an opening balance "
+"permanently. Once set, these balances cannot be undone from Updates."
+msgstr ""
+"Những người này áp dụng chính sách nghỉ phép, chính sách lưu số dư đầu kỳ cố"
+" định. Sau khi đặt, không thể hoàn tác các số dư này từ Cập nhật."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "This balance is not set, so there is nothing to undo."
+msgstr "Số dư này chưa được đặt, nên không có gì để hoàn tác."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "This leave type does not keep a balance, or is not offered in %s."
+msgstr "Loại phép này không lưu số dư, hoặc không áp dụng tại %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "This person could not be found any more."
+msgstr "Không còn tìm thấy người này."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "This person is no longer on record."
+msgstr "Người này không còn trong hồ sơ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This sheet sets %(balances)s for %(people)s, as at %(date)s."
+msgstr "Bảng tính này đặt %(balances)s cho %(people)s, tính đến %(date)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"This sheet was made for balances as at %(sheet)s, so it is used for "
+"%(sheet)s, not %(picked)s."
+msgstr ""
+"Bảng tính này được tạo cho số dư tính đến %(sheet)s, nên được dùng cho "
+"%(sheet)s, không phải %(picked)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Through the absence policy"
+msgstr "Qua chính sách nghỉ phép"
+
+#. module: pb_updates
+#: model:ir.model,name:pb_updates.model_hr_leave_allocation
+msgid "Time Off Allocation"
+msgstr "Phân bổ nghỉ phép"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"Under %(who)s's absence policy at most %(cap)s days can be carried from last"
+" year."
+msgstr ""
+"Theo chính sách nghỉ phép của %(who)s, tối đa %(cap)s ngày được chuyển từ "
+"năm trước."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Undo refused: %s"
+msgstr "Không thể hoàn tác: %s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Undo the balances"
+msgstr "Hoàn tác các số dư"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Undo these balances"
+msgstr "Hoàn tác các số dư này"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Undoing leave balances needs the Time Off administrator role."
+msgstr "Hoàn tác số dư phép cần vai trò quản trị Nghỉ phép."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__undone_at
+msgid "Undone at"
+msgstr "Hoàn tác lúc"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__undone_by_id
+msgid "Undone by"
+msgstr "Hoàn tác bởi"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Undone: it had already been taken off on the Time Off screen."
+msgstr "Đã hoàn tác: số dư đã được gỡ trên màn hình Nghỉ phép trước đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Undone: the balance was taken off."
+msgstr "Đã hoàn tác: số dư đã được gỡ."
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__unit
+msgid "Unit"
+msgstr "Đơn vị"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid "Updates: “%(name)s” (%(ref)s)"
+msgstr "Cập nhật: “%(name)s” (%(ref)s)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "Use hours with at most two decimals, like 7.5."
+msgstr "Hãy nhập số giờ với tối đa hai chữ số thập phân, ví dụ 7.5."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "What undo can do."
+msgstr "Hoàn tác làm được gì."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Which leave types?"
+msgstr "Những loại phép nào?"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Whole days"
+msgstr "Ngày trọn"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__reason
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Withdraw it"
+msgstr "Rút lại"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Withdraw “%s”?"
+msgstr "Rút lại “%s”?"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Working out who approves these…"
+msgstr "Đang xác định người phê duyệt…"
+
+#. module: pb_updates
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_leave_line__way
+msgid "Written through"
+msgstr "Ghi qua"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"You can check a sheet; setting balances needs the Time Off administrator "
+"role."
+msgstr ""
+"Bạn có thể kiểm tra bảng tính; đặt số dư cần vai trò quản trị Nghỉ phép."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"You can look through these balances, but setting them needs the Time Off "
+"administrator role."
+msgstr ""
+"Bạn có thể xem các số dư này, nhưng đặt chúng cần vai trò quản trị Nghỉ "
+"phép."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"You can undo this from Past updates: each balance is taken off again, unless"
+" leave has been taken or asked for against it. That one stays."
+msgstr ""
+"Bạn có thể hoàn tác từ Lịch sử cập nhật: mỗi số dư sẽ được gỡ lại, trừ khi "
+"đã có ngày nghỉ được dùng hoặc xin trên số dư đó. Số dư đó được giữ lại."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "as at %s"
+msgstr "tính đến %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "hours"
+msgstr "giờ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid "this company"
+msgstr "công ty này"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "“%(name)s”: %(msg)s"
+msgstr "“%(name)s”: %(msg)s"

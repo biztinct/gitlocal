@@ -35,6 +35,8 @@ const LOCAL_GLYPHS = {
     // UPDATES P3a — the personal-details lane (Lucide `user-round`).
     userRound: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
     eraser: '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
+    // UPDATES P4 — leave opening balances (Lucide `calendar-range`).
+    calendarRange: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 2v4"/><path d="M17 14h-6"/><path d="M13 18H7"/><path d="M7 14h.01"/><path d="M17 18h.01"/>',
 };
 /** One markup object per icon and size, reused on every render (OWL t-out
  *  re-inserts a NEW markup every redraw — memory: owl-markup-flicker). */
@@ -382,6 +384,41 @@ export function oneoffTotals(rv) {
     return out;
 }
 
+// ---------------------------------------------------------------------------
+//  UPDATES P4 — leave opening balances: totals and quantities
+// ---------------------------------------------------------------------------
+/** "12.5 days", "1 day", "7.5 hours" — the server's own words. */
+export function qtyLabel(n, unit = "day") {
+    const value = Math.round(Number(n || 0) * 100) / 100;
+    const text = value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    if (unit === "hour") { return value === 1 ? _t("1 hour") : _t("%s hours", text); }
+    return value === 1 ? _t("1 day") : _t("%s days", text);
+}
+
+/**
+ * Over the balances Apply would send: `{byCol, days, hours, balances,
+ * people, policy, plain}`. Only "days available" cells are balances;
+ * "carried" and "taken" are kept with them.
+ */
+export function leaveTotals(rv) {
+    const out = { byCol: {}, days: 0, hours: 0, balances: 0, people: 0, policy: 0, plain: 0 };
+    const units = Object.fromEntries((rv.columns || []).map((c) => [c.field_id, c.unit]));
+    const people = new Set();
+    for (const row of rv.rows || []) {
+        for (const [fid, cell] of Object.entries(row.cells || {})) {
+            if (cellKind(cell) !== "change" || !fid.endsWith(":avail")) { continue; }
+            const n = Number(cell.amount || 0);
+            out.byCol[fid] = (out.byCol[fid] || 0) + n;
+            if ((cell.unit || units[fid]) === "hour") { out.hours += n; } else { out.days += n; }
+            out.balances += 1;
+            people.add(row.emp_id);
+            if (row.policy) { out.policy += 1; } else { out.plain += 1; }
+        }
+    }
+    out.people = people.size;
+    return out;
+}
+
 /** The changes Apply sends: every cell the desk said yes to, not left out.
  *  A row with its own start date (from the file) sends it with each value;
  *  the rest take the default the person picks on the Apply step. */
@@ -612,7 +649,12 @@ export class UpdReview extends Component {
                                                                : _t("%s things need your attention.", grouped(c.attention)) };
         }
         const base = c.changes
-            ? (this.rv.oneoff
+            ? (this.rv.leave
+                ? _t("This sheet sets %(balances)s for %(people)s, as at %(date)s.", {
+                    balances: plural(this.leaveSums.balances, _t("1 opening balance"), _t("%s opening balances")),
+                    people: plural(this.leaveSums.people, _t("1 person"), _t("%s people")),
+                    date: dayLabel(this.rv.cutover) || this.rv.cutover_label || "" })
+                : this.rv.oneoff
                 ? _t("This sheet sends %(amounts)s for %(people)s, paid in %(month)s.", {
                     amounts: plural(c.changes, _t("1 one-off amount"), _t("%s one-off amounts")),
                     people: plural(c.people, _t("1 person"), _t("%s people")),
@@ -659,7 +701,8 @@ export class UpdReview extends Component {
         ];
         if (this.counts.offScheme) {
             // Counted in VALUES, never red: it is not something to fix.
-            out.push({ key: "off", label: _t("Not in their pay scheme"), count: this.counts.offScheme, quiet: true });
+            out.push({ key: "off", label: this.rv.leave ? _t("Not used for this person") : _t("Not in their pay scheme"),
+                       count: this.counts.offScheme, quiet: true });
         }
         // UPDATES P2c — rows by when they start (rows, not values).
         if (c.later) { out.push({ key: "later", label: _t("Starts later"), count: c.later, when: "later" }); }
@@ -679,6 +722,28 @@ export class UpdReview extends Component {
         return col.role === "deduction" ? _t("Takes from pay") : _t("Adds to pay");
     }
     get paidMonthRows() { return (this.rv.rows || []).filter((r) => r.paid_month).length; }
+
+    // ------------------------------------------------------------- leave (P4)
+    get leaveSums() { return leaveTotals(this.rv); }
+    get leaveStripLine() { return _t("Balances as at %s", dayLabel(this.rv.cutover) || this.rv.cutover_label || ""); }
+    get leaveSummary() {
+        const t = this.leaveSums;
+        const total = [t.days ? qtyLabel(t.days, "day") : "", t.hours ? qtyLabel(t.hours, "hour") : ""]
+            .filter(Boolean).join(" + ") || qtyLabel(0, "day");
+        return _t("%(people)s · %(balances)s · %(total)s in total", {
+            people: plural(t.people, _t("1 person"), _t("%s people")),
+            balances: plural(t.balances, _t("1 balance"), _t("%s balances")), total });
+    }
+    get leavePolicyChip() {
+        const n = this.rv.policy_people || 0;
+        return n ? plural(n, _t("1 person on an absence policy"), _t("%s people on an absence policy")) : "";
+    }
+    leaveColTag(col) {
+        if (col.role !== "avail") { return _t("Kept with the balance"); }
+        const n = this.leaveSums.byCol[col.field_id] || 0;
+        const unit = col.unit === "hour" ? _t("Hours") : _t("Days");
+        return n ? `${unit} · ${qtyLabel(n, col.unit)}` : unit;
+    }
     get stripMonthLine() { return _t("One-off pay for %s", this.rv.month_label || ""); }
     get paidMonthChip() {
         const n = this.paidMonthRows;
@@ -779,7 +844,7 @@ export class UpdReview extends Component {
     // ------------------------------------------------- UPDATES P3b — new employees
     get openUnmatchedCount() { return this.openUnmatched.length; }
     get canAddNew() {
-        return !!(this.props.canHire && this.props.canWrite && this.props.judgeNew && !this.rv.oneoff
+        return !!(this.props.canHire && this.props.canWrite && this.props.judgeNew && !this.rv.oneoff && !this.rv.leave
                   && ((this.rv.unmatched || []).some((u) => !u.bound && !u.skipped) || this.rv.addNew));
     }
     get newChoiceCount() {
@@ -911,7 +976,7 @@ export class UpdReview extends Component {
 
     /** The legend strip: each lane in this file, its count and its rule. */
     get laneStrip() {
-        if (this.rv.oneoff) { return []; }
+        if (this.rv.oneoff || this.rv.leave) { return []; }
         const counts = laneCounts(this.rv);
         const present = new Set((this.rv.columns || []).map((c) => c.lane).filter(Boolean));
         return LANES.filter((l) => present.has(l)).map((lane) => ({

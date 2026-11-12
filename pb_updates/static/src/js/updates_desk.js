@@ -35,7 +35,7 @@ import { PEOPLE_LENSES } from "@pb_people_hub/js/people_hub";
 import { grouped } from "@pb_records/js/records_review";
 import {
     UpdReview, icon, plural, reviewCounts, changesToSend, PAGE_ROWS,
-    dayLabel, rowStart, startBuckets, oneoffTotals, moneyLabel,
+    dayLabel, rowStart, startBuckets, oneoffTotals, moneyLabel, leaveTotals, qtyLabel,
     LANE_ICON, laneLabel,
     SCHEME_TARGET, joinersToSend, bindRow, cellFromItem, newRowFrom, unmatchedPayload,
 } from "@pb_updates/js/updates_review";
@@ -106,17 +106,27 @@ export class PbUpdatesDesk extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.dialog = useService("dialog");
+        this.action = useService("action");
         this.state = useState({
             view: "home",
             loading: true,
             error: "",
             home: { can_write: false, can_export: false, people_count: 0, topics: [], history: [], coming_up: [], today: "",
                     oneoff: { available: false, items: 0, months: [], this_month: "" },
-                    waiting: { months: [], clashes: [], can_choose: false } },
+                    waiting: { months: [], clashes: [], can_choose: false },
+                    // UPDATES P4 — the third kind of sheet, and the attendance tile.
+                    leave: { available: false, may_set: false, types: [], policy_people: 0, today: "", min: "" },
+                    attendance: { available: false } },
             // UPDATES P2d — which kind of sheet: lasting changes, or one-off
             // pay items for one pay month.
             kind: "lasting",
             month: "",
+            // UPDATES P4 — "balances as at", the leave types picked for the
+            // sheet, and who the balances go to on the Apply step.
+            cutover: "",
+            cutoverNote: "",
+            leavePicked: {},
+            leaveOutlook: null,
             monthNote: "",
             openMonth: "",
             choosing: "",
@@ -180,6 +190,13 @@ export class PbUpdatesDesk extends Component {
                 picked[t.key] = t.key !== "bank";
             }
             this.state.picked = picked;
+            // UPDATES P4 — the leave types already in use are picked; with
+            // none in use yet, every one offered.
+            const types = (home.leave && home.leave.types) || [];
+            const inUse = types.filter((t) => t.in_use > 0);
+            const leavePicked = {};
+            for (const t of types) { leavePicked[t.id] = inUse.length ? t.in_use > 0 : true; }
+            this.state.leavePicked = leavePicked;
             await this.loadHistory();
         } catch (e) {
             this.state.error = e.data?.message || e.message?.data?.message || _t("Updates could not be opened.");
@@ -213,7 +230,7 @@ export class PbUpdatesDesk extends Component {
     get canExport() { return !!this.state.home.can_export; }
 
     get heroBody() {
-        return _t("Change job details, contracts, bank details and ongoing pay items for the whole team from one spreadsheet, any day of the month, and add one-off pay items like a bonus to a pay month. You see every change before it happens.");
+        return _t("Change job details, contracts, bank details and ongoing pay items for the whole team from one spreadsheet, any day of the month, add one-off pay items like a bonus to a pay month, and set leave opening balances. You see every change before it happens.");
     }
 
     get noWriteNote() {
@@ -228,6 +245,10 @@ export class PbUpdatesDesk extends Component {
     }
 
     historyIcon(h) {
+        if (h.kind === "leave") {
+            return { pending: "clock", blocked: "alert", cancelled: "ban", undone: "undo",
+                     rejected: "xCircle", returned: "rotate" }[h.state] || "calendarRange";
+        }
         if (h.kind === "oneoff") {
             return { pending: "clock", blocked: "alert", clash: "scale", cancelled: "ban",
                      rejected: "xCircle", returned: "rotate" }[h.state] || "coins";
@@ -345,6 +366,7 @@ export class PbUpdatesDesk extends Component {
 
     cancelBatch(h) {
         if (h.kind === "oneoff") { return this.cancelOneoff(h); }
+        if (h.kind === "leave") { return this.cancelLeave(h); }
         const pending = h.state === "pending";
         const blocked = h.state === "blocked";
         const values = h.open_values || (h.scheduled || []).reduce((n, s) => n + s.values, 0);
@@ -354,12 +376,22 @@ export class PbUpdatesDesk extends Component {
 
     cancelLabel(h) {
         if (h.kind === "oneoff") { return _t("Cancel"); }
+        if (h.kind === "leave") { return _t("Withdraw"); }
         if (h.state === "blocked") { return _t("Cancel it"); }
         return h.state === "pending" ? _t("Withdraw") : _t("Cancel the scheduled part");
     }
 
     historyLine(h) {
         const bits = [whenLabel(h.date)];
+        if (h.kind === "leave") {
+            if (h.cutover) { bits.push(_t("as at %s", dayLabel(h.cutover))); }
+            bits.push(_t("%(balances)s for %(people)s", {
+                balances: plural(h.values, _t("1 balance"), _t("%s balances")),
+                people: plural(h.people, _t("1 person"), _t("%s people")) }));
+            if (h.days_label) { bits.push(h.days_label); }
+            if (h.user) { bits.push(_t("by %s", h.user)); }
+            return bits.filter(Boolean).join(" · ");
+        }
         if (h.kind === "oneoff") {
             if (h.month_label) { bits.push(h.month_label); }
             bits.push(_t("%(amounts)s for %(people)s", {
@@ -389,6 +421,7 @@ export class PbUpdatesDesk extends Component {
         if (h.state === "blocked") {
             return h.state_reason || _t("Approved, but it could not be made.");
         }
+        if (h.kind === "leave") { return this.leaveHistoryNote(h); }
         if (h.kind === "oneoff") {
             const bits = [];
             if (h.state === "pending") {
@@ -473,9 +506,16 @@ export class PbUpdatesDesk extends Component {
     }
 
     draftKind(d) {
+        if (d.kind === "leave") {
+            return _t("Leave balances as at %s", dayLabel(d.cutover) || d.cutover_label);
+        }
         return d.kind === "oneoff"
             ? _t("One-off pay for %s", d.month_label || monthLabel(d.month))
             : _t("Lasting changes");
+    }
+
+    draftIcon(d) {
+        return { oneoff: "coins", leave: "calendarRange" }[d.kind] || "fileSpreadsheet";
     }
 
     draftStep(d) {
@@ -560,12 +600,21 @@ export class PbUpdatesDesk extends Component {
     // =================================================================
     get oneoffInfo() { return this.state.home.oneoff || { available: false, months: [] }; }
     get isOneoff() { return this.state.kind === "oneoff"; }
+    /** UPDATES P4 — the third kind: leave opening balances. */
+    get leaveInfo() { return this.state.home.leave || { available: false, types: [] }; }
+    get isLeave() { return this.state.kind === "leave"; }
+    /** The first kind, the only one with start dates, lanes and new people. */
+    get isLasting() { return this.state.kind === "lasting"; }
 
     setKind(kind) {
         if (kind === "oneoff" && !this.oneoffInfo.available) { return; }
-        this.state.kind = kind === "oneoff" ? "oneoff" : "lasting";
+        if (kind === "leave" && !this.leaveInfo.available) { return; }
+        this.state.kind = ["oneoff", "leave"].includes(kind) ? kind : "lasting";
         if (this.isOneoff && !this.state.month) {
             this.state.month = this.oneoffInfo.this_month || "";
+        }
+        if (this.isLeave && !this.state.cutover) {
+            this.state.cutover = this.leaveInfo.today || luxon.DateTime.now().toISODate();
         }
         Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
         this.state.file.error = "";
@@ -673,6 +722,8 @@ export class PbUpdatesDesk extends Component {
         this.state.draftNotice = [];
         this.state.joinerOutlook = null;
         this.state.monthNote = "";
+        this.state.cutoverNote = "";
+        this.state.leaveOutlook = null;
         Object.assign(this.state.file, { name: "", b64: "", busy: false, rows: 0, phase: "", error: "", over: 0 });
         Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
         this.state.match = null;
@@ -729,6 +780,13 @@ export class PbUpdatesDesk extends Component {
     }
 
     get downloadHint() {
+        if (this.isLeave) {
+            if (!this.canExport) {
+                return _t("Downloading a sheet needs permission to export employee records. You can still upload a file of your own.");
+            }
+            if (!this.pickedLeaveTypes.length) { return _t("Pick at least one leave type above."); }
+            return _t("One row per person and a column for each leave type picked. A balance already set is filled in and shaded. Leave a cell blank and nothing changes for it.");
+        }
         if (this.isOneoff) {
             if (!this.canExport) {
                 return _t("Downloading a sheet needs permission to export employee records. You can still upload a file of your own.");
@@ -750,10 +808,13 @@ export class PbUpdatesDesk extends Component {
 
     async downloadSheet() {
         const d = this.state.download;
-        if (d.busy || !this.canExport || (!this.isOneoff && !this.pickedTopics.length)) { return; }
+        if (d.busy || !this.canExport || !this.canDownload) { return; }
         Object.assign(d, { busy: true, msg: "", tone: "" });
         try {
-            const res = this.isOneoff
+            const res = this.isLeave
+                ? await this.orm.call(MODEL, "download_leave_sheet", [], {
+                    cutover: this.state.cutover, type_ids: this.pickedLeaveTypes.map((t) => t.id) })
+                : this.isOneoff
                 ? await this.orm.call(MODEL, "download_oneoff_sheet", [], { month: this.state.month })
                 : await this.orm.call(MODEL, "download_sheet", [], {
                     topic_keys: this.pickedTopics.map((t) => t.key) });
@@ -877,6 +938,12 @@ export class PbUpdatesDesk extends Component {
                 return;
             }
             f.rows = res.rows;
+            if (this.isLeave && res.sheet_date && res.sheet_date !== this.state.cutover) {
+                // A downloaded sheet says which date it is for: that date wins.
+                this.state.cutoverNote = _t("This sheet was made for balances as at %(sheet)s, so it is used for %(sheet)s, not %(picked)s.", {
+                    sheet: dayLabel(res.sheet_date), picked: dayLabel(this.state.cutover) });
+                this.state.cutover = res.sheet_date;
+            }
             if (this.isOneoff && res.sheet_month && res.sheet_month !== this.state.month) {
                 // A downloaded sheet says which month it is for: that month wins.
                 this.state.monthNote = _t("This sheet was made for %(sheet)s, so it is used for %(sheet)s, not %(picked)s.", {
@@ -901,6 +968,7 @@ export class PbUpdatesDesk extends Component {
 
     /** The extra arguments a one-off sheet sends with every call. */
     kindArgs(args) {
+        if (this.isLeave) { return Object.assign(args, { kind: "leave", cutover: this.state.cutover }); }
         return this.isOneoff ? Object.assign(args, { kind: "oneoff", month: this.state.month }) : args;
     }
 
@@ -1085,6 +1153,9 @@ export class PbUpdatesDesk extends Component {
             bank: { label: _t("Bank details"), tone: "bank", icon: "creditCard" },
             component: { label: _t("Ongoing pay"), tone: "pay", icon: "banknote" },
             oneoff: { label: _t("One-off pay"), tone: "pay", icon: "coins" },
+            leave_avail: { label: _t("Leave balance"), tone: "leave", icon: "calendarRange" },
+            leave_carry: { label: _t("Kept with the balance"), tone: "leave", icon: "history" },
+            leave_taken: { label: _t("Kept with the balance"), tone: "leave", icon: "history" },
         }[group] || { label: "", tone: "none", icon: "" };
     }
 
@@ -1217,7 +1288,12 @@ export class PbUpdatesDesk extends Component {
                 // today, and the default picked on the Apply step.
                 dated: !!res.dated,
                 today: res.today || this.state.home.today || "",
-                defaultStart: this.isOneoff ? "" : this.defaultStart,
+                defaultStart: this.isLasting ? this.defaultStart : "",
+                // UPDATES P4 — leave opening balances as at one date.
+                leave: !!res.leave,
+                cutover: res.cutover || "",
+                cutover_label: res.cutover_label || "",
+                policy_people: res.policy_people || 0,
                 // UPDATES P2d — a sheet of one-off pay items for one month.
                 oneoff: !!res.oneoff,
                 month: res.month || "",
@@ -1271,13 +1347,15 @@ export class PbUpdatesDesk extends Component {
     toApply() {
         const a = this.state.apply;
         if (!a.touched) {
-            a.name = this.isOneoff ? _t("%s one-off pay items", this.monthLabel) : defaultName();
+            a.name = this.isLeave ? _t("Leave opening balances as at %s", this.cutoverLabel)
+                : this.isOneoff ? _t("%s one-off pay items", this.monthLabel) : defaultName();
         }
         a.error = "";
         this.go("apply");
         this.refreshPaid();
         this.refreshLanes();
         this.refreshJoinerOutlook();
+        this.refreshLeaveOutlook();
     }
 
     // =================================================================
@@ -1288,7 +1366,7 @@ export class PbUpdatesDesk extends Component {
     async refreshJoinerOutlook() {
         this.state.joinerOutlook = null;
         const n = this.newCount;
-        if (this.isOneoff || !n) { return; }
+        if (!this.isLasting || !n) { return; }
         try {
             this.state.joinerOutlook = await this.orm.silent.call(MODEL, "joiner_outlook", [], { count: n });
         } catch {
@@ -1317,7 +1395,7 @@ export class PbUpdatesDesk extends Component {
     /** Ask the server, once per visit to Apply, what each lane will do. */
     async refreshLanes() {
         this.state.lanes = [];
-        if (this.isOneoff || !this.state.rv) { return; }
+        if (!this.isLasting || !this.state.rv) { return; }
         this.state.lanesBusy = true;
         try {
             const res = await this.orm.silent.call(MODEL, "lane_outlook", [], {
@@ -1553,6 +1631,16 @@ export class PbUpdatesDesk extends Component {
 
     get applyLabel() {
         const n = this.applyCounts.changes;
+        if (this.isLeave) {
+            // Balances, not values: "carried" and "taken" travel with one.
+            const n = this.leaveApply ? this.leaveApply.balances : 0;
+            if (this.state.apply.busy) {
+                return plural(n, _t("Sending 1 balance…"), _t("Sending %s balances…"));
+            }
+            return this.state.leaveOutlook && this.state.leaveOutlook.outcome === "now"
+                ? plural(n, _t("Set 1 balance"), _t("Set %s balances"))
+                : plural(n, _t("Send 1 balance for approval"), _t("Send %s balances for approval"));
+        }
         if (this.isOneoff) {
             return this.state.apply.busy
                 ? plural(n, _t("Sending 1 one-off amount…"), _t("Sending %s one-off amounts…"))
@@ -1590,6 +1678,7 @@ export class PbUpdatesDesk extends Component {
     }
 
     get applyIcon() {
+        if (this.isLeave) { return "calendarRange"; }
         if (this.isOneoff) { return "coins"; }
         return this.laterCount && !this.nowCount ? "calendarClock" : "check";
     }
@@ -1616,7 +1705,7 @@ export class PbUpdatesDesk extends Component {
             a.error = _t("Give this update a name so you can find it later in Past updates.");
             return;
         }
-        if (!this.isOneoff && (this.whenDateError || this.tooManyDates)) {
+        if (this.isLasting && (this.whenDateError || this.tooManyDates)) {
             a.error = this.whenDateError || this.tooManyDatesLine;
             return;
         }
@@ -1634,11 +1723,11 @@ export class PbUpdatesDesk extends Component {
                 changes: changesToSend(rv),
                 stats: { rows: rv.stats.rows, unmatched: counts.rowsOpen + rv.unmatched.filter((u) => u.skipped && !u.asNew).length,
                          left_out: counts.leftOut, off_scheme: counts.offScheme },
-                start_date: this.isOneoff ? false : (this.defaultStart || false),
+                start_date: this.isLasting ? (this.defaultStart || false) : false,
                 hold_scope: this.state.when.scope,
                 // UPDATES P3b — the draft becomes this update; new employees.
                 draft_id: this.state.draftId || 0,
-                joiners: this.isOneoff ? [] : joinersToSend(rv),
+                joiners: this.isLasting ? joinersToSend(rv) : [],
             }));
             if (!answer.ok) {
                 a.error = answer.msg;
@@ -1723,6 +1812,10 @@ export class PbUpdatesDesk extends Component {
                 : plural(d.joiners_added, _t("1 new employee added"), _t("%s new employees added"));
         }
         if (d.kind === "oneoff") { return d.pending ? _t("Sent for approval") : _t("Approved"); }
+        if (d.kind === "leave") {
+            if (d.pending) { return _t("Sent for approval"); }
+            return plural(d.written, _t("1 balance set"), _t("%s balances set"));
+        }
         if (d.pending && this.doneParts.some((p) => !p.pending)) { return _t("Sent, part of it for approval"); }
         if (d.pending && this.doneLanes.some((l) => !l.pending)) { return _t("Sent, part of it for approval"); }
         if (d.pending) { return _t("Sent for approval"); }
@@ -1737,6 +1830,13 @@ export class PbUpdatesDesk extends Component {
     /** "12 values changed today · 30 are scheduled for 1 Dec 2026" */
     get doneWhenLine() {
         const d = this.state.done;
+        if (d && d.kind === "leave") {
+            const bits = [_t("As at %s", dayLabel(d.cutover) || d.cutover_label)];
+            if (d.days_label) { bits.push(_t("%s in total", d.days_label)); }
+            if (d.hours_label) { bits.push(_t("%s in total", d.hours_label)); }
+            if (d.not_set) { bits.push(plural(d.not_set, _t("1 could not be set"), _t("%s could not be set"))); }
+            return bits.join(" · ");
+        }
         if (d && d.kind === "oneoff") {
             const bits = [];
             if (d.earn) { bits.push(_t("%s added to pay", d.earn)); }
@@ -1778,6 +1878,16 @@ export class PbUpdatesDesk extends Component {
             return d.joiners_waiting
                 ? _t("Nobody is added until the request is approved. The rest of each row follows by itself once the person exists.")
                 : _t("Saved as “%s”. You will find it under Past updates, with the original file.", d.batch_name || this.state.apply.name);
+        }
+        if (d.kind === "leave") {
+            const what = plural(d.values, _t("1 balance"), _t("%s balances"));
+            if (d.pending) {
+                return d.with_whom
+                    ? _t("%(what)s for %(people)s are waiting with %(who)s. Nothing is set until they approve.", {
+                        what, who: d.with_whom, people: plural(d.people, _t("1 person"), _t("%s people")) })
+                    : _t("%s are waiting for approval. Nothing is set until it is approved.", what);
+            }
+            return _t("Saved as “%s”. Each balance is on the Time Off screen now, and the update is under Past updates with the original file.", d.batch_name || this.state.apply.name);
         }
         if (d.kind === "oneoff") {
             const what = plural(d.values, _t("1 one-off amount"), _t("%s one-off amounts"));
@@ -1836,12 +1946,26 @@ export class PbUpdatesDesk extends Component {
     async undoDone() {
         const d = this.state.done;
         if (!d || !d.batch_id) { return; }
+        if (d.kind === "leave") {
+            await this.undoLeave({ id: d.batch_id, name: d.batch_name || this.state.apply.name,
+                                   permanent: d.permanent || 0 }, true);
+            return;
+        }
         await this.undoBatch(d.batch_id, d.batch_name || this.state.apply.name, true,
                              this.doneScheduled.length > 0, 0, this.doneJoiners.length > 0);
     }
 
     get undoDoneLabel() {
+        if (this.state.done && this.state.done.kind === "leave") { return _t("Undo these balances"); }
         return this.doneScheduled.length ? _t("Undo what was applied") : _t("Undo this update");
+    }
+
+    /** The Done screen's Undo: never for a one-off; for leave balances only
+     *  when some were set outside an absence policy. */
+    get canUndoDone() {
+        const d = this.state.done;
+        if (!d || d.pending || !d.batch_id || !d.written || d.kind === "oneoff") { return false; }
+        return d.kind !== "leave" || (d.undoable || 0) > 0;
     }
 
     // =================================================================
@@ -1887,6 +2011,210 @@ export class PbUpdatesDesk extends Component {
                 cancel: () => resolve(),
             });
         });
+    }
+
+    // =================================================================
+    //  UPDATES P4 — leave opening balances (D18) and the attendance tile (D17)
+    // =================================================================
+    get leaveTypes() { return this.leaveInfo.types || []; }
+    get pickedLeaveTypes() { return this.leaveTypes.filter((t) => this.state.leavePicked[t.id]); }
+    get mayLeave() { return !!this.leaveInfo.may_set; }
+
+    toggleLeaveType(id) { this.state.leavePicked[id] = !this.state.leavePicked[id]; }
+
+    leaveTypeLine(t) {
+        const bits = [t.unit === "hour" ? _t("Hours") : t.unit === "half_day" ? _t("Half days") : _t("Whole days")];
+        if (t.in_use) { bits.push(plural(t.in_use, _t("1 balance today"), _t("%s balances today"))); }
+        if (t.policy) { bits.push(_t("Absence policy")); }
+        return bits.join(" · ");
+    }
+
+    get canDownload() {
+        if (this.isLeave) { return this.pickedLeaveTypes.length > 0 && !this.cutoverError; }
+        return this.isOneoff || this.pickedTopics.length > 0;
+    }
+
+    onCutover(ev) {
+        this.state.cutover = ev.target.value || "";
+        this.state.cutoverNote = "";
+        Object.assign(this.state.download, { busy: false, msg: "", tone: "" });
+    }
+
+    get cutoverLabel() { return dayLabel(this.state.cutover); }
+
+    get cutoverError() {
+        const d = this.state.cutover;
+        if (!d) { return _t("Pick the date these balances are as at."); }
+        const info = this.leaveInfo;
+        if (info.today && d > info.today) { return _t("Balances can be as at today or an earlier date, not a future one."); }
+        if (info.min && d < info.min) { return _t("Pick a date within the last year."); }
+        return "";
+    }
+
+    get cutoverLine() {
+        return _t("Each number is what the person still has available on %s. It becomes their balance from that day.", this.cutoverLabel);
+    }
+
+    get leavePolicyLine() {
+        const n = this.leaveInfo.policy_people || 0;
+        if (!n) { return ""; }
+        return plural(n,
+            _t("1 person is on an absence policy: their annual leave balance is set through the policy, can carry “carried from last year” and “already taken this year” with it, and is permanent once set."),
+            _t("%s people are on an absence policy: their annual leave balance is set through the policy, can carry “carried from last year” and “already taken this year” with it, and is permanent once set."));
+    }
+
+    get leaveMatchLead() { return _t("Leave opening balances as at %s.", this.cutoverLabel); }
+
+    /** The Apply step's own numbers for a leave sheet. */
+    get leaveApply() {
+        const rv = this.state.rv;
+        if (!rv || !rv.leave) { return null; }
+        const t = leaveTotals(rv);
+        return t;
+    }
+
+    get leaveCardTitle() {
+        const t = this.leaveApply;
+        if (!t) { return ""; }
+        return _t("Leave opening balances as at %(date)s · %(balances)s for %(people)s", {
+            date: this.cutoverLabel,
+            balances: plural(t.balances, _t("1 balance"), _t("%s balances")),
+            people: plural(t.people, _t("1 person"), _t("%s people")) });
+    }
+
+    get leaveTotalLabel() {
+        const t = this.leaveApply;
+        if (!t) { return ""; }
+        const bits = [];
+        if (t.days) { bits.push(qtyLabel(t.days, "day")); }
+        if (t.hours) { bits.push(qtyLabel(t.hours, "hour")); }
+        return bits.join(" + ") || qtyLabel(0, "day");
+    }
+
+    /** What Undo will and will not be able to do — said BEFORE applying. */
+    get leaveUndoLine() {
+        const t = this.leaveApply;
+        if (!t) { return ""; }
+        if (t.policy && !t.plain) {
+            return _t("These people are on an absence policy, which keeps an opening balance permanently. Once set, these balances cannot be undone from Updates.");
+        }
+        if (t.policy) {
+            return _t("%(plain)s can be undone later from Past updates, unless leave has been taken or asked for against them. %(policy)s for people on an absence policy are permanent once set.", {
+                plain: plural(t.plain, _t("1 balance"), _t("%s balances")),
+                policy: plural(t.policy, _t("1 balance"), _t("%s balances")) });
+        }
+        return _t("You can undo this from Past updates: each balance is taken off again, unless leave has been taken or asked for against it. That one stays.");
+    }
+
+    async refreshLeaveOutlook() {
+        this.state.leaveOutlook = null;
+        if (!this.isLeave || !this.state.rv) { return; }
+        try {
+            this.state.leaveOutlook = await this.orm.silent.call(MODEL, "leave_outlook", [], {
+                changes: changesToSend(this.state.rv) });
+        } catch {
+            this.state.leaveOutlook = { outcome: "approval", line: _t("Go for approval") };
+        }
+    }
+
+    get leaveOutIcon() {
+        const o = this.state.leaveOutlook;
+        return o && o.outcome === "now" ? "check" : "clock";
+    }
+
+    leaveHistoryNote(h) {
+        const bits = [];
+        if (h.state === "pending") {
+            bits.push(h.with_whom ? _t("Waiting for approval with %s.", h.with_whom) : _t("Waiting for approval."));
+        }
+        if (h.not_set) {
+            const first = (h.not_set_lines || [])[0];
+            const example = first ? `${first.who} · ${first.type}: ${first.why}` : "";
+            if (!example) {
+                bits.push(plural(h.not_set, _t("1 could not be set."), _t("%s could not be set.")));
+            } else if (h.not_set === 1) {
+                bits.push(_t("1 could not be set: %s", example));
+            } else {
+                bits.push(_t("%(n)s could not be set, for example %(first)s", { n: grouped(h.not_set), first: example }));
+            }
+        }
+        if (h.undone_values) {
+            bits.push(plural(h.undone_values, _t("1 balance was taken off again."), _t("%s balances were taken off again.")));
+        }
+        if (h.permanent) {
+            bits.push(plural(h.permanent, _t("1 was set through the absence policy and is permanent."),
+                             _t("%s were set through the absence policy and are permanent.")));
+        }
+        if (h.values_refused) {
+            bits.push(plural(h.values_refused, _t("1 value from the file was left out."), _t("%s values from the file were left out.")));
+        }
+        return bits.join(" ");
+    }
+
+    cancelLeave(h) {
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Withdraw “%s”?", h.name),
+            body: _t("The approval request is withdrawn and the balances in it are never set. Nothing has been changed, so nothing needs putting back."),
+            confirmLabel: _t("Withdraw it"),
+            cancelLabel: _t("Keep it"),
+            confirm: async () => {
+                try {
+                    const res = await this.orm.call(MODEL, "cancel", [], { batch_id: h.id });
+                    this.notif.add(res.msg, { type: res.ok ? "success" : "warning" });
+                    await this.loadHistory();
+                } catch (e) {
+                    this.notif.add(e.data?.message || _t("The update could not be withdrawn. Nothing has changed."), { type: "danger" });
+                }
+            },
+            cancel: () => {},
+        });
+    }
+
+    undoLeave(h, thenHome = false) {
+        return new Promise((resolve) => {
+            const body = h.permanent
+                ? _t("Each balance this update set is taken off again, unless leave has been taken or asked for against it: that one stays. Balances set through an absence policy are permanent and stay too.")
+                : _t("Each balance this update set is taken off again, unless leave has been taken or asked for against it: that one stays.");
+            this.dialog.add(ConfirmationDialog, {
+                title: _t("Undo “%s”?", h.name),
+                body,
+                confirmLabel: _t("Undo the balances"),
+                cancelLabel: _t("Keep them"),
+                confirm: async () => {
+                    this.state.undoing = h.id;
+                    try {
+                        const res = await this.orm.call(MODEL, "undo", [], { batch_id: h.id });
+                        this.notif.add(res.ok ? _t("“%(name)s”: %(msg)s", { name: h.name, msg: res.msg }) : res.msg,
+                                       { type: res.ok ? "success" : "warning" });
+                        if (thenHome) {
+                            this.resetFlow();
+                            this.go("home");
+                        }
+                        await this.loadHistory();
+                    } catch (e) {
+                        this.notif.add(e.data?.message || _t("The update could not be undone. Nothing has changed."), { type: "danger" });
+                    } finally {
+                        this.state.undoing = 0;
+                        resolve();
+                    }
+                },
+                cancel: () => resolve(),
+            });
+        });
+    }
+
+    undoFromHistory(h) {
+        if (h.kind === "leave") { return this.undoLeave(h); }
+        return this.undoBatch(h.id, h.name, false, h.has_open, 0, !!(h.joiners && h.joiners.length));
+    }
+
+    // ------------------------------------------------- the attendance tile (D17)
+    get attendance() { return this.state.home.attendance || { available: false }; }
+
+    openAttendance() {
+        const a = this.attendance;
+        if (!a.available) { return; }
+        this.action.doAction(a.action, { additionalContext: a.context || {} });
     }
 }
 
@@ -1971,7 +2299,8 @@ Object.assign(PbUpdatesDesk.prototype, {
         try {
             const res = await this.orm.silent.call(MODEL, "save_draft", [], {
                 draft_id: this.state.draftId || 0,
-                kind: this.state.kind, month: this.state.month || false,
+                kind: this.state.kind,
+                month: (this.isLeave ? this.state.cutover : this.state.month) || false,
                 filename: this.state.file.name,
                 file_b64: first ? this.state.file.b64 : "",
                 columns: this.state.match ? this.matchColumns() : null,
@@ -2002,6 +2331,7 @@ Object.assign(PbUpdatesDesk.prototype, {
             this.resetFlow();
             this.setKind(res.kind);
             if (res.kind === "oneoff" && res.month) { this.state.month = res.month; }
+            if (res.kind === "leave" && res.cutover) { this.state.cutover = res.cutover; }
             const f = this.state.file;
             Object.assign(f, { name: res.filename, b64: res.file_b64, busy: true, phase: "read", error: "" });
             this.go("start");

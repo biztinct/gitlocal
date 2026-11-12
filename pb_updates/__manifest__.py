@@ -53,9 +53,17 @@ against the team. An unfinished update is saved as a private draft and can be
 continued or discarded from the Updates home. A pay run's "Review pay data"
 says which people had changes since their last finished pay run.
 
-UPDATES programme, phases 1-3b. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
+UPDATES P4: a third kind of sheet, "Leave opening balances" — many people's
+balances as at one date, in the same four steps, with drafts, history and
+approval on the records route. Where a person is on an absence policy the
+balance is written only through that policy's own opening-balance step;
+otherwise as one approved allocation. A balance is set once per person and
+leave type; undo takes back only what nothing has been taken against. The
+Start screen also carries a tile to the existing attendance file screen.
+
+UPDATES programme, phases 1-4. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.5.0',
+    'version': '19.0.1.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -83,6 +91,10 @@ UPDATES programme, phases 1-3b. Ledger: docs/handovers/updates/UPDATES_LEDGER.md
         # new-hire path (`pb.people.onboard.wizard.create_employee`) and its
         # approval. Installed on every live database.
         'pb_people_advanced',
+        # UPDATES P4: leave opening balances are written as time-off
+        # allocations. Installed on every live database. The leave policy
+        # layer (pb_timeoff) is reached by soft checks only.
+        'hr_holidays',
     ],
     'data': [
         'security/ir.model.access.csv',

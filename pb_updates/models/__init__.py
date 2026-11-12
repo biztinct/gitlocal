@@ -13,3 +13,5 @@ from . import updates_retire
 from . import updates_joiners
 from . import updates_drafts
 from . import updates_sincerun
+from . import updates_leave
+from . import updates_leave_desk

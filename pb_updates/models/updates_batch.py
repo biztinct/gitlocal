@@ -121,8 +121,10 @@ class PbUpdatesLayout(models.Model):
         if not pairs:
             return self.browse()
         fingerprint = heading_fingerprint([h for h, _t in headings_to_targets])
-        if kind == 'oneoff':
-            fingerprint = 'oneoff:' + fingerprint
+        # UPDATES P4: a leave-balance sheet's matching is its own too.
+        kind = kind if kind in ('oneoff', 'leave') else 'lasting'
+        if kind != 'lasting':
+            fingerprint = kind + ':' + fingerprint
         company = self.env.company
         mapping = {_norm(h): t for h, t in pairs}
         layout = self.search([('company_id', '=', company.id),
@@ -135,8 +137,7 @@ class PbUpdatesLayout(models.Model):
             layout.write(vals)
             return layout
         vals.update({'company_id': company.id, 'fingerprint': fingerprint,
-                     'use_count': 1,
-                     'kind': 'oneoff' if kind == 'oneoff' else 'lasting'})
+                     'use_count': 1, 'kind': kind})
         return self.create(vals)
 
 

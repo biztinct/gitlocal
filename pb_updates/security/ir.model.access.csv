@@ -17,3 +17,8 @@ access_pb_updates_joiner_viewer,pb.updates.joiner records viewer,model_pb_update
 access_pb_updates_joiner_hr,pb.updates.joiner hr,model_pb_updates_joiner,hr.group_hr_user,1,0,0,0
 access_pb_updates_joiner_officer,pb.updates.joiner payroll officer,model_pb_updates_joiner,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
 access_pb_updates_joiner_system,pb.updates.joiner system,model_pb_updates_joiner,base.group_system,1,0,0,0
+access_pb_updates_leave_line_viewer,pb.updates.leave.line viewer,model_pb_updates_leave_line,pb_records.group_records_viewer,1,0,0,0
+access_pb_updates_leave_line_hr,pb.updates.leave.line hr,model_pb_updates_leave_line,hr.group_hr_user,1,0,0,0
+access_pb_updates_leave_line_officer,pb.updates.leave.line officer,model_pb_updates_leave_line,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_updates_leave_line_timeoff,pb.updates.leave.line timeoff,model_pb_updates_leave_line,hr_holidays.group_hr_holidays_user,1,0,0,0
+access_pb_updates_leave_line_system,pb.updates.leave.line system,model_pb_updates_leave_line,base.group_system,1,0,0,0

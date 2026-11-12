@@ -408,7 +408,7 @@ class PbUpdatesDesk(models.AbstractModel):
         fingerprint = heading_fingerprint([c['head'] for c in columns])
         Layout = self.env['pb.updates.layout']
         layouts = Layout.search([('company_id', '=', self.env.company.id),
-                                 ('kind', '!=', 'oneoff')],
+                                 ('kind', 'not in', ('oneoff', 'leave'))],
                                 order='last_used desc, id desc', limit=50)
         exact = layouts.filtered(lambda l: l.fingerprint == fingerprint)[:1]
         maps = ([exact.get_map()] if exact else []) + \

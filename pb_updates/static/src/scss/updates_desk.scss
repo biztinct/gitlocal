@@ -671,6 +671,28 @@ $pbu-who-w: 210px;
                       svg { flex: none; color: var(--pbim-primary); } }
     .pbu-tile--oneoff:hover { border-color: var(--pbim-primary); }
 
+    // ------------------------------------------------------------ leave balances (P4)
+    .pbu-tile--leave:hover { border-color: var(--pbim-primary); }
+    .pbu-kind.pbu-kind--leave { color: var(--pbim-primary); }
+    .pbu-leave-date .pbu-date { width: auto; min-width: 180px; flex: 0 0 auto; font-weight: 700; }
+    .pbu-leave-types .pbu-topic { padding: 10px 12px; }
+    .pbu-leave-sum { font-size: 13px; font-weight: 700; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbu-leave-card .pbu-total.is-earn b { color: var(--pbim-primary); }
+    .pbu-leave-card .pbu-total.is-earn { background: var(--pbim-soft); }
+    // The quiet way to the attendance file screen (D17): secondary, never a kind.
+    .pbu-attend {
+        display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+        padding: 10px 14px; border-radius: 12px; border: 1px dashed var(--pbim-line);
+        background: transparent; font: inherit; color: var(--pbim-muted); cursor: pointer;
+        transition: border-color .15s ease, background .15s ease, color .15s ease;
+        > svg { margin-left: auto; flex: none; transition: transform .15s ease; }
+        &:hover { border-color: var(--pbim-primary); border-style: solid; background: var(--pbim-surface);
+                  color: var(--pbim-primary); > svg { transform: translateX(3px); } }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbu-attend-t { display: flex; flex-direction: column; gap: 1px; min-width: 0;
+                    b { font-size: 13.5px; color: var(--pbim-ink); } }
+
     .pbu-totals, .pbu-oneoff-strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .pbu-oneoff-strip {
         padding: 10px 14px; border-radius: 12px; background: var(--pbim-surface);
