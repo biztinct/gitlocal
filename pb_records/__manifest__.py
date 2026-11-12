@@ -79,8 +79,13 @@ whatever the records route says). Through Updates, personal details apply at
 once where the company's records route is the shipped one or "No approval
 needed" (a company switch turns that off); a route a company set up itself is
 always followed.
+
+UPDATES P3c: the platform's own support login and demo-role logins are never
+asked to approve a bank-details change and can never approve one, whatever
+seat or group they hold; a bank route that names its approvers is never
+widened to Finance or the records managers.
 """,
-    'version': '19.0.1.10.0',
+    'version': '19.0.1.10.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

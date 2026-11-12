@@ -62,6 +62,24 @@ PAY_EMPLOYEE_FIELDS = frozenset({
     'f:hr.employee:vn_dependent_record_count',
 })
 
+#: UPDATES P3c (D14/D15) — logins that are never asked to approve, and can
+#: never approve, a bank-details change, whatever seat or group they hold.
+#: The platform's own support (recovery) login is named the way the platform
+#: itself names it in every tenant database: the `pb_tenancy.recovery_login`
+#: setting (mirrored by the tenant platform; same default as `biz_access`'s
+#: `recovery_login` and `pb_tenants`' break-glass login). There is no xmlid
+#: or flag on that account — provisioning creates it by login.
+RECOVERY_LOGIN_PARAMS = ('pb_tenancy.recovery_login',
+                         'pb_tenants.break_glass_login')
+RECOVERY_LOGIN_DEFAULT = 'platform.recovery@payobook.com'
+#: The demo sign-up / demo-world role (`pb_demo`, read-only sandbox, "cannot
+#: approve"). Only where that module is installed; nowhere else is there a
+#: reliable marker for a demo login, so nothing is guessed from a login name.
+DEMO_GROUP_XMLID = 'pb_demo.group_payobook_demo'
+#: Route "who" modes that NAME the people: the business chose them, so the
+#: bank lane never widens the list to Finance or records managers.
+NAMED_WHO_MODES = ('people', 'team')
+
 #: Content fields of a proposal that only the desk itself (under sudo) may
 #: write: a client that rewrote them could move a bank change onto a route
 #: with no second person.
@@ -288,15 +306,49 @@ class PbRecordsApply(models.Model):
         return users.filtered(lambda u: u.active and not u.share
                               and company.id in u.company_ids.ids)
 
+    # ------------------------------------- UPDATES P3c — who never approves
+    @api.model
+    def _recovery_logins(self):
+        """The platform support login(s) of this database, lower-cased."""
+        icp = self.env['ir.config_parameter'].sudo()
+        logins = {RECOVERY_LOGIN_DEFAULT}
+        for key in RECOVERY_LOGIN_PARAMS:
+            value = str(icp.get_param(key) or '').strip().lower()
+            if value:
+                logins.add(value)
+        return logins
+
+    @api.model
+    def _bank_excluded(self, user):
+        """Why `user` may never be asked to approve, nor approve, a
+        bank-details change — `''` when they may. Self-service logins
+        (P3a), the platform support login and demo-role logins (P3c)."""
+        user = user.sudo()
+        if not user:
+            return ''
+        if user.share:
+            return 'self_service'
+        if (user.login or '').strip().lower() in self._recovery_logins():
+            return 'support'
+        demo = self.env.ref(DEMO_GROUP_XMLID, raise_if_not_found=False)
+        if demo and demo.id in user.all_group_ids.ids:
+            return 'demo'
+        return ''
+
+    @api.model
+    def _bank_may_ask(self, users):
+        """`users` minus everyone who may never approve bank details."""
+        return users.filtered(lambda u: not self._bank_excluded(u))
+
     @api.model
     def _second_people(self, company, proposer):
         """`(users, via)` who may approve somebody else's bank change: the
         Finance holders first, else any Records manager — never the
-        proposer."""
-        finance = self._finance_holders(company) - proposer
+        proposer, never the platform support login or a demo login (P3c)."""
+        finance = self._bank_may_ask(self._finance_holders(company) - proposer)
         if finance:
             return finance.sorted('id')[:20], _("Finance approver")
-        managers = self._records_managers(company) - proposer
+        managers = self._bank_may_ask(self._records_managers(company) - proposer)
         return managers[:20], _("A second person (records manager)")
 
     def _note_second_person(self):
@@ -319,6 +371,15 @@ class PbRecordsApply(models.Model):
         company = company or self.company_id or self.env.company
         return _("Waiting for a second person. Nobody else in %s can approve "
                  "bank details yet — add one in Access.", company.name)
+
+    def _nobody_named_sentence(self, company=None):
+        """UPDATES P3c — the bank route names its approvers and none of them
+        (other than the proposer) can be asked: the fix is the route itself."""
+        company = company or self.company_id or self.env.company
+        return _("Waiting for a second person. Nobody else named to approve "
+                 "bank details in %s can approve this yet — add a person to "
+                 "the bank details route in Settings › Approval Matrix.",
+                 company.name)
 
     def _approval_step_people(self, step, people, issue, ctx, company):
         """UPDATES P3a — opt-in engine hook (`records_engine.py`): who may
@@ -345,13 +406,20 @@ class PbRecordsApply(models.Model):
                                 person.get('name') or ''))
         # Only a staff login can decide: a self-service (portal) login named
         # on the route (a demo Finance holder, say) cannot open the request.
-        staff = set(self.env['res.users'].sudo().browse(
-            [p['user_id'] for p in keep]).exists().filtered(
-                lambda u: not u.share).ids)
+        # P3c: nor the platform support login, nor a demo-role login — they
+        # are never seated, whatever the route or the Finance seat says.
+        staff = set(rec._bank_may_ask(self.env['res.users'].sudo().browse(
+            [p['user_id'] for p in keep]).exists()).ids)
         keep = [p for p in keep if p.get('active', True) and p['user_id'] in staff]
         if keep:
             blocking = issue and issue.get('level') == 'block'
             return keep, (None if blocking else issue)
+        if ((step or {}).get('who') or {}).get('mode') in NAMED_WHO_MODES:
+            # The route names its approvers (rize, D14): never widen it to
+            # Finance or the records managers behind the business's back.
+            return [], {'level': 'block', 'code': 'no_second_person',
+                        'msg': rec._nobody_named_sentence(company),
+                        'fixes': []}
         users, via = rec._second_people(company, proposer)
         if users:
             return engine._people_payload(users.ids, via), None
@@ -364,13 +432,20 @@ class PbRecordsApply(models.Model):
         the person who proposed them — whatever seat they hold."""
         self.ensure_one()
         rec = self.sudo()
-        if rec._bank_rule_applies(request) and user == rec._proposer():
+        if not rec._bank_rule_applies(request):
+            return None
+        if user == rec._proposer():
             return _("Bank details need a second person. You proposed this "
                      "change, so somebody else has to approve it.")
+        if rec._bank_excluded(user):
+            # P3c (D14/D15): the platform support login and demo logins.
+            return _("This login cannot approve bank details. One of the "
+                     "company's own people has to approve them.")
         return None
 
     def _second_person_approved(self, request=None):
-        """Has somebody other than the proposer approved this request?"""
+        """Has somebody other than the proposer approved this request —
+        somebody who may approve bank details at all (P3c)?"""
         self.ensure_one()
         request = request or self.approval_request_id
         if not request:
@@ -378,7 +453,7 @@ class PbRecordsApply(models.Model):
         proposer = self._proposer()
         return bool(request.sudo().decision_ids.filtered(
             lambda d: d.action == 'approve' and d.user_id
-            and d.user_id != proposer))
+            and d.user_id != proposer and not self._bank_excluded(d.user_id)))
 
     def _writer_desk(self):
         """The desk as the proposer (else the last approver), in the

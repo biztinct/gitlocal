@@ -2258,3 +2258,15 @@ msgstr "chưa có ai"
 #: code:addons/pb_records/static/src/js/records_desk.js:0
 msgid "%(names)s and %(n)s more"
 msgstr "%(names)s và %(n)s người khác"
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "Waiting for a second person. Nobody else named to approve bank details in %s can approve this yet — add a person to the bank details route in Settings › Approval Matrix."
+msgstr "Đang chờ người thứ hai. Chưa có ai khác được chỉ định phê duyệt tài khoản ngân hàng trong %s có thể phê duyệt yêu cầu này — hãy thêm một người vào quy trình duyệt tài khoản ngân hàng trong Cài đặt › Ma trận phê duyệt."
+
+#. module: pb_records
+#. odoo-python
+#: code:addons/pb_records/models/records_approval.py:0
+msgid "This login cannot approve bank details. One of the company's own people has to approve them."
+msgstr "Tài khoản đăng nhập này không thể phê duyệt tài khoản ngân hàng. Một người của chính công ty phải phê duyệt."
