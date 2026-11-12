@@ -125,6 +125,9 @@ that has closed expires itself. The whole job is behind
             'pb_lifecycle/static/src/scss/workflow_inbox.scss',
             'pb_lifecycle/static/src/js/workflow_inbox.js',
             'pb_lifecycle/static/src/xml/workflow_inbox.xml',
+            # WF2 P5c: a repeat's line tasks in the inbox ("Do all in turn").
+            'pb_lifecycle/static/src/js/workflow_inbox_lines.js',
+            'pb_lifecycle/static/src/xml/workflow_inbox_lines.xml',
         ],
         # A LEAN frontend bundle for the two login-less pages: the kit's tokens
         # and this module's page block. No backend asset is leaked into them.

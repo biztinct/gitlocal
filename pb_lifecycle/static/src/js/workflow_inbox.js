@@ -20,7 +20,7 @@ import { PbInbox } from "@pb_approval_config/js/inbox";
 import { day } from "@pb_approval_config/js/sentence";
 
 const WORKBENCH = "/pb_lifecycle/static/workflow/index.html";
-const CACHE_KEY = "wf2-p5a";
+const CACHE_KEY = "wf2-p5c";
 const LEAVE_MS = 320;
 
 patch(PbInbox.prototype, {

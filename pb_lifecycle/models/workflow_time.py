@@ -343,7 +343,8 @@ class WorkflowTimeReport(models.AbstractModel):
         since = now - timedelta(days=days) if days else None
         company = w.company_id
         Run = self.env[RUN].sudo()
-        domain = [('workflow_id', '=', w.id), ('company_id', '=', company.id)]
+        # WF2 P5c: a repeat's lines are counted inside their run, never as runs.
+        domain = [('workflow_id', '=', w.id), ('company_id', '=', company.id), ('parent_id', '=', False)]
         ever = Run.search_count(domain)
         if not ever:
             return {'workflow_id': w.id, 'period': period, 'empty': True}

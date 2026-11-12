@@ -336,14 +336,19 @@ class WorkflowRun(models.Model):
         self._lock()
         if self.state in ('held', 'done', 'cancelled', 'rejected'):
             return
-        d, steps = self.version_id.definition, {s.key: s for s in self.sudo().step_ids}
+        # WF2 P5c: one line of a repeat walks the repeat's steps as its main
+        # path (`_definition`); every other run walks its version as before.
+        d, steps = self._definition(), {s.key: s for s in self.sudo().step_ids}
         # WF2 P3b: a "Send back" puts earlier steps back to not started (the
         # walk then starts again from the top), a "Stop here" ends the run.
         signals = {}
         def skip(ids, reason='Another path was selected.'):
             for key in ids:
                 for child in D.descendants(d, key):
-                    s = steps[child]
+                    s = steps.get(child)
+                    # WF2 P5c: a repeat's own steps live on its lines.
+                    if s is None:
+                        continue
                     if s.state not in ('done', 'skipped'):
                         s._cancel_activity()
                         internal(s).write({'state': 'skipped', 'error': reason})
@@ -361,6 +366,10 @@ class WorkflowRun(models.Model):
             s, n = steps[key], steps[key].config
             if s.state in ('done', 'skipped'):
                 return True
+            # WF2 P5c: a repeat under way is looked at again on every walk
+            # (its lines move it on); a pending one checks "Only when…" first.
+            if n['type'] == 'repeat' and s.state != 'pending':
+                return self._repeat_visit(s, n)
             if s.state in ('waiting', 'failed'):
                 return False
             if s.state == 'pending' and n.get('when'):
@@ -373,6 +382,8 @@ class WorkflowRun(models.Model):
                     skip([key], _('Filters did not match when this step was reached.'))
                     self._log(_('Skipped %s: filters did not match.', s.name), s)
                     return True
+            if n['type'] == 'repeat':
+                return self._repeat_visit(s, n)
             if n['type'] == 'branch':
                 if not s.choice:
                     # One timing rule (F11): versions saved since it exists
@@ -433,6 +444,9 @@ class WorkflowRun(models.Model):
             # skipped and the walk carries on.
             return s.state in ('done', 'skipped')
         bound = [i for i, s in enumerate(d['stages']) if isinstance(s, dict) and s.get('bind')]
+        if self.sudo().parent_id:
+            # A line runs inside a section its parent was already let into.
+            bound = []
         gate = dict(self.gate or {})
         passed = set(gate.get('passed') or [])
         outcome = {}

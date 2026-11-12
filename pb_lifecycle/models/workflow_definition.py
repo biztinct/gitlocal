@@ -12,7 +12,62 @@ GROUPS = ('branch', 'parallel', 'subprocess')
 TYPES = ('trigger', 'task', 'input', 'matrix', 'email', 'wait', 'branch',
          'parallel', 'subprocess', 'action', 'reference',
          # WF2 P3b: eight more, each a registered, guarded operation.
-         'stage_move', 'send_back', 'update', 'create', 'notify', 'confirm', 'start', 'end')
+         'stage_move', 'send_back', 'update', 'create', 'notify', 'confirm', 'start', 'end',
+         # WF2 P5c: "Repeat for each…" — a group of steps run once per line.
+         'repeat')
+#: WF2 P5c: containers whose `steps` list holds their own steps.
+STEP_LISTS = ('subprocess', 'repeat')
+#: How many lines a repeat runs for by default, and at most.
+REPEAT_DEFAULT, REPEAT_HARD = 50, 200
+#: Step kinds a repeat may not hold (one record, one approval; one level
+#: deep), with the code and the plain reason for each (R8).
+REPEAT_REFUSED = {
+    'matrix': ('repeat_matrix', 'An approval cannot be repeated for each line: one record has one approval. '
+                                'Put it before or after “%s”.'),
+    'stage_move': ('repeat_stage_move', 'Moving the record to a stage cannot be repeated for each line. '
+                                        'Put it before or after “%s”.'),
+    'start': ('repeat_start', 'Starting another workflow cannot be repeated for each line. '
+                              'Put it before or after “%s”.'),
+    'repeat': ('repeat_nested', 'A repeat cannot sit inside another repeat. Keep “%s” one level deep.'),
+    'parallel': ('repeat_parallel', 'Work in parallel cannot sit inside “%s”. Use “Together” on the repeat instead.'),
+    'subprocess': ('repeat_saved_group', 'A saved group cannot sit inside “%s”. Add its steps one by one.'),
+    'action': ('repeat_action', 'A module action cannot be repeated for each line. Put it before or after “%s”.'),
+    'update': ('repeat_update', 'Updating the record cannot be repeated for each line yet. Put it before or after “%s”.'),
+    'reference': ('repeat_reference', 'Existing work is shown once, outside “%s”.'),
+}
+REPEAT_SOURCES = ('area', 'answers', 'team')
+
+
+def line_fields(d, node):
+    """The detail keys each line of a repeat carries, as far as the
+    definition itself can tell (an area's own lines name theirs in the
+    node; the studio checks them against the area's contract)."""
+    src = node.get('source') if isinstance(node.get('source'), dict) else {}
+    kind = src.get('kind')
+    if kind == 'team':
+        return ['person']
+    if kind == 'answers':
+        form = next((n for n in d.get('nodes', []) if n.get('id') == src.get('step')), None)
+        field = next((f for f in ((form or {}).get('form') or {}).get('fields', [])
+                      if f.get('id') == src.get('field')), None)
+        if field and field.get('type') == 'rows':
+            return ['description', 'amount']
+        return ['value']
+    return [str(k) for k in src.get('fields') or [] if isinstance(k, str) and IDENT.fullmatch(k)]
+
+
+def line_view(d, key):
+    """The definition as one line of the repeat `key` sees it: its steps
+    are the main path, and the repeat no longer holds them (so every
+    shape helper above treats them as top-level)."""
+    rep = next(n for n in d['nodes'] if n.get('id') == key)
+    return dict(d, nodes=[dict(n, steps=[]) if n.get('id') == key else n for n in d['nodes']],
+                order=list(rep.get('steps') or []))
+
+
+def repeat_of(d, key, parent_map=None):
+    """The repeat around `key`, or None."""
+    return next((g for g in ancestors(d, key, parent_map) if g.get('type') == 'repeat'), None)
 #: Steps a person completes (they wait with a task in someone's list).
 PEOPLE = ('task', 'input', 'confirm')
 #: Who a person step (or a notice) can go to.
@@ -21,7 +76,9 @@ OWNER_KINDS = ('initiator', 'user', 'role', 'manager', 'field', 'subject', 'mana
                'team',
                # WF2 P4b (D18): someone the area names who never logs in
                # (Hiring: "The candidate"), always reached by email link.
-               'participant')
+               'participant',
+               # WF2 P5c: a person named on the line (inside a repeat only).
+               'line')
 #: Steps that change something outside the run. A "send back" may not jump
 #: over one of these: going back would make it happen twice.
 ONCE_ONLY = ('matrix', 'action', 'update', 'create', 'start')
@@ -55,7 +112,7 @@ def parents(d):
         for b in n.get('branches', []) or []:
             for child in b.get('steps', []):
                 found[child] = (n, b['id'])
-        if n.get('type') == 'subprocess':
+        if n.get('type') in STEP_LISTS:
             for child in n.get('steps', []):
                 found[child] = (n, None)
     return found
@@ -151,7 +208,7 @@ def containers(d):
     for n in d.get('nodes', []):
         for b in n.get('branches', []):
             yield {'key': b['id'], 'ids': b.get('steps', []), 'parent': n}
-        if n.get('type') == 'subprocess':
+        if n.get('type') in STEP_LISTS:
             yield {'key': n['id'], 'ids': n.get('steps', []), 'parent': n}
 
 
@@ -444,11 +501,14 @@ def _validate(d, source_fields=None, actions=None):
         if n.get('type') not in ('branch', 'parallel') and n.get('branches'):
             error(n['id'], 'branches_outside_group', 'Only path groups can contain branches.')
             return out
-        if n.get('type') != 'subprocess' and n.get('steps'):
+        if n.get('type') not in STEP_LISTS and n.get('steps'):
             error(n['id'], 'steps_outside_saved_group', 'Only a saved group can contain a step list.')
             return out
         if n.get('type') == 'subprocess' and not isinstance(n.get('steps'), list):
             error(n['id'], 'bad_saved_group', 'A saved group needs a list of steps.')
+            return out
+        if n.get('type') == 'repeat' and not isinstance(n.get('steps'), list):
+            error(n['id'], 'bad_repeat', 'A repeat needs a list of steps.')
             return out
     if out:
         return out
@@ -529,7 +589,8 @@ def _validate(d, source_fields=None, actions=None):
                 owner = n.get('owner', {})
                 if not isinstance(owner, dict) or owner.get('kind') not in OWNER_KINDS or (
                         owner.get('kind') in ('user', 'team') and type(owner.get('id')) is not int) or (
-                        owner.get('kind') == 'participant' and not isinstance(owner.get('key'), str)):
+                        owner.get('kind') == 'participant' and not isinstance(owner.get('key'), str)) or (
+                        owner.get('kind') == 'line' and not isinstance(owner.get('field'), str)):
                     error(key, 'missing_owner', 'Choose who gets this.' if kind == 'notify' else 'Choose who does this step.')
             if kind in PEOPLE:
                 if type(n.get('due', 2)) is not int or not 1 <= n.get('due', 2) <= 365:
@@ -574,7 +635,24 @@ def _validate(d, source_fields=None, actions=None):
                                                    'or give it an “Only when…”.') % n['title'])
                 if kind == 'end' and len(str(n.get('reason') or '')) > 200:
                     error(key, 'end_reason', 'Keep the reason under 200 characters.')
-            if kind == 'send_back':
+            around = repeat_of(d, key, parent_map) if kind == 'send_back' else None
+            if around:
+                # WF2 P5c: inside a repeat a send back stays on its own line.
+                view = line_view(d, around['id'])
+                view_map = group_map(view)
+                target = nodes.get(n.get('target')) if isinstance(n.get('target'), str) else None
+                top = main_ancestor(view, key, view_map)
+                if (not target or target['type'] not in ('task', 'input', 'confirm') or target['id'] not in view['order']
+                        or top not in view['order'] or view['order'].index(target['id']) >= view['order'].index(top)):
+                    error(key, 'repeat_send_back_outside', 'Inside “%s”, send it back only to an earlier task or form '
+                                                           'of the same line.' % around['title'])
+                else:
+                    twice = [nodes[x]['title'] for x in between(view, target['id'], key, view_map)
+                             if nodes[x]['type'] in ONCE_ONLY]
+                    if twice:
+                        error(key, 'send_back_effects', 'Steps in between would run twice: %s. Send it back to a '
+                                                        'later step, or move those steps after this one.' % ', '.join(twice))
+            elif kind == 'send_back':
                 target = nodes.get(n.get('target')) if isinstance(n.get('target'), str) else None
                 top = main_ancestor(d, key, parent_map)
                 if (not target or target['type'] not in ('task', 'input', 'confirm') or target['id'] not in order
@@ -632,7 +710,44 @@ def _validate(d, source_fields=None, actions=None):
                 if not n['steps']:
                     error(key, 'empty_saved_group', 'Add a step to this saved group.')
                 available = walk(n['steps'], available)
+            if kind == 'repeat':
+                available = repeat_checks(n, available)
         return available
+    def repeat_checks(n, available):
+        """WF2 P5c: "Repeat for each…" — on the main path, one level deep,
+        no approval or other once-per-record step inside, a known source
+        and a cap. Line details are values only inside it; after it, the
+        counts are."""
+        key, title = n['id'], n['title']
+        src = n.get('source')
+        if key not in order:
+            error(key, 'repeat_off_main_path', 'Keep “%s” on the main path, not inside a path or group.' % title)
+        if not isinstance(src, dict) or src.get('kind') not in REPEAT_SOURCES:
+            error(key, 'repeat_source', 'Choose what to repeat for: the lines of the record, the answers to a '
+                                        'list question, or the people on a team.')
+        if n.get('mode', 'together') not in ('together', 'one_by_one') or n.get('join', 'all') not in ('all', 'any'):
+            error(key, 'repeat_mode', 'Choose whether the lines run together or one by one, and when to carry on.')
+        cap = n.get('max_lines', REPEAT_DEFAULT)
+        if type(cap) is not int or not 1 <= cap <= REPEAT_HARD:
+            error(key, 'repeat_cap', 'Repeat for at most 1 to %s lines.' % REPEAT_HARD)
+        if not n['steps']:
+            error(key, 'empty_repeat', 'Add the steps to do for each line.')
+        for child in [x for s in n['steps'] for x in descendants(d, s)]:
+            refused = REPEAT_REFUSED.get(nodes[child]['type'])
+            if refused:
+                error(child, refused[0], refused[1] % title)
+        if n.get('join') == 'any' and any(nodes[x]['type'] in ('email', 'create', 'notify')
+                                          for s in n['steps'] for x in descendants(d, s)):
+            error(key, 'repeat_any_effects', 'Use “When every line is done” for lines that send messages '
+                                             'or make drafts.')
+        inside = set(available) | {'line.label', 'line.number'} | {'line.%s' % f for f in line_fields(d, n)}
+        walk(n['steps'], inside)
+        after = set(available) | {'step.%s.count' % key, 'step.%s.done' % key}
+        for s in n['steps']:
+            for x in descendants(d, s):
+                if nodes[x]['type'] == 'task' and len(buttons(nodes[x])) > 1:
+                    after |= {'step.%s.%s__%s' % (key, x, b['key']) for b in buttons(nodes[x])}
+        return after
     walk(order, base | CONTEXT_FIELDS)
     matrix = [n for n in raw if n['type'] == 'matrix']
     if len(matrix) > 1:
@@ -703,6 +818,19 @@ def route_preview(d, values, describe=None):
                                      'reason': 'Skipped · path filters do not match', 'skipped': True})
             elif n['type'] == 'subprocess':
                 visit(n['steps'], n['title'])
+            elif n['type'] == 'repeat':
+                # WF2 P5c: one sample line is walked; the rest do the same.
+                sample = getattr(describe, 'repeat_sample', None)
+                line = sample(n) if sample else {}
+                before = dict(values)
+                values.update({'line.%s' % k: v for k, v in (line.get('values') or {}).items()})
+                values.update({'line.label': line.get('label', ''), 'line.number': 1})
+                visit(n['steps'], line.get('path') or n['title'])
+                stopped.clear()
+                values.clear()
+                values.update(before)
+                rows.append({'id': key, 'title': n['title'], 'type': 'path', 'path': path,
+                             'reason': line.get('after') or '…and the same for each other line'})
             elif n['type'] in ('send_back', 'end'):
                 stopped.append(key)
     visit(d['order'])
@@ -735,5 +863,5 @@ STRUCTURAL = frozenset({
     'branches_outside_group', 'steps_outside_saved_group', 'bad_saved_group',
     'shared_identifier', 'start_position', 'step_missing_reference',
     'group_section_mismatch', 'one_path_only', 'self_nesting', 'section_order',
-    'field_identifier',
+    'field_identifier', 'bad_repeat',
 })

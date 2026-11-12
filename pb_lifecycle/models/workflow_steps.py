@@ -149,7 +149,8 @@ class WorkflowSteps(models.AbstractModel):
         values = run._values()
         def one(match):
             key = match.group(1)
-            if key.startswith('step.'):
+            # WF2 P5c: a line's own details ({{line.amount}}) fill the same way.
+            if key.startswith(('step.', 'line.')):
                 value = values.get(key)
                 if value is None:
                     return match.group(0)
@@ -230,7 +231,8 @@ class WorkflowSteps(models.AbstractModel):
     def _send_back(self, run, step, node):
         """Send back for changes: the target and the steps after it, up to
         this one, start again; the target's person sees the latest note."""
-        d = run.version_id.definition
+        # WF2 P5c: on one line of a repeat, the repeat's steps are the path.
+        d = run._definition()
         count = int(step.choice or 0) if str(step.choice or '').isdigit() else 0
         if count >= D.SEND_BACK_LIMIT:
             raise UserError(_('This has gone back three times. Someone should look at it.'))
@@ -363,10 +365,14 @@ class WorkflowSteps(models.AbstractModel):
             'subject': run.name, 'message_type': 'notification',
             'subtype_id': self.env.ref('mail.mt_note').id,
             'author_id': run.company_id.partner_id.id})
+        # Named on the step first (WF2 P5c): the inbox reads the run as the
+        # person told, and a run lets the people on its steps read it — a
+        # notice from one line of a repeat (or a new process the person did
+        # not start) otherwise failed with the framework's refusal (G72).
+        internal(step).write({'assignee_id': person.id})
         # The approval outbox's way of telling someone in the app, without
         # the email a person set to "by email" would otherwise get.
         target.sudo()._notify_thread_by_inbox(message, [{'id': person.partner_id.id, 'uid': person.id, 'notif': 'inbox'}])
-        internal(step).write({'assignee_id': person.id})
         run._log(_('Told %s in the app.', person.name), step)
         step._finish()
 

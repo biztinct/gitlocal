@@ -23,6 +23,8 @@ class WorkflowConfiguration(models.AbstractModel):
         for n in definition['nodes']:
             for f in n.get('form', {}).get('fields', []):
                 meta['step.%s.%s' % (n['id'], f['id'])] = {**f, 'key': f['id']}
+        # WF2 P5c: a repeat's line details (inside it) and its counts (after it).
+        meta.update(self._repeat_meta(w, definition))
         checks = [('trigger', definition['scope']), ('trigger', definition['trigger'].get('before'))]
         for n in definition['nodes']:
             checks += [(n['id'], n.get('when')), (n['id'], n.get('wait_for'))]
@@ -138,7 +140,7 @@ class WorkflowConfiguration(models.AbstractModel):
             return self.search_records(w.id, term)
         return [{'id': r.id, 'name': r.name} for r in self.env['pb.workflow.run'].search([
             ('workflow_id', '=', w.id), ('company_id', '=', self.env.company.id),
-            ('name', 'ilike', str(term)[:100])], limit=30) if self._readable_run(r)]
+            ('name', 'ilike', str(term)[:100]), ('parent_id', '=', False)], limit=30) if self._readable_run(r)]
 
     @api.model
     def filter_choices(self, workflow_id, field, term='', selected=None):

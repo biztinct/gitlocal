@@ -357,7 +357,8 @@ class WorkflowStageService(models.AbstractModel):
         else:
             row = internal(Pos).create(dict(vals, company_id=company.id, res_model=model, res_id=int(res_id)))
         runs = sysenv[RUN].search([('company_id', '=', company.id), ('state', 'in', ['running', 'waiting', 'failed']),
-                                   ('source_model', '=', model), ('source_id', '=', int(res_id))]) if model != RUN \
+                                   ('source_model', '=', model), ('source_id', '=', int(res_id)),
+                                   ('parent_id', '=', False)]) if model != RUN \
             else sysenv[RUN].browse(int(res_id))
         for target in (runs | (run.sudo() if run else sysenv[RUN])):
             if old:
@@ -606,7 +607,8 @@ class WorkflowStageService(models.AbstractModel):
             waiting = record.sudo()
         else:
             waiting = self.env[RUN].sudo().search([('company_id', '=', company.id), ('source_model', '=', model),
-                                                   ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting'])])
+                                                   ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting']),
+                                                   ('parent_id', '=', False)])
         try:
             allowed = self._may_move(model, record, stage, waiting)
         except (AccessError, UserError):
@@ -633,7 +635,8 @@ class WorkflowStageService(models.AbstractModel):
                 raise UserError(_('This stage belongs to another kind of record.'))
             source = record
             waiting = self.env[RUN].sudo().search([('company_id', '=', company.id), ('source_model', '=', model),
-                                                   ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting'])])
+                                                   ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting']),
+                                                   ('parent_id', '=', False)])
         if stage.enter != 'person':
             raise UserError(_('Records get into “%s” by themselves. Nobody needs to move them.', stage.name))
         if model != RUN:
@@ -671,7 +674,7 @@ class WorkflowStageService(models.AbstractModel):
             stages = self._user_stages(model, self.env['pb.workflow'], company)
             status = self._status_value(contract, record)
             runs = self.env[RUN].sudo().search([('company_id', '=', company.id), ('source_model', '=', model),
-                                                ('source_id', '=', record.id)])
+                                                ('source_id', '=', record.id), ('parent_id', '=', False)])
         position = self._record_position(model, record.id, company)
         entered = set(self.env['pb.workflow.log'].sudo().search([
             ('run_id', 'in', runs.ids), ('stage_id', '!=', False)]).mapped('stage_id').ids) if runs else set()

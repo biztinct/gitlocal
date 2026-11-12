@@ -82,7 +82,8 @@ class WorkflowMyTasks(http.Controller):
         tasks = []
         for step in studio._home_tasks(person):
             data = studio._page_data(step, HOME_UNSUPPORTED)
-            tasks.append({'id': step.id, 'name': step.name, 'kind': step.kind,
+            # WF2 P5c: `data['name']` carries a repeat's line ("Check · Taxi").
+            tasks.append({'id': step.id, 'name': data['name'], 'kind': step.kind,
                           'verb': {'input': 'Fill in', 'confirm': 'Read and confirm'}.get(step.kind, 'To do'),
                           'workflow': data['workflow'], 'due': data['due'], 'late': data['late']})
         notices = [{'id': n.id, 'subject': n.subject or '', 'body': n.body or '',

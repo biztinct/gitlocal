@@ -36,3 +36,4 @@ from . import workflow_schedule_run
 
 # WORKFLOW-2 P5c: the areas' date timetables (D31) and Repeat for each line.
 from . import workflow_timetable
+from . import workflow_repeat

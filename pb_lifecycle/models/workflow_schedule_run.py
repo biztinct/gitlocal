@@ -400,8 +400,8 @@ class WorkflowScheduleStudio(models.AbstractModel):
         return run.initiator_id.name
 
     @api.model
-    def runs(self, workflow_id=None):
-        rows = super().runs(workflow_id)
+    def runs(self, workflow_id=None, show_lines=False):
+        rows = super().runs(workflow_id, show_lines=show_lines)
         scheduled = {r.id: r.scheduled_at for r in self.env['pb.workflow.run'].sudo().browse(
             [row['id'] for row in rows]) if r.scheduled_at}
         for row in rows:

@@ -788,9 +788,12 @@ class WorkflowStudio(models.AbstractModel):
             return False
 
     @api.model
-    def runs(self, workflow_id=None):
+    def runs(self, workflow_id=None, show_lines=False):
         self._progress_permission()
         domain = [('company_id', '=', self._company().id)]
+        # WF2 P5c: a repeat's lines are shown only when asked ("Show lines").
+        if not show_lines:
+            domain.append(('parent_id', '=', False))
         if workflow_id:
             domain.append(('workflow_id', '=', int(workflow_id)))
         return [{'id': r.id, 'name': r.name, 'state': r.state,

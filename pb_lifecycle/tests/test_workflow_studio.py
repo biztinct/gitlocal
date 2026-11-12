@@ -3552,3 +3552,438 @@ class TestWorkflowStudio(TransactionCase):
     def test_wf2p5c_s4_nobody_has_the_new_right(self):
         group = self.env.ref('pb_lifecycle.group_approvals_see_everyone')
         self.assertFalse(group.sudo().user_ids.filtered(lambda u: not u.login.startswith('wf2-')))
+
+    # ------------------------------------------------------- the repeat kit
+    PICK = {'id': 'pick', 'type': 'input', 'title': 'What to check', 'stage': 0, 'owner': {'kind': 'initiator'},
+            'due': 2, 'form': {'fields': [{'id': 'items', 'type': 'multiselect', 'label': 'Things',
+                                           'options': ['A', 'B', 'C', 'D', 'E', 'F', 'G'], 'required': True}]}}
+
+    def rep(self, ident='rep', steps=(), source=None, **kw):
+        return dict({'id': ident, 'type': 'repeat', 'title': 'For each thing', 'stage': 0, 'steps': list(steps),
+                     'source': source or {'kind': 'answers', 'step': 'pick', 'field': 'items'},
+                     'mode': 'together', 'join': 'all', 'max_lines': 50}, **kw)
+
+    def repeat_flow(self, inner, rep_kw=None, before=None, after=(), model='', publish=True):
+        """[before…] → repeat(inner) → [after…], inner steps only in the repeat."""
+        before = [copy.deepcopy(self.PICK)] if before is None else before
+        w, d = self.workflow(before, model=model)
+        rep = self.rep(steps=[n['id'] for n in inner if not n.get('_nested')], **(rep_kw or {}))
+        d['nodes'] += [rep] + [{k: v for k, v in n.items() if k != '_nested'} for n in inner] + list(after)
+        d['order'] += ['rep'] + [n['id'] for n in after]
+        if publish:
+            self.publish(w, d)
+        return w, d
+
+    def check(self, **kw):
+        return self.todo('check', owner={'kind': 'user', 'id': self.staff.id}, title='Check it', **kw)
+
+    def lines_of(self, run, key='rep'):
+        return self.env['pb.workflow.run'].sudo().search([('parent_id', '=', run.id), ('parent_step_key', '=', key)],
+                                                         order='line_round, line_number')
+
+    def as_staff(self):
+        return self.env['pb.workflow.studio'].with_user(self.staff).with_company(self.company)
+
+    def answer_line(self, line, key='check', values=None):
+        step = self.step(line, key)
+        self.assertEqual(step.state, 'waiting', step.error)
+        return self.as_staff().answer(step.id, values or {})
+
+    def started(self, w, items):
+        run = self.start(w)
+        self.service.answer(self.step(run, 'pick').id, {'items': list(items)})
+        return run
+
+    def test_wf2p5c_t1_repeat_basics(self):
+        after = self.todo('after', owner={'kind': 'user', 'id': self.admin.id}, title='After')
+        w, d = self.repeat_flow([self.check(buttons=self.BUTTONS)], after=[after])
+        run = self.started(w, ['A', 'B', 'C', 'D'])
+        lines = self.lines_of(run)
+        self.assertEqual(lines.mapped('line_label'), ['A', 'B', 'C', 'D'])
+        self.assertEqual(lines.mapped('line_number'), [1, 2, 3, 4])
+        self.assertTrue(all(l.state == 'waiting' and l.line_count == 4 for l in lines))
+        self.assertEqual(self.step(run, 'rep').state, 'active')
+        self.assertEqual(run.state, 'waiting')
+        self.assertFalse(self.step(run, 'check'), 'the repeat\'s steps live on its lines only')
+        self.assertEqual(self.step(run, 'after').state, 'pending')
+        for line, choice in zip(lines, ['fine', 'fine', 'missing', 'fine']):
+            self.answer_line(line, values={'outcome': choice})
+        self.assertTrue(all(l.state == 'done' for l in lines))
+        self.assertEqual(self.step(run, 'rep').state, 'done')
+        self.assertEqual(self.step(run, 'after').state, 'waiting')
+        values = run._values()
+        self.assertEqual((values['step.rep.count'], values['step.rep.done']), (4, 4))
+        self.assertEqual((values['step.rep.check__fine'], values['step.rep.check__missing']), (3, 1))
+        self.assertNotIn('step.rep._lines', values)
+        # "any": the first line done carries on, the others stop
+        w2, _d2 = self.repeat_flow([self.check()], rep_kw={'join': 'any'}, after=[dict(after)])
+        run2 = self.started(w2, ['A', 'B', 'C'])
+        lines2 = self.lines_of(run2)
+        self.answer_line(lines2[1])
+        self.assertEqual(lines2.mapped('state'), ['cancelled', 'done', 'cancelled'])
+        self.assertEqual(self.step(run2, 'after').state, 'waiting')
+        self.assertFalse(lines2[0].step_ids.filtered('activity_id'), 'the stopped lines leave no to-do behind')
+        # one by one: in order, the next when the previous is done
+        w3, _d3 = self.repeat_flow([self.check()], rep_kw={'mode': 'one_by_one'})
+        run3 = self.started(w3, ['A', 'B', 'C'])
+        self.assertEqual(self.lines_of(run3).mapped('line_label'), ['A'])
+        self.answer_line(self.lines_of(run3)[0])
+        self.assertEqual(self.lines_of(run3).mapped('line_label'), ['A', 'B'])
+        self.answer_line(self.lines_of(run3)[1])
+        self.answer_line(self.lines_of(run3)[2])
+        self.assertEqual(run3.state, 'done')
+        self.assertEqual(run3._values()['step.rep.done'], 3)
+
+    def receipts(self, claim, count):
+        product = self.env['product.product'].create({'name': 'P5c Taxi', 'can_be_expensed': True, 'standard_price': 0.0})
+        for i in range(count):
+            self.env['hr.expense'].create({
+                'name': 'P5c receipt %s' % (i + 1), 'employee_id': claim.employee_id.id, 'product_id': product.id,
+                'total_amount_currency': 10.0 * (i + 1), 'company_id': self.company.id, 'pb_claim_id': claim.id,
+                'date': fields.Date.today() - timedelta(days=count - i)})
+
+    def claim_repeat(self, inner, rep_kw=None, receipts=4, after=()):
+        self.need(self.CLAIM)
+        self.expense_access(self.admin, self.staff)
+        kw = dict({'source': {'kind': 'area', 'key': 'receipts', 'fields': ['description', 'date', 'category', 'amount']},
+                   'title': 'For each receipt'}, **(rep_kw or {}))
+        w, d = self.repeat_flow(inner, rep_kw=kw, before=[], after=after, model=self.CLAIM)
+        claim = self.claim('draft')
+        self.receipts(claim, receipts)
+        return w, d, claim
+
+    def test_wf2p5c_t1b_receipts_are_snapshotted_at_start(self):
+        w, _d, claim = self.claim_repeat([self.check()])
+        run = self.start(w, claim)
+        lines = self.lines_of(run)
+        self.assertEqual(lines.mapped('line_label')[0][:12], 'P5c receipt ')
+        self.assertEqual(lines[0].line_values['amount'], 10.0)
+        self.receipts(claim, 1)        # a fifth receipt, added later
+        self.service._cron_workflows()
+        self.assertEqual(len(self.lines_of(run)), 4)
+        self.assertEqual(self.lines_of(run)[0].facts['line.amount'], 10.0)
+
+    def test_wf2p5c_t2_repeat_limits_and_refusals(self):
+        w, _d = self.repeat_flow([self.check()], rep_kw={'max_lines': 2})
+        run = self.started(w, ['A', 'B', 'C'])
+        step = self.step(run, 'rep')
+        self.assertEqual(step.state, 'failed')
+        self.assertIn('There are 3 answers, more than the 2 this repeats for', step.error)
+        self.assertFalse(self.lines_of(run))
+        self.assertEqual(run.state, 'failed')
+        # each refused kind gives its own code
+        role_w, _ = self.workflow()
+        stage_target = {'kind': 'yours', 'id': 1}
+        refused = {
+            'repeat_matrix': {'id': 'x', 'type': 'matrix', 'title': 'Approve', 'stage': 0},
+            'repeat_stage_move': {'id': 'x', 'type': 'stage_move', 'title': 'Move', 'stage': 0, 'target': stage_target},
+            'repeat_start': {'id': 'x', 'type': 'start', 'title': 'Start', 'stage': 0, 'workflow_id': role_w.id},
+            'repeat_update': {'id': 'x', 'type': 'update', 'title': 'Set', 'stage': 0, 'field': 'note', 'value': 'x'},
+        }
+        for code, node in refused.items():
+            _w, d = self.repeat_flow([self.check(), node], publish=False)
+            codes = {i['code'] for i in D.validate(d, {'amount', 'urgent'})}
+            self.assertIn(code, codes, (code, codes))
+        # nested repeat, parallel inside
+        _w, d = self.repeat_flow([self.check()], publish=False)
+        inner = self.rep('rep2', steps=['c2'])
+        d['nodes'] += [inner, dict(self.check(), id='c2')]
+        d['nodes'][[n['id'] for n in d['nodes']].index('rep')]['steps'].append('rep2')
+        self.assertIn('repeat_nested', {i['code'] for i in D.validate(d, {'amount', 'urgent'})})
+        _w, d = self.repeat_flow([self.check()], publish=False)
+        par = {'id': 'par', 'type': 'parallel', 'title': 'Both', 'stage': 0, 'join': 'all', 'branches': [
+            self.path('pa', None, ['c3']), self.path('pb', None, ['c4'])]}
+        d['nodes'] += [par, dict(self.check(), id='c3'), dict(self.check(), id='c4')]
+        d['nodes'][[n['id'] for n in d['nodes']].index('rep')]['steps'].append('par')
+        self.assertIn('repeat_parallel', {i['code'] for i in D.validate(d, {'amount', 'urgent'})})
+        # off the main path, a cap over 200, no source, empty
+        _w, d = self.repeat_flow([self.check()], rep_kw={'max_lines': 201, 'source': {'kind': 'everything'}}, publish=False)
+        codes = {i['code'] for i in D.validate(d, {'amount', 'urgent'})}
+        self.assertTrue({'repeat_cap', 'repeat_source'} <= codes, codes)
+        _w, d = self.repeat_flow([], publish=False)
+        self.assertIn('empty_repeat', {i['code'] for i in D.validate(d, {'amount', 'urgent'})})
+        # send back from inside to outside the repeat: refused
+        back = {'id': 'back', 'type': 'send_back', 'title': 'Back', 'stage': 0, 'target': 'pick',
+                'when': self.rule('line.value', 'A')}
+        _w, d = self.repeat_flow([self.check(), back], publish=False)
+        self.assertIn('repeat_send_back_outside', {i['code'] for i in D.validate(d, {'amount', 'urgent'})})
+        # a person on the line only inside a repeat that names one
+        mine = self.todo('mine', owner={'kind': 'line', 'field': 'person'})
+        w5, d5 = self.repeat_flow([mine], publish=False)
+        self.assertIn('line_owner', {i['code'] for i in self.service._validate(w5.sudo(), d5)})
+
+    def test_wf2p5c_t3_repeat_people_inbox_and_pages(self):
+        role = self.env['biz.approval.role'].create({'name': 'P5c checkers', 'key': 'p5c_checkers_%s' % uuid.uuid4().hex[:6],
+                                                     'is_pool': True})
+        other = self.staffer('WF2 P5c checker two')
+        self.env['biz.approval.responsibility'].create({
+            'company_id': self.company.id, 'role_id': role.id, 'scope_key': '', 'scope_label': self.company.name,
+            'pool_user_ids': [(6, 0, (self.staff | other).ids)]})
+        mine = self.todo('check', owner={'kind': 'line', 'field': 'person'}, title='Check in')
+        w, d = self.repeat_flow([mine], before=[], rep_kw={'source': {'kind': 'team', 'id': role.id},
+                                                           'title': 'For each checker'})
+        self.assertFalse([i for i in self.service._validate(w.sudo(), d) if i.get('severity') != 'warning'])
+        run = self.start(w)
+        lines = self.lines_of(run)
+        self.assertEqual(sorted(lines.mapped('line_label')), sorted([self.staff.name, other.name]))
+        by_person = {l.line_values['person']: l for l in lines}
+        step = self.step(by_person[self.staff.id], 'check')
+        self.assertEqual(step.assignee_id, self.staff, 'the line names the person who does it')
+        card = next(c for c in self.as_staff()._inbox_tasks('me') if c['id'] == step.id)
+        self.assertEqual(card['title'], 'Check in · %s' % self.staff.name)
+        self.assertRegex(card['line']['words'], r'^person [12] of 2$')
+        self.assertTrue(card['group']['key'].startswith('rep-%s-' % run.id))
+        # another person can neither see nor answer this line's task
+        self.assertNotIn(step.id, [c['id'] for c in self.env['pb.workflow.studio'].with_user(other)._inbox_tasks('me')])
+        with self.assertRaises(AccessError):
+            self.env['pb.workflow.studio'].with_user(other).with_company(self.company).answer(step.id, {})
+        self.assertEqual(self.as_staff().task_detail(step.id)['line']['label'], self.staff.name)
+        page = self.env['pb.workflow.studio'].sudo()._page_data(step.sudo(), ())
+        self.assertIn('person', page['record'])
+        self.assertIn(self.staff.name, page['name'])
+        # a team inside a repeat still works (first one wins)
+        team_task = self.todo('check', owner={'kind': 'team', 'id': role.id}, title='Check')
+        w2, _d2 = self.repeat_flow([team_task])
+        run2 = self.started(w2, ['A', 'B'])
+        t = self.step(self.lines_of(run2)[0], 'check')
+        self.assertEqual(set(t.team_user_ids.ids), {self.staff.id, other.id})
+        # six line tasks for one person: one card, "Do all in turn"
+        w3, _d3 = self.repeat_flow([self.check()])
+        run3 = self.started(w3, ['A', 'B', 'C', 'D', 'E', 'F'])
+        items = self.env['pb.approval.inbox'].with_user(self.staff)._extra_items('me')
+        grouped = [c for c in items if c.get('kind') == 'task_group']
+        self.assertEqual(len(grouped), 1)
+        self.assertEqual(grouped[0]['group_count'], 6)
+        self.assertEqual(len(grouped[0]['group']['ids']), 6)
+        self.assertEqual(grouped[0]['title'], 'Check it · 6 to do')
+        self.assertEqual(self.lines_of(run3)[0].step_ids.filtered(lambda s: s.key == 'check').id, grouped[0]['id'])
+        counts = self.env['pb.approval.inbox'].with_user(self.staff)._extra_counts('me')
+        self.assertGreaterEqual(counts['mine'], 6 + 1, 'counts still count every task')
+
+    def test_wf2p5c_t4_failed_line_and_stop_inside(self):
+        absent = self.staffer('WF2 P5c away')
+        guarded = self.todo('check', owner={'kind': 'user', 'id': absent.id}, title='Check it',
+                            when=self.rule('line.value', 'B'))
+        plain = self.todo('also', owner={'kind': 'user', 'id': self.staff.id}, title='Also')
+        w, _d = self.repeat_flow([guarded, plain])
+        w2, _d2 = self.repeat_flow([dict(guarded), dict(plain)])
+        absent.write({'active': False})
+        run = self.started(w, ['A', 'B', 'C'])
+        lines = self.lines_of(run)
+        self.assertEqual(lines.mapped('state'), ['waiting', 'failed', 'waiting'])
+        rep = self.step(run, 'rep')
+        self.assertEqual((rep.state, rep.error), ('failed', '1 of 3 lines needs attention.'))
+        self.assertEqual(run.state, 'failed')
+        progress = self.service.progress(run.id)
+        row = next(r for r in progress['steps'] if r['key'] == 'rep')
+        self.assertEqual([x['state'] for x in row['lines']], ['waiting', 'failed', 'waiting'])
+        self.assertTrue(row['lines'][1]['failed_step_id'])
+        # the healthy lines carry on meanwhile
+        self.answer_line(lines[0], 'also')
+        # Retry that line only
+        absent.write({'active': True})
+        self.service.run_action(lines[1].id, 'retry', row['lines'][1]['failed_step_id'])
+        self.assertEqual(lines[1].state, 'waiting')
+        self.assertEqual(self.step(run, 'rep').state, 'active')
+        self.assertEqual(run.state, 'waiting')
+        self.assertEqual(lines[0].state, 'done', 'the other lines were not touched')
+        # Retry on the repeat itself retries every line that needs it
+        absent.write({'active': False})
+        run2 = self.started(w2, ['B', 'C'])
+        absent.write({'active': True})
+        self.service.run_action(run2.id, 'retry', self.step(run2, 'rep').id)
+        self.assertEqual(self.lines_of(run2).mapped('state'), ['waiting', 'waiting'])
+        # "Stop here" inside ends that line only
+        stop = {'id': 'stop', 'type': 'end', 'title': 'Not needed', 'stage': 0, 'reason': 'Skip B',
+                'when': self.rule('line.value', 'B')}
+        w3, _d3 = self.repeat_flow([stop, self.check()], after=[self.todo('after', owner={'kind': 'user', 'id': self.admin.id})])
+        run3 = self.started(w3, ['A', 'B'])
+        lines3 = self.lines_of(run3)
+        self.assertEqual(lines3.mapped('state'), ['waiting', 'done'])
+        self.assertEqual(run3.state, 'waiting')
+        self.answer_line(lines3[0])
+        self.assertEqual(self.step(run3, 'after').state, 'waiting')
+        self.assertEqual(run3._values()['step.rep.done'], 2)
+
+    def test_wf2p5c_t5_line_values_in_rules_notices_and_after(self):
+        tell = {'id': 'tell', 'type': 'notify', 'title': 'Tell', 'stage': 0, 'owner': {'kind': 'user', 'id': self.staff.id},
+                'text': 'Please look at {{line.value}} ({{line.number}})'}
+        branch = self.choose('which', [self.path('p_b', self.rule('line.value', 'B'), ['tell']),
+                                       self.path('p_else', None, ['check'])])
+        check = self.check(buttons=self.BUTTONS)
+        after = self.choose('after', [
+            self.path('p_many', {'match': 'all', 'rules': [{'field': 'step.rep.check__missing', 'op': 'gte', 'value': 1}]},
+                      ['fix']),
+            self.path('p_ok', None, ['done'])])
+        fix = self.todo('fix', owner={'kind': 'user', 'id': self.admin.id}, title='Fix')
+        done = self.todo('done', owner={'kind': 'user', 'id': self.admin.id}, title='All good')
+        w, d = self.repeat_flow([dict(branch), dict(tell, _nested=True), dict(check, _nested=True)],
+                                after=[after, fix, done], publish=False)
+        d['order'] = [k for k in d['order'] if k not in ('fix', 'done')]
+        self.assertFalse([i for i in D.validate(d, {'amount', 'urgent'})], D.validate(d, {'amount', 'urgent'}))
+        self.publish(w, d)
+        run = self.started(w, ['A', 'B'])
+        a, b = self.lines_of(run)
+        self.assertEqual(self.step(b, 'tell').state, 'done')
+        note = self.env['mail.message'].sudo().search([('body', 'ilike', 'Please look at B (2)')], limit=1)
+        self.assertTrue(note, 'the notice was filled with the line')
+        self.answer_line(a, values={'outcome': 'missing'})
+        self.assertEqual(self.step(run, 'fix').state, 'waiting')
+        self.assertEqual(self.step(run, 'done').state, 'skipped')
+        # Try it out walks one sample line and says the rest do the same
+        rows = self.service.preview(w.id, {'step.pick.items': ['A']})['steps']
+        self.assertTrue(any(r.get('reason', '').startswith('…and the same') for r in rows), rows)
+        self.assertTrue(any(r['id'] == 'rep' and r.get('reason', '').startswith('For each answer to “Things”') for r in rows), rows)
+
+    def test_wf2p5c_t6_generic_sources(self):
+        form = {'id': 'pick', 'type': 'input', 'title': 'Costs', 'stage': 0, 'owner': {'kind': 'initiator'}, 'due': 2,
+                'form': {'fields': [{'id': 'rows', 'type': 'rows', 'label': 'Cost lines', 'required': True}]}}
+        check = self.check(when={'match': 'all', 'rules': [{'field': 'line.amount', 'op': 'gt', 'value': 50}]})
+        w, d = self.repeat_flow([check], before=[form], rep_kw={'source': {'kind': 'answers', 'step': 'pick', 'field': 'rows'}})
+        run = self.start(w)
+        self.service.answer(self.step(run, 'pick').id, {'rows': [{'description': 'Hotel', 'amount': 120},
+                                                                 {'description': 'Bus', 'amount': 5}]})
+        lines = self.lines_of(run)
+        self.assertEqual(lines.mapped('line_label'), ['Hotel', 'Bus'])
+        self.assertEqual(lines.mapped('state'), ['waiting', 'done'], 'line.amount steers each line')
+        words = self.service._repeat_words('', d['nodes'][[n['id'] for n in d['nodes']].index('rep')], d)
+        self.assertEqual(words['each'], 'For each line of “Cost lines”')
+        # no answers at all: nothing to repeat, carry on
+        w2, _d2 = self.repeat_flow([self.check()], before=[dict(self.PICK, form={'fields': [dict(
+            self.PICK['form']['fields'][0], required=False)]})], after=[self.todo('after', owner={'kind': 'user', 'id': self.admin.id})])
+        run2 = self.start(w2)
+        self.service.answer(self.step(run2, 'pick').id, {})
+        self.assertEqual(self.step(run2, 'rep').state, 'done')
+        self.assertEqual(self.step(run2, 'after').state, 'waiting')
+
+    def test_wf2p5c_t7_lines_are_not_runs_anywhere_people_count_runs(self):
+        w, _d, claim = self.claim_repeat([self.check()], receipts=3)
+        run = self.start(w, claim)
+        lines = self.lines_of(run)
+        self.assertEqual(len(lines), 3)
+        self.assertEqual([r['id'] for r in self.service.runs(w.id)], run.ids)
+        shown = self.service.runs(w.id, show_lines=True)
+        self.assertEqual(sorted(r['id'] for r in shown), sorted((run | lines).ids))
+        self.assertTrue(all(r.get('line') for r in shown if r['id'] in lines.ids))
+        self.assertEqual([r['id'] for r in self.service.record_runs(self.CLAIM, claim.id)['runs']], run.ids)
+        strip = self.strip(self.admin, self.CLAIM, claim.id)
+        self.assertEqual(len(strip['workflows']), 1)
+        self.assertEqual(strip['workflows'][0]['sentence'], '0 of 3 receipts done')
+        mine = self.strip(self.staff, self.CLAIM, claim.id)['workflows'][0]
+        self.assertTrue(mine['task_id'])
+        self.assertTrue(mine['sentence'].startswith('0 of 3 receipts done · next for you: Check it · P5c receipt 1'))
+        self.answer_line(lines[0])
+        self.assertEqual(self.strip(self.admin, self.CLAIM, claim.id)['workflows'][0]['sentence'], '1 of 3 receipts done')
+        self.assertFalse(self.env['pb.workflow.event'].sudo().search([('run_id', 'in', lines.ids)]),
+                         'a line has no start of its own, so it never counts as "already running"')
+        self.answer_line(lines[1])
+        self.answer_line(lines[2])
+        report = self.service.time_report(w.id, 'all')
+        self.assertEqual(report['runs'], 1, 'the lines are not counted as runs')
+        self.assertFalse([s for s in report['steps'] if s['key'] == 'check'], 'line steps are not ranked one by one')
+
+    def test_wf2p5c_t8_isolation_guards_and_plain_words(self):
+        w, _d = self.repeat_flow([self.check()])
+        run = self.started(w, ['A', 'B'])
+        for line in self.lines_of(run):
+            self.assertEqual((line.company_id, line.workflow_id, line.version_id, line.initiator_id),
+                             (run.company_id, run.workflow_id, run.version_id, run.initiator_id))
+        other_company = self.env['res.company'].create({'name': 'WF2 P5c elsewhere'})
+        stranger = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'P5c stranger', 'login': 'wf2-p5c-stranger-%s' % uuid.uuid4(), 'company_id': other_company.id,
+            'company_ids': [(6, 0, other_company.ids)], 'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        self.assertFalse(self.env['pb.workflow.studio'].with_user(stranger)._inbox_tasks('me'))
+        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        for path in ('pb_lifecycle/models/workflow_repeat.py', 'pb_me_expense/models/workflow_lines.py',
+                     'pb_lifecycle/models/workflow_timetable.py'):
+            text = open(os.path.join(root, path), encoding='utf-8').read()
+            self.assertFalse(re.search(r'\b(source|record|records|rec|exp)\b\.(state|stage_id)\s*=[^=]', text), path)
+            self.assertFalse(re.search(r'\b(source|record|records|rec|exp)\b(\.\w+\([^)]*\))*\.write\(', text), path)
+            for s in re.findall(r"_\(\s*'([^']*)'", text):
+                self.assertNotRegex(s, r'(?i)odoo|\bcron\b|sub-run|\bloop\b|iteration|\bindex\b|\bnode\b|\bchild\b', s)
+        schedule = open(os.path.join(root, 'pb_lifecycle/static/workflow/repeat.js'), encoding='utf-8').read()
+        for s in re.findall(r"'([^'<>{}$]{12,})'", schedule):
+            self.assertNotRegex(s, r'(?i)odoo|sub-run|\bloop\b|iteration|\bindex\b|\bchild\b', s)
+
+    def test_wf2p5c_t9_scheduled_repeat_counts_parents_and_starts_lines_once(self):
+        self.need(self.CLAIM)
+        self.expense_access(self.admin, self.staff)
+        claims = [self.claim('draft') for _i in range(2)]
+        for c in claims:
+            self.receipts(c, 3)
+        scope = {'match': 'all', 'rules': [{'field': 'id', 'op': 'in', 'value': [c.id for c in claims]}]}
+        w, d = self.scheduled([], model=self.CLAIM, scope=scope)
+        rep = self.rep(steps=['check'], source={'kind': 'area', 'key': 'receipts', 'fields': ['amount']}, title='For each receipt')
+        d['nodes'] += [rep, self.check()]
+        d['order'].append('rep')
+        self.publish(w, d)
+        preview = self.service.schedule_preview(w.id)
+        self.assertEqual(preview['count'], 2, 'records are counted, never lines')
+        w.sudo().last_tick_at = fields.Datetime.now() - timedelta(hours=25)
+        Studio = self.env['pb.workflow.studio'].sudo()
+        Studio._cron_workflows()
+        Studio._cron_workflows()
+        parents = self.env['pb.workflow.run'].sudo().search([('workflow_id', '=', w.id), ('parent_id', '=', False)])
+        self.assertEqual(len(parents), 2)
+        lines = self.env['pb.workflow.run'].sudo().search([('workflow_id', '=', w.id), ('parent_id', '!=', False)])
+        self.assertEqual(len(lines), 6, 'three lines each, started once over two worker passes')
+        self.assertEqual(len(set(lines.mapped('line_start_key'))), 6)
+        self.assertEqual(len(w.sudo().schedule_log), 1)
+
+    def test_wf2p5c_t10_send_back_inside_a_line(self):
+        form = {'id': 'note', 'type': 'input', 'title': 'Describe it', 'stage': 0, 'owner': {'kind': 'user', 'id': self.staff.id},
+                'due': 2, 'form': {'fields': [{'id': 'words', 'type': 'text', 'label': 'Words', 'required': True}]}}
+        check = self.todo('check', owner={'kind': 'user', 'id': self.admin.id}, title='Check it', buttons=self.BUTTONS)
+        back = {'id': 'back', 'type': 'send_back', 'title': 'Back', 'stage': 0, 'target': 'note'}
+        route = self.choose('route', [self.path('p_missing', self.rule('step.check.outcome', 'missing'), ['back']),
+                                      self.path('p_ok', None, [])])
+        w, d = self.repeat_flow([form, check, route, dict(back, _nested=True)], publish=False)
+        self.assertFalse(D.validate(d, {'amount', 'urgent'}))
+        self.publish(w, d)
+        run = self.started(w, ['A', 'B'])
+        a, b = self.lines_of(run)
+        for line in (a, b):
+            self.as_staff().answer(self.step(line, 'note').id, {'words': 'first try'})
+        self.service.answer(self.step(a, 'check').id, {'outcome': 'missing', 'comment': 'Say more'})
+        self.assertEqual(self.step(a, 'note').state, 'waiting', 'line A went back to its own form')
+        self.assertEqual(self.step(a, 'note').answers['_sent_back']['note'], 'Say more')
+        self.assertEqual(self.step(b, 'check').state, 'waiting', 'line B was not touched')
+        self.assertEqual(self.step(b, 'note').state, 'done')
+        self.assertEqual(self.step(run, 'rep').state, 'active')
+        self.as_staff().answer(self.step(a, 'note').id, {'words': 'better'})
+        self.service.answer(self.step(a, 'check').id, {'outcome': 'fine'})
+        self.service.answer(self.step(b, 'check').id, {'outcome': 'fine'})
+        self.assertEqual(run.state, 'done')
+
+    def test_wf2p5c_t11_no_repeat_is_byte_identical(self):
+        """Three definitions without a repeat: validation and Try it out
+        output byte-identical to the code before this phase (golden file
+        written from that code)."""
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'wf2p5c_no_repeat_baseline.json')
+        cases = json.load(open(path, encoding='utf-8'))
+        self.assertEqual(len(cases), 3)
+        for case in cases:
+            d = case['definition']
+            now = {'validate': D.validate(d, {'amount', 'urgent'}, {}),
+                   'preview': [D.route_preview(d, v) for v in ({'amount': 50, 'urgent': False},
+                                                               {'amount': 500, 'urgent': True, 'step.check.outcome': 'missing'})]}
+            self.assertEqual(json.dumps(now, sort_keys=True), json.dumps({k: case[k] for k in ('validate', 'preview')}, sort_keys=True))
+
+    def test_wf2p5c_t12_two_hundred_lines_in_one_pass(self):
+        import time
+        w, _d, claim = self.claim_repeat([self.check()], rep_kw={'max_lines': 200}, receipts=200)
+        began = time.time()
+        run = self.start(w, claim)
+        started = time.time() - began
+        self.assertEqual(len(self.lines_of(run)), 200)
+        began = time.time()
+        self.env['pb.workflow.studio'].sudo()._cron_workflows()
+        worker = time.time() - began
+        began = time.time()
+        items = self.env['pb.approval.inbox'].with_user(self.staff)._extra_items('me')
+        inbox = time.time() - began
+        self.assertEqual(len([c for c in items if c.get('kind') == 'task_group']), 1)
+        print('WF2P5C_PERF=' + json.dumps({'start_200_lines_s': round(started, 2), 'worker_pass_s': round(worker, 2),
+                                           'inbox_200_tasks_s': round(inbox, 2), 'inbox_cards': len(items)}))
+        self.assertLess(started, 120)
+        self.assertLess(worker, 60)

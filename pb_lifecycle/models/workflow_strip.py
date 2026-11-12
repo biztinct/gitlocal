@@ -180,7 +180,8 @@ class WorkflowStrip(models.AbstractModel):
         if not stages:
             return []
         waiting = self.env[RUN].sudo().search([('company_id', '=', company.id), ('source_model', '=', model),
-                                               ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting'])])
+                                               ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting']),
+                                               ('parent_id', '=', False)])
         rows = []
         for stage in stages:
             try:
@@ -260,7 +261,8 @@ class WorkflowStrip(models.AbstractModel):
     # ------------------------------------------------------- staff strip
     def _strip_has_something(self, model, res_id, company):
         runs = self.env[RUN].sudo().search([('company_id', '=', company.id), ('source_model', '=', model),
-                                            ('source_id', '=', int(res_id))], order='id desc', limit=MAX_RUNS)
+                                            ('source_id', '=', int(res_id)), ('parent_id', '=', False)],
+                                           order='id desc', limit=MAX_RUNS)
         position = self.env['pb.workflow.record.stage'].sudo().search([
             ('company_id', '=', company.id), ('res_model', '=', model), ('res_id', '=', int(res_id))], limit=1)
         return runs, position
@@ -450,7 +452,8 @@ class WorkflowStrip(models.AbstractModel):
         if str(service._status_value(contract, record)) != str(stage.anchor_value):
             return {'ok': False, 'code': 'gone', 'message': _('This has moved on, so it cannot go to %s now.', stage.name)}
         waiting = service.env[RUN].search([('company_id', '=', company.id), ('source_model', '=', model),
-                                           ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting'])])
+                                           ('source_id', '=', record.id), ('state', 'in', ['running', 'waiting']),
+                                           ('parent_id', '=', False)])
         if not self._home_names(person, record, stage, waiting[:1].initiator_id if waiting else None):
             return {'ok': False, 'code': 'who', 'message': _('Only %(who)s can move this to %(stage)s.',
                                               who=service._lower_words(service._owner_words(model, stage.enter_owner)), stage=stage.name)}
@@ -511,7 +514,8 @@ class WorkflowStripHome(models.AbstractModel):
         model = src['model']
         ids = [r['id'] for r in rows]
         Run, Pos = self.env[RUN].sudo(), self.env['pb.workflow.record.stage'].sudo()
-        runs = Run.search([('source_model', '=', model), ('source_id', 'in', ids)], order='id desc')
+        runs = Run.search([('source_model', '=', model), ('source_id', 'in', ids), ('parent_id', '=', False)],
+                          order='id desc')
         positions = Pos.search([('res_model', '=', model), ('res_id', 'in', ids)])
         if not runs and not positions:
             return

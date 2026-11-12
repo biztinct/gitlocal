@@ -6,3 +6,5 @@ from . import pb_me_home
 from . import workflow_contract
 # WF2 P2b (D6): approved / refused / paid emails to the employee.
 from . import expense_messages
+# WF2 P5c: a claim's receipts, for "Repeat for each…".
+from . import workflow_lines

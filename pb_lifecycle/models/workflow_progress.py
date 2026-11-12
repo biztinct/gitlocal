@@ -110,7 +110,7 @@ class WorkflowProgress(models.AbstractModel):
             return {'runs': [], 'approvals': [], 'can_design': False, 'record_stages': [], 'record_stage': None}
         source = self._source(model, record_id)
         domain = [('source_model', '=', model), ('source_id', '=', int(record_id)),
-                  ('company_id', '=', self.env.company.id)]
+                  ('company_id', '=', self.env.company.id), ('parent_id', '=', False)]
         runs = self.env['pb.workflow.run'].search(domain, limit=50)
         # Native approval history is reused even for records predating Studio.
         approvals = self.env['biz.approval.request'].search([
