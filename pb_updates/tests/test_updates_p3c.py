@@ -121,8 +121,11 @@ class TestUpdatesP3cBankApprovers(P3cCommon):
         """No setting written on the database: the platform's default name."""
         self.env['ir.config_parameter'].sudo().set_param(
             'pb_tenancy.recovery_login', '')
-        default = self._user(RA.RECOVERY_LOGIN_DEFAULT, (
-            'base.group_user', 'base.group_system'), self.company)
+        # The tenant databases already carry this login (p0clone, template).
+        default = self.env['res.users'].sudo().with_context(active_test=False).search(
+            [('login', '=', RA.RECOVERY_LOGIN_DEFAULT)], limit=1) or self._user(
+                RA.RECOVERY_LOGIN_DEFAULT, ('base.group_user', 'base.group_system'),
+                self.company)
         Apply = self.env['pb.records.apply']
         self.assertEqual(Apply._bank_excluded(default), 'support')
         self.assertEqual(Apply._bank_excluded(self.second), '')

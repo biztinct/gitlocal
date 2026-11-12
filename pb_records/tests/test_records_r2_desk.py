@@ -22,7 +22,8 @@ from unittest.mock import patch
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.modules.module import get_module_path
-from odoo.addons.pb_records.tests.bank_second import approve_bank
+from odoo.addons.pb_records.tests.bank_second import (
+    approve_bank, ensure_second_person)
 from odoo.tests import TransactionCase, tagged
 
 
@@ -60,6 +61,9 @@ class TestRecordsR2Desk(TransactionCase):
         # `test_records_approval.py`.
         cls.env['biz.approval.seed'].sudo().set_no_approval_needed(
             cls.env.company, 'records')
+        # UPDATES P3c: a Finance holder who may approve bank details (the
+        # platform support login, p0clone's only one, is never asked).
+        ensure_second_person(cls.env, cls.env.company)
 
         # A boolean destination that exists on THIS build. `hr.employee`'s
         # boolean set differs between deployments, so the fixture picks one from

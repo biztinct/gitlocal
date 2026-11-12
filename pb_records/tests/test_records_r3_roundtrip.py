@@ -25,7 +25,8 @@ import re
 from unittest.mock import patch
 
 from odoo.modules.module import get_module_path
-from odoo.addons.pb_records.tests.bank_second import approve_bank
+from odoo.addons.pb_records.tests.bank_second import (
+    approve_bank, ensure_second_person)
 from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.pb_records.models import pb_records_io
@@ -61,6 +62,9 @@ class TestRecordsR3RoundTrip(TransactionCase):
         # `test_records_approval.py`.
         cls.env['biz.approval.seed'].sudo().set_no_approval_needed(
             cls.env.company, 'records')
+        # UPDATES P3c: a Finance holder who may approve bank details (the
+        # platform support login, p0clone's only one, is never asked).
+        ensure_second_person(cls.env, cls.env.company)
         cls.Desk = cls.env['pb.records.desk']
         cls.Config = cls.env['hr.formula.config']
         cls.Rule = cls.env['hr.formula.rule']

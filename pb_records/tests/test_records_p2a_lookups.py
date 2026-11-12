@@ -22,7 +22,8 @@ import json
 import os
 
 from odoo.modules.module import get_module_path
-from odoo.addons.pb_records.tests.bank_second import approve_bank
+from odoo.addons.pb_records.tests.bank_second import (
+    approve_bank, ensure_second_person)
 from odoo.tests import TransactionCase, tagged
 
 GOLDEN = ('pb_records', 'tests', 'data', 'p2a_golden_preview.json')
@@ -46,6 +47,9 @@ class TestRecordsP2aLookups(TransactionCase):
         super().setUpClass()
         cls.env['biz.approval.seed'].sudo().set_no_approval_needed(
             cls.env.company, 'records')
+        # UPDATES P3c: a Finance holder who may approve bank details (the
+        # platform support login, p0clone's only one, is never asked).
+        ensure_second_person(cls.env, cls.env.company)
         cls.company = cls.env.company
         cls.other = cls.env['res.company'].create({'name': 'P2A Other Co'})
         cls.Desk = cls.env['pb.records.desk'].with_context(
