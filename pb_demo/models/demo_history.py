@@ -120,6 +120,7 @@ class PbDemoGenerator(models.TransientModel):
 
         months = list(_HISTORY_MONTHS)
         has_fiv = 'formula_input_values' in Slip._fields
+        has_fcv = 'formula_computed_values' in Slip._fields
         total = 0
         for mi in months:
             m_start, m_end = self._month_bounds(mi)
@@ -151,6 +152,8 @@ class PbDemoGenerator(models.TransientModel):
                     try:
                         mc, _l = mslip._evaluate_rules_with_dependencies(mid_rules, dict(iv))
                         mslip._create_payslip_lines_from_formulas(mid_rules, mc)
+                        if has_fcv:   # UPDATES P5b — the engine's own results, as every computed payslip keeps
+                            mslip.formula_computed_values = json.dumps(mc, default=str)
                         advpay = float(mc.get('ADVPAY', 0.0))
                     except Exception as ex:  # pragma: no cover
                         _logger.warning('pb_demo: mid compute failed for %s: %s', ei['name'], ex)
@@ -167,6 +170,8 @@ class PbDemoGenerator(models.TransientModel):
                         eslip._create_payslip_lines_from_formulas(end_rules, ec)
                         if has_fiv:
                             eslip.formula_input_values = json.dumps(iv_end)
+                        if has_fcv:   # UPDATES P5b
+                            eslip.formula_computed_values = json.dumps(ec, default=str)
                     except Exception as ex:  # pragma: no cover
                         _logger.warning('pb_demo: end compute failed for %s: %s', ei['name'], ex)
                     if run_state == 'done':

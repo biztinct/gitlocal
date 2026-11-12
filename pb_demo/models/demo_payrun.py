@@ -32,6 +32,15 @@ _logger = logging.getLogger(__name__)
 _ADVISORY_HOOKS = ('_yw_append_exceptions', '_close_append_exceptions')
 
 
+def _computed_json(values):
+    """UPDATES P5b — a demo payslip keeps its calculation's own results, as
+    every payslip the payroll engine computes does (`formula_computed_values`).
+    Values a payslip does not print (the taxable base, TXBASE) live only
+    there; the Updates year-to-date view reads them from it. Lines and totals
+    are made from the same values and are not touched."""
+    return json.dumps(values, default=str)
+
+
 class PbPayrunWizardDemo(models.AbstractModel):
     _inherit = 'pb.payrun.wizard'
 
@@ -428,6 +437,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
         loanmap = self._loans_for(list(cmap))
         end_rules = end_cfg.rule_ids
         has_fiv = 'formula_input_values' in Slip._fields
+        has_fcv = 'formula_computed_values' in Slip._fields
 
         rule_cache = {}
         exceptions, work = [], []
@@ -460,6 +470,8 @@ class PbPayrunWizardDemo(models.AbstractModel):
             slip.with_context(pb_salary_rule_cache=rule_cache)._create_payslip_lines_from_formulas(end_rules, vc)
             if has_fiv:
                 slip.formula_input_values = json.dumps(iv)
+            if has_fcv:
+                slip.formula_computed_values = _computed_json(vc)   # UPDATES P5b
             self._pb_demo_oneoffs_done(slip, oneoff_token)
 
         def failed(item, ex):
@@ -567,6 +579,7 @@ class PbPayrunWizardDemo(models.AbstractModel):
 
         end_rules = end_cfg.rule_ids
         has_fiv = 'formula_input_values' in Slip._fields
+        has_fcv = 'formula_computed_values' in Slip._fields
         emps = self.env['hr.employee'].sudo().browse(list(cmap))
         exceptions, computed = [], 0
         for e in emps:
@@ -594,6 +607,8 @@ class PbPayrunWizardDemo(models.AbstractModel):
                     slip._create_payslip_lines_from_formulas(end_rules, vc)
                     if has_fiv:
                         slip.formula_input_values = json.dumps(iv)
+                    if has_fcv:
+                        slip.formula_computed_values = _computed_json(vc)   # UPDATES P5b
                     self._pb_demo_oneoffs_done(slip, oneoff_token)
                 computed += 1
             except Exception as ex:  # pragma: no cover
