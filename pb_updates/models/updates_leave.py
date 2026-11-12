@@ -20,10 +20,18 @@ it made. Rails (handover §3):
   * never leave taken or requested, accrual, carry-over or the January
     rollover: no `hr.leave` is created or changed here, and an undo only
     refuses an allocation nothing has been taken or asked for against;
-  * written as the PROPOSER, with their own rights (the precedent of
-    `pb.records.apply._writer_desk`): the approver approves, the proposer's
-    Time Off administrator role is what the policy layer and the allocation
-    flow check;
+  * written as the PROPOSER (the precedent of `pb.records.apply._writer_desk`):
+    the approver approves, and the audit names the proposer. A Time Off
+    administrator writes with their own rights, as in P4. An HR officer
+    (owner D23, 2026-11-13: HR officers may send; the approval route still
+    decides) has no Time Off rights of their own, so for exactly the two
+    writes below — the policy layer's `post_opening_balance` and one
+    allocation's create + approve — the officer's own user runs with
+    superuser rights (`su`), AFTER the row's verdict was read again and two
+    officer-only rails held: the person works in one of the officer's
+    companies, and it is not the officer's own balance (the native Time Off
+    rule: only an administrator approves their own allocation). Nothing else
+    runs elevated; undo stays with Time Off administrators;
   * no email: allocations from a sheet are created and approved quietly
     (no tracking messages, activities closed without notice).
 
@@ -55,6 +63,10 @@ PARTS = ('avail', 'carry', 'taken')
 #: The leave policy layer's own right (`pb_timeoff` `MANAGER`), which is also
 #: the right that may approve any allocation: Time Off administrator.
 MANAGER = 'hr_holidays.group_hr_holidays_manager'
+#: Who may SEND a leave sheet (owner D23, 2026-11-13): an HR officer — the
+#: Employees officer right, which Time Off officers and administrators hold
+#: too (their groups imply it). It is the role that could already CHECK one.
+SENDER = 'hr.group_hr_user'
 #: A cell above this is refused (or the hour equivalent).
 MAX_DAYS = 365.0
 #: Hours in a day when the person has no working schedule to ask.
@@ -197,8 +209,9 @@ class PbUpdatesLeaveLine(models.Model):
         if not rows:
             return 0, 0, 0
         apply_rec = rows.mapped('apply_id')[:1]
-        if actor.id != SUPERUSER_ID and not actor.has_group(MANAGER):
-            why = _("%s no longer has the Time Off administrator role, so no balance was set. "
+        own_rights = actor.id == SUPERUSER_ID or actor.has_group(MANAGER)
+        if not own_rights and not actor.has_group(SENDER):
+            why = _("%s no longer has the HR officer role, so no balance was set. "
                     "Ask somebody who has it to send the sheet again.") % (actor.name or '')
             rows.write({'state': 'refused', 'reason': why})
             rows._log(why)
@@ -209,7 +222,12 @@ class PbUpdatesLeaveLine(models.Model):
         ctx = dict(self.env.context, **QUIET)
         if companies:
             ctx['allowed_company_ids'] = companies
-        aenv = self.env(user=actor.id, su=actor.id == SUPERUSER_ID, context=ctx)
+        # D23: an HR officer's balances are written as the officer with
+        # superuser rights, for the two writes of `_write_one` only (module
+        # docstring); a Time Off administrator keeps their own rights.
+        aenv = self.env(user=actor.id, su=actor.id == SUPERUSER_ID or not own_rights,
+                        context=ctx)
+        officer = None if own_rights else actor
         Desk = self.env['pb.updates.desk'].sudo()
         reference = _("Updates: “%(name)s” (%(ref)s)", name=rows[:1].batch_id.name or '',
                       ref=(apply_rec.name if apply_rec else '') or '')
@@ -218,7 +236,7 @@ class PbUpdatesLeaveLine(models.Model):
             why = ''
             try:
                 with self.env.cr.savepoint():
-                    row._write_one(aenv, Desk, reference)
+                    row._write_one(aenv, Desk, reference, officer=officer)
             except _Refused as error:
                 why = str(error)
             except UserError as error:
@@ -244,16 +262,23 @@ class PbUpdatesLeaveLine(models.Model):
         self.sudo().write({'state': 'refused', 'reason': why})
         self._log(_("Could not be set: %s") % why)
 
-    def _write_one(self, aenv, Desk, reference):
+    def _write_one(self, aenv, Desk, reference, officer=None):
         """Write ONE row as `aenv`'s user. Raises `_Refused` with a sentence
-        when the rails say no; the caller's savepoint undoes any part of it."""
+        when the rails say no; the caller's savepoint undoes any part of it.
+
+        `officer`: the HR officer whose balances are written elevated (D23),
+        or None for a Time Off administrator (own rights)."""
         self.ensure_one()
         row = self.sudo()
         self.env.cr.execute('SELECT pg_advisory_xact_lock(hashtext(%s))',
                             ['pb.leave.balance:%s:%s' % (row.employee_id.id, row.leave_type_id.id)])
-        verdict = Desk._leave_row_check(row)
+        verdict = Desk._leave_row_check(row, sender=officer)
         if verdict:
             raise _Refused(verdict)
+        if officer is not None and row.company_id.id not in officer.sudo().company_ids.ids:
+            raise _Refused(_("%(who)s works in %(company)s, which %(sender)s no longer works in, "
+                             "so this balance was not set.", who=row.employee_id.name or '',
+                             company=row.company_id.name or '', sender=officer.name or ''))
         employee = aenv['hr.employee'].browse(row.employee_id.id)
         leave_type = aenv['hr.leave.type'].browse(row.leave_type_id.id)
         Alloc = aenv['hr.leave.allocation']

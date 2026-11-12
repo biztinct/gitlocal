@@ -5835,10 +5835,10 @@ msgstr "tổng cộng %s"
 #. odoo-python
 #: code:addons/pb_updates/models/updates_leave.py:0
 msgid ""
-"%s no longer has the Time Off administrator role, so no balance was set. Ask"
-" somebody who has it to send the sheet again."
+"%s no longer has the HR officer role, so no balance was set. Ask somebody "
+"who has it to send the sheet again."
 msgstr ""
-"%s không còn vai trò quản trị Nghỉ phép, nên không số dư nào được đặt. Hãy "
+"%s không còn vai trò Cán bộ nhân sự, nên không số dư nào được đặt. Hãy "
 "nhờ người có vai trò này gửi lại bảng tính."
 
 #. module: pb_updates
@@ -6670,17 +6670,17 @@ msgstr "Đã đặt: %(balance)s %(type)s tính đến %(date)s."
 #. odoo-python
 #: code:addons/pb_updates/models/updates_leave_desk.py:0
 msgid ""
-"Setting leave balances needs the Time Off administrator role. You can still "
-"check a sheet and see what it would set."
+"Setting leave balances needs the HR officer role. You can still check a "
+"sheet and see what it would set."
 msgstr ""
-"Đặt số dư phép cần vai trò quản trị Nghỉ phép. Bạn vẫn có thể kiểm tra bảng "
+"Đặt số dư phép cần vai trò Cán bộ nhân sự. Bạn vẫn có thể kiểm tra bảng "
 "tính và xem nó sẽ đặt những gì."
 
 #. module: pb_updates
 #. odoo-javascript
 #: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
-msgid "Setting them needs the Time Off administrator role"
-msgstr "Cần vai trò quản trị Nghỉ phép để đặt"
+msgid "Setting them needs the HR officer role"
+msgstr "Cần vai trò Cán bộ nhân sự để đặt"
 
 #. module: pb_updates
 #. odoo-python
@@ -6939,20 +6939,18 @@ msgstr "Ghi qua"
 #. odoo-javascript
 #: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
 msgid ""
-"You can check a sheet; setting balances needs the Time Off administrator "
-"role."
+"You can check a sheet; setting balances needs the HR officer role."
 msgstr ""
-"Bạn có thể kiểm tra bảng tính; đặt số dư cần vai trò quản trị Nghỉ phép."
+"Bạn có thể kiểm tra bảng tính; đặt số dư cần vai trò Cán bộ nhân sự."
 
 #. module: pb_updates
 #. odoo-javascript
 #: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
 msgid ""
-"You can look through these balances, but setting them needs the Time Off "
-"administrator role."
+"You can look through these balances, but setting them needs the HR officer "
+"role."
 msgstr ""
-"Bạn có thể xem các số dư này, nhưng đặt chúng cần vai trò quản trị Nghỉ "
-"phép."
+"Bạn có thể xem các số dư này, nhưng đặt chúng cần vai trò Cán bộ nhân sự."
 
 #. module: pb_updates
 #. odoo-javascript
@@ -8854,3 +8852,23 @@ msgstr ""
 #: code:addons/pb_updates/models/updates_ytd_desk.py:0
 msgid "“Including this pay period” is for months counted only."
 msgstr "“Gồm cả kỳ lương này” chỉ dùng cho số tháng tính."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave_desk.py:0
+msgid ""
+"%(who)s cannot set their own leave balance. Ask a Time Off administrator or "
+"another HR officer to send it."
+msgstr ""
+"%(who)s không thể tự đặt số dư phép của chính mình. Hãy nhờ quản trị Nghỉ "
+"phép hoặc một Cán bộ nhân sự khác gửi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_leave.py:0
+msgid ""
+"%(who)s works in %(company)s, which %(sender)s no longer works in, so this "
+"balance was not set."
+msgstr ""
+"%(who)s làm việc tại %(company)s, nơi %(sender)s không còn làm việc, nên số "
+"dư này không được đặt."

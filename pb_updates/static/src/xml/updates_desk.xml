@@ -68,7 +68,7 @@
                 <span class="pbu-tile-t">Leave opening balances</span>
                 <span class="pbu-tile-d">How much leave each person still has on a date, for many people at once. Set once per person and leave type.</span>
                 <span t-if="!leaveInfo.available" class="pbu-tile-off"><t t-out="icon('info', 13)"/> No leave type keeps a balance yet</span>
-                <span t-elif="!mayLeave" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Setting them needs the Time Off administrator role</span>
+                <span t-elif="!mayLeave" class="pbu-tile-off"><t t-out="icon('lock', 13)"/> Setting them needs the HR officer role</span>
               </button>
               <!-- UPDATES P5 — the fourth kind of sheet. -->
               <button type="button" class="pbu-tile pbu-tile--ytd" t-att-class="{ 'is-off': !ytdInfo.available }"
@@ -408,7 +408,7 @@
                   <b>Leave opening balances</b>
                   <span class="pbu-sub">How much leave each person still has on a date. Set once per person and leave type.</span>
                   <span t-if="!leaveInfo.available" class="pbu-topic-warn"><t t-out="icon('info', 12)"/> No leave type keeps a balance yet.</span>
-                  <span t-elif="!mayLeave" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can check a sheet; setting balances needs the Time Off administrator role.</span>
+                  <span t-elif="!mayLeave" class="pbu-topic-warn"><t t-out="icon('lock', 12)"/> You can check a sheet; setting balances needs the HR officer role.</span>
                 </span>
               </button>
               <!-- UPDATES P5 — the fourth kind. -->
@@ -868,7 +868,7 @@
               </div>
             </div>
             <span t-if="state.apply.busy" class="pbu-prog pbu-prog--run"><i/></span>
-            <p t-if="isLeave and !mayLeave" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these balances, but setting them needs the Time Off administrator role.</span></p>
+            <p t-if="isLeave and !mayLeave" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these balances, but setting them needs the HR officer role.</span></p>
             <p t-elif="isYtd and !ytdInfo.may_send" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these figures, but sending them needs the Payroll Officer role.</span></p>
             <p t-elif="!isLeave and !isYtd and !canWrite" class="pbu-refuse"><t t-out="icon('lock', 15)"/><span>You can look through these changes, but applying them needs permission to change employee records. Ask an administrator for the HR or Payroll Officer role.</span></p>
             <div class="pbu-bar">

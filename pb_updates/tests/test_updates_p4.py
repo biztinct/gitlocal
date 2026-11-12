@@ -528,15 +528,13 @@ class TestUpdatesP4(P4Fixture):
         self.assertTrue(home['attendance']['available'])
         self.assertTrue(home['leave']['available'])
 
-    def test_L12b_only_time_off_admins_send(self):
+    def test_L12b_officers_check_and_send(self):
+        # P4 shipped "Time Off administrators only send"; owner D23
+        # (2026-11-13) lets HR officers send too. Who still cannot, and how an
+        # officer's balances are written: test_updates_p4b.
         rv = self.review([['Code', 'Days'], ['P4NA', '12']], {2: L(self.days)}, user=self.officer)
         self.assertEqual(len(rv['changes']), 1, 'an officer can check a sheet')
-        res = self.U(self.officer).apply(name='DEMO P4 no', file_b64=csv_b64([['Code', 'Days'], ['P4NA', '12']]),
-                                         filename='p4.csv', columns=self.cols({2: L(self.days)}),
-                                         changes=rv['changes'], kind='leave', cutover=CUT)
-        self.assertFalse(res['ok'])
-        self.assertIn('Time Off administrator', res['msg'])
-        self.assertFalse(self.U(self.officer).get_home()['leave']['may_set'])
+        self.assertTrue(self.U(self.officer).get_home()['leave']['may_set'])
 
     def test_L12c_dates(self):
         U = self.U()

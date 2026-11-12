@@ -41,7 +41,7 @@ from odoo.addons.pb_updates.models.updates_desk import (
     GUESS_RATIO, IDENTITY_KEYS, product_label)
 from odoo.addons.pb_updates.models.updates_batch import heading_fingerprint
 from odoo.addons.pb_updates.models.updates_leave import (
-    GROUP, HOURS_DEFAULT, LIVE, MANAGER, MAX_DAYS, PARTS, PREFIX, REACH_BACK_DAYS,
+    GROUP, HOURS_DEFAULT, LIVE, MANAGER, MAX_DAYS, PARTS, PREFIX, REACH_BACK_DAYS, SENDER,
     card_id, day_label, number_text, parse_card)
 
 #: The hidden sheet's cell that says which date a sheet's balances are as at.
@@ -65,12 +65,37 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
     # =================================================================
     @api.model
     def _leave_may_set(self):
-        """Who may SEND leave balances: a Time Off administrator — the
-        right the leave policy layer and the allocation flow both ask."""
+        """Who may SEND leave balances (owner D23, 2026-11-13): an HR
+        officer — the role that can check a sheet — or a Time Off
+        administrator. The approval route still decides whether it goes in;
+        an officer's approved balances are written as `updates_leave`
+        describes."""
         try:
-            return bool(self.env.user.has_group(MANAGER))
+            user = self.env.user
+            return bool(user._is_superuser() or user.has_group(SENDER)
+                        or user.has_group(MANAGER))
         except Exception:   # noqa: BLE001 — a missing group is a "no"
             return False
+
+    @api.model
+    def _leave_may_undo(self):
+        """Who may UNDO leave balances: a Time Off administrator only (P4,
+        unchanged by D23) — the right that may refuse any allocation."""
+        try:
+            user = self.env.user
+            return bool(user._is_superuser() or user.has_group(MANAGER))
+        except Exception:   # noqa: BLE001 — a missing group is a "no"
+            return False
+
+    @api.model
+    def _leave_own_people(self, sender):
+        """The employee records of `sender` when that sender is not a Time
+        Off administrator (D23 rail: only an administrator sets their own
+        balance, the native Time Off rule). Empty for an administrator or no
+        sender."""
+        if not sender or sender._is_superuser() or sender.has_group(MANAGER):
+            return frozenset()
+        return frozenset(sender.sudo().with_context(active_test=False).employee_ids.ids)
 
     @api.model
     def _leave_today(self):
@@ -241,7 +266,10 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
         return {'openings': openings, 'waiting': waiting, 'covers': covers}
 
     @api.model
-    def _leave_ctx(self, emp_ids, cutover, type_ids=None, skip_line_ids=()):
+    def _leave_ctx(self, emp_ids, cutover, type_ids=None, skip_line_ids=(), sender=None):
+        """`sender`: the person sending (review, recheck, apply: the user on
+        the screen; on approval: the HR officer whose sheet is written), for
+        the own-balance rail; None = no such rail."""
         people = self._leave_people(emp_ids, cutover)
         companies = sorted({p['company_id'] for p in people.values()} | set(self.env.companies.ids))
         types = self._leave_types(companies)
@@ -249,7 +277,8 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
             wanted = {int(t) for t in type_ids}
             types = {k: v for k, v in types.items() if k in wanted}
         existing = self._leave_existing(list(people), list(types), cutover, skip_line_ids)
-        return dict(existing, people=people, types=types, cutover=cutover)
+        return dict(existing, people=people, types=types, cutover=cutover,
+                    own=self._leave_own_people(sender))
 
     # =================================================================
     # One cell's verdict
@@ -305,6 +334,9 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
                             type=name, company=person['company'], who=who))
         if t['country'] and person['country'] and t['country'] != person['country']:
             return refuse(_("%(type)s is for employees in another country.", type=name))
+        if emp_id in ctx.get('own', ()):
+            return refuse(_("%(who)s cannot set their own leave balance. Ask a Time Off "
+                            "administrator or another HR officer to send it.", who=who))
         if part != 'avail' and not person['policy']:
             return not_used(_("Carried and taken days are only kept for people on an absence "
                               "policy. %s is not on one, so this is left out.") % who)
@@ -402,12 +434,13 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
         return out
 
     @api.model
-    def _leave_row_check(self, row):
+    def _leave_row_check(self, row, sender=None):
         """At write time: the same verdict as the review, read fresh, for a
-        waiting row. '' when it can still be written, else the sentence."""
+        waiting row. '' when it can still be written, else the sentence.
+        `sender`: the HR officer whose sheet is being written (D23), or None."""
         row = row.sudo()
         ctx = self._leave_ctx([row.employee_id.id], row.cutover_date, [row.leave_type_id.id],
-                              skip_line_ids=[row.id])
+                              skip_line_ids=[row.id], sender=sender)
         person = ctx['people'].get(row.employee_id.id)
         if not person:
             return _("This person is no longer on record.")
@@ -890,7 +923,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
             matched.append({'row': offset, 'emp_id': emp_id, 'method': method, 'values': values})
         emp_ids = sorted({m['emp_id'] for m in matched})
         info = self._people_info(desk, emp_ids)
-        ctx = self._leave_ctx(emp_ids, cutover)
+        ctx = self._leave_ctx(emp_ids, cutover, sender=self.env.user)
         last_row, twice = {}, {}
         for pos, m in enumerate(matched):
             twice[m['emp_id']] = twice.get(m['emp_id'], 0) + 1
@@ -962,7 +995,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
             return {'items': [], 'msg': refusal}
         changes = [c for c in (changes or []) if isinstance(c, dict)]
         emp_ids = sorted({int(c.get('emp_id') or 0) for c in changes} - {0})
-        ctx = self._leave_ctx(emp_ids, cutover)
+        ctx = self._leave_ctx(emp_ids, cutover, sender=self.env.user)
         cat = self._leave_catalogue()
         clear_words = self._desk()._io_clear_words()
         items = []
@@ -1013,7 +1046,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
                 "Past updates.")}
         if not self._leave_may_set():
             return {'ok': False, 'msg': _(
-                "Setting leave balances needs the Time Off administrator role. You can still "
+                "Setting leave balances needs the HR officer role. You can still "
                 "check a sheet and see what it would set.")}
         cutover, refusal = self._leave_cutover(cutover)
         if refusal:
@@ -1037,7 +1070,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
                 "There is nothing to send: no balance in this file would change anything.")}
         emp_ids = sorted({c['emp_id'] for c in clean})
         visible = set(desk._matching({'employee_ids': emp_ids}, ctx={}).ids)
-        ctx = self._leave_ctx(emp_ids, cutover)
+        ctx = self._leave_ctx(emp_ids, cutover, sender=self.env.user)
         cat = self._leave_catalogue()
         names = {i: p['name'] for i, p in ctx['people'].items()}
         groups = {}
@@ -1198,7 +1231,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
         rows = batch.leave_line_ids.sudo()
         state, label, note = self._leave_state(batch)
         apply_rec = rows.mapped('apply_id')[:1]
-        may_set = may_write and self._leave_may_set()
+        may_undo = may_write and self._leave_may_undo()
         undoable = rows.filtered(lambda r: r.state == 'set' and r.way == 'allocation')
         permanent = rows.filtered(lambda r: r.state == 'set' and r.way == 'policy')
         live = rows.filtered(lambda r: r.state in LIVE) or rows
@@ -1217,7 +1250,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
             'cutover': fields.Date.to_string(batch.leave_date) if batch.leave_date else '',
             'cutover_label': day_label(self.env, batch.leave_date) if batch.leave_date else '',
             'with_whom': apply_rec._waiting_for() if apply_rec and state == 'pending' else '',
-            'can_undo': bool(may_set and undoable),
+            'can_undo': bool(may_undo and undoable),
             'can_cancel': bool(may_write and apply_rec and apply_rec.state == 'pending'
                                and not apply_rec.applied
                                and apply_rec.with_env(self.env)._may_cancel()),
@@ -1306,7 +1339,7 @@ class PbUpdatesLeaveDesk(models.AbstractModel):
             batch = self._leave_batch(batch_id)
             if batch:
                 self._gate()
-                if not self._leave_may_set():
+                if not self._leave_may_undo():
                     return {'ok': False, 'msg': _(
                         "Undoing leave balances needs the Time Off administrator role.")}
                 rows = batch.leave_line_ids
@@ -1440,7 +1473,7 @@ class PbRecordsDeskLeave(models.AbstractModel):
         source = self.env['pb.records.apply'].sudo().browse(int(apply_id or 0)).exists()
         if source and source.updates_leave and source.applied:
             Updates = self.env['pb.updates.desk']
-            if not Updates._leave_may_set():
+            if not Updates._leave_may_undo():
                 return {'ok': False, 'msg': _(
                     "Undoing leave balances needs the Time Off administrator role.")}
             return Updates._leave_undo_rows(source.leave_line_ids, source)
