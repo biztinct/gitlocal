@@ -10,7 +10,9 @@ from decimal import Decimal, InvalidOperation
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
-from .application_payroll_source import _json, _stamp, _optional_record_input, USUAL_ANSWER_REASON
+from .application_payroll_source import (
+    _json, _stamp, _optional_record_input, USUAL_ANSWER_REASON,
+    HISTORY_START_UNCONFIRMED_REASON, shown_reason)
 
 _TOKEN = object()
 _CTX = 'payroll_preparation_token'
@@ -279,6 +281,8 @@ class PayrollPreparation(models.Model):
                 # Shown in the reader's language; the stored fact (and every
                 # fingerprint taken before this) keeps the English sentence.
                 cell['reason'] = _('No line on the contract, so this is No (the usual answer).')
+            elif cell.get('reason') == HISTORY_START_UNCONFIRMED_REASON:
+                cell['reason'] = shown_reason(self.env, cell['reason'])   # UPDATES P5b (D27)
             cell.update(editable=editable, future=future, optional=bool(optional), issue=bool(issue),
                 settlement_zero=bool(optional and self._settlement_zero(rule)),
                 tone='amber' if cell['status'] == 'conflict' else 'red' if issue else 'edited' if edit else 'normal',

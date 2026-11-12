@@ -174,6 +174,7 @@ from . import test_treatment_classification
 from . import test_learnrev_net_words
 
 from . import test_application_payroll_source
+from . import test_application_history_ytd   # UPDATES P5b (D27)
 
 from . import test_payroll_period_input
 from . import test_employee_work_timezone

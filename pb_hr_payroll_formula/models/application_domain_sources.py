@@ -12,7 +12,8 @@ import math
 from odoo import fields, models
 from odoo.exceptions import AccessError, MissingError
 
-from .application_payroll_source import checked_read, readable_field
+from .application_payroll_source import (
+    checked_read, readable_field, HISTORY_START_UNCONFIRMED_REASON)
 
 
 EMPLOYEE_FIELDS = (
@@ -478,11 +479,19 @@ class HrFormulaConfigApplicationDomains(models.Model):
         if code not in set(self.rule_ids.mapped('code')):
             return source_result(reason='history_component_not_in_scheme')
         year_start = start.replace(month=1, day=1)
+        start_known = bool(employee.date_of_joining)
         joined = employee.date_of_joining or (contract.date_start if contract else False)
         if not joined:
             return source_result(reason='employment_start_required_for_history_coverage')
         lower = max(year_start, joined)
         if lower >= start:
+            if not start_known and joined > year_start:
+                # UPDATES P5b (D27): the contract start alone (a contract made
+                # at go-live) cannot prove nothing was paid earlier this year.
+                # Not known — never a confident 0. A January period (the year
+                # starts with it) keeps its legitimate 0.
+                return source_result(reason=HISTORY_START_UNCONFIRMED_REASON,
+                                     why='employment_start_unconfirmed_for_history')
             return source_result(0.0, 'zero_confirmed', reason='no_prior_service_days_this_year')
         slips = self.env['hr.payslip'].search([
             ('employee_id', '=', employee.id), ('company_id', '=', self.company_id.id),

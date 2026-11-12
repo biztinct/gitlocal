@@ -15630,3 +15630,13 @@ msgstr "Câu trả lời"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__value_labels_hint
 msgid "What the words mean"
 msgstr "Ý nghĩa của các từ"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/application_payroll_source.py:0
+msgid ""
+"The employee record has no Date of Joining, so what was paid earlier this "
+"year is not known. Add the Date of Joining to the employee record."
+msgstr ""
+"Hồ sơ nhân viên chưa có ngày vào làm, nên chưa biết đã trả bao nhiêu trước "
+"đó trong năm nay. Hãy thêm ngày vào làm vào hồ sơ nhân viên."

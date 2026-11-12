@@ -28,6 +28,23 @@ _NUMERIC_KINDS = ('money', 'quantity', 'integer', 'rate')
 _MEMO = 'pb_hr_payroll_formula.app_memo'
 # PDR D2 — the words a contract flag carries when it has no line.
 USUAL_ANSWER_REASON = 'No line on the contract, so this is No (the usual answer).'
+# UPDATES P5b (D27) — the posted year-to-date source cannot tell what was paid
+# earlier this year when the employee record has no joining date and the
+# contract start was the only lower bound. Stored in English (it enters facts
+# and fingerprints, like USUAL_ANSWER_REASON); `shown_reason` gives it in the
+# reader's language where a person reads it.
+HISTORY_START_UNCONFIRMED_REASON = (
+    'The employee record has no Date of Joining, so what was paid earlier this year '
+    'is not known. Add the Date of Joining to the employee record.')
+
+
+def shown_reason(env, reason):
+    """A stored English reason in the reader's language, for the sentences
+    that have a translation; any other reason is returned as it is."""
+    if reason == HISTORY_START_UNCONFIRMED_REASON:
+        return env._('The employee record has no Date of Joining, so what was paid earlier '
+                     'this year is not known. Add the Date of Joining to the employee record.')
+    return reason
 
 
 _ACCESS_MEMO = ('pb_hr_payroll_formula.access_memo',)
@@ -1072,7 +1089,8 @@ class ApplicationPayrollPayslip(models.Model):
             self.employee_id, self.date_from, self.date_to, cert)
         if not row['ok']:
             raise UserError(_('Application payroll needs attention:\n%s') % '\n'.join(
-                '%s: %s' % (b.get('code') or self.employee_id.name, b['reason']) for b in row['blockers']))
+                '%s: %s' % (b.get('code') or self.employee_id.name, shown_reason(self.env, b['reason']))
+                for b in row['blockers']))
         if self.contract_id.id != row['contract_id']:
             raise UserError(_('The payslip contract does not match the single effective application contract.'))
         snap = self.env['hr.payroll.application.snapshot'].sudo().with_context(**{_SEAL_KEY: _SEAL}).create({
