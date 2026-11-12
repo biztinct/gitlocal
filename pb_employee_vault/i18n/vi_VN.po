@@ -1332,3 +1332,26 @@ msgstr "%s câu trả lời cần kiểm tra"
 #: code:addons/pb_employee_vault/static/src/js/fillin_chip.js:0
 msgid "Payobook filled these in from the scheme's usual answers when the contract was created. Open the contract to check or change them."
 msgstr "Payobook đã điền các câu trả lời này theo câu trả lời thường dùng của chế độ lương khi tạo hợp đồng. Mở hợp đồng để kiểm tra hoặc sửa."
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/workflow_timetable.py:0
+msgid "Employee document"
+msgstr "Giấy tờ nhân viên"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/workflow_timetable.py:0
+msgid "Employee documents"
+msgstr "Giấy tờ nhân viên"
+
+#. module: pb_employee_vault
+#. odoo-python
+#: code:addons/pb_employee_vault/models/workflow_timetable.py:0
+msgid ""
+"%s days before a document expires, HR gets a to-do on the employee to renew it."
+msgstr ""
+"%s ngày trước khi giấy tờ hết hạn, nhân sự nhận được một việc cần làm trên hồ sơ nhân viên để gia hạn."

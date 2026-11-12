@@ -20721,3 +20721,284 @@ msgstr "Có, tôi là công dân/thường trú nhân"
 #: model:ir.model.fields.selection,name:pb_hiring.selection__hr_applicant__pb_work_authorization__permit
 msgid "Yes, I have a valid work permit/visa"
 msgstr "Có, tôi có giấy phép lao động/thị thực hợp lệ"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "Choose the stage the new one comes after."
+msgstr "Chọn giai đoạn mà giai đoạn mới sẽ đứng sau."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid ""
+"A new stage goes among the working stages, before Joined. Choose one of those to put it after."
+msgstr ""
+"Giai đoạn mới được đặt giữa các giai đoạn đang làm, trước Đã nhận việc. Hãy chọn một trong số đó để đặt giai đoạn mới phía sau."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "There is already a stage called “%s”."
+msgstr "Đã có một giai đoạn tên “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "Hiring takes up to %s stages of your own. Rename one you no longer use."
+msgstr ""
+"Tuyển dụng cho phép tối đa %s giai đoạn của riêng bạn. Hãy đổi tên một giai đoạn bạn không còn dùng."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "“%(name)s” added after %(after)s."
+msgstr "Đã thêm “%(name)s” sau %(after)s."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid ""
+"“%s” is one of Hiring's own stages. It can be renamed or hidden from a role, but not removed."
+msgstr ""
+"“%s” là giai đoạn có sẵn của Tuyển dụng. Bạn có thể đổi tên hoặc ẩn nó với một vai trò, nhưng không thể xóa."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "1 candidate is in this stage. Move them first."
+msgstr "Có 1 ứng viên đang ở giai đoạn này. Hãy chuyển ứng viên đó đi trước."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "%s candidates are in this stage. Move them first."
+msgstr "Có %s ứng viên đang ở giai đoạn này. Hãy chuyển họ đi trước."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "An automation uses “%(s)s”: %(r)s. Change or remove it in Automations first."
+msgstr ""
+"Một quy tắc tự động đang dùng “%(s)s”: %(r)s. Hãy sửa hoặc xóa nó trong Tự động hóa trước."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/stage_add.py:0
+msgid "“%(name)s” is removed. %(free)s of %(total)s company stages are free."
+msgstr "Đã xóa “%(name)s”. Còn trống %(free)s trên %(total)s giai đoạn của công ty."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Move to a Hiring stage"
+msgstr "Chuyển sang một giai đoạn Tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Existing stage"
+msgstr "Giai đoạn có sẵn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Choose a permitted Hiring stage. Joined stays with its own action."
+msgstr ""
+"Chọn một giai đoạn Tuyển dụng được phép. Đã nhận việc vẫn dùng thao tác riêng của nó."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Stages, candidate messages and automations"
+msgstr "Giai đoạn, tin nhắn cho ứng viên và tự động hóa"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring settings"
+msgstr "Cài đặt Tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"Confirming the person started creates their employee record, contract and login, and opens their joining checklist."
+msgstr ""
+"Xác nhận người này đã bắt đầu đi làm sẽ tạo hồ sơ nhân viên, hợp đồng và tài khoản đăng nhập của họ, đồng thời mở danh sách việc nhận việc của họ."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Whoever moves a candidate here can choose to send the “not this time” email."
+msgstr "Người chuyển ứng viên đến đây có thể chọn gửi email “lần này chưa phù hợp”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Add a tag"
+msgstr "Thêm nhãn"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Added the tag “%s”."
+msgstr "Đã thêm nhãn “%s”."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Would add the tag “%s”"
+msgstr "Sẽ thêm nhãn “%s”"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Adds the tag “%s”"
+msgstr "Thêm nhãn “%s”"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring has not opened this value to workflows."
+msgstr "Tuyển dụng chưa cho phép quy trình dùng giá trị này."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "That tag is no longer in Hiring. Edit the step."
+msgstr "Nhãn đó không còn trong Tuyển dụng. Hãy sửa bước này."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Someone confirms the person started, from their offer"
+msgstr "Có người xác nhận người này đã bắt đầu đi làm, từ thư mời làm việc của họ"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Somebody applies, or a recruiter moves them here"
+msgstr "Có người ứng tuyển, hoặc nhà tuyển dụng chuyển họ đến đây"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "A recruiter moves the candidate here"
+msgstr "Nhà tuyển dụng chuyển ứng viên đến đây"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring automations"
+msgstr "Tự động hóa Tuyển dụng"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "the feedback deadline"
+msgstr "hạn gửi nhận xét"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "This business action is no longer available."
+msgstr "Thao tác này không còn dùng được."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "Hiring did not move this candidate."
+msgstr "Tuyển dụng đã không chuyển ứng viên này."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "This stage no longer exists."
+msgstr "Giai đoạn này không còn nữa."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid "This stage changed. Reopen Stages before editing it."
+msgstr "Giai đoạn này đã thay đổi. Hãy mở lại Giai đoạn trước khi sửa."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/joining_p6.py:0
+msgid "Chosen in Hiring by %(who)s on %(day)s."
+msgstr "Được %(who)s chọn trong Tuyển dụng ngày %(day)s."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/js/hiring_setup.js:0
+msgid "%(used)s of %(total)s company stages used"
+msgstr "Đã dùng %(used)s / %(total)s giai đoạn của công ty"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Add a stage"
+msgstr "Thêm giai đoạn"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Name of the new stage"
+msgstr "Tên giai đoạn mới"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "after"
+msgstr "sau"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "The stage it comes after"
+msgstr "Giai đoạn đứng trước nó"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid ""
+"It shows wherever the stage before it shows: on those roles' boards and in those presets."
+msgstr ""
+"Giai đoạn này hiện ở mọi nơi giai đoạn đứng trước nó hiện: trên bảng của các vị trí đó và trong các mẫu thiết lập sẵn đó."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "· added by your company"
+msgstr "· do công ty bạn thêm"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Remove “"
+msgstr "Xóa “"
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "”? It comes off every board and preset. Candidates' history keeps it."
+msgstr ""
+"”? Giai đoạn này sẽ bị gỡ khỏi mọi bảng và mẫu thiết lập sẵn. Lịch sử của ứng viên vẫn giữ lại."
+
+#. module: pb_hiring
+#. odoo-javascript
+#: code:addons/pb_hiring/static/src/xml/hiring_setup.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/workflow_contract.py:0
+msgid ""
+"When every opening has a signed offer, keep remaining candidates without a live offer On hold as Future-fit. No rejection email is sent."
+msgstr ""
+"Khi mọi vị trí đều đã có thư mời nhận việc được ký, giữ các ứng viên còn lại chưa có thư mời đang hiệu lực ở trạng thái Tạm hoãn với nhãn Phù hợp tương lai. Không gửi email từ chối."

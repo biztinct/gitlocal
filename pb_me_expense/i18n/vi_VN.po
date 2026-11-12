@@ -432,6 +432,8 @@ msgid "Expense"
 msgstr "Chi phí"
 
 #. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
 #: model:ir.model,name:pb_me_expense.model_pb_expense_claim model:ir.model.fields,field_description:pb_me_expense.field_hr_expense__pb_claim_id model_terms:ir.ui.view,arch_db:pb_me_expense.pb_expense_claim_view_form model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
 msgid "Expense claim"
 msgstr "Đề nghị hoàn chi phí"
@@ -601,6 +603,8 @@ msgid "Nobody set up yet"
 msgstr "Chưa có người duyệt"
 
 #. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
 #: model:ir.model.fields,field_description:pb_me_expense.field_pb_expense_claim__note
 msgid "Note"
 msgstr "Ghi chú"
@@ -1252,3 +1256,94 @@ msgstr "Khi đề nghị bị trả lại, nhân viên nhận email kèm lý do 
 #: model:mail.template,name:pb_me_expense.mail_template_claim_returned
 msgid "Expense claim: sent back (to the employee)"
 msgstr "Đề nghị hoàn chi phí: trả lại (gửi nhân viên)"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The employee starts a claim, or it comes back to them"
+msgstr "Nhân viên tạo phiếu, hoặc phiếu được trả lại cho họ"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The employee sends the claim"
+msgstr "Nhân viên gửi phiếu"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The last approver says yes"
+msgstr "Người phê duyệt cuối cùng đồng ý"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Every receipt on the claim has been paid"
+msgstr "Mọi biên lai trong phiếu đã được thanh toán"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "An approver says no"
+msgstr "Một người phê duyệt từ chối"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Every receipt on the claim is marked approved."
+msgstr "Mọi biên lai trong phiếu được đánh dấu đã duyệt."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid ""
+"Every receipt is marked refused with the approver’s reason, which the employee sees on their claim."
+msgstr ""
+"Mọi biên lai được đánh dấu đã từ chối kèm lý do của người phê duyệt, nhân viên sẽ thấy lý do này trên phiếu của mình."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The employee home shows the employee a “fix and resend” reminder."
+msgstr "Trang chủ nhân viên hiện lời nhắc “sửa và gửi lại” cho nhân viên."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid ""
+"When a claim is sent back or taken back, its receipts can be changed and sent again."
+msgstr ""
+"Khi một phiếu bị trả lại hoặc được rút lại, các biên lai của phiếu có thể được sửa và gửi lại."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Expenses has not opened this value to workflows."
+msgstr "Phần Chi phí chưa cho phép quy trình dùng giá trị này."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "receipt"
+msgstr "biên lai"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Category"
+msgstr "Danh mục"

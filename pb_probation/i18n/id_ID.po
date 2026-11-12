@@ -1,0 +1,46 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-12 22:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid "Trial periods"
+msgstr "Masa percobaan"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"%s days before a trial period ends, a review opens and the manager is asked to choose who gives feedback."
+msgstr ""
+"%s hari sebelum masa percobaan berakhir, sebuah tinjauan dibuka dan atasan diminta memilih siapa yang memberi masukan."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"%s days before a trial period ends, a review can open for the manager (opening these by itself is switched off here)."
+msgstr ""
+"%s hari sebelum masa percobaan berakhir, sebuah tinjauan dapat dibuka untuk atasan (pembukaan otomatis nonaktif di sini)."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"While a trial-period review is open, HR (or else the manager) gets a to-do %(far)s days and again %(near)s days before the trial period ends."
+msgstr ""
+"Selama tinjauan masa percobaan terbuka, HR (atau atasan jika tidak ada) menerima tugas %(far)s hari dan sekali lagi %(near)s hari sebelum masa percobaan berakhir."

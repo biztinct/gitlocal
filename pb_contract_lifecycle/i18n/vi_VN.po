@@ -724,3 +724,30 @@ msgstr "Xem Không thời hạn"
 msgid "No contract has an end date on it"
 msgstr "Không có hợp đồng nào có ngày kết thúc"
 
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"%s days before a contract ends, its manager is asked to decide what happens next."
+msgstr ""
+"%s ngày trước khi hợp đồng kết thúc, quản lý của hợp đồng sẽ được hỏi để quyết định bước tiếp theo."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"%s days before a contract ends, its manager can be asked to decide what happens next (raising these by itself is switched off here)."
+msgstr ""
+"%s ngày trước khi hợp đồng kết thúc, quản lý của hợp đồng có thể được hỏi để quyết định bước tiếp theo (việc tự tạo các câu hỏi này đang tắt ở đây)."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"While a contract decision is still open, HR is told halfway to the end date, and every day in the last %s days."
+msgstr ""
+"Khi quyết định về hợp đồng vẫn chưa xong, nhân sự sẽ được báo khi đi được nửa chặng đến ngày kết thúc, và mỗi ngày trong %s ngày cuối."

@@ -1145,7 +1145,9 @@ msgid "About"
 msgstr "Về"
 
 #. module: biz_approval_workflow
+#. odoo-python
 #. odoo-javascript
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
 #: code:addons/biz_approval_workflow/security/biz_approval_workflow_groups.xml:0
 msgid "Approvals"
 msgstr "Phê duyệt"
@@ -1248,3 +1250,48 @@ msgstr "Hạn"
 #: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_request__facts
 msgid "Facts"
 msgstr "Dữ kiện"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Other request"
+msgstr "Yêu cầu khác"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Someone writes down what they are asking for"
+msgstr "Ai đó ghi lại điều họ đang yêu cầu"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "An approver sends it back to be changed"
+msgstr "Người phê duyệt trả lại để sửa"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Someone sends it for a sign-off"
+msgstr "Ai đó gửi để xin phê duyệt"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "The last approver says yes"
+msgstr "Người phê duyệt cuối cùng đồng ý"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "An approver says no"
+msgstr "Người phê duyệt từ chối"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "The person who asked takes it back"
+msgstr "Người yêu cầu rút lại"

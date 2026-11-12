@@ -26,6 +26,8 @@ msgid "%(what)s · %(who)s"
 msgstr "%(what)s · %(who)s"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
 msgid "Amount"
 msgstr "Số tiền"
 
@@ -145,6 +147,8 @@ msgid "The letter"
 msgstr "Nội dung thư"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
 msgid "Their manager"
 msgstr "Quản lý của họ"
 
@@ -874,6 +878,7 @@ msgstr "hành trình"
 
 #. module: pb_lifecycle
 #. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
 #: code:addons/pb_lifecycle/static/src/xml/journeys.xml:0
 msgid "of"
 msgstr "trên"
@@ -931,6 +936,8 @@ msgid "Offboarding"
 msgstr "Nghỉ việc"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
 #: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__state__on_hold
 #: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_journey_case_search
 msgid "On hold"
@@ -943,6 +950,8 @@ msgid "Onboarding"
 msgstr "Tiếp nhận nhân viên mới"
 
 #. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
 #: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_employee_checkin__kind__other
 #: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_feedback_request__kind__other
 #: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_case__case_type__other
@@ -966,3 +975,4917 @@ msgstr "Cổng nhân viên"
 #: model:ir.model.fields.selection,name:pb_lifecycle.selection__pb_journey_template__case_type__probation
 msgid "Probation"
 msgstr "Thử việc"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_lifecycle
+#: model:res.groups,name:pb_lifecycle.group_approvals_see_everyone
+#: model:pb.role.ability,name:pb_lifecycle.ability_approvals_see_everyone
+msgid "See everyone's approvals"
+msgstr "Xem phê duyệt của mọi người"
+
+#. module: pb_lifecycle
+#: model:res.groups,comment:pb_lifecycle.group_approvals_see_everyone
+msgid ""
+"Read every approval request in your companies, in the Approvals inbox under Everyone. Does not let you decide, move, repair or cancel anything."
+msgstr ""
+"Xem mọi yêu cầu phê duyệt trong các công ty của bạn, trong hộp Phê duyệt ở mục Mọi người. Không cho phép bạn quyết định, chuyển, sửa hay hủy bất cứ việc gì."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.pbme_card_workflow_notices
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "For you"
+msgstr "Dành cho bạn"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.pbme_card_workflow_notices
+msgid "See all"
+msgstr "Xem tất cả"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.pbme_card_workflow_notices
+msgid "more on My tasks."
+msgstr "việc nữa trong Việc của tôi."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_workflow_run_form
+msgid "View submitted information"
+msgstr "Xem thông tin đã gửi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_workflow_run_form
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "View workflow"
+msgstr "Xem quy trình"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_workflow_run_form
+msgid "Started"
+msgstr "Bắt đầu"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_task_page
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "My tasks"
+msgstr "Việc của tôi"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Things a workflow has asked you to do, and notices for you."
+msgstr "Những việc quy trình nhờ bạn làm, và các thông báo dành cho bạn."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Waiting for you"
+msgstr "Đang chờ bạn"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Late, it was due"
+msgstr "Trễ hạn, hạn là"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Needed by"
+msgstr "Cần trước"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid ""
+"<span>Nothing is waiting for you. When a workflow needs you, it shows here and on your home page.</span>"
+msgstr ""
+"<span>Không có việc nào đang chờ bạn. Khi một quy trình cần bạn, việc đó sẽ hiện ở đây và trên trang chủ của bạn.</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Mark as read"
+msgstr "Đánh dấu đã đọc"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Do it now"
+msgstr "Làm ngay"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Move to…"
+msgstr "Chuyển sang…"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Moved. Everyone sees the new stage now."
+msgstr "Đã chuyển. Giờ mọi người đều thấy giai đoạn mới."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Only the person this stage names can move it there."
+msgstr "Chỉ người được giai đoạn này chỉ định mới có thể chuyển sang đó."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "It gets there by itself. Nobody needs to move it."
+msgstr "Hồ sơ tự đến giai đoạn đó. Không ai cần chuyển."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "That move is not possible any more. The page shows where it is now."
+msgstr "Không thể chuyển như vậy nữa. Trang đang cho thấy vị trí hiện tại."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "{{0}} more stages"
+msgstr "{{0}} giai đoạn nữa"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "counts as"
+msgstr "được tính là"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Here now"
+msgstr "Đang ở đây"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Stages"
+msgstr "Các giai đoạn"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Stage"
+msgstr "Giai đoạn"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Where this is now"
+msgstr "Hiện đang ở đâu"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Thanks — sent."
+msgstr "Cảm ơn — đã gửi."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Thanks, this is already done."
+msgstr "Cảm ơn, việc này đã xong rồi."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Nothing more to do here."
+msgstr "Không còn gì phải làm ở đây."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "You can close this page."
+msgstr "Bạn có thể đóng trang này."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "There is nothing more to do here."
+msgstr "Không còn việc gì phải làm ở đây."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Back to my tasks"
+msgstr "Quay lại việc của tôi"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "This link has run out."
+msgstr "Liên kết này đã hết hạn."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid ""
+"Ask whoever sent it to you for a new one. A new link always replaces the old one."
+msgstr ""
+"Hãy xin người đã gửi cho bạn một liên kết mới. Liên kết mới luôn thay thế liên kết cũ."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Late · it was due"
+msgstr "Trễ hạn · hạn là"
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Sent back"
+msgstr "Đã bị trả lại"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "by"
+msgstr "bởi"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "for changes"
+msgstr "để chỉnh sửa"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Check your answers, change what is needed and send it again."
+msgstr "Hãy kiểm tra câu trả lời, sửa những gì cần và gửi lại."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "A few answers need a look. They are marked below."
+msgstr "Một vài câu trả lời cần xem lại. Chúng được đánh dấu bên dưới."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Send my answers"
+msgstr "Gửi câu trả lời của tôi"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "What you are asked to confirm"
+msgstr "Những gì bạn được nhờ xác nhận"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Add a note (optional)"
+msgstr "Thêm ghi chú (không bắt buộc)"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Anything the next person should know"
+msgstr "Điều người tiếp theo cần biết"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Mark it done"
+msgstr "Đánh dấu là xong"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "This link is just for you and works once. You do not need to sign in."
+msgstr "Liên kết này chỉ dành cho bạn và dùng được một lần. Bạn không cần đăng nhập."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "From the record"
+msgstr "Lấy từ hồ sơ"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Only needed if an earlier answer says so."
+msgstr "Chỉ cần khi một câu trả lời trước đó yêu cầu."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Files cannot be sent from this page. Ask"
+msgstr "Không thể gửi tệp từ trang này. Hãy hỏi"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "how to send it."
+msgstr "cách gửi tệp."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "This one is chosen inside the app. Ask"
+msgstr "Mục này được chọn bên trong ứng dụng. Hãy nhờ"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "to fill it in for you."
+msgstr "điền giúp bạn."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<option value=\"\">Choose one…</option>"
+msgstr "<option value=\"\">Chọn một…</option>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<span>Yes</span>"
+msgstr "<span>Có</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<span>No</span>"
+msgstr "<span>Không</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Up to 10 files, 10 MB each."
+msgstr "Tối đa 10 tệp, mỗi tệp 10 MB."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<span>What it is</span><span>Amount</span>"
+msgstr "<span>Nội dung</span><span>Số tiền</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Leave a line empty to skip it."
+msgstr "Để trống một dòng để bỏ qua dòng đó."
+
+#. module: pb_lifecycle
+#: model:mail.template,name:pb_lifecycle.mail_template_workflow_link
+msgid "Workflow: something for you to do (link)"
+msgstr "Quy trình: có việc cho bạn (liên kết)"
+
+#. module: pb_lifecycle
+#: model:mail.template,subject:pb_lifecycle.mail_template_workflow_link
+msgid "You have something to do: {{ object.name }}"
+msgstr "Bạn có việc cần làm: {{ object.name }}"
+
+#. module: pb_lifecycle
+#: model:mail.template,body_html:pb_lifecycle.mail_template_workflow_link
+msgid ""
+"<div style=\"margin:0;padding:24px 0;background:#f6f7fc;font-family:Inter,Segoe UI,Arial,sans-serif;color:#1f1d2b\">\n"
+"  <div style=\"max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e4f2;border-radius:16px;padding:32px\">\n"
+"    <p style=\"margin:0 0 4px;font-size:13px;color:#6b6880\" t-out=\"ctx.get('link_company') or ''\"/>\n"
+"    <h1 style=\"margin:0 0 16px;font-size:22px;line-height:1.3;color:#1f1d2b\" t-out=\"object.name or ''\"/>\n"
+"    <p style=\"margin:0 0 16px;font-size:15px;line-height:1.55\">\n"
+"      <t t-if=\"ctx.get('link_name')\">Hello <t t-out=\"ctx.get('link_name')\"/>, </t>there is one thing for you to do. It takes a minute and you do not need to sign in.\n"
+"    </p>\n"
+"    <p t-if=\"ctx.get('link_due')\" style=\"margin:0 0 20px;font-size:14px;color:#6b6880\">Needed by <t t-out=\"ctx.get('link_due')\"/>.</p>\n"
+"    <p style=\"margin:0 0 24px\">\n"
+"      <a t-att-href=\"ctx.get('link_url')\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px\">Open it</a>\n"
+"    </p>\n"
+"    <p style=\"margin:0;font-size:12px;line-height:1.5;color:#6b6880\">\n"
+"      This link is just for you and works until <t t-out=\"ctx.get('link_until') or ''\"/>. Please do not forward it. If you were not expecting this, you can ignore it.\n"
+"    </p>\n"
+"  </div>\n"
+"</div>\n"
+"        "
+msgstr ""
+"<div style=\"margin:0;padding:24px 0;background:#f6f7fc;font-family:Inter,Segoe UI,Arial,sans-serif;color:#1f1d2b\">\n"
+"  <div style=\"max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e4f2;border-radius:16px;padding:32px\">\n"
+"    <p style=\"margin:0 0 4px;font-size:13px;color:#6b6880\" t-out=\"ctx.get('link_company') or ''\"/>\n"
+"    <h1 style=\"margin:0 0 16px;font-size:22px;line-height:1.3;color:#1f1d2b\" t-out=\"object.name or ''\"/>\n"
+"    <p style=\"margin:0 0 16px;font-size:15px;line-height:1.55\">\n"
+"      <t t-if=\"ctx.get('link_name')\">Xin chào <t t-out=\"ctx.get('link_name')\"/>, </t>bạn có một việc cần làm. Chỉ mất một phút và bạn không cần đăng nhập.\n"
+"    </p>\n"
+"    <p t-if=\"ctx.get('link_due')\" style=\"margin:0 0 20px;font-size:14px;color:#6b6880\">Cần hoàn thành trước <t t-out=\"ctx.get('link_due')\"/>.</p>\n"
+"    <p style=\"margin:0 0 24px\">\n"
+"      <a t-att-href=\"ctx.get('link_url')\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px\">Mở ngay</a>\n"
+"    </p>\n"
+"    <p style=\"margin:0;font-size:12px;line-height:1.5;color:#6b6880\">\n"
+"      Liên kết này chỉ dành cho bạn và dùng được đến hết <t t-out=\"ctx.get('link_until') or ''\"/>. Vui lòng không chuyển tiếp cho người khác. Nếu bạn không chờ thư này, bạn có thể bỏ qua.\n"
+"    </p>\n"
+"  </div>\n"
+"</div>\n"
+"        "
+
+#. module: pb_lifecycle
+#: model:pb.role.ability,description:pb_lifecycle.ability_approvals_see_everyone
+msgid ""
+"Look at every approval request in the company, under Everyone in the Approvals inbox. Read only: it does not let you decide, move, repair or cancel anything."
+msgstr ""
+"Xem mọi yêu cầu phê duyệt trong công ty, ở mục Mọi người trong hộp Phê duyệt. Chỉ xem: không cho phép bạn quyết định, chuyển, sửa hay hủy bất cứ việc gì."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "the link sent to %s"
+msgstr "liên kết đã gửi đến %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This kind of record does not say who it is about. Choose someone else."
+msgstr "Loại hồ sơ này không cho biết nó nói về ai. Hãy chọn người khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose a team from Approvals › Who approves."
+msgstr "Hãy chọn một nhóm trong Phê duyệt › Ai phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid ""
+"Nobody is on the team “%s” here yet. Add people to it in Approvals › Who approves."
+msgstr ""
+"Nhóm “%s” ở đây chưa có ai. Hãy thêm người vào nhóm trong Phê duyệt › Ai phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "The person this is about"
+msgstr "Người được nói đến"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s cannot sign in at the moment, so this cannot be given to them."
+msgstr "%s hiện không thể đăng nhập, nên không thể giao việc này cho họ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s has no staff login yet, so this task cannot be given to them."
+msgstr ""
+"%s chưa có tài khoản đăng nhập nhân viên văn phòng, nên không thể giao việc này cho họ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s has no login and no work email, so this cannot reach them."
+msgstr ""
+"%s không có tài khoản đăng nhập và không có email công việc, nên không thể gửi đến họ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Set the company working calendar before assigning this task."
+msgstr "Hãy đặt lịch làm việc của công ty trước khi giao việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "The company calendar has no available working days."
+msgstr "Lịch làm việc của công ty không có ngày làm việc nào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Open Workflow Studio → My tasks to complete this step."
+msgstr "Mở Workflow Studio → Việc của tôi để hoàn thành bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose an active person who belongs to this company."
+msgstr "Hãy chọn một người đang làm việc thuộc công ty này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %(who)s, covering for %(whose)s while they are away."
+msgstr "Đang chờ %(who)s, người làm thay %(whose)s trong lúc họ vắng mặt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %s."
+msgstr "Đang chờ %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Nobody on the team “%s” can open this record."
+msgstr "Không ai trong nhóm “%s” mở được hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for someone on the team %s."
+msgstr "Đang chờ một người trong nhóm %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %s, on their employee home."
+msgstr "Đang chờ %s, trên trang chủ nhân viên của họ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Sent back to you"
+msgstr "Đã bị trả lại cho bạn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Late"
+msgstr "Trễ hạn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "To do"
+msgstr "Cần làm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "a team"
+msgstr "một nhóm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Team: %s · nobody has taken it"
+msgstr "Nhóm: %s · chưa ai nhận"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Someone without a login"
+msgstr "Một người không có tài khoản đăng nhập"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(who)s, by %(link)s"
+msgstr "%(who)s, qua %(link)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Fill in"
+msgstr "Điền vào"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Read and confirm"
+msgstr "Đọc và xác nhận"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This task no longer exists."
+msgstr "Việc này không còn nữa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Only someone on this team can take this task."
+msgstr "Chỉ người trong nhóm này mới nhận được việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "You no longer have access to this workflow record."
+msgstr "Bạn không còn quyền xem hồ sơ của quy trình này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Someone on the team is taking this right now. Look again in a moment."
+msgstr "Một người trong nhóm đang nhận việc này. Hãy xem lại sau giây lát."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This task is not waiting any more."
+msgstr "Việc này không còn đang chờ nữa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s has just taken this."
+msgstr "%s vừa nhận việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s took this for the team."
+msgstr "%s đã nhận việc này thay cho nhóm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Only the person who took this can put it back."
+msgstr "Chỉ người đã nhận việc này mới trả lại được."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s put this back for the team."
+msgstr "%s đã trả việc này lại cho nhóm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This task is not waiting for an answer."
+msgstr "Việc này không chờ câu trả lời."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose this in the app."
+msgstr "Hãy chọn mục này trong ứng dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Attach the file again."
+msgstr "Hãy đính kèm lại tệp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Confirmed by link sent to %(email)s: “%(what)s”."
+msgstr "Đã xác nhận qua liên kết gửi đến %(email)s: “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Filled in by link sent to %s."
+msgstr "Đã điền qua liên kết gửi đến %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Answered by link sent to %(email)s: “%(what)s”."
+msgstr "Đã trả lời qua liên kết gửi đến %(email)s: “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Done by link sent to %s."
+msgstr "Đã hoàn thành qua liên kết gửi đến %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(who)s confirmed: “%(what)s”."
+msgstr "%(who)s đã xác nhận: “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(who)s chose “%(what)s”."
+msgstr "%(who)s đã chọn “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s sent the details."
+msgstr "%s đã gửi thông tin."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s marked it done."
+msgstr "%s đã đánh dấu là xong."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This file does not belong to this task."
+msgstr "Tệp này không thuộc việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose a file up to 10 MB."
+msgstr "Hãy chọn tệp tối đa 10 MB."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Only the person this task is for can attach a file to it."
+msgstr "Chỉ người được giao việc này mới đính kèm tệp được."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Told %s on their employee home."
+msgstr "Đã báo cho %s trên trang chủ nhân viên của họ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "them"
+msgstr "họ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %(who)s: a link was sent to %(email)s."
+msgstr "Đang chờ %(who)s: đã gửi liên kết đến %(email)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This step no longer exists."
+msgstr "Bước này không còn nữa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This step is not waiting for a link."
+msgstr "Bước này không chờ liên kết."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "New for your team: %s"
+msgstr "Việc mới cho nhóm của bạn: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid ""
+"“%(step)s” in %(workflow)s is waiting for someone on your team. Open it in Approvals and press Take it."
+msgstr ""
+"“%(step)s” trong %(workflow)s đang chờ một người trong nhóm của bạn. Hãy mở trong Phê duyệt và nhấn Nhận xử lý."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Still waiting for you: %s"
+msgstr "Vẫn đang chờ bạn: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "“%(what)s” was due on %(when)s. Open it in Approvals to finish it."
+msgstr "“%(what)s” có hạn vào %(when)s. Hãy mở trong Phê duyệt để hoàn thành."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "nobody on the team yet"
+msgstr "chưa có ai trong nhóm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Late: %s"
+msgstr "Trễ hạn: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid ""
+"“%(what)s” was due on %(when)s and is still with %(who)s. Nothing has been moved; you are told so you can help."
+msgstr ""
+"“%(what)s” có hạn vào %(when)s và vẫn đang ở chỗ %(who)s. Chưa có gì bị chuyển đi; bạn được báo để có thể hỗ trợ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "A reminder went out for %s."
+msgstr "Đã gửi lời nhắc cho %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(step)s is late; %(who)s was told."
+msgstr "%(step)s đang trễ hạn; đã báo cho %(who)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s is late and there is nobody to tell."
+msgstr "%s đang trễ hạn và không có ai để báo."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Past its target time: %s"
+msgstr "Đã quá thời gian mục tiêu: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This has been in “%(stage)s” longer than its target of %(hours)s hours."
+msgstr "Hồ sơ này đã ở “%(stage)s” lâu hơn thời gian mục tiêu %(hours)s giờ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Past its target time in %(stage)s; %(who)s was told."
+msgstr "Đã quá thời gian mục tiêu ở %(stage)s; đã báo cho %(who)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Started for %(line)s (%(n)s of %(count)s)."
+msgstr "Đã bắt đầu cho %(line)s (%(n)s / %(count)s)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Started version %s."
+msgstr "Đã bắt đầu theo phiên bản %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: the workflow it belongs to has ended."
+msgstr "Đã dừng: quy trình chứa nó đã kết thúc."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: it was sent back and starts again."
+msgstr "Đã dừng: nó đã bị trả lại và bắt đầu lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid ""
+"There are %(count)s %(lines)s, more than the %(cap)s this repeats for, so none were started. Raise the limit in the step or narrow it down, then retry."
+msgstr ""
+"Có %(count)s %(lines)s, nhiều hơn mức %(cap)s mà bước này lặp lại, nên chưa bắt đầu dòng nào. Hãy tăng giới hạn trong bước hoặc thu hẹp lại, rồi thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "There were no %s, so nothing was repeated."
+msgstr "Không có %s nào, nên không có gì được lặp lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Nothing to repeat: there were no %s."
+msgstr "Không có gì để lặp lại: không có %s nào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "together"
+msgstr "cùng lúc"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "one by one"
+msgstr "lần lượt từng dòng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Repeating for %(count)s %(lines)s, %(how)s."
+msgstr "Đang lặp lại cho %(count)s %(lines)s, %(how)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: another line finished first."
+msgstr "Đã dừng: một dòng khác đã xong trước."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "1 of %s lines needs attention."
+msgstr "1 trong %s dòng cần chú ý."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(n)s of %(count)s lines need attention."
+msgstr "%(n)s trong %(count)s dòng cần chú ý."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(line)s finished first; the other lines were stopped."
+msgstr "%(line)s đã xong trước; các dòng còn lại đã được dừng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "All %(count)s %(lines)s finished (%(done)s done)."
+msgstr "Đã hoàn tất cả %(count)s %(lines)s (%(done)s xong)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "line"
+msgstr "dòng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each %s"
+msgstr "Cho từng %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "person"
+msgstr "người"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "people"
+msgstr "người"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each person on %s"
+msgstr "Cho từng người trong %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each person on a team"
+msgstr "Cho từng người trong một nhóm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "lines"
+msgstr "dòng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each line of “%s”"
+msgstr "Cho từng dòng của “%s”"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "answer"
+msgstr "câu trả lời"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "answers"
+msgstr "câu trả lời"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each answer to “%s”"
+msgstr "Cho từng câu trả lời của “%s”"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each answer"
+msgstr "Cho từng câu trả lời"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each line"
+msgstr "Cho từng dòng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "A new process has no record with lines. Edit the step."
+msgstr "Quy trình mới chưa có hồ sơ nào có dòng. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This area"
+msgstr "Mục này"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%s no longer offers these lines to workflows. Edit the step."
+msgstr "%s không còn cho quy trình dùng các dòng này. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "The answer this repeats for is not a list. Edit the step."
+msgstr ""
+"Câu trả lời mà bước này lặp lại theo không phải là một danh sách. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Choose one of the teams from Approvals › Who approves. Edit the step."
+msgstr "Hãy chọn một nhóm trong Phê duyệt › Ai phê duyệt. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Choose what this repeats for. Edit the step."
+msgstr "Hãy chọn bước này lặp lại cho cái gì. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Answer"
+msgstr "Câu trả lời"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid ""
+"Only a step inside “Repeat for each…” can go to the person on the line, and only when the line names a person."
+msgstr ""
+"Chỉ bước nằm trong “Lặp lại cho từng…” mới có thể giao cho người trên dòng, và chỉ khi dòng đó ghi tên một người."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This record type"
+msgstr "Loại hồ sơ này"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid ""
+"%s has no lines a workflow can repeat for. Choose a list question or a team instead."
+msgstr ""
+"%s không có dòng nào để quy trình lặp lại theo. Hãy chọn một câu hỏi dạng danh sách hoặc một nhóm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "A new process has no record with lines. Choose a list question or a team."
+msgstr ""
+"Quy trình mới chưa có hồ sơ nào có dòng. Hãy chọn một câu hỏi dạng danh sách hoặc một nhóm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Some line details are not offered any more. Choose “%s” again."
+msgstr "Một số chi tiết của dòng không còn được cung cấp. Hãy chọn lại “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Repeat for the answers to a list question asked earlier on the main path."
+msgstr ""
+"Lặp lại cho các câu trả lời của một câu hỏi dạng danh sách đã hỏi trước đó trên luồng chính."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Choose one of the teams from Approvals › Who approves."
+msgstr "Hãy chọn một nhóm trong Phê duyệt › Ai phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This line does not name a person. Edit the step."
+msgstr "Dòng này không ghi tên người nào. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "The person on the line"
+msgstr "Người trên dòng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(what)s %(n)s of %(count)s"
+msgstr "%(what)s %(n)s trên %(count)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(done)s of %(count)s %(lines)s done"
+msgstr "Đã xong %(done)s trên %(count)s %(lines)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(done)s of %(count)s %(lines)s"
+msgstr "%(done)s trên %(count)s %(lines)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Retry by %s."
+msgstr "%s đã thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: the workflow it belongs to was cancelled."
+msgstr "Đã dừng: quy trình chứa nó đã bị hủy."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "you"
+msgstr "bạn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(done)s of %(count)s %(lines)s done · next for you: %(what)s"
+msgstr "Đã xong %(done)s trên %(count)s %(lines)s · việc tiếp theo của bạn: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Each %(one)s usually %(time)s"
+msgstr "Mỗi %(one)s thường mất %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(each)s, %(how)s"
+msgstr "%(each)s, %(how)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(each)s · shown for %(first)s"
+msgstr "%(each)s · đang hiển thị cho %(first)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%s · shown for one"
+msgstr "%s · đang hiển thị cho một"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "…and the same for %(n)s more %(lines)s"
+msgstr "…và tương tự cho %(n)s %(lines)s nữa"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "…and the same for each other %s"
+msgstr "…và tương tự cho từng %s khác"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "That is the only %s."
+msgstr "Đó là %s duy nhất."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(what)s · %(n)s to do"
+msgstr "%(what)s · %(n)s việc cần làm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Choose a comparison and value that match the field type."
+msgstr "Hãy chọn cách so sánh và giá trị phù hợp với loại thông tin này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "You need email-template editing permission to change shared messages."
+msgstr "Bạn cần quyền sửa mẫu email để thay đổi tin nhắn dùng chung."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "These template settings are not supported."
+msgstr "Các thiết lập mẫu này không được hỗ trợ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Use a shorter message."
+msgstr "Hãy dùng tin nhắn ngắn hơn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Give the message a name and a subject."
+msgstr "Hãy đặt tên và tiêu đề cho tin nhắn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "This shared template changed elsewhere. Reopen it before saving."
+msgstr "Mẫu dùng chung này đã được thay đổi ở nơi khác. Hãy mở lại trước khi lưu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Choose a run of this workflow."
+msgstr "Hãy chọn một lần chạy của quy trình này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Choose a related-record field."
+msgstr "Hãy chọn một thông tin liên kết tới hồ sơ khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "A letter"
+msgstr "Một thư"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"A draft letter for the person this is about, from your letters library. Sending it still needs its own approval."
+msgstr ""
+"Bản nháp thư cho người mà việc này liên quan, lấy từ thư viện thư của bạn. Việc gửi thư vẫn cần phê duyệt riêng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft letter"
+msgstr "Thư nháp"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "An announcement"
+msgstr "Một thông báo chung"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"A draft announcement from one of your templates. It then follows its own sign-off before it goes out."
+msgstr ""
+"Bản nháp thông báo chung từ một trong các mẫu của bạn. Sau đó nó đi qua bước duyệt riêng trước khi được gửi đi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft announcement"
+msgstr "Thông báo chung nháp"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This app is not switched on here."
+msgstr "Ứng dụng này chưa được bật ở đây."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"Letters are written for the person a record is about, and this kind of record does not say who that is."
+msgstr ""
+"Thư được viết cho người mà hồ sơ liên quan, nhưng loại hồ sơ này không cho biết đó là ai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%(label)s” needs %(kind)s."
+msgstr "“%(label)s” cần %(kind)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This value cannot be set by a workflow."
+msgstr "Quy trình không thể đặt giá trị này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Set the company working calendar before waiting in working days."
+msgstr "Hãy thiết lập lịch làm việc của công ty trước khi chờ theo ngày làm việc."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Skipped %(step)s: %(why)s"
+msgstr "Đã bỏ qua %(step)s: %(why)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The stage this step moves to no longer exists. Edit the step."
+msgstr "Giai đoạn mà bước này chuyển sang không còn tồn tại. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” belongs to another kind of record. Edit the step."
+msgstr "“%s” thuộc về một loại hồ sơ khác. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This is now %(exit)s, so it was not moved to %(stage)s."
+msgstr "Hồ sơ này hiện đã %(exit)s, nên không được chuyển sang %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” follows a stage that no longer exists."
+msgstr "“%s” đi sau một giai đoạn không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Waiting for this to reach %s."
+msgstr "Đang chờ hồ sơ này đến %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This is already past %(anchor)s, so it was not moved to %(stage)s."
+msgstr "Hồ sơ này đã qua %(anchor)s, nên không được chuyển sang %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” belongs to another process. Edit the step."
+msgstr "“%s” thuộc về một quy trình khác. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This has gone back three times. Someone should look at it."
+msgstr "Hồ sơ này đã bị trả lại ba lần. Cần có người xem xét."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The step this sends back to is not on the main path any more. Edit the step."
+msgstr "Bước mà bước này trả lại không còn nằm trên luồng chính. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Steps in between would run twice: %s."
+msgstr "Các bước ở giữa sẽ chạy hai lần: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Sent back to %(target)s (%(n)s of %(limit)s)."
+msgstr "Đã trả lại %(target)s (lần %(n)s trên %(limit)s)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "A new process has no record to update."
+msgstr "Quy trình mới chưa có hồ sơ nào để cập nhật."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%(area)s has not opened this value to workflows."
+msgstr "%(area)s chưa cho phép quy trình thay đổi giá trị này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Set %(label)s to %(value)s."
+msgstr "Đã đặt %(label)s thành %(value)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This app is not switched on here any more, so nothing was created."
+msgstr "Ứng dụng này không còn được bật ở đây, nên chưa tạo gì cả."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The template this step starts from is not available any more. Edit the step."
+msgstr "Mẫu mà bước này dùng để bắt đầu không còn nữa. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This is not about an employee, so there is nobody to write a letter for."
+msgstr "Việc này không liên quan đến nhân viên nào, nên không có ai để viết thư."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s works for another company."
+msgstr "%s làm việc cho công ty khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft letter created for %(who)s: %(what)s."
+msgstr "Đã tạo thư nháp cho %(who)s: %(what)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft announcement created: %s."
+msgstr "Đã tạo thông báo chung nháp: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s has no login to show this to."
+msgstr "%s không có tài khoản đăng nhập để xem thông báo này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "That person"
+msgstr "Người đó"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Told %s in the app."
+msgstr "Đã báo cho %s trong ứng dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The workflow this hands over to no longer exists. Edit the step."
+msgstr "Quy trình mà bước này chuyển giao không còn tồn tại. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "A workflow cannot start itself."
+msgstr "Một quy trình không thể tự bắt đầu chính nó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” is not switched on, so it could not start. Switch it on, then retry."
+msgstr "“%s” chưa được bật nên không thể bắt đầu. Hãy bật lên rồi thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” no longer starts this way for these records. Edit the step."
+msgstr "“%s” không còn bắt đầu theo cách này cho các hồ sơ này. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"This would be the fourth workflow handed over in a row. Workflows can hand over three times at most."
+msgstr ""
+"Đây sẽ là quy trình thứ tư được chuyển giao liên tiếp. Quy trình chỉ được chuyển giao tối đa ba lần."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s is already running for this record."
+msgstr "%s đang chạy cho hồ sơ này rồi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Started %s."
+msgstr "Đã bắt đầu %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s did not start: its filters do not match this record."
+msgstr "%s chưa bắt đầu: điều kiện lọc của nó không khớp với hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s did not start."
+msgstr "%s chưa bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s working day"
+msgstr "%s ngày làm việc"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s working days"
+msgstr "%s ngày làm việc"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s day"
+msgstr "%s ngày"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s hour"
+msgstr "%s giờ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s hours"
+msgstr "%s giờ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would move this to %s"
+msgstr "Sẽ chuyển hồ sơ này sang %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would send it back to %s. The steps from there run again."
+msgstr "Sẽ trả lại %s. Các bước từ đó sẽ chạy lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would stop here: %s"
+msgstr "Sẽ dừng tại đây: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would stop here"
+msgstr "Sẽ dừng tại đây"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "an earlier step"
+msgstr "một bước trước đó"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would set %(label)s from the answer to %(step)s"
+msgstr "Sẽ đặt %(label)s theo câu trả lời của %(step)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would set %(label)s to %(value)s"
+msgstr "Sẽ đặt %(label)s thành %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would make a draft letter from %s"
+msgstr "Sẽ tạo một bản nháp thư từ %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would make a draft announcement from %s"
+msgstr "Sẽ tạo một bản nháp thông báo chung từ %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would tell %s in the app"
+msgstr "Sẽ báo cho %s trong ứng dụng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would ask %s to confirm"
+msgstr "Sẽ nhờ %s xác nhận"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would start %s"
+msgstr "Sẽ bắt đầu %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Asks %(who)s: %(choices)s"
+msgstr "Hỏi %(who)s: %(choices)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This record type is not available."
+msgstr "Loại hồ sơ này không khả dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s stages are added in its own set-up."
+msgstr "Các giai đoạn của %s được thêm trong phần thiết lập riêng của mục đó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Choose the stage the new one comes after."
+msgstr "Chọn giai đoạn mà giai đoạn mới sẽ nằm sau."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Someone this record names"
+msgstr "Một người được nêu trong hồ sơ này"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Choose a staff person to move records into this stage."
+msgstr "Chọn một nhân sự để chuyển hồ sơ vào giai đoạn này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Choose someone this kind of record names."
+msgstr "Chọn một người được nêu trong loại hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"A notice is read inside the app, and %s has no login. Use “Ask someone to confirm” or a form instead."
+msgstr ""
+"Thông báo được đọc trong ứng dụng, nhưng %s không có tài khoản đăng nhập. Hãy dùng “Nhờ ai đó xác nhận” hoặc một biểu mẫu thay thế."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(who)s answers by email link, and a link page cannot take %(fields)s. Remove them, or choose someone else."
+msgstr ""
+"%(who)s trả lời qua liên kết trong email, và trang liên kết không thể nhận %(fields)s. Hãy bỏ các mục đó, hoặc chọn người khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"“%(step)s” goes to %(who)s by email link. If there is no email address on the record, the step stops and needs a look."
+msgstr ""
+"“%(step)s” được gửi đến %(who)s qua liên kết trong email. Nếu hồ sơ không có địa chỉ email, bước này sẽ dừng lại và cần được xem xét."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"If a task is late and the person has no manager, the person who published this workflow is told. You can name someone else in Settings."
+msgstr ""
+"Nếu một việc bị trễ hạn mà người đó không có quản lý, người đã ban hành quy trình này sẽ được báo. Bạn có thể chọn người khác trong Cài đặt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(owner)s already emails %(who)s here: %(text)s This step would send a second email."
+msgstr ""
+"%(owner)s đã gửi email cho %(who)s ở đây: %(text)s Bước này sẽ gửi thêm một email thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Choose who is told about late tasks from Approvals › Who approves."
+msgstr "Chọn người được báo về các việc trễ hạn trong Phê duyệt › Ai phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "This kind of record does not name that person any more. Edit the step."
+msgstr "Loại hồ sơ này không còn nêu người đó nữa. Hãy sửa bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "%s has no email address on the record, and nobody could be found to add one."
+msgstr "%s không có địa chỉ email trong hồ sơ, và không tìm được ai để thêm vào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(who)s has no email address on the record. Waiting for someone on the team %(team)s to add one."
+msgstr ""
+"%(who)s không có địa chỉ email trong hồ sơ. Đang chờ một người trong nhóm %(team)s thêm vào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(who)s has no email address on the record. Waiting for %(keeper)s to add one."
+msgstr "%(who)s không có địa chỉ email trong hồ sơ. Đang chờ %(keeper)s thêm vào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Add an email for %s"
+msgstr "Thêm email cho %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"A workflow needs to reach %s by email. Add their email address here; the link then goes out by itself."
+msgstr ""
+"Một quy trình cần liên hệ %s qua email. Hãy thêm địa chỉ email của họ tại đây; sau đó liên kết sẽ tự được gửi đi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "An email address for %s was added."
+msgstr "Đã thêm địa chỉ email cho %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Add an email"
+msgstr "Thêm email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Waiting for you: add an email for %s"
+msgstr "Đang chờ bạn: thêm email cho %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "someone"
+msgstr "ai đó"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Waiting for %(who)s to add an email for %(name)s"
+msgstr "Đang chờ %(who)s thêm email cho %(name)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"This task is to add an email address for %s on the record. The link then goes out by itself."
+msgstr ""
+"Việc này là thêm địa chỉ email cho %s vào hồ sơ. Sau đó liên kết sẽ tự được gửi đi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Their manager was told on %s"
+msgstr "Quản lý của họ đã được báo vào %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "The person who published this workflow was told on %s"
+msgstr "Người đã ban hành quy trình này đã được báo vào %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "%(role)s was told on %(day)s"
+msgstr "%(role)s đã được báo vào %(day)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_record_context.py:0
+msgid "Manage these stages through the module that owns them."
+msgstr "Hãy quản lý các giai đoạn này trong phần ứng dụng sở hữu chúng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_record_context.py:0
+msgid "Workflow setup is not available for this record type."
+msgstr "Không thể thiết lập quy trình cho loại hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_record_context.py:0
+msgid "Save the record before creating a workflow just for it."
+msgstr "Hãy lưu hồ sơ trước khi tạo một quy trình riêng cho nó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Sign in with an internal account."
+msgstr "Hãy đăng nhập bằng tài khoản nội bộ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "You can complete your tasks, but cannot edit workflows."
+msgstr "Bạn có thể hoàn thành việc của mình, nhưng không thể sửa quy trình."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A workflow publisher must publish or activate this change."
+msgstr "Người ban hành quy trình phải ban hành hoặc bật thay đổi này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This company is not available to you."
+msgstr "Bạn không có quyền với công ty này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow is not available in your current company."
+msgstr "Quy trình này không có trong công ty hiện tại của bạn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "You do not have permission to start this workflow."
+msgstr "Bạn không có quyền bắt đầu quy trình này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a record for this workflow."
+msgstr "Chọn một hồ sơ cho quy trình này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The source record no longer exists."
+msgstr "Hồ sơ gốc không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a record from this company."
+msgstr "Chọn một hồ sơ thuộc công ty này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Urgent"
+msgstr "Khẩn cấp"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Other approval request"
+msgstr "Yêu cầu phê duyệt khác"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval routes, people and backups"
+msgstr "Tuyến phê duyệt, người phê duyệt và người thay thế"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Permissions and access delegation"
+msgstr "Quyền truy cập và ủy quyền"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Existing module settings and templates"
+msgstr "Cài đặt và mẫu hiện có của từng phần"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Stages, candidate messages and automations"
+msgstr "Giai đoạn, tin nhắn cho ứng viên và các việc tự động"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Employee checklists and their automatic work"
+msgstr "Danh sách việc của nhân viên và các việc tự động đi kèm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Calculation, locks and payment release"
+msgstr "Tính lương, khóa sổ và chi trả"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Time policies and attendance rules"
+msgstr "Chính sách thời gian và quy tắc chấm công"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Give the workflow a name."
+msgstr "Hãy đặt tên cho quy trình."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This kind of record is not available."
+msgstr "Loại hồ sơ này không khả dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the existing approval process for this record."
+msgstr "Chọn quy trình phê duyệt hiện có cho hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"A new process has no record of its own to follow. Choose “Send it for approval”."
+msgstr ""
+"Một quy trình mới không có hồ sơ riêng để theo dõi. Hãy chọn “Gửi đi phê duyệt”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an existing record for an automatic start."
+msgstr "Chọn một hồ sơ hiện có để tự động bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the approval process this follows."
+msgstr "Chọn quy trình phê duyệt mà bước này đi theo."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval is already complete for this trigger. Do not request it again."
+msgstr "Việc phê duyệt cho sự kiện này đã hoàn tất. Đừng yêu cầu lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a date field."
+msgstr "Chọn một mục ngày."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Use a delay from 0 to 365."
+msgstr "Dùng khoảng chờ từ 0 đến 365."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a valid date offset."
+msgstr "Chọn khoảng thời gian trước/sau ngày hợp lệ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an accessible record type for the lookup."
+msgstr "Chọn loại hồ sơ mà bạn có quyền xem để tra cứu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Map each approval value from one form field only."
+msgstr "Mỗi giá trị phê duyệt chỉ được lấy từ một ô trong biểu mẫu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an existing single-person responsibility."
+msgstr "Chọn một vai trò hiện có do một người đảm nhận."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A new process has no record that names a manager. Choose someone else."
+msgstr "Một quy trình mới không có hồ sơ nào nêu tên quản lý. Hãy chọn người khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a person field from this record."
+msgstr "Chọn một người được nêu trong hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a supported task type."
+msgstr "Chọn một loại việc được hỗ trợ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Say why this message is additional to existing notifications."
+msgstr "Hãy cho biết vì sao tin nhắn này cần thêm ngoài các thông báo đã có."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an active person in this company."
+msgstr "Chọn một người đang làm việc tại công ty này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose one of the listed options for “%s”."
+msgstr "Chọn một trong các lựa chọn có sẵn cho “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an existing owner from the list."
+msgstr "Chọn một người phụ trách có trong danh sách."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%(label)s stages belong to %(area)s. Use “Move to a Hiring stage” instead."
+msgstr ""
+"Các giai đoạn của %(label)s thuộc về %(area)s. Hãy dùng “Chuyển sang một giai đoạn Tuyển dụng” thay thế."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose one of your stages to move it to."
+msgstr "Chọn một giai đoạn của bạn để chuyển sang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%s has not opened any values to workflows yet."
+msgstr "%s chưa cho phép quy trình thay đổi giá trị nào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%s no longer offers this value. Choose another."
+msgstr "%s không còn cung cấp giá trị này. Hãy chọn giá trị khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose one of the values %s lets workflows set."
+msgstr "Chọn một trong các giá trị mà %s cho phép quy trình đặt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "That answer is not %(kind)s, so it cannot fill “%(label)s”."
+msgstr "Câu trả lời đó không phải là %(kind)s, nên không thể điền vào “%(label)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Write what to set “%s” to."
+msgstr "Nhập giá trị muốn đặt cho “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the template to start from."
+msgstr "Chọn mẫu để bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the workflow to hand over to."
+msgstr "Chọn quy trình sẽ được chuyển tiếp sang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A workflow cannot start itself. Choose another one."
+msgstr "Một quy trình không thể tự bắt đầu chính nó. Hãy chọn quy trình khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "“%s” is for another kind of record. Choose one for the same records."
+msgstr ""
+"“%s” dành cho một loại hồ sơ khác. Hãy chọn quy trình dành cho cùng loại hồ sơ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Publish “%s” first, so there is a version to start."
+msgstr "Hãy ban hành “%s” trước, để có một phiên bản để bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"“%s” starts by itself, so it cannot be handed over to. Choose one that a person starts."
+msgstr ""
+"“%s” tự bắt đầu, nên không thể chuyển tiếp sang nó. Hãy chọn một quy trình do người bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Someone saved a newer draft. Reload before applying your changes."
+msgstr ""
+"Có người đã lưu một bản nháp mới hơn. Hãy tải lại trước khi áp dụng thay đổi của bạn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow is too large."
+msgstr "Quy trình này quá lớn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose who can start this workflow."
+msgstr "Chọn người có thể bắt đầu quy trình này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A selected role no longer exists."
+msgstr "Một vai trò đã chọn không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an approval process belonging to this record."
+msgstr "Chọn một quy trình phê duyệt thuộc hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Records where %s"
+msgstr "Các hồ sơ có %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Every record"
+msgstr "Mọi hồ sơ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "a value"
+msgstr "một giá trị"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid " and "
+msgstr " và "
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid " or "
+msgstr " hoặc "
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%(text)s, plus %(count)s more filters"
+msgstr "%(text)s, và thêm %(count)s điều kiện lọc khác"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Existing runs keep their version. Publishing does not activate this workflow."
+msgstr ""
+"Các lần chạy đang diễn ra vẫn giữ phiên bản cũ. Ban hành không tự bật quy trình này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Reload the latest draft before publishing."
+msgstr "Hãy tải lại bản nháp mới nhất trước khi ban hành."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval route for this custom Workflow Studio process."
+msgstr "Tuyến phê duyệt cho quy trình tùy chỉnh này trong Workflow Studio."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Publish a process before activating it."
+msgstr "Hãy ban hành quy trình trước khi bật nó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Another active workflow starts on exactly the same records and event. Change the filters or pause the other one."
+msgstr ""
+"Một quy trình khác đang bật cũng bắt đầu trên đúng những hồ sơ và sự kiện này. Hãy đổi điều kiện lọc hoặc tạm dừng quy trình kia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Other workflows also start for these records. Review them and confirm this one does different work."
+msgstr ""
+"Các quy trình khác cũng bắt đầu cho những hồ sơ này. Hãy kiểm tra chúng và xác nhận quy trình này làm việc khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Review existing automation rules and confirm that this workflow has a different purpose."
+msgstr ""
+"Hãy kiểm tra các quy tắc tự động hiện có và xác nhận quy trình này có mục đích khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Set up who approves this in Approval Matrix before turning it on."
+msgstr "Hãy thiết lập người phê duyệt trong Ma trận phê duyệt trước khi bật."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"The approval route for this is paused. Switch it back on in Approval Matrix first."
+msgstr ""
+"Tuyến phê duyệt cho việc này đang tạm dừng. Hãy bật lại trong Ma trận phê duyệt trước."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This version belongs to another workflow."
+msgstr "Phiên bản này thuộc về một quy trình khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a published saved group."
+msgstr "Chọn một nhóm bước đã lưu và đã ban hành."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The example values are not valid."
+msgstr "Các giá trị mẫu không hợp lệ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Add example values from before the change."
+msgstr "Thêm giá trị mẫu của thời điểm trước khi thay đổi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Preview only. No tasks, approvals or messages are created."
+msgstr "Chỉ xem trước. Không có việc, phê duyệt hay tin nhắn nào được tạo."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow is not active."
+msgstr "Quy trình này đang tắt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow starts from its configured event."
+msgstr "Quy trình này bắt đầu từ sự kiện đã thiết lập."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Reload the start dialog and try again."
+msgstr "Hãy tải lại cửa sổ bắt đầu và thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Enter a valid amount and urgency."
+msgstr "Hãy nhập số tiền và mức độ khẩn cấp hợp lệ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This email template no longer exists."
+msgstr "Mẫu email này không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a template for this kind of record."
+msgstr "Chọn một mẫu dành cho loại hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This template belongs to another company."
+msgstr "Mẫu này thuộc về một công ty khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This business action is no longer available."
+msgstr "Thao tác này không còn khả dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The module has not registered this action."
+msgstr "Thao tác này chưa được thiết lập trong hệ thống."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This run no longer exists."
+msgstr "Lần chạy này không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This run belongs to another company."
+msgstr "Lần chạy này thuộc về công ty khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Only the assigned person can complete this task."
+msgstr "Chỉ người được giao mới có thể hoàn thành việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This step has already been completed."
+msgstr "Bước này đã được hoàn thành."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Use files uploaded for this task."
+msgstr "Hãy dùng các tệp đã tải lên cho việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This file could not be read."
+msgstr "Không đọc được tệp này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a failed step in an active run."
+msgstr "Hãy chọn một bước bị lỗi trong một lần chạy đang hoạt động."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Carried on without sending it back again."
+msgstr "Đã tiếp tục mà không trả lại lần nữa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%s by %s."
+msgstr "%s bởi %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"This step has failed five times. Resolve the source issue before starting a new run."
+msgstr ""
+"Bước này đã lỗi năm lần. Hãy xử lý nguyên nhân gốc trước khi bắt đầu lần chạy mới."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Withdraw the pending request in Approvals before cancelling this run."
+msgstr "Hãy rút lại yêu cầu đang chờ trong Phê duyệt trước khi hủy lần chạy này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This action is not available now."
+msgstr "Hiện không thể thực hiện thao tác này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Email template"
+msgstr "Mẫu email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This settings screen is not available."
+msgstr "Màn hình cài đặt này không khả dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Workflow Studio"
+msgstr "Workflow Studio"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Needs attention: %s"
+msgstr "Cần chú ý: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Carried on after waiting %s."
+msgstr "Đã tiếp tục sau khi chờ %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"The wait reached its deadline before the conditions matched. Check the record, then retry."
+msgstr ""
+"Thời gian chờ đã hết trước khi các điều kiện được đáp ứng. Hãy kiểm tra hồ sơ rồi thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The queued message is missing. Check the mail service before retrying."
+msgstr ""
+"Không tìm thấy tin nhắn đang chờ gửi. Hãy kiểm tra dịch vụ email trước khi thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"The mail service could not send this message. Fix delivery settings, then retry."
+msgstr ""
+"Dịch vụ email không gửi được tin nhắn này. Hãy sửa cài đặt gửi thư rồi thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The approval request was %s."
+msgstr "Yêu cầu phê duyệt: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval was returned. Correct the source record, then retry this step."
+msgstr "Phê duyệt đã bị trả lại. Hãy sửa hồ sơ gốc rồi thử lại bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "%s min"
+msgstr "%s phút"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "Where time goes could not be worked out just now. Try again in a moment."
+msgstr "Hiện chưa tính được thời gian được dùng vào đâu. Hãy thử lại sau giây lát."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "Someone by email link"
+msgstr "Một người qua liên kết email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "Approvals"
+msgstr "Phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "There is already a stage called “%s”."
+msgstr "Đã có một giai đoạn tên là “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "You do not have access to this record."
+msgstr "Bạn không có quyền truy cập hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose the workflow these stages belong to."
+msgstr "Hãy chọn quy trình mà các giai đoạn này thuộc về."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This workflow follows a record. Its stages belong to that kind of record."
+msgstr ""
+"Quy trình này đi theo một loại hồ sơ. Các giai đoạn của nó thuộc về loại hồ sơ đó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "%(label)s stages are managed in %(area)s."
+msgstr "Các giai đoạn của %(label)s được quản lý trong %(area)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage is not available in your current company."
+msgstr "Giai đoạn này không có trong công ty hiện tại của bạn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A named person"
+msgstr "Một người cụ thể"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A responsibility"
+msgstr "Một vai trò phụ trách"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A person on this record"
+msgstr "Một người trong hồ sơ này"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Their manager’s manager"
+msgstr "Quản lý cấp trên của quản lý của họ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "The person who started the workflow"
+msgstr "Người đã bắt đầu quy trình"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Someone"
+msgstr "Một người"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "%(who)s presses Move to %(stage)s"
+msgstr "%(who)s bấm Chuyển sang %(stage)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "By itself, when %s"
+msgstr "Tự động, khi %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "By itself, when its rule matches"
+msgstr "Tự động, khi khớp với quy tắc"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "By itself, when the steps before are finished"
+msgstr "Tự động, khi các bước trước đã xong"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose who moves records into this stage."
+msgstr "Hãy chọn ai sẽ chuyển hồ sơ vào giai đoạn này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid ""
+"A new process has no record of its own. Choose a named person or a responsibility."
+msgstr ""
+"Một quy trình mới chưa có hồ sơ riêng. Hãy chọn một người cụ thể hoặc một vai trò phụ trách."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "These stage settings are not valid."
+msgstr "Cài đặt giai đoạn này không hợp lệ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Give the stage a name of up to 40 characters."
+msgstr "Hãy đặt tên giai đoạn tối đa 40 ký tự."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose the existing stage this one comes after."
+msgstr "Hãy chọn giai đoạn có sẵn mà giai đoạn này đứng sau."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A new process has no existing stages to follow."
+msgstr "Một quy trình mới chưa có giai đoạn nào để đứng sau."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose how records get into this stage."
+msgstr "Hãy chọn cách hồ sơ được đưa vào giai đoạn này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Add the rule that moves records into this stage."
+msgstr "Hãy thêm quy tắc chuyển hồ sơ vào giai đoạn này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Use a target from 0 to 8,760 hours."
+msgstr "Hãy đặt mục tiêu từ 0 đến 8.760 giờ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Left %s: the record moved on."
+msgstr "Đã rời %s: hồ sơ đã chuyển tiếp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Left %s."
+msgstr "Đã rời %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Moved to %(stage)s by %(who)s."
+msgstr "Đã chuyển sang %(stage)s bởi %(who)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Moved to %s by the workflow."
+msgstr "Đã được quy trình chuyển sang %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "Moved to %s."
+msgstr "Đã chuyển sang %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This workflow waits for a stage that no longer exists. Edit its sections."
+msgstr ""
+"Quy trình này đang chờ một giai đoạn không còn tồn tại. Hãy chỉnh sửa các phần của nó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Waiting until %(rule)s, to move to %(stage)s."
+msgstr "Đang chờ đến khi %(rule)s, để chuyển sang %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Waiting for its rule to move this to %s."
+msgstr "Đang chờ quy tắc chuyển hồ sơ này sang %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Waiting for %(who)s to move this to %(stage)s."
+msgstr "Đang chờ %(who)s chuyển hồ sơ này sang %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Records are in “%s” now. Move them on before it follows another stage."
+msgstr ""
+"Hiện có hồ sơ đang ở “%s”. Hãy chuyển chúng đi trước khi đặt giai đoạn này sau một giai đoạn khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage order is not valid."
+msgstr "Thứ tự giai đoạn này không hợp lệ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Keep every stage once, and the existing stages in their own order."
+msgstr ""
+"Mỗi giai đoạn chỉ xuất hiện một lần, và các giai đoạn có sẵn giữ nguyên thứ tự của chúng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Your own stages come after one of the existing stages."
+msgstr "Các giai đoạn bạn tự tạo phải đứng sau một trong các giai đoạn có sẵn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "%(n)s records are in “%(stage)s” now. Move them on before removing it."
+msgstr ""
+"Hiện có %(n)s hồ sơ đang ở “%(stage)s”. Hãy chuyển chúng đi trước khi xóa giai đoạn này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A record is in “%s” now. Move it on before removing it."
+msgstr "Hiện có một hồ sơ đang ở “%s”. Hãy chuyển nó đi trước khi xóa giai đoạn này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid ""
+"“%(w)s” waits for this stage. Pause that workflow or change its sections first."
+msgstr ""
+"“%(w)s” đang chờ giai đoạn này. Hãy tạm dừng quy trình đó hoặc thay đổi các phần của nó trước."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage no longer exists."
+msgstr "Giai đoạn này không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Only %(who)s can move this to %(stage)s."
+msgstr "Chỉ %(who)s mới có thể chuyển hồ sơ này sang %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage belongs to another process."
+msgstr "Giai đoạn này thuộc về một quy trình khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage belongs to another kind of record."
+msgstr "Giai đoạn này thuộc về một loại hồ sơ khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Records get into “%s” by themselves. Nobody needs to move them."
+msgstr "Hồ sơ tự động vào “%s”. Không ai cần chuyển chúng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This is not at %(anchor)s, so it cannot move to %(stage)s yet."
+msgstr "Hồ sơ này chưa ở %(anchor)s, nên chưa thể chuyển sang %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "the workflow"
+msgstr "quy trình"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "today"
+msgstr "hôm nay"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "tomorrow"
+msgstr "ngày mai"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "yesterday"
+msgstr "hôm qua"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Late by 1 day"
+msgstr "Trễ hạn 1 ngày"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Late by %s days"
+msgstr "Trễ hạn %s ngày"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "due %s"
+msgstr "hạn %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for this to be sent for approval"
+msgstr "Đang chờ gửi đi để phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "approval"
+msgstr "phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for approval: %(step)s with %(who)s"
+msgstr "Đang chờ phê duyệt: %(step)s với %(who)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for your team %(team)s: %(what)s"
+msgstr "Đang chờ nhóm %(team)s của bạn: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for you: %s"
+msgstr "Đang chờ bạn: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %s — nobody has taken it yet"
+msgstr "Đang chờ %s — chưa ai nhận xử lý"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s (%(team)s): %(what)s"
+msgstr "Đang chờ %(who)s (%(team)s): %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s, covering for %(whose)s: %(what)s"
+msgstr "Đang chờ %(who)s, làm thay cho %(whose)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %s, by email"
+msgstr "Đang chờ %s, qua email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s by email link (%(email)s)"
+msgstr "Đang chờ %(who)s qua liên kết email (%(email)s)"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s on their employee home: %(what)s"
+msgstr "Đang chờ %(who)s trên trang chủ nhân viên của họ: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s: %(what)s"
+msgstr "Đang chờ %(who)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting: %s"
+msgstr "Đang chờ: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Paused until %s"
+msgstr "Tạm dừng đến %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Sending a message"
+msgstr "Đang gửi tin nhắn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "In progress"
+msgstr "Đang thực hiện"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Done on %s"
+msgstr "Xong ngày %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Stopped on %s"
+msgstr "Đã dừng ngày %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Turned down on %s"
+msgstr "Bị từ chối ngày %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Needs a look from the workflow owner"
+msgstr "Cần người phụ trách quy trình xem lại"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "In %(stage)s since %(day)s · moved by %(who)s"
+msgstr "Ở %(stage)s từ %(day)s · chuyển bởi %(who)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "In %(stage)s since %(day)s"
+msgstr "Ở %(stage)s từ %(day)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "This cannot be moved from here."
+msgstr "Không thể chuyển hồ sơ này từ đây."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "This stage is not available."
+msgstr "Giai đoạn này không khả dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "This has moved on, so it cannot go to %s now."
+msgstr "Hồ sơ này đã chuyển tiếp, nên giờ không thể sang %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "Stage %(n)s of %(total)s"
+msgstr "Giai đoạn %(n)s/%(total)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "waiting for you"
+msgstr "đang chờ bạn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "with %s"
+msgstr "đang ở chỗ %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Use Workflow Studio to make this change."
+msgstr "Hãy dùng Workflow Studio để thực hiện thay đổi này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow history is retained. Archive the workflow instead."
+msgstr "Lịch sử quy trình được giữ lại. Hãy lưu trữ quy trình thay vì xóa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Choose the record this workflow follows."
+msgstr "Hãy chọn loại hồ sơ mà quy trình này đi theo."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "A published version cannot be changed. Save a new version."
+msgstr "Không thể thay đổi phiên bản đã ban hành. Hãy lưu một phiên bản mới."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Published workflow versions are retained."
+msgstr "Các phiên bản quy trình đã ban hành luôn được giữ lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Filters did not match when this step was reached."
+msgstr "Bộ lọc không khớp khi đến bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Skipped %s: filters did not match."
+msgstr "Đã bỏ qua %s: bộ lọc không khớp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Path: %s."
+msgstr "Nhánh: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "This path’s filters did not match when parallel work started."
+msgstr "Bộ lọc của nhánh này không khớp khi các việc song song bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "none matched"
+msgstr "không nhánh nào khớp"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Parallel paths: %s."
+msgstr "Các nhánh song song: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped by “%s”."
+msgstr "Đã dừng bởi “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped here: %(step)s. %(why)s"
+msgstr "Dừng tại đây: %(step)s. %(why)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped here: %s."
+msgstr "Dừng tại đây: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped: the record is now %s."
+msgstr "Đã dừng: hồ sơ hiện ở trạng thái %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow finished."
+msgstr "Quy trình đã hoàn tất."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "This approval belongs to another record."
+msgstr "Phê duyệt này thuộc về một hồ sơ khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "%s attached files"
+msgstr "%s tệp đính kèm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Submitted information"
+msgstr "Thông tin đã gửi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Answers frozen when this approval was submitted."
+msgstr "Các câu trả lời được giữ nguyên tại thời điểm gửi phê duyệt này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Any request"
+msgstr "Mọi yêu cầu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Start approval from the waiting workflow step."
+msgstr "Bắt đầu phê duyệt từ bước quy trình đang chờ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "This workflow is already closed."
+msgstr "Quy trình này đã đóng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "The answers changed. Request a fresh approval."
+msgstr "Các câu trả lời đã thay đổi. Hãy gửi yêu cầu phê duyệt mới."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "%s — done."
+msgstr "%s — xong."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Following the approval already open for this record."
+msgstr "Đang theo phê duyệt đã mở cho hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Waiting for this record to be sent for approval."
+msgstr "Đang chờ hồ sơ này được gửi phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Waiting for matching conditions."
+msgstr "Đang chờ đủ điều kiện phù hợp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Waiting for the set time."
+msgstr "Đang chờ đến thời gian đã đặt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"This record uses a different approval process. Check the workflow’s selected process."
+msgstr ""
+"Hồ sơ này dùng một cách phê duyệt khác. Hãy kiểm tra cách phê duyệt đã chọn trong quy trình."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"Nobody is recorded as having started this, so there is no one to send it for approval. Send it from the record instead."
+msgstr ""
+"Không có ai được ghi nhận là người bắt đầu việc này, nên không có ai để gửi phê duyệt. Hãy gửi từ chính hồ sơ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"Nobody is recorded as having started this, so there is no one to send it for approval."
+msgstr ""
+"Không có ai được ghi nhận là người bắt đầu việc này, nên không có ai để gửi phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Following the existing Approval Matrix route."
+msgstr "Đang theo tuyến phê duyệt hiện có trong Ma trận phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Message queued in the existing mail service."
+msgstr "Tin nhắn đã được xếp hàng chờ gửi qua dịch vụ thư hiện có."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow history cannot be changed."
+msgstr "Không thể thay đổi lịch sử quy trình."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow tasks are created by their workflow."
+msgstr "Việc trong quy trình do chính quy trình tạo ra."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Manage this task in Workflow Studio so progress stays in sync."
+msgstr "Hãy quản lý việc này trong Workflow Studio để tiến độ luôn khớp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"Complete this step in Workflow Studio → My tasks so its required information is checked."
+msgstr ""
+"Hãy hoàn thành bước này trong Workflow Studio → Việc của tôi để thông tin bắt buộc được kiểm tra."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Cancel or complete this task from Workflow Studio."
+msgstr "Hãy hủy hoặc hoàn thành việc này từ Workflow Studio."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_home.py:0
+msgid "Late — it was due %s"
+msgstr "Trễ hạn — hạn là %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_home.py:0
+msgid "Due %s"
+msgstr "Hạn %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_home.py:0
+msgid "%(verb)s: %(what)s"
+msgstr "%(verb)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "“%s” did not start on schedule"
+msgstr "“%s” đã không bắt đầu theo lịch"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"%(count)s records matched “%(name)s” at its scheduled start, more than the %(cap)s it may start at once, so it started none. Narrow its filters in Workflow Studio, or split it into smaller workflows."
+msgstr ""
+"Có %(count)s hồ sơ khớp với “%(name)s” vào giờ bắt đầu theo lịch, nhiều hơn mức %(cap)s có thể bắt đầu cùng lúc, nên không hồ sơ nào được bắt đầu. Hãy thu hẹp bộ lọc trong Workflow Studio, hoặc tách thành các quy trình nhỏ hơn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"Did not start: %(count)s records matched, more than the %(cap)s it may start at once."
+msgstr ""
+"Không bắt đầu: có %(count)s hồ sơ khớp, nhiều hơn mức %(cap)s có thể bắt đầu cùng lúc."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Nothing to start: no record matched."
+msgstr "Không có gì để bắt đầu: không hồ sơ nào khớp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"Started for %(started)s of %(count)s records; the others already had this workflow running."
+msgstr ""
+"Đã bắt đầu cho %(started)s trên %(count)s hồ sơ; các hồ sơ còn lại đã có quy trình này đang chạy."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started for %s records."
+msgstr "Đã bắt đầu cho %s hồ sơ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started for 1 record."
+msgstr "Đã bắt đầu cho 1 hồ sơ."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started."
+msgstr "Đã bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "1 earlier start was missed while the system was off; it started once."
+msgstr "1 lần bắt đầu trước đó bị lỡ khi hệ thống tắt; quy trình đã bắt đầu một lần."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "%s earlier starts were missed while the system was off; it started once."
+msgstr ""
+"%s lần bắt đầu trước đó bị lỡ khi hệ thống tắt; quy trình đã bắt đầu một lần."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"A new process started on a schedule has no record to filter. Remove the filters."
+msgstr ""
+"Một quy trình mới bắt đầu theo lịch không có hồ sơ nào để lọc. Hãy bỏ các bộ lọc."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"This site's workflow clock is switched off. Scheduled workflows here do not start until it is switched on."
+msgstr ""
+"Đồng hồ quy trình của trang này đang tắt. Các quy trình theo lịch ở đây sẽ không bắt đầu cho đến khi đồng hồ được bật."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"%(count)s records match today, more than the %(cap)s a scheduled start may make at once. As it stands it would start none. Narrow the filters."
+msgstr ""
+"Hôm nay có %(count)s hồ sơ khớp, nhiều hơn mức %(cap)s mà một lần bắt đầu theo lịch có thể tạo cùng lúc. Như hiện tại, sẽ không hồ sơ nào được bắt đầu. Hãy thu hẹp bộ lọc."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "a new process"
+msgstr "một quy trình mới"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"“%(name)s” already starts %(when)s for %(which)s. Check this one does different work."
+msgstr ""
+"“%(name)s” đã bắt đầu %(when)s cho %(which)s. Hãy kiểm tra để chắc quy trình này làm việc khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "%(area)s already does this on its own timetable: %(what)s"
+msgstr "%(area)s đã tự làm việc này theo lịch riêng: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started on schedule"
+msgstr "Bắt đầu theo lịch"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Automated rules"
+msgstr "Quy tắc tự động"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(name)s” runs %(when)s."
+msgstr "“%(name)s” chạy %(when)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%s” runs automatically."
+msgstr "“%s” chạy tự động."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” sends “%(t)s”."
+msgstr "“%(w)s” gửi “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” gives %(who)s a task: “%(t)s”."
+msgstr "“%(w)s” giao cho %(who)s một việc: “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” tells %(who)s in the app: “%(t)s”."
+msgstr "“%(w)s” báo cho %(who)s trong ứng dụng: “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” sets %(f)s."
+msgstr "“%(w)s” đặt %(f)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” makes a draft: “%(t)s”."
+msgstr "“%(w)s” tạo bản nháp: “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” hands over to “%(t)s”."
+msgstr "“%(w)s” chuyển tiếp sang “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” moves it to %(s)s."
+msgstr "“%(w)s” chuyển hồ sơ sang %(s)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Approval Matrix"
+msgstr "Ma trận phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Approval routes are set up for some parts of the business only. Approval Matrix shows which."
+msgstr ""
+"Tuyến phê duyệt chỉ được thiết lập cho một số bộ phận. Ma trận phê duyệt cho biết đó là những bộ phận nào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "No approval route is set up for this yet."
+msgstr "Chưa có tuyến phê duyệt nào được thiết lập cho mục này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Approvals for this are paused in Approval Matrix, so nothing new can be sent in."
+msgstr ""
+"Phê duyệt cho mục này đang tạm dừng trong Ma trận phê duyệt, nên không thể gửi thêm yêu cầu mới."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ", then "
+msgstr ", rồi "
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "no steps yet"
+msgstr "chưa có bước nào"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Approval route “%(name)s”: %(route)s."
+msgstr "Tuyến phê duyệt “%(name)s”: %(route)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Each approver is told when it is their turn and gets a to-do."
+msgstr "Mỗi người phê duyệt được báo khi đến lượt và nhận một việc cần làm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "A late approver is reminded, and then it is passed up."
+msgstr "Người phê duyệt trễ hạn sẽ được nhắc, sau đó việc được chuyển lên cấp trên."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "People who only use the employee home are not told this way."
+msgstr "Những người chỉ dùng trang chủ nhân viên sẽ không được báo theo cách này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "The person who sent it in is told it is approved."
+msgstr "Người gửi được báo là đã duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "The person who sent it in is told it was sent back."
+msgstr "Người gửi được báo là đã bị trả lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "returned"
+msgstr "đã bị trả lại"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "The person who sent it in is told it was turned down."
+msgstr "Người gửi được báo là đã bị từ chối."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "rejected"
+msgstr "bị từ chối"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Section “%s” waited for a stage that was removed. It works as a heading now: choose another stage, or keep it as a heading."
+msgstr ""
+"Phần “%s” đã chờ một giai đoạn nay đã bị xóa. Hiện phần này chỉ là tiêu đề: hãy chọn giai đoạn khác, hoặc giữ nó làm tiêu đề."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Section “%(s)s” cannot wait for %(e)s: records that get there stop."
+msgstr "Phần “%(s)s” không thể chờ %(e)s: hồ sơ đến đó sẽ dừng lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Section “%s” waits for a stage that does not exist any more. Choose another stage, or make it a heading."
+msgstr ""
+"Phần “%s” chờ một giai đoạn không còn tồn tại. Hãy chọn giai đoạn khác, hoặc biến nó thành tiêu đề."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Section “%s” waits for a stage another section already uses. Each stage can start one section."
+msgstr ""
+"Phần “%s” chờ một giai đoạn mà phần khác đã dùng. Mỗi giai đoạn chỉ bắt đầu được một phần."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Linked sections follow the stage order. Move section “%s” or choose a later stage."
+msgstr ""
+"Các phần được liên kết đi theo thứ tự giai đoạn. Hãy di chuyển phần “%s” hoặc chọn một giai đoạn sau."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "This message is already sent by another step on the same path."
+msgstr "Tin nhắn này đã được một bước khác trên cùng nhánh gửi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Going back sends these again: %s."
+msgstr "Quay lại sẽ gửi lại những mục này: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Another step on the same path already makes this draft."
+msgstr "Một bước khác trên cùng nhánh đã tạo bản nháp này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%(owner)s already does this here: %(text)s This step would send a second message."
+msgstr ""
+"%(owner)s đã làm việc này ở đây: %(text)s Bước này sẽ gửi tin nhắn lần thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%(owner)s already does this here: %(text)s This step would tell them a second time."
+msgstr ""
+"%(owner)s đã làm việc này ở đây: %(text)s Bước này sẽ báo cho họ lần thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Another workflow already does this: %(text)s This step would do it a second time."
+msgstr ""
+"Một quy trình khác đã làm việc này: %(text)s Bước này sẽ làm lại lần thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "%(owner)s already does this: %(text)s This step would do it a second time."
+msgstr "%(owner)s đã làm việc này: %(text)s Bước này sẽ làm lại lần thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"“%s” already gets records by itself. This step would move them there a second way."
+msgstr "“%s” đã tự nhận hồ sơ. Bước này sẽ chuyển hồ sơ đến đó thêm một cách nữa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%(owner)s already does this here: %(text)s This step would give them a second task."
+msgstr ""
+"%(owner)s đã làm việc này ở đây: %(text)s Bước này sẽ giao cho họ việc thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%s already sends each one for approval by itself. This step would send it again. Choose “Wait for the approval this record already goes through” instead."
+msgstr ""
+"%s đã tự gửi từng hồ sơ đi phê duyệt. Bước này sẽ gửi lại lần nữa. Hãy chọn “Chờ phê duyệt mà hồ sơ này vốn đã đi qua”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Monday"
+msgstr "Thứ Hai"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Tuesday"
+msgstr "Thứ Ba"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Wednesday"
+msgstr "Thứ Tư"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Thursday"
+msgstr "Thứ Năm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Friday"
+msgstr "Thứ Sáu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Saturday"
+msgstr "Thứ Bảy"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Sunday"
+msgstr "Chủ Nhật"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "January"
+msgstr "Tháng 1"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "February"
+msgstr "Tháng 2"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "March"
+msgstr "Tháng 3"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "April"
+msgstr "Tháng 4"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "May"
+msgstr "Tháng 5"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "June"
+msgstr "Tháng 6"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "July"
+msgstr "Tháng 7"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "August"
+msgstr "Tháng 8"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "September"
+msgstr "Tháng 9"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "October"
+msgstr "Tháng 10"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "November"
+msgstr "Tháng 11"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "December"
+msgstr "Tháng 12"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Jan"
+msgstr "thg 1"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Feb"
+msgstr "thg 2"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Mar"
+msgstr "thg 3"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Apr"
+msgstr "thg 4"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Jun"
+msgstr "thg 6"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Jul"
+msgstr "thg 7"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Aug"
+msgstr "thg 8"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Sep"
+msgstr "thg 9"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Oct"
+msgstr "thg 10"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Nov"
+msgstr "thg 11"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Dec"
+msgstr "thg 12"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose when this workflow starts."
+msgstr "Chọn thời điểm quy trình này bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose how often it starts."
+msgstr "Chọn mức độ thường xuyên quy trình bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose a start time."
+msgstr "Chọn giờ bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose at least one day of the week."
+msgstr "Chọn ít nhất một ngày trong tuần."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose a day of the month."
+msgstr "Chọn một ngày trong tháng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose a month."
+msgstr "Chọn một tháng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose the date it starts."
+msgstr "Chọn ngày bắt đầu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose whether it starts on working days only."
+msgstr "Chọn xem quy trình có chỉ bắt đầu vào ngày làm việc hay không."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose what it starts for: a new process, or each matching record."
+msgstr ""
+"Chọn quy trình bắt đầu cho điều gì: một quy trình mới, hay cho từng hồ sơ phù hợp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "A workflow on records starts once for each matching record."
+msgstr "Quy trình theo hồ sơ sẽ bắt đầu một lần cho từng hồ sơ phù hợp."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "%(when)s, or the next working day"
+msgstr "%(when)s, hoặc ngày làm việc kế tiếp"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "On a schedule"
+msgstr "Theo lịch"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every working day at %(time)s"
+msgstr "Mỗi ngày làm việc lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every day at %(time)s"
+msgstr "Mỗi ngày lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every weekday at %(time)s"
+msgstr "Từ Thứ Hai đến Thứ Sáu lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "%(days)s and %(last)s"
+msgstr "%(days)s và %(last)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every %(days)s at %(time)s"
+msgstr "Mỗi %(days)s lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "On the last day of each month at %(time)s"
+msgstr "Vào ngày cuối cùng của mỗi tháng lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "On the %(nth)s of each month at %(time)s"
+msgstr "Vào ngày %(day)s hằng tháng lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every year on the last day of %(month)s at %(time)s"
+msgstr "Hằng năm vào ngày cuối cùng của %(month)s lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every year on %(day)s %(month)s at %(time)s"
+msgstr "Hằng năm vào ngày %(day)s %(month)s lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Once, on %(day)s %(month)s %(year)s at %(time)s"
+msgstr "Một lần, vào ngày %(day)s %(month)s %(year)s lúc %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Once"
+msgstr "Một lần"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"%(owner)s already reminds people on its own timetable: %(text)s This step would remind them a second time."
+msgstr ""
+"%(owner)s đã tự nhắc mọi người theo lịch riêng: %(text)s Bước này sẽ nhắc họ thêm lần thứ hai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "You need permission to view workflow progress."
+msgstr "Bạn cần có quyền để xem tiến độ quy trình."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose who does this step."
+msgstr "Chọn người thực hiện bước này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose an available person field on this record."
+msgstr "Chọn một mục chỉ người có sẵn trên hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Name the employee’s manager and link their user account in People."
+msgstr ""
+"Ghi tên quản lý của nhân viên và liên kết tài khoản người dùng của họ trong mục Nhân sự."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid ""
+"%s has no manager with a staff login, so this cannot go to their manager’s manager."
+msgstr ""
+"%s không có quản lý nào có tài khoản đăng nhập nhân viên văn phòng, nên việc này không thể chuyển đến quản lý cấp trên của quản lý."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose a single-person responsibility from People & backups."
+msgstr "Chọn một trách nhiệm do một người đảm nhận trong Con người & người thay thế."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Nobody is named for %s in People & backups."
+msgstr "Chưa có ai được chỉ định cho %s trong Con người & người thay thế."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for the assigned person"
+msgstr "Đang chờ người được giao"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for information"
+msgstr "Đang chờ thông tin"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for the mail service"
+msgstr "Đang chờ dịch vụ gửi thư"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting until the set time"
+msgstr "Đang chờ đến giờ đã đặt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting"
+msgstr "Đang chờ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This step needs attention from the workflow owner."
+msgstr "Bước này cần người phụ trách quy trình xem lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Another path was selected."
+msgstr "Một hướng khác đã được chọn."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for matching conditions; the shown time is the deadline."
+msgstr "Đang chờ đủ điều kiện; thời gian hiển thị là hạn chót."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for the person to confirm"
+msgstr "Đang chờ người đó xác nhận"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Sent back by %(who)s: %(note)s"
+msgstr "Đã bị %(who)s trả lại: %(note)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "a later step"
+msgstr "một bước sau"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Sent back by “%s” for changes."
+msgstr "Đã bị trả lại từ “%s” để chỉnh sửa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This approval is not available."
+msgstr "Phê duyệt này không còn khả dụng."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Viewing progress does not include permission to read submitted answers."
+msgstr "Quyền xem tiến độ không bao gồm quyền đọc các câu trả lời đã gửi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Record not available"
+msgstr "Hồ sơ không khả dụng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose a record field in this task."
+msgstr "Chọn một mục chọn hồ sơ trong việc này."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid ""
+"Only the person who started this request or its workflow owner can reopen information."
+msgstr ""
+"Chỉ người tạo yêu cầu này hoặc người phụ trách quy trình mới có thể mở lại phần thông tin."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Correct the original record, then ask the workflow owner to retry approval."
+msgstr ""
+"Hãy sửa hồ sơ gốc, sau đó nhờ người phụ trách quy trình thử lại bước phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "There is no information form to reopen."
+msgstr "Không có biểu mẫu thông tin nào để mở lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid ""
+"Later work depends on these answers. Cancel this run and start a corrected request to follow a fresh route."
+msgstr ""
+"Các bước sau phụ thuộc vào những câu trả lời này. Hãy hủy lần chạy này và tạo một yêu cầu đã sửa để đi theo hướng mới."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Information reopened after approval was returned."
+msgstr "Đã mở lại phần thông tin sau khi phê duyệt bị trả lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This event no longer exists."
+msgstr "Sự kiện này không còn tồn tại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This event does not need retrying."
+msgstr "Sự kiện này không cần thử lại."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "Workflow progress"
+msgstr "Tiến độ quy trình"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "A notice goes to one person. Choose someone, not a team."
+msgstr "Thông báo chỉ gửi đến một người. Hãy chọn một người, không phải một nhóm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"Reminded a day after it is due, then their manager is told a day later — the same way approvals work."
+msgstr ""
+"Được nhắc một ngày sau hạn, rồi quản lý của họ được báo sau đó một ngày — giống như cách phê duyệt hoạt động."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"Reminded %(r)s days after it is due, then their manager is told %(e)s days after it is due — the same way approvals work."
+msgstr ""
+"Được nhắc %(r)s ngày sau hạn, rồi quản lý của họ được báo %(e)s ngày sau hạn — giống như cách phê duyệt hoạt động."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "The team %s"
+msgstr "Nhóm %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "A team"
+msgstr "Một nhóm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Choose one person to move records into this stage, not a team."
+msgstr "Chọn một người để chuyển hồ sơ sang giai đoạn này, không phải một nhóm."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"If %(who)s has no login, “%(step)s” goes to them by email link (people with an employee-home login do it there)."
+msgstr ""
+"Nếu %(who)s không có tài khoản đăng nhập, “%(step)s” sẽ được gửi cho họ qua liên kết trong email (người có tài khoản trang chủ nhân viên sẽ làm ở đó)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"By link, “%(step)s” cannot take %(fields)s: files and record choices need the app. The page asks them to send these another way."
+msgstr ""
+"Qua liên kết, “%(step)s” không thể nhận %(fields)s: tệp và các lựa chọn hồ sơ cần dùng trong ứng dụng. Trang sẽ nhờ họ gửi những mục này theo cách khác."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "“%(step)s” goes to %(who)s: anyone on it can take it in Approvals."
+msgstr ""
+"“%(step)s” được gửi đến %(who)s: bất kỳ ai trong đó đều có thể nhận xử lý trong Phê duyệt."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "%s stages are removed in its own set-up."
+msgstr "Giai đoạn của %s được xóa trong phần thiết lập riêng của mục đó."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Only a stage your company added can be removed."
+msgstr "Chỉ có thể xóa giai đoạn do công ty bạn thêm vào."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Covering for %s while they are away"
+msgstr "Làm thay %s trong thời gian vắng mặt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Team %(team)s · taken by %(who)s"
+msgstr "Nhóm %(team)s · %(who)s đã nhận xử lý"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Team %s · nobody has taken it yet"
+msgstr "Nhóm %s · chưa có ai nhận xử lý"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Waiting for %(who)s to answer %(link)s."
+msgstr "Đang chờ %(who)s trả lời %(link)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Link sent to %s"
+msgstr "Đã gửi liên kết đến %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Done by %s"
+msgstr "Do %s hoàn thành"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Waiting for %s on their employee home"
+msgstr "Đang chờ %s trên trang chủ nhân viên"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "It is yours now. The rest of the team sees that you have it."
+msgstr ""
+"Việc này giờ là của bạn. Những người khác trong nhóm sẽ thấy bạn đang nhận xử lý."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "This could not be taken."
+msgstr "Không thể nhận xử lý việc này."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "Put back for the team."
+msgstr "Đã trả lại cho nhóm."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "This could not be put back."
+msgstr "Không thể trả lại việc này."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "Done. It has moved on to the next step."
+msgstr "Xong. Đã chuyển sang bước tiếp theo."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "This could not be moved."
+msgstr "Không thể chuyển hồ sơ này."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "A new link was sent to %s. The old one no longer works."
+msgstr "Đã gửi liên kết mới đến %s. Liên kết cũ không còn dùng được."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "The link could not be sent."
+msgstr "Không thể gửi liên kết."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox_lines.js:0
+msgid "All done for “%s”."
+msgstr "Đã xong toàn bộ cho “%s”."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Workflow setup"
+msgstr "Thiết lập quy trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Set up workflow"
+msgstr "Thiết lập quy trình"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid ""
+"Steps, forms and tasks across your business. Existing approvals and settings stay connected."
+msgstr ""
+"Các bước, biểu mẫu và việc trong toàn doanh nghiệp của bạn. Các phê duyệt và cài đặt hiện có vẫn được giữ kết nối."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Build, try and run your processes."
+msgstr "Xây dựng, chạy thử và vận hành các quy trình của bạn."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Workflows & my tasks"
+msgstr "Quy trình & việc của tôi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Where this record is"
+msgstr "Hồ sơ này đang ở đâu"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "workflows ›"
+msgstr "quy trình ›"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Send again"
+msgstr "Gửi lại"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Move to"
+msgstr "Chuyển sang"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Stopped: this is now"
+msgstr "Đã dừng: hiện đang ở"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Task"
+msgstr "Việc"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_record.xml:0
+msgid "See this record’s live workflow"
+msgstr "Xem quy trình đang chạy của hồ sơ này"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_record.xml:0
+msgid "Find or create a workflow for this record type"
+msgstr "Tìm hoặc tạo quy trình cho loại hồ sơ này"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Tasks"
+msgstr "Việc"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "late"
+msgstr "trễ hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Work a workflow has asked of you. Approvals are below."
+msgstr "Những việc quy trình đã giao cho bạn. Phê duyệt nằm ở bên dưới."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "started by"
+msgstr "bắt đầu bởi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Team:"
+msgstr "Nhóm:"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "has it"
+msgstr "đang nhận xử lý"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "· nobody has taken it"
+msgstr "· chưa có ai nhận xử lý"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "With"
+msgstr "Đang ở"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Covering for"
+msgstr "Làm thay cho"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Due"
+msgstr "Hạn"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Take it"
+msgstr "Nhận xử lý"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "No approvals are waiting for you right now."
+msgstr "Hiện không có phê duyệt nào đang chờ bạn."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "For the team"
+msgstr "Dành cho nhóm"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid ". Nobody has taken it yet: take it so the others know you have it."
+msgstr ". Chưa ai nhận xử lý: hãy nhận để những người khác biết bạn đang làm."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "You took this for the team"
+msgstr "Bạn đã nhận xử lý việc này cho nhóm"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Put it back"
+msgstr "Trả lại cho nhóm"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "You are covering for"
+msgstr "Bạn đang làm thay cho"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "while they are away."
+msgstr "trong thời gian họ vắng mặt."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "to do, one for each line"
+msgstr "việc cần làm, mỗi dòng một việc"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "Do all in turn"
+msgstr "Làm lần lượt"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "One for each line · worked through one after another"
+msgstr "Mỗi dòng một việc · làm lần lượt từng việc"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "Doing all in turn ·"
+msgstr "Đang làm lần lượt ·"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "left, this one included. The next opens when you finish."
+msgstr "việc còn lại, tính cả việc này. Việc tiếp theo sẽ mở khi bạn làm xong."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/controllers/token_pages.py:0
+msgid "Hi %(name)s — there is one thing to confirm."
+msgstr "Chào %(name)s — có một việc cần bạn xác nhận."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/controllers/token_pages.py:0
+msgid "This could not be sent. Try again in a moment."
+msgstr "Chưa gửi được. Vui lòng thử lại sau giây lát."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is created"
+msgstr "khi một hồ sơ được tạo"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is changed"
+msgstr "khi một hồ sơ được thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is created or changed"
+msgstr "khi một hồ sơ được tạo hoặc thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is deleted"
+msgstr "khi một hồ sơ bị xóa"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "while a form is being filled in"
+msgstr "trong khi đang điền biểu mẫu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "at a set time"
+msgstr "vào một thời điểm đã định"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "some time after a record is created"
+msgstr "một thời gian sau khi hồ sơ được tạo"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "some time after a record changes"
+msgstr "một thời gian sau khi hồ sơ thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when the stage changes"
+msgstr "khi giai đoạn thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when the status changes"
+msgstr "khi trạng thái thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when the priority changes"
+msgstr "khi mức ưu tiên thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a tag is added"
+msgstr "khi một nhãn được thêm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when someone is assigned"
+msgstr "khi có người được giao"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is archived"
+msgstr "khi một hồ sơ được lưu trữ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is restored"
+msgstr "khi một hồ sơ được khôi phục"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a message arrives"
+msgstr "khi có tin nhắn đến"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a message is sent"
+msgstr "khi một tin nhắn được gửi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when another system calls in"
+msgstr "khi một hệ thống khác gửi yêu cầu đến"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a text"
+msgstr "một đoạn chữ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a number"
+msgstr "một con số"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a date"
+msgstr "một ngày"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a yes or no"
+msgstr "có hoặc không"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "one of the listed choices"
+msgstr "một trong các lựa chọn đã liệt kê"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a person"
+msgstr "một người"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is"
+msgstr "là"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is not"
+msgstr "không phải là"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is more than"
+msgstr "lớn hơn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is at least"
+msgstr "ít nhất là"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is less than"
+msgstr "nhỏ hơn"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is at most"
+msgstr "nhiều nhất là"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "contains"
+msgstr "có chứa"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "does not contain"
+msgstr "không chứa"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is filled in"
+msgstr "đã được điền"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is empty"
+msgstr "đang trống"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is one of"
+msgstr "là một trong"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is not one of"
+msgstr "không phải là một trong"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Started by a person"
+msgstr "Do một người bắt đầu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "When a record is created"
+msgstr "Khi một hồ sơ được tạo"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "When selected fields change"
+msgstr "Khi các thông tin đã chọn thay đổi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Based on a record date"
+msgstr "Dựa trên một ngày trong hồ sơ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "After approval is applied"
+msgstr "Sau khi phê duyệt được áp dụng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Expenses"
+msgstr "Chi phí"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Expense policies, receipts and payment steps"
+msgstr "Chính sách chi phí, biên lai và các bước thanh toán"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Assets"
+msgstr "Tài sản"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Asset custody, returns and handovers"
+msgstr "Giữ, trả và bàn giao tài sản"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Learning"
+msgstr "Học tập"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Enrolments, learning journeys and course messages"
+msgstr "Ghi danh, lộ trình học tập và tin nhắn khóa học"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Integrations"
+msgstr "Kết nối hệ thống"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Connections, credentials and incoming records"
+msgstr "Kết nối, thông tin đăng nhập và hồ sơ nhận về"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Attendance"
+msgstr "Chấm công"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Clock rules, exceptions and corrections"
+msgstr "Quy tắc chấm công, ngoại lệ và chỉnh sửa"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "%s h"
+msgstr "%s giờ"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "I confirm"
+msgstr "Tôi xác nhận"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Done"
+msgstr "Xong"

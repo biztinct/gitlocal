@@ -1988,7 +1988,9 @@ msgid "at %s"
 msgstr "ở %s"
 
 #. module: pb_payruns
+#. odoo-python
 #. odoo-javascript
+#: code:addons/pb_payruns/models/workflow_contract.py:0
 #: code:addons/pb_payruns/static/src/js/payruns.js:0
 msgid "done"
 msgstr "xong"
@@ -4806,3 +4808,69 @@ msgstr "Một đợt lương thêm ngoài lương tháng thông thường. Đợ
 #: code:addons/pb_payruns/static/src/xml/payruns.xml:0
 msgid "Kind of run: Top-up"
 msgstr "Loại đợt lương: Bổ sung"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "draft"
+msgstr "bản nháp"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "Someone prepares the pay run, or it comes back to them"
+msgstr "Có người chuẩn bị đợt lương, hoặc đợt lương được trả lại cho họ"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "approval_pending"
+msgstr "đang chờ phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "Someone sends the pay run for approval"
+msgstr "Có người gửi đợt lương để phê duyệt"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "The last approver says yes"
+msgstr "Người phê duyệt cuối cùng đồng ý"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "cancel"
+msgstr "đã hủy"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "An approver turns it down"
+msgstr "Một người phê duyệt từ chối"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid ""
+"Its payslips are checked and held while the run waits for approval, so nobody can change or pay them."
+msgstr ""
+"Các phiếu lương được kiểm tra và giữ lại trong khi đợt lương chờ phê duyệt, nên không ai có thể sửa hay trả lương theo chúng."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "Its payslips are finished, ready for payslips, bank files and payment."
+msgstr ""
+"Các phiếu lương đã hoàn tất, sẵn sàng để gửi phiếu lương, lập tệp ngân hàng và thanh toán."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/workflow_contract.py:0
+msgid "Its payslips are cancelled."
+msgstr "Các phiếu lương đã bị hủy."

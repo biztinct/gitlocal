@@ -177,3 +177,67 @@ msgstr "Số liệu mục tiêu"
 #: code:addons/pb_goals/static/src/js/goals_palette.js:0
 msgid "Talent"
 msgstr "Nhân tài"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_goals
+#: model:mail.template,name:pb_goals.mail_goals_change_returned
+msgid "Goals: a change was sent back"
+msgstr "Mục tiêu: một thay đổi đã bị trả lại"
+
+#. module: pb_goals
+#: model:mail.template,subject:pb_goals.mail_goals_change_returned
+msgid "Your goal change was sent back — {{ object.summary }}"
+msgstr "Thay đổi mục tiêu của bạn đã bị trả lại — {{ object.summary }}"
+
+#. module: pb_goals
+#: model:mail.template,body_html:pb_goals.mail_goals_change_returned
+msgid ""
+"<div style=\"margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;\">\n"
+"                <p>Hello <t t-out=\"object.employee_id.name or ''\"/>,</p>\n"
+"                <p>\n"
+"                    The change you asked for on your goals was sent back to\n"
+"                    you before a decision, so your goals stay as they are for\n"
+"                    now.\n"
+"                </p>\n"
+"                <div style=\"border-left:3px solid #5A4BB0; padding:8px 14px; margin:14px 0; background:#F4F2FB;\">\n"
+"                    <strong><t t-out=\"object.summary or ''\"/></strong>\n"
+"                    <br/><t t-out=\"object._pb_sent_back_note() or 'No reason was given.'\"/>\n"
+"                </div>\n"
+"                <p>\n"
+"                    Change what is asked and send it again.\n"
+"                </p>\n"
+"                <p>\n"
+"                    <a t-attf-href=\"/my/goals\" style=\"display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;\">\n"
+"                        Open my goals\n"
+"                    </a>\n"
+"                </p>\n"
+"                <br/>\n"
+"                The HR team\n"
+"            </div>\n"
+"        "
+msgstr ""
+"<div style=\"margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;\">\n"
+"                <p>Xin chào <t t-out=\"object.employee_id.name or ''\"/>,</p>\n"
+"                <p>\n"
+"                    Thay đổi bạn yêu cầu cho mục tiêu của mình đã bị trả lại\n"
+"                    trước khi có quyết định, nên mục tiêu của bạn tạm thời\n"
+"                    được giữ nguyên.\n"
+"                </p>\n"
+"                <div style=\"border-left:3px solid #5A4BB0; padding:8px 14px; margin:14px 0; background:#F4F2FB;\">\n"
+"                    <strong><t t-out=\"object.summary or ''\"/></strong>\n"
+"                    <br/><t t-out=\"object._pb_sent_back_note() or 'Không có lý do kèm theo.'\"/>\n"
+"                </div>\n"
+"                <p>\n"
+"                    Hãy sửa theo yêu cầu rồi gửi lại.\n"
+"                </p>\n"
+"                <p>\n"
+"                    <a t-attf-href=\"/my/goals\" style=\"display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;\">\n"
+"                        Mở mục tiêu của tôi\n"
+"                    </a>\n"
+"                </p>\n"
+"                <br/>\n"
+"                Phòng nhân sự\n"
+"            </div>\n"
+"        "

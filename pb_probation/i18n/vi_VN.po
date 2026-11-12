@@ -787,3 +787,36 @@ msgstr "trên"
 #: code:addons/pb_probation/static/src/js/probation_board.js:0
 msgid "people"
 msgstr "người"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid "Trial periods"
+msgstr "Thời gian thử việc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"%s days before a trial period ends, a review opens and the manager is asked to choose who gives feedback."
+msgstr ""
+"%s ngày trước khi thời gian thử việc kết thúc, một buổi đánh giá được mở và quản lý được nhờ chọn người góp ý."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"%s days before a trial period ends, a review can open for the manager (opening these by itself is switched off here)."
+msgstr ""
+"%s ngày trước khi thời gian thử việc kết thúc, có thể mở một buổi đánh giá cho quản lý (việc tự mở đang tắt ở đây)."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"While a trial-period review is open, HR (or else the manager) gets a to-do %(far)s days and again %(near)s days before the trial period ends."
+msgstr ""
+"Trong khi buổi đánh giá thử việc đang mở, nhân sự (nếu không có thì quản lý) nhận được một việc cần làm %(far)s ngày và một lần nữa %(near)s ngày trước khi thời gian thử việc kết thúc."

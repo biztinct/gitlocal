@@ -51,3 +51,151 @@ msgstr "Menunggu persetujuan"
 #: model:ir.model.fields.selection,name:pb_timeoff.selection__hr_leave__state__validate1
 msgid "Second approval"
 msgstr "Persetujuan kedua"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_timeoff
+#: model:mail.template,name:pb_timeoff.mail_template_leave_returned
+msgid "Time off: sent back (to the employee)"
+msgstr "Cuti: dikembalikan (ke karyawan)"
+
+#. module: pb_timeoff
+#: model:mail.template,subject:pb_timeoff.mail_template_leave_returned
+msgid "Your time off request was sent back"
+msgstr "Permintaan cuti Anda dikembalikan"
+
+#. module: pb_timeoff
+#: model:mail.template,body_html:pb_timeoff.mail_template_leave_returned
+msgid ""
+"<div style=\"margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;\">\n"
+"          <div style=\"max-width:520px;margin:0 auto;\">\n"
+"            <p style=\"margin:0 0 6px;font-size:13px;color:#6b6f80;\" t-out=\"object.holiday_status_id.name or ''\">Annual leave</p>\n"
+"            <h2 style=\"margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;\">Your request was sent back</h2>\n"
+"            <p style=\"margin:0 0 12px;\">Hello <t t-out=\"object.employee_id.name or ''\">Lan</t>,</p>\n"
+"            <p style=\"margin:0 0 12px;\">\n"
+"              Your request for <strong t-out=\"object.holiday_status_id.name or ''\">Annual leave</strong>\n"
+"              from <t t-out=\"object.request_date_from or ''\">2026-11-20</t>\n"
+"              to <t t-out=\"object.request_date_to or ''\">2026-11-21</t>\n"
+"              was sent back to you.\n"
+"            </p>\n"
+"            <div style=\"margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;\">\n"
+"              <div style=\"font-size:12px;color:#6b6f80;margin-bottom:2px;\">The reason given</div>\n"
+"              <div t-out=\"object._pb_sent_back_note() or 'No reason was given.'\">Please pick a different week.</div>\n"
+"            </div>\n"
+"            <p style=\"margin:0 0 12px;\">Change what is asked, then ask for it again.</p>\n"
+"            <p style=\"margin:20px 0 8px;\">\n"
+"              <a t-att-href=\"object._pb_sent_back_url()\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Open your requests</a>\n"
+"            </p>\n"
+"          </div>\n"
+"        </div>\n"
+"      "
+msgstr ""
+"<div style=\"margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;\">\n"
+"          <div style=\"max-width:520px;margin:0 auto;\">\n"
+"            <p style=\"margin:0 0 6px;font-size:13px;color:#6b6f80;\" t-out=\"object.holiday_status_id.name or ''\">Annual leave</p>\n"
+"            <h2 style=\"margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;\">Permintaan Anda dikembalikan</h2>\n"
+"            <p style=\"margin:0 0 12px;\">Halo <t t-out=\"object.employee_id.name or ''\">Lan</t>,</p>\n"
+"            <p style=\"margin:0 0 12px;\">\n"
+"              Permintaan Anda untuk <strong t-out=\"object.holiday_status_id.name or ''\">Annual leave</strong>\n"
+"              dari <t t-out=\"object.request_date_from or ''\">2026-11-20</t>\n"
+"              sampai <t t-out=\"object.request_date_to or ''\">2026-11-21</t>\n"
+"              telah dikembalikan kepada Anda.\n"
+"            </p>\n"
+"            <div style=\"margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;\">\n"
+"              <div style=\"font-size:12px;color:#6b6f80;margin-bottom:2px;\">Alasan yang diberikan</div>\n"
+"              <div t-out=\"object._pb_sent_back_note() or 'Tidak ada alasan yang diberikan.'\">Please pick a different week.</div>\n"
+"            </div>\n"
+"            <p style=\"margin:0 0 12px;\">Ubah sesuai yang diminta, lalu ajukan lagi.</p>\n"
+"            <p style=\"margin:20px 0 8px;\">\n"
+"              <a t-att-href=\"object._pb_sent_back_url()\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Buka permintaan Anda</a>\n"
+"            </p>\n"
+"          </div>\n"
+"        </div>\n"
+"      "
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "Time off"
+msgstr "Cuti"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "Time off request"
+msgstr "Permintaan cuti"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The employee asks for time off"
+msgstr "Karyawan mengajukan cuti"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The first approver says yes and a second approval is needed"
+msgstr "Pemberi persetujuan pertama menyetujui dan perlu persetujuan kedua"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"The last approver says yes, or straight away when this kind of time off needs no approval"
+msgstr ""
+"Pemberi persetujuan terakhir menyetujui, atau langsung jika jenis cuti ini tidak perlu persetujuan"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "An approver says no, or sends it back"
+msgstr "Pemberi persetujuan menolak atau mengembalikannya"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The time off is cancelled"
+msgstr "Cuti dibatalkan"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"A new request is sent for approval by itself when an approval route is set up."
+msgstr ""
+"Permintaan baru otomatis dikirim untuk disetujui jika jalur persetujuan sudah diatur."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"When time off is asked for after the days have passed, the HR lead gets an email and a to-do. Only for kinds of time off with “Tell HR when it is” switched on."
+msgstr ""
+"Jika cuti diajukan setelah harinya lewat, kepala HR menerima email dan tugas. Hanya untuk jenis cuti yang mengaktifkan “Beri tahu HR saat terjadi”."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The employee is told their time off is approved."
+msgstr "Karyawan diberi tahu bahwa cutinya disetujui."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The days come off the employee’s balance."
+msgstr "Hari-hari tersebut dipotong dari saldo karyawan."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The employee is told their time off was refused."
+msgstr "Karyawan diberi tahu bahwa cutinya ditolak."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"Once a month, as the carry-forward date comes round, people holding too many days and their managers get a warning email. Only when the warning is switched on."
+msgstr ""
+"Sebulan sekali, menjelang tanggal pemindahan sisa cuti, orang yang menyimpan terlalu banyak hari beserta atasannya menerima email peringatan. Hanya jika peringatan aktif."

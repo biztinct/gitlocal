@@ -842,3 +842,150 @@ msgstr "Đang chờ duyệt"
 #: model:ir.model.fields.selection,name:pb_timeoff.selection__hr_leave__state__validate1
 msgid "Second approval"
 msgstr "Duyệt cấp 2"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_timeoff
+#: model:mail.template,name:pb_timeoff.mail_template_leave_returned
+msgid "Time off: sent back (to the employee)"
+msgstr "Nghỉ phép: đã bị trả lại (gửi nhân viên)"
+
+#. module: pb_timeoff
+#: model:mail.template,subject:pb_timeoff.mail_template_leave_returned
+msgid "Your time off request was sent back"
+msgstr "Yêu cầu nghỉ phép của bạn đã bị trả lại"
+
+#. module: pb_timeoff
+#: model:mail.template,body_html:pb_timeoff.mail_template_leave_returned
+msgid ""
+"<div style=\"margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;\">\n"
+"          <div style=\"max-width:520px;margin:0 auto;\">\n"
+"            <p style=\"margin:0 0 6px;font-size:13px;color:#6b6f80;\" t-out=\"object.holiday_status_id.name or ''\">Annual leave</p>\n"
+"            <h2 style=\"margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;\">Your request was sent back</h2>\n"
+"            <p style=\"margin:0 0 12px;\">Hello <t t-out=\"object.employee_id.name or ''\">Lan</t>,</p>\n"
+"            <p style=\"margin:0 0 12px;\">\n"
+"              Your request for <strong t-out=\"object.holiday_status_id.name or ''\">Annual leave</strong>\n"
+"              from <t t-out=\"object.request_date_from or ''\">2026-11-20</t>\n"
+"              to <t t-out=\"object.request_date_to or ''\">2026-11-21</t>\n"
+"              was sent back to you.\n"
+"            </p>\n"
+"            <div style=\"margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;\">\n"
+"              <div style=\"font-size:12px;color:#6b6f80;margin-bottom:2px;\">The reason given</div>\n"
+"              <div t-out=\"object._pb_sent_back_note() or 'No reason was given.'\">Please pick a different week.</div>\n"
+"            </div>\n"
+"            <p style=\"margin:0 0 12px;\">Change what is asked, then ask for it again.</p>\n"
+"            <p style=\"margin:20px 0 8px;\">\n"
+"              <a t-att-href=\"object._pb_sent_back_url()\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Open your requests</a>\n"
+"            </p>\n"
+"          </div>\n"
+"        </div>\n"
+"      "
+msgstr ""
+"<div style=\"margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;\">\n"
+"          <div style=\"max-width:520px;margin:0 auto;\">\n"
+"            <p style=\"margin:0 0 6px;font-size:13px;color:#6b6f80;\" t-out=\"object.holiday_status_id.name or ''\">Annual leave</p>\n"
+"            <h2 style=\"margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;\">Yêu cầu của bạn đã bị trả lại</h2>\n"
+"            <p style=\"margin:0 0 12px;\">Xin chào <t t-out=\"object.employee_id.name or ''\">Lan</t>,</p>\n"
+"            <p style=\"margin:0 0 12px;\">\n"
+"              Yêu cầu <strong t-out=\"object.holiday_status_id.name or ''\">Annual leave</strong>\n"
+"              từ <t t-out=\"object.request_date_from or ''\">2026-11-20</t>\n"
+"              đến <t t-out=\"object.request_date_to or ''\">2026-11-21</t>\n"
+"              của bạn đã bị trả lại.\n"
+"            </p>\n"
+"            <div style=\"margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;\">\n"
+"              <div style=\"font-size:12px;color:#6b6f80;margin-bottom:2px;\">Lý do được nêu</div>\n"
+"              <div t-out=\"object._pb_sent_back_note() or 'Không có lý do kèm theo.'\">Please pick a different week.</div>\n"
+"            </div>\n"
+"            <p style=\"margin:0 0 12px;\">Hãy sửa theo yêu cầu, rồi gửi yêu cầu lại.</p>\n"
+"            <p style=\"margin:20px 0 8px;\">\n"
+"              <a t-att-href=\"object._pb_sent_back_url()\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Mở các yêu cầu của bạn</a>\n"
+"            </p>\n"
+"          </div>\n"
+"        </div>\n"
+"      "
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "Time off"
+msgstr "Nghỉ phép"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "Time off request"
+msgstr "Yêu cầu nghỉ phép"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The employee asks for time off"
+msgstr "Nhân viên xin nghỉ phép"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The first approver says yes and a second approval is needed"
+msgstr "Người phê duyệt đầu tiên đồng ý và cần duyệt cấp 2"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"The last approver says yes, or straight away when this kind of time off needs no approval"
+msgstr ""
+"Người phê duyệt cuối cùng đồng ý, hoặc ngay lập tức khi loại nghỉ phép này không cần phê duyệt"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "An approver says no, or sends it back"
+msgstr "Người phê duyệt từ chối hoặc trả lại"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The time off is cancelled"
+msgstr "Nghỉ phép bị hủy"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"A new request is sent for approval by itself when an approval route is set up."
+msgstr "Khi đã thiết lập tuyến phê duyệt, yêu cầu mới sẽ tự được gửi đi phê duyệt."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"When time off is asked for after the days have passed, the HR lead gets an email and a to-do. Only for kinds of time off with “Tell HR when it is” switched on."
+msgstr ""
+"Khi nghỉ phép được xin sau khi những ngày đó đã qua, trưởng nhân sự nhận được email và một việc cần làm. Chỉ áp dụng cho các loại nghỉ phép đang bật “Báo nhân sự khi xảy ra”."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The employee is told their time off is approved."
+msgstr "Nhân viên được thông báo nghỉ phép của họ đã được duyệt."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The days come off the employee’s balance."
+msgstr "Số ngày được trừ vào số dư phép của nhân viên."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid "The employee is told their time off was refused."
+msgstr "Nhân viên được thông báo nghỉ phép của họ đã bị từ chối."
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_contract.py:0
+msgid ""
+"Once a month, as the carry-forward date comes round, people holding too many days and their managers get a warning email. Only when the warning is switched on."
+msgstr ""
+"Mỗi tháng một lần, khi gần đến ngày chuyển phép sang kỳ sau, những người còn quá nhiều ngày phép và quản lý của họ nhận được email cảnh báo. Chỉ khi cảnh báo đang bật."

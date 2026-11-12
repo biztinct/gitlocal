@@ -939,3 +939,18 @@ msgstr "Yêu cầu khác"
 #: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
 msgid "No approvals are waiting on you."
 msgstr "Không có phê duyệt nào đang chờ bạn."
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "workflow task for you"
+msgstr "việc theo quy trình dành cho bạn"
+
+#. module: pb_mission
+#. odoo-javascript
+#: code:addons/pb_mission/static/src/xml/pb_dock.xml:0
+msgid "workflow tasks for you"
+msgstr "việc theo quy trình dành cho bạn"
