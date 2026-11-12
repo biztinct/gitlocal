@@ -3480,3 +3480,75 @@ class TestWorkflowStudio(TransactionCase):
             checked += 1
         self.assertGreaterEqual(checked, 2, 'at least two of the three areas are installed here')
         self.assertEqual(self.env['ir.cron'].sudo().search([('active', '=', True)]).ids, crons)
+
+    def see_everyone_fixture(self):
+        self.approval_route(process=self.generic_process())
+        record = self.generic('P5c everyone')
+        sent = self.env['biz.approval.engine'].with_user(self.admin).submit(record.with_user(self.admin))
+        viewer = self.staffer('WF2 P5c viewer')
+        return self.env['biz.approval.request'].browse(sent['id']), viewer
+
+    def test_wf2p5c_s3_see_everyones_approvals_reads_and_nothing_more(self):
+        """D32: the narrow right sees Everyone and opens a request to read
+        it; it cannot decide, repair, cancel or set anything up, and other
+        companies stay hidden. Nobody has it after the upgrade."""
+        group = self.env.ref('pb_lifecycle.group_approvals_see_everyone')
+        ability = self.env.ref('pb_lifecycle.ability_approvals_see_everyone')
+        self.assertEqual(ability.group_ids, group)
+        self.assertNotRegex(ability.name + ability.description, r'(?i)odoo')
+        request, viewer = self.see_everyone_fixture()
+        Inbox = self.env['pb.approval.inbox'].with_user(viewer)
+        Request = self.env['biz.approval.request'].with_user(viewer)
+        self.assertFalse(Inbox._can_org())
+        self.assertFalse(Request.search([('id', '=', request.id)]))
+        with self.assertRaises(AccessError):
+            Inbox.get_request(request.id, 'org')
+        viewer.write({'group_ids': [(4, group.id)]})
+        self.env.invalidate_all()
+        Inbox = self.env['pb.approval.inbox'].with_user(viewer)
+        Request = self.env['biz.approval.request'].with_user(viewer)
+        self.assertTrue(Inbox._can_org())
+        self.assertEqual(Request.search([('id', '=', request.id)]), request.with_user(viewer))
+        drawer = Inbox.get_request(request.id, 'org')
+        self.assertEqual(drawer['id'], request.id)
+        self.assertTrue(Inbox.get_request(request.id, 'me'))
+        Engine = self.env['biz.approval.engine'].with_user(viewer)
+        def refused(call):
+            try:
+                with self.env.cr.savepoint():
+                    call()
+            except (AccessError, UserError):
+                return True
+            return False
+        for call in (lambda: Engine.decide(request.id, 'signoff', 'approve'),
+                     lambda: Inbox.decide(request.id, 'signoff', 'approve'),
+                     lambda: Inbox.cancel(request.id, 'not mine'),
+                     lambda: Inbox.repair(request.id),
+                     lambda: Request.browse(request.id).write({'title': 'changed'}),
+                     lambda: self.env['biz.approval.workflow'].with_user(viewer).create({
+                         'name': 'P5c no', 'company_id': self.company.id, 'process_id': self.generic_process().id,
+                         'owner_user_id': viewer.id})):
+            self.assertTrue(refused(call))
+        self.assertEqual(request.state, 'pending')
+        self.assertFalse(viewer.has_group('biz_approval_workflow.group_approval_config'))
+        self.assertFalse(viewer.has_group('hr.group_hr_manager'))
+        # another company's request stays hidden
+        other = self.env['res.company'].create({'name': 'WF2 P5c other company'})
+        theirs = request.sudo().copy({'company_id': other.id, 'title': 'P5c other company'})
+        self.assertFalse(Request.search([('id', '=', theirs.id)]))
+        self.assertTrue(refused(lambda: Inbox.get_request(theirs.id, 'org')))
+        # D26: with this right a pay manager counts as "can see Everyone"
+        try:
+            from odoo.addons.pb_pay.models.pay_single_notice import pay_group_rest
+        except ImportError:
+            return
+        Engine = type(self.env['biz.approval.engine'])
+        with patch.object(Engine, 'tells_approver', lambda self, record, *a, **k: True), \
+                patch.object(Engine, '_latest_request', lambda self, record, *a, **k: request):
+            plain = self.staffer('WF2 P5c pay person')
+            rest = pay_group_rest(self.generic('P5c pay'), viewer | plain)
+            self.assertEqual(rest, plain, 'the one who can see Everyone is not given the to-do')
+
+    def test_wf2p5c_s4_nobody_has_the_new_right(self):
+        group = self.env.ref('pb_lifecycle.group_approvals_see_everyone')
+        self.assertFalse(group.sudo().user_ids.filtered(lambda u: not u.login.startswith('wf2-')))

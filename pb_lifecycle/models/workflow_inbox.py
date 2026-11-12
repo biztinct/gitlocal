@@ -38,3 +38,18 @@ class WorkflowInbox(models.AbstractModel):
         counts['mine'] = int(counts.get('mine') or 0) + len(mine)
         counts['late'] = int(counts.get('late') or 0) + sum(1 for c in mine if c['late'])
         return counts
+
+
+class WorkflowInboxSeeEveryone(models.AbstractModel):
+    """WF2 P5c (D32): the narrow read-only right "See everyone's approvals"
+    opens the inbox's Everyone scope, beside the three broad rights the
+    inbox already names (`ORG_GROUPS`). Added here, by inheritance, so the
+    Approvals module itself is not changed (another session works on it);
+    D26's "can see Everyone" check asks this same method."""
+    _inherit = 'pb.approval.inbox'
+
+    def _can_org(self):
+        if super()._can_org():
+            return True
+        return bool(self._safe(lambda: self.env.user.has_group('pb_lifecycle.group_approvals_see_everyone'),
+                               default=False))

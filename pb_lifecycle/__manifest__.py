@@ -55,7 +55,7 @@ itself escalated, a check-in due today tells its owner, and a feedback window
 that has closed expires itself. The whole job is behind
 `pb_lifecycle.reminders_enabled`, which a deployment can turn off in one row.
 """,
-    'version': '19.0.1.17.0',
+    'version': '19.0.1.18.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -85,6 +85,8 @@ that has closed expires itself. The whole job is behind
         'security/workflow_security.xml',
         'security/workflow/ir.model.access.csv',
         'data/workflow_abilities.xml',
+        # WF2 P5c (D32): the narrow "See everyone's approvals" right.
+        'security/approvals_see_everyone.xml',
         'report/hr_letter_report.xml',
         'views/journey_template_views.xml',
         'views/letter_views.xml',
