@@ -26,12 +26,23 @@ from datetime import date, datetime, time, timedelta
 
 import pytz
 
+from odoo.tools.translate import LazyTranslate
+
+#: P5b: every sentence below is a lazy translation; the caller passes the
+#: language (`lang`), and no language means English, as before.
+_lt = LazyTranslate(__name__)
+
 EVERY = ('day', 'week', 'month', 'year', 'once')
 STARTS = ('process', 'each_record')
 AT = re.compile(r'^([01]\d|2[0-3]):([0-5]\d)$')
-DAY_NAMES = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-MONTH_NAMES = ('January', 'February', 'March', 'April', 'May', 'June', 'July',
-               'August', 'September', 'October', 'November', 'December')
+DAY_NAMES = (_lt('Monday'), _lt('Tuesday'), _lt('Wednesday'), _lt('Thursday'), _lt('Friday'),
+             _lt('Saturday'), _lt('Sunday'))
+MONTH_NAMES = (_lt('January'), _lt('February'), _lt('March'), _lt('April'), _lt('May'), _lt('June'),
+               _lt('July'), _lt('August'), _lt('September'), _lt('October'), _lt('November'),
+               _lt('December'))
+#: The short month in "Once, on 20 Nov 2026" (English: the first three letters).
+MONTH_SHORT = (_lt('Jan'), _lt('Feb'), _lt('Mar'), _lt('Apr'), _lt('May'), _lt('Jun'),
+               _lt('Jul'), _lt('Aug'), _lt('Sep'), _lt('Oct'), _lt('Nov'), _lt('Dec'))
 #: How far back the worker looks for a missed start (it only ever starts the
 #: latest one, so this only has to be longer than any gap between two starts).
 LOOKBACK_DAYS = 400
@@ -47,39 +58,46 @@ def fresh(has_record):
             'starts': 'each_record' if has_record else 'process'}
 
 
-def issues(s, has_record):
+def _t(lang, text, **args):
+    """A lazy sentence in `lang` (None or en_US: the English source,
+    unchanged), filled with `args`."""
+    out = text._translate(lang) if lang and lang != 'en_US' else text._source
+    return out % args if args else out
+
+
+def issues(s, has_record, lang=None):
     """[(code, text)] for a schedule; empty when it is complete. With
     `has_record` None the "what it starts for" check is left to the caller,
     which knows the record type."""
     if not isinstance(s, dict):
-        return [('schedule_missing', 'Choose when this workflow starts.')]
+        return [('schedule_missing', _t(lang, _lt('Choose when this workflow starts.')))]
     out = []
     every = s.get('every')
     if every not in EVERY:
-        out.append(('schedule_every', 'Choose how often it starts.'))
+        out.append(('schedule_every', _t(lang, _lt('Choose how often it starts.'))))
     if not isinstance(s.get('at'), str) or not AT.match(s.get('at') or ''):
-        out.append(('schedule_time', 'Choose a start time.'))
+        out.append(('schedule_time', _t(lang, _lt('Choose a start time.'))))
     if every == 'week':
         days = s.get('weekdays')
         if not isinstance(days, list) or not days or any(type(d) is not int or not 0 <= d <= 6 for d in days):
-            out.append(('schedule_weekdays', 'Choose at least one day of the week.'))
+            out.append(('schedule_weekdays', _t(lang, _lt('Choose at least one day of the week.'))))
     if every in ('month', 'year'):
         day = s.get('day')
         if day != 'last' and (type(day) is not int or not 1 <= day <= 31):
-            out.append(('schedule_day', 'Choose a day of the month.'))
+            out.append(('schedule_day', _t(lang, _lt('Choose a day of the month.'))))
     if every == 'year' and (type(s.get('month')) is not int or not 1 <= s['month'] <= 12):
-        out.append(('schedule_month', 'Choose a month.'))
+        out.append(('schedule_month', _t(lang, _lt('Choose a month.'))))
     if every == 'once':
         try:
             date.fromisoformat(str(s.get('date') or ''))
         except ValueError:
-            out.append(('schedule_date', 'Choose the date it starts.'))
+            out.append(('schedule_date', _t(lang, _lt('Choose the date it starts.'))))
     if 'working_days' in s and type(s['working_days']) is not bool:
-        out.append(('schedule_working', 'Choose whether it starts on working days only.'))
+        out.append(('schedule_working', _t(lang, _lt('Choose whether it starts on working days only.'))))
     starts = s.get('starts')
     if starts not in STARTS or (has_record is not None and (starts == 'each_record') != bool(has_record)):
-        out.append(('schedule_starts', 'Choose what it starts for: a new process, or each matching record.'
-                    if not has_record else 'A workflow on records starts once for each matching record.'))
+        out.append(('schedule_starts', _t(lang, _lt('Choose what it starts for: a new process, or each matching record.'))
+                    if not has_record else _t(lang, _lt('A workflow on records starts once for each matching record.'))))
     return out
 
 
@@ -208,45 +226,54 @@ def ordinal(n):
     return '%d%s' % (n, suffix)
 
 
-def words(s):
+def words(s, lang=None):
     """"Every Monday at 9:00", "On the last day of each month at 17:30",
-    "Once, on 20 Nov 2026 at 8:00", "… , or the next working day" (English;
-    P5b translates)."""
-    text = _words(s)
+    "Once, on 20 Nov 2026 at 8:00", "… , or the next working day" — in
+    `lang` (None: English)."""
+    text = _words(s, lang)
     if isinstance(s, dict) and s.get('working_days') and s.get('every') in EVERY and s['every'] != 'day':
-        text += ', or the next working day'
+        text = _t(lang, _lt('%(when)s, or the next working day'), when=text)
     return text
 
 
-def _words(s):
+def _words(s, lang=None):
     if not isinstance(s, dict) or s.get('every') not in EVERY:
-        return 'On a schedule'
+        return _t(lang, _lt('On a schedule'))
     at = str(s.get('at') or '09:00')
     hour, minute = at.split(':') if ':' in at else ('9', '00')
     at = '%d:%s' % (int(hour), minute)
     every = s['every']
     if every == 'day':
-        text = 'Every working day at %s' % at if s.get('working_days') else 'Every day at %s' % at
-        return text
+        if s.get('working_days'):
+            return _t(lang, _lt('Every working day at %(time)s'), time=at)
+        return _t(lang, _lt('Every day at %(time)s'), time=at)
     if every == 'week':
         days = sorted(set(d for d in (s.get('weekdays') or []) if type(d) is int and 0 <= d <= 6))
         if days == [0, 1, 2, 3, 4]:
-            named = 'weekday'
-        elif len(days) == 7:
-            return 'Every day at %s' % at
-        else:
-            names = [DAY_NAMES[d] for d in days] or ['Monday']
-            named = names[0] if len(names) == 1 else ', '.join(names[:-1]) + ' and ' + names[-1]
-        return 'Every %s at %s' % (named, at)
+            return _t(lang, _lt('Every weekday at %(time)s'), time=at)
+        if len(days) == 7:
+            return _t(lang, _lt('Every day at %(time)s'), time=at)
+        names = [_t(lang, DAY_NAMES[d]) for d in days] or [_t(lang, DAY_NAMES[0])]
+        named = names[0] if len(names) == 1 else _t(
+            lang, _lt('%(days)s and %(last)s'), days=', '.join(names[:-1]), last=names[-1])
+        return _t(lang, _lt('Every %(days)s at %(time)s'), days=named, time=at)
     if every == 'month':
-        day = 'the last day' if s.get('day') == 'last' else 'the %s' % ordinal(int(s.get('day') or 1))
-        return 'On %s of each month at %s' % (day, at)
+        if s.get('day') == 'last':
+            return _t(lang, _lt('On the last day of each month at %(time)s'), time=at)
+        day = int(s.get('day') or 1)
+        # `nth` is the English ordinal ("21st"); a translation may use the
+        # plain number (`day`) instead
+        return _t(lang, _lt('On the %(nth)s of each month at %(time)s'), nth=ordinal(day), day=day, time=at)
     if every == 'year':
-        month = MONTH_NAMES[int(s.get('month') or 1) - 1] if type(s.get('month')) is int and 1 <= s['month'] <= 12 else 'January'
-        day = 'the last day of %s' % month if s.get('day') == 'last' else '%d %s' % (int(s.get('day') or 1), month)
-        return 'Every year on %s at %s' % (day, at)
+        known = type(s.get('month')) is int and 1 <= s['month'] <= 12
+        month = _t(lang, MONTH_NAMES[int(s.get('month') or 1) - 1] if known else MONTH_NAMES[0])
+        if s.get('day') == 'last':
+            return _t(lang, _lt('Every year on the last day of %(month)s at %(time)s'), month=month, time=at)
+        return _t(lang, _lt('Every year on %(day)s %(month)s at %(time)s'),
+                  day=int(s.get('day') or 1), month=month, time=at)
     try:
         d = date.fromisoformat(str(s.get('date') or ''))
-        return 'Once, on %d %s %d at %s' % (d.day, MONTH_NAMES[d.month - 1][:3], d.year, at)
+        return _t(lang, _lt('Once, on %(day)s %(month)s %(year)s at %(time)s'),
+                  day=d.day, month=_t(lang, MONTH_SHORT[d.month - 1]), year=d.year, time=at)
     except ValueError:
-        return 'Once'
+        return _t(lang, _lt('Once'))

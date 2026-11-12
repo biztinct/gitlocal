@@ -251,9 +251,9 @@ class WorkflowScheduleStudio(models.AbstractModel):
         schedule = self._schedule_of(definition)
         if not schedule:
             return {'ok': False, 'issues': [], 'next': []}
-        problems = WS.issues(schedule, bool(w.source_model))
+        problems = WS.issues(schedule, bool(w.source_model), self.env.lang)
         result = {'ok': not problems, 'issues': [{'code': c, 'text': t} for c, t in problems],
-                  'words': WS.words(schedule), 'next': [], 'clock_on': self._schedule_clock_on(),
+                  'words': WS.words(schedule, self.env.lang), 'next': [], 'clock_on': self._schedule_clock_on(),
                   'cap': WS.FAN_OUT_CAP, 'count': None, 'names': [], 'over_cap': False}
         tzname, working = self._company_clock(w.company_id)
         result['tz'] = tzname
@@ -325,7 +325,7 @@ class WorkflowScheduleStudio(models.AbstractModel):
         schedule = self._schedule_of(definition) if isinstance(definition, dict) else None
         if schedule is None or any(e.get('code', '').startswith('schedule_') for e in errors):
             return errors
-        for code, text in WS.issues(schedule, bool(w.source_model)):
+        for code, text in WS.issues(schedule, bool(w.source_model), self.env.lang):
             if code == 'schedule_starts':
                 errors.append({'id': 'trigger', 'code': code, 'text': text, 'severity': 'error'})
         if not w.source_model and (definition.get('scope') or {}).get('rules'):
@@ -366,7 +366,7 @@ class WorkflowScheduleStudio(models.AbstractModel):
             if same_time:
                 warnings.append({'code': 'schedule_twin', 'text': _(
                     '“%(name)s” already starts %(when)s for %(which)s. Check this one does different work.',
-                    name=other.name, when=WS.words(theirs)[0].lower() + WS.words(theirs)[1:],
+                    name=other.name, when=WS.words(theirs, self.env.lang)[0].lower() + WS.words(theirs, self.env.lang)[1:],
                     which=self._scope_summary(other.source_model, other.published_id.definition.get('scope') or {}).lower()
                     if other.source_model else _('a new process'))})
         if w.source_model:
