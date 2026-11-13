@@ -51,6 +51,15 @@ class TestDesktopConnector(ClockCase):
         self.assertEqual(self.receive([self.row])['duplicates'],1)
         self.assertEqual(len(self.connector.event_ids),1)
 
+    def test_source_local_display_does_not_shift_for_viewer(self):
+        self.receive([dict(self.row, TimeStr='2026-11-01 23:59:59')])
+        self.E._cron_process()
+        event = self.connector.event_ids
+        for timezone in ('Australia/Sydney', 'Asia/Ho_Chi_Minh', 'America/Los_Angeles', 'UTC'):
+            viewed = event.with_context(tz=timezone)
+            self.assertEqual(viewed.punch_local_display, '2026-11-01 23:59:59')
+            self.assertEqual(viewed.source_timezone, 'Asia/Ho_Chi_Minh')
+
     def test_publication_timezone_leading_zero_and_conflict(self):
         self.connector.publish_punches=True
         self.receive([self.row]);self.E._cron_process()

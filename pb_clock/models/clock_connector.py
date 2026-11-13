@@ -207,11 +207,20 @@ class ConnectorEvent(models.Model):
         ('duplicate', 'Already received'), ('review', 'Review'), ('historical', 'Historical / ignored')], default='pending', required=True, index=True, readonly=True)
     user_code = fields.Char(readonly=True)
     punch_local = fields.Datetime(readonly=True)
+    punch_local_display = fields.Char(string='Punch time (source local)', compute='_compute_local_display')
+    source_timezone = fields.Selection(related='connector_id.tz', string='Source time zone', readonly=True)
     machine_code = fields.Char(readonly=True, string='Source machine code (not verified terminal)')
     note = fields.Text(readonly=True)
     punch_id = fields.Many2one('pb.clock.punch', readonly=True)
     resolution_note = fields.Text(tracking=True)
     _row_uniq = models.Constraint('UNIQUE(connector_id, row_hash)', 'This source record is already received.')
+
+    @api.depends('punch_local')
+    def _compute_local_display(self):
+        # This is a wall-clock value, not UTC. A normal datetime widget would
+        # incorrectly add the viewer's timezone offset a second time.
+        for record in self:
+            record.punch_local_display = fields.Datetime.to_string(record.punch_local) if record.punch_local else False
 
     def write(self, vals):
         if not self.env.su and set(vals) - {'resolution_note'}:
