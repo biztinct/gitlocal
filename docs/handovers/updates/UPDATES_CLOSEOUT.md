@@ -3,10 +3,10 @@
 People › Updates: a standalone bulk sheet door for employee details, contract and pay
 items, one-off pay items, new joiners, leave opening balances and year-to-date figures —
 usable any time, separate from the pay run. Built 2026-11-11 → 2026-11-13 in phases
-P1–P6 (+ P4b, P5b, P5c, P5d). Everything below is LIVE on `payobook`,
+P1–P6 (+ P4b, P5b, P5c, P5d, P5e). Everything below is LIVE on `payobook`,
 `payobook_template`, `p0clone`, `rize`, `sudima` and pushed to `origin 19.1`.
 
-Source of truth for decisions (D1–D32), facts (U…) and gotchas (G1–G97):
+Source of truth for decisions (D1–D33), facts (U…) and gotchas (G1–G99):
 `UPDATES_LEDGER.md`. Per-phase evidence: `UPDATES_P*_REPORT.md`.
 
 ## 1. What shipped
@@ -27,16 +27,15 @@ Source of truth for decisions (D1–D32), facts (U…) and gotchas (G1–G97):
 | P5b | Engine `history.ytd`: blank joining date = "not known"; new demo runs keep results | P5B |
 | P5c | "Paid in Payobook" counted honestly (complete sums only, engine signs, advances once), popover | P5C |
 | P5d | Employee tax summary counts each month once; mid-year joiners paid in Payobook alone | P5D |
+| P5e | Tax summary counts an advance until its month-end payslip is finished (D33) | P5E |
 
-Final versions: `pb_updates` 19.0.1.7.3, `pb_records` 19.0.1.10.1 (see each report for the
+Final versions: `pb_updates` 19.0.1.7.4, `pb_records` 19.0.1.10.1 (see each report for the
 other modules touched).
 
 ## 2. Open items
 
 ### Owner / client decisions and actions
-1. **Tax summary, advance whose month-end slip is not finished** (P5D): not counted
-   ("waits for month end"), so a person whose only tax sits on such an advance shows 0.
-   Owner asked 2026-11-13 whether to count it until month end.
+1. ~~**Tax summary, advance whose month-end slip is not finished**~~ — **DONE in P5e** (`pb_updates` 19.0.1.7.4, LIVE ×5 2026-11-13 21:14 UTC, owner decision D33): on the employee's own tax summary such an advance is counted until its month-end payslip is finished ("Mid-month advance · counted until the month-end payslip is finished"); demo person 9409's tax now reads −91,450. The year-to-date screen is unchanged. Report `UPDATES_P5E_REPORT.md`.
 2. **Rize Indonesia December**: Rize to confirm "Total income" = monthly taxable pay and
    whether severance was paid; December steps and exact mapping in `UPDATES_P5_REPORT.md`
    (re-read with P5C/P5D: incomplete figures are refused, joiners rule D31).
