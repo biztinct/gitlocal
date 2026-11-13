@@ -76,6 +76,13 @@ class ClockBridge(http.Controller):
         return Response(package.read_bytes(), content_type='application/zip', headers=[
             ('Content-Disposition', content_disposition(package.name)), ('Cache-Control', 'private, no-store')])
 
+    def _setup_assets(self):
+        # Standalone static files can be cached for a year. Content hashes make
+        # returning setup users receive the deployed code without a hard refresh.
+        root = Path(get_module_path('pb_clock')) / 'static' / 'setup'
+        return {key: '/pb_clock/static/setup/%s?v=%s' % (name, hashlib.sha256((root / name).read_bytes()).hexdigest()[:12])
+                for key, name in [('script_url', 'setup.js'), ('style_url', 'setup.css')]}
+
     def _setup_headers(self, result):
         result.headers.update({
             'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
@@ -98,7 +105,7 @@ class ClockBridge(http.Controller):
         # This shell has no customer information until a bearer request succeeds.
         env = request.env(user=SUPERUSER_ID, su=True)
         html = env['ir.ui.view']._render_template('pb_clock.connector_setup', {
-            'manager_id': '', 'csrf_token': '', 'back_url': '',
+            'manager_id': '', 'csrf_token': '', 'back_url': '', **self._setup_assets(),
         })
         return self._setup_headers(Response(html, content_type='text/html; charset=utf-8'))
 
@@ -109,7 +116,7 @@ class ClockBridge(http.Controller):
             return request.not_found()
         connector._manager()
         html = request.env['ir.ui.view']._render_template('pb_clock.connector_setup', {
-            'manager_id': connector.id, 'csrf_token': request.csrf_token(),
+            'manager_id': connector.id, 'csrf_token': request.csrf_token(), **self._setup_assets(),
             'back_url': '/bizapp/action-%s/%s' % (request.env.ref('pb_clock.action_clock_connectors').id, connector.id),
         })
         return self._setup_headers(Response(html, content_type='text/html; charset=utf-8'))

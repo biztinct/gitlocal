@@ -131,11 +131,11 @@ class ClockConnector(models.Model):
         self._manager()
         self._setup_lock()
         token = secrets.token_urlsafe(32)
-        values = {'invitation_hash': digest(token), 'invitation_until': fields.Datetime.now() + timedelta(hours=48)}
+        values = {'invitation_hash': digest(token), 'invitation_until': fields.Datetime.now() + timedelta(days=5)}
         if self.sudo().invitation_pairing:
             values.update(pairing_hash=False, pairing_until=False, invitation_pairing=False)
         self.sudo().write(values)
-        self.message_post(body=_('A 48-hour IT setup invitation was created. Any earlier invitation is invalid. Installation access is unchanged.'))
+        self.message_post(body=_('A 5-day IT setup invitation was created. Any earlier invitation is invalid. Installation access is unchanged.'))
         return token
 
     def _revoke_invitation(self):

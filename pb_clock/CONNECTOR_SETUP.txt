@@ -14,7 +14,7 @@ No payroll, employee records, raw punches or configuration-write access is given
 The page is English. Installation still runs on the Windows attendance PC.
 
 Invitation lifecycle
-- 48-hour, per-connector capability. Only the digest is persisted server-side.
+- 5-day, per-connector capability. Only the digest is persisted server-side.
 - The secret is in a URL fragment and sent only in an Authorization header.
   It does not appear in server URL logs or referrers. Share it privately.
 - Link rotation invalidates the old link and its unused pairing code.

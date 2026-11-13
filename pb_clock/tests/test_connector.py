@@ -33,6 +33,8 @@ class TestDesktopConnector(ClockCase):
 
     def test_invitation_expiry_rotation_and_revoke_preserve_installation(self):
         first = self.connector._new_invitation()
+        expected_expiry = datetime.utcnow() + timedelta(days=5)
+        self.assertLess(abs((self.connector.invitation_until - expected_expiry).total_seconds()), 3)
         self.assertEqual(self.C._invited(first), self.connector)
         second = self.connector._new_invitation()
         self.assertFalse(self.C._invited(first))
@@ -243,6 +245,8 @@ class TestConnectorHttp(HttpCase):
         dom = html.fromstring(page.content)
         self.assertEqual(dom.xpath('//body/@data-back-url')[0],
             '/bizapp/action-%s/%s' % (self.env.ref('pb_clock.action_clock_connectors').id, self.connector.id))
+        self.assertRegex(dom.xpath('//script/@src')[0], r'/setup.js\?v=[0-9a-f]{12}$')
+        self.assertRegex(dom.xpath('//link[@rel="stylesheet"]/@href')[0], r'/setup.css\?v=[0-9a-f]{12}$')
         csrf = dom.xpath('//body/@data-csrf')[0]
         headers = {'X-Forwarded-Proto': 'https', 'X-Forwarded-Host': self.base_url().split('://', 1)[1]}
         r = self.url_open('/clock-bridge/manage/%s/invite' % self.connector.id,
