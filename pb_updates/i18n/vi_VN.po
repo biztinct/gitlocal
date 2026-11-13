@@ -9343,3 +9343,15 @@ msgid ""
 msgstr ""
 "Số liệu lũy kế từ Cập nhật: vào làm ngày %(date)s, %(paid)s đã trả trên "
 "Payobook (chỉ phiếu lương Payobook)."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · counted until the month-end payslip is finished"
+msgstr "Tạm ứng giữa tháng · được tính cho đến khi phiếu lương cuối tháng hoàn tất"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Each month is counted once in the year to date: a mid-month advance is part of that month's month-end payslip, so it is not added again. Until that month-end payslip is finished, the advance is counted on its own."
+msgstr "Mỗi tháng chỉ được tính một lần trong số lũy kế từ đầu năm: khoản tạm ứng giữa tháng là một phần của phiếu lương cuối tháng đó, nên không cộng thêm lần nữa. Cho đến khi phiếu lương cuối tháng đó hoàn tất, khoản tạm ứng được tính riêng."

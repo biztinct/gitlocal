@@ -624,7 +624,7 @@ class PbUpdatesYtdLine(models.Model):
         return total, total < 0
 
     @api.model
-    def _person_window(self, ledger, emp_id, covers_to=None, upper=None):
+    def _person_window(self, ledger, emp_id, covers_to=None, upper=None, count_pending=False):
         """How each finished payslip of one person stands for "paid in
         Payobook": `{'rows': [...], 'counted': [...], 'months': {...},
         'overlap': [...], 'split': [...], 'twice': [...]}`.
@@ -632,7 +632,15 @@ class PbUpdatesYtdLine(models.Model):
         `covers_to` — the figures before Payobook cover up to this day: a
         payslip that ends on or before it is already in those figures; one that
         starts on or before it and ends after it overlaps them. `upper` — a pay
-        period's first day: only payslips that end before it count."""
+        period's first day: only payslips that end before it count.
+
+        `count_pending` — UPDATES P5e (owner decision D33), the employee's own
+        tax summary ONLY: an advance whose scheme is linked to a month-end
+        scheme but whose month has no finished month-end payslip yet is
+        counted (state `pending`) until that payslip is finished. An advance
+        of a scheme linked to nothing stays `advance_only`. Off (the default)
+        for the year-to-date view, both downloads, the popover and pay runs:
+        there such an advance is never added and its month is not counted."""
         rows, counted, overlap, split = [], [], [], []
         slips = [s for s in ledger['by_emp'].get(emp_id, [])
                  if not upper or s['date_to'] < upper]
@@ -649,6 +657,10 @@ class PbUpdatesYtdLine(models.Model):
                 elif ends:
                     row['state'] = 'split'
                     split.append(row)
+                elif count_pending and any(link[0] == slip['config']
+                                           for link in ledger['links']):
+                    row['state'] = 'pending'
+                    counted.append(row)
                 else:
                     row['state'] = 'advance_only'
             elif covers_to and slip['date_from'] <= covers_to:
@@ -939,7 +951,9 @@ class PbUpdatesYtdLine(models.Model):
         # off payslip lines (never a stored result the page does not print).
         ledger = dict(ledger, values={k: v for k, v in ledger['values'].items()
                                       if v[1] is not None and k[0] in page})
-        window = self._person_window(ledger, emp.id)
+        # UPDATES P5e (D33): on this page only, an advance whose month-end
+        # payslip is not finished yet is counted until it is.
+        window = self._person_window(ledger, emp.id, count_pending=True)
         state = {r['id']: r['state'] for r in window['rows'] if r['id'] in page}
         counted = [r for r in window['counted'] if r['id'] in page]
         split = [r for r in window['split'] if r['id'] in page]
@@ -962,15 +976,24 @@ class PbUpdatesYtdLine(models.Model):
             'advance': _("Mid-month advance · not added"),
             'advance_only': _("Mid-month advance · waits for month end"),
             'split': _("Mid-month advance · shown apart"),
+            'pending': _("Mid-month advance · counted until the month-end payslip is finished"),
         }
+        pending = [sid for sid, s in state.items() if s == 'pending']
+        if pending:
+            note = _("Each month is counted once in the year to date: a mid-month advance is "
+                     "part of that month's month-end payslip, so it is not added again. Until "
+                     "that month-end payslip is finished, the advance is counted on its own.")
+        else:
+            note = _("Each month is counted once in the year to date: a mid-month "
+                     "advance is part of that month's month-end payslip, so it is "
+                     "not added again. An advance whose month-end payslip is not "
+                     "finished yet is counted with it.")
         qcontext.update({
             'ytd': ytd,
             'ytd_not_added': {sid: words[s] for sid, s in state.items() if s in words},
+            'ytd_counted_for_now': pending,
             'ytd_advance_apart': apart,
-            'ytd_advance_note': _("Each month is counted once in the year to date: a mid-month "
-                                  "advance is part of that month's month-end payslip, so it is "
-                                  "not added again. An advance whose month-end payslip is not "
-                                  "finished yet is counted with it."),
+            'ytd_advance_note': note,
             'ytd_advance_apart_title': _("Mid-month advances not matched to a month-end payslip "
                                          "· shown apart, not added to the year"),
         })

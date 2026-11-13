@@ -27,8 +27,15 @@
              says why it is not in the year's totals; one that cannot be
              matched to a month-end payslip is shown apart under the table.
              `ytd_not_added` exists only for a person whose year has an advance. -->
+        <!-- UPDATES P5e (D33) — an advance whose month-end payslip is not
+             finished yet IS in the totals until it is: its pill carries a
+             clock (Lucide "clock") and an outlined look. -->
         <xpath expr="//a[@t-att-href=&quot;row['url']&quot;]" position="after">
-            <span t-if="ytd_not_added and row['id'] in ytd_not_added" class="pbme-taxrow-adv" t-esc="ytd_not_added[row['id']]"/>
+            <span t-if="ytd_counted_for_now and row['id'] in ytd_counted_for_now" class="pbme-taxrow-adv pbme-taxrow-adv-now"><svg
+                  width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                  stroke-linecap="round" stroke-linejoin="round" class="pbme-taxrow-adv-ic" aria-hidden="true"><circle
+                  cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><t t-esc="ytd_not_added[row['id']]"/></span>
+            <span t-elif="ytd_not_added and row['id'] in ytd_not_added" class="pbme-taxrow-adv" t-esc="ytd_not_added[row['id']]"/>
         </xpath>
         <xpath expr="//div[hasclass('pbme-tablewrap')]" position="after">
             <div t-if="ytd_not_added" class="pbme-card pbme-taxnote pbme-taxnote-adv">

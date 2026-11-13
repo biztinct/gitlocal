@@ -78,3 +78,15 @@ msgid ""
 msgstr ""
 "Angka tahun berjalan dari Pembaruan: bergabung %(date)s, %(paid)s dibayar di"
 " Payobook (hanya slip gaji Payobook)."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · counted until the month-end payslip is finished"
+msgstr "Uang muka pertengahan bulan · dihitung sampai slip gaji akhir bulan selesai"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Each month is counted once in the year to date: a mid-month advance is part of that month's month-end payslip, so it is not added again. Until that month-end payslip is finished, the advance is counted on its own."
+msgstr "Setiap bulan dihitung satu kali dalam total tahun berjalan: uang muka pertengahan bulan adalah bagian dari slip gaji akhir bulan itu, jadi tidak ditambahkan lagi. Sampai slip gaji akhir bulan itu selesai, uang muka dihitung tersendiri."
