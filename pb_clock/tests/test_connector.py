@@ -31,6 +31,59 @@ class TestDesktopConnector(ClockCase):
         self.connector.action_revoke()
         self.assertFalse(self.C._authenticate(first['token']))
 
+    def test_invitation_expiry_rotation_and_revoke_preserve_installation(self):
+        first = self.connector._new_invitation()
+        self.assertEqual(self.C._invited(first), self.connector)
+        second = self.connector._new_invitation()
+        self.assertFalse(self.C._invited(first))
+        code = self.connector._setup_code(invited=True)
+        paired = self.C._pair(code, 'invited-windows-123')
+        with self.assertRaises(UserError):
+            self.connector._setup_code(invited=True)
+        self.connector._revoke_invitation()
+        self.assertFalse(self.C._invited(second))
+        self.assertEqual(self.C._authenticate(paired['token']), self.connector)
+        third = self.connector._new_invitation()
+        self.connector.invitation_until = datetime.utcnow() - timedelta(seconds=1)
+        self.assertFalse(self.C._invited(third))
+        self.assertEqual(self.C._authenticate(paired['token']), self.connector)
+
+    def test_invitation_revoke_invalidates_unspent_code(self):
+        self.connector._new_invitation()
+        code = self.connector._setup_code(invited=True)
+        self.connector._revoke_invitation()
+        self.assertFalse(self.C._pair(code, 'revoked-invited-pc'))
+        self.connector._new_invitation()
+        code = self.connector._setup_code(invited=True)
+        self.connector._new_invitation()
+        self.assertFalse(self.C._pair(code, 'replaced-invited-pc'))
+
+    def test_setup_status_excludes_source_data_and_credentials(self):
+        self.connector._new_invitation()
+        self.receive([self.row])
+        self.connector.last_error = 'PRIVATE path and employee detail'
+        status = self.connector._setup_status()
+        self.assertTrue(status['needs_attention'])
+        self.assertNotIn('PRIVATE', json.dumps(status))
+        self.assertNotIn('885', json.dumps(status))
+        self.assertEqual(set(status), {'name', 'company', 'timezone', 'history_from', 'interval_minutes',
+            'state', 'last_contact', 'last_read', 'pending', 'needs_attention', 'invitation_until'})
+
+    def test_invitation_manager_and_company_access(self):
+        user = self.env['res.users'].create({'name': 'Scoped connector manager', 'login': 'scoped-connector-manager',
+            'company_id': self.company.id, 'company_ids': [(6, 0, [self.company.id])],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id, self.env.ref('hr_attendance.group_hr_attendance_manager').id])]})
+        token = self.connector.with_user(user)._new_invitation()
+        self.assertEqual(self.C._invited(token), self.connector)
+        self.connector.with_user(user)._revoke_invitation()
+        outside = self.env['res.company'].create({'name': 'Invitation outside scope'})
+        other = self.C.create({'name': 'Other setup', 'company_id': outside.id, 'source_group': 'Other',
+                               'tz': 'UTC', 'history_from': '2026-09-01'})
+        with self.assertRaises(AccessError):
+            other.with_user(user)._new_invitation()
+        with self.assertRaises(AccessError):
+            self.connector.with_user(user).write({'invitation_until': datetime.utcnow()})
+
     def test_expired_pairing(self):
         self.connector.write({'pairing_hash':digest('testcode'), 'pairing_until':datetime.utcnow()-timedelta(minutes=1)})
         self.assertFalse(self.C._pair('testcode','test-installation'))
@@ -138,3 +191,63 @@ class TestConnectorHttp(HttpCase):
         self.assertEqual(r.status_code,200,r.text)
         r=self.call('sync',{'rows':[{}]*501},r.json()['token'])
         self.assertEqual(r.status_code,400)
+
+    def setup_call(self, operation, token='', secure=True):
+        return self.url_open('/clock-bridge/setup/' + operation, data='', method='POST',
+            headers={'Authorization': 'Bearer ' + token, 'X-Forwarded-Proto': 'https' if secure else 'http',
+                     'X-Forwarded-Host': self.base_url().split('://', 1)[1]}, allow_redirects=False)
+
+    def test_invitation_http_shell_and_capability_boundary(self):
+        token = self.connector._new_invitation()
+        page = self.url_open('/clock-bridge/setup')
+        self.assertEqual(page.status_code, 200, page.text[:500])
+        self.assertNotIn('HTTP Test PC', page.text)
+        self.assertIn('frame-ancestors', page.headers['Content-Security-Policy'])
+        self.assertEqual(page.headers['Referrer-Policy'], 'no-referrer')
+        self.assertEqual(self.setup_call('status').status_code, 401)
+        self.assertEqual(self.setup_call('status', token, secure=False).status_code, 400)
+        status = self.setup_call('status', token)
+        self.assertEqual(status.status_code, 200, status.text)
+        self.assertEqual(status.json()['name'], 'HTTP Test PC')
+        for action in ('invite', 'revoke-invite', 'records', 'publish'):
+            self.assertEqual(self.setup_call(action, token).status_code, 403)
+        code = self.setup_call('code', token).json()['code']
+        self.connector._revoke_invitation()
+        self.assertEqual(self.setup_call('status', token).status_code, 401)
+        self.assertEqual(self.call('pair', {'code': code, 'installation_id': 'revoked-invitation-test'}).status_code, 401)
+
+    def test_invitation_http_pair_and_expiry_do_not_stop_sync(self):
+        token = self.connector._new_invitation()
+        code = self.setup_call('code', token).json()['code']
+        pair = self.call('pair', {'code': code, 'installation_id': 'invitation-http-test'})
+        self.assertEqual(pair.status_code, 200, pair.text)
+        self.assertEqual(self.setup_call('code', token).status_code, 409)
+        self.connector.invitation_until = datetime.utcnow() - timedelta(seconds=1)
+        self.assertEqual(self.setup_call('status', token).status_code, 401)
+        self.assertEqual(self.call('sync', {'rows': []}, pair.json()['token']).status_code, 200)
+
+    def test_management_requires_login_and_csrf(self):
+        page = self.url_open('/clock-bridge/manage/%s' % self.connector.id, allow_redirects=False)
+        self.assertIn(page.status_code, (302, 303))
+        manager = self.env['res.users'].create({'name': 'HTTP setup manager', 'login': 'http-setup-manager',
+            'password': 'test-only-setup-password', 'company_id': self.connector.company_id.id,
+            'company_ids': [(6, 0, [self.connector.company_id.id])],
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                  self.env.ref('hr_attendance.group_hr_attendance_manager').id])]})
+        self.authenticate(manager.login, 'test-only-setup-password')
+        r = self.url_open('/clock-bridge/manage/%s/invite' % self.connector.id, data='', method='POST', allow_redirects=False)
+        self.assertEqual(r.status_code, 400)
+        page = self.url_open('/clock-bridge/manage/%s' % self.connector.id)
+        self.assertEqual(page.status_code, 200, page.text[:500])
+        from lxml import html
+        csrf = html.fromstring(page.content).xpath('//body/@data-csrf')[0]
+        headers = {'X-Forwarded-Proto': 'https', 'X-Forwarded-Host': self.base_url().split('://', 1)[1]}
+        r = self.url_open('/clock-bridge/manage/%s/invite' % self.connector.id,
+                         data={'csrf_token': csrf}, headers=headers, method='POST')
+        self.assertEqual(r.status_code, 200, r.text)
+        token = r.json()['invitation']
+        self.assertEqual(self.setup_call('status', token).status_code, 200)
+        r = self.url_open('/clock-bridge/manage/%s/revoke-invite' % self.connector.id,
+                         data={'csrf_token': csrf}, headers=headers, method='POST')
+        self.assertEqual(r.status_code, 200, r.text)
+        self.assertEqual(self.setup_call('status', token).status_code, 401)

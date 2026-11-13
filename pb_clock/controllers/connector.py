@@ -75,3 +75,81 @@ class ClockBridge(http.Controller):
             return Response('The Windows package is not installed on this server yet.', status=503)
         return Response(package.read_bytes(), content_type='application/zip', headers=[
             ('Content-Disposition', content_disposition(package.name)), ('Cache-Control', 'private, no-store')])
+
+    def _setup_headers(self, result):
+        result.headers.update({
+            'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
+            'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY',
+            'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+            'X-Robots-Tag': 'noindex, nofollow',
+        })
+        return result
+
+    def _package(self):
+        package = Path(get_module_path('pb_clock')) / 'releases' / 'PayobookAttendanceConnector.zip'
+        if not package.is_file():
+            return response({'error': 'The Windows package is not available yet. Please contact your Payobook administrator.'}, 503)
+        return Response(package.read_bytes(), content_type='application/zip', headers=[
+            ('Content-Disposition', content_disposition(package.name)), ('Cache-Control', 'no-store')])
+
+    @http.route('/clock-bridge/setup', type='http', auth='none', methods=['GET'], save_session=False)
+    def setup_page(self, **kw):
+        # The fragment credential never travels in a URL, access log or referrer.
+        # This shell has no customer information until a bearer request succeeds.
+        env = request.env(user=SUPERUSER_ID, su=True)
+        html = env['ir.ui.view']._render_template('pb_clock.connector_setup', {
+            'manager_id': '', 'csrf_token': '',
+        })
+        return self._setup_headers(Response(html, content_type='text/html; charset=utf-8'))
+
+    @http.route('/clock-bridge/manage/<int:connector_id>', type='http', auth='user', methods=['GET'])
+    def manage_page(self, connector_id, **kw):
+        connector = request.env['pb.clock.connector'].browse(connector_id).exists()
+        if not connector:
+            return request.not_found()
+        connector._manager()
+        html = request.env['ir.ui.view']._render_template('pb_clock.connector_setup', {
+            'manager_id': connector.id, 'csrf_token': request.csrf_token(),
+        })
+        return self._setup_headers(Response(html, content_type='text/html; charset=utf-8'))
+
+    @http.route('/clock-bridge/manage/<int:connector_id>/<string:operation>', type='http', auth='user', methods=['POST'])
+    def manage_setup(self, connector_id, operation, **kw):
+        if request.httprequest.scheme != 'https':
+            return response({'error': 'HTTPS required'}, 400)
+        connector = request.env['pb.clock.connector'].browse(connector_id).exists()
+        if not connector:
+            return response({'error': 'Connector not found'}, 404)
+        connector._manager()
+        return self._setup_operation(connector, operation, manager=True)
+
+    @http.route('/clock-bridge/setup/<string:operation>', type='http', auth='none', methods=['POST'],
+                csrf=False, readonly=False, save_session=False)
+    def invited_setup(self, operation, **kw):
+        if request.httprequest.scheme != 'https':
+            return response({'error': 'HTTPS required'}, 400)
+        auth = request.httprequest.headers.get('Authorization', '')
+        token = auth[7:] if auth.startswith('Bearer ') and len(auth) < 200 else ''
+        env = request.env(user=SUPERUSER_ID, su=True)
+        connector = env['pb.clock.connector']._invited(token)
+        if not connector:
+            return response({'error': 'This invitation has expired or been revoked. Ask your Payobook administrator for a new link.'}, 401)
+        return self._setup_operation(connector, operation, manager=False)
+
+    def _setup_operation(self, connector, operation, manager):
+        from odoo.exceptions import UserError
+        if operation == 'status':
+            return self._setup_headers(response(connector._setup_status()))
+        if operation == 'download':
+            return self._setup_headers(self._package())
+        if operation == 'code':
+            try:
+                return self._setup_headers(response({'code': connector._setup_code(invited=not manager)}))
+            except UserError as exc:
+                return response({'error': str(exc)}, 409)
+        if manager and operation == 'invite':
+            return self._setup_headers(response({'invitation': connector._new_invitation(), **connector._setup_status()}))
+        if manager and operation == 'revoke-invite':
+            connector._revoke_invitation()
+            return self._setup_headers(response(connector._setup_status()))
+        return response({'error': 'This action is not available on the setup page'}, 403)

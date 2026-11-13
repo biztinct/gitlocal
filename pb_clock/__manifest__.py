@@ -34,7 +34,7 @@ WHAT THIS MODULE ADDS
 The hours then travel the road that already exists: the weekly timesheet, its
 approval, and the pay run.
 """,
-    'version': '19.0.1.3.1',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -59,11 +59,13 @@ approval, and the pay run.
         'views/hr_employee_views.xml',
         'views/clock_actions.xml',
         'views/clock_connector.xml',
+        'views/connector_setup.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_clock/static/src/scss/clock_lens.scss',
             'pb_clock/static/src/js/clock_lens.js',
+            'pb_clock/static/src/js/connector_settings.js',
             'pb_clock/static/src/xml/clock_lens.xml',
         ],
     },

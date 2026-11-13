@@ -52,6 +52,9 @@ class ClockConnector(models.Model):
     token_hash = fields.Char(groups='base.group_no_one', copy=False)
     pairing_hash = fields.Char(groups='base.group_no_one', copy=False)
     pairing_until = fields.Datetime(groups='base.group_no_one', copy=False)
+    invitation_hash = fields.Char(groups='base.group_no_one', copy=False)
+    invitation_until = fields.Datetime(readonly=True, copy=False, string='IT invitation expires')
+    invitation_pairing = fields.Boolean(groups='base.group_no_one', copy=False)
     installation_id = fields.Char(readonly=True, copy=False)
     event_ids = fields.One2many('pb.clock.connector.event', 'connector_id', readonly=True)
     device_id = fields.Many2one('pb.clock.device', readonly=True, copy=False)
@@ -75,7 +78,7 @@ class ClockConnector(models.Model):
     def write(self, vals):
         if not self.env.su:
             self._manager()
-            if set(vals) & {'token_hash', 'pairing_hash', 'pairing_until', 'state', 'installation_id', 'device_id', 'last_contact', 'last_read', 'last_error', 'latest_source_punch', 'source_rows', 'pending_rows', 'client_version'}:
+            if set(vals) & {'invitation_hash', 'invitation_until', 'invitation_pairing', 'token_hash', 'pairing_hash', 'pairing_until', 'state', 'installation_id', 'device_id', 'last_contact', 'last_read', 'last_error', 'latest_source_punch', 'source_rows', 'pending_rows', 'client_version'}:
                 raise AccessError(_('Connection status is maintained by the connector.'))
         # Changing interpretation of already published data must not silently rewrite it.
         for rec in self:
@@ -94,10 +97,12 @@ class ClockConnector(models.Model):
     def action_pair(self):
         self.ensure_one()
         self._manager()
+        self._setup_lock()
         code = secrets.token_urlsafe(24)
         # Re-pairing revokes the former installation immediately.
         self.sudo().write({'pairing_hash': digest(code), 'pairing_until': fields.Datetime.now() + timedelta(minutes=30),
-                           'token_hash': False, 'installation_id': False, 'state': 'new'})
+                           'token_hash': False, 'installation_id': False, 'state': 'new',
+                           'invitation_hash': False, 'invitation_until': False, 'invitation_pairing': False})
         wizard = self.env['pb.clock.connector.pair'].create({'connector_id': self.id, 'code': code})
         self.message_post(body=_('New 30-minute pairing code issued. Previous installation access revoked.'))
         return {'type': 'ir.actions.act_window', 'name': _('Set up on a Windows PC'), 'res_model': wizard._name,
@@ -105,9 +110,81 @@ class ClockConnector(models.Model):
 
     def action_revoke(self):
         self._manager()
-        self.sudo().write({'state': 'revoked', 'token_hash': False, 'pairing_hash': False, 'pairing_until': False})
+        for rec in self:
+            rec._setup_lock()
+        self.sudo().write({'state': 'revoked', 'token_hash': False, 'pairing_hash': False, 'pairing_until': False,
+                           'invitation_hash': False, 'invitation_until': False, 'invitation_pairing': False})
         for rec in self:
             rec.message_post(body=_('Installation access revoked. Stored records remain available.'))
+
+    def action_setup(self):
+        self.ensure_one()
+        self._manager()
+        return {'type': 'ir.actions.act_url', 'url': '/clock-bridge/manage/%s' % self.id, 'target': 'new'}
+
+    def _setup_lock(self):
+        self.ensure_one()
+        self.env.cr.execute('SELECT id FROM pb_clock_connector WHERE id=%s FOR UPDATE', [self.id])
+        self.invalidate_recordset()
+
+    def _new_invitation(self):
+        self._manager()
+        self._setup_lock()
+        token = secrets.token_urlsafe(32)
+        values = {'invitation_hash': digest(token), 'invitation_until': fields.Datetime.now() + timedelta(hours=48)}
+        if self.sudo().invitation_pairing:
+            values.update(pairing_hash=False, pairing_until=False, invitation_pairing=False)
+        self.sudo().write(values)
+        self.message_post(body=_('A 48-hour IT setup invitation was created. Any earlier invitation is invalid. Installation access is unchanged.'))
+        return token
+
+    def _revoke_invitation(self):
+        self._manager()
+        self._setup_lock()
+        values = {'invitation_hash': False, 'invitation_until': False}
+        if self.sudo().invitation_pairing:
+            values.update(pairing_hash=False, pairing_until=False, invitation_pairing=False)
+        self.sudo().write(values)
+        self.message_post(body=_('IT setup invitation revoked. An already paired installation continues syncing.'))
+
+    @api.model
+    def _invited(self, token):
+        if not isinstance(token, str) or not 40 <= len(token) <= 100:
+            return self.browse()
+        record = self.sudo().search([('invitation_hash', '=', digest(token)),
+                                    ('invitation_until', '>', fields.Datetime.now())], limit=1)
+        if record:
+            record._setup_lock()
+            if record.invitation_hash != digest(token) or not record.invitation_until or record.invitation_until <= fields.Datetime.now():
+                return self.browse()
+        return record
+
+    def _setup_code(self, invited=False):
+        self._setup_lock()
+        if self.state == 'connected':
+            raise UserError(_('This PC is already paired. Ask an attendance manager if it must be replaced.'))
+        code = secrets.token_urlsafe(24)
+        expires = fields.Datetime.now() + timedelta(minutes=30)
+        if invited:
+            if not self.invitation_until or self.invitation_until <= fields.Datetime.now():
+                raise UserError(_('This setup invitation has expired.'))
+            expires = min(expires, self.invitation_until)
+        self.sudo().write({'pairing_hash': digest(code), 'pairing_until': expires,
+                           'invitation_pairing': invited, 'state': 'new'})
+        self.message_post(body=_('A 30-minute pairing code was issued from the guided setup page.'))
+        return code
+
+    def _setup_status(self):
+        # Deliberate allowlist: no employees, raw punches, secrets, paths or
+        # client error text (which can contain a local path) reach invited IT.
+        self.ensure_one()
+        active_invite = bool(self.invitation_until and self.invitation_until > fields.Datetime.now())
+        return {'name': self.name, 'company': self.company_id.name, 'timezone': self.tz,
+                'history_from': str(self.history_from), 'interval_minutes': self.interval_minutes,
+                'state': self.state, 'last_contact': fields.Datetime.to_string(self.last_contact) if self.last_contact else None,
+                'last_read': fields.Datetime.to_string(self.last_read) if self.last_read else None,
+                'pending': self.pending_rows, 'needs_attention': bool(self.last_error),
+                'invitation_until': fields.Datetime.to_string(self.invitation_until) if active_invite else None}
 
     def action_records(self):
         self.ensure_one()
@@ -133,7 +210,8 @@ class ClockConnector(models.Model):
             return None
         token = secrets.token_urlsafe(48)
         rec.write({'token_hash': digest(token), 'pairing_hash': False, 'pairing_until': False,
-                   'installation_id': installation, 'state': 'connected', 'last_contact': fields.Datetime.now()})
+                   'invitation_pairing': False, 'installation_id': installation, 'state': 'connected', 'last_contact': fields.Datetime.now(),
+                   'last_read': False, 'last_error': False, 'pending_rows': 0})
         return {'token': token, 'config': rec._config()}
 
     @api.model
