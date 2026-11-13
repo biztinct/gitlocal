@@ -3,7 +3,10 @@
 
 ONLY where a payroll manager has mapped an input pay item of the payslip's
 scheme to a figure (`pb.updates.ytd.map`), and ONLY for a person with a stored
-figure for that tax year that covers a time before the payslip's period.
+figure for that tax year that covers a time before the payslip's period —
+or (UPDATES P5d, owner decision D31) a person with no figure who joined this
+tax year and whose finished payslips cover every month from the joining month
+(`pb.updates.ytd.line._joiner_plan`: "paid in Payobook" alone).
 Everywhere else both seams return exactly what `super()` returned, called
 with the caller's own arguments (test Y9).
 
@@ -59,12 +62,22 @@ def ytd_parts(info):
         parts['below_zero'] = list(info['below_zero'])
     if info.get('twice'):
         parts['twice'] = list(info['twice'])
+    # UPDATES P5d (D31) — paid in Payobook alone for a person who joined this
+    # year: no figure row, the joining date instead (kept only then).
+    if info.get('joined'):
+        parts['joined'] = info['joined']
     return parts
+
+
+def ytd_key(info):
+    """The provenance key of a value from Updates: the figure row, or
+    `joined` for a person paid in Payobook alone (P5d, no figure row)."""
+    return 'updates_ytd:%s' % (info['line_id'] or 'joined')
 
 
 def ytd_entry(info, ignored=None):
     """The provenance entry of a value that came from a year-to-date figure."""
-    out = {'src': 'employee_field', 'key': 'updates_ytd:%s' % info['line_id'],
+    out = {'src': 'employee_field', 'key': ytd_key(info),
            'via': YTD_VIA, 'ytd': ytd_parts(info)}
     if ignored:
         out['ignored'] = ignored
@@ -256,7 +269,7 @@ class PayrollImportBatchUpdatesYtd(models.Model):
                 prov[code] = ytd_entry(info, ignored=_ignored(src, entry.get('key'), other))
             elif choice == 'file':
                 prov[code] = dict(entry, ignored=_ignored(
-                    'employee_field', 'updates_ytd:%s' % info['line_id'], info['value']))
+                    'employee_field', ytd_key(info), info['value']))
             elif computing:
                 # D11 — stop and ask. A review screen just sees the file's value.
                 raise YtdClash(person, info, other, entry.get('key'), src,

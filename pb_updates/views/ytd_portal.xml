@@ -23,6 +23,30 @@
                 </t>
             </tr>
         </xpath>
+        <!-- UPDATES P5d (D29) — a mid-month advance is listed as before but
+             says why it is not in the year's totals; one that cannot be
+             matched to a month-end payslip is shown apart under the table.
+             `ytd_not_added` exists only for a person whose year has an advance. -->
+        <xpath expr="//a[@t-att-href=&quot;row['url']&quot;]" position="after">
+            <span t-if="ytd_not_added and row['id'] in ytd_not_added" class="pbme-taxrow-adv" t-esc="ytd_not_added[row['id']]"/>
+        </xpath>
+        <xpath expr="//div[hasclass('pbme-tablewrap')]" position="after">
+            <div t-if="ytd_not_added" class="pbme-card pbme-taxnote pbme-taxnote-adv">
+                <p class="d-flex align-items-start gap-2 mb-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" class="pbme-ic flex-none mt-1" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                    </svg>
+                    <span t-esc="ytd_advance_note"/>
+                </p>
+                <t t-if="ytd_advance_apart">
+                    <p class="mt-2 mb-1"><b t-esc="ytd_advance_apart_title"/></p>
+                    <t t-foreach="codes" t-as="c">
+                        <p t-if="c in ytd_advance_apart" class="mb-0"><t t-esc="labels[c_index]"/>: <t t-out="ytd_advance_apart[c]" t-options='{"widget": "monetary", "display_currency": currency}'/></p>
+                    </t>
+                </t>
+            </div>
+        </xpath>
         <xpath expr="//div[hasclass('pbme-tablewrap')]" position="after">
             <div t-if="ytd_opening_apart" class="pbme-card pbme-taxnote">
                 <p><b t-esc="ytd_opening_also"/></p>

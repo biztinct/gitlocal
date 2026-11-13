@@ -72,7 +72,7 @@ the pay run" sheet instead. No tax calculation is changed.
 
 UPDATES programme, phases 1-5. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
 """,
-    'version': '19.0.1.7.2',
+    'version': '19.0.1.7.3',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -116,6 +116,10 @@ UPDATES programme, phases 1-5. Ledger: docs/handovers/updates/UPDATES_LEDGER.md.
         'views/ytd_portal.xml',
     ],
     'assets': {
+        # UPDATES P5d (D29) — the employee tax summary's mid-month advance pill.
+        'web.assets_frontend': [
+            'pb_updates/static/src/scss/ytd_portal.scss',
+        ],
         'web.assets_backend': [
             'pb_updates/static/src/scss/updates_desk.scss',
             'pb_updates/static/src/js/updates_review.js',

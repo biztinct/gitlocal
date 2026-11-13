@@ -1253,6 +1253,14 @@ $pbu-since-kinds: (pay: (#5A4BB0, #EEEBFA), contract: (#3E4784, #EEF0FA), bank: 
             &.is-before { color: var(--pbim-primary); } &.is-paid { color: #067647; } }
     }
     .pbu-ytd-pop-note { margin: 0; }
+    // ---- UPDATES P5d (D31): paid in Payobook alone, for a person who joined this year.
+    .pbu-ytd-cell .pbu-ytd-joined { gap: 4px; align-items: center; }
+    .pbu-ytd-pop-joined {
+        margin: 0; padding: 8px 10px; border-radius: 10px; gap: 8px;
+        background: var(--pbim-soft); color: var(--pbim-primary); font-weight: 600;
+        border: 1px solid var(--pbim-primary-light);
+        svg { color: var(--pbim-primary); }
+    }
     .pbu-ytd-pop-left {
         font-size: 12px; color: var(--pbim-muted);
         summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600;
