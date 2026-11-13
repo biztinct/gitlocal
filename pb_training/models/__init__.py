@@ -109,3 +109,6 @@ from . import overview_l6
 from . import learner_l7
 
 from . import question_bank
+
+# WF2 P6a (D31): the due-date chase, declared to Workflow Studio.
+from . import workflow_timetable

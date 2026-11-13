@@ -1,0 +1,58 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-14 12:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "Training"
+msgstr "Pelatihan"
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "%(before)s days and 1 day before a course is due, and on the day, the person gets a reminder email; while it is late, every %(every)s days."
+msgstr "%(before)s hari dan 1 hari sebelum batas waktu kursus, serta pada harinya, orang tersebut menerima email pengingat; selama terlambat, setiap %(every)s hari."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "%(before)s days and 1 day before a course is due, and on the day, the person can get a reminder email; while it is late, every %(every)s days (the reminders are switched off here)."
+msgstr "%(before)s hari dan 1 hari sebelum batas waktu kursus, serta pada harinya, orang tersebut dapat menerima email pengingat; selama terlambat, setiap %(every)s hari (pengingat dimatikan di sini)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the person’s manager is told, then once a week."
+msgstr "Jika kursus terlambat %s hari, atasan orang tersebut diberi tahu, lalu seminggu sekali."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the person’s manager can be told, then once a week (the reminders are switched off here)."
+msgstr "Jika kursus terlambat %s hari, atasan orang tersebut dapat diberi tahu, lalu seminggu sekali (pengingat dimatikan di sini)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the HR lead is told, then once a week."
+msgstr "Jika kursus terlambat %s hari, kepala HR diberi tahu, lalu seminggu sekali."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the HR lead can be told, then once a week (the reminders are switched off here)."
+msgstr "Jika kursus terlambat %s hari, kepala HR dapat diberi tahu, lalu seminggu sekali (pengingat dimatikan di sini)."

@@ -45,12 +45,21 @@ class WorkflowTimetable(models.AbstractModel):
         """Whether this workflow starts inside the area's window before the
         date: a record-date start on the same date, no later than the date
         and no earlier than the area's first reminder; any scheduled start for
-        each record (it lands on some day of the window)."""
+        each record (it lands on some day of the window). WF2 P6a: a window
+        after the date too, when the area declares `after_days`."""
         t = d.get('trigger') or {}
         if t.get('kind') == 'date':
             if t.get('date_field') != timing.get('field'):
                 return False
             days = (t.get('delay') or 0) * UNIT_DAYS.get(t.get('unit', 'day'), 1)
+            if timing.get('after_days') is not None:
+                # WF2 P6a: an area that keeps reminding AFTER the date (from
+                # `after_days` on, while the thing is still open — training's
+                # late chase). A row with no `before_days` reminds only then.
+                if t.get('mode', 'after') == 'after' and days >= timing['after_days']:
+                    return True
+                if timing.get('before_days') is None:
+                    return False
             if t.get('mode', 'after') == 'after':
                 return days < 1
             return days <= (timing.get('before_days') or 0)

@@ -241,6 +241,8 @@ msgstr "Hiện tất cả"
 #: model:ir.actions.client,name:pb_training.action_pb_training_board
 #: model:ir.module.category,name:pb_training.module_category_training
 #: model:res.groups.privilege,name:pb_training.res_groups_privilege_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
 msgid "Training"
 msgstr "Đào tạo"
 
@@ -12426,3 +12428,42 @@ msgstr "Câu hỏi nhanh"
 #: code:addons/pb_training/models/training_common.py:0
 msgid "Lesson"
 msgstr "Bài học"
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "%(before)s days and 1 day before a course is due, and on the day, the person gets a reminder email; while it is late, every %(every)s days."
+msgstr "%(before)s ngày và 1 ngày trước hạn khóa học, và đúng ngày hạn, người học nhận email nhắc; khi đã trễ hạn, cứ %(every)s ngày một lần."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "%(before)s days and 1 day before a course is due, and on the day, the person can get a reminder email; while it is late, every %(every)s days (the reminders are switched off here)."
+msgstr "%(before)s ngày và 1 ngày trước hạn khóa học, và đúng ngày hạn, người học có thể nhận email nhắc; khi đã trễ hạn, cứ %(every)s ngày một lần (việc nhắc đang tắt ở đây)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the person’s manager is told, then once a week."
+msgstr "Khi khóa học trễ hạn %s ngày, quản lý của người học được báo, sau đó mỗi tuần một lần."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the person’s manager can be told, then once a week (the reminders are switched off here)."
+msgstr "Khi khóa học trễ hạn %s ngày, quản lý của người học có thể được báo, sau đó mỗi tuần một lần (việc nhắc đang tắt ở đây)."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the HR lead is told, then once a week."
+msgstr "Khi khóa học trễ hạn %s ngày, trưởng nhóm nhân sự được báo, sau đó mỗi tuần một lần."
+
+#. module: pb_training
+#. odoo-python
+#: code:addons/pb_training/models/workflow_timetable.py:0
+msgid "When a course is %s days late, the HR lead can be told, then once a week (the reminders are switched off here)."
+msgstr "Khi khóa học trễ hạn %s ngày, trưởng nhóm nhân sự có thể được báo, sau đó mỗi tuần một lần (việc nhắc đang tắt ở đây)."

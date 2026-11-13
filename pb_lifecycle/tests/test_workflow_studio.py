@@ -4277,3 +4277,33 @@ class TestWorkflowStudio(TransactionCase):
         self.publish(w2, d2)
         run = self.start(w2)
         self.assertTrue(self.env['pb.workflow.run'].with_user(self.staff).search([('id', '=', run.id)]))
+
+    def test_wf2p6a_tt_learning_due_dates_declared_and_warned(self):
+        """D31, next areas: training declares its due-date chase from its
+        own settings; a workflow starting after the due date that tells the
+        manager is warned; switched off, no warning. Jobs unchanged."""
+        model = 'pb.training.assignment'
+        if model not in self.env or model not in {r['key'] for r in self.service._models()}:
+            self.skipTest('training is not installed here')
+        crons = self.env['ir.cron'].sudo().search([('active', '=', True)]).ids
+        Param = self.env['ir.config_parameter'].sudo()
+        Param.set_param('pb_training.reminders', '1')
+        Param.set_param('pb_training.manager_escalate_days', '4')
+        rows = [r for r in self.service._existing(model, self.company) if r['kind'] == 'reminder']
+        self.assertTrue(any('4 days late, the person’s manager is told' in r['text'] for r in rows), rows)
+        self.assertTrue(all(not self.BANNED.search(r['text']) for r in rows))
+        w, d = self.workflow([self.todo('chase', owner={'kind': 'manager'})], model=model)
+        d['trigger'].update(kind='date', date_field='due_date', delay=6, mode='after', unit='day')
+        hit = [i for i in self.service._validate(w.sudo(), d) if i['code'] == 'repeats_existing' and i['id'] == 'chase']
+        self.assertTrue(hit)
+        self.assertIn('Training already reminds people on its own timetable', hit[0]['text'])
+        d['trigger']['delay'] = 2   # before the manager is told: no warning for the manager
+        self.assertFalse([i for i in self.service._validate(w.sudo(), d)
+                          if i['code'] == 'repeats_existing' and i['id'] == 'chase'])
+        Param.set_param('pb_training.reminders', '0')
+        d['trigger']['delay'] = 6
+        self.assertFalse([i for i in self.service._validate(w.sudo(), d)
+                          if i['code'] == 'repeats_existing' and i['id'] == 'chase'])
+        rows = [r for r in self.service._existing(model, self.company) if r['kind'] == 'reminder']
+        self.assertTrue(any('switched off here' in r['text'] for r in rows))
+        self.assertEqual(self.env['ir.cron'].sudo().search([('active', '=', True)]).ids, crons)
