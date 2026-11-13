@@ -1,0 +1,92 @@
+# Translation of Payobook Updates (pb_updates).
+# UPDATES P5d: Indonesian for the strings added in this phase only.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%s: no figures before Payobook, and the finished payslips since the joining "
+"date do not cover it in full, so nothing is worked out"
+msgstr ""
+"%s: tidak ada angka sebelum Payobook, dan slip gaji yang selesai sejak "
+"tanggal bergabung tidak mencakupnya secara penuh, jadi tidak dihitung"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Each month is counted once in the year to date: a mid-month advance is part "
+"of that month's month-end payslip, so it is not added again. An advance "
+"whose month-end payslip is not finished yet is counted with it."
+msgstr ""
+"Setiap bulan dihitung satu kali dalam total tahun berjalan: uang muka "
+"pertengahan bulan adalah bagian dari slip gaji akhir bulan itu, jadi tidak "
+"ditambahkan lagi. Uang muka yang slip gaji akhir bulannya belum selesai "
+"dihitung bersama slip itu."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Joined %s — Payobook payslips only"
+msgstr "Bergabung %s — hanya slip gaji Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · not added"
+msgstr "Uang muka pertengahan bulan · tidak ditambahkan"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · shown apart"
+msgstr "Uang muka pertengahan bulan · ditampilkan terpisah"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · waits for month end"
+msgstr "Uang muka pertengahan bulan · menunggu akhir bulan"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Mid-month advances not matched to a month-end payslip · shown apart, not "
+"added to the year"
+msgstr ""
+"Uang muka pertengahan bulan yang tidak cocok dengan slip gaji akhir bulan · "
+"ditampilkan terpisah, tidak ditambahkan ke total tahun"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Year-to-date figures from Updates: joined %(date)s, %(paid)s paid in "
+"Payobook (Payobook payslips only)."
+msgstr ""
+"Angka tahun berjalan dari Pembaruan: bergabung %(date)s, %(paid)s dibayar di"
+" Payobook (hanya slip gaji Payobook)."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · counted until the month-end payslip is finished"
+msgstr "Uang muka pertengahan bulan · dihitung sampai slip gaji akhir bulan selesai"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Each month is counted once in the year to date: a mid-month advance is part of that month's month-end payslip, so it is not added again. Until that month-end payslip is finished, the advance is counted on its own."
+msgstr "Setiap bulan dihitung satu kali dalam total tahun berjalan: uang muka pertengahan bulan adalah bagian dari slip gaji akhir bulan itu, jadi tidak ditambahkan lagi. Sampai slip gaji akhir bulan itu selesai, uang muka dihitung tersendiri."

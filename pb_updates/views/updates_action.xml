@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Updates as a standalone client action. Its main door is the People
+        hub's Updates lens; a named action RECORD (not a bare tag) is what a
+        deep link and the command palette need, because an action opened by
+        tag alone has no name and a breadcrumb back to it reads "Unnamed"
+        (see pb_records/views/pb_records_action.xml).
+    -->
+    <record id="action_pb_updates_desk" model="ir.actions.client">
+        <field name="name">Updates</field>
+        <field name="tag">pb_updates_desk</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

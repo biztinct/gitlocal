@@ -2,6 +2,11 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
 import json
 import logging
 from datetime import datetime, timedelta
@@ -95,9 +100,16 @@ class PayrollAnalytics(models.Model):
                         record.variance_percentage = round(variance, 2)
                         _logger.info(f"Calculated variance: {variance}%")
                     elif current_total > 0 and prev_total == 0:
-                        # Current data exists but no previous data - new period
-                        record.variance_percentage = 100.0
-                        _logger.info("New period - variance set to 100%")
+                        # No prior period to compare against. This used to store
+                        # the sentinel 100.0 meaning "100%", which the form then
+                        # rendered through widget="percentage" — multiplying by
+                        # 100 a second time and printing "10000%". There is no
+                        # variance to report against nothing: report zero and
+                        # say why in the log.
+                        record.variance_percentage = 0.0
+                        _logger.info(
+                            "No previous period for record %s — variance not "
+                            "computed (was reported as 100%%).", record.id)
                     elif current_total == prev_total and current_total > 0:
                         # Same values - no change
                         record.variance_percentage = 0.0
@@ -188,7 +200,7 @@ class PayrollAnalytics(models.Model):
         self.write(analytics_data)
         
         # Force computation of stored fields
-        self.invalidate_cache()
+        self.invalidate_recordset()
         self._compute_analytics()
         
         _logger.info(f"Updated analytics: {self.total_employees} employees, {self.total_payroll} total payroll")
@@ -241,7 +253,7 @@ class PayrollAnalytics(models.Model):
             
             # Update the existing record with fresh data
             existing.write(analytics_data)
-            existing.invalidate_cache()  # Force refresh
+            existing.invalidate_recordset()  # Force refresh
             existing._compute_analytics()  # Recalculate stored fields
             _logger.info(f"Updated existing analytics record {existing.id} for {country}")
             return existing
@@ -264,7 +276,7 @@ class PayrollAnalytics(models.Model):
             ('employee_id', 'in', employee_ids),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
-            ('state', 'in', ['level2', 'done'])
+            ('state', 'in', ['verify', 'done'])
         ])
 
     def _get_batch_employee_ids(self):
@@ -323,29 +335,30 @@ class PayrollAnalytics(models.Model):
             ('struct_id', '=', structure.id),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
-            ('state', 'in', ['level2', 'done'])
+            ('state', 'in', ['verify', 'done'])
         ])
         
         _logger.info(f"Found {len(payslips)} payslips with specific structure")
         
-        # If no payslips found, try broader search for any payslips in level2 state
+        # If no payslips found, try broader search for any payslips awaiting a
+        # decision in the period (a payslip waits in 'verify' while its run's
+        # approval is open — the old 'level2' state is gone with the ladder).
         if not payslips:
             _logger.info("No payslips found with specific structure, trying broader search...")
-            all_level2_payslips = self.env['hr.payslip'].search([
-                ('state', '=', 'level2'),
+            all_waiting_payslips = self.env['hr.payslip'].search([
+                ('state', '=', 'verify'),
                 ('date_from', '>=', date_from),
                 ('date_to', '<=', date_to)
             ])
-            _logger.info(f"Found {len(all_level2_payslips)} payslips in level2 state")
-            
-            if all_level2_payslips:
-                _logger.info(f"Level2 payslip structures: {[p.struct_id.name for p in all_level2_payslips]}")
-                # Use all level2 payslips if they exist
-                payslips = all_level2_payslips
-        
+            _logger.info(f"Found {len(all_waiting_payslips)} payslips waiting for approval")
+
+            if all_waiting_payslips:
+                _logger.info(f"Waiting payslip structures: {[p.struct_id.name for p in all_waiting_payslips]}")
+                payslips = all_waiting_payslips
+
         # If still no payslips, try any recent payslips
         if not payslips:
-            _logger.info("No level2 payslips found, trying any recent payslips...")
+            _logger.info("No waiting payslips found, trying any recent payslips...")
             recent_payslips = self.env['hr.payslip'].search([
                 ('date_from', '>=', date_from),
                 ('date_to', '<=', date_to)
@@ -849,6 +862,7 @@ class PayrollAnalytics(models.Model):
             ['date_to:month'],
         )
     
+    @require_license
     def action_approve_payroll(self):
         """Final approval action"""
         self.ensure_one()
@@ -862,29 +876,23 @@ class PayrollAnalytics(models.Model):
             ('date_end', '<=', self.date_to)
         ])
 
-        # Finalize the specific batch linked to this analytics record when possible
-        if self.payslip_run_id:
-            runs_to_finalize = self.payslip_run_id.filtered(lambda r: r.state == 'level2')
-        else:
-            runs_to_finalize = self.env['hr.payslip.run'].search([
-                ('state', '=', 'level2'),
-                ('date_start', '>=', self.date_from),
-                ('date_end', '<=', self.date_to)
-            ])
+        # APPROVING AN ANALYTICS RECORD DOES NOT APPROVE A PAY RUN.
+        #
+        # It used to: this method finished every matching run with
+        # `runs_to_finalize.sudo().action_payslip_run_level2_done()`. Two things
+        # were wrong with that and only one of them was the sudo. A pay run is
+        # approved by the people its published route names, each of them
+        # recorded by name against the step they decided — and a second screen
+        # that quietly writes 'done' on behalf of nobody is exactly the hole
+        # every part of that machinery exists to close. The sudo made it worse
+        # (it bypassed the run's own access as well), but removing only the
+        # sudo would have left a pay run being approved from a reporting
+        # screen.
+        #
+        # So it does nothing to the runs at all now. Approving the analytics
+        # marks the analytics approved; approving the pay run is done in
+        # Approvals, by the people who hold its seats.
 
-        if runs_to_finalize:
-            _logger.info(
-                "Final approve: setting %d payslip run(s) to done from analytics %s",
-                len(runs_to_finalize),
-                self.id,
-            )
-            runs_to_finalize.sudo().action_payslip_run_level2_done()
-        else:
-            _logger.info(
-                "Final approve: no level2 payslip runs found to finalize for analytics %s",
-                self.id,
-            )
-        
         _logger.info(f"Found {len(all_payslip_runs)} total payslip runs in period")
         for run in all_payslip_runs:
             _logger.info(f"Payslip run {run.name}: state={run.state}, payslips={len(run.slip_ids)}")
@@ -937,6 +945,7 @@ class PayrollAnalytics(models.Model):
             }
         }
     
+    @require_license
     def action_export_bank_file(self):
         """Export bank file for approved payroll"""
         self.ensure_one()
@@ -976,7 +985,7 @@ class PayrollAnalytics(models.Model):
         return {'type': 'ir.actions.client', 'tag': 'reload'}
     
     @api.model
-    def search(self, domain, offset=0, limit=None, order=None, count=False):
+    def search(self, domain, offset=0, limit=None, order=None):
         """Override search to auto-refresh analytics when accessed via Approval Queue"""
         # Check if this search is from the Approval Queue (has auto_refresh_analytics context)
         if self.env.context.get('auto_refresh_analytics'):
@@ -985,7 +994,7 @@ class PayrollAnalytics(models.Model):
             _logger.info("Approval Queue accessed - skipping auto-refresh for performance")
         
         # Always use standard search for best performance
-        return super().search(domain, offset=offset, limit=limit, order=order, count=count)
+        return super().search(domain, offset=offset, limit=limit, order=order)
     
     @api.model
     def get_analytics_stats(self, country):

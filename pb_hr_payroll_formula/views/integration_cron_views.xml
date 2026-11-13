@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RD53 — "did the fetch run, and what happened?"
+
+         A monthly schedule is invisible by nature: it runs at 2am on the 5th
+         and nothing on any screen says so. Somebody about to run payroll needs
+         to know it worked WITHOUT having to trust that it did — and, if it did
+         not, to find that out before they start rather than after.
+
+         So the connector carries its own answer, in this order: is it on, when
+         does it next run, when did it last run, what happened, how many
+         records arrived. Plus a button to run it now, because a monthly job you
+         cannot try is a monthly job you cannot trust. -->
+    <record id="view_integration_connector_form_cron" model="ir.ui.view">
+        <field name="name">hr.integration.connector.form.cron</field>
+        <field name="model">hr.integration.connector</field>
+        <field name="inherit_id"
+               ref="pb_hr_payroll_formula.view_integration_connector_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_fetch_available_fields']"
+                   position="after">
+                <button name="action_fetch_last_month_now"
+                        string="Fetch last month now"
+                        type="object"
+                        invisible="not cron_pull_enabled"
+                        help="Run the monthly fetch immediately, exactly as the
+                              schedule will run it."/>
+                <button name="action_refresh_records_now"
+                        string="Update records now"
+                        type="object"
+                        invisible="not cron_writeback_enabled"
+                        confirm="This writes the connected system's values onto
+                                 the matching Employee, Contract and Bank
+                                 records. It does not create any payslips."
+                        help="Bring the records into step immediately, without
+                              waiting for the schedule."/>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <group string="Automatic monthly fetch" name="rd53_cron">
+                    <group>
+                        <field name="cron_pull_enabled"/>
+                        <!-- RD54 — fetching and WRITING are different acts, so
+                             they are different switches. The warning is not
+                             decoration: once this is on, the connected system
+                             owns every mapped field and a spreadsheet
+                             correction will be put back at the next fetch. -->
+                        <field name="cron_writeback_enabled"
+                               invisible="not cron_pull_enabled"/>
+                        <field name="cron_writeback_last_result" readonly="1"
+                               invisible="not cron_writeback_last_result"/>
+                        <!-- The outcome first, because that is the question.
+                             Nothing shows until it has actually run once —
+                             an empty row would read as "nothing happened"
+                             when the truth is "it has not been asked yet". -->
+                        <field name="cron_pull_last_state"
+                               invisible="not cron_pull_last_run"/>
+                        <field name="cron_pull_last_run"
+                               invisible="not cron_pull_last_run"/>
+                        <field name="cron_pull_last_rows"
+                               invisible="cron_pull_last_state != 'ok'"/>
+                    </group>
+                    <group>
+                        <field name="cron_pull_last_result"
+                               invisible="not cron_pull_last_run"/>
+                    </group>
+                    <div colspan="2" class="text-warning"
+                         invisible="not cron_writeback_enabled">
+                        While this is on, the connected system is the source of
+                        truth for every mapped field. A value corrected in a
+                        spreadsheet will be put back at the next fetch unless
+                        you unmap that field from the feed.
+                    </div>
+                    <div colspan="2" class="text-muted"
+                         invisible="cron_pull_enabled">
+                        Off. Payroll will wait for the sync each month until
+                        this is switched on.
+                    </div>
+                    <div colspan="2" class="text-muted"
+                         invisible="not cron_pull_enabled or cron_pull_last_run">
+                        On, and it has not run yet. It fetches the previous
+                        month early each month; use “Fetch last month now” to
+                        see it work without waiting.
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The list answers "are they all fine?" at a glance, which is the other
+         way this question gets asked. -->
+    <record id="view_integration_connector_tree_cron" model="ir.ui.view">
+        <field name="name">hr.integration.connector.tree.cron</field>
+        <field name="model">hr.integration.connector</field>
+        <field name="inherit_id"
+               ref="pb_hr_payroll_formula.view_integration_connector_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="cron_pull_enabled" optional="show"
+                       string="Auto fetch"/>
+                <field name="cron_pull_last_state" optional="show"
+                       string="Last fetch"
+                       decoration-danger="cron_pull_last_state == 'failed'"
+                       decoration-warning="cron_pull_last_state == 'skipped'"
+                       decoration-success="cron_pull_last_state == 'ok'"/>
+                <field name="cron_pull_last_run" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

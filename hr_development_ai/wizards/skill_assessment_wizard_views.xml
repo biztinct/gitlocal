@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Skill Assessment Wizard Form View -->
+    <record id="view_skill_assessment_wizard_form" model="ir.ui.view">
+        <field name="name">skill.assessment.wizard.form</field>
+        <field name="model">skill.assessment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Skill Assessment">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            Skill Assessment
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="assessment_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes" placeholder="General notes about this assessment..."/>
+                    </group>
+                    <notebook>
+                        <page string="Skills to Assess" name="skills">
+                            <field name="skill_line_ids">
+                                <list editable="bottom">
+                                    <field name="skill_id"/>
+                                    <field name="current_level_id" readonly="1" optional="show"/>
+                                    <field name="current_score" readonly="1" optional="show"/>
+                                    <field name="assessed_level_id"/>
+                                    <field name="assessed_score"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button string="Save Assessment" type="object" name="action_save_assessment" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Skill Assessment Wizard Action -->
+    <record id="action_skill_assessment_wizard" model="ir.actions.act_window">
+        <field name="name">Skill Assessment</field>
+        <field name="res_model">skill.assessment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

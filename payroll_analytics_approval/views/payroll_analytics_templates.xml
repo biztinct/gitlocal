@@ -236,8 +236,8 @@
             
         </div>
         
-        <!-- Include Chart.js and Custom Scripts -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <!-- Chart.js comes from Odoo's own local bundle (web/static/lib/Chart);
+             the CDN <script> that used to sit here was removed in Phase M. -->
         <script>
             // Initialize dashboard when DOM is ready
             $(document).ready(function() {

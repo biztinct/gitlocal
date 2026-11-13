@@ -1,0 +1,36 @@
+Employee-record fields in Monthly adjustments — completed 2026-10-21 UTC
+
+Feature commit: 7db810a1e8d37d7376bc057dc29b56dfe3a7cae4
+Combined-test fixture correction: fd437e6f5
+Deployed combined source: f8b0c00fa4f04bed16d02bbc85680c28d85a4989
+Later dd6128834 contains documentation only, with identical addon content.
+
+Behavior
+Employee records fields can be dragged or moved through their menu into Monthly adjustments, reordered, saved and moved back. The server preserves their chosen worksheet after reload.
+Moving fields does not change mappings, formulas or approval permissions. Focused payroll retains reviewed monthly overrides and optional master updates; legacy read-only records remain read-only.
+The separate records download continues to include mapped records placed in Monthly adjustments. Time remains for monthly input fields; calculated outputs and employee matching keys keep their existing protections.
+
+Deployment
+SSH Payobook19v2; /odoo/odoo-server/addons only.
+All active databases: p0clone, payobook, payobook_template, rize. ABM untouched.
+pb_payroll_templates version 19.0.1.3.1.
+Latest combined branch included Learning L0, subsequent walk fixes and training 19.0.1.4.1; those committed changes were preserved and deployed. Required pb_learning_hub dependency installed by the existing training module upgrade.
+152 combined custom addon trees verified; installed versions verified on all four DBs.
+Shared flock and deploy-notes START/DONE/FAILED protocol followed.
+Original cron IDs restored exactly: p0clone 26, payobook 37, template 0, rize 69.
+Service active and all three public sites warmed successfully.
+Permanent Rize backup: /odoo/archives/rize-record-move-20261021T075010Z
+Nonproduction backups: /odoo/backups/record-move-20261021T075010Z (seven-day retention, preserve latest usable).
+Final deployment evidence: /tmp/payroll-record-move-fd437e6f5/receipt.json and logs/
+
+Validation
+Local: 94 payroll-template regression tests, zero failures/errors; JavaScript menu and drag/drop tests passed; XML parsing and diff checks passed.
+Deployed p0clone: 375 combined payroll/sidebar/training/learning/talent tests, zero failures/errors.
+New tests cover saved placement, monthly workbook column movement, separate records export, optional master updates, moving back and unchanged legacy read-only protections.
+Chrome on deployed Rize: actual pointer drag of Technical advisory allowance from Employee records to Monthly adjustments; Save layout; reload; confirmed persisted placement; menu move back and save; original last-record position restored. Move-to-adjustments menu visible; no console errors. No employee values changed or payroll computed.
+No PNG/screenshot files saved during this test run. Inline observations only; unrelated assets preserved.
+
+Incident record
+The first combined gate stopped on two pre-existing tenant-dependent test assumptions (retired optional workforce-planning actions and an unconfigured HR lead). 373 of 375 tests passed, including payroll; service and cron sets were restored.
+The test fixtures were corrected without changing business logic: validate retired action references only for installed owning modules; give the escalation-timing test a deterministic HR recipient. Full 375-test retry passed before remaining DB upgrades.
+The first attempt upgraded only p0clone. The retry reused verified backups, completed all four databases, and ended DONE; retry downtime 325 seconds. Failure and successful recovery logs retained.

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- LEARNING L4: how the course is taught, on the course form, under its
+         hours. The session switches only show for a course taught in a room
+         (or both). -->
+    <record id="view_slide_channel_form_pb_delivery" model="ir.ui.view">
+        <field name="name">slide.channel.form.pb.delivery</field>
+        <field name="model">slide.channel</field>
+        <field name="inherit_id" ref="pb_training.view_slide_channel_form_pb_hours"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pb_hours']" position="after">
+                <field name="delivery"/>
+                <field name="session_hours" invisible="delivery == 'online'"/>
+                <field name="attendance_completes" invisible="delivery == 'online'"/>
+                <field name="self_booking" invisible="delivery == 'online'"/>
+                <field name="session_certificate" invisible="delivery == 'online'"/>
+                <field name="session_validity_months" invisible="delivery == 'online' or not session_certificate"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

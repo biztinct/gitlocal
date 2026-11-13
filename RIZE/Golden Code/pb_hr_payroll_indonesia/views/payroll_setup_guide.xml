@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Create a dedicated model for the setup guide instead of using res.config.settings -->
+    <record id="view_payroll_setup_guide" model="ir.ui.view">
+        <field name="name">payroll.setup.guide.form</field>
+        <field name="model">payroll.setup.guide</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Setup Guide" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Multi-Country Payroll Setup Guide</h1>
+                    </div>
+                    
+                    <notebook>
+                        <page string="Initial Setup">
+                            <group>
+                                <h3>Step 1: Create Spreadsheets</h3>
+                                <div class="alert alert-info" role="alert">
+                                    <p>Create spreadsheets with the following External IDs:</p>
+                                    <ul>
+                                        <li><strong>Vietnam:</strong> __custom__.payrollstaging</li>
+                                        <li><strong>Indonesia:</strong> __custom__.payrollstaging_indonesia</li>
+                                        <li><strong>India:</strong> __custom__.payrollstaging_india</li>
+                                    </ul>
+                                </div>
+                                
+                                <h3>Step 2: Configure User Access</h3>
+                                <div class="alert alert-warning" role="alert">
+                                    <p>Go to Settings → Users and assign country-specific groups:</p>
+                                    <ul>
+                                        <li>Vietnam Payroll User</li>
+                                        <li>Indonesia Payroll User</li>
+                                        <li>India Payroll User</li>
+                                    </ul>
+                                </div>
+                                
+                                <h3>Step 3: Configure Zoho Integration</h3>
+                                <div class="alert alert-success" role="alert">
+                                    <p>Set up Zoho API credentials in the configuration.</p>
+                                </div>
+                            </group>
+                        </page>
+                        
+                        <page string="Country-Specific Setup">
+                            <group string="Vietnam">
+                                <h4>Required Components:</h4>
+                                <ul>
+                                    <li>Social Insurance (SI)</li>
+                                    <li>Health Insurance (HI)</li>
+                                    <li>Unemployment Insurance (UI)</li>
+                                    <li>Personal Income Tax (PIT)</li>
+                                </ul>
+                            </group>
+                            
+                            <group string="Indonesia">
+                                <h4>Required Components:</h4>
+                                <ul>
+                                    <li>BPJS Kesehatan (Health Insurance)</li>
+                                    <li>BPJS Ketenagakerjaan (Employment Insurance)</li>
+                                    <li>PPh 21 (Income Tax)</li>
+                                    <li>THR (Religious Holiday Allowance)</li>
+                                </ul>
+                            </group>
+                            
+                            <group string="India">
+                                <h4>Required Components:</h4>
+                                <ul>
+                                    <li>Provident Fund (PF)</li>
+                                    <li>Employee State Insurance (ESI)</li>
+                                    <li>Professional Tax</li>
+                                    <li>Income Tax (TDS)</li>
+                                </ul>
+                            </group>
+                        </page>
+                        
+                        <page string="Workflow">
+                            <group>
+                                <h3>Standard Payroll Workflow</h3>
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <i class="fa fa-upload fa-4x text-primary" title="Import Data"/>
+                                        <h4>1. Import Data</h4>
+                                        <p>Get employee data from Zoho</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <i class="fa fa-calculator fa-4x text-info" title="Calculate"/>
+                                        <h4>2. Calculate</h4>
+                                        <p>Review calculations in spreadsheet</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <i class="fa fa-edit fa-4x text-warning" title="Edit Spreadsheet"/>
+                                        <h4>3. Edit Spreadsheet</h4>
+                                        <p>Review and adjust calculations</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <i class="fa fa-file-text fa-4x text-danger" title="Generate Payslips"/>
+                                        <h4>4. Generate Payslips</h4>
+                                        <p>Import data and create payslips</p>
+                                    </div>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Create a simple transient model for the guide -->
+    <record id="action_payroll_setup_guide" model="ir.actions.act_window">
+        <field name="name">Payroll Setup Guide</field>
+        <field name="res_model">payroll.setup.guide</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_setup_guide"/>
+        <field name="target">current</field>
+    </record>
+    
+    <!-- Move the guide to a dedicated menu under Payroll Management instead of Configuration -->
+    <menuitem id="menu_payroll_setup_guide"
+              name="📋 Setup Guide"
+              parent="pb_hr_payroll_indonesia.menu_payroll_management_root"
+              action="action_payroll_setup_guide"
+              sequence="5"/>
+    
+</odoo>

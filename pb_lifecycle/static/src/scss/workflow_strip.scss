@@ -1,0 +1,233 @@
+// WF2 P4b — "where this is": one strip, two homes (a staff record screen,
+// drawn by OWL; an employee-home page, drawn by QWeb). Same tokens as the
+// workbench's record track (`.track-step` done / here / later / passed /
+// stopped, `kind-core` / `kind-yours`), so a record looks the same in
+// Studio, on its own screen and on the employee home.
+// The strip sizes itself by its own width (container queries), not the
+// window's: a form in a narrow pane gets the compact track too.
+
+.pbwfs {
+    --pbwfs-ink: #1f1d2b;
+    --pbwfs-sub: #5f5c73;
+    --pbwfs-line: #e6e4f2;
+    --pbwfs-soft: #f7f7fc;
+    --pbwfs-brand: #5A4BB0;
+    --pbwfs-brand-ink: #3d2f86;
+    --pbwfs-brand-soft: #f0ecff;
+    --pbwfs-late: #a3324f;
+    --pbwfs-late-soft: #fdecef;
+    --pbwfs-ok: #1f7a4d;
+    --pbwfs-ok-soft: #e7f6ee;
+    --pbwfs-team: #23667f;
+    --pbwfs-link: #8a5205;
+    container-type: inline-size;
+    position: relative;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid var(--pbwfs-line);
+    border-radius: 14px;
+    padding: 12px 16px 10px;
+    color: var(--pbwfs-ink);
+    font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(31, 29, 43, .04), 0 10px 28px -22px rgba(90, 75, 176, .45);
+    animation: pbwfs-in .16s ease both;
+
+    *, *::before, *::after { box-sizing: border-box; }
+    .pbwfs-ic { flex: none; vertical-align: -2px; }
+    button, summary { font: inherit; }
+}
+@keyframes pbwfs-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pbwfs { animation: none; } }
+
+// ------------------------------------------------------------- the top line
+.pbwfs-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pbwfs-chip {
+    display: inline-flex; align-items: center; gap: 6px; max-width: 260px;
+    padding: 3px 10px 3px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+    background: var(--pbwfs-brand-soft); color: var(--pbwfs-brand-ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pbwfs-switch {
+    border: 1px solid var(--pbwfs-line); background: #fff; color: var(--pbwfs-sub);
+    border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: 600; cursor: pointer;
+    &:hover, &:focus-visible { border-color: var(--pbwfs-brand); color: var(--pbwfs-brand-ink); }
+}
+.pbwfs-dot {
+    width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--pbwfs-brand);
+    box-shadow: 0 0 0 4px var(--pbwfs-brand-soft);
+    &.is-late { background: var(--pbwfs-late); box-shadow: 0 0 0 4px var(--pbwfs-late-soft); }
+    &.is-done { background: var(--pbwfs-ok); box-shadow: 0 0 0 4px var(--pbwfs-ok-soft); }
+    &.is-stopped { background: #9a9cab; box-shadow: 0 0 0 4px #f0f0f4; }
+    &.is-team { background: var(--pbwfs-team); box-shadow: 0 0 0 4px #e3f1f6; }
+    &.is-link { background: #c47a12; box-shadow: 0 0 0 4px #fff3df; }
+    &.is-mine { animation: pbwfs-pulse 2.4s ease-in-out infinite; }
+}
+@keyframes pbwfs-pulse { 50% { box-shadow: 0 0 0 7px rgba(90, 75, 176, .10); } }
+@media (prefers-reduced-motion: reduce) { .pbwfs-dot.is-mine { animation: none; } }
+.pbwfs-sentence {
+    flex: 1 1 260px; margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -.005em;
+    overflow-wrap: anywhere;
+}
+.pbwfs-meta { font-weight: 500; color: var(--pbwfs-sub); &.is-late { color: var(--pbwfs-late); font-weight: 700; } }
+.pbwfs-acts { display: flex; align-items: center; gap: 8px; margin-left: auto; position: relative; }
+
+.pbwfs-btn {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 6px 14px;
+    border-radius: 10px; border: 1px solid transparent; font-size: 13.5px; font-weight: 600;
+    cursor: pointer; text-decoration: none; white-space: nowrap; list-style: none;
+    transition: background .16s ease, box-shadow .16s ease, transform .16s ease;
+    &::-webkit-details-marker { display: none; }
+    &:focus-visible { outline: 3px solid rgba(90, 75, 176, .35); outline-offset: 2px; }
+    &:disabled { opacity: .6; cursor: progress; }
+}
+.pbwfs-btn--primary {
+    background: var(--pbwfs-brand); color: #fff;
+    &:hover { background: #4b3d9c; color: #fff; box-shadow: 0 6px 16px -8px rgba(90, 75, 176, .8); }
+    &:active { transform: translateY(1px); }
+}
+.pbwfs-btn--quiet {
+    background: none; color: var(--pbwfs-brand-ink); padding-inline: 8px;
+    &:hover { background: var(--pbwfs-brand-soft); color: var(--pbwfs-brand-ink); }
+}
+.pbwfs-btn--line { background: #fff; border-color: var(--pbwfs-line); color: var(--pbwfs-ink);
+    &:hover { border-color: var(--pbwfs-brand); } }
+
+// "Move to…": a small menu of the company stages it may go to next.
+.pbwfs-movebox { position: relative; }
+.pbwfs-menu {
+    position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 240px; max-width: 320px;
+    background: #fff; border: 1px solid var(--pbwfs-line); border-radius: 12px; padding: 6px;
+    box-shadow: 0 18px 40px -16px rgba(31, 29, 43, .35);
+    animation: pbwfs-in .16s ease both;
+}
+.pbwfs-menu-form { margin: 0; }
+.pbwfs-menu-item {
+    display: flex; align-items: flex-start; gap: 8px; width: 100%; text-align: left; border: 0; background: none;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--pbwfs-ink); font-size: 13.5px;
+    .pbwfs-ic { color: var(--pbwfs-brand); margin-top: 2px; }
+    small { display: block; color: var(--pbwfs-sub); font-size: 12px; }
+    &:hover, &:focus-visible { background: var(--pbwfs-brand-soft); outline: none; }
+    &:disabled { cursor: not-allowed; color: var(--pbwfs-sub); background: none; .pbwfs-ic { color: #a3a1b5; } }
+}
+.pbwfs-note {
+    display: flex; align-items: center; gap: 6px; margin: 8px 0 0; font-size: 13px; padding: 6px 10px; border-radius: 9px;
+    &.is-ok { background: var(--pbwfs-ok-soft); color: var(--pbwfs-ok); }
+    &.is-bad { background: var(--pbwfs-late-soft); color: var(--pbwfs-late); }
+}
+
+// ------------------------------------------------------------- the track
+.pbwfs-track {
+    list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px;
+    margin: 10px 0 0; padding: 0;
+}
+.pbwfs-step.track-step, .pbwfs-step.is-more {
+    display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 5px;
+    border: 1px solid #e2e3ed; border-radius: 10px; background: var(--pbwfs-soft); color: #5f6476; font-size: 13px;
+    &:not(:last-child)::after { content: ''; width: 10px; height: 1px; background: #c9cbd8; margin-left: 4px; margin-right: -10px; }
+}
+.pbwfs-step.is-more { padding: 0; border-style: dashed; background: #fff; }
+.pbwfs .track-icon {
+    display: inline-flex; width: 20px; height: 20px; border-radius: 50%; align-items: center; justify-content: center;
+    background: #eceef5; color: #8b8fa3; flex: none;
+}
+.pbwfs .track-step.done .track-icon { background: #e5f5ec; color: #26724c; }
+.pbwfs .track-step.done { color: #3f4a45; }
+.pbwfs .track-step.here { background: var(--pbwfs-brand-soft); border-color: var(--pbwfs-brand); color: var(--pbwfs-brand-ink);
+    box-shadow: 0 0 0 3px rgba(90, 75, 176, .08); }
+.pbwfs .track-step.here .track-icon { background: var(--pbwfs-brand); color: #fff; }
+.pbwfs .track-step.passed { border-style: dashed; background: #fff; }
+.pbwfs .track-step.stopped { opacity: .62; }
+.pbwfs-name { display: inline-flex; flex-direction: column; line-height: 1.2;
+    b { font-weight: 600; }
+    small { font-size: 11px; color: var(--pbwfs-brand); } }
+.pbwfs-here {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase;
+    padding: 1px 6px; border-radius: 6px; background: var(--pbwfs-brand); color: #fff;
+}
+.pbwfs-more { position: relative;
+    summary { list-style: none; cursor: pointer; padding: 4px 10px; font-weight: 700; color: var(--pbwfs-brand-ink); border-radius: 10px;
+        &::-webkit-details-marker { display: none; }
+        &:focus-visible { outline: 3px solid rgba(90, 75, 176, .35); } }
+}
+.pbwfs-pop {
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: flex; flex-direction: column; gap: 4px;
+    min-width: 180px; padding: 8px 10px; background: #fff; border: 1px solid var(--pbwfs-line); border-radius: 10px;
+    box-shadow: 0 14px 32px -16px rgba(31, 29, 43, .35); font-size: 13px; color: var(--pbwfs-ink);
+}
+.pbwfs-exits { margin: 6px 0 0; font-size: 12.5px; color: var(--pbwfs-sub);
+    b { color: #7d4652; } }
+
+// ---------------------------------------------- narrow: "Stage 2 of 5 · X"
+.pbwfs-mobile { display: none; margin-top: 8px;
+    summary { display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; font-size: 13.5px; color: var(--pbwfs-sub);
+        padding: 6px 10px; border-radius: 9px; background: var(--pbwfs-soft);
+        b { color: var(--pbwfs-ink); }
+        .pbwfs-ic { margin-left: auto; transition: transform .16s ease; }
+        &::-webkit-details-marker { display: none; } }
+    &[open] summary .pbwfs-ic { transform: rotate(180deg); }
+}
+.pbwfs-vtrack { list-style: none; margin: 8px 0 0; padding: 0 0 0 4px; display: flex; flex-direction: column; gap: 6px;
+    .track-step { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #5f6476; }
+    .track-step.here { color: var(--pbwfs-brand-ink); font-weight: 600; }
+    .track-step.here .track-icon { background: var(--pbwfs-brand); color: #fff; }
+}
+@container (max-width: 560px) {
+    .pbwfs-track, .pbwfs-exits { display: none; }
+    .pbwfs-mobile { display: block; }
+    .pbwfs-sentence { flex-basis: 100%; order: 3; font-size: 14.5px; }
+    .pbwfs-acts { order: 4; margin-left: 0; width: 100%; }
+    .pbwfs-acts .pbwfs-btn--primary { flex: 1; justify-content: center; }
+    .pbwfs-menu { left: 0; right: auto; width: 100%; max-width: none; }
+}
+
+// ------------------------------------------------------------ where it sits
+// A record screen: above the form sheet, on the sheet's own background and
+// lined up with the cards inside the sheet (the sheet keeps 24px inside).
+// While its menu or a "+3" is open it lifts over the sheet's sticky status
+// bar (z 1020); otherwise it stays under it, so scrolling never covers the bar.
+.pbwfs-host:has(.pbwfs-menu, .pbwfs-more[open]) { z-index: 1021; }
+.pbwfs-host { background: #f4f6fb; padding: 16px 8px 0 16px; position: relative; z-index: 5;
+    // No Sass max()/min() with calc() here: the server's compiler refuses
+    // them and the whole backend style sheet falls back (ledger G46).
+    > .pbwfs { max-width: 1272px; width: calc(100% - 48px); margin: 0 auto; }
+    @media (max-width: 767.98px) { padding: 10px 10px 0; > .pbwfs { width: auto; } }
+}
+// A cockpit drawer (Hiring's candidate drawer): inside its padding.
+.pbhr-cdrawer > .pbwfs { margin: 10px 16px 6px; }
+// The employee home: inside the page's own column.
+.pbwfs-wrap { max-width: 760px; margin: 0 auto 14px; }
+.pbwfs-wrap--task { margin-bottom: 18px; max-width: 640px; }
+// The expense claim page is a little wider; line up with its own card.
+.pbwfs-wrap--claim { max-width: 880px; }
+.pbwfs--page { margin: 0; }
+
+// My requests: one quiet line under the title.
+.pbwfs-rqline {
+    display: flex; align-items: center; gap: 5px; margin-top: 2px; font-size: 12.5px; color: #5A4BB0; font-weight: 500;
+    .pbwfs-ic { color: #5A4BB0; }
+    &.is-late { color: #a3324f; .pbwfs-ic { color: #a3324f; } }
+}
+
+// ---------------------------------------------------------------- the drawer
+// "Do it now" opens the task in place (the same task page the inbox shows).
+// The drawer is portalled to the page body, so it carries its own tokens.
+.pbwfs-portal { --pbwfs-brand-soft: #f0ecff; --pbwfs-brand-ink: #3d2f86; font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    .pbwfs-chip { padding: 6px; }
+}
+.pbwfs-scrim { position: fixed; inset: 0; z-index: 1040; background: #1f1d2b; opacity: .34; animation: pbwfs-fade .16s ease both; }
+@keyframes pbwfs-fade { from { opacity: 0; } to { opacity: .34; } }
+.pbwfs-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 1041; width: 640px; max-width: 100vw;
+    display: flex; flex-direction: column; background: #fff; box-shadow: -24px 0 48px -24px rgba(31, 29, 43, .45);
+    animation: pbwfs-slide .2s ease-out both;
+}
+@keyframes pbwfs-slide { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pbwfs-drawer, .pbwfs-scrim, .pbwfs-menu { animation: none; } }
+.pbwfs-dh { display: flex; align-items: flex-start; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #e6e4f2;
+    h2 { margin: 0; font-size: 18px; font-weight: 800; color: #1f1d2b; }
+    p { margin: 2px 0 0; color: #5f5c73; font-size: 13px; } }
+.pbwfs-x { margin-left: auto; padding: 6px; border-radius: 8px; border: 0; background: none; color: #5f5c73; cursor: pointer;
+    &:hover, &:focus-visible { background: #f0ecff; color: #1f1d2b; } }
+.pbwfs-frame { flex: 1 1 auto; width: 100%; min-height: 0; border: 0; background: #f6f7fc; }

@@ -1,0 +1,12 @@
+/var/log/odoo/odoo-server.log {
+    daily
+    maxsize 100M
+    rotate 7
+    maxage 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    su odoo odoo
+    create 0640 odoo odoo
+}

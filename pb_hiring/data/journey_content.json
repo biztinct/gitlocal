@@ -1,0 +1,42 @@
+{
+  "emails": [
+    {
+      "name": "Application received",
+      "subject": "We got your application - here's what happens next",
+      "body": "Hi {{first_name}},\n\nThanks for applying for the {{role}} role at {{brand}}. Your application landed with us, and a real person (not a black hole) will be reading it.\n\nWe take about two weeks to go through applications properly, so you'll hear from us within that time either way. If two weeks pass and you haven't, feel free to nudge us.\n\n{{company_intro}}\n\nTalk soon.\nTalent Team\n{{website}} | {{linkedin}}",
+      "key": "received"
+    },
+    {
+      "name": "Let's chat",
+      "subject": "Let's chat — {{role}} at {{brand}}",
+      "body": "Hi {{first_name}},\n\nGood news - we liked what we saw, and we'd love to get to know you a bit better.\n\nThe next step is a relaxed conversation with {{hr_name}} from our team. Nothing to prepare, no trick questions. It's really just a chance for us to hear about you and what you're after, and for you to ask us anything - the role, the team, what we're building, all of it.\n\nIt'll take about {{duration}} minutes. Grab a time that works for you here: {{scheduling_link}}.\n\nLooking forward to it,\n{{sender_name}}\n{{website}} | {{linkedin}}",
+      "key": "phone"
+    },
+    {
+      "name": "Assignment",
+      "subject": "A short assignment for the {{role}} role",
+      "body": "Hi {{first_name}},\n\nThanks for a great conversation. The next step is a short assignment - it gives you a feel for the kind of problems we work on, and gives us a sense of how you think.\n\nHere's what we'd like you to cover:\n{{tasks}}\n{{format}}\n\nWe're not after hours of polish or a flawless finish. We care far more about your thinking than a perfect wrapper.\n\nPlease send it over by {{deadline}}. If life gets in the way and you need more time, just tell us - we'd rather you do your best work than rush it.\n\nSend your submission to {{submission_link}}, and if anything's unclear, reply here.\n\nGood luck,\n{{sender_name}}\n{{website}} | {{linkedin}}",
+      "key": "assignment"
+    },
+    {
+      "name": "On hold / delay",
+      "subject": "A quick, honest update on your application",
+      "body": "Hi {{first_name}},\n\nI wanted to reach out rather than leave you wondering. We're still working through our decision on the {{role}} role, and it's taking a bit longer than we'd hoped — {{reason}}.\n\nI don't want to rush a decision that matters, and I also don't want to leave you in the dark. Where things stand: we're keeping your application very much active, and I expect to have a clearer update for you by {{update_date}}.\n\nIf your situation changes in the meantime — another offer, a shift in timing — please tell me. I'll do my best to move things along on our end so you're not left waiting unfairly.\n\nThanks for your patience, and sorry for the wait.\n\nBest,\n{{sender_name}}\n{{brand}}",
+      "key": "on_hold"
+    },
+    {
+      "name": "Application not progressing",
+      "subject": "Your application to {{brand}}",
+      "body": "Hi {{first_name}},\n\nThanks for taking the time to apply for the {{role}} role, and for your interest in what we're building at {{brand}}.\n\nAfter going through your application, we've decided not to take it forward this time. These calls are rarely black and white, and this one isn't a knock on your ability — it usually comes down to how closely the experience lines up with what this particular role needs right now.\n\nWe'd genuinely welcome you to apply again for roles that fit down the line. Thank you once again for your interest, and we wish you every success ahead.\n\nWarmly,\n{{sender_name}}",
+      "key": "cv_reject"
+    }
+  ],
+  "sections": {
+    "about": "At Rize, we are building the digital infrastructure powering the future of sustainable rice cultivation across Southeast Asia.\n\nRice farming supports the livelihoods of millions of smallholder farmers, yet it is also one of the world's largest contributors to methane emissions, accounting for nearly 12% of global methane emissions and close to 30% across Southeast Asia. The transition toward modern, measurable, and lower-emission farming is no longer optional. It is inevitable.\n\nRize exists to accelerate that transition.\n\nFounded through a joint venture between Temasek, Wavemaker Impact, Breakthrough Energy Ventures, and GenZero, Rize combines climate technology, agricultural intelligence, and last-mile operational infrastructure to help make rice cultivation more productive, resilient, and sustainable.",
+    "building": "We are building a technology platform that enables large-scale sustainable rice farming through:\n• Field operations and task management\n• Cultivation and farm activity tracking across millions of hectares of paddy fields\n• Agricultural data capture and verification\n• Agri-input supply chain management\n• Access to financing and third-party agricultural services\n• Climate and sustainability reporting infrastructure\n\nThis ecosystem helps farmers become more climate-resilient, improve yields, reduce farming costs, and adopt modern agricultural practices with measurable impact.",
+    "mission": "Decarbonise rice agriculture: Eliminate 100 megatons of carbon emissions by 2040\nImprove farmer livelihoods: Increase yields, reduce cost-to-farm, and improve access to financing\nBuild trusted agricultural infrastructure: Create a scalable and verifiable platform for sustainable farming practices",
+    "operate": "Vietnam (Mekong Delta region)\nIndonesia (Java Island and expansion regions)",
+    "why": "At Rize, you will work on problems that sit at the intersection of climate, agriculture, technology, and livelihoods. Our work directly impacts farmers, food systems, and sustainability outcomes across the region.\n\nWe are building with urgency, ownership, and long-term impact in mind.\n\nYou can learn more about us here:\nwww.rize.farm\nRize LinkedIn"
+  },
+  "intro": "A quick bit about us while you wait: we're building the tech to make rice farming more sustainable and less carbon-heavy across Southeast Asia. It's messy, meaningful work - and we're glad you want in."
+}

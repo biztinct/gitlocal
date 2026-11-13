@@ -1,0 +1,48 @@
+test_conditional_task_skips_without_activity (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_conditional_task_skips_without_activity) ... ok
+test_cross_company_progress_denied (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_cross_company_progress_denied) ... ok
+test_custom_process_uses_native_matrix_and_frozen_answers (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_custom_process_uses_native_matrix_and_frozen_answers) ... ok
+test_cycle_and_repeated_step_rejected (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_cycle_and_repeated_step_rejected) ... ok
+test_draft_conflict (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_draft_conflict) ... ok
+test_email_uses_native_queue_and_retries_same_message (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_email_uses_native_queue_and_retries_same_message) ... ok
+test_existing_record_stage_is_available_without_creating_stages (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_existing_record_stage_is_available_without_creating_stages) ... ok
+test_filter_validation_rejects_wrong_types_and_forward_answers (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_filter_validation_rejects_wrong_types_and_forward_answers) ... ok
+test_filtered_parallel_any_waits_for_eligible_work (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_filtered_parallel_any_waits_for_eligible_work) ... ok
+test_filters_cannot_bypass_required_approval (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_filters_cannot_bypass_required_approval) ... ok
+test_form_visibility_ignores_hidden_payload (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_form_visibility_ignores_hidden_payload) ... ok
+test_idempotent_start_and_explicit_repeat (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_idempotent_start_and_explicit_repeat) ... ok
+test_invalid_shapes_and_typed_form_values (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_invalid_shapes_and_typed_form_values) ... ok
+test_native_activity_type_and_record_owner_reused (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_native_activity_type_and_record_owner_reused) ... ok
+test_native_approval_cannot_be_omitted (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_native_approval_cannot_be_omitted) ... ok
+test_native_before_and_after_domains (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_native_before_and_after_domains) ... ok
+test_native_changed_hook_ignores_create_and_unwatched_fields (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_native_changed_hook_ignores_create_and_unwatched_fields) ... ok
+test_native_created_hook_captures_without_inline_effects (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_native_created_hook_captures_without_inline_effects) ... ok
+test_native_negative_before_filter_does_not_match_missing_value (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_native_negative_before_filter_does_not_match_missing_value) ... ok
+test_nested_filters_and_roles (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_nested_filters_and_roles) ... ok
+test_new_conditions_read_live_old_branches_keep_snapshot (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_new_conditions_read_live_old_branches_keep_snapshot) ... ok
+test_new_process_has_no_native_model_dependency (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_new_process_has_no_native_model_dependency) ... ok
+test_no_approval_route_reuses_native_fast_path (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_no_approval_route_reuses_native_fast_path) ... ok
+test_parallel_with_no_matches_continues (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_parallel_with_no_matches_continues) ... ok
+test_pause_disables_only_generated_rule (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_pause_disables_only_generated_rule) ... ok
+test_progress_permission_is_not_edit_permission (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_progress_permission_is_not_edit_permission) ... ok
+test_publish_does_not_activate (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_publish_does_not_activate) ... ok
+test_record_button_lists_actual_runs_and_respects_view_permission (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_record_button_lists_actual_runs_and_respects_view_permission) ... ok
+test_record_only_scope_excludes_other_records_and_native_triggers (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_record_only_scope_excludes_other_records_and_native_triggers) ... ok
+test_record_setup_reuses_workflows_and_enforces_design_permission (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_record_setup_reuses_workflows_and_enforces_design_permission) ... ok
+test_record_stages_reuse_native_statusbar_and_do_not_imply_history (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_record_stages_reuse_native_statusbar_and_do_not_imply_history) ... ok
+test_required_fields_checked_server_side (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_required_fields_checked_server_side) ... ok
+test_returned_approval_reopens_information_without_repeating_steps (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_returned_approval_reopens_information_without_repeating_steps) ... ok
+test_shared_stage_rename_uses_hiring_authority_and_same_record (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_shared_stage_rename_uses_hiring_authority_and_same_record) ... ok
+test_shared_template_editor_native_preview_and_concurrency (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_shared_template_editor_native_preview_and_concurrency) ... ok
+test_source_access_is_rechecked_on_progress (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_source_access_is_rechecked_on_progress) ... ok
+test_start_requires_explicit_grant (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_start_requires_explicit_grant) ... ok
+test_task_owner_and_direct_runtime_mutations (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_task_owner_and_direct_runtime_mutations) ... ok
+test_typed_branch_and_parallel_join (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_typed_branch_and_parallel_join) ... ok
+test_versions_are_pinned_and_immutable (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_versions_are_pinned_and_immutable) ... ok
+test_wait_conditions_use_live_record_and_timeout (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_wait_conditions_use_live_record_and_timeout) ... ok
+test_wait_persists_and_worker_resumes (odoo.addons.pb_lifecycle.tests.test_workflow_studio.TestWorkflowStudio.test_wait_persists_and_worker_resumes) ... ok
+
+----------------------------------------------------------------------
+Ran 42 tests in 19.231s
+
+OK
+WORKFLOW_TEST_RESULT={"tests": 42, "successful": true, "failures": 0, "errors": 0}

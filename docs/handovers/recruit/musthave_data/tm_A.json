@@ -1,0 +1,335 @@
+[
+ {
+  "tab": "Goal Setting",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: the day after a new joiner starts, their joining checklist opens a goal sheet for them with two weeks to write it, and emails them.\n2. To see it from the employee side, sign in as the employee.\n3. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My goals” and choose “My goals”. (or go to payobook.com/my and open “My goals”).\n4. The page shows the date the goals are due.\n5. HR can also open the year for everybody at once: “People” → “Goals” tab → “Open it for everyone” (the HR lead only).",
+  "comments": "Reminders go 3 days before the due date, 1 day before, on the day, and every 3 days after. Joiners who started before this was switched on keep their old checklist. The two-week period is a setting."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My goals” and choose “My goals”. (or go to payobook.com/my and open “My goals”).\n3. Under “Start from one of these”, press “Use this one” on a template, or open “Write a goal”.\n4. Fill in “What you are going to do”, “Why it matters and what good looks like”, “Done by”, the key results and “How you think it will go”, then press “Add it”.\n5. Move a key result with “Where it is now” / “How far along” and press “Save”.\n6. Press “Send them to …” (your manager).",
+  "comments": "The page will not send until each goal has its title, dates and key results. Templates are written by HR for a job. Each key result has its own progress figure."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Manager (lam.ngo@example.com)",
+  "clicks": "1. Sign in.\n2. In the left menu click “Home”, then the “Approvals” tab.\n3. Open “Goals · Quách Anh Tuấn · DEMO Goal year 2026”.\n4. To set the weights: Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Goals” and choose “Goals”., open Quách Anh Tuấn’s sheet, type a weight for each goal (out of 100) and press “Save the weights”.\n5. Press “Send it back” to ask for edits (with a note), or “Approve” in Approvals to agree it. It then goes to the HR lead to lock.",
+  "comments": "The weights must add up to 100 before the sheet can be agreed. A manager who has not decided within the set time is reminded, and after that the HR lead is told."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Goals” tab.\n4. Click the “With the HR lead” step to list sheets waiting for the lock.\n5. Open one and agree it in “Home” → “Approvals” (“Approve”) — the sheet becomes “Agreed and locked”.\n6. To see a locked one, open Thái Ngọc Diệp’s sheet: it shows when it was locked and by whom.",
+  "comments": "Once locked, the goals cannot be changed except through a change request. The lock date, who locked it, and the history are kept on the sheet."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Manager (lam.ngo@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Goals” and choose “Goals”..\n3. Open Thái Ngọc Diệp’s sheet (agreed and locked).\n4. See each goal’s weight, and mark each key result out of 5, then press “Save the scores”.\n5. The “Scores” tab shows the total for the year as a number and a word (Outstanding, Strong, Solid).",
+  "comments": "A goal’s score is the average of its key results; the year is the goals weighted by their weights. No total shows until every mark is in. The band words and cut-offs are settings."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee with agreed goals (diep.thai@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My goals” and choose “My goals”. (or go to payobook.com/my and open “My goals”).\n3. Find the October check-in (planned for 25 October).\n4. Fill in “What moved this month” and “Anything in the way”, then press “Write it up”.\n5. The manager (lam.ngo@example.com) sees it on the “Goals” board under “Monthly conversations” and can press “Mark it done”.",
+  "comments": "One check-in is created each month for every agreed sheet, on the 25th. Both sides are reminded 3 days before, on the day and 3 days after. A check-in nobody writes up is marked missed."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Goals” tab.\n4. Open the “Reviews” tab.\n5. Each person shows whether a half-way review and a year-end score apply to them, worked out from the date their goals started.",
+  "comments": "Someone who joined less than 3 months before the half-way point skips the half-way review. Each person is emailed one sentence explaining what applies to them and can read it on their own goals page. The months are settings."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 11,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee with agreed goals (diep.thai@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My goals” and choose “My goals”..\n3. On a key result, change “Where it is now” or “How far along”, add “A line about it” and press “Save”.\n4. The goal shows “% of the way”. The manager sees every change under “What has moved” on the board.",
+  "comments": "Every move of a key result is kept: when, who moved it, the figure and the note. Progress can still move after the goals are locked."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 12,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee with agreed goals (diep.thai@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My goals” and choose “My goals”..\n3. On a goal that is done, press “Mark it finished” (“Not finished after all” undoes it).\n4. At year end, HR presses “Close the year” on the “Goals” board (the HR lead) — the goals are filed and appear under “Other years” on the employee’s page.",
+  "comments": "The date and the person who marked a goal complete are recorded. Closing the year freezes every figure and keeps it; nothing is deleted and it can be undone."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 13,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: the emails go out on their own each morning.\n2. To see who is late, sign in as the HR lead, click “People” → “Goals” tab and use the “past its date” count.",
+  "comments": "Emails go to the employee (goals due, goals sent back, goals agreed, check-ins, reviews) and to the manager (goals waiting, check-ins). A manager who does not decide is escalated to the HR lead. Missed goal submissions and missed check-ins are reminded but are NOT escalated to HR by email — HR sees them on the board."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 14,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. The goal emails are ready-made and worded in plain English.\n2. Changing their wording today is done by an administrator in the system’s email template list — there is no HR screen for it yet.",
+  "comments": "There is a setting for the HR sender address; it is not filled in yet, so goal emails come from the company address. Rize to give the HR address. An HR-friendly email editor is not built."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 15,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Manager (lam.ngo@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Goals” and choose “Goals”..\n3. The line at the top says whose goals you are looking at: a manager sees their team and their own.\n4. Sign in as the employee (ess1.demo@payobook.com) to see that an employee sees only their own; the HR lead sees the whole company.",
+  "comments": "Who sees what is decided by the system for each person, not by the screen. Company-wide figures (Insights → Goals) are for the HR team only."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 16,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press for manager approvals: if a manager has not decided a goal sheet in time, they are reminded, then it goes to the HR lead.\n2. To see the timings: sign in as the HR lead, click “Settings” → “Approvals” and open “Goal sheet”.",
+  "comments": "Escalation to the HR lead works for manager sign-offs, with a time limit you can set, and it is logged on the request. Missed goal submissions and missed check-ins do not escalate to HR on their own — they are listed on the Goals board and in Insights."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 17,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “Home”, then the “Approvals” tab.\n3. Goal sheets and goal changes waiting for the HR lead appear here with everything else to sign off.\n4. Overdue check-ins are on “People” → “Goals” → “Monthly conversations”.",
+  "comments": "Pending goal approvals land in the one approvals list. Overdue check-ins are not added to an HR task list; HR sees them on the Goals board. The separate “Goals waiting on you” card was taken off Home on request."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 18,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee with agreed goals (diep.thai@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My goals” and choose “My goals”..\n3. On an agreed goal press “Ask to change it” (or “Ask to drop it”), write “Why this has to change” and press “Ask for it”.\n4. The manager (lam.ngo@example.com) decides it in “Home” → “Approvals” — one is waiting: “Goal change · Thái Ngọc Diệp · Add a goal”. Then the HR lead decides.\n5. the HR lead sees every request on “People” → “Goals” → “Changes asked for”.",
+  "comments": "A change needs the manager and then the HR lead. Every version of the goal and who agreed it is kept. On the demo one change was agreed and one turned down."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 19,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “Insights”.\n3. Open the “Goals” tab.\n4. See how long each step takes, compliance by manager, how far along, missed check-ins and how the scores came out.\n5. Press “Spreadsheet” to download it to Excel.",
+  "comments": "Figures can be read by manager and by part of the business. The screen is for the HR team only."
+ },
+ {
+  "tab": "Goal Setting",
+  "row": 20,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Goals” tab.\n4. Open the “Reviews” tab and look at a late joiner: it shows whether they get a half-way review and a year-end score this year.\n5. The joiner is emailed one sentence explaining it, and it shows on their own goals page under “How your year is reviewed”.",
+  "comments": "Today the rule is: under 3 months before the half-way point means no half-way review; under 3 months before year end carries to next year. For a November joiner with a March year end, Rize may want the year-end rule at 6 months — it is a setting."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Announce” tab.\n4. Press the left arrow (“The month before”) to go back to September 2026, where the demo announcements are.\n5. Press “New announcement” (or click a day). Fill in “What it is called”, “What it says”, “Who gets it” and “Goes out”.\n6. In “How often” choose “Just once”, “Every week”, “Every month” or “Every year”, then press “Put it on the calendar”.",
+  "comments": "A month calendar shows every announcement as a pill on its day. “Who gets it” can be everybody in a company, certain departments, certain jobs, or every company in one country."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Announcements” → “Templates”.\n3. Add a template with a poster or PDF (“A picture or a PDF that goes out with it”). Press “Write one from this” to start an announcement from it.\n4. On the announcement, set “Who looks after it”.",
+  "comments": "The person who looks after an announcement gets an email and a to-do 2 days before it goes out, so they can check or change it."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: an announcement on the calendar is sent by email at the time it was booked for.\n2. To check what went out: sign in as the HR lead, click “People” → “Announce”, open a sent one (for example “DEMO Pay day moves to the 25th”) and press “Who got it”.",
+  "comments": "Sending is by email only. Slack was left out by agreement; the chat option shows as “not connected”. The person who looks after it is reminded 2 days before."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click the “Settings” gear at the top right of the screen, then “Announcements” → “Who looks after them”.\n3. Name the HR person for each company (one company per country).\n4. The HR team sees every announcement on “People” → “Announce”; a person who looks after an announcement sees only their own (search bar: “Announcements I look after”).",
+  "comments": "Head HR sees all. Each announcement has one person who looks after it. A sign-off by the HR lead before sending is built but switched off; it can be turned on."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Announce” tab.\n4. Press the left arrow (“The month before”) to go back to September 2026, where the demo announcements are.\n5. Open an announcement that has not gone out yet and change it.\n6. Inside the last 2 days before it goes out, only the HR lead can change it, and the change is written into its history.",
+  "comments": "The person who looks after it is reminded 2 days before and can change it until then. If Rize want everybody responsible to edit right up to sending, the 2 days can be changed. On the demo all eight announcements have already gone out, so write a new one to try this."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Announce” tab.\n4. Press the left arrow (“The month before”) to go back to September 2026, where the demo announcements are.\n5. On a new announcement pick the company (one per country) and, if wanted, “Who gets it” → “Every company in this country”.\n6. Press “Check who gets it” to count the people before anything is sent.",
+  "comments": "Each company is scheduled separately and has its own person who looks after announcements, who is the one reminded."
+ },
+ {
+  "tab": "HR Comm",
+  "row": 10,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press once switched on: a personal birthday or work-anniversary email card goes to the person on the day.\n2. To see who is coming up: sign in as the HR lead, Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Birthdays and anniversaries this week” and choose “Birthdays and anniversaries this week”..",
+  "comments": "The cards are designed and tested but switched off on the demo (about 32 people a day would get one). We switch them on when Rize say so. Email only — Slack was left out by agreement."
+ },
+ {
+  "tab": "Leave & Attendance",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Already in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in.\n2. In the left menu click “Workforce”, then the “Holidays” tab.\n3. Or go to payobook.com/my and open the “Public holidays” card.",
+  "comments": "Every employee sees the public holidays of every company, their own first. HR adds them one at a time (“Add a public holiday”) or pastes a whole year (“Paste a year of holidays”). Only Vietnam’s holidays are loaded on the demo — Rize to give their countries’ lists."
+ },
+ {
+  "tab": "Leave & Attendance",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in.\n2. Go to payobook.com/my and open the “My Leave” card.\n3. Under “Request time off” pick the type, “First day”, “Last day”, then press “Send for approval”.\n4. The manager decides it: sign in as lam.ngo@example.com → “Home” → “Approvals” (one is waiting: “DEMO Manager day off · Thái Ngọc Diệp”).",
+  "comments": "If the manager has not decided within 2 working days they are chased, and the day after it goes to the HR lead. Past-dated requests are refused except sick leave, which tells HR. A leave that has already started cannot be changed by the employee."
+ },
+ {
+  "tab": "Leave & Attendance",
+  "row": 6,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in.\n2. Go to payobook.com/my and open the “My Leave” card to see balances and requests.\n3. HR sees everybody’s balance on “Workforce” → “Time Off” → “Leave balances” (sign in as tuan.quach@example.com).",
+  "comments": "Balances are worked out automatically. The warning 6 months before the carry-forward cut-off is built, but it only watches a leave type once a cap is set for it, and no caps are set yet. Rize to give the cap per leave type."
+ },
+ {
+  "tab": "Leave & Attendance",
+  "row": 7,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "Field staff (demo.field@example.com)",
+  "clicks": "1. On a phone, sign in and go to payobook.com/field.\n2. Press “Check in” — the phone takes a photo and the location.\n3. HR sees it: sign in as tuan.quach@example.com → “Workforce” → “Field” tab (map), and on the “Today” tab.",
+  "comments": "Check-in uses a selfie photo plus the phone’s location. Face matching is not done — a photo was agreed instead. HR sees status and who is on leave on the map; line managers do not see the map unless given the attendance role. Only one agronomist is set up as field staff on the demo."
+ },
+ {
+  "tab": "Leave & Attendance",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Already in Payobook",
+  "try_as": "HR (tuan.quach@example.com)",
+  "clicks": "1. Sign in.\n2. In the left menu click “Workforce”, then the “Time Off” tab: “Approval queue”, “Absence heatmap” and “Leave balances”.\n3. Open the “Today” tab for who is in, late or absent today.\n4. Managers are emailed when a request needs them and find it in “Home” → “Approvals”.",
+  "comments": "HR can also file leave for somebody with “Apply on behalf”. Refusing a request needs a reason."
+ },
+ {
+  "tab": "Leave & Attendance",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: the system emails on its own.\n2. To see a back-dated sick leave flagged, sign in as tuan.quach@example.com → “Workforce” → “Time Off” and look for the “Backdated” mark in the “Approval queue”.",
+  "comments": "Emails go for approvals and escalations, and HR is alerted when sick leave is entered for past dates. The leave-balance warning is built but waits for the carry-forward caps to be set (see the line above)."
+ },
+ {
+  "tab": "RnR",
+  "row": 3,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My praise” and choose “My praise”. (or go to payobook.com/my and open “Recognition”).\n3. Under “Say thank you to somebody”, pick “Who deserves it”, “Which value” and write “What they did”.\n4. Press “Send it”.",
+  "comments": "A real example is required. You cannot nominate yourself. It goes to the colleague’s manager first."
+ },
+ {
+  "tab": "RnR",
+  "row": 4,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press once switched on: HR gets an email when a nomination comes in.\n2. Today HR sees new ones on “People” → “Praise” in the “Waiting on HR” count (the HR lead).",
+  "comments": "The HR email is built but switched off on the demo, and the HR address is a test one. Rize to give the HR address, then we switch it on."
+ },
+ {
+  "tab": "RnR",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Manager (lam.ngo@example.com)",
+  "clicks": "1. Sign in.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My praise” and choose “My praise”. (or go to payobook.com/my and open “Recognition”).\n3. Under “Waiting for you” open the nomination for Tô Đức Thắng.\n4. Add a comment in “Anything to add (optional)” and press “Agree, send it to HR” or “Not this time”.",
+  "comments": "Only the nominee’s own manager can decide at this step. HR then recognises it, and can add a money award."
+ },
+ {
+  "tab": "RnR",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”.\n3. Open the “Praise” tab.\n4. Press “All praise” for the full list, or “Values” for the company values.",
+  "comments": "Every nomination is kept with its value, story, who nominated, the decision and any award. Eight demo nominations are on it."
+ },
+ {
+  "tab": "RnR",
+  "row": 7,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”, then the “Praise” tab.\n3. Press “Mood board” to see this month’s email: recognised stories, new joiners, birthdays and anniversaries, quarter winners.\n4. Everyone can also see the stories on “Home” → “Wall”.",
+  "comments": "The monthly email is built but switched off on the demo; it goes to everybody once switched on. Email only — Slack was left out by agreement."
+ },
+ {
+  "tab": "RnR",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu click “People”, then the “Praise” tab.\n3. Press “Roll up the quarter”: people are ranked by how often they were nominated.\n4. Tick the winners, type an amount if any, press “Choose these”, then “Yes, choose them”.",
+  "comments": "Quarter Q3 2026 is already closed on the demo with its winners. A money award still has to be approved by the pay team and added to a pay run by hand."
+ },
+ {
+  "tab": "RnR",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Employee nominates (see the first RnR line).\n2. Manager agrees it (see the manager line).\n3. the HR lead: “People” → “Praise”, open it (“Read and decide”), press “Recognise it” and add an amount if wanted.\n4. The award then waits on “Pay Run” → “Awards” for the pay team to approve and add to a pay run.",
+  "comments": "The whole path is: nominate, manager, HR, award, pay run. Money never reaches a payslip without someone in the pay team adding it."
+ }
+]

@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_contract_review_staff,Contract decision mine and my team's,model_pb_contract_review,base.group_user,1,1,0,0
+access_pb_contract_review_user,Contract decision read,model_pb_contract_review,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_contract_review_manager,Contract decision manager,model_pb_contract_review,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_contract_review_admin,Contract decision admin,model_pb_contract_review,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_contract_review_system,Contract decision system,model_pb_contract_review,base.group_system,1,1,1,1
+access_pb_contract_extension_staff,Extension request mine and my team's,model_pb_contract_extension,base.group_user,1,1,0,0
+access_pb_contract_extension_user,Extension request read,model_pb_contract_extension,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_contract_extension_manager,Extension request manager,model_pb_contract_extension,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_contract_extension_admin,Extension request admin,model_pb_contract_extension,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_contract_extension_system,Extension request system,model_pb_contract_extension,base.group_system,1,1,1,1

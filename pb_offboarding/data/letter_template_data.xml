@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- The covering letter for a final settlement. noupdate="1" so a company
+         that has reworded it keeps its wording through every upgrade.
+
+         Nothing here is evaluated — P0's letter engine SUBSTITUTES, so a
+         `${...}` that is misspelt stays on the page exactly as typed, which is
+         what makes editing this safe for a non-technical administrator. The
+         four money placeholders are handed in by the step that prepares it
+         (`_auto_ff_cover`), already formatted, because a number formatted in
+         the template is a number formatted differently in every template. -->
+
+    <record id="letter_template_ff_cover" model="pb.letter.template">
+        <field name="name">Final settlement — covering letter</field>
+        <field name="letter_type">ff_cover</field>
+        <field name="subject">Your final settlement</field>
+        <field name="sequence">40</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_other"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    Your last working day with ${company} was
+                    ${last_working_day}. Everything owed either way has now been
+                    worked out and signed off, and your final settlement is
+                    closed.
+                </p>
+                <p>
+                    <strong>What you are being paid</strong><br/>
+                    Total earnings: ${total_earnings}<br/>
+                    Total deductions: ${total_deductions}<br/>
+                    <strong>Net payable: ${net_payable}</strong>
+                </p>
+                <p>
+                    The full breakdown is on the settlement statement filed with
+                    this letter. The payment follows our normal salary run; if
+                    anything on it does not look right, reply to this letter and
+                    we will go through it with you.
+                </p>
+                <p>${extra}</p>
+                <p>
+                    Thank you for the work you put in since ${joining_date}. We
+                    wish you well in what comes next.
+                </p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

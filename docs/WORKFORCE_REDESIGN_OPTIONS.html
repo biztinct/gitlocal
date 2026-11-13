@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workforce, Made One Product — Audit · Gaps · Three Directions</title>
+<style>
+/* ================= TOKENS ================= */
+:root{
+  --paper:#F7F6FB; --card:#FFFFFF; --ink:#1B1733; --mut:#6A6580; --faint:#9B96B2;
+  --line:#E4E2EF; --line2:#D8D5E8;
+  --acc:#5A4BB0; --acc-deep:#241F52; --acc-soft:#EDEAF8; --acc-soft2:#DCD6F2;
+  --good:#2E7D4F; --good-soft:#E3F2E9; --warn:#B45309; --warn-soft:#FEF3C7;
+  --bad:#B91C4B; --bad-soft:#FCE7EF; --info:#2563EB; --info-soft:#E5EDFD;
+  --code-bg:#211C3E; --code-ink:#D9D4F0;
+  --sh:0 10px 30px rgba(27,23,51,.08);
+  --f-d:"Avenir Next","Segoe UI Variable Display",system-ui,-apple-system,sans-serif;
+  --f-b:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-m:"SF Mono",ui-monospace,"Cascadia Code","JetBrains Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#131022; --card:#1C1936; --ink:#ECE9F8; --mut:#A29BC4; --faint:#736D96;
+    --line:#2C2749; --line2:#3A3460;
+    --acc:#A79BE8; --acc-deep:#CFC7F4; --acc-soft:#2A2450; --acc-soft2:#372F64;
+    --good:#6FBF8F; --good-soft:#1D3229; --warn:#E2A24A; --warn-soft:#3A2C14;
+    --bad:#EE7BA4; --bad-soft:#3D1F2C; --info:#7CA5F2; --info-soft:#1E2A48;
+    --code-bg:#0E0B1E; --code-ink:#C9C3E6;
+    --sh:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="light"]{
+  --paper:#F7F6FB; --card:#FFFFFF; --ink:#1B1733; --mut:#6A6580; --faint:#9B96B2;
+  --line:#E4E2EF; --line2:#D8D5E8;
+  --acc:#5A4BB0; --acc-deep:#241F52; --acc-soft:#EDEAF8; --acc-soft2:#DCD6F2;
+  --good:#2E7D4F; --good-soft:#E3F2E9; --warn:#B45309; --warn-soft:#FEF3C7;
+  --bad:#B91C4B; --bad-soft:#FCE7EF; --info:#2563EB; --info-soft:#E5EDFD;
+  --code-bg:#211C3E; --code-ink:#D9D4F0;
+  --sh:0 10px 30px rgba(27,23,51,.08);
+}
+:root[data-theme="dark"]{
+  --paper:#131022; --card:#1C1936; --ink:#ECE9F8; --mut:#A29BC4; --faint:#736D96;
+  --line:#2C2749; --line2:#3A3460;
+  --acc:#A79BE8; --acc-deep:#CFC7F4; --acc-soft:#2A2450; --acc-soft2:#372F64;
+  --good:#6FBF8F; --good-soft:#1D3229; --warn:#E2A24A; --warn-soft:#3A2C14;
+  --bad:#EE7BA4; --bad-soft:#3D1F2C; --info:#7CA5F2; --info-soft:#1E2A48;
+  --code-bg:#0E0B1E; --code-ink:#C9C3E6;
+  --sh:0 10px 30px rgba(0,0,0,.35);
+}
+/* ================= BASE ================= */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{animation:none !important;transition:none !important} }
+body{margin:0;background:var(--paper);color:var(--ink);font:15.5px/1.62 var(--f-b);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--f-d);text-wrap:balance;margin:0}
+p{margin:0 0 1em}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+.mono{font-family:var(--f-m)}
+.num{font-variant-numeric:tabular-nums}
+/* ================= NAV ================= */
+.topnav{position:sticky;top:0;z-index:60;background:color-mix(in srgb, var(--paper) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topnav .wrap{display:flex;align-items:center;gap:22px;height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-d);font-weight:700;font-size:14px;letter-spacing:.02em}
+.brand .dot{width:22px;height:22px;border-radius:7px;background:var(--acc);display:inline-flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.brand .dot svg{width:13px;height:13px}
+.navlinks{display:flex;gap:4px;margin-left:auto;overflow-x:auto}
+.navlinks a{font-size:13px;font-weight:600;color:var(--mut);padding:6px 11px;border-radius:8px;white-space:nowrap}
+.navlinks a:hover{color:var(--ink);background:var(--acc-soft);text-decoration:none}
+.tbtn{border:1px solid var(--line2);background:var(--card);color:var(--mut);border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.tbtn svg{width:15px;height:15px}
+.tbtn:hover{color:var(--ink)}
+/* ================= HERO ================= */
+.hero{padding:84px 0 56px;position:relative;overflow:hidden}
+.hero .eyebrow{margin-bottom:18px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--acc)}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--acc);border-radius:2px}
+.hero h1{font-size:clamp(36px,5.4vw,62px);line-height:1.04;font-weight:700;letter-spacing:-.022em;max-width:15ch}
+.hero .sub{margin-top:22px;font-size:18px;line-height:1.6;color:var(--mut);max-width:62ch}
+.hero .sub strong{color:var(--ink);font-weight:600}
+.meta-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.mchip{display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--line2);background:var(--card);border-radius:999px;padding:7px 15px;font-size:13px;color:var(--mut)}
+.mchip b{font-family:var(--f-d);font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+/* ================= SECTIONS ================= */
+section{padding:64px 0;border-top:1px solid var(--line)}
+.sec-head{max-width:820px;margin-bottom:36px}
+.sec-head h2{font-size:clamp(26px,3vw,36px);font-weight:700;letter-spacing:-.015em;margin:10px 0 14px}
+.sec-head .lede{color:var(--mut);font-size:16.5px}
+.sec-head .lede strong{color:var(--ink);font-weight:600}
+h3.block{font-size:19px;font-weight:700;letter-spacing:-.01em;margin:44px 0 6px}
+p.blocknote{color:var(--mut);font-size:14.5px;max-width:78ch;margin-bottom:18px}
+p.blocknote strong{color:var(--ink)}
+/* cards & grids */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:960px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr}.wrap{padding:0 18px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+/* stat tiles */
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.stat .v{font-family:var(--f-d);font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:13px;font-weight:600;color:var(--mut);margin-top:8px;line-height:1.4}
+.stat.bad .v{color:var(--bad)} .stat.warn .v{color:var(--warn)} .stat.good .v{color:var(--good)} .stat.acc .v{color:var(--acc)}
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tblwrap{overflow-x:auto;border-radius:14px;box-shadow:var(--sh)}
+.tbl th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line2);background:color-mix(in srgb, var(--card) 60%, var(--paper))}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td .sub{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.tbl .mono{font-size:12px;color:var(--mut)}
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.chip.gen0{background:var(--bad-soft);color:var(--bad)}
+.chip.gen1{background:var(--warn-soft);color:var(--warn)}
+.chip.gen15{background:var(--info-soft);color:var(--info)}
+.chip.gen2{background:var(--good-soft);color:var(--good)}
+.chip.v-rebuild{background:var(--bad-soft);color:var(--bad)}
+.chip.v-merge{background:var(--acc-soft);color:var(--acc)}
+.chip.v-keep{background:var(--good-soft);color:var(--good)}
+.chip.v-move{background:var(--info-soft);color:var(--info)}
+.chip.v-retire{background:var(--warn-soft);color:var(--warn)}
+.chip.neutral{background:var(--acc-soft);color:var(--acc)}
+/* swatch matrix */
+.swrow{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.swrow:last-child{border-bottom:none}
+.swname{flex:0 0 190px;font-size:13px;font-weight:600}
+.swname .sub{display:block;font-size:11px;color:var(--faint);font-weight:500}
+.swchips{display:flex;flex-wrap:wrap;gap:6px}
+.sw{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:7px;padding:3px 8px 3px 4px;font:10.5px var(--f-m);color:var(--mut);background:var(--card)}
+.sw i{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+.sw.ok{border-color:var(--good);}
+.swtag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:auto;flex:none}
+.swtag.drift{background:var(--bad-soft);color:var(--bad)}
+.swtag.ok{background:var(--good-soft);color:var(--good)}
+.swtag.part{background:var(--warn-soft);color:var(--warn)}
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);font:12.5px/1.7 var(--f-m);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:0}
+pre.code .cm{color:#8D85B8}
+pre.code .hl{color:#F5A3C0}
+.callout{border:1px solid var(--line2);border-left:3px solid var(--acc);background:var(--card);border-radius:0 14px 14px 0;padding:16px 20px;font-size:14px;color:var(--mut)}
+.callout b{color:var(--ink)}
+/* icon helper */
+.ic{width:16px;height:16px;flex:none}
+/* ============ MOCKUP KIT (fixed light — depicts the product) ============ */
+.shot{margin:26px 0 10px;border-radius:16px;border:1px solid var(--line2);box-shadow:var(--sh);overflow:hidden;background:#fff}
+.shot-bar{display:flex;align-items:center;gap:8px;background:#ECEAF4;padding:9px 14px;border-bottom:1px solid #DDD9EC}
+.shot-bar .d{width:10px;height:10px;border-radius:50%}
+.shot-bar .url{margin-left:10px;background:#fff;border:1px solid #DDD9EC;border-radius:7px;font:11px var(--f-m);color:#8B86A5;padding:4px 12px}
+.shot-scroll{overflow-x:auto}
+.shot-cap{display:block;font-size:13px;color:var(--mut);margin:12px 2px 0}
+.shot-cap b{color:var(--ink);font-family:var(--f-d)}
+/* mockup internals: fixed light values, deliberately theme-independent */
+.mk{display:flex;min-width:1170px;background:#F5F6FA;color:#1B1733;font:12.5px/1.5 var(--f-b);text-align:left}
+.mk *{box-sizing:border-box}
+.mk .rail{flex:0 0 188px;background:#141A2E;color:#B9BFD4;padding:14px 10px;display:flex;flex-direction:column;gap:2px;min-height:560px}
+.mk .rail .logo{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:13px;padding:4px 8px 14px}
+.mk .rail .logo i{width:20px;height:20px;border-radius:6px;background:#5A4BB0;display:inline-flex;align-items:center;justify-content:center}
+.mk .rail .logo i svg{width:12px;height:12px;color:#fff}
+.mk .rail .sect{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:#5E6680;padding:12px 8px 5px}
+.mk .rail a{display:flex;align-items:center;gap:9px;color:#B9BFD4;padding:7px 9px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none}
+.mk .rail a svg{width:14px;height:14px;opacity:.85}
+.mk .rail a.on{background:#5A4BB0;color:#fff}
+.mk .rail a .n{margin-left:auto;background:rgba(255,255,255,.14);border-radius:999px;font-size:10px;padding:1px 7px;font-variant-numeric:tabular-nums}
+.mk .rail a.on .n{background:rgba(255,255,255,.25)}
+.mk .rail .foot{margin-top:auto;border-top:1px solid #232B44;padding-top:8px}
+.mk .main{flex:1;min-width:0;display:flex;flex-direction:column}
+.mk .pghead{padding:16px 22px 0}
+.mk .pgrow{display:flex;align-items:center;gap:14px}
+.mk h1.pg{font-size:19px;font-weight:700;letter-spacing:-.01em;margin:0}
+.mk .ctx{display:flex;align-items:center;gap:8px;margin-left:auto}
+:is(.mk,.mkb) .ctxi{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E2E8F0;border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:600;color:#3A3554}
+:is(.mk,.mkb) .ctxi svg{width:12px;height:12px;color:#64748B}
+:is(.mk,.mkb) .ctxi.pinned{border-color:#CBC2EE;background:#EDEAF8;color:#5A4BB0}
+:is(.mk,.mkb) .btn{display:inline-flex;align-items:center;gap:7px;border-radius:9px;padding:7px 13px;font-size:11.5px;font-weight:700;border:1px solid transparent;cursor:default}
+:is(.mk,.mkb) .btn svg{width:12px;height:12px}
+:is(.mk,.mkb) .btn.pri{background:#5A4BB0;color:#fff}
+:is(.mk,.mkb) .btn.out{background:#fff;color:#5A4BB0;border-color:#CBC2EE}
+:is(.mk,.mkb) .btn.ghost{background:#EDEAF8;color:#5A4BB0}
+.mk .lens{display:flex;gap:4px;margin-top:14px;border-bottom:1px solid #E2E8F0;padding:0 0}
+.mk .lens a{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;font-size:12px;font-weight:700;color:#64748B;border-bottom:2px solid transparent;text-decoration:none}
+.mk .lens a svg{width:13px;height:13px}
+.mk .lens a.on{color:#5A4BB0;border-bottom-color:#5A4BB0}
+.mk .lens a .n{background:#FCE7EF;color:#DC2668;border-radius:999px;font-size:10px;font-weight:700;padding:1px 7px}
+.mk .body{padding:16px 22px 22px;display:flex;gap:14px;align-items:flex-start}
+.mk .col{min-width:0;flex:1}
+.mk .kcard{background:#fff;border:1px solid #E2E8F0;border-radius:12px}
+:is(.mk,.mkb) .avatar{width:26px;height:26px;border-radius:50%;background:#DCD6F2;color:#5A4BB0;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none}
+:is(.mk,.mkb) .avatar.g{background:#E3F2E9;color:#2E7D4F}:is(.mk,.mkb) .avatar.b{background:#E5EDFD;color:#2563EB}:is(.mk,.mkb) .avatar.a{background:#FEF3C7;color:#B45309}:is(.mk,.mkb) .avatar.r{background:#FCE7EF;color:#DC2668}
+:is(.mk,.mkb) .pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;border-radius:999px;padding:2px 8px}
+:is(.mk,.mkb) .pill.ind{background:#EDEAF8;color:#5A4BB0}:is(.mk,.mkb) .pill.grn{background:#E3F2E9;color:#2E7D4F}:is(.mk,.mkb) .pill.amb{background:#FEF3C7;color:#B45309}:is(.mk,.mkb) .pill.ros{background:#FCE7EF;color:#DC2668}:is(.mk,.mkb) .pill.blu{background:#E5EDFD;color:#2563EB}:is(.mk,.mkb) .pill.gry{background:#EEF1F5;color:#64748B}
+:is(.mk,.mkb) .num{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="i-chevl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-chevr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-chevd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+<symbol id="i-cmd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+<symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol>
+<symbol id="i-umb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12a10 10 0 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/></symbol>
+<symbol id="i-act" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+</defs></svg>
+
+<nav class="topnav"><div class="wrap">
+  <span class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 17V7l8 10V7"/><path d="M17 17v-6a3 3 0 0 1 3 3"/></svg></span>Workforce · Design Dossier</span>
+  <div class="navlinks">
+    <a href="#audit">Audit</a><a href="#gaps">Gaps</a><a href="#field">Field notes</a>
+    <a href="#option-a">Option A</a><a href="#option-b">Option B</a><a href="#option-c">Option C</a>
+    <a href="#verdict">Verdict</a>
+  </div>
+  <button class="tbtn" id="themeToggle" aria-label="Toggle theme"><svg class="ic"><use href="#i-moon"/></svg></button>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Payobook · Workforce study · Aug 2026</span>
+  <h1>Workforce, made one&nbsp;product.</h1>
+  <p class="sub">A file-by-file audit of all <strong>14 Workforce screens</strong>, a field study of <strong>Deputy, Zoho, Rippling, Connecteam, When&nbsp;I&nbsp;Work and Homebase</strong> — and three design directions, each mocked up below, with a clear recommendation. The finding in one line: <strong>you don't have a Workforce product — you have fourteen products that share a sidebar.</strong></p>
+  <div class="meta-chips">
+    <span class="mchip"><b>14</b> screens traced to code</span>
+    <span class="mchip"><b>9</b> modules · 3 UI generations</span>
+    <span class="mchip"><b>6</b> competitors studied</span>
+    <span class="mchip"><b>8</b> structural gaps</span>
+    <span class="mchip"><b>3</b> design options</span>
+    <span class="mchip"><b>1</b> recommendation</span>
+  </div>
+</div></header>
+
+<!-- ================================================================ AUDIT -->
+<section id="audit"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Part 1 · Deep study of what exists</span>
+    <h2>Three generations of UI are wearing the same sidebar</h2>
+    <p class="lede">Every one of the 14 submenus was traced from its sidebar record to the exact view, component and stylesheet that renders it. The section splits cleanly into <strong>three generations built years apart in product-time</strong> — and the seam runs exactly along module lines.</p>
+  </div>
+
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Generation</th><th>Screens</th><th>How it's built</th><th>Tell-tale signs</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="chip gen0">Gen 0 · dashboard-in-a-form</span></td>
+        <td><b>Workforce Dashboard</b></td>
+        <td>A TransientModel <em>form view</em> with raw <span class="mono">&lt;canvas&gt;</span> tags; a script polls the DOM and injects Chart.js</td>
+        <td>3-stop gradient hero, Material-2015 palette hard-coded in JS, FontAwesome, <span class="mono">!important</span> overrides</td>
+      </tr>
+      <tr>
+        <td><span class="chip gen1">Gen 1 · inline-template OWL</span></td>
+        <td><b>Live Attendance · Timecards · Shift Roster · Overtime Rules · Payroll Report</b></td>
+        <td>OWL components with ~200-line templates embedded as strings inside the JS; plain <span class="mono">.css</span></td>
+        <td>Flat-UI 2013 colors, 25+ <span class="mono">linear-gradient</span> fills, 91 FontAwesome icons, a literal ⚠️ emoji, zero design tokens</td>
+      </tr>
+      <tr>
+        <td><span class="chip gen15">Gen 1.5 · bare native</span></td>
+        <td><b>Shift Templates</b></td>
+        <td>Stock Odoo kanban/list/form — no JS, no CSS, not even a search view</td>
+        <td>No filters, no group-by, no link to the roster that consumes it</td>
+      </tr>
+      <tr>
+        <td><span class="chip gen2">Gen 2 · token cockpits</span></td>
+        <td><b>My Team · Attendance Control · Leave · Weekly Entry · Business Trips · Overtime Desk · Driver Tracking</b></td>
+        <td>Bespoke OWL cockpits on the shared <span class="mono">--pbim-*</span> token kit, external templates, Lucide icons</td>
+        <td>Good bones — but each one picked its own accent, and none of them link to each other</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="block">Exhibit A — the accent chaos, measured</h3>
+  <p class="blocknote">These are the <strong>actual hex values</strong> read out of each screen's stylesheet. One product should have one primary and a small semantic set. Workforce currently ships <strong>~12 distinct visual identities</strong>: five different "danger" reds, five different "success" greens, four different page-background whites and four different text inks — plus a violet breadcrumb strip that clashes with every screen it sits on.</p>
+  <div class="card" style="padding:22px 24px">
+    <div class="swrow"><span class="swname">Workforce Dashboard<span class="sub">pb_hr_workforce · Gen 0</span></span><span class="swchips"><span class="sw"><i style="background:#0f4c75"></i>#0f4c75</span><span class="sw"><i style="background:#1b6ca8"></i>#1b6ca8</span><span class="sw"><i style="background:#3282b8"></i>#3282b8</span><span class="sw"><i style="background:#2e7d32"></i>#2e7d32</span><span class="sw"><i style="background:#e65100"></i>#e65100</span><span class="sw"><i style="background:#c62828"></i>#c62828</span></span><span class="swtag drift">gradient hero</span></div>
+    <div class="swrow"><span class="swname">Live Attendance<span class="sub">pb_hr_workforce · Gen 1</span></span><span class="swchips"><span class="sw"><i style="background:#3282b8"></i>#3282b8</span><span class="sw"><i style="background:#2ecc71"></i>#2ecc71</span><span class="sw"><i style="background:#3498db"></i>#3498db</span><span class="sw"><i style="background:#f39c12"></i>#f39c12</span><span class="sw"><i style="background:#9b59b6"></i>#9b59b6</span><span class="sw"><i style="background:#e74c3c"></i>#e74c3c</span></span><span class="swtag drift">4 gradient headers</span></div>
+    <div class="swrow"><span class="swname">Timecards<span class="sub">pb_hr_workforce · Gen 1</span></span><span class="swchips"><span class="sw"><i style="background:#e67e22"></i>#e67e22</span><span class="sw"><i style="background:#fde68a"></i>#fde68a</span><span class="sw"><i style="background:#fca5a5"></i>#fca5a5</span><span class="sw"><i style="background:#c084fc"></i>#c084fc</span><span class="sw"><i style="background:#fdba74"></i>#fdba74</span><span class="sw"><i style="background:#475569"></i>#475569</span></span><span class="swtag drift">13 gradient fills</span></div>
+    <div class="swrow"><span class="swname">Shift Roster<span class="sub">pb_hr_workforce · Gen 1</span></span><span class="swchips"><span class="sw"><i style="background:#3282b8"></i>#3282b8</span><span class="sw"><i style="background:#e74c3c"></i>#e74c3c</span><span class="sw"><i style="background:#2ecc71"></i>#2ecc71</span><span class="sw"><i style="background:#9b59b6"></i>#9b59b6</span><span class="sw"><i style="background:#f39c12"></i>#f39c12</span><span class="sw"><i style="background:#1abc9c"></i>#1abc9c</span></span><span class="swtag drift">11-color palette + emoji</span></div>
+    <div class="swrow"><span class="swname">Overtime Rules<span class="sub">pb_hr_workforce · Gen 1</span></span><span class="swchips"><span class="sw"><i style="background:#7c3aed"></i>#7c3aed</span><span class="sw"><i style="background:#6d28d9"></i>#6d28d9</span><span class="sw"><i style="background:#1e1b4b"></i>#1e1b4b</span><span class="sw"><i style="background:#312e81"></i>#312e81</span><span class="sw"><i style="background:#4f46e5"></i>#4f46e5</span></span><span class="swtag drift">12 gradients, dark modal</span></div>
+    <div class="swrow"><span class="swname">Payroll Report<span class="sub">pb_hr_workforce · Gen 1</span></span><span class="swchips"><span class="sw"><i style="background:#5C619D"></i>#5C619D</span><span class="sw"><i style="background:#059669"></i>#059669</span><span class="sw"><i style="background:#E11D48"></i>#E11D48</span><span class="sw"><i style="background:#B45309"></i>#B45309</span></span><span class="swtag drift">4th legacy palette</span></div>
+    <div class="swrow"><span class="swname">Shift Templates<span class="sub">pb_hr_workforce · Gen 1.5</span></span><span class="swchips"><span class="sw"><i style="background:#E2E8F0"></i>stock Odoo, unstyled</span></span><span class="swtag part">no identity at all</span></div>
+    <div class="swrow"><span class="swname">My Team<span class="sub">pb_team · Gen 2</span></span><span class="swchips"><span class="sw ok"><i style="background:#5A4BB0"></i>#5A4BB0</span><span class="sw"><i style="background:#dc2626"></i>#dc2626</span><span class="sw"><i style="background:#7c3aed"></i>#7c3aed</span><span class="sw"><i style="background:#2563eb"></i>#2563eb</span><span class="sw"><i style="background:#16a34a"></i>#16a34a</span></span><span class="swtag part">3 of 4 tints drift</span></div>
+    <div class="swrow"><span class="swname">Attendance Control<span class="sub">pb_attendance_flow · Gen 2</span></span><span class="swchips"><span class="sw ok"><i style="background:#5A4BB0"></i>#5A4BB0</span><span class="sw ok"><i style="background:#2E7D4F"></i>#2E7D4F</span><span class="sw ok"><i style="background:#D97706"></i>#D97706</span><span class="sw ok"><i style="background:#DC2668"></i>#DC2668</span></span><span class="swtag ok">on-token · the model</span></div>
+    <div class="swrow"><span class="swname">Leave<span class="sub">pb_timeoff · Gen 2</span></span><span class="swchips"><span class="sw"><i style="background:#059669"></i>#059669</span><span class="sw"><i style="background:#047857"></i>#047857</span><span class="sw"><i style="background:#D1FAE5"></i>#D1FAE5</span></span><span class="swtag drift">invented its own green</span></div>
+    <div class="swrow"><span class="swname">Weekly Entry<span class="sub">pb_hr_workforce + biz_week_grid · Gen 2</span></span><span class="swchips"><span class="sw ok"><i style="background:#5A4BB0"></i>#5A4BB0</span><span class="sw"><i style="background:#4f46e5"></i>#4f46e5 un-hosted</span></span><span class="swtag ok">on-token (hosted)</span></div>
+    <div class="swrow"><span class="swname">Business Trips<span class="sub">pb_business_trip · Gen 2</span></span><span class="swchips"><span class="sw"><i style="background:#7c3aed"></i>#7c3aed</span><span class="sw"><i style="background:#ede9fe"></i>#ede9fe</span><span class="sw"><i style="background:#e11d48"></i>#e11d48</span><span class="sw"><i style="background:#1e293b"></i>#1e293b</span></span><span class="swtag drift">5 values off-token</span></div>
+    <div class="swrow"><span class="swname">Overtime Desk<span class="sub">pb_hr_workforce · Gen 2</span></span><span class="swchips"><span class="sw ok"><i style="background:#D97706"></i>#D97706</span><span class="sw ok"><i style="background:#B45309"></i>#B45309</span><span class="sw ok"><i style="background:#FEF3C7"></i>#FEF3C7</span></span><span class="swtag ok">promotes a real semantic</span></div>
+    <div class="swrow"><span class="swname">Driver Tracking<span class="sub">pb_driver_checkin · Gen 2</span></span><span class="swchips"><span class="sw"><i style="background:#0b1f3a"></i>#0b1f3a ×3 copies</span><span class="sw ok"><i style="background:#2E7D4F"></i>#2E7D4F</span><span class="sw ok"><i style="background:#D97706"></i>#D97706</span></span><span class="swtag part">navy invented, rest ok</span></div>
+    <div class="swrow"><span class="swname">Breadcrumb strip<span class="sub">shared by all 5 Gen-1 screens</span></span><span class="swchips"><span class="sw"><i style="background:#7c3aed"></i>#7c3aed</span><span class="sw"><i style="background:#6d28d9"></i>#6d28d9</span><span class="sw"><i style="background:#a78bfa"></i>#a78bfa</span></span><span class="swtag drift">violet, on every host</span></div>
+  </div>
+
+  <div class="grid g4" style="margin-top:26px">
+    <div class="stat bad"><div class="v num">5</div><div class="l">different "danger red" hexes across the section</div></div>
+    <div class="stat bad"><div class="v num">5</div><div class="l">different "success green" hexes</div></div>
+    <div class="stat warn"><div class="v num">4</div><div class="l">page backgrounds &amp; 4 text inks, each 1–2 points apart — invisible drift</div></div>
+    <div class="stat warn"><div class="v num">25+</div><div class="l">gradient fills on legacy screens (design system says zero)</div></div>
+  </div>
+
+  <h3 class="block">Exhibit B — the same data, sold six times</h3>
+  <p class="blocknote">Cohesion isn't just visual. The section repeatedly rebuilds the same information with no awareness of its siblings — the classic symptom of screens accreted one at a time.</p>
+  <div class="grid g3">
+    <div class="card"><span class="chip v-rebuild">6 screens</span>
+      <h4 style="margin:10px 0 6px;font-size:15px">…all render <span class="mono">hr.attendance</span></h4>
+      <p style="font-size:13.5px;color:var(--mut);margin:0">Live Attendance, Timecards, Weekly Entry, Attendance Control, Workforce Dashboard and Driver Tracking each built a private read-model over the same punches — six queries, six layouts, zero links between them.</p></div>
+    <div class="card"><span class="chip v-rebuild">5 inboxes</span>
+      <h4 style="margin:10px 0 6px;font-size:15px">…for one approval job</h4>
+      <p style="font-size:13.5px;color:var(--mut);margin:0">My Team is a unified queue over OT + trips + corrections + leave. Yet Overtime Desk, Business Trips, Attendance Control and Leave each ship their own queue for their own slice. Same records, five places to check.</p></div>
+    <div class="card"><span class="chip v-rebuild">3 editors</span>
+      <h4 style="margin:10px 0 6px;font-size:15px">…for one config model</h4>
+      <p style="font-size:13.5px;color:var(--mut);margin:0">"Overtime Rules" is a 1,084-line bespoke dashboard editing <span class="mono">hr.overtime.config</span>. Overtime Desk renders the same records as a card gallery, opening the native form — a third UI. One model, three faces.</p></div>
+  </div>
+
+  <h3 class="block">Exhibit C — navigation is a set of dead ends</h3>
+  <p class="blocknote">Moving between related screens — the exact pain you named — is unsupported by design. <strong>7 of 14 screens have no outbound navigation at all.</strong> The five legacy screens share a two-segment breadcrumb whose two links are <strong>byte-identical</strong> — both go to the same dashboard:</p>
+  <pre class="code"><span class="cm">// attendance_live.js:309 — repeated verbatim in timecards, roster, OT rules, payroll report</span>
+goHome()          { this.actionService.doAction(<span class="hl">'pb_dashboard.action_pb_dashboard'</span>); }
+goFlowDashboard() { this.actionService.doAction(<span class="hl">'pb_dashboard.action_pb_dashboard'</span>); }  <span class="cm">// ← same target</span></pre>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card">
+      <h4 style="font-size:14px;margin:0 0 10px;color:var(--bad)">Edges that should exist and don't</h4>
+      <ul style="margin:0;padding-left:18px;font-size:13.5px;color:var(--mut);line-height:1.9">
+        <li>Live Attendance's "Late / Not started" cards <b style="color:var(--ink)">are</b> Attendance Control's exception queue — no link</li>
+        <li>Shift Roster ⇄ Timecards (planned vs actual) — no link either way</li>
+        <li>Weekly Entry submits OT that Overtime Desk approves — no link</li>
+        <li>My Team aggregates four cockpits — links to none of them</li>
+        <li>Roster's quick-create picks Shift Templates — no link to manage them</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px;margin:0 0 10px;color:var(--bad)">Context is thrown away at every hop</h4>
+      <p style="font-size:13.5px;color:var(--mut);margin:0 0 8px">Each screen keeps its own department filter, its own week picker, its own search. Move from Roster to Timecards and you re-select the same department and the same week — every time.</p>
+      <p style="font-size:13.5px;color:var(--mut);margin:0">Deep links that do exist escape to <b style="color:var(--ink)">raw native forms</b> with no way back, and Payroll Report — a payslip screen — sits in Workforce next to attendance boards.</p>
+    </div>
+  </div>
+
+  <h3 class="block">Disposition — what we found, screen by screen</h3>
+  <div class="tblwrap"><table class="tbl">
+    <thead><tr><th>Menu item</th><th>Module</th><th>Generation</th><th>Condition found</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td><b>My Team</b></td><td class="mono">pb_team</td><td><span class="chip gen2">Gen 2</span></td><td>Strong unified approval queue; dead end (zero outbound links); 3 of 4 source tints off-token</td><td><span class="chip v-keep">Keep · becomes the Approvals core</span></td></tr>
+      <tr><td><b>Workforce Dashboard</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen0">Gen 0</span></td><td>Chart.js-in-a-form, gradient hero, links into retired actions</td><td><span class="chip v-retire">Retire · absorbed by Today</span></td></tr>
+      <tr><td><b>Live Attendance</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen1">Gen 1</span></td><td>Right idea, 2013 body; passive board with no drill-to-action</td><td><span class="chip v-rebuild">Rebuild · as the Today board</span></td></tr>
+      <tr><td><b>Attendance Control</b></td><td class="mono">pb_attendance_flow</td><td><span class="chip gen2">Gen 2</span></td><td>The best screen in the section — token-faithful, real flows, in-app back</td><td><span class="chip v-merge">Merge · the Exceptions lens of Time</span></td></tr>
+      <tr><td><b>Timecards</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen1">Gen 1</span></td><td>Gantt bars under 13 gradients and an orange identity; view-only</td><td><span class="chip v-rebuild">Rebuild · the Timeline lens of Time</span></td></tr>
+      <tr><td><b>Leave</b></td><td class="mono">pb_timeoff</td><td><span class="chip gen2">Gen 2</span></td><td>Good cockpit; invented its own emerald identity</td><td><span class="chip v-keep">Keep · re-tint to system</span></td></tr>
+      <tr><td><b>Weekly Entry</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen2">Gen 2</span></td><td>Cleanest composition (generic WeekGrid, zero new colors)</td><td><span class="chip v-merge">Merge · the Grid lens of Time</span></td></tr>
+      <tr><td><b>Business Trips</b></td><td class="mono">pb_business_trip</td><td><span class="chip gen2">Gen 2</span></td><td>Solid kanban + dialog pattern; violet identity, FA icons in composer, 2 invalid CSS declarations</td><td><span class="chip v-keep">Keep · re-tint, queue joins Approvals</span></td></tr>
+      <tr><td><b>Overtime Desk</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen2">Gen 2</span></td><td>Best accent discipline (promotes the amber semantic); already contains a config gallery</td><td><span class="chip v-keep">Keep · absorbs Overtime Rules</span></td></tr>
+      <tr><td><b>Shift Roster</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen1">Gen 1</span></td><td>Deputy-inspired <em>features</em> (open shifts, leave overlay, conflicts, copy week) grafted onto 2013 chrome, 11-color palette, an emoji, inline styles</td><td><span class="chip v-rebuild">Reskin + instrument · Schedule</span></td></tr>
+      <tr><td><b>Shift Templates</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen15">Gen 1.5</span></td><td>Bare native views; no search view; reachable from 3 different menus</td><td><span class="chip v-merge">Fold · a drawer inside Schedule</span></td></tr>
+      <tr><td><b>Overtime Rules</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen1">Gen 1</span></td><td>12 gradients, near-black modal, raw RPC URL strings; duplicates OT Desk's gallery</td><td><span class="chip v-retire">Retire · merged into Overtime Desk</span></td></tr>
+      <tr><td><b>Payroll Report</b></td><td class="mono">pb_hr_workforce</td><td><span class="chip gen1">Gen 1</span></td><td>A payslip-run comparison screen; 4th legacy palette; can't even open a payslip</td><td><span class="chip v-move">Relocate · to the Pay Run section</span></td></tr>
+      <tr><td><b>Driver Tracking</b></td><td class="mono">pb_driver_checkin</td><td><span class="chip gen2">Gen 2</span></td><td>Good map cockpit; navy accent invented in 3 copies; dead end</td><td><span class="chip v-merge">Fold · the Map lens of Today</span></td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+<style>
+/* part-2 components */
+.gapcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.gapcard .gnum{font:700 11px var(--f-m);color:var(--bad);letter-spacing:.08em}
+.gapcard h4{font-size:15.5px;margin:0;letter-spacing:-.01em}
+.gapcard .now,.gapcard .best{font-size:13px;line-height:1.6;padding:10px 12px;border-radius:10px}
+.gapcard .now{background:var(--bad-soft);color:var(--ink)}
+.gapcard .best{background:var(--good-soft);color:var(--ink)}
+.gapcard .lab{display:block;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.gapcard .now .lab{color:var(--bad)} .gapcard .best .lab{color:var(--good)}
+.prodcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.prodcard h4{font-size:15px;margin:0 0 2px}
+.prodcard .tag{font-size:11.5px;color:var(--faint);font-weight:600;margin-bottom:10px;display:block}
+.prodcard ul{margin:0;padding-left:16px;font-size:13px;color:var(--mut);line-height:1.7}
+.prodcard ul b{color:var(--ink)}
+.steal{margin-top:10px;font-size:12.5px;background:var(--acc-soft);color:var(--acc);border-radius:9px;padding:7px 11px;font-weight:600}
+.laws{counter-reset:law;display:grid;grid-template-columns:repeat(2,1fr);gap:2px 34px;margin-top:8px}
+@media (max-width:760px){.laws{grid-template-columns:1fr}}
+.law{counter-increment:law;display:flex;gap:14px;padding:13px 4px;border-bottom:1px dashed var(--line)}
+.law::before{content:counter(law,decimal-leading-zero);font:700 12px var(--f-m);color:var(--acc);padding-top:2px}
+.law div{font-size:13.5px;color:var(--mut);line-height:1.55}
+.law b{color:var(--ink)}
+/* option blocks */
+.opt-band{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.opt-badge{font:800 13px var(--f-d);letter-spacing:.06em;background:var(--acc);color:#fff;border-radius:10px;padding:8px 14px}
+:root[data-theme="dark"] .opt-badge{color:#131022}
+.opt-name{font-size:clamp(24px,2.6vw,32px);font-weight:700;letter-spacing:-.015em}
+.opt-thesis{font-size:15px;color:var(--mut);max-width:74ch;margin-bottom:8px}
+.opt-thesis b{color:var(--ink)}
+.vergrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px}
+@media (max-width:900px){.vergrid{grid-template-columns:1fr}}
+.vercard{border-radius:14px;padding:16px 18px;border:1px solid var(--line);background:var(--card)}
+.vercard h5{margin:0 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.vercard.pro h5{color:var(--good)} .vercard.con h5{color:var(--bad)} .vercard.eff h5{color:var(--info)}
+.vercard ul{margin:0;padding-left:16px;font-size:13px;color:var(--mut);line-height:1.7}
+.vercard b{color:var(--ink)}
+/* IA before/after */
+.ia{display:grid;grid-template-columns:1fr 44px 1.35fr;gap:16px;align-items:start;margin:18px 0 6px}
+@media (max-width:860px){.ia{grid-template-columns:1fr}.ia .iarr{display:none}}
+.ia .iacol h5{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 10px}
+.ia .old{display:flex;flex-wrap:wrap;gap:6px}
+.ia .old span{font-size:12px;font-weight:600;border:1px solid var(--line2);background:var(--card);border-radius:8px;padding:4px 10px;color:var(--mut)}
+.ia .old span.g0{border-left:3px solid var(--bad)}
+.ia .old span.g1{border-left:3px solid var(--warn)}
+.ia .old span.g2{border-left:3px solid var(--good)}
+.ia .iarr{display:flex;align-items:center;justify-content:center;color:var(--acc);padding-top:40px}
+.hub{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;align-items:flex-start}
+.hub .hic{width:30px;height:30px;border-radius:9px;background:var(--acc-soft);color:var(--acc);display:inline-flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.hub .hic svg{width:15px;height:15px}
+.hub h6{margin:0;font-size:14px;font-family:var(--f-d)}
+.hub p{margin:2px 0 0;font-size:12px;color:var(--faint);line-height:1.5}
+.hub p b{color:var(--mut);font-weight:600}
+/* anatomy skeleton */
+.anat{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:var(--card);font-size:12px}
+.anat .zone{position:relative;border-bottom:1px dashed var(--line2);padding:12px 16px 12px 52px;color:var(--mut)}
+.anat .zone:last-child{border-bottom:none}
+.anat .zone b{color:var(--ink)}
+.anat .zn{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font:700 11px var(--f-d);display:flex;align-items:center;justify-content:center}
+:root[data-theme="dark"] .anat .zn{color:#131022}
+/* mockup A specifics — the Time grid */
+.mkt{width:100%;border-collapse:collapse;font-size:11.5px}
+.mkt th{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#94A3B8;text-align:left;padding:8px 10px;border-bottom:1px solid #E2E8F0;background:#FAFBFE;font-weight:800;white-space:nowrap}
+.mkt th.we,.mkt td.we{background:#F6F7FB}
+.mkt td{padding:7px 10px;border-bottom:1px solid #EEF1F6;white-space:nowrap;vertical-align:middle}
+.mkt tr:last-child td{border-bottom:none}
+:is(.mkt,.cwt) .emp{display:flex;align-items:center;gap:8px;font-weight:700;font-size:11.5px}
+:is(.mkt,.cwt) .emp .sub{display:block;font-weight:500;font-size:10px;color:#94A3B8}
+.mkt .cell{display:inline-block;min-width:40px;text-align:center;border:1px solid transparent;border-radius:7px;padding:3px 6px;font-variant-numeric:tabular-nums;color:#1B1733}
+.mkt .cell.ed{border-color:#5A4BB0;box-shadow:0 0 0 3px #EDEAF8;background:#fff;font-weight:700}
+.mkt .cell.miss{background:#FCE7EF;color:#DC2668;font-weight:700}
+.mkt .cell.zero{color:#C2C8D6}
+.mkt .tot{font-weight:800;font-variant-numeric:tabular-nums}
+.mkt tfoot td{background:#FAFBFE;font-weight:800;border-top:1px solid #E2E8F0;font-variant-numeric:tabular-nums}
+.ribbon{display:flex;align-items:center;gap:10px;background:#FEF3C7;border:1px solid #F5DFA0;color:#7C4A08;border-radius:10px;padding:9px 14px;font-size:11.5px;font-weight:600;margin:14px 0 0}
+.ribbon svg{width:14px;height:14px;color:#B45309;flex:none}
+.ribbon a{margin-left:auto;color:#B45309;font-weight:800;text-decoration:none;white-space:nowrap}
+.drawer{flex:0 0 300px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px;box-shadow:0 12px 28px rgba(16,12,40,.10)}
+.drawer .dh{display:flex;gap:10px;align-items:center;padding-bottom:12px;border-bottom:1px solid #EEF1F6}
+.drawer .dh .avatar{width:34px;height:34px;font-size:12px}
+.drawer .dh b{font-size:13px;display:block}
+.drawer .dh .sub{font-size:10.5px;color:#94A3B8}
+.drawer .wksum{display:flex;gap:6px;margin:12px 0}
+.drawer .wksum span{flex:1;background:#F6F7FB;border-radius:8px;padding:7px 6px;text-align:center;font-size:10px;color:#64748B;font-weight:600}
+.drawer .wksum b{display:block;font-size:14px;color:#1B1733;font-variant-numeric:tabular-nums;font-weight:800}
+.dt{width:100%;border-collapse:collapse;font-size:11px}
+.dt th{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;text-align:right;padding:5px 6px;border-bottom:1px solid #EEF1F6;font-weight:800}
+.dt th:first-child{text-align:left}
+.dt td{padding:5px 6px;border-bottom:1px solid #F3F5F9;text-align:right;font-variant-numeric:tabular-nums;color:#3A3554}
+.dt td:first-child{text-align:left;font-weight:700;color:#1B1733}
+.dt tr:last-child td{border-bottom:none}
+.dt .neg{color:#DC2668;font-weight:700}.dt .pos{color:#2E7D4F;font-weight:700}
+.dt td .din{display:inline-block;min-width:34px;border:1px solid #E2E8F0;border-radius:6px;padding:1px 5px;background:#fff;text-align:center}
+.dt td .din.ed{border-color:#5A4BB0;box-shadow:0 0 0 2px #EDEAF8;font-weight:700}
+</style>
+
+<!-- ================================================================ GAPS -->
+<section id="gaps"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Part 2 · Gap analysis</span>
+    <h2>Eight gaps between this section and the best in class</h2>
+    <p class="lede">Each gap pairs what the code audit found with what Deputy, Zoho, Rippling, Connecteam, When&nbsp;I&nbsp;Work or Homebase actually ship. These eight are the design brief — every option in Part&nbsp;4 is scored against them.</p>
+  </div>
+  <div class="grid g2">
+    <div class="gapcard"><span class="gnum">GAP 01 · INFORMATION ARCHITECTURE</span><h4>Fourteen flat menu items, zero hierarchy of importance</h4>
+      <div class="now"><span class="lab">Payobook today</span>14 sidebar entries at equal weight — config screens (Shift Templates, Overtime Rules) sit beside daily surfaces (Live Attendance), and a payslip report hides among them.</div>
+      <div class="best"><span class="lab">Best in class</span>Deputy runs an entire WFM product on ~6 top items. Connecteam ships 3 hubs. Zoho People 5.0 scopes everything by audience: My&nbsp;Space / Team / Organization. Config never competes with daily work.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 02 · COHESION</span><h4>No shared page anatomy — every screen re-invents the page</h4>
+      <div class="now"><span class="lab">Payobook today</span>Three UI generations, ~12 accent identities, 5 reds, 5 greens, 4 background whites. A user crossing two menus changes visual worlds.</div>
+      <div class="best"><span class="lab">Best in class</span>Zoho hosts ~15 services in one repeating service-tab anatomy. Rippling reads as one product across 20+ "apps": one brand color, strict semantic status palette, same header/filter/grid skeleton everywhere.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 03 · CONTEXT</span><h4>Department, week and person are re-chosen on every screen</h4>
+      <div class="now"><span class="lab">Payobook today</span>Every screen owns a private department filter and week picker; nothing follows you. 7 of 14 screens have no outbound navigation at all.</div>
+      <div class="best"><span class="lab">Best in class</span>Deputy keeps location + date as persistent context shared by Schedule, Timesheets and People — switching surfaces keeps the same slice. Numeric tiles drill into pre-filtered lists rather than making you re-filter.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 04 · APPROVAL MODEL</span><h4>Five inboxes, no exception-first triage, no auto-approval</h4>
+      <div class="now"><span class="lab">Payobook today</span>OT, trips, corrections and leave each ship a separate queue; My Team aggregates them but links to nothing. Every entry is reviewed by hand.</div>
+      <div class="best"><span class="lab">Best in class</span>Deputy splits timesheets into "issues" vs "clean", auto-approves within a configurable variance of the schedule, and lets managers bulk-clear the clean set. Rippling filters to "only unapproved" and resolves from push notifications.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 05 · THE TODAY SURFACE</span><h4>Live Attendance shows; it doesn't triage</h4>
+      <div class="now"><span class="lab">Payobook today</span>A passive 4-column board. "Late" and "Not started" are displayed but not actionable — the correction flow lives two menus away with no link.</div>
+      <div class="best"><span class="lab">Best in class</span>Deputy's Today: on-shift / on-break / late / scheduled tiles that drill into filtered people lists. Connecteam adds a live map of punch locations. Homebase surfaces "who's late" by default on the manager dashboard.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 06 · SCHEDULING INSTRUMENTATION</span><h4>A roster without cost, coverage or compliance in the canvas</h4>
+      <div class="now"><span class="lab">Payobook today</span>The Deputy-inspired roster has open shifts, leave overlay and conflict icons — but no wage cost per day, no coverage lens, no ceiling/compliance warnings while building, and it never meets Timecards' actuals.</div>
+      <div class="best"><span class="lab">Best in class</span>Deputy docks budgeted-vs-scheduled-vs-actual wages above each day column and refuses invalid pastes. Rippling flags jurisdiction rule breaches as you build. When&nbsp;I&nbsp;Work overlays required-vs-scheduled coverage.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 07 · TIME ENTRY &amp; RECONCILIATION</span><h4>No single place to see or enter one person's week</h4>
+      <div class="now"><span class="lab">Payobook today</span>Timecards (view-only Gantt), Weekly Entry (bulk grid), and Attendance Control (exceptions) are three unlinked screens. There is no per-employee week view with table entry, no scheduled-vs-actual reconciliation, and no lock state before payroll.</div>
+      <div class="best"><span class="lab">Best in class</span>Zoho shows one attendance dataset through four switchable lenses including a per-day tabular view with inline regularization. Connecteam approves then <b>locks</b> days so payroll can't drift. Homebase runs a "daily review" ritual of scheduled vs actual.</div></div>
+    <div class="gapcard"><span class="gnum">GAP 08 · LIFECYCLE &amp; ACKNOWLEDGMENT</span><h4>Work states exist in the models but not in the experience</h4>
+      <div class="now"><span class="lab">Payobook today</span>Draft/published shift states exist, but there's no employee acknowledgment, no "all confirmed" signal, no close-the-week ritual, no sentiment loop.</div>
+      <div class="best"><span class="lab">Best in class</span>When&nbsp;I&nbsp;Work shows a green badge when an employee confirmed all shifts. Deputy sorts confirmation-required posts first and captures anonymous shift-end sentiment (Shift Pulse) — the cheapest wow in the category.</div></div>
+  </div>
+</div></section>
+
+<!-- ================================================================ FIELD NOTES -->
+<section id="field"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Part 3 · Field notes</span>
+    <h2>What the best products actually do</h2>
+    <p class="lede">Condensed from vendor documentation and hands-on reviews, 2024–2026. Full pattern-by-pattern notes fed the options; these are the signatures worth remembering.</p>
+  </div>
+  <div class="grid g3">
+    <div class="prodcard"><h4>Deputy</h4><span class="tag">The shift-work benchmark</span>
+      <ul><li><b>Exception-first timesheets:</b> "issues vs clean" split, tolerance-based auto-approval, one-click rounding, bulk approve</li>
+      <li><b>Stats panel in the scheduler:</b> budget vs scheduled vs actual wages per day column; hover any hour for required-vs-scheduled staff</li>
+      <li><b>Refuse-on-paste:</b> copying a shift re-validates leave, availability, fatigue and location before it lands</li>
+      <li><b>Leave approvals with context:</b> live projected balance + who else is off in the window, inside the dialog</li></ul>
+      <div class="steal">Steal: tolerance auto-approval + budget docked in the canvas</div></div>
+    <div class="prodcard"><h4>Zoho People / Shifts</h4><span class="tag">Many modules, one grammar</span>
+      <ul><li><b>Audience-scoped IA:</b> My Space / Team / Organization tabs organize ~15 services</li>
+      <li><b>One dataset, four lenses:</b> attendance as List / Calendar / Tabular / Overtime views on a single page</li>
+      <li><b>Regularization:</b> employees request punch fixes through an approval flow instead of managers editing raw data</li></ul>
+      <div class="steal">Steal: lens-switching over one dataset — never four pages</div></div>
+    <div class="prodcard"><h4>Connecteam</h4><span class="tag">Mobile-first, hub-based</span>
+      <ul><li><b>Three hubs</b> (Operations / Communications / HR) hold the entire product</li>
+      <li><b>Today view:</b> who's in, on which job, hours so far, plus a live map of punch locations</li>
+      <li><b>Approve-then-lock:</b> locked days can't drift before payroll; separate approve vs reopen permissions</li>
+      <li><b>Full admin from a phone</b> — approvals, schedules, reports</li></ul>
+      <div class="steal">Steal: the punch map + the day-lock state machine</div></div>
+    <div class="prodcard"><h4>Rippling</h4><span class="tag">The design-excellence reference</span>
+      <ul><li><b>Unified employee graph:</b> scheduling reads pay, certifications, leave and location natively — rules need no integration</li>
+      <li><b>Compliance while you build:</b> jurisdiction rest/break/OT warnings appear as the schedule is drafted, not after</li>
+      <li><b>Push triage:</b> missed punch / OT-risk notifications resolvable in one tap</li></ul>
+      <div class="steal">Steal: validation at the moment of action, never in a report</div></div>
+    <div class="prodcard"><h4>When I Work</h4><span class="tag">Scheduling ergonomics</span>
+      <ul><li><b>Coverage view:</b> required-vs-scheduled staffing as an overlay lens on the schedule</li>
+      <li><b>Shift confirmation:</b> employees ack shifts; manager sees a green all-confirmed badge per person</li>
+      <li><b>Labor budget bar</b> docked at the bottom of the scheduler with sales & labor-% targets</li></ul>
+      <div class="steal">Steal: read-receipts for schedules</div></div>
+    <div class="prodcard"><h4>Homebase</h4><span class="tag">Small-business polish</span>
+      <ul><li><b>Late by default:</b> the manager view leads with who's late, not who's fine</li>
+      <li><b>Daily review ritual:</b> a scheduled-vs-actual reconciliation screen after each day closes</li>
+      <li><b>Forecast-fed scheduling:</b> sales + weather feed labor-cost targets while building</li></ul>
+      <div class="steal">Steal: the end-of-day reconciliation moment</div></div>
+  </div>
+
+  <h3 class="block">Seven laws of cohesion these products obey</h3>
+  <p class="blocknote">Independent of features, this is why those products feel like one thing while Workforce feels like fourteen:</p>
+  <div class="laws">
+    <div class="law"><div><b>One brand color, strict semantic status palette.</b> Brand marks identity; red/amber/green mark state; nothing else carries color.</div></div>
+    <div class="law"><div><b>One page anatomy,</b> repeated: header → persistent context → lens switcher → exception ribbon → content. Users learn it once.</div></div>
+    <div class="law"><div><b>Context follows the user.</b> Department, week and person survive every navigation. Tiles drill into pre-filtered lists.</div></div>
+    <div class="law"><div><b>Lenses, not pages.</b> One dataset with switchable views beats four screens over the same table.</div></div>
+    <div class="law"><div><b>Exceptions first.</b> The default manager job is clearing a short flagged list, not scanning everything.</div></div>
+    <div class="law"><div><b>Validate in the canvas.</b> Warnings appear on the cell being edited, at the moment of action — never in a later report.</div></div>
+    <div class="law"><div><b>Every record is a door.</b> Any avatar, any shift, any number opens its detail in place — no dead ends, ever.</div></div>
+  </div>
+</div></section>
+
+<!-- ================================================================ OPTION A -->
+<section id="option-a"><div class="wrap">
+  <div class="sec-head" style="max-width:920px">
+    <span class="eyebrow">Part 4 · Three design directions</span>
+    <h2>Three ways to make it one product</h2>
+    <p class="lede">All three share the same non-negotiable foundation — <strong>one token system, Lucide icons, zero gradients, the pbim indigo</strong> — and differ in how radically they restructure the experience. They are staged deliberately: <strong>B contains A, and C's engine can power either.</strong></p>
+  </div>
+
+  <div class="opt-band"><span class="opt-badge">OPTION A</span><span class="opt-name">Six Hubs — consolidate &amp; unify</span><span class="chip v-keep">Evolutionary · lowest risk</span></div>
+  <p class="opt-thesis"><b>Thesis: the content is mostly right; the packaging is wrong.</b> Collapse 14 menu items into 6 hubs + Trips, each hub built on one shared page anatomy with lens tabs over a single dataset — Zoho's lens pattern wearing Payobook's design system. Your seven modern cockpits survive as lenses; the seven legacy screens are retired, rebuilt or folded in.</p>
+
+  <div class="ia">
+    <div class="iacol"><h5>Today — 14 items, 3 generations</h5>
+      <div class="old">
+        <span class="g2">My Team</span><span class="g0">Workforce Dashboard</span><span class="g1">Live Attendance</span><span class="g2">Attendance Control</span><span class="g1">Timecards</span><span class="g2">Leave</span><span class="g2">Weekly Entry</span><span class="g2">Business Trips</span><span class="g2">Overtime Desk</span><span class="g1">Shift Roster</span><span class="g1">Shift Templates</span><span class="g1">Overtime Rules</span><span class="g1">Payroll Report</span><span class="g2">Driver Tracking</span>
+      </div>
+      <p style="font-size:11.5px;color:var(--faint);margin-top:12px">Left edge marks the generation: <span style="color:var(--bad)">■</span> Gen 0 · <span style="color:var(--warn)">■</span> Gen 1/1.5 · <span style="color:var(--good)">■</span> Gen 2</p>
+    </div>
+    <div class="iarr"><svg class="ic" style="width:26px;height:26px"><use href="#i-arrow"/></svg></div>
+    <div class="iacol"><h5>Proposed — 7 items, 1 system</h5>
+      <div class="hub"><span class="hic"><svg><use href="#i-act"/></svg></span><div><h6>Today</h6><p>Live board · punch map · pulse — <b>absorbs Live Attendance, Workforce Dashboard KPIs, Driver Tracking</b></p></div></div>
+      <div class="hub"><span class="hic"><svg><use href="#i-cal"/></svg></span><div><h6>Schedule</h6><p>Roster · coverage · budget · templates drawer — <b>absorbs Shift Roster, Shift Templates</b></p></div></div>
+      <div class="hub"><span class="hic"><svg><use href="#i-clock"/></svg></span><div><h6>Time</h6><p>Timeline · Week Grid · People · Exceptions · Import — <b>absorbs Timecards, Weekly Entry, Attendance Control</b></p></div></div>
+      <div class="hub"><span class="hic"><svg><use href="#i-umb"/></svg></span><div><h6>Time Off</h6><p>Leave Command Center, re-tinted to the system indigo</p></div></div>
+      <div class="hub"><span class="hic"><svg><use href="#i-zap"/></svg></span><div><h6>Overtime</h6><p>Desk · ceilings · rules as a settings tab — <b>absorbs Overtime Rules</b></p></div></div>
+      <div class="hub"><span class="hic"><svg><use href="#i-plane"/></svg></span><div><h6>Trips</h6><p>Business Trips, re-tinted; its queue also feeds Approvals</p></div></div>
+      <div class="hub"><span class="hic"><svg><use href="#i-inbox"/></svg></span><div><h6>Approvals</h6><p>My Team grows into the <b>one</b> inbox — OT, trips, corrections, leave — with deep links back to every hub</p></div></div>
+      <p style="font-size:11.5px;color:var(--faint);margin-top:10px">Payroll Report relocates to the Pay Run section, where its data lives.</p>
+    </div>
+  </div>
+
+  <h3 class="block">The shared page anatomy — learned once, true everywhere</h3>
+  <div class="grid g2" style="align-items:start">
+    <div class="anat">
+      <div class="zone"><span class="zn">1</span><b>Hub header</b> — name, primary action. One solid-indigo button per page, everything else outline/ghost.</div>
+      <div class="zone"><span class="zn">2</span><b>Persistent context bar</b> — department · week · person search. <b>Synced across all hubs:</b> switch hubs, keep the slice.</div>
+      <div class="zone"><span class="zn">3</span><b>Lens tabs</b> — switchable views over one dataset (Zoho pattern). Counts on tabs that need attention.</div>
+      <div class="zone"><span class="zn">4</span><b>Exception ribbon</b> — what needs review, before the content (Deputy pattern). Dismissed when clear.</div>
+      <div class="zone"><span class="zn">5</span><b>Content + detail drawer</b> — every avatar and number opens detail in a right drawer. No page-jump, no lost context.</div>
+    </div>
+    <div class="callout" style="align-self:center">
+      <b>Why this is the safe bet:</b> the sidebar is data-driven (<span class="mono">pb.sidebar.item</span> records), so the IA change is data, not code. The seven Gen-2 cockpits keep their facades and templates — they're re-tinted and mounted as lenses. Only three surfaces are truly rebuilt: the Today board, the Timeline lens, and the Schedule chrome. Everything ships hub-by-hub with no big-bang cutover.
+    </div>
+  </div>
+
+  <h3 class="block">Mockup — the Time hub, Week-Grid lens, person drawer open</h3>
+  <p class="blocknote">This is your named pain point solved in one screen: bulk table entry in the grid, the exception ribbon on top, and <strong>one person's week as a scheduled / actual / entered table</strong> in the drawer — reachable from any avatar in any hub.</p>
+  <div class="shot"><div class="shot-bar"><span class="d" style="background:#F26D6D"></span><span class="d" style="background:#F2C94C"></span><span class="d" style="background:#6DD48E"></span><span class="url">payobook.com/workforce/time · grid</span></div>
+  <div class="shot-scroll"><div class="mk">
+    <div class="rail">
+      <div class="logo"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 17V7l8 10V7"/></svg></i>Payobook</div>
+      <div class="sect">PAYROLL</div>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-grid"/></svg>Dashboard</a>
+      <div class="sect">WORKFORCE</div>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-act"/></svg>Today</a>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-cal"/></svg>Schedule</a>
+      <a class="on" href="#option-a" onclick="return false"><svg><use href="#i-clock"/></svg>Time<span class="n">8</span></a>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-umb"/></svg>Time Off</a>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-zap"/></svg>Overtime</a>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-plane"/></svg>Trips</a>
+      <a href="#option-a" onclick="return false"><svg><use href="#i-inbox"/></svg>Approvals<span class="n">14</span></a>
+      <div class="foot"><a href="#option-a" onclick="return false"><svg><use href="#i-sliders"/></svg>Rules &amp; Settings</a></div>
+    </div>
+    <div class="main">
+      <div class="pghead">
+        <div class="pgrow">
+          <h1 class="pg">Time</h1>
+          <div class="ctx">
+            <span class="ctxi pinned"><svg><use href="#i-users"/></svg>Factory · Đội A<svg><use href="#i-chevd"/></svg></span>
+            <span class="ctxi"><svg><use href="#i-chevl"/></svg>Aug 11 – 17<svg><use href="#i-chevr"/></svg></span>
+            <span class="ctxi"><svg><use href="#i-search"/></svg>Find anyone…<span style="font-size:9px;color:#94A3B8;border:1px solid #E2E8F0;border-radius:4px;padding:0 4px">⌘K</span></span>
+            <span class="btn out"><svg><use href="#i-upload"/></svg>Import punches</span>
+          </div>
+        </div>
+        <div class="lens">
+          <a href="#option-a" onclick="return false"><svg><use href="#i-act"/></svg>Timeline</a>
+          <a class="on" href="#option-a" onclick="return false"><svg><use href="#i-grid"/></svg>Week Grid</a>
+          <a href="#option-a" onclick="return false"><svg><use href="#i-users"/></svg>People</a>
+          <a href="#option-a" onclick="return false"><svg><use href="#i-alert"/></svg>Exceptions<span class="n">8</span></a>
+          <a href="#option-a" onclick="return false"><svg><use href="#i-upload"/></svg>Import</a>
+        </div>
+        <div class="ribbon"><svg><use href="#i-alert"/></svg>8 entries need review — 3 missing punch-outs · 4 late vs shift · 1 over the monthly OT ceiling<a href="#option-a" onclick="return false">Review exceptions →</a></div>
+      </div>
+      <div class="body">
+        <div class="col kcard" style="overflow:hidden">
+          <table class="mkt">
+            <thead><tr><th style="min-width:170px">Employee</th><th>Mon 11</th><th>Tue 12</th><th>Wed 13</th><th>Thu 14</th><th>Fri 15</th><th class="we">Sat 16</th><th class="we">Sun 17</th><th>Total</th><th>OT</th></tr></thead>
+            <tbody>
+              <tr><td><span class="emp"><span class="avatar">TM</span><span>Trần Thị Mai<span class="sub">Line lead · Đội A</span></span></span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell ed num">9.5</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td class="we"><span class="cell zero num">—</span></td><td class="we"><span class="cell zero num">—</span></td><td class="tot num">41.5</td><td><span class="pill amb num">+2.0</span></td></tr>
+              <tr><td><span class="emp"><span class="avatar g">NH</span><span>Nguyễn Văn Hùng<span class="sub">Operator · Đội A</span></span></span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell miss num">?</span></td><td class="we"><span class="cell zero num">—</span></td><td class="we"><span class="cell zero num">—</span></td><td class="tot num">32.0</td><td><span class="pill gry num">0</span></td></tr>
+              <tr><td><span class="emp"><span class="avatar b">LP</span><span>Lê Thị Phương<span class="sub">Operator · Đội A</span></span></span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td class="we"><span class="cell num">4.0</span></td><td class="we"><span class="cell zero num">—</span></td><td class="tot num">44.0</td><td><span class="pill amb num">+4.0</span></td></tr>
+              <tr><td><span class="emp"><span class="avatar a">PT</span><span>Phạm Văn Tuấn<span class="sub">Driver · Logistics</span></span></span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">7.5</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td class="we"><span class="cell zero num">—</span></td><td class="we"><span class="cell zero num">—</span></td><td class="tot num">39.5</td><td><span class="pill gry num">0</span></td></tr>
+              <tr><td><span class="emp"><span class="avatar r">VA</span><span>Vũ Thị Lan Anh<span class="sub">QC · Đội B</span></span></span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">8.0</span></td><td><span class="cell num">6.0</span></td><td><span class="cell num">8.0</span></td><td class="we"><span class="cell zero num">—</span></td><td class="we"><span class="cell zero num">—</span></td><td class="tot num">38.0</td><td><span class="pill gry num">0</span></td></tr>
+            </tbody>
+            <tfoot><tr><td>Đội A · 24 people</td><td class="num">186</td><td class="num">184</td><td class="num">189</td><td class="num">182</td><td class="num">178</td><td class="we num">36</td><td class="we num">—</td><td class="num">955</td><td class="num">+31</td></tr></tfoot>
+          </table>
+        </div>
+        <div class="drawer">
+          <div class="dh"><span class="avatar">TM</span><div><b>Trần Thị Mai</b><span class="sub">Line lead · Đội A · VN-0412</span></div><span class="pill grn" style="margin-left:auto">On shift</span></div>
+          <div class="wksum"><span>Scheduled<b class="num">40.0</b></span><span>Actual<b class="num">41.5</b></span><span>Δ week<b class="num" style="color:#B45309">+1.5</b></span></div>
+          <table class="dt">
+            <thead><tr><th>Day</th><th>Sched</th><th>Actual</th><th>Entered</th><th>Δ</th></tr></thead>
+            <tbody>
+              <tr><td>Mon 11</td><td>8.0</td><td>8.1</td><td><span class="din">8.0</span></td><td>0</td></tr>
+              <tr><td>Tue 12</td><td>8.0</td><td>8.0</td><td><span class="din">8.0</span></td><td>0</td></tr>
+              <tr><td>Wed 13</td><td>8.0</td><td>9.6</td><td><span class="din ed">9.5</span></td><td class="pos">+1.5</td></tr>
+              <tr><td>Thu 14</td><td>8.0</td><td>8.0</td><td><span class="din">8.0</span></td><td>0</td></tr>
+              <tr><td>Fri 15</td><td>8.0</td><td>7.9</td><td><span class="din">8.0</span></td><td>0</td></tr>
+              <tr><td>Sat 16</td><td>—</td><td>—</td><td><span class="din">—</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+          <div style="display:flex;gap:6px;margin:12px 0 10px;flex-wrap:wrap">
+            <span class="pill amb">OT 150% · 2.0h</span><span class="pill ind">Night · 0h</span><span class="pill grn">On time 96%</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <span class="btn ghost" style="flex:1;justify-content:center">File correction</span>
+            <span class="btn out" style="flex:1;justify-content:center">Full profile</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div></div>
+  <p class="shot-cap"><b>Reading the mockup:</b> the pinned context (Factory · Đội A · Aug 11–17) travels to Schedule, Today and Approvals unchanged. The amber ribbon carries the Deputy exception-first pattern; the drawer is Gap 07 answered — scheduled / actual / entered per day, editable inline, with OT split and correction hand-off.</p>
+
+  <div class="vergrid">
+    <div class="vercard pro"><h5>Why choose A</h5><ul>
+      <li><b>Lowest risk, fastest visible win</b> — sidebar IA is data records; cockpits are re-tinted, not rewritten</li>
+      <li>Kills all Gen 0/1 debt in one stroke (7 legacy surfaces retired or rebuilt)</li>
+      <li>Ships hub-by-hub — value from the first phase</li></ul></div>
+    <div class="vercard con"><h5>What it won't give you</h5><ul>
+      <li>Still page-based — hubs are siblings, not one workspace</li>
+      <li>Approvals remain a place you go, not something ambient</li>
+      <li>WOW ceiling is "very polished SaaS", not "category-defining"</li></ul></div>
+    <div class="vercard eff"><h5>Effort &amp; reuse</h5><ul>
+      <li><b>~4 implementation phases</b></li>
+      <li>Reused: all 7 Gen-2 cockpits, sidebar, token kit</li>
+      <li>Rebuilt: Today board, Timeline lens, Schedule chrome</li>
+      <li>New: context-sync service, drawer kit, exception ribbon</li></ul></div>
+  </div>
+</div></section>
+<style>
+/* Option B — mission control */
+.mkb{display:flex;flex-direction:column;min-width:1060px;background:#F5F6FA;color:#1B1733;font:12.5px/1.5 var(--f-b)}
+.mkb-top{display:flex;align-items:center;gap:14px;background:#141A2E;padding:10px 16px}
+.mkb-top .lg{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:13px}
+.mkb-top .lg i{width:20px;height:20px;border-radius:6px;background:#5A4BB0;display:inline-flex;align-items:center;justify-content:center}
+.mkb-top .lg i svg{width:12px;height:12px;color:#fff}
+.mkb-top .gsearch{flex:1;max-width:430px;display:flex;align-items:center;gap:9px;background:#1E2740;border:1px solid #2B3554;border-radius:9px;padding:7px 12px;color:#8E98B8;font-size:11.5px}
+.mkb-top .gsearch svg{width:13px;height:13px}
+.mkb-top .gsearch kbd{margin-left:auto;font:10px var(--f-m);border:1px solid #39456B;border-radius:5px;padding:1px 6px;color:#8E98B8}
+.mkb-top .ctxc{display:inline-flex;align-items:center;gap:6px;background:#1E2740;border:1px solid #2B3554;color:#C6CDE4;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:600}
+.mkb-top .ava{width:26px;height:26px;border-radius:50%;background:#5A4BB0;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin-left:auto}
+.mkb-low{display:flex;align-items:stretch;min-height:560px}
+.rail2{flex:0 0 76px;background:#fff;border-right:1px solid #E2E8F0;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px}
+.rail2 a{display:flex;flex-direction:column;align-items:center;gap:4px;width:60px;padding:9px 0;border-radius:10px;color:#64748B;font-size:9px;font-weight:800;letter-spacing:.04em;text-decoration:none}
+.rail2 a svg{width:17px;height:17px}
+.rail2 a.on{background:#EDEAF8;color:#5A4BB0}
+.rail2 .sp{margin-top:auto}
+.canvas{flex:1;min-width:0;padding:16px 18px;position:relative}
+.tiles{display:flex;gap:10px}
+.tile{flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px;cursor:default}
+.tile .tv{font-family:var(--f-d);font-size:24px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.tile .tl{font-size:10.5px;font-weight:700;color:#64748B;margin-top:5px;display:flex;align-items:center;gap:5px}
+.tile .tl i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.tile.sel{border-color:#DC2668;box-shadow:0 0 0 3px #FCE7EF}
+.tile.sel .tv{color:#DC2668}
+.canvas2{display:flex;gap:12px;margin-top:12px;align-items:flex-start}
+.plist{flex:1.7;background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden}
+.plist .ph{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #EEF1F6;font-size:11px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:.08em}
+.plist .prow{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #F3F5F9;font-size:12px}
+.plist .prow:last-child{border-bottom:none}
+.plist .pn{font-weight:700;min-width:150px}
+.plist .pn .sub{display:block;font-weight:500;font-size:10px;color:#94A3B8}
+.plist .pt{color:#64748B;font-variant-numeric:tabular-nums;font-size:11px}
+.plist .late{margin-left:auto}
+.pbtn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;border:1px solid #E2E8F0;background:#fff;color:#64748B}
+.pbtn svg{width:12px;height:12px}
+.pbtn.ok{color:#2E7D4F;border-color:#BFE3CD}.pbtn.no{color:#DC2668;border-color:#F4C3D6}
+.mapcard{flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden}
+.mapcard .mh{padding:10px 14px;border-bottom:1px solid #EEF1F6;font-size:11px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:.08em;display:flex;gap:8px;align-items:center}
+.mapbox{position:relative;height:178px;background:
+  radial-gradient(circle at 20% 30%, #E8F0E4 0 18%, transparent 19%),
+  radial-gradient(circle at 75% 60%, #E4EBF5 0 22%, transparent 23%),
+  linear-gradient(#F2F5F9,#F2F5F9)}
+.mapbox::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(90deg, transparent 49.6%, #DDE4EE 49.6% 50.4%, transparent 50.4%),
+  linear-gradient(0deg, transparent 49.6%, #DDE4EE 49.6% 50.4%, transparent 50.4%)}
+.mpin{position:absolute;width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#5A4BB0;border:2px solid #fff;box-shadow:0 3px 8px rgba(16,12,40,.25)}
+.mpin::after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff}
+.mpin.g{background:#2E7D4F}.mpin.a{background:#D97706}
+.dock{flex:0 0 268px;background:#fff;border-left:1px solid #E2E8F0;padding:14px;display:flex;flex-direction:column;gap:8px}
+.dock .dh2{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64748B;padding-bottom:6px}
+.dock .dh2 .n{background:#FCE7EF;color:#DC2668;border-radius:999px;font-size:10px;padding:1px 8px;font-variant-numeric:tabular-nums}
+.dcard{border:1px solid #EEF1F6;border-radius:10px;padding:9px 11px}
+.dcard .dr1{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700}
+.dcard .dr1 .k{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.dcard .dr1 .k svg{width:11px;height:11px}
+.dcard .dr1 .k.amb{background:#FEF3C7;color:#B45309}.dcard .dr1 .k.ind{background:#EDEAF8;color:#5A4BB0}.dcard .dr1 .k.blu{background:#E5EDFD;color:#2563EB}.dcard .dr1 .k.grn{background:#E3F2E9;color:#2E7D4F}
+.dcard .dr2{font-size:10.5px;color:#94A3B8;margin:3px 0 7px;padding-left:27px}
+.dcard .dr3{display:flex;gap:6px;padding-left:27px}
+.dock .clean{margin-top:auto;border-top:1px dashed #E2E8F0;padding-top:10px}
+.dock .clean p{font-size:10.5px;color:#94A3B8;margin:0 0 8px}
+.pop{position:absolute;left:335px;top:196px;width:255px;background:#fff;border:1px solid #E2E8F0;border-radius:13px;box-shadow:0 18px 44px rgba(16,12,40,.20);padding:13px;z-index:5}
+.pop::before{content:"";position:absolute;left:-6px;top:26px;width:12px;height:12px;background:#fff;border-left:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;transform:rotate(45deg)}
+.pop .ph2{display:flex;gap:9px;align-items:center}
+.pop .ph2 b{font-size:12.5px;display:block}
+.pop .ph2 .sub{font-size:10px;color:#94A3B8}
+.pop .wbar{margin:10px 0 4px}
+.pop .wbar .wl{display:flex;justify-content:space-between;font-size:10px;color:#64748B;font-weight:700;margin-bottom:4px}
+.pop .track{height:6px;border-radius:4px;background:#EEF1F5;overflow:hidden}
+.pop .track i{display:block;height:100%;width:79%;background:#5A4BB0;border-radius:4px}
+.pop .prow2{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
+.pop .pact{display:flex;gap:6px;margin-top:11px}
+.pop .pact span{flex:1;text-align:center;font-size:10.5px;font-weight:800;border:1px solid #CBC2EE;color:#5A4BB0;border-radius:8px;padding:6px 4px}
+.pop .pact span.pri{background:#5A4BB0;border-color:#5A4BB0;color:#fff}
+/* Option C — close the week */
+.verbs{display:flex;gap:4px;background:#fff;border-bottom:1px solid #E2E8F0;padding:10px 18px 0}
+.verbs a{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;font-size:12.5px;font-weight:800;color:#64748B;border-bottom:3px solid transparent;text-decoration:none;letter-spacing:.01em}
+.verbs a svg{width:14px;height:14px}
+.verbs a.on{color:#5A4BB0;border-bottom-color:#5A4BB0}
+.verbs .vctx{margin-left:auto;display:flex;gap:8px;align-items:center;padding-bottom:8px}
+.cwhead{display:flex;align-items:center;gap:14px;padding:16px 18px 0}
+.cwhead h1{font-size:18px;font-weight:800;margin:0;letter-spacing:-.01em}
+.lockchips{display:flex;gap:5px;margin-left:auto}
+.lockchips span{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;border-radius:8px;padding:5px 9px;background:#E3F2E9;color:#2E7D4F}
+.lockchips span svg{width:10px;height:10px}
+.lockchips span.open{background:#EEF1F5;color:#94A3B8}
+.cwstats{display:flex;gap:10px;padding:14px 18px 0}
+.cwstat{flex:1;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:11px 14px}
+.cwstat .v{font-family:var(--f-d);font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.cwstat .l{font-size:10px;font-weight:700;color:#64748B;margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.cwstat.g .v{color:#2E7D4F}.cwstat.a .v{color:#B45309}.cwstat.r .v{color:#DC2668}
+.cwbody{display:flex;gap:12px;padding:12px 18px 18px;align-items:flex-start}
+.cwt{width:100%;border-collapse:collapse;font-size:11.5px}
+.cwt th{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#94A3B8;text-align:left;padding:9px 12px;border-bottom:1px solid #E2E8F0;background:#FAFBFE;font-weight:800}
+.cwt td{padding:9px 12px;border-bottom:1px solid #F3F5F9;vertical-align:middle;white-space:nowrap}
+.cwt tr:last-child td{border-bottom:none}
+.bars{display:flex;flex-direction:column;gap:3px;min-width:150px}
+.bars .b{display:flex;align-items:center;gap:7px;font-size:9.5px;color:#94A3B8;font-weight:700}
+.bars .b i{display:block;height:5px;border-radius:3px}
+.bars .b.s i{background:#C4CBD9}
+.bars .b.a i{background:#5A4BB0}
+.reason{font-size:10px;font-weight:800;border-radius:999px;padding:3px 9px}
+.reason.mp{background:#FCE7EF;color:#DC2668}.reason.ot{background:#FEF3C7;color:#B45309}.reason.el{background:#E5EDFD;color:#2563EB}
+.cwrail{flex:0 0 268px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:15px}
+.cwrail h6{margin:0 0 10px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64748B}
+.cwrail .tot{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px dashed #EEF1F6;color:#3A3554}
+.cwrail .tot b{font-variant-numeric:tabular-nums;font-weight:800;color:#1B1733}
+.cwrail .chk{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:#3A3554;padding:6px 0}
+.cwrail .chk svg{width:13px;height:13px}
+.cwrail .chk.done svg{color:#2E7D4F}.cwrail .chk.todo svg{color:#DC2668}
+.cwcta{margin-top:12px;text-align:center;background:#EEF1F5;color:#94A3B8;border-radius:10px;padding:10px;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px}
+.cwcta svg{width:13px;height:13px}
+.cwnote{font-size:10px;color:#94A3B8;text-align:center;margin-top:7px}
+.loop{display:flex;align-items:center;justify-content:center;gap:10px;padding:0 18px 18px;font-size:10.5px;font-weight:800;color:#64748B}
+.loop span{background:#fff;border:1px solid #E2E8F0;border-radius:999px;padding:5px 13px;display:inline-flex;gap:6px;align-items:center}
+.loop span.on{background:#EDEAF8;border-color:#CBC2EE;color:#5A4BB0}
+.loop svg{width:11px;height:11px;color:#C4CBD9}
+/* verdict */
+.score{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.score th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:12px 16px;border-bottom:1px solid var(--line2);text-align:center;background:color-mix(in srgb, var(--card) 60%, var(--paper))}
+.score th:first-child{text-align:left}
+.score td{padding:10px 16px;border-bottom:1px solid var(--line);text-align:center;color:var(--mut)}
+.score td:first-child{text-align:left;color:var(--ink);font-weight:600}
+.score tr:last-child td{border-bottom:none}
+.score .full{color:var(--good);font-weight:800}
+.score .half{color:var(--warn);font-weight:800}
+.score .none{color:var(--faint)}
+.score td.win{background:var(--acc-soft);color:var(--acc);font-weight:800}
+.phase{display:flex;gap:16px;padding:18px 20px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;align-items:flex-start}
+.phase .pn2{flex:none;font:800 12px var(--f-m);color:var(--acc);background:var(--acc-soft);border-radius:9px;padding:7px 11px;margin-top:2px}
+.phase h5{margin:0 0 4px;font-size:15px}
+.phase p{margin:0;font-size:13.5px;color:var(--mut);line-height:1.6}
+.phase p b{color:var(--ink)}
+.phase .tail{margin-left:auto;flex:none;font-size:11px;font-weight:700;color:var(--faint);text-align:right;white-space:nowrap;padding-top:4px}
+.rec{border:2px solid var(--acc);background:var(--card);border-radius:18px;padding:28px 30px;margin:26px 0;box-shadow:var(--sh)}
+.rec .eyebrow{margin-bottom:10px}
+.rec h3{font-size:clamp(20px,2.4vw,27px);margin:0 0 12px;letter-spacing:-.015em}
+.rec p{font-size:15px;color:var(--mut)}
+.rec p b{color:var(--ink)}
+footer{border-top:1px solid var(--line);padding:36px 0 60px;color:var(--faint);font-size:13px}
+footer b{color:var(--mut)}
+</style>
+
+<!-- ================================================================ OPTION B -->
+<section id="option-b"><div class="wrap">
+  <div class="opt-band"><span class="opt-badge">OPTION B</span><span class="opt-name">Mission Control — one workspace, zero navigation</span><span class="chip neutral">Transformational · the WOW play</span></div>
+  <p class="opt-thesis"><b>Thesis: stop navigating; stay in the room.</b> Workforce becomes a single full-height workspace. Hubs become <b>lenses</b> on an icon rail; department + week + person live once in a global command bar and never reset; the approval queue becomes a <b>persistent right dock</b> visible from every lens; and any avatar, anywhere, opens a <b>person popover</b> with their week, punches and one-tap actions. ⌘K jumps to any person, lens or action. This is the Rippling/Linear class of product feel — nobody in the payroll space has it.</p>
+
+  <h3 class="block">Mockup — the Today lens, "Late" tile drilled, person popover open</h3>
+  <div class="shot"><div class="shot-bar"><span class="d" style="background:#F26D6D"></span><span class="d" style="background:#F2C94C"></span><span class="d" style="background:#6DD48E"></span><span class="url">payobook.com/workforce · today</span></div>
+  <div class="shot-scroll"><div class="mkb">
+    <div class="mkb-top">
+      <span class="lg"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 17V7l8 10V7"/></svg></i>Workforce</span>
+      <span class="gsearch"><svg><use href="#i-search"/></svg>Search people, lenses, actions…<kbd>⌘K</kbd></span>
+      <span class="ctxc"><svg class="ic" style="width:11px;height:11px"><use href="#i-users"/></svg>Factory · Đội A</span>
+      <span class="ctxc"><svg class="ic" style="width:11px;height:11px"><use href="#i-cal"/></svg>Mon Aug 17 · Wk 34</span>
+      <span class="ava">AD</span>
+    </div>
+    <div class="mkb-low">
+      <div class="rail2">
+        <a class="on" href="#option-b" onclick="return false"><svg><use href="#i-act"/></svg>TODAY</a>
+        <a href="#option-b" onclick="return false"><svg><use href="#i-cal"/></svg>SCHEDULE</a>
+        <a href="#option-b" onclick="return false"><svg><use href="#i-clock"/></svg>TIME</a>
+        <a href="#option-b" onclick="return false"><svg><use href="#i-umb"/></svg>TIME OFF</a>
+        <a href="#option-b" onclick="return false"><svg><use href="#i-plane"/></svg>TRIPS</a>
+        <a class="sp" href="#option-b" onclick="return false"><svg><use href="#i-sliders"/></svg>RULES</a>
+      </div>
+      <div class="canvas">
+        <div class="tiles">
+          <div class="tile"><div class="tv num" style="color:#2E7D4F">132</div><div class="tl"><i style="background:#2E7D4F"></i>ON SHIFT</div></div>
+          <div class="tile sel"><div class="tv num">6</div><div class="tl"><i style="background:#DC2668"></i>LATE</div></div>
+          <div class="tile"><div class="tv num" style="color:#B45309">11</div><div class="tl"><i style="background:#D97706"></i>NOT STARTED</div></div>
+          <div class="tile"><div class="tv num" style="color:#2563EB">14</div><div class="tl"><i style="background:#2563EB"></i>ON BREAK</div></div>
+          <div class="tile"><div class="tv num" style="color:#64748B">9</div><div class="tl"><i style="background:#94A3B8"></i>ON LEAVE</div></div>
+        </div>
+        <div class="canvas2">
+          <div class="plist">
+            <div class="ph">Late · 6 people <span style="margin-left:auto;font-weight:600;letter-spacing:0;text-transform:none;color:#94A3B8">click a tile to re-filter</span></div>
+            <div class="prow"><span class="avatar r">NH</span><span class="pn">Nguyễn Văn Hùng<span class="sub">Operator · Đội A</span></span><span class="pt">Shift 08:00 · not in</span><span class="pill ros late num">32 min</span><span class="pbtn ok" title="Excuse"><svg><use href="#i-check"/></svg></span><span class="pbtn" title="File correction"><svg><use href="#i-file"/></svg></span></div>
+            <div class="prow" style="background:#F8F7FC"><span class="avatar">TM</span><span class="pn">Trần Thị Mai<span class="sub">Line lead · Đội A</span></span><span class="pt">Shift 08:00 · in 08:19</span><span class="pill ros late num">19 min</span><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn"><svg><use href="#i-file"/></svg></span></div>
+            <div class="prow"><span class="avatar a">PT</span><span class="pn">Phạm Văn Tuấn<span class="sub">Driver · Logistics</span></span><span class="pt">Shift 07:30 · in 07:46</span><span class="pill ros late num">16 min</span><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn"><svg><use href="#i-file"/></svg></span></div>
+            <div class="prow"><span class="avatar b">LP</span><span class="pn">Lê Thị Phương<span class="sub">Operator · Đội A</span></span><span class="pt">Shift 08:00 · in 08:11</span><span class="pill ros late num">11 min</span><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn"><svg><use href="#i-file"/></svg></span></div>
+            <div class="prow"><span class="avatar g">HD</span><span class="pn">Hoàng Văn Dũng<span class="sub">QC · Đội B</span></span><span class="pt">Shift 08:00 · in 08:09</span><span class="pill ros late num">9 min</span><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn"><svg><use href="#i-file"/></svg></span></div>
+          </div>
+          <div class="mapcard">
+            <div class="mh"><svg class="ic" style="width:12px;height:12px"><use href="#i-pin"/></svg>FIELD · 8 DRIVERS LIVE</div>
+            <div class="mapbox">
+              <span class="mpin g" style="left:22%;top:28%"></span>
+              <span class="mpin g" style="left:48%;top:52%"></span>
+              <span class="mpin" style="left:64%;top:24%"></span>
+              <span class="mpin a" style="left:78%;top:64%"></span>
+              <span class="mpin g" style="left:34%;top:70%"></span>
+            </div>
+            <div style="display:flex;gap:10px;padding:9px 14px;font-size:10px;font-weight:700;color:#64748B">
+              <span><i style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2E7D4F;margin-right:4px"></i>Moving</span>
+              <span><i style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#D97706;margin-right:4px"></i>Idle &gt; 5 min</span>
+              <span style="margin-left:auto;color:#5A4BB0">Open map →</span>
+            </div>
+          </div>
+        </div>
+        <div class="pop">
+          <div class="ph2"><span class="avatar" style="width:32px;height:32px;font-size:11px">TM</span><div><b>Trần Thị Mai</b><span class="sub">Line lead · Đội A · VN-0412</span></div></div>
+          <div class="wbar"><div class="wl"><span>This week</span><span class="num">31.5 / 40 h</span></div><div class="track"><i></i></div></div>
+          <div class="prow2"><span class="pill amb">OT MTD · 12h</span><span class="pill grn">Leave · 6.5d</span><span class="pill ind">On time · 96%</span></div>
+          <div class="pact"><span>Timecard</span><span>Schedule</span><span class="pri">Approve OT</span></div>
+        </div>
+      </div>
+      <div class="dock">
+        <div class="dh2"><svg class="ic" style="width:13px;height:13px"><use href="#i-inbox"/></svg>Needs you<span class="n num">14</span></div>
+        <div class="dcard"><div class="dr1"><span class="k amb"><svg><use href="#i-zap"/></svg></span>OT · Nguyễn Văn Hùng</div><div class="dr2">+2.0h Sat Aug 16 · 150% · under ceiling</div><div class="dr3"><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn no"><svg><use href="#i-x"/></svg></span></div></div>
+        <div class="dcard"><div class="dr1"><span class="k ind"><svg><use href="#i-plane"/></svg></span>Trip · Lê Thị Phương</div><div class="dr2">Đà Nẵng · 3 days · ₫2.1M advance</div><div class="dr3"><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn no"><svg><use href="#i-x"/></svg></span></div></div>
+        <div class="dcard"><div class="dr1"><span class="k blu"><svg><use href="#i-file"/></svg></span>Fix · Phạm Văn Tuấn</div><div class="dr2">Missed punch-out Wed · 17:30 proposed</div><div class="dr3"><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn no"><svg><use href="#i-x"/></svg></span></div></div>
+        <div class="dcard"><div class="dr1"><span class="k grn"><svg><use href="#i-umb"/></svg></span>Leave · Vũ Thị Lan Anh</div><div class="dr2">Annual · Aug 21–22 · 2 others off then</div><div class="dr3"><span class="pbtn ok"><svg><use href="#i-check"/></svg></span><span class="pbtn no"><svg><use href="#i-x"/></svg></span></div></div>
+        <div class="clean"><p>9 more are clean — within schedule tolerance, under every ceiling.</p><span class="btn pri" style="width:100%;justify-content:center"><svg><use href="#i-check"/></svg>Approve all 9 clean</span></div>
+      </div>
+    </div>
+  </div></div></div>
+  <p class="shot-cap"><b>Reading the mockup:</b> the "Late · 6" tile is drilled — Deputy's Today pattern. The right dock is the ambient approval queue with Deputy-style clean/issues split ("Approve all 9 clean"). The popover on Trần Thị Mai is the universal person card: hover any avatar in any lens, get the week, balances, and one-tap actions. The map card folds Driver Tracking into the room.</p>
+
+  <div class="vergrid">
+    <div class="vercard pro"><h5>Why choose B</h5><ul>
+      <li><b>Category-defining feel</b> — no payroll competitor in your markets works like this</li>
+      <li>Kills the navigation problem <b>structurally</b>: context can't be lost because it never leaves the room</li>
+      <li>Approvals become ambient — the five-inbox problem dissolves</li>
+      <li>Contains all of Option A: hubs simply mount as lenses</li></ul></div>
+    <div class="vercard con"><h5>Costs &amp; risks</h5><ul>
+      <li>The shell (command bar, dock, popover, ⌘K, lens router) is <b>new engineering</b> before any lens improves</li>
+      <li>Deeper Odoo integration care: breadcrumbs/actions bypassed inside the workspace</li>
+      <li>Needs discipline: a weak lens inside a strong shell is very visible</li></ul></div>
+    <div class="vercard eff"><h5>Effort &amp; reuse</h5><ul>
+      <li><b>~6 implementation phases</b> (= A's 4 + shell + interactions)</li>
+      <li>Reused: everything A reuses — cockpits become lenses inside the shell</li>
+      <li>New: workspace shell, global context service, person popover, dock, ⌘K</li>
+      <li>Precedent in-house: Formula Studio already ships a Command Center (⌘K)</li></ul></div>
+  </div>
+</div></section>
+
+<!-- ================================================================ OPTION C -->
+<section id="option-c"><div class="wrap">
+  <div class="opt-band"><span class="opt-badge">OPTION C</span><span class="opt-name">The Manager's Day — four verbs, one loop</span><span class="chip v-retire">Opinionated · process-led</span></div>
+  <p class="opt-thesis"><b>Thesis: organize by the job, not the data.</b> A workforce manager's week is a loop: <b>Today</b> (who's here, fix what's wrong) → <b>Plan</b> (roster the coming week against coverage and budget) → <b>Approve</b> (clear the exception list) → <b>Close</b> (reconcile, lock, hand to payroll). Option C makes those four verbs the entire IA and pours the engineering into the workflow engine underneath: tolerance-based auto-approval, day-lock states, employee acknowledgment, shift-end pulse. Records and configs move behind ⌘K and a settings page.</p>
+
+  <h3 class="block">Mockup — the Close verb: reconcile, lock, hand to payroll</h3>
+  <p class="blocknote">This screen doesn't exist in Payobook today in any form — it's the Homebase "daily review" plus Connecteam's approve-then-lock, elevated to the week level. It is also the natural bridge into your payroll run: <strong>a week can't reach payroll until it's clean and locked.</strong></p>
+  <div class="shot"><div class="shot-bar"><span class="d" style="background:#F26D6D"></span><span class="d" style="background:#F2C94C"></span><span class="d" style="background:#6DD48E"></span><span class="url">payobook.com/workforce/close · week 33</span></div>
+  <div class="shot-scroll"><div class="mkb">
+    <div class="verbs">
+      <a href="#option-c" onclick="return false"><svg><use href="#i-act"/></svg>Today</a>
+      <a href="#option-c" onclick="return false"><svg><use href="#i-cal"/></svg>Plan</a>
+      <a href="#option-c" onclick="return false"><svg><use href="#i-inbox"/></svg>Approve <span class="pill ros num" style="margin-left:2px">14</span></a>
+      <a class="on" href="#option-c" onclick="return false"><svg><use href="#i-lock"/></svg>Close</a>
+      <span class="vctx"><span class="ctxi"><svg><use href="#i-users"/></svg>Factory · all teams</span><span class="ctxi"><svg><use href="#i-chevl"/></svg>Week 33 · Aug 11 – 17<svg><use href="#i-chevr"/></svg></span></span>
+    </div>
+    <div class="cwhead">
+      <h1>Close week 33</h1>
+      <span class="pill amb">7 flagged remain</span>
+      <div class="lockchips">
+        <span><svg><use href="#i-lock"/></svg>Mon</span><span><svg><use href="#i-lock"/></svg>Tue</span><span><svg><use href="#i-lock"/></svg>Wed</span><span class="open">Thu</span><span class="open">Fri</span><span class="open">Sat</span>
+      </div>
+    </div>
+    <div class="cwstats">
+      <div class="cwstat g"><div class="v num">41</div><div class="l">Auto-approved · within 10-min tolerance</div></div>
+      <div class="cwstat a"><div class="v num">7</div><div class="l">Flagged for review</div></div>
+      <div class="cwstat r"><div class="v num">3</div><div class="l">Missing punches</div></div>
+      <div class="cwstat"><div class="v num">3<span style="color:#94A3B8;font-size:14px">/6</span></div><div class="l">Days locked</div></div>
+    </div>
+    <div class="cwbody">
+      <div class="col kcard" style="flex:1;overflow:hidden">
+        <table class="cwt">
+          <thead><tr><th>Person · day</th><th>Scheduled vs actual</th><th>Δ</th><th>Why flagged</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><span class="emp"><span class="avatar r">NH</span><span style="font-weight:700">Nguyễn Văn Hùng<span class="sub" style="display:block;font-weight:500;font-size:10px;color:#94A3B8">Fri Aug 15</span></span></span></td>
+              <td><div class="bars"><span class="b s"><i style="width:96px"></i>8.0</span><span class="b a"><i style="width:46px"></i>3.8</span></div></td>
+              <td class="num" style="color:#DC2668;font-weight:800">−4.2</td><td><span class="reason mp">Missing punch-out</span></td>
+              <td><span class="btn ghost">Fix</span> <span class="btn out">Approve as-is</span></td></tr>
+            <tr><td><span class="emp"><span class="avatar">TM</span><span style="font-weight:700">Trần Thị Mai<span class="sub" style="display:block;font-weight:500;font-size:10px;color:#94A3B8">Wed Aug 13</span></span></span></td>
+              <td><div class="bars"><span class="b s"><i style="width:96px"></i>8.0</span><span class="b a"><i style="width:115px"></i>9.6</span></div></td>
+              <td class="num" style="color:#B45309;font-weight:800">+1.6</td><td><span class="reason ot">OT past weekly ceiling</span></td>
+              <td><span class="btn ghost">Split to bonus</span> <span class="btn out">Approve</span></td></tr>
+            <tr><td><span class="emp"><span class="avatar b">LP</span><span style="font-weight:700">Lê Thị Phương<span class="sub" style="display:block;font-weight:500;font-size:10px;color:#94A3B8">Sat Aug 16</span></span></span></td>
+              <td><div class="bars"><span class="b s"><i style="width:48px"></i>4.0</span><span class="b a"><i style="width:96px"></i>8.0</span></div></td>
+              <td class="num" style="color:#B45309;font-weight:800">+4.0</td><td><span class="reason ot">Unscheduled weekend</span></td>
+              <td><span class="btn ghost">Fix</span> <span class="btn out">Approve</span></td></tr>
+            <tr><td><span class="emp"><span class="avatar a">PT</span><span style="font-weight:700">Phạm Văn Tuấn<span class="sub" style="display:block;font-weight:500;font-size:10px;color:#94A3B8">Thu Aug 14</span></span></span></td>
+              <td><div class="bars"><span class="b s"><i style="width:96px"></i>8.0</span><span class="b a"><i style="width:73px"></i>6.1</span></div></td>
+              <td class="num" style="color:#2563EB;font-weight:800">−1.9</td><td><span class="reason el">Early leave · no request</span></td>
+              <td><span class="btn ghost">Ask employee</span> <span class="btn out">Approve</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cwrail">
+        <h6>Payroll handoff</h6>
+        <div class="tot"><span>Regular hours</span><b class="num">1,284.0</b></div>
+        <div class="tot"><span>Overtime</span><b class="num">62.5</b></div>
+        <div class="tot"><span>Bonus hours</span><b class="num">6.0</b></div>
+        <div class="tot" style="border-bottom:none"><span>Est. gross</span><b class="num">₫1.92B</b></div>
+        <div style="height:1px;background:#EEF1F6;margin:8px 0"></div>
+        <div class="chk done"><svg><use href="#i-check"/></svg>Overtime all decided</div>
+        <div class="chk done"><svg><use href="#i-check"/></svg>Leave conflicts resolved</div>
+        <div class="chk todo"><svg><use href="#i-x"/></svg>7 exceptions open</div>
+        <div class="chk todo"><svg><use href="#i-x"/></svg>3 days unlocked</div>
+        <div class="cwcta"><svg><use href="#i-lock"/></svg>Lock week &amp; send to payroll</div>
+        <div class="cwnote">Enabled when every flag is cleared. Locked weeks are read-only to everyone below payroll manager.</div>
+      </div>
+    </div>
+    <div class="loop">
+      <span><svg><use href="#i-act"/></svg>TODAY</span><svg><use href="#i-arrow"/></svg>
+      <span><svg><use href="#i-cal"/></svg>PLAN</span><svg><use href="#i-arrow"/></svg>
+      <span><svg><use href="#i-inbox"/></svg>APPROVE</span><svg><use href="#i-arrow"/></svg>
+      <span class="on"><svg><use href="#i-lock"/></svg>CLOSE</span><svg><use href="#i-arrow"/></svg>
+      <span style="color:#94A3B8">PAYROLL RUN</span>
+    </div>
+  </div></div></div>
+  <p class="shot-cap"><b>Reading the mockup:</b> 41 of 51 entries auto-approved inside tolerance — managers only ever see the 7 flagged rows. Days lock progressively; the payroll handoff rail turns the Workforce section into the <b>front door of your pay run</b>, which nothing does today.</p>
+
+  <div class="vergrid">
+    <div class="vercard pro"><h5>Why choose C</h5><ul>
+      <li><b>Deepest workflow win:</b> tolerance auto-approval + locks attack the actual hours managers waste</li>
+      <li>The Close ritual gives payroll a <b>guaranteed-clean input</b> — a compliance story competitors can't match</li>
+      <li>Smallest visual surface: four screens to keep excellent</li></ul></div>
+    <div class="vercard con"><h5>Costs &amp; risks</h5><ul>
+      <li><b>Retraining:</b> verbs replace nouns — users must relearn where things live</li>
+      <li>Record/config management gets demoted behind search &amp; settings; power users may resist</li>
+      <li>Engine work (tolerances, locks, ack) is backend-heavy — less visible day one</li></ul></div>
+    <div class="vercard eff"><h5>Effort &amp; reuse</h5><ul>
+      <li><b>~5 implementation phases</b>, half of them engine (models/rules), not UI</li>
+      <li>Reused: exception engine, approval chains, OT ceilings, week grid — the seams all exist</li>
+      <li>New: tolerance engine, day-lock state machine, ack + pulse, the four verb surfaces</li></ul></div>
+  </div>
+</div></section>
+
+<!-- ================================================================ VERDICT -->
+<section id="verdict"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Part 5 · Verdict</span>
+    <h2>Scoring the three against the eight gaps</h2>
+    <p class="lede">● closes the gap structurally · ◐ improves it materially · — untouched.</p>
+  </div>
+  <div class="tblwrap"><table class="score">
+    <thead><tr><th>Criterion</th><th>A · Six Hubs</th><th>B · Mission Control</th><th>C · Manager's Day</th></tr></thead>
+    <tbody>
+      <tr><td>G1 · Information architecture</td><td class="full">●</td><td class="win">●</td><td class="full">●</td></tr>
+      <tr><td>G2 · One page anatomy</td><td class="full">●</td><td class="win">●</td><td class="half">◐</td></tr>
+      <tr><td>G3 · Persistent context, no dead ends</td><td class="half">◐</td><td class="win">●</td><td class="half">◐</td></tr>
+      <tr><td>G4 · Exception-first approvals</td><td class="half">◐</td><td class="full">●</td><td class="win">●</td></tr>
+      <tr><td>G5 · A real Today surface</td><td class="full">●</td><td class="win">●</td><td class="full">●</td></tr>
+      <tr><td>G6 · Instrumented scheduling</td><td class="full">●</td><td class="full">●</td><td class="full">●</td></tr>
+      <tr><td>G7 · Person week · entry · reconciliation</td><td class="full">●</td><td class="full">●</td><td class="win">●</td></tr>
+      <tr><td>G8 · Lifecycle, locks &amp; acknowledgment</td><td class="none">—</td><td class="half">◐</td><td class="win">●</td></tr>
+      <tr><td>WOW factor</td><td class="half">Polished SaaS</td><td class="win">Category-defining</td><td class="full">Workflow-defining</td></tr>
+      <tr><td>Effort (implementation phases)</td><td class="win">~4</td><td class="none">~6</td><td class="none">~5</td></tr>
+      <tr><td>Risk</td><td class="win">Low</td><td class="none">Medium</td><td class="none">Medium-high</td></tr>
+      <tr><td>Reuse of your 7 modern cockpits</td><td class="win">Maximal</td><td class="full">Maximal (as lenses)</td><td class="half">Partial</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="rec">
+    <span class="eyebrow">Recommendation</span>
+    <h3>Build B — Mission Control — staged through A, powered by C's engine.</h3>
+    <p>The three options aren't really rivals: <b>A is B's first milestone, and C's engine is what makes either feel intelligent.</b> Consolidating to hubs (A) is work you must do under any future — it retires all Gen 0/1 debt and unifies the tokens. The Mission Control shell (B) is the only option that solves the navigation problem <em>structurally</em> instead of politely, and it's the one that produces the "how is this an Odoo app?" reaction. C's tolerance auto-approval and week-locks are the substance behind the shine — they're what a demo can't fake. Sequence it so every phase ships something visible:</p>
+    <div style="margin-top:18px">
+      <div class="phase"><span class="pn2">P0</span><div><h5>One system of record for pixels</h5><p>Purge the legacy palettes: re-tint Leave, Trips, My Team and Driver Tracking onto <b>pbim tokens</b>; fix the invalid CSS; retire the violet breadcrumb; ship the shared drawer + ribbon + context-bar kit. <b>Visible result:</b> every surviving screen is one brand.</p></div><span class="tail">foundation<br>1 phase</span></div>
+      <div class="phase"><span class="pn2">P1</span><div><h5>The great consolidation (Option A core)</h5><p>14 items → 7. Build the <b>Today board</b> (retiring Live Attendance + Workforce Dashboard, folding the driver map), merge Timecards + Weekly Entry + Attendance Control into the <b>Time hub</b> with the person drawer, fold Overtime Rules into the Desk, move Payroll Report to Pay Runs. <b>Visible result:</b> the sidebar in mockup A.</p></div><span class="tail">structure<br>2 phases</span></div>
+      <div class="phase"><span class="pn2">P2</span><div><h5>Instrument the Schedule</h5><p>Reskin the roster onto tokens; add the Deputy stats strip (cost per day column vs actuals), the coverage lens, ceiling/compliance warnings at edit-time, and the templates drawer. <b>Visible result:</b> mockup-A-grade Schedule with live budget.</p></div><span class="tail">canvas<br>1 phase</span></div>
+      <div class="phase"><span class="pn2">P3</span><div><h5>Raise the Mission Control shell (Option B)</h5><p>Global command bar with synced context, icon-rail lenses hosting the P1 hubs, the persistent <b>Needs-you dock</b> (absorbing My Team), the universal <b>person popover</b>, and ⌘K — extending the Command Center pattern Formula Studio already ships. <b>Visible result:</b> mockup B.</p></div><span class="tail">the wow<br>2 phases</span></div>
+      <div class="phase"><span class="pn2">P4</span><div><h5>Turn on the engine (Option C inside)</h5><p>Tolerance-based auto-approval feeding the dock's "clean" batch, day/week locks with the <b>Close ritual</b> handing a clean week to the pay run, employee shift acknowledgment, and shift-end pulse. <b>Visible result:</b> mockup C, living inside Mission Control.</p></div><span class="tail">substance<br>2 phases</span></div>
+    </div>
+    <p style="margin-top:16px;margin-bottom:0"><b>Decision points:</b> stop after P2 and you've shipped Option A in full — already the best-looking workforce suite in your market. P3 is the differentiator; P4 is the moat. If appetite is limited, my minimum-worthwhile cut is <b>P0 + P1</b> — it alone resolves the incohesion you named.</p>
+  </div>
+
+  <footer>
+    <p><b>Method:</b> every one of the 14 screens was traced from its <span class="mono">pb.sidebar.item</span> record through action, component, template and stylesheet; hex values and code cited in Part 1 are from those files, not memory. Competitive patterns in Parts 2–3 are drawn from Deputy, Zoho, Connecteam, Rippling, When&nbsp;I&nbsp;Work and Homebase vendor documentation and hands-on third-party reviews, 2024–2026.</p>
+    <p style="margin-top:8px">Payobook · Workforce design dossier · August 17, 2026 · Prepared with Claude Fable</p>
+  </footer>
+</div></section>
+
+<script>
+(function(){
+  var btn=document.getElementById('themeToggle'), root=document.documentElement;
+  function effective(){
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  function paint(){
+    var mode=effective();
+    btn.innerHTML='<svg class="ic"><use href="#'+(mode==='dark'?'i-sun':'i-moon')+'"/></svg>';
+  }
+  btn.addEventListener('click',function(){
+    root.setAttribute('data-theme', effective()==='dark'?'light':'dark');
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

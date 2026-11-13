@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ============ Demo driver users + employees ============ -->
+    <!-- SECURITY: no password field, and they ship ARCHIVED.
+
+         These live in `data` rather than `demo` on purpose — the xmlids must
+         resolve for toggle_demo/the route sims, which a demo-only load cannot
+         guarantee. The cost used to be that every install, including paying
+         client tenants, carried two live internal driver accounts: on the SaaS
+         fleet they were what the tenant cockpit counted as "2 users", when the
+         real answer was one admin (see pb_tenants fleet health).
+
+         `active="False"` keeps the xmlids resolvable while nobody inherits a
+         live account. toggle_demo() un-archives the pair when demo mode is
+         switched ON and re-archives them when it is switched OFF, so an awake
+         driver account only ever exists while somebody is actually demoing.
+         Still no password: set one from Settings > Users just before a phone
+         demo, and clear it afterwards. -->
+    <record id="demo_user_driver_hanoi" model="res.users">
+        <field name="name">Nguyễn Văn Tài (Driver)</field>
+        <field name="login">driver.hanoi@payobook.com</field>
+        <field name="group_ids" eval="[(4, ref('group_pb_driver'))]"/>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="demo_emp_driver_hanoi" model="hr.employee">
+        <field name="name">Nguyễn Văn Tài</field>
+        <field name="user_id" ref="demo_user_driver_hanoi"/>
+        <field name="job_title">Delivery Driver</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="demo_user_driver_hcmc" model="res.users">
+        <field name="name">Trần Thị Mai (Driver)</field>
+        <field name="login">driver.hcmc@payobook.com</field>
+        <field name="group_ids" eval="[(4, ref('group_pb_driver'))]"/>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="demo_emp_driver_hcmc" model="hr.employee">
+        <field name="name">Trần Thị Mai</field>
+        <field name="user_id" ref="demo_user_driver_hcmc"/>
+        <field name="job_title">Delivery Driver</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- ============ Route simulators (ship active=False; admin-gated) ======= -->
+    <record id="route_sim_hanoi" model="biz.geo.route.sim">
+        <field name="name">Hanoi — Hoàn Kiếm ring</field>
+        <field name="user_id" ref="demo_user_driver_hanoi"/>
+        <field name="speed_kmh">28</field>
+        <field name="loop" eval="True"/>
+        <field name="active" eval="False"/>
+        <field name="route_geojson"><![CDATA[{"type":"LineString","coordinates":[[105.872,21.032],[105.87152,21.03574],[105.8701,21.03932],[105.8678,21.04258],[105.86472,21.04538],[105.861,21.04759],[105.8568,21.04912],[105.8523,21.0499],[105.8477,21.0499],[105.8432,21.04912],[105.839,21.04759],[105.83528,21.04538],[105.8322,21.04258],[105.8299,21.03932],[105.82848,21.03574],[105.828,21.032],[105.82848,21.02826],[105.8299,21.02468],[105.8322,21.02142],[105.83528,21.01862],[105.839,21.01641],[105.8432,21.01488],[105.8477,21.0141],[105.8523,21.0141],[105.8568,21.01488],[105.861,21.01641],[105.86472,21.01862],[105.8678,21.02142],[105.8701,21.02468],[105.87152,21.02826],[105.872,21.032]]}]]></field>
+    </record>
+
+    <record id="route_sim_hcmc" model="biz.geo.route.sim">
+        <field name="name">HCMC — District 1 loop</field>
+        <field name="user_id" ref="demo_user_driver_hcmc"/>
+        <field name="speed_kmh">32</field>
+        <field name="loop" eval="True"/>
+        <field name="active" eval="False"/>
+        <field name="route_geojson"><![CDATA[{"type":"LineString","coordinates":[[106.72,10.776],[106.71956,10.77933],[106.71827,10.78251],[106.71618,10.7854],[106.71338,10.78789],[106.71,10.78986],[106.70618,10.79122],[106.70209,10.79191],[106.69791,10.79191],[106.69382,10.79122],[106.69,10.78986],[106.68662,10.78789],[106.68382,10.7854],[106.68173,10.78251],[106.68044,10.77933],[106.68,10.776],[106.68044,10.77267],[106.68173,10.76949],[106.68382,10.7666],[106.68662,10.76411],[106.69,10.76214],[106.69382,10.76078],[106.69791,10.76009],[106.70209,10.76009],[106.70618,10.76078],[106.71,10.76214],[106.71338,10.76411],[106.71618,10.7666],[106.71827,10.76949],[106.71956,10.77267],[106.72,10.776]]}]]></field>
+    </record>
+
+</odoo>

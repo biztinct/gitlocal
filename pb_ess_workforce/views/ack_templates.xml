@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ============================================================= -->
+  <!--  The login-less acknowledgment page.                           -->
+  <!--  ONE template, five outcomes. The status IS the page.          -->
+  <!-- ============================================================= -->
+  <template id="ack_token_page" name="Confirm your shift">
+    <t t-call="web.frontend_layout">
+      <div id="wrap" class="pbme pbew pbew-ackpage">
+        <div class="pbew-ackcard">
+
+          <div class="pbew-ackcard__brand">Payobook</div>
+
+          <!-- ==== the live case: a shift to confirm ==== -->
+          <t t-if="status == 'ok'">
+            <div class="pbew-ackcard__ic">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Confirm your shift</h1>
+            <p class="pbew-ackcard__sub" t-if="shift['who']" t-esc="greeting"/>
+            <div class="pbew-ackcard__shift">
+              <div class="d"><t t-esc="shift['day']"/></div>
+              <div class="t"><t t-esc="shift['start']"/> – <t t-esc="shift['end']"/></div>
+              <div class="n"><t t-esc="shift['name']"/> · <t t-esc="shift['hours_label']"/></div>
+            </div>
+            <form t-attf-action="/work/ack/#{token}/confirm" method="post">
+              <button type="submit" class="pbme-btn pbme-btn--primary pbme-btn--block">
+                <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
+                Yes, I have seen it
+              </button>
+            </form>
+            <p class="pbew-ackcard__fine">This link works once and only for this shift.</p>
+          </t>
+
+          <!-- ==== just confirmed ==== -->
+          <t t-elif="status == 'acked'">
+            <div class="pbew-ackcard__ic pbew-ackcard__ic--ok">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Thank you</h1>
+            <p class="pbew-ackcard__sub">Your manager can now see that you have this shift.</p>
+            <div class="pbew-ackcard__shift">
+              <div class="d"><t t-esc="shift['day']"/></div>
+              <div class="t"><t t-esc="shift['start']"/> – <t t-esc="shift['end']"/></div>
+            </div>
+          </t>
+
+          <!-- ==== already used ==== -->
+          <t t-elif="status == 'used'">
+            <div class="pbew-ackcard__ic pbew-ackcard__ic--ok">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>Already confirmed</h1>
+            <p class="pbew-ackcard__sub" t-esc="already"/>
+          </t>
+
+          <!-- ==== the shift has started ==== -->
+          <t t-elif="status == 'expired'">
+            <div class="pbew-ackcard__ic pbew-ackcard__ic--warn">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>This shift has already started</h1>
+            <p class="pbew-ackcard__sub">Confirmations close when a shift begins. Speak to your manager if something is wrong.</p>
+          </t>
+
+          <!-- ==== pulled back or cancelled ==== -->
+          <t t-elif="status == 'stale'">
+            <div class="pbew-ackcard__ic pbew-ackcard__ic--warn">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>This shift has changed</h1>
+            <p class="pbew-ackcard__sub">It was withdrawn or rescheduled after this link was sent. Your manager will send a new one.</p>
+          </t>
+
+          <!-- ==== nothing matches ==== -->
+          <t t-else="">
+            <div class="pbew-ackcard__ic pbew-ackcard__ic--warn">
+              <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="28"/></t>
+            </div>
+            <h1>This link is not valid</h1>
+            <p class="pbew-ackcard__sub">Check that you copied the whole address, or ask your manager to send it again.</p>
+          </t>
+
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The notification email body.                                  -->
+  <!--  A QWeb template rather than a mail.template body_html: text    -->
+  <!--  nodes here are extracted into the .po, an HTML blob in a data  -->
+  <!--  record is not (W7 / W80).                                     -->
+  <!-- ============================================================= -->
+  <template id="ack_mail_body" name="Shift published email body">
+    <div style="font-family: Inter, Arial, sans-serif; color: #1F2333; font-size: 14px; line-height: 1.55;">
+      <p t-esc="greeting"/>
+      <p>Your shift has been published:</p>
+      <table style="border-collapse: collapse; margin: 14px 0;">
+        <tr><td style="padding: 4px 14px 4px 0; color: #6B7280;">Day</td><td style="padding: 4px 0; font-weight: 700;"><t t-esc="day"/></td></tr>
+        <tr><td style="padding: 4px 14px 4px 0; color: #6B7280;">Time</td><td style="padding: 4px 0; font-weight: 700;"><t t-esc="start"/> – <t t-esc="end"/></td></tr>
+        <tr><td style="padding: 4px 14px 4px 0; color: #6B7280;">Shift</td><td style="padding: 4px 0;"><t t-esc="name"/></td></tr>
+      </table>
+      <p>Please confirm you have seen it:</p>
+      <p>
+        <a t-att-href="url" style="display: inline-block; background: #5A4BB0; color: #ffffff; text-decoration: none; padding: 11px 22px; border-radius: 10px; font-weight: 700;">Confirm this shift</a>
+      </p>
+      <p style="color: #6B7280; font-size: 12px;">This link works once and only for this shift.</p>
+    </div>
+  </template>
+
+</odoo>

@@ -1,0 +1,4987 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-12 22:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_lifecycle
+#: model:res.groups,name:pb_lifecycle.group_approvals_see_everyone
+#: model:pb.role.ability,name:pb_lifecycle.ability_approvals_see_everyone
+msgid "See everyone's approvals"
+msgstr "Lihat persetujuan semua orang"
+
+#. module: pb_lifecycle
+#: model:res.groups,comment:pb_lifecycle.group_approvals_see_everyone
+msgid ""
+"Read every approval request in your companies, in the Approvals inbox under Everyone. Does not let you decide, move, repair or cancel anything."
+msgstr ""
+"Baca setiap permintaan persetujuan di perusahaan Anda, di kotak Persetujuan pada bagian Semua orang. Tidak memungkinkan Anda memutuskan, memindahkan, memperbaiki, atau membatalkan apa pun."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.pbme_card_workflow_notices
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "For you"
+msgstr "Untuk Anda"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.pbme_card_workflow_notices
+msgid "See all"
+msgstr "Lihat semua"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.pbme_card_workflow_notices
+msgid "more on My tasks."
+msgstr "lainnya di Tugas saya."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_workflow_run_form
+msgid "View submitted information"
+msgstr "Lihat informasi yang dikirim"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_workflow_run_form
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "View workflow"
+msgstr "Lihat alur kerja"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.view_workflow_run_form
+msgid "Started"
+msgstr "Dimulai"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_task_page
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "My tasks"
+msgstr "Tugas saya"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Things a workflow has asked you to do, and notices for you."
+msgstr ""
+"Hal-hal yang diminta alur kerja untuk Anda kerjakan, dan pemberitahuan untuk Anda."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Waiting for you"
+msgstr "Menunggu Anda"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Late, it was due"
+msgstr "Terlambat, batas waktunya"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Needed by"
+msgstr "Diperlukan sebelum"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid ""
+"<span>Nothing is waiting for you. When a workflow needs you, it shows here and on your home page.</span>"
+msgstr ""
+"<span>Tidak ada yang menunggu Anda. Saat alur kerja membutuhkan Anda, tugasnya muncul di sini dan di beranda Anda.</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_my_tasks_page
+msgid "Mark as read"
+msgstr "Tandai sudah dibaca"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Do it now"
+msgstr "Kerjakan sekarang"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Move to…"
+msgstr "Pindahkan ke…"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Moved. Everyone sees the new stage now."
+msgstr "Sudah dipindahkan. Semua orang kini melihat tahap yang baru."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Only the person this stage names can move it there."
+msgstr "Hanya orang yang ditunjuk tahap ini yang bisa memindahkannya ke sana."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "It gets there by itself. Nobody needs to move it."
+msgstr ""
+"Catatan sampai ke sana dengan sendirinya. Tidak perlu ada yang memindahkannya."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "That move is not possible any more. The page shows where it is now."
+msgstr ""
+"Pemindahan itu sudah tidak bisa dilakukan. Halaman ini menunjukkan posisinya sekarang."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "{{0}} more stages"
+msgstr "{{0}} tahap lagi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "counts as"
+msgstr "dihitung sebagai"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Here now"
+msgstr "Di sini sekarang"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Stages"
+msgstr "Tahap"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Stage"
+msgstr "Tahap"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "of"
+msgstr "dari"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_strip_page
+msgid "Where this is now"
+msgstr "Posisinya sekarang"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Thanks — sent."
+msgstr "Terima kasih — sudah terkirim."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Thanks, this is already done."
+msgstr "Terima kasih, ini sudah selesai."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Nothing more to do here."
+msgstr "Tidak ada lagi yang perlu dikerjakan di sini."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "You can close this page."
+msgstr "Anda bisa menutup halaman ini."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "There is nothing more to do here."
+msgstr "Tidak ada lagi yang perlu dilakukan di sini."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Back to my tasks"
+msgstr "Kembali ke tugas saya"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "This link has run out."
+msgstr "Tautan ini sudah kedaluwarsa."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid ""
+"Ask whoever sent it to you for a new one. A new link always replaces the old one."
+msgstr ""
+"Mintalah tautan baru kepada orang yang mengirimkannya. Tautan baru selalu menggantikan yang lama."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Late · it was due"
+msgstr "Terlambat · batas waktunya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "by"
+msgstr "oleh"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "for changes"
+msgstr "untuk diubah"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Check your answers, change what is needed and send it again."
+msgstr "Periksa jawaban Anda, ubah yang perlu, lalu kirim lagi."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "A few answers need a look. They are marked below."
+msgstr "Beberapa jawaban perlu diperiksa. Jawaban itu ditandai di bawah."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Send my answers"
+msgstr "Kirim jawaban saya"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "What you are asked to confirm"
+msgstr "Hal yang diminta untuk Anda konfirmasi"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Add a note (optional)"
+msgstr "Tambahkan catatan (opsional)"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Anything the next person should know"
+msgstr "Hal yang perlu diketahui orang berikutnya"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "Mark it done"
+msgstr "Tandai selesai"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.workflow_task_body
+msgid "This link is just for you and works once. You do not need to sign in."
+msgstr ""
+"Tautan ini khusus untuk Anda dan hanya berlaku sekali. Anda tidak perlu masuk."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "From the record"
+msgstr "Dari catatan"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Only needed if an earlier answer says so."
+msgstr "Hanya perlu jika jawaban sebelumnya memintanya."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Files cannot be sent from this page. Ask"
+msgstr "File tidak bisa dikirim dari halaman ini. Tanyakan kepada"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "how to send it."
+msgstr "cara mengirimnya."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "This one is chosen inside the app. Ask"
+msgstr "Isian ini dipilih di dalam aplikasi. Mintalah"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "to fill it in for you."
+msgstr "untuk mengisinya bagi Anda."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<option value=\"\">Choose one…</option>"
+msgstr "<option value=\"\">Pilih salah satu…</option>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<span>Yes</span>"
+msgstr "<span>Ya</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<span>No</span>"
+msgstr "<span>Tidak</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Up to 10 files, 10 MB each."
+msgstr "Maksimal 10 file, masing-masing 10 MB."
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "<span>What it is</span><span>Amount</span>"
+msgstr "<span>Keterangan</span><span>Jumlah</span>"
+
+#. module: pb_lifecycle
+#: model_terms:ir.ui.view,arch_db:pb_lifecycle.wt_field
+msgid "Leave a line empty to skip it."
+msgstr "Biarkan baris kosong untuk melewatinya."
+
+#. module: pb_lifecycle
+#: model:mail.template,name:pb_lifecycle.mail_template_workflow_link
+msgid "Workflow: something for you to do (link)"
+msgstr "Alur kerja: ada tugas untuk Anda (tautan)"
+
+#. module: pb_lifecycle
+#: model:mail.template,subject:pb_lifecycle.mail_template_workflow_link
+msgid "You have something to do: {{ object.name }}"
+msgstr "Ada tugas untuk Anda: {{ object.name }}"
+
+#. module: pb_lifecycle
+#: model:mail.template,body_html:pb_lifecycle.mail_template_workflow_link
+msgid ""
+"<div style=\"margin:0;padding:24px 0;background:#f6f7fc;font-family:Inter,Segoe UI,Arial,sans-serif;color:#1f1d2b\">\n"
+"  <div style=\"max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e4f2;border-radius:16px;padding:32px\">\n"
+"    <p style=\"margin:0 0 4px;font-size:13px;color:#6b6880\" t-out=\"ctx.get('link_company') or ''\"/>\n"
+"    <h1 style=\"margin:0 0 16px;font-size:22px;line-height:1.3;color:#1f1d2b\" t-out=\"object.name or ''\"/>\n"
+"    <p style=\"margin:0 0 16px;font-size:15px;line-height:1.55\">\n"
+"      <t t-if=\"ctx.get('link_name')\">Hello <t t-out=\"ctx.get('link_name')\"/>, </t>there is one thing for you to do. It takes a minute and you do not need to sign in.\n"
+"    </p>\n"
+"    <p t-if=\"ctx.get('link_due')\" style=\"margin:0 0 20px;font-size:14px;color:#6b6880\">Needed by <t t-out=\"ctx.get('link_due')\"/>.</p>\n"
+"    <p style=\"margin:0 0 24px\">\n"
+"      <a t-att-href=\"ctx.get('link_url')\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px\">Open it</a>\n"
+"    </p>\n"
+"    <p style=\"margin:0;font-size:12px;line-height:1.5;color:#6b6880\">\n"
+"      This link is just for you and works until <t t-out=\"ctx.get('link_until') or ''\"/>. Please do not forward it. If you were not expecting this, you can ignore it.\n"
+"    </p>\n"
+"  </div>\n"
+"</div>\n"
+"        "
+msgstr ""
+"<div style=\"margin:0;padding:24px 0;background:#f6f7fc;font-family:Inter,Segoe UI,Arial,sans-serif;color:#1f1d2b\">\n"
+"  <div style=\"max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e4f2;border-radius:16px;padding:32px\">\n"
+"    <p style=\"margin:0 0 4px;font-size:13px;color:#6b6880\" t-out=\"ctx.get('link_company') or ''\"/>\n"
+"    <h1 style=\"margin:0 0 16px;font-size:22px;line-height:1.3;color:#1f1d2b\" t-out=\"object.name or ''\"/>\n"
+"    <p style=\"margin:0 0 16px;font-size:15px;line-height:1.55\">\n"
+"      <t t-if=\"ctx.get('link_name')\">Halo <t t-out=\"ctx.get('link_name')\"/>, </t>ada satu hal yang perlu Anda lakukan. Hanya perlu satu menit dan Anda tidak perlu login.\n"
+"    </p>\n"
+"    <p t-if=\"ctx.get('link_due')\" style=\"margin:0 0 20px;font-size:14px;color:#6b6880\">Dibutuhkan paling lambat <t t-out=\"ctx.get('link_due')\"/>.</p>\n"
+"    <p style=\"margin:0 0 24px\">\n"
+"      <a t-att-href=\"ctx.get('link_url')\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px\">Buka</a>\n"
+"    </p>\n"
+"    <p style=\"margin:0;font-size:12px;line-height:1.5;color:#6b6880\">\n"
+"      Tautan ini khusus untuk Anda dan berlaku sampai <t t-out=\"ctx.get('link_until') or ''\"/>. Mohon jangan meneruskannya ke orang lain. Jika Anda tidak menantikan email ini, Anda dapat mengabaikannya.\n"
+"    </p>\n"
+"  </div>\n"
+"</div>\n"
+"        "
+
+#. module: pb_lifecycle
+#: model:pb.role.ability,description:pb_lifecycle.ability_approvals_see_everyone
+msgid ""
+"Look at every approval request in the company, under Everyone in the Approvals inbox. Read only: it does not let you decide, move, repair or cancel anything."
+msgstr ""
+"Lihat setiap permintaan persetujuan di perusahaan, pada bagian Semua orang di kotak Persetujuan. Hanya baca: tidak memungkinkan Anda memutuskan, memindahkan, memperbaiki, atau membatalkan apa pun."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "the link sent to %s"
+msgstr "tautan yang dikirim ke %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This kind of record does not say who it is about. Choose someone else."
+msgstr "Jenis catatan ini tidak menyebutkan siapa yang dimaksud. Pilih orang lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose a team from Approvals › Who approves."
+msgstr "Pilih tim dari Persetujuan › Siapa yang menyetujui."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid ""
+"Nobody is on the team “%s” here yet. Add people to it in Approvals › Who approves."
+msgstr ""
+"Belum ada orang di tim “%s” di sini. Tambahkan orang ke tim itu di Persetujuan › Siapa yang menyetujui."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "The person this is about"
+msgstr "Orang yang bersangkutan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s cannot sign in at the moment, so this cannot be given to them."
+msgstr "%s saat ini tidak bisa login, jadi ini tidak bisa diberikan kepadanya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s has no staff login yet, so this task cannot be given to them."
+msgstr ""
+"%s belum punya akun login staf, jadi tugas ini tidak bisa diberikan kepadanya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s has no login and no work email, so this cannot reach them."
+msgstr ""
+"%s tidak punya akun login dan email kerja, jadi ini tidak bisa sampai kepadanya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Set the company working calendar before assigning this task."
+msgstr "Atur kalender kerja perusahaan sebelum memberikan tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "The company calendar has no available working days."
+msgstr "Kalender perusahaan tidak memiliki hari kerja yang tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Open Workflow Studio → My tasks to complete this step."
+msgstr "Buka Workflow Studio → Tugas saya untuk menyelesaikan langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose an active person who belongs to this company."
+msgstr "Pilih orang aktif yang termasuk dalam perusahaan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %(who)s, covering for %(whose)s while they are away."
+msgstr "Menunggu %(who)s, yang menggantikan %(whose)s selama mereka tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %s."
+msgstr "Menunggu %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Nobody on the team “%s” can open this record."
+msgstr "Tidak ada seorang pun di tim “%s” yang bisa membuka catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for someone on the team %s."
+msgstr "Menunggu seseorang di tim %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %s, on their employee home."
+msgstr "Menunggu %s, di beranda karyawannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Sent back to you"
+msgstr "Dikembalikan kepada Anda"
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Late"
+msgstr "Terlambat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "To do"
+msgstr "Harus dikerjakan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "a team"
+msgstr "sebuah tim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Team: %s · nobody has taken it"
+msgstr "Tim: %s · belum ada yang mengambil"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Someone without a login"
+msgstr "Seseorang tanpa akun login"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(who)s, by %(link)s"
+msgstr "%(who)s, melalui %(link)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Fill in"
+msgstr "Isi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Read and confirm"
+msgstr "Baca dan konfirmasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This task no longer exists."
+msgstr "Tugas ini sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Only someone on this team can take this task."
+msgstr "Hanya anggota tim ini yang dapat mengambil tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "You no longer have access to this workflow record."
+msgstr "Anda tidak lagi memiliki akses ke catatan alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Someone on the team is taking this right now. Look again in a moment."
+msgstr "Seseorang di tim sedang mengambil tugas ini. Lihat lagi sebentar lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This task is not waiting any more."
+msgstr "Tugas ini sudah tidak menunggu lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s has just taken this."
+msgstr "%s baru saja mengambil tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s took this for the team."
+msgstr "%s mengambil tugas ini untuk tim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Only the person who took this can put it back."
+msgstr "Hanya orang yang mengambil tugas ini yang dapat mengembalikannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s put this back for the team."
+msgstr "%s mengembalikan tugas ini ke tim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This task is not waiting for an answer."
+msgstr "Tugas ini tidak sedang menunggu jawaban."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose this in the app."
+msgstr "Pilih ini di aplikasi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Attach the file again."
+msgstr "Lampirkan lagi berkasnya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Confirmed by link sent to %(email)s: “%(what)s”."
+msgstr "Dikonfirmasi melalui tautan yang dikirim ke %(email)s: “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Filled in by link sent to %s."
+msgstr "Diisi melalui tautan yang dikirim ke %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Answered by link sent to %(email)s: “%(what)s”."
+msgstr "Dijawab melalui tautan yang dikirim ke %(email)s: “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Done by link sent to %s."
+msgstr "Diselesaikan melalui tautan yang dikirim ke %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(who)s confirmed: “%(what)s”."
+msgstr "%(who)s mengonfirmasi: “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(who)s chose “%(what)s”."
+msgstr "%(who)s memilih “%(what)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s sent the details."
+msgstr "%s mengirim rinciannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s marked it done."
+msgstr "%s menandainya selesai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This file does not belong to this task."
+msgstr "Berkas ini bukan milik tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Choose a file up to 10 MB."
+msgstr "Pilih berkas maksimal 10 MB."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Only the person this task is for can attach a file to it."
+msgstr "Hanya orang yang mendapat tugas ini yang dapat melampirkan berkas."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Told %s on their employee home."
+msgstr "%s sudah diberi tahu di beranda karyawannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "them"
+msgstr "mereka"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Waiting for %(who)s: a link was sent to %(email)s."
+msgstr "Menunggu %(who)s: tautan sudah dikirim ke %(email)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This step no longer exists."
+msgstr "Langkah ini sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This step is not waiting for a link."
+msgstr "Langkah ini tidak sedang menunggu tautan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "New for your team: %s"
+msgstr "Baru untuk tim Anda: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid ""
+"“%(step)s” in %(workflow)s is waiting for someone on your team. Open it in Approvals and press Take it."
+msgstr ""
+"“%(step)s” di %(workflow)s menunggu seseorang di tim Anda. Buka di Persetujuan dan tekan Ambil."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Still waiting for you: %s"
+msgstr "Masih menunggu Anda: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "“%(what)s” was due on %(when)s. Open it in Approvals to finish it."
+msgstr ""
+"“%(what)s” memiliki batas waktu %(when)s. Buka di Persetujuan untuk menyelesaikannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "nobody on the team yet"
+msgstr "belum ada orang di tim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Late: %s"
+msgstr "Terlambat: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid ""
+"“%(what)s” was due on %(when)s and is still with %(who)s. Nothing has been moved; you are told so you can help."
+msgstr ""
+"“%(what)s” memiliki batas waktu %(when)s dan masih ada pada %(who)s. Belum ada yang dipindahkan; Anda diberi tahu agar bisa membantu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "A reminder went out for %s."
+msgstr "Pengingat sudah dikirim untuk %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%(step)s is late; %(who)s was told."
+msgstr "%(step)s terlambat; %(who)s sudah diberi tahu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "%s is late and there is nobody to tell."
+msgstr "%s terlambat dan tidak ada orang yang bisa diberi tahu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Past its target time: %s"
+msgstr "Melewati waktu target: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "This has been in “%(stage)s” longer than its target of %(hours)s hours."
+msgstr "Ini sudah berada di “%(stage)s” lebih lama dari targetnya, %(hours)s jam."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Past its target time in %(stage)s; %(who)s was told."
+msgstr "Melewati waktu target di %(stage)s; %(who)s sudah diberi tahu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Started for %(line)s (%(n)s of %(count)s)."
+msgstr "Dimulai untuk %(line)s (%(n)s dari %(count)s)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Started version %s."
+msgstr "Dimulai dengan versi %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: the workflow it belongs to has ended."
+msgstr "Dihentikan: alur kerja induknya sudah berakhir."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: it was sent back and starts again."
+msgstr "Dihentikan: dikembalikan dan dimulai lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid ""
+"There are %(count)s %(lines)s, more than the %(cap)s this repeats for, so none were started. Raise the limit in the step or narrow it down, then retry."
+msgstr ""
+"Ada %(count)s %(lines)s, lebih dari batas %(cap)s untuk pengulangan ini, jadi tidak ada yang dimulai. Naikkan batasnya di langkah ini atau persempit, lalu coba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "There were no %s, so nothing was repeated."
+msgstr "Tidak ada %s, jadi tidak ada yang diulang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Nothing to repeat: there were no %s."
+msgstr "Tidak ada yang diulang: tidak ada %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "together"
+msgstr "sekaligus"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "one by one"
+msgstr "satu per satu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Repeating for %(count)s %(lines)s, %(how)s."
+msgstr "Mengulangi untuk %(count)s %(lines)s, %(how)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: another line finished first."
+msgstr "Dihentikan: baris lain selesai lebih dulu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "1 of %s lines needs attention."
+msgstr "1 dari %s baris perlu perhatian."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(n)s of %(count)s lines need attention."
+msgstr "%(n)s dari %(count)s baris perlu perhatian."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(line)s finished first; the other lines were stopped."
+msgstr "%(line)s selesai lebih dulu; baris lainnya dihentikan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "All %(count)s %(lines)s finished (%(done)s done)."
+msgstr "Semua %(count)s %(lines)s sudah tuntas (%(done)s selesai)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "line"
+msgstr "baris"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each %s"
+msgstr "Untuk setiap %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "person"
+msgstr "orang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "people"
+msgstr "orang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each person on %s"
+msgstr "Untuk setiap orang di %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each person on a team"
+msgstr "Untuk setiap orang di sebuah tim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "lines"
+msgstr "baris"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each line of “%s”"
+msgstr "Untuk setiap baris dari “%s”"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "answer"
+msgstr "jawaban"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "answers"
+msgstr "jawaban"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each answer to “%s”"
+msgstr "Untuk setiap jawaban atas “%s”"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each answer"
+msgstr "Untuk setiap jawaban"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "For each line"
+msgstr "Untuk setiap baris"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "A new process has no record with lines. Edit the step."
+msgstr "Proses baru belum punya catatan yang memiliki baris. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This area"
+msgstr "Bagian ini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%s no longer offers these lines to workflows. Edit the step."
+msgstr "%s tidak lagi menyediakan baris ini untuk alur kerja. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "The answer this repeats for is not a list. Edit the step."
+msgstr "Jawaban yang diulang di langkah ini bukan sebuah daftar. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Choose one of the teams from Approvals › Who approves. Edit the step."
+msgstr ""
+"Pilih salah satu tim dari Persetujuan › Siapa yang menyetujui. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Choose what this repeats for. Edit the step."
+msgstr "Pilih apa yang diulang oleh langkah ini. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Description"
+msgstr "Keterangan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Answer"
+msgstr "Jawaban"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid ""
+"Only a step inside “Repeat for each…” can go to the person on the line, and only when the line names a person."
+msgstr ""
+"Hanya langkah di dalam “Ulangi untuk setiap…” yang bisa ditujukan ke orang di baris, dan hanya jika baris itu menyebut seseorang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This record type"
+msgstr "Jenis catatan ini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid ""
+"%s has no lines a workflow can repeat for. Choose a list question or a team instead."
+msgstr ""
+"%s tidak punya baris yang bisa diulang oleh alur kerja. Pilih pertanyaan berupa daftar atau sebuah tim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "A new process has no record with lines. Choose a list question or a team."
+msgstr ""
+"Proses baru belum punya catatan yang memiliki baris. Pilih pertanyaan berupa daftar atau sebuah tim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Some line details are not offered any more. Choose “%s” again."
+msgstr "Beberapa detail baris tidak tersedia lagi. Pilih “%s” lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Repeat for the answers to a list question asked earlier on the main path."
+msgstr ""
+"Ulangi untuk jawaban dari pertanyaan berupa daftar yang diajukan sebelumnya di jalur utama."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Choose one of the teams from Approvals › Who approves."
+msgstr "Pilih salah satu tim dari Persetujuan › Siapa yang menyetujui."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This line does not name a person. Edit the step."
+msgstr "Baris ini tidak menyebut seseorang. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "The person on the line"
+msgstr "Orang di baris"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(what)s %(n)s of %(count)s"
+msgstr "%(what)s %(n)s dari %(count)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(done)s of %(count)s %(lines)s done"
+msgstr "%(done)s dari %(count)s %(lines)s selesai"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(done)s of %(count)s %(lines)s"
+msgstr "%(done)s dari %(count)s %(lines)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Retry by %s."
+msgstr "Dicoba lagi oleh %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Stopped: the workflow it belongs to was cancelled."
+msgstr "Dihentikan: alur kerja induknya dibatalkan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "you"
+msgstr "Anda"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(done)s of %(count)s %(lines)s done · next for you: %(what)s"
+msgstr "%(done)s dari %(count)s %(lines)s selesai · berikutnya untuk Anda: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Each %(one)s usually %(time)s"
+msgstr "Setiap %(one)s biasanya butuh %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(each)s, %(how)s"
+msgstr "%(each)s, %(how)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(each)s · shown for %(first)s"
+msgstr "%(each)s · ditampilkan untuk %(first)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%s · shown for one"
+msgstr "%s · ditampilkan untuk satu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "…and the same for %(n)s more %(lines)s"
+msgstr "…dan sama untuk %(n)s %(lines)s lainnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "…and the same for each other %s"
+msgstr "…dan sama untuk setiap %s lainnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "That is the only %s."
+msgstr "Itu satu-satunya %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(what)s · %(n)s to do"
+msgstr "%(what)s · %(n)s tugas"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Choose a comparison and value that match the field type."
+msgstr "Pilih perbandingan dan nilai yang sesuai dengan jenis isian ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "You need email-template editing permission to change shared messages."
+msgstr "Anda perlu izin mengubah templat email untuk mengubah pesan bersama."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "These template settings are not supported."
+msgstr "Pengaturan templat ini tidak didukung."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Use a shorter message."
+msgstr "Gunakan pesan yang lebih pendek."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Give the message a name and a subject."
+msgstr "Beri pesan ini nama dan subjek."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "This shared template changed elsewhere. Reopen it before saving."
+msgstr ""
+"Templat bersama ini sudah diubah di tempat lain. Buka lagi sebelum menyimpan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Choose a run of this workflow."
+msgstr "Pilih satu jalannya alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_configuration.py:0
+msgid "Choose a related-record field."
+msgstr "Pilih isian yang terhubung ke catatan lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "A letter"
+msgstr "Sebuah surat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"A draft letter for the person this is about, from your letters library. Sending it still needs its own approval."
+msgstr ""
+"Draf surat untuk orang yang bersangkutan, dari pustaka surat Anda. Pengirimannya tetap perlu persetujuan tersendiri."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft letter"
+msgstr "Draf surat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "An announcement"
+msgstr "Sebuah pengumuman"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"A draft announcement from one of your templates. It then follows its own sign-off before it goes out."
+msgstr ""
+"Draf pengumuman dari salah satu templat Anda. Setelah itu pengumuman melewati persetujuannya sendiri sebelum dikirim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft announcement"
+msgstr "Draf pengumuman"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This app is not switched on here."
+msgstr "Aplikasi ini belum diaktifkan di sini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"Letters are written for the person a record is about, and this kind of record does not say who that is."
+msgstr ""
+"Surat ditulis untuk orang yang bersangkutan dengan catatan, tetapi jenis catatan ini tidak menyebutkan siapa orangnya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%(label)s” needs %(kind)s."
+msgstr "“%(label)s” memerlukan %(kind)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This value cannot be set by a workflow."
+msgstr "Nilai ini tidak bisa diatur oleh alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Set the company working calendar before waiting in working days."
+msgstr "Atur kalender kerja perusahaan sebelum menunggu dalam hari kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Skipped %(step)s: %(why)s"
+msgstr "Melewati %(step)s: %(why)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The stage this step moves to no longer exists. Edit the step."
+msgstr "Tahap tujuan langkah ini sudah tidak ada. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” belongs to another kind of record. Edit the step."
+msgstr "“%s” milik jenis catatan lain. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This is now %(exit)s, so it was not moved to %(stage)s."
+msgstr "Catatan ini sekarang sudah %(exit)s, jadi tidak dipindahkan ke %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” follows a stage that no longer exists."
+msgstr "“%s” mengikuti tahap yang sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Waiting for this to reach %s."
+msgstr "Menunggu catatan ini mencapai %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This is already past %(anchor)s, so it was not moved to %(stage)s."
+msgstr "Catatan ini sudah melewati %(anchor)s, jadi tidak dipindahkan ke %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” belongs to another process. Edit the step."
+msgstr "“%s” milik proses lain. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This has gone back three times. Someone should look at it."
+msgstr "Catatan ini sudah dikembalikan tiga kali. Perlu ada yang memeriksanya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The step this sends back to is not on the main path any more. Edit the step."
+msgstr ""
+"Langkah tujuan pengembalian ini sudah tidak ada di jalur utama. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Steps in between would run twice: %s."
+msgstr "Langkah-langkah di antaranya akan berjalan dua kali: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Sent back to %(target)s (%(n)s of %(limit)s)."
+msgstr "Dikembalikan ke %(target)s (%(n)s dari %(limit)s)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "A new process has no record to update."
+msgstr "Proses baru belum punya catatan untuk diperbarui."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%(area)s has not opened this value to workflows."
+msgstr "%(area)s belum membuka nilai ini untuk alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Set %(label)s to %(value)s."
+msgstr "Mengatur %(label)s menjadi %(value)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This app is not switched on here any more, so nothing was created."
+msgstr "Aplikasi ini tidak aktif lagi di sini, jadi tidak ada yang dibuat."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The template this step starts from is not available any more. Edit the step."
+msgstr "Templat yang dipakai langkah ini sudah tidak tersedia. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This is not about an employee, so there is nobody to write a letter for."
+msgstr "Ini tidak terkait karyawan, jadi tidak ada orang yang bisa dibuatkan surat."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s works for another company."
+msgstr "%s bekerja untuk perusahaan lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft letter created for %(who)s: %(what)s."
+msgstr "Draf surat dibuat untuk %(who)s: %(what)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Draft announcement created: %s."
+msgstr "Draf pengumuman dibuat: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s has no login to show this to."
+msgstr "%s tidak punya akun login untuk melihat ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "That person"
+msgstr "Orang tersebut"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Told %s in the app."
+msgstr "Memberi tahu %s di aplikasi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "The workflow this hands over to no longer exists. Edit the step."
+msgstr "Alur kerja tujuan serah terima ini sudah tidak ada. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "A workflow cannot start itself."
+msgstr "Alur kerja tidak bisa memulai dirinya sendiri."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” is not switched on, so it could not start. Switch it on, then retry."
+msgstr "“%s” belum aktif, jadi tidak bisa dimulai. Aktifkan, lalu coba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "“%s” no longer starts this way for these records. Edit the step."
+msgstr "“%s” tidak lagi dimulai dengan cara ini untuk catatan ini. Ubah langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid ""
+"This would be the fourth workflow handed over in a row. Workflows can hand over three times at most."
+msgstr ""
+"Ini akan menjadi alur kerja keempat yang diserahkan berturut-turut. Alur kerja hanya bisa diserahkan paling banyak tiga kali."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s is already running for this record."
+msgstr "%s sudah berjalan untuk catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Started %s."
+msgstr "Memulai %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s did not start: its filters do not match this record."
+msgstr "%s tidak dimulai: filternya tidak cocok dengan catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s did not start."
+msgstr "%s tidak dimulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s working day"
+msgstr "%s hari kerja"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s working days"
+msgstr "%s hari kerja"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s day"
+msgstr "%s hari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s days"
+msgstr "%s hari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s hour"
+msgstr "%s jam"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s hours"
+msgstr "%s jam"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would move this to %s"
+msgstr "Akan memindahkan ini ke %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would send it back to %s. The steps from there run again."
+msgstr "Akan mengembalikannya ke %s. Langkah-langkah dari sana berjalan lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would stop here: %s"
+msgstr "Akan berhenti di sini: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would stop here"
+msgstr "Akan berhenti di sini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "an earlier step"
+msgstr "langkah sebelumnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would set %(label)s from the answer to %(step)s"
+msgstr "Akan mengatur %(label)s dari jawaban di %(step)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would set %(label)s to %(value)s"
+msgstr "Akan mengatur %(label)s menjadi %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would make a draft letter from %s"
+msgstr "Akan membuat draf surat dari %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would make a draft announcement from %s"
+msgstr "Akan membuat draf pengumuman dari %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would tell %s in the app"
+msgstr "Akan memberi tahu %s di aplikasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would ask %s to confirm"
+msgstr "Akan meminta %s untuk mengonfirmasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Would start %s"
+msgstr "Akan memulai %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Asks %(who)s: %(choices)s"
+msgstr "Bertanya kepada %(who)s: %(choices)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "This record type is not available."
+msgstr "Jenis catatan ini tidak tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "%s stages are added in its own set-up."
+msgstr "Tahap %s ditambahkan di pengaturannya sendiri."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "Choose the stage the new one comes after."
+msgstr "Pilih tahap yang akan diikuti oleh tahap baru."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Someone this record names"
+msgstr "Seseorang yang disebut di catatan ini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Choose a staff person to move records into this stage."
+msgstr "Pilih seorang staf untuk memindahkan catatan ke tahap ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Choose someone this kind of record names."
+msgstr "Pilih seseorang yang disebut di jenis catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"A notice is read inside the app, and %s has no login. Use “Ask someone to confirm” or a form instead."
+msgstr ""
+"Pemberitahuan dibaca di dalam aplikasi, dan %s tidak punya akun login. Gunakan “Minta seseorang mengonfirmasi” atau formulir sebagai gantinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(who)s answers by email link, and a link page cannot take %(fields)s. Remove them, or choose someone else."
+msgstr ""
+"%(who)s menjawab lewat tautan di email, dan halaman tautan tidak bisa menerima %(fields)s. Hapus isian tersebut, atau pilih orang lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"“%(step)s” goes to %(who)s by email link. If there is no email address on the record, the step stops and needs a look."
+msgstr ""
+"“%(step)s” dikirim ke %(who)s lewat tautan di email. Jika tidak ada alamat email di catatan, langkah ini berhenti dan perlu diperiksa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"If a task is late and the person has no manager, the person who published this workflow is told. You can name someone else in Settings."
+msgstr ""
+"Jika sebuah tugas terlambat dan orang tersebut tidak punya atasan, orang yang menerbitkan alur kerja ini akan diberi tahu. Anda bisa memilih orang lain di Pengaturan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(owner)s already emails %(who)s here: %(text)s This step would send a second email."
+msgstr ""
+"%(owner)s sudah mengirim email ke %(who)s di sini: %(text)s Langkah ini akan mengirim email kedua."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Choose who is told about late tasks from Approvals › Who approves."
+msgstr ""
+"Pilih siapa yang diberi tahu tentang tugas yang terlambat di Persetujuan › Siapa yang menyetujui."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "This kind of record does not name that person any more. Edit the step."
+msgstr "Jenis catatan ini tidak lagi menyebut orang tersebut. Ubah langkahnya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "%s has no email address on the record, and nobody could be found to add one."
+msgstr ""
+"%s tidak punya alamat email di catatan, dan tidak ada orang yang bisa ditemukan untuk menambahkannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(who)s has no email address on the record. Waiting for someone on the team %(team)s to add one."
+msgstr ""
+"%(who)s tidak punya alamat email di catatan. Menunggu seseorang di tim %(team)s untuk menambahkannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"%(who)s has no email address on the record. Waiting for %(keeper)s to add one."
+msgstr ""
+"%(who)s tidak punya alamat email di catatan. Menunggu %(keeper)s untuk menambahkannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Add an email for %s"
+msgstr "Tambahkan email untuk %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"A workflow needs to reach %s by email. Add their email address here; the link then goes out by itself."
+msgstr ""
+"Sebuah alur kerja perlu menghubungi %s lewat email. Tambahkan alamat email mereka di sini; tautannya lalu terkirim dengan sendirinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "An email address for %s was added."
+msgstr "Alamat email untuk %s sudah ditambahkan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Add an email"
+msgstr "Tambahkan email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Waiting for you: add an email for %s"
+msgstr "Menunggu Anda: tambahkan email untuk %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "someone"
+msgstr "seseorang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Waiting for %(who)s to add an email for %(name)s"
+msgstr "Menunggu %(who)s menambahkan email untuk %(name)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid ""
+"This task is to add an email address for %s on the record. The link then goes out by itself."
+msgstr ""
+"Tugas ini adalah menambahkan alamat email untuk %s di catatan. Tautannya lalu terkirim dengan sendirinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "Their manager was told on %s"
+msgstr "Atasan mereka sudah diberi tahu pada %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "The person who published this workflow was told on %s"
+msgstr "Orang yang menerbitkan alur kerja ini sudah diberi tahu pada %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_reach.py:0
+msgid "%(role)s was told on %(day)s"
+msgstr "%(role)s sudah diberi tahu pada %(day)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_record_context.py:0
+msgid "Manage these stages through the module that owns them."
+msgstr "Kelola tahap-tahap ini di bagian aplikasi yang memilikinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_record_context.py:0
+msgid "Workflow setup is not available for this record type."
+msgstr "Pengaturan alur kerja tidak tersedia untuk jenis catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_record_context.py:0
+msgid "Save the record before creating a workflow just for it."
+msgstr "Simpan catatan ini dulu sebelum membuat alur kerja khusus untuknya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Sign in with an internal account."
+msgstr "Masuk dengan akun internal."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "You can complete your tasks, but cannot edit workflows."
+msgstr "Anda bisa menyelesaikan tugas Anda, tetapi tidak bisa mengubah alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A workflow publisher must publish or activate this change."
+msgstr "Penerbit alur kerja harus menerbitkan atau mengaktifkan perubahan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This company is not available to you."
+msgstr "Perusahaan ini tidak tersedia untuk Anda."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow is not available in your current company."
+msgstr "Alur kerja ini tidak tersedia di perusahaan Anda saat ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "You do not have permission to start this workflow."
+msgstr "Anda tidak punya izin untuk memulai alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a record for this workflow."
+msgstr "Pilih catatan untuk alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The source record no longer exists."
+msgstr "Catatan asalnya sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a record from this company."
+msgstr "Pilih catatan dari perusahaan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Urgent"
+msgstr "Mendesak"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Other approval request"
+msgstr "Permintaan persetujuan lainnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval routes, people and backups"
+msgstr "Jalur persetujuan, orang, dan cadangan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Permissions and access delegation"
+msgstr "Izin dan pendelegasian akses"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Existing module settings and templates"
+msgstr "Pengaturan dan templat yang sudah ada"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Settings"
+msgstr "Pengaturan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Stages, candidate messages and automations"
+msgstr "Tahap, pesan untuk kandidat, dan otomatisasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Employee checklists and their automatic work"
+msgstr "Daftar periksa karyawan dan pekerjaan otomatisnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Calculation, locks and payment release"
+msgstr "Perhitungan, penguncian, dan pencairan pembayaran"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Time policies and attendance rules"
+msgstr "Kebijakan waktu dan aturan kehadiran"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Give the workflow a name."
+msgstr "Beri nama alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This kind of record is not available."
+msgstr "Jenis catatan ini tidak tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the existing approval process for this record."
+msgstr "Pilih proses persetujuan yang sudah ada untuk catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"A new process has no record of its own to follow. Choose “Send it for approval”."
+msgstr ""
+"Proses baru tidak punya catatan sendiri untuk diikuti. Pilih “Kirim untuk persetujuan”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an existing record for an automatic start."
+msgstr "Pilih catatan yang sudah ada untuk mulai otomatis."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the approval process this follows."
+msgstr "Pilih proses persetujuan yang diikuti."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval is already complete for this trigger. Do not request it again."
+msgstr "Persetujuan untuk pemicu ini sudah selesai. Jangan minta lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a date field."
+msgstr "Pilih isian tanggal."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Use a delay from 0 to 365."
+msgstr "Gunakan jeda dari 0 sampai 365."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a valid date offset."
+msgstr "Pilih selisih tanggal yang valid."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an accessible record type for the lookup."
+msgstr "Pilih jenis catatan yang bisa Anda akses untuk pencarian."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Map each approval value from one form field only."
+msgstr "Setiap nilai persetujuan hanya boleh diambil dari satu isian formulir."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an existing single-person responsibility."
+msgstr "Pilih tanggung jawab yang sudah ada untuk satu orang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A new process has no record that names a manager. Choose someone else."
+msgstr "Proses baru tidak punya catatan yang menyebut atasan. Pilih orang lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a person field from this record."
+msgstr "Pilih isian orang dari catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a supported task type."
+msgstr "Pilih jenis tugas yang didukung."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Say why this message is additional to existing notifications."
+msgstr ""
+"Jelaskan mengapa pesan ini perlu ditambahkan di luar pemberitahuan yang sudah ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an active person in this company."
+msgstr "Pilih orang yang aktif di perusahaan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose one of the listed options for “%s”."
+msgstr "Pilih salah satu opsi yang tersedia untuk “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an existing owner from the list."
+msgstr "Pilih penanggung jawab yang ada di daftar."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%(label)s stages belong to %(area)s. Use “Move to a Hiring stage” instead."
+msgstr ""
+"Tahap %(label)s milik %(area)s. Gunakan “Pindahkan ke tahap Rekrutmen” sebagai gantinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose one of your stages to move it to."
+msgstr "Pilih salah satu tahap Anda sebagai tujuan pemindahan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%s has not opened any values to workflows yet."
+msgstr "%s belum membuka nilai apa pun untuk alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%s no longer offers this value. Choose another."
+msgstr "%s tidak lagi menyediakan nilai ini. Pilih yang lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose one of the values %s lets workflows set."
+msgstr "Pilih salah satu nilai yang boleh diatur alur kerja di %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "That answer is not %(kind)s, so it cannot fill “%(label)s”."
+msgstr "Jawaban itu bukan %(kind)s, jadi tidak bisa mengisi “%(label)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Write what to set “%s” to."
+msgstr "Tulis nilai yang akan diisikan ke “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the template to start from."
+msgstr "Pilih templat untuk memulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose the workflow to hand over to."
+msgstr "Pilih alur kerja tujuan penyerahan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A workflow cannot start itself. Choose another one."
+msgstr "Alur kerja tidak bisa memulai dirinya sendiri. Pilih yang lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "“%s” is for another kind of record. Choose one for the same records."
+msgstr "“%s” untuk jenis catatan lain. Pilih alur kerja untuk catatan yang sama."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Publish “%s” first, so there is a version to start."
+msgstr "Terbitkan “%s” dulu, agar ada versi yang bisa dimulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"“%s” starts by itself, so it cannot be handed over to. Choose one that a person starts."
+msgstr ""
+"“%s” mulai dengan sendirinya, jadi tidak bisa menjadi tujuan penyerahan. Pilih alur kerja yang dimulai oleh seseorang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Someone saved a newer draft. Reload before applying your changes."
+msgstr ""
+"Seseorang telah menyimpan draf yang lebih baru. Muat ulang sebelum menerapkan perubahan Anda."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow is too large."
+msgstr "Alur kerja ini terlalu besar."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose who can start this workflow."
+msgstr "Pilih siapa yang bisa memulai alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "A selected role no longer exists."
+msgstr "Salah satu peran yang dipilih sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose an approval process belonging to this record."
+msgstr "Pilih proses persetujuan milik catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Records where %s"
+msgstr "Catatan dengan %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Every record"
+msgstr "Semua catatan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "a value"
+msgstr "sebuah nilai"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid " and "
+msgstr " dan "
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid " or "
+msgstr " atau "
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%(text)s, plus %(count)s more filters"
+msgstr "%(text)s, ditambah %(count)s filter lainnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Existing runs keep their version. Publishing does not activate this workflow."
+msgstr ""
+"Proses yang sedang berjalan tetap memakai versinya. Menerbitkan tidak mengaktifkan alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Reload the latest draft before publishing."
+msgstr "Muat ulang draf terbaru sebelum menerbitkan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval route for this custom Workflow Studio process."
+msgstr "Jalur persetujuan untuk proses khusus Workflow Studio ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Publish a process before activating it."
+msgstr "Terbitkan proses ini sebelum mengaktifkannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Another active workflow starts on exactly the same records and event. Change the filters or pause the other one."
+msgstr ""
+"Alur kerja aktif lain dimulai pada catatan dan peristiwa yang persis sama. Ubah filternya atau jeda alur kerja yang lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Other workflows also start for these records. Review them and confirm this one does different work."
+msgstr ""
+"Alur kerja lain juga dimulai untuk catatan ini. Tinjau alur kerja tersebut dan pastikan yang ini melakukan pekerjaan berbeda."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"Review existing automation rules and confirm that this workflow has a different purpose."
+msgstr ""
+"Tinjau aturan otomatis yang sudah ada dan pastikan alur kerja ini punya tujuan yang berbeda."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Set up who approves this in Approval Matrix before turning it on."
+msgstr "Atur siapa yang menyetujui di Matriks Persetujuan sebelum mengaktifkannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"The approval route for this is paused. Switch it back on in Approval Matrix first."
+msgstr ""
+"Jalur persetujuan untuk ini sedang dijeda. Aktifkan kembali di Matriks Persetujuan terlebih dahulu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This version belongs to another workflow."
+msgstr "Versi ini milik alur kerja lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a published saved group."
+msgstr "Pilih grup tersimpan yang sudah diterbitkan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The example values are not valid."
+msgstr "Nilai contoh tidak valid."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Add example values from before the change."
+msgstr "Tambahkan nilai contoh dari sebelum perubahan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Preview only. No tasks, approvals or messages are created."
+msgstr "Hanya pratinjau. Tidak ada tugas, persetujuan, atau pesan yang dibuat."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow is not active."
+msgstr "Alur kerja ini nonaktif."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This workflow starts from its configured event."
+msgstr "Alur kerja ini dimulai dari peristiwa yang sudah diatur."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Reload the start dialog and try again."
+msgstr "Muat ulang jendela mulai lalu coba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Enter a valid amount and urgency."
+msgstr "Masukkan jumlah dan tingkat urgensi yang valid."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This email template no longer exists."
+msgstr "Templat email ini sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a template for this kind of record."
+msgstr "Pilih templat untuk jenis catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This template belongs to another company."
+msgstr "Templat ini milik perusahaan lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This business action is no longer available."
+msgstr "Tindakan ini sudah tidak tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The module has not registered this action."
+msgstr "Tindakan ini belum disiapkan di sistem."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This run no longer exists."
+msgstr "Proses ini sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This run belongs to another company."
+msgstr "Proses ini milik perusahaan lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Only the assigned person can complete this task."
+msgstr "Hanya orang yang ditugaskan yang dapat menyelesaikan tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This step has already been completed."
+msgstr "Langkah ini sudah diselesaikan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Use files uploaded for this task."
+msgstr "Gunakan file yang diunggah untuk tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This file could not be read."
+msgstr "File ini tidak dapat dibaca."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Choose a failed step in an active run."
+msgstr "Pilih langkah yang gagal dalam proses yang sedang berjalan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Carried on without sending it back again."
+msgstr "Dilanjutkan tanpa dikembalikan lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "%s by %s."
+msgstr "%s oleh %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"This step has failed five times. Resolve the source issue before starting a new run."
+msgstr ""
+"Langkah ini sudah gagal lima kali. Selesaikan sumber masalahnya sebelum memulai proses baru."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Withdraw the pending request in Approvals before cancelling this run."
+msgstr ""
+"Tarik kembali permintaan yang tertunda di Persetujuan sebelum membatalkan proses ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This action is not available now."
+msgstr "Tindakan ini tidak tersedia sekarang."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Email template"
+msgstr "Templat email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "This settings screen is not available."
+msgstr "Layar pengaturan ini tidak tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Workflow Studio"
+msgstr "Workflow Studio"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Needs attention: %s"
+msgstr "Perlu perhatian: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Carried on after waiting %s."
+msgstr "Dilanjutkan setelah menunggu %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"The wait reached its deadline before the conditions matched. Check the record, then retry."
+msgstr ""
+"Waktu tunggu habis sebelum syaratnya terpenuhi. Periksa catatan, lalu coba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The queued message is missing. Check the mail service before retrying."
+msgstr ""
+"Pesan yang mengantre tidak ditemukan. Periksa layanan email sebelum mencoba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid ""
+"The mail service could not send this message. Fix delivery settings, then retry."
+msgstr ""
+"Layanan email tidak dapat mengirim pesan ini. Perbaiki pengaturan pengiriman, lalu coba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "The approval request was %s."
+msgstr "Permintaan persetujuan: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Approval was returned. Correct the source record, then retry this step."
+msgstr ""
+"Persetujuan dikembalikan. Perbaiki catatan sumbernya, lalu coba lagi langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "%s min"
+msgstr "%s mnt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "1 day"
+msgstr "1 hari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "Where time goes could not be worked out just now. Try again in a moment."
+msgstr ""
+"Ke mana waktu terpakai belum bisa dihitung saat ini. Coba lagi sebentar lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "Someone by email link"
+msgstr "Seseorang lewat tautan email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "There is already a stage called “%s”."
+msgstr "Sudah ada tahap bernama “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "You do not have access to this record."
+msgstr "Anda tidak memiliki akses ke catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose the workflow these stages belong to."
+msgstr "Pilih alur kerja tempat tahap-tahap ini berada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This workflow follows a record. Its stages belong to that kind of record."
+msgstr ""
+"Alur kerja ini mengikuti sebuah catatan. Tahap-tahapnya milik jenis catatan tersebut."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "%(label)s stages are managed in %(area)s."
+msgstr "Tahap %(label)s dikelola di %(area)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage is not available in your current company."
+msgstr "Tahap ini tidak tersedia di perusahaan Anda saat ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A named person"
+msgstr "Orang tertentu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A responsibility"
+msgstr "Sebuah tanggung jawab"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A person on this record"
+msgstr "Seseorang di catatan ini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Their manager"
+msgstr "Atasan mereka"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Their manager’s manager"
+msgstr "Atasan dari atasan mereka"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "The person who started the workflow"
+msgstr "Orang yang memulai alur kerja"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Someone"
+msgstr "Seseorang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "%(who)s presses Move to %(stage)s"
+msgstr "%(who)s menekan Pindahkan ke %(stage)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "By itself, when %s"
+msgstr "Otomatis, saat %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "By itself, when its rule matches"
+msgstr "Otomatis, saat aturannya terpenuhi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "By itself, when the steps before are finished"
+msgstr "Otomatis, saat langkah-langkah sebelumnya selesai"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose who moves records into this stage."
+msgstr "Pilih siapa yang memindahkan catatan ke tahap ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid ""
+"A new process has no record of its own. Choose a named person or a responsibility."
+msgstr ""
+"Proses baru belum memiliki catatan sendiri. Pilih orang tertentu atau sebuah tanggung jawab."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "These stage settings are not valid."
+msgstr "Pengaturan tahap ini tidak valid."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Give the stage a name of up to 40 characters."
+msgstr "Beri nama tahap paling banyak 40 karakter."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose the existing stage this one comes after."
+msgstr "Pilih tahap yang sudah ada yang mendahului tahap ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A new process has no existing stages to follow."
+msgstr "Proses baru belum memiliki tahap yang bisa diikuti."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Choose how records get into this stage."
+msgstr "Pilih cara catatan masuk ke tahap ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Add the rule that moves records into this stage."
+msgstr "Tambahkan aturan yang memindahkan catatan ke tahap ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Use a target from 0 to 8,760 hours."
+msgstr "Gunakan target dari 0 sampai 8.760 jam."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Left %s: the record moved on."
+msgstr "Keluar dari %s: catatan sudah berpindah."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Left %s."
+msgstr "Keluar dari %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Moved to %(stage)s by %(who)s."
+msgstr "Dipindahkan ke %(stage)s oleh %(who)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Moved to %s by the workflow."
+msgstr "Dipindahkan ke %s oleh alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "Moved to %s."
+msgstr "Dipindahkan ke %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This workflow waits for a stage that no longer exists. Edit its sections."
+msgstr "Alur kerja ini menunggu tahap yang sudah tidak ada. Ubah bagian-bagiannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Waiting until %(rule)s, to move to %(stage)s."
+msgstr "Menunggu sampai %(rule)s, untuk pindah ke %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Waiting for its rule to move this to %s."
+msgstr "Menunggu aturannya memindahkan ini ke %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Waiting for %(who)s to move this to %(stage)s."
+msgstr "Menunggu %(who)s memindahkan ini ke %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Records are in “%s” now. Move them on before it follows another stage."
+msgstr ""
+"Saat ini ada catatan di “%s”. Pindahkan dulu sebelum tahap ini mengikuti tahap lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage order is not valid."
+msgstr "Urutan tahap ini tidak valid."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Keep every stage once, and the existing stages in their own order."
+msgstr ""
+"Setiap tahap hanya muncul sekali, dan tahap yang sudah ada tetap dalam urutannya sendiri."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Your own stages come after one of the existing stages."
+msgstr "Tahap buatan Anda harus berada setelah salah satu tahap yang sudah ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "%(n)s records are in “%(stage)s” now. Move them on before removing it."
+msgstr ""
+"Saat ini ada %(n)s catatan di “%(stage)s”. Pindahkan dulu sebelum menghapusnya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "A record is in “%s” now. Move it on before removing it."
+msgstr "Saat ini ada satu catatan di “%s”. Pindahkan dulu sebelum menghapusnya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid ""
+"“%(w)s” waits for this stage. Pause that workflow or change its sections first."
+msgstr ""
+"“%(w)s” menunggu tahap ini. Jeda alur kerja itu atau ubah bagian-bagiannya terlebih dahulu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage no longer exists."
+msgstr "Tahap ini sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Only %(who)s can move this to %(stage)s."
+msgstr "Hanya %(who)s yang dapat memindahkan ini ke %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage belongs to another process."
+msgstr "Tahap ini milik proses lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This stage belongs to another kind of record."
+msgstr "Tahap ini milik jenis catatan lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "Records get into “%s” by themselves. Nobody needs to move them."
+msgstr ""
+"Catatan masuk ke “%s” dengan sendirinya. Tidak ada yang perlu memindahkannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "This is not at %(anchor)s, so it cannot move to %(stage)s yet."
+msgstr "Ini belum berada di %(anchor)s, jadi belum bisa pindah ke %(stage)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_stage.py:0
+msgid "the workflow"
+msgstr "alur kerja"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "today"
+msgstr "hari ini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "tomorrow"
+msgstr "besok"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "yesterday"
+msgstr "kemarin"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Late by 1 day"
+msgstr "Terlambat 1 hari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Late by %s days"
+msgstr "Terlambat %s hari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "due %s"
+msgstr "batas waktu %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for this to be sent for approval"
+msgstr "Menunggu ini dikirim untuk persetujuan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "approval"
+msgstr "persetujuan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for approval: %(step)s with %(who)s"
+msgstr "Menunggu persetujuan: %(step)s oleh %(who)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for your team %(team)s: %(what)s"
+msgstr "Menunggu tim Anda %(team)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for you: %s"
+msgstr "Menunggu Anda: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %s — nobody has taken it yet"
+msgstr "Menunggu %s — belum ada yang mengambilnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s (%(team)s): %(what)s"
+msgstr "Menunggu %(who)s (%(team)s): %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s, covering for %(whose)s: %(what)s"
+msgstr "Menunggu %(who)s, menggantikan %(whose)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %s, by email"
+msgstr "Menunggu %s, lewat email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s by email link (%(email)s)"
+msgstr "Menunggu %(who)s lewat tautan email (%(email)s)"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s on their employee home: %(what)s"
+msgstr "Menunggu %(who)s di beranda karyawan mereka: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting for %(who)s: %(what)s"
+msgstr "Menunggu %(who)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Waiting: %s"
+msgstr "Menunggu: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Paused until %s"
+msgstr "Dijeda sampai %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Sending a message"
+msgstr "Mengirim pesan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "In progress"
+msgstr "Sedang berjalan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Done on %s"
+msgstr "Selesai pada %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Stopped on %s"
+msgstr "Dihentikan pada %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Turned down on %s"
+msgstr "Ditolak pada %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "On hold"
+msgstr "Ditahan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "Needs a look from the workflow owner"
+msgstr "Perlu dicek oleh pemilik alur kerja"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "In %(stage)s since %(day)s · moved by %(who)s"
+msgstr "Di %(stage)s sejak %(day)s · dipindahkan oleh %(who)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "In %(stage)s since %(day)s"
+msgstr "Di %(stage)s sejak %(day)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "This cannot be moved from here."
+msgstr "Ini tidak dapat dipindahkan dari sini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "This stage is not available."
+msgstr "Tahap ini tidak tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "This has moved on, so it cannot go to %s now."
+msgstr "Ini sudah berpindah, jadi sekarang tidak bisa ke %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "Stage %(n)s of %(total)s"
+msgstr "Tahap %(n)s dari %(total)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "waiting for you"
+msgstr "menunggu Anda"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_strip.py:0
+msgid "with %s"
+msgstr "di %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Use Workflow Studio to make this change."
+msgstr "Gunakan Workflow Studio untuk membuat perubahan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow history is retained. Archive the workflow instead."
+msgstr "Riwayat alur kerja tetap disimpan. Arsipkan alur kerja sebagai gantinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Choose the record this workflow follows."
+msgstr "Pilih catatan yang diikuti alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "A published version cannot be changed. Save a new version."
+msgstr "Versi yang sudah diterbitkan tidak dapat diubah. Simpan versi baru."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Published workflow versions are retained."
+msgstr "Versi alur kerja yang sudah diterbitkan tetap disimpan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Filters did not match when this step was reached."
+msgstr "Filter tidak cocok saat langkah ini dicapai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Skipped %s: filters did not match."
+msgstr "%s dilewati: filter tidak cocok."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Path: %s."
+msgstr "Jalur: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "This path’s filters did not match when parallel work started."
+msgstr "Filter jalur ini tidak cocok saat pekerjaan paralel dimulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "none matched"
+msgstr "tidak ada yang cocok"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Parallel paths: %s."
+msgstr "Jalur paralel: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped by “%s”."
+msgstr "Dihentikan oleh “%s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped here: %(step)s. %(why)s"
+msgstr "Berhenti di sini: %(step)s. %(why)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped here: %s."
+msgstr "Berhenti di sini: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Stopped: the record is now %s."
+msgstr "Dihentikan: catatan ini sekarang %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow finished."
+msgstr "Alur kerja selesai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "This approval belongs to another record."
+msgstr "Persetujuan ini milik catatan lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "%s attached files"
+msgstr "%s file terlampir"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Submitted information"
+msgstr "Informasi yang dikirim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Answers frozen when this approval was submitted."
+msgstr "Jawaban dikunci saat persetujuan ini dikirim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Any request"
+msgstr "Permintaan apa pun"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Whole company"
+msgstr "Seluruh perusahaan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Start approval from the waiting workflow step."
+msgstr "Mulai persetujuan dari langkah alur kerja yang sedang menunggu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "This workflow is already closed."
+msgstr "Alur kerja ini sudah ditutup."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "The answers changed. Request a fresh approval."
+msgstr "Jawaban sudah berubah. Ajukan persetujuan baru."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "%s — done."
+msgstr "%s — selesai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Following the approval already open for this record."
+msgstr "Mengikuti persetujuan yang sudah dibuka untuk catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Waiting for this record to be sent for approval."
+msgstr "Menunggu catatan ini dikirim untuk persetujuan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Waiting for matching conditions."
+msgstr "Menunggu kondisi yang sesuai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Waiting for the set time."
+msgstr "Menunggu waktu yang ditetapkan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"This record uses a different approval process. Check the workflow’s selected process."
+msgstr ""
+"Catatan ini memakai proses persetujuan yang berbeda. Periksa proses yang dipilih di alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"Nobody is recorded as having started this, so there is no one to send it for approval. Send it from the record instead."
+msgstr ""
+"Tidak ada yang tercatat memulai ini, jadi tidak ada yang bisa mengirimnya untuk persetujuan. Kirim dari catatannya saja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"Nobody is recorded as having started this, so there is no one to send it for approval."
+msgstr ""
+"Tidak ada yang tercatat memulai ini, jadi tidak ada yang bisa mengirimnya untuk persetujuan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Following the existing Approval Matrix route."
+msgstr "Mengikuti rute Matriks Persetujuan yang sudah ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Message queued in the existing mail service."
+msgstr "Pesan sudah masuk antrean di layanan email yang ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow history cannot be changed."
+msgstr "Riwayat alur kerja tidak dapat diubah."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Workflow tasks are created by their workflow."
+msgstr "Tugas alur kerja dibuat oleh alur kerjanya sendiri."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Manage this task in Workflow Studio so progress stays in sync."
+msgstr "Kelola tugas ini di Workflow Studio agar progresnya tetap sesuai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid ""
+"Complete this step in Workflow Studio → My tasks so its required information is checked."
+msgstr ""
+"Selesaikan langkah ini di Workflow Studio → Tugas saya agar informasi wajibnya diperiksa."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_models.py:0
+msgid "Cancel or complete this task from Workflow Studio."
+msgstr "Batalkan atau selesaikan tugas ini dari Workflow Studio."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_home.py:0
+msgid "Late — it was due %s"
+msgstr "Terlambat — batas waktunya %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_home.py:0
+msgid "Due %s"
+msgstr "Batas waktu %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_home.py:0
+msgid "%(verb)s: %(what)s"
+msgstr "%(verb)s: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "“%s” did not start on schedule"
+msgstr "“%s” tidak dimulai sesuai jadwal"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"%(count)s records matched “%(name)s” at its scheduled start, more than the %(cap)s it may start at once, so it started none. Narrow its filters in Workflow Studio, or split it into smaller workflows."
+msgstr ""
+"%(count)s catatan cocok dengan “%(name)s” saat jadwal mulainya, lebih dari %(cap)s yang boleh dimulai sekaligus, jadi tidak ada yang dimulai. Persempit filternya di Workflow Studio, atau pecah menjadi alur kerja yang lebih kecil."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"Did not start: %(count)s records matched, more than the %(cap)s it may start at once."
+msgstr ""
+"Tidak dimulai: %(count)s catatan cocok, lebih dari %(cap)s yang boleh dimulai sekaligus."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Nothing to start: no record matched."
+msgstr "Tidak ada yang dimulai: tidak ada catatan yang cocok."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"Started for %(started)s of %(count)s records; the others already had this workflow running."
+msgstr ""
+"Dimulai untuk %(started)s dari %(count)s catatan; sisanya sudah menjalankan alur kerja ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started for %s records."
+msgstr "Dimulai untuk %s catatan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started for 1 record."
+msgstr "Dimulai untuk 1 catatan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started."
+msgstr "Dimulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "1 earlier start was missed while the system was off; it started once."
+msgstr ""
+"1 jadwal mulai sebelumnya terlewat saat sistem mati; alur kerja dimulai satu kali."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "%s earlier starts were missed while the system was off; it started once."
+msgstr ""
+"%s jadwal mulai sebelumnya terlewat saat sistem mati; alur kerja dimulai satu kali."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"A new process started on a schedule has no record to filter. Remove the filters."
+msgstr ""
+"Proses baru yang dimulai sesuai jadwal tidak punya catatan untuk difilter. Hapus filternya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"This site's workflow clock is switched off. Scheduled workflows here do not start until it is switched on."
+msgstr ""
+"Jam alur kerja di situs ini nonaktif. Alur kerja terjadwal di sini tidak akan dimulai sampai jam ini diaktifkan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"%(count)s records match today, more than the %(cap)s a scheduled start may make at once. As it stands it would start none. Narrow the filters."
+msgstr ""
+"%(count)s catatan cocok hari ini, lebih dari %(cap)s yang boleh dibuat sekaligus oleh satu jadwal mulai. Dengan kondisi ini, tidak ada yang akan dimulai. Persempit filternya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "a new process"
+msgstr "proses baru"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid ""
+"“%(name)s” already starts %(when)s for %(which)s. Check this one does different work."
+msgstr ""
+"“%(name)s” sudah dimulai %(when)s untuk %(which)s. Pastikan alur kerja ini melakukan pekerjaan yang berbeda."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "%(area)s already does this on its own timetable: %(what)s"
+msgstr "%(area)s sudah melakukan ini dengan jadwalnya sendiri: %(what)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule_run.py:0
+msgid "Started on schedule"
+msgstr "Dimulai sesuai jadwal"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Automated rules"
+msgstr "Aturan otomatis"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(name)s” runs %(when)s."
+msgstr "“%(name)s” berjalan %(when)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%s” runs automatically."
+msgstr "“%s” berjalan otomatis."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” sends “%(t)s”."
+msgstr "“%(w)s” mengirim “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” gives %(who)s a task: “%(t)s”."
+msgstr "“%(w)s” memberi %(who)s tugas: “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” tells %(who)s in the app: “%(t)s”."
+msgstr "“%(w)s” memberi tahu %(who)s di aplikasi: “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” sets %(f)s."
+msgstr "“%(w)s” mengisi %(f)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” makes a draft: “%(t)s”."
+msgstr "“%(w)s” membuat draf: “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” hands over to “%(t)s”."
+msgstr "“%(w)s” menyerahkan ke “%(t)s”."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "“%(w)s” moves it to %(s)s."
+msgstr "“%(w)s” memindahkannya ke %(s)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Approval Matrix"
+msgstr "Matriks Persetujuan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Approval routes are set up for some parts of the business only. Approval Matrix shows which."
+msgstr ""
+"Rute persetujuan hanya diatur untuk sebagian bagian bisnis. Matriks Persetujuan menunjukkan bagian mana saja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "No approval route is set up for this yet."
+msgstr "Belum ada rute persetujuan yang diatur untuk ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Approvals for this are paused in Approval Matrix, so nothing new can be sent in."
+msgstr ""
+"Persetujuan untuk ini dijeda di Matriks Persetujuan, jadi tidak ada pengajuan baru yang bisa dikirim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ", then "
+msgstr ", lalu "
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "no steps yet"
+msgstr "belum ada langkah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Approval route “%(name)s”: %(route)s."
+msgstr "Rute persetujuan “%(name)s”: %(route)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Each approver is told when it is their turn and gets a to-do."
+msgstr ""
+"Setiap pemberi persetujuan diberi tahu saat gilirannya tiba dan mendapat tugas."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "A late approver is reminded, and then it is passed up."
+msgstr ""
+"Pemberi persetujuan yang terlambat akan diingatkan, lalu diteruskan ke atasan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "People who only use the employee home are not told this way."
+msgstr "Orang yang hanya memakai beranda karyawan tidak diberi tahu dengan cara ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "The person who sent it in is told it is approved."
+msgstr "Pengirim diberi tahu bahwa pengajuannya disetujui."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "The person who sent it in is told it was sent back."
+msgstr "Pengirim diberi tahu bahwa pengajuannya dikembalikan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "returned"
+msgstr "dikembalikan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "The person who sent it in is told it was turned down."
+msgstr "Pengirim diberi tahu bahwa pengajuannya ditolak."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "rejected"
+msgstr "ditolak"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Section “%s” waited for a stage that was removed. It works as a heading now: choose another stage, or keep it as a heading."
+msgstr ""
+"Bagian “%s” menunggu tahap yang sudah dihapus. Sekarang bagian ini berfungsi sebagai judul: pilih tahap lain, atau biarkan sebagai judul."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Section “%(s)s” cannot wait for %(e)s: records that get there stop."
+msgstr ""
+"Bagian “%(s)s” tidak bisa menunggu %(e)s: catatan yang sampai di sana akan berhenti."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Section “%s” waits for a stage that does not exist any more. Choose another stage, or make it a heading."
+msgstr ""
+"Bagian “%s” menunggu tahap yang sudah tidak ada. Pilih tahap lain, atau jadikan judul."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Section “%s” waits for a stage another section already uses. Each stage can start one section."
+msgstr ""
+"Bagian “%s” menunggu tahap yang sudah dipakai bagian lain. Setiap tahap hanya bisa memulai satu bagian."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Linked sections follow the stage order. Move section “%s” or choose a later stage."
+msgstr ""
+"Bagian yang ditautkan mengikuti urutan tahap. Pindahkan bagian “%s” atau pilih tahap yang lebih akhir."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "This message is already sent by another step on the same path."
+msgstr "Pesan ini sudah dikirim oleh langkah lain di jalur yang sama."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Going back sends these again: %s."
+msgstr "Kembali akan mengirim ulang ini: %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "Another step on the same path already makes this draft."
+msgstr "Langkah lain di jalur yang sama sudah membuat draf ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%(owner)s already does this here: %(text)s This step would send a second message."
+msgstr ""
+"%(owner)s sudah melakukan ini di sini: %(text)s Langkah ini akan mengirim pesan kedua."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%(owner)s already does this here: %(text)s This step would tell them a second time."
+msgstr ""
+"%(owner)s sudah melakukan ini di sini: %(text)s Langkah ini akan memberi tahu mereka untuk kedua kalinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"Another workflow already does this: %(text)s This step would do it a second time."
+msgstr ""
+"Alur kerja lain sudah melakukan ini: %(text)s Langkah ini akan melakukannya untuk kedua kalinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "%(owner)s already does this: %(text)s This step would do it a second time."
+msgstr ""
+"%(owner)s sudah melakukan ini: %(text)s Langkah ini akan melakukannya untuk kedua kalinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"“%s” already gets records by itself. This step would move them there a second way."
+msgstr ""
+"“%s” sudah menerima catatan dengan sendirinya. Langkah ini akan memindahkannya ke sana dengan cara kedua."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%(owner)s already does this here: %(text)s This step would give them a second task."
+msgstr ""
+"%(owner)s sudah melakukan ini di sini: %(text)s Langkah ini akan memberi mereka tugas kedua."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid ""
+"%s already sends each one for approval by itself. This step would send it again. Choose “Wait for the approval this record already goes through” instead."
+msgstr ""
+"%s sudah mengirim setiap catatan untuk persetujuan dengan sendirinya. Langkah ini akan mengirimnya lagi. Pilih “Tunggu persetujuan yang memang sudah dilalui catatan ini” saja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Monday"
+msgstr "Senin"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Tuesday"
+msgstr "Selasa"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Wednesday"
+msgstr "Rabu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Thursday"
+msgstr "Kamis"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Friday"
+msgstr "Jumat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Saturday"
+msgstr "Sabtu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Sunday"
+msgstr "Minggu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "January"
+msgstr "Januari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "February"
+msgstr "Februari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "March"
+msgstr "Maret"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "April"
+msgstr "April"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "May"
+msgstr "Mei"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "June"
+msgstr "Juni"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "July"
+msgstr "Juli"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "August"
+msgstr "Agustus"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "September"
+msgstr "September"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "October"
+msgstr "Oktober"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "November"
+msgstr "November"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "December"
+msgstr "Desember"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Jan"
+msgstr "Jan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Feb"
+msgstr "Feb"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Mar"
+msgstr "Mar"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Apr"
+msgstr "Apr"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Jun"
+msgstr "Jun"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Jul"
+msgstr "Jul"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Aug"
+msgstr "Agu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Sep"
+msgstr "Sep"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Oct"
+msgstr "Okt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Nov"
+msgstr "Nov"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Dec"
+msgstr "Des"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose when this workflow starts."
+msgstr "Pilih kapan alur kerja ini dimulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose how often it starts."
+msgstr "Pilih seberapa sering alur kerja ini dimulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose a start time."
+msgstr "Pilih jam mulai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose at least one day of the week."
+msgstr "Pilih minimal satu hari dalam seminggu."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose a day of the month."
+msgstr "Pilih satu tanggal dalam bulan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose a month."
+msgstr "Pilih satu bulan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose the date it starts."
+msgstr "Pilih tanggal mulainya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose whether it starts on working days only."
+msgstr "Pilih apakah alur kerja hanya dimulai pada hari kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Choose what it starts for: a new process, or each matching record."
+msgstr ""
+"Pilih untuk apa alur kerja dimulai: proses baru, atau setiap catatan yang cocok."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "A workflow on records starts once for each matching record."
+msgstr "Alur kerja untuk catatan dimulai satu kali untuk setiap catatan yang cocok."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "%(when)s, or the next working day"
+msgstr "%(when)s, atau hari kerja berikutnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "On a schedule"
+msgstr "Sesuai jadwal"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every working day at %(time)s"
+msgstr "Setiap hari kerja pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every day at %(time)s"
+msgstr "Setiap hari pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every weekday at %(time)s"
+msgstr "Setiap Senin sampai Jumat pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "%(days)s and %(last)s"
+msgstr "%(days)s dan %(last)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every %(days)s at %(time)s"
+msgstr "Setiap %(days)s pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "On the last day of each month at %(time)s"
+msgstr "Pada hari terakhir setiap bulan pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "On the %(nth)s of each month at %(time)s"
+msgstr "Pada tanggal %(day)s setiap bulan pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every year on the last day of %(month)s at %(time)s"
+msgstr "Setiap tahun pada hari terakhir bulan %(month)s pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Every year on %(day)s %(month)s at %(time)s"
+msgstr "Setiap tahun pada %(day)s %(month)s pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Once, on %(day)s %(month)s %(year)s at %(time)s"
+msgstr "Sekali, pada %(day)s %(month)s %(year)s pukul %(time)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_schedule.py:0
+msgid "Once"
+msgstr "Sekali"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"%(owner)s already reminds people on its own timetable: %(text)s This step would remind them a second time."
+msgstr ""
+"%(owner)s sudah mengingatkan orang sesuai jadwalnya sendiri: %(text)s Langkah ini akan mengingatkan mereka untuk kedua kalinya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "You need permission to view workflow progress."
+msgstr "Anda memerlukan izin untuk melihat progres alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose who does this step."
+msgstr "Pilih siapa yang mengerjakan langkah ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose an available person field on this record."
+msgstr "Pilih salah satu isian orang yang tersedia di catatan ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Name the employee’s manager and link their user account in People."
+msgstr "Tentukan atasan karyawan dan hubungkan akun penggunanya di People."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid ""
+"%s has no manager with a staff login, so this cannot go to their manager’s manager."
+msgstr ""
+"%s tidak memiliki atasan dengan akun login staf, jadi ini tidak bisa diteruskan ke atasan dari atasan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose a single-person responsibility from People & backups."
+msgstr "Pilih tanggung jawab satu orang dari People & backups."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Nobody is named for %s in People & backups."
+msgstr "Belum ada yang ditunjuk untuk %s di People & backups."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for the assigned person"
+msgstr "Menunggu orang yang ditugaskan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for information"
+msgstr "Menunggu informasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for the mail service"
+msgstr "Menunggu layanan email"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting until the set time"
+msgstr "Menunggu hingga waktu yang ditentukan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting"
+msgstr "Menunggu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This step needs attention from the workflow owner."
+msgstr "Langkah ini perlu perhatian pemilik alur kerja."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Another path was selected."
+msgstr "Jalur lain telah dipilih."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for matching conditions; the shown time is the deadline."
+msgstr "Menunggu kondisi terpenuhi; waktu yang ditampilkan adalah batas waktunya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Waiting for the person to confirm"
+msgstr "Menunggu orang tersebut mengonfirmasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Sent back by %(who)s: %(note)s"
+msgstr "Dikembalikan oleh %(who)s: %(note)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "a later step"
+msgstr "langkah berikutnya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Sent back by “%s” for changes."
+msgstr "Dikembalikan oleh “%s” untuk diubah."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This approval is not available."
+msgstr "Persetujuan ini tidak tersedia."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Viewing progress does not include permission to read submitted answers."
+msgstr "Izin melihat progres tidak termasuk izin membaca jawaban yang sudah dikirim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Record not available"
+msgstr "Catatan tidak tersedia"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Choose a record field in this task."
+msgstr "Pilih isian catatan di tugas ini."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid ""
+"Only the person who started this request or its workflow owner can reopen information."
+msgstr ""
+"Hanya orang yang memulai permintaan ini atau pemilik alur kerjanya yang dapat membuka kembali informasi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Correct the original record, then ask the workflow owner to retry approval."
+msgstr ""
+"Perbaiki catatan aslinya, lalu minta pemilik alur kerja untuk mencoba lagi persetujuannya."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "There is no information form to reopen."
+msgstr "Tidak ada formulir informasi untuk dibuka kembali."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid ""
+"Later work depends on these answers. Cancel this run and start a corrected request to follow a fresh route."
+msgstr ""
+"Pekerjaan berikutnya bergantung pada jawaban ini. Batalkan proses ini dan mulai permintaan yang sudah diperbaiki agar mengikuti jalur baru."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "Information reopened after approval was returned."
+msgstr "Informasi dibuka kembali setelah persetujuan dikembalikan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This event no longer exists."
+msgstr "Peristiwa ini sudah tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+msgid "This event does not need retrying."
+msgstr "Peristiwa ini tidak perlu dicoba lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_lifecycle/models/workflow_progress.py:0
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "Workflow progress"
+msgstr "Progres alur kerja"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "A notice goes to one person. Choose someone, not a team."
+msgstr "Pemberitahuan dikirim ke satu orang. Pilih seseorang, bukan tim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"Reminded a day after it is due, then their manager is told a day later — the same way approvals work."
+msgstr ""
+"Diingatkan satu hari setelah batas waktu, lalu atasannya diberi tahu sehari kemudian — sama seperti cara kerja persetujuan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"Reminded %(r)s days after it is due, then their manager is told %(e)s days after it is due — the same way approvals work."
+msgstr ""
+"Diingatkan %(r)s hari setelah batas waktu, lalu atasannya diberi tahu %(e)s hari setelah batas waktu — sama seperti cara kerja persetujuan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "The team %s"
+msgstr "Tim %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "A team"
+msgstr "Sebuah tim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Choose one person to move records into this stage, not a team."
+msgstr "Pilih satu orang untuk memindahkan catatan ke tahap ini, bukan tim."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"If %(who)s has no login, “%(step)s” goes to them by email link (people with an employee-home login do it there)."
+msgstr ""
+"Jika %(who)s tidak punya akun login, “%(step)s” dikirim kepadanya lewat tautan email (orang yang punya akun login beranda karyawan mengerjakannya di sana)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid ""
+"By link, “%(step)s” cannot take %(fields)s: files and record choices need the app. The page asks them to send these another way."
+msgstr ""
+"Lewat tautan, “%(step)s” tidak bisa menerima %(fields)s: berkas dan pilihan catatan memerlukan aplikasi. Halaman akan meminta mereka mengirimkannya dengan cara lain."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "“%(step)s” goes to %(who)s: anyone on it can take it in Approvals."
+msgstr ""
+"“%(step)s” dikirim ke %(who)s: siapa pun di dalamnya dapat mengambilnya di Persetujuan."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "%s stages are removed in its own set-up."
+msgstr "Tahap %s dihapus di pengaturannya sendiri."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Only a stage your company added can be removed."
+msgstr "Hanya tahap yang ditambahkan perusahaan Anda yang dapat dihapus."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Covering for %s while they are away"
+msgstr "Menggantikan %s selama tidak ada"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Team %(team)s · taken by %(who)s"
+msgstr "Tim %(team)s · diambil oleh %(who)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Team %s · nobody has taken it yet"
+msgstr "Tim %s · belum ada yang mengambil"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Waiting for %(who)s to answer %(link)s."
+msgstr "Menunggu %(who)s menjawab %(link)s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Link sent to %s"
+msgstr "Tautan dikirim ke %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Done by %s"
+msgstr "Diselesaikan oleh %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people_design.py:0
+msgid "Waiting for %s on their employee home"
+msgstr "Menunggu %s di beranda karyawan"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "It is yours now. The rest of the team sees that you have it."
+msgstr ""
+"Tugas ini sekarang milik Anda. Anggota tim lainnya melihat bahwa Anda yang mengambilnya."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "This could not be taken."
+msgstr "Tugas ini tidak dapat diambil."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "Put back for the team."
+msgstr "Dikembalikan ke tim."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "This could not be put back."
+msgstr "Tugas ini tidak dapat dikembalikan."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox.js:0
+msgid "Done. It has moved on to the next step."
+msgstr "Selesai. Sudah lanjut ke langkah berikutnya."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "This could not be moved."
+msgstr "Ini tidak dapat dipindahkan."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "A new link was sent to %s. The old one no longer works."
+msgstr "Tautan baru telah dikirim ke %s. Tautan lama tidak berlaku lagi."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_strip.js:0
+msgid "The link could not be sent."
+msgstr "Tautan tidak dapat dikirim."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_inbox_lines.js:0
+msgid "All done for “%s”."
+msgstr "Semua selesai untuk “%s”."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Workflow setup"
+msgstr "Pengaturan alur kerja"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Set up workflow"
+msgstr "Atur alur kerja"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid ""
+"Steps, forms and tasks across your business. Existing approvals and settings stay connected."
+msgstr ""
+"Langkah, formulir, dan tugas di seluruh bisnis Anda. Persetujuan dan pengaturan yang sudah ada tetap terhubung."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Build, try and run your processes."
+msgstr "Bangun, coba, dan jalankan proses Anda."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/js/workflow_studio.js:0
+msgid "Workflows & my tasks"
+msgstr "Alur kerja & tugas saya"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Where this record is"
+msgstr "Posisi catatan ini"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "workflows ›"
+msgstr "alur kerja ›"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Send again"
+msgstr "Kirim lagi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Move to"
+msgstr "Pindahkan ke"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Stopped: this is now"
+msgstr "Berhenti: sekarang menjadi"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_strip.xml:0
+msgid "Task"
+msgstr "Tugas"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_record.xml:0
+msgid "See this record’s live workflow"
+msgstr "Lihat alur kerja yang sedang berjalan untuk catatan ini"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_record.xml:0
+msgid "Find or create a workflow for this record type"
+msgstr "Cari atau buat alur kerja untuk jenis catatan ini"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Tasks"
+msgstr "Tugas"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "late"
+msgstr "terlambat"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Work a workflow has asked of you. Approvals are below."
+msgstr "Pekerjaan yang diminta alur kerja dari Anda. Persetujuan ada di bawah."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "started by"
+msgstr "dimulai oleh"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Team:"
+msgstr "Tim:"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "has it"
+msgstr "sedang mengerjakannya"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "· nobody has taken it"
+msgstr "· belum ada yang mengambil"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "With"
+msgstr "Di tangan"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Covering for"
+msgstr "Menggantikan"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Due"
+msgstr "Batas waktu"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Take it"
+msgstr "Ambil"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "No approvals are waiting for you right now."
+msgstr "Saat ini tidak ada persetujuan yang menunggu Anda."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "For the team"
+msgstr "Untuk tim"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid ". Nobody has taken it yet: take it so the others know you have it."
+msgstr ""
+". Belum ada yang mengambilnya: ambil agar yang lain tahu Anda yang menanganinya."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "You took this for the team"
+msgstr "Anda mengambil ini untuk tim"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "Put it back"
+msgstr "Kembalikan ke tim"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "You are covering for"
+msgstr "Anda sedang menggantikan"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox.xml:0
+msgid "while they are away."
+msgstr "selama mereka tidak ada."
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "to do, one for each line"
+msgstr "tugas, satu untuk setiap baris"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "Do all in turn"
+msgstr "Kerjakan bergiliran"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "One for each line · worked through one after another"
+msgstr "Satu untuk setiap baris · dikerjakan satu per satu"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "Doing all in turn ·"
+msgstr "Mengerjakan bergiliran ·"
+
+#. module: pb_lifecycle
+#. odoo-javascript
+#: code:addons/pb_lifecycle/static/src/xml/workflow_inbox_lines.xml:0
+msgid "left, this one included. The next opens when you finish."
+msgstr "tersisa, termasuk yang ini. Berikutnya terbuka saat Anda selesai."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/controllers/token_pages.py:0
+msgid "Hi %(name)s — there is one thing to confirm."
+msgstr "Halo %(name)s — ada satu hal yang perlu dikonfirmasi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/controllers/token_pages.py:0
+msgid "This could not be sent. Try again in a moment."
+msgstr "Ini tidak dapat dikirim. Coba lagi sebentar lagi."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is created"
+msgstr "saat catatan dibuat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is changed"
+msgstr "saat catatan diubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is created or changed"
+msgstr "saat catatan dibuat atau diubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is deleted"
+msgstr "saat catatan dihapus"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "while a form is being filled in"
+msgstr "saat formulir sedang diisi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "at a set time"
+msgstr "pada waktu yang ditentukan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "some time after a record is created"
+msgstr "beberapa waktu setelah catatan dibuat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "some time after a record changes"
+msgstr "beberapa waktu setelah catatan berubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when the stage changes"
+msgstr "saat tahap berubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when the status changes"
+msgstr "saat status berubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when the priority changes"
+msgstr "saat prioritas berubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a tag is added"
+msgstr "saat label ditambahkan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when someone is assigned"
+msgstr "saat seseorang ditugaskan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is archived"
+msgstr "saat catatan diarsipkan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a record is restored"
+msgstr "saat catatan dipulihkan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a message arrives"
+msgstr "saat pesan masuk"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when a message is sent"
+msgstr "saat pesan dikirim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_contract.py:0
+msgid "when another system calls in"
+msgstr "saat sistem lain mengirim permintaan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a text"
+msgstr "teks"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a number"
+msgstr "angka"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a date"
+msgstr "tanggal"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a yes or no"
+msgstr "ya atau tidak"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "one of the listed choices"
+msgstr "salah satu pilihan yang tersedia"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_steps.py:0
+msgid "a person"
+msgstr "seseorang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is"
+msgstr "adalah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is not"
+msgstr "bukan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is more than"
+msgstr "lebih dari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is at least"
+msgstr "minimal"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is less than"
+msgstr "kurang dari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is at most"
+msgstr "maksimal"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "contains"
+msgstr "berisi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "does not contain"
+msgstr "tidak berisi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is filled in"
+msgstr "sudah diisi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is empty"
+msgstr "kosong"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is one of"
+msgstr "salah satu dari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "is not one of"
+msgstr "bukan salah satu dari"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Started by a person"
+msgstr "Dimulai oleh seseorang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "When a record is created"
+msgstr "Saat catatan dibuat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "When selected fields change"
+msgstr "Saat isian yang dipilih berubah"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Based on a record date"
+msgstr "Berdasarkan tanggal pada catatan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "After approval is applied"
+msgstr "Setelah persetujuan diterapkan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Expenses"
+msgstr "Pengeluaran"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Expense policies, receipts and payment steps"
+msgstr "Kebijakan pengeluaran, struk, dan langkah pembayaran"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Assets"
+msgstr "Aset"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Asset custody, returns and handovers"
+msgstr "Penyimpanan, pengembalian, dan serah terima aset"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Learning"
+msgstr "Pembelajaran"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Enrolments, learning journeys and course messages"
+msgstr "Pendaftaran, jalur belajar, dan pesan kursus"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Integrations"
+msgstr "Integrasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Connections, credentials and incoming records"
+msgstr "Koneksi, kredensial, dan catatan yang masuk"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Attendance"
+msgstr "Kehadiran"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_studio.py:0
+msgid "Clock rules, exceptions and corrections"
+msgstr "Aturan absen, pengecualian, dan koreksi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_time.py:0
+msgid "%s h"
+msgstr "%s jam"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "I confirm"
+msgstr "Saya konfirmasi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_people.py:0
+msgid "Done"
+msgstr "Selesai"

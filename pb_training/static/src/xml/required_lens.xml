@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Required (LEARNING L2). Section comments use `=` rules and
+       never a doubled hyphen (R35). Loop variables avoid OWL's reserved
+       words (R1): `tb`, `sk`, `col`, `row`, `sf`, `dp`, `jb`, `st`, `ct`,
+       `rq`, `lr`, `ls`, `pk`, `gp`, `et`, `cid`. Every translatable text node
+       is on one line (ledger LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbRequiredLens">
+    <div class="pbrq" t-att-class="{ 'pbrq--embedded': props.embedded }">
+      <div class="pbrq-wrap">
+
+        <!-- ============ inner tabs ============ -->
+        <nav class="pbrq-tabs" role="tablist">
+          <button t-foreach="tabs" t-as="tb" t-key="tb" role="tab" class="pbrq-tab"
+                  t-att-class="{ 'is-on': state.tab === tb }"
+                  t-att-aria-selected="state.tab === tb ? 'true' : 'false'"
+                  t-on-click="() => this.setTab(tb)">
+            <t t-out="ic(tabIcon(tb),15)"/> <span t-esc="tabLabel(tb)"/>
+          </button>
+        </nav>
+
+        <!-- ============ reading ============ -->
+        <t t-if="!state.loaded">
+          <div class="pbrq-hero pbrq-skel" aria-busy="true">
+            <div class="pbrq-skel-line pbrq-skel-line--s"/>
+            <div class="pbrq-skel-line"/>
+          </div>
+        </t>
+
+        <!-- ============ could not read ============ -->
+        <div t-elif="state.failed" class="pbrq-panel pbrq-empty">
+          <div class="pbrq-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The required training could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="retry">
+            <t t-out="ic('refresh',15)"/> Try again
+          </button>
+        </div>
+
+        <!-- ============ not for this reader ============ -->
+        <div t-elif="!allowed" class="pbrq-panel pbrq-empty">
+          <div class="pbrq-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Required training is looked after by the training team</h2>
+          <p>What is required of you is on My learning.</p>
+        </div>
+
+        <!-- ================================================================
+             MATRIX
+             ================================================================ -->
+        <t t-elif="state.tab === 'matrix'">
+          <section class="pbrq-hero">
+            <div class="pbrq-hero-top">
+              <div class="pbrq-ring" t-att-class="ringClass" role="img" t-att-aria-label="summary.percent === null or summary.percent === undefined ? '' : summary.percent + '%'">
+                <svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true">
+                  <circle cx="22" cy="22" r="18" class="pbrq-ring-bg"/>
+                  <circle cx="22" cy="22" r="18" class="pbrq-ring-on" t-att-stroke-dasharray="ringDash"/>
+                </svg>
+                <b t-if="summary.percent !== null and summary.percent !== undefined"><t t-esc="summary.percent"/>%</b>
+                <b t-else="">—</b>
+              </div>
+              <div class="pbrq-hero-text">
+                <div class="pbrq-eyebrow"><t t-out="ic('listChecks',14)"/> Required training</div>
+                <p class="pbrq-headline" t-esc="m.headline"/>
+              </div>
+              <div class="pbrq-hero-act">
+                <button class="pbim-btn ghost" t-att-disabled="state.acting === 'matrix_xlsx' or !rows.length" t-on-click="() => this.download('matrix_xlsx')">
+                  <t t-out="ic('download',14)"/> Download the spreadsheet
+                </button>
+                <button class="pbim-btn ghost" t-att-disabled="state.acting === 'matrix_pdf' or !rows.length" t-on-click="() => this.download('matrix_pdf')">
+                  <t t-out="ic('printer',14)"/> Print for an auditor
+                </button>
+              </div>
+            </div>
+            <div class="pbrq-states" role="group">
+              <button t-foreach="['missing', 'expiring', 'in_progress', 'not_due']" t-as="sk" t-key="sk"
+                      class="pbrq-state" t-att-class="stateChipClass(sk)"
+                      t-att-aria-pressed="state.filters.state === sk ? 'true' : 'false'"
+                      t-on-click="() => this.setState(sk)">
+                <b t-esc="summary[sk] || 0"/> <span t-esc="stateLabel(sk)"/>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ site shortfalls (headcount rules) ============ -->
+          <section t-if="(m.shortfalls || []).length" class="pbrq-panel pbrq-short">
+            <h3><t t-out="ic('mapPin',15)"/> Sites short of trained people</h3>
+            <ul>
+              <li t-foreach="m.shortfalls" t-as="sf" t-key="sf.requirement_id + '-' + sf.site">
+                <b t-esc="sf.name"/> · <span t-esc="sf.words"/>
+              </li>
+            </ul>
+          </section>
+
+          <!-- ============ no rules at all ============ -->
+          <div t-if="!columns.length" class="pbrq-panel pbrq-empty">
+            <div class="pbrq-empty-ic"><t t-out="ic('listChecks',26)"/></div>
+            <h2>No required training yet</h2>
+            <p>Say who must hold which course, certificate or licence, and the matrix shows who is missing it. A country pack writes the legal rules for you.</p>
+            <div class="pbrq-empty-act">
+              <button t-if="m.can_manage" class="pbim-btn primary" t-on-click="() => this.setTab('rules')">
+                <t t-out="ic('plus',15)"/> Write the first rule
+              </button>
+              <button t-if="m.can_manage" class="pbim-btn ghost" t-on-click="openSettings">
+                <t t-out="ic('globe',15)"/> Switch on a country pack
+              </button>
+            </div>
+          </div>
+
+          <t t-else="">
+            <!-- ============ filters ============ -->
+            <div class="pbrq-bar">
+              <label class="pbrq-search">
+                <t t-out="ic('search',14)"/>
+                <input type="search" placeholder="Search a name" t-att-value="state.filters.q" t-on-input="onSearch"/>
+              </label>
+              <select class="pbrq-in" aria-label="Department" t-on-change="(ev) => this.onFilter('department_id', ev)">
+                <option value="0" t-att-selected="!state.filters.department_id">Every department</option>
+                <t t-foreach="lists.departments || []" t-as="dp" t-key="dp.id">
+                  <option t-att-value="dp.id" t-att-selected="state.filters.department_id === dp.id" t-esc="dp.name"/>
+                </t>
+              </select>
+              <select class="pbrq-in" aria-label="Job" t-on-change="(ev) => this.onFilter('job_id', ev)">
+                <option value="0" t-att-selected="!state.filters.job_id">Every job</option>
+                <t t-foreach="lists.jobs || []" t-as="jb" t-key="jb.id">
+                  <option t-att-value="jb.id" t-att-selected="state.filters.job_id === jb.id" t-esc="jb.name"/>
+                </t>
+              </select>
+              <select t-if="(lists.sites || []).length" class="pbrq-in" aria-label="Site" t-on-change="(ev) => this.onFilter('work_location_id', ev)">
+                <option value="0" t-att-selected="!state.filters.work_location_id">Every site</option>
+                <t t-foreach="lists.sites" t-as="st" t-key="st.id">
+                  <option t-att-value="st.id" t-att-selected="state.filters.work_location_id === st.id" t-esc="st.name"/>
+                </t>
+              </select>
+              <select class="pbrq-in" aria-label="Country" t-on-change="(ev) => this.onFilter('country_code', ev, false)">
+                <option value="" t-att-selected="!state.filters.country_code">Every country</option>
+                <t t-foreach="lists.countries || []" t-as="ct" t-key="ct.id">
+                  <option t-att-value="ct.code" t-att-selected="state.filters.country_code === ct.code" t-esc="ct.name"/>
+                </t>
+              </select>
+              <select class="pbrq-in" aria-label="Safety group" t-on-change="(ev) => this.onFilter('safety_group', ev, false)">
+                <option value="" t-att-selected="!state.filters.safety_group">Every safety group</option>
+                <t t-foreach="lists.safety_groups || []" t-as="gp" t-key="gp.key">
+                  <option t-att-value="gp.key" t-att-selected="state.filters.safety_group === gp.key" t-esc="gp.label"/>
+                </t>
+              </select>
+              <select class="pbrq-in" aria-label="Rule" t-on-change="(ev) => this.onFilter('requirement_id', ev)">
+                <option value="0" t-att-selected="!state.filters.requirement_id">Every rule</option>
+                <t t-foreach="columns" t-as="col" t-key="col.id">
+                  <option t-att-value="col.id" t-att-selected="state.filters.requirement_id === col.id" t-esc="col.name"/>
+                </t>
+              </select>
+              <button t-if="anyFilter" class="pbim-btn ghost" t-on-click="clearFilters">
+                <t t-out="ic('x',14)"/> Show everything
+              </button>
+            </div>
+
+            <!-- ============ bulk bar ============ -->
+            <div t-if="pickedIds.length" class="pbrq-bulk">
+              <b t-esc="pickedWords"/>
+              <button t-if="m.can_write" class="pbim-btn primary" t-att-disabled="state.acting === 'bulk'" t-on-click="bulkAssign">
+                <t t-out="ic('userCheck',14)"/> Assign now
+              </button>
+              <t t-if="m.can_manage">
+                <select class="pbrq-in" aria-label="Safety group" t-on-change="(ev) => this.state.groupPick = ev.target.value">
+                  <option value="" t-att-selected="!state.groupPick">No safety group</option>
+                  <t t-foreach="lists.safety_groups || []" t-as="gp" t-key="gp.key">
+                    <option t-att-value="gp.key" t-att-selected="state.groupPick === gp.key" t-esc="gp.label"/>
+                  </t>
+                </select>
+                <button class="pbim-btn ghost" t-att-disabled="state.acting === 'group'" t-on-click="setGroup">
+                  <t t-out="ic('shield',14)"/> Set safety group
+                </button>
+              </t>
+              <button class="pbim-btn ghost" t-on-click="clearPicked"><t t-out="ic('x',14)"/> Clear</button>
+            </div>
+
+            <p t-if="!rows.length" class="pbrq-calm">
+              <t t-out="ic('info',14)"/>
+              Nobody matches. Press the filter again, or Show everything.
+            </p>
+
+            <!-- ============ the grid ============ -->
+            <section t-else="" class="pbrq-panel pbrq-gridwrap">
+              <div class="pbrq-scroll">
+                <div class="pbrq-grid" t-att-style="gridStyle" role="grid">
+                  <div class="pbrq-h pbrq-h--pick" role="columnheader">
+                    <input type="checkbox" t-att-checked="allPicked" t-on-change="toggleAll" aria-label="Pick everybody on this page"/>
+                  </div>
+                  <div class="pbrq-h pbrq-h--emp" role="columnheader">Person</div>
+                  <div t-foreach="columns" t-as="col" t-key="col.id" class="pbrq-h" role="columnheader"
+                       t-att-class="{ 'is-link': canManage }" t-att-title="col.note"
+                       t-on-click="() => this.openColumn(col)">
+                    <b class="pbrq-h-name" t-esc="col.name"/>
+                    <span class="pbrq-h-sub" t-esc="col.timing_words"/>
+                    <span t-if="col.unverified" class="pbrq-tag is-warn">To confirm</span>
+                    <span t-if="col.no_course" class="pbrq-tag">No course linked — link one</span>
+                    <span t-if="col.no_audience" class="pbrq-tag">Pick who this is for</span>
+                  </div>
+
+                  <t t-foreach="rows" t-as="row" t-key="row.employee_id">
+                    <div class="pbrq-c pbrq-c--pick" t-att-class="{ 'is-picked': isPicked(row) }">
+                      <input type="checkbox" t-att-checked="isPicked(row)" t-on-change="() => this.togglePick(row)" t-att-aria-label="row.name"/>
+                    </div>
+                    <div class="pbrq-c pbrq-emp" t-att-class="{ 'is-picked': isPicked(row) }">
+                      <b t-esc="row.name"/>
+                      <span class="pbrq-dim"><t t-esc="row.department"/><t t-if="row.department and row.job"> · </t><t t-esc="row.job"/></span>
+                      <span t-if="row.safety_group" class="pbrq-tag" t-att-title="row.safety_group_word">Safety group <t t-esc="row.safety_group"/></span>
+                    </div>
+                    <div t-foreach="columns" t-as="col" t-key="col.id" class="pbrq-c pbrq-cell">
+                      <t t-set="cl" t-value="cell(row, col)"/>
+                      <button t-if="cl and cl.state !== 'exempt'" class="pbrq-chip" t-att-class="cellClass(row, col)"
+                              t-att-title="cl.words" t-on-click="() => this.onCell(row, col)">
+                        <t t-if="cellIcon(row, col)" t-out="ic(cellIcon(row, col),12)"/>
+                        <span t-esc="cl.words"/>
+                      </button>
+                      <span t-else="" class="pbrq-none" title="Not for them">·</span>
+                      <div t-if="state.pop and state.pop.emp === row.employee_id and state.pop.req === col.id" class="pbrq-pop" role="dialog">
+                        <b t-esc="state.pop.name"/>
+                        <p t-esc="popWords(col)"/>
+                        <div class="pbrq-pop-act">
+                          <button t-if="col.can_assign" class="pbim-btn primary" t-att-disabled="state.acting" t-on-click.stop="assignCell">
+                            <t t-out="ic('userCheck',14)"/> Assign now
+                          </button>
+                          <button class="pbim-btn ghost" t-on-click.stop="closePop">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </div>
+              <div class="pbrq-foot">
+                <span class="pbrq-dim" t-esc="shownWords"/>
+                <div t-if="(m.pages || 1) > 1" class="pbrq-pager">
+                  <button class="pbim-btn ghost" t-att-disabled="(m.page || 1) &lt;= 1" t-on-click="() => this.goPage(-1)"><t t-out="ic('chevronLeft',14)"/></button>
+                  <span class="pbrq-dim"><t t-esc="m.page"/> / <t t-esc="m.pages"/></span>
+                  <button class="pbim-btn ghost" t-att-disabled="(m.page || 1) >= (m.pages || 1)" t-on-click="() => this.goPage(1)"><t t-out="ic('chevron',14)"/></button>
+                </div>
+              </div>
+            </section>
+          </t>
+        </t>
+
+        <!-- ================================================================
+             RULES · DAY ONE · COMES ROUND AGAIN
+             ================================================================ -->
+        <t t-else="">
+          <div class="pbrq-bar">
+            <button t-if="canManage" class="pbim-btn primary" t-on-click="newRule">
+              <t t-out="ic('plus',15)"/> New rule
+            </button>
+            <t t-if="state.tab === 'rules'">
+              <button t-foreach="packChips" t-as="pk" t-key="pk.key" class="pbrq-pill"
+                      t-att-class="{ 'is-on': state.rulePack === pk.key }" t-on-click="() => this.setPack(pk.key)">
+                <t t-out="ic('globe',13)"/> <span t-esc="pk.label"/>
+              </button>
+              <button t-if="state.rulePack and !packChips.length" class="pbrq-pill is-on" t-on-click="() => this.setPack(state.rulePack)">
+                <t t-out="ic('x',13)"/> Every rule
+              </button>
+            </t>
+            <button t-if="canManage" class="pbim-btn ghost pbrq-push" t-on-click="openSettings">
+              <t t-out="ic('settings',14)"/> Country packs and switches
+            </button>
+          </div>
+
+          <p t-if="state.tab === 'day_one' and !r.day1" class="pbrq-calm">
+            <t t-out="ic('info',14)"/>
+            The old day-one rules are switched off, so their courses are not assigned on a joiner's first day. Rules written here are assigned by the morning job when Assign it by itself is on.
+          </p>
+
+          <div t-if="!ruleRows.length and !(state.tab === 'day_one' and (r.legacy_rules || []).length) and !(state.tab === 'recurring' and (r.legacy_schedules || []).length)" class="pbrq-panel pbrq-empty">
+            <div class="pbrq-empty-ic"><t t-out="ic(tabIcon(state.tab),26)"/></div>
+            <h2 t-if="state.tab === 'day_one'">Say what a new joiner must do first</h2>
+            <h2 t-elif="state.tab === 'recurring'">Nothing comes round again yet</h2>
+            <h2 t-else="">No rules yet</h2>
+            <p>A rule says who must hold which course, certificate or licence, and for how long. Write one, or switch on a country pack in Settings.</p>
+          </div>
+
+          <section t-if="ruleRows.length" class="pbrq-panel pbrq-rules">
+            <div t-foreach="ruleRows" t-as="rq" t-key="rq.id" class="pbrq-rule" t-att-class="{ 'is-off': !rq.active }">
+              <div class="pbrq-rule-main">
+                <div class="pbrq-rule-name">
+                  <b t-esc="rq.name"/>
+                  <span t-if="rq.pack_word" class="pbrq-tag"><t t-out="ic('globe',11)"/> <t t-esc="rq.pack_word"/></span>
+                  <span t-if="rq.unverified" class="pbrq-tag is-warn">To confirm</span>
+                  <span t-if="!rq.active" class="pbrq-tag">Switched off</span>
+                  <span t-if="rq.legacy" class="pbrq-tag">Converted</span>
+                </div>
+                <span class="pbrq-dim"><t t-esc="rq.kind_word"/> · <t t-esc="rq.target_words"/> · <t t-esc="rq.timing_words"/></span>
+                <span class="pbrq-dim"><t t-out="ic('users',12)"/> <t t-esc="rq.audience_words"/></span>
+                <span t-if="rq.note" class="pbrq-note" t-esc="rq.note"/>
+              </div>
+              <div class="pbrq-rule-act">
+                <button class="pbrq-auto" t-att-class="{ 'is-on': rq.auto }" t-att-disabled="!canManage or state.acting === 'auto-' + rq.id" t-on-click="() => this.toggleAuto(rq)" title="The morning job puts the course on whoever is missing it">
+                  <t t-out="ic(rq.auto ? 'zap' : 'pause',13)"/>
+                  <span t-if="rq.auto">Assigns itself</span>
+                  <span t-else="">Assign by hand</span>
+                </button>
+                <button class="pbim-btn ghost" t-on-click="() => this.openMatrixFor(rq)" title="Who is missing it">
+                  <t t-out="ic('layoutGrid',14)"/>
+                </button>
+                <button t-if="canManage" class="pbim-btn ghost" t-on-click="() => this.editRule(rq)">
+                  <t t-out="ic('pencil',14)"/> Edit
+                </button>
+                <button t-if="canManage" class="pbim-btn ghost" t-att-disabled="state.acting === 'on-' + rq.id" t-on-click="() => this.toggleActive(rq)">
+                  <t t-out="ic('powerOff',14)"/>
+                  <span t-if="rq.active">Switch off</span>
+                  <span t-else="">Switch on</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ the old rows, read-only ============ -->
+          <section t-if="state.tab === 'day_one' and (r.legacy_rules || []).length" class="pbrq-panel pbrq-legacy">
+            <h3>Day-one rules from before</h3>
+            <p class="pbrq-dim">They still run from the joining checklist. Each one now also has a rule above, marked Converted.</p>
+            <div t-foreach="r.legacy_rules" t-as="lr" t-key="lr.id" class="pbrq-rule is-old">
+              <div class="pbrq-rule-main">
+                <div class="pbrq-rule-name">
+                  <b t-esc="lr.name"/>
+                  <span t-if="lr.converted" class="pbrq-tag is-good">Converted</span>
+                  <span t-if="!lr.active" class="pbrq-tag">Switched off</span>
+                </div>
+                <span class="pbrq-dim"><t t-esc="lr.courses.join(', ')"/></span>
+              </div>
+            </div>
+          </section>
+          <section t-if="state.tab === 'recurring' and (r.legacy_schedules || []).length" class="pbrq-panel pbrq-legacy">
+            <h3>Schedules from before</h3>
+            <p class="pbrq-dim">They still run every night. Each one now also has a rule above, marked Converted.</p>
+            <div t-foreach="r.legacy_schedules" t-as="ls" t-key="ls.id" class="pbrq-rule is-old">
+              <div class="pbrq-rule-main">
+                <div class="pbrq-rule-name">
+                  <b t-esc="ls.name"/>
+                  <span t-if="ls.converted" class="pbrq-tag is-good">Converted</span>
+                  <span t-if="!ls.active" class="pbrq-tag">Switched off</span>
+                </div>
+                <span class="pbrq-dim"><t t-esc="ls.course"/> · <t t-esc="ls.audience"/></span>
+              </div>
+            </div>
+          </section>
+        </t>
+      </div>
+
+      <!-- ================================================================
+           THE DRAWER. A direct child of the root (R114).
+           ================================================================ -->
+      <div t-if="state.drawer" class="pbim-modal-scrim pbrq-scrim" t-on-click="closeDrawer">
+        <div class="pbrq-drawer" t-on-click.stop="() => {}">
+          <div class="pbrq-drawer-head">
+            <div>
+              <div class="pbrq-eyebrow">Required training</div>
+              <h2 class="pbrq-drawer-title" t-if="state.form.id">Change this rule</h2>
+              <h2 class="pbrq-drawer-title" t-else="">A new rule</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeDrawer" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbrq-drawer-body">
+            <label class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">What it is called</span>
+              <input class="pbrq-in" type="text" maxlength="200" placeholder="Fire safety, every year" t-att-value="state.form.name" t-on-input="(ev) => this.setField('name', ev)"/>
+            </label>
+            <label class="pbrq-f">
+              <span class="pbrq-f-l">Kind</span>
+              <select class="pbrq-in" t-on-change="(ev) => this.setField('kind', ev)">
+                <option value="always" t-att-selected="state.form.kind === 'always'">Hold it at all times</option>
+                <option value="day_one" t-att-selected="state.form.kind === 'day_one'">Within days of joining</option>
+                <option value="recurring" t-att-selected="state.form.kind === 'recurring'">Comes round again</option>
+                <option value="statutory" t-att-selected="state.form.kind === 'statutory'">Required by law</option>
+              </select>
+            </label>
+            <label class="pbrq-f">
+              <span class="pbrq-f-l">What they must hold</span>
+              <select class="pbrq-in" t-on-change="(ev) => this.setField('target', ev)">
+                <option value="course" t-att-selected="state.form.target === 'course'">A course</option>
+                <option value="certificate" t-att-selected="state.form.target === 'certificate'">A certificate</option>
+                <option value="licence" t-att-selected="state.form.target === 'licence'">A licence or permit</option>
+                <option value="hours" t-att-selected="state.form.target === 'hours'">Hours of training</option>
+                <option value="path" t-att-selected="state.form.target === 'path'">A learning path</option>
+              </select>
+            </label>
+            <label t-if="state.form.target === 'path'" class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Learning path</span>
+              <select class="pbrq-in" t-on-change="(ev) => this.setField('path_id', ev, 'int')">
+                <option value="0" t-att-selected="!state.form.path_id">Pick a path</option>
+                <t t-foreach="lists.paths || []" t-as="lpth" t-key="lpth.id">
+                  <option t-att-value="lpth.id" t-att-selected="state.form.path_id === lpth.id" t-esc="lpth.name"/>
+                </t>
+              </select>
+              <span class="pbrq-hint">Held once the person has finished every step of the path. Assign now puts them on it.</span>
+            </label>
+            <label t-if="state.form.target !== 'path'" class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Course</span>
+              <select class="pbrq-in" t-on-change="(ev) => this.setField('channel_id', ev, 'int')">
+                <option value="0" t-att-selected="!state.form.channel_id">No course</option>
+                <t t-foreach="lists.courses || []" t-as="cid" t-key="cid.id">
+                  <option t-att-value="cid.id" t-att-selected="state.form.channel_id === cid.id" t-esc="cid.name"/>
+                </t>
+              </select>
+            </label>
+            <label t-if="state.form.target === 'certificate' or state.form.target === 'licence'" class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Name on the paper</span>
+              <input class="pbrq-in" type="text" maxlength="200" placeholder="Forklift" t-att-value="state.form.name_pattern" t-on-input="(ev) => this.setField('name_pattern', ev)"/>
+              <span class="pbrq-hint">A certificate counts when its name contains these words. Separate alternatives with |.</span>
+            </label>
+            <label t-if="state.form.target === 'hours'" class="pbrq-f">
+              <span class="pbrq-f-l">Hours</span>
+              <input class="pbrq-in" type="number" min="0" step="0.5" t-att-value="state.form.hours_required" t-on-input="(ev) => this.setField('hours_required', ev)"/>
+            </label>
+            <label class="pbrq-f">
+              <span class="pbrq-f-l">Valid for (months)</span>
+              <input class="pbrq-in" type="number" min="0" t-att-value="state.form.validity_months" t-on-input="(ev) => this.setField('validity_months', ev, 'int')"/>
+              <span class="pbrq-hint">0 means it never runs out.</span>
+            </label>
+            <label class="pbrq-f">
+              <span class="pbrq-f-l">Days they get</span>
+              <input class="pbrq-in" type="number" min="1" t-att-value="state.form.due_days" t-on-input="(ev) => this.setField('due_days', ev, 'int')"/>
+            </label>
+            <label t-if="state.form.kind === 'recurring'" class="pbrq-f">
+              <span class="pbrq-f-l">Comes round every (months)</span>
+              <input class="pbrq-in" type="number" min="1" t-att-value="state.form.every_months" t-on-input="(ev) => this.setField('every_months', ev, 'int')"/>
+            </label>
+            <label class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Refresher course (optional)</span>
+              <select class="pbrq-in" t-on-change="(ev) => this.setField('refresher_channel_id', ev, 'int')">
+                <option value="0" t-att-selected="!state.form.refresher_channel_id">The same course</option>
+                <t t-foreach="lists.courses || []" t-as="cid" t-key="cid.id">
+                  <option t-att-value="cid.id" t-att-selected="state.form.refresher_channel_id === cid.id" t-esc="cid.name"/>
+                </t>
+              </select>
+            </label>
+
+            <div class="pbrq-f pbrq-f--wide pbrq-sep">
+              <span class="pbrq-f-l">Who it is for</span>
+              <span class="pbrq-hint">Leave everything empty and it is for everybody in the company.</span>
+            </div>
+            <div class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Departments (and the ones under them)</span>
+              <div class="pbrq-picks">
+                <span t-foreach="state.form.department_ids" t-as="cid" t-key="cid" class="pbrq-pick"><t t-esc="nameOf('departments', cid)"/> <button t-on-click="() => this.removeFrom('department_ids', cid)" title="Take it off"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <select class="pbrq-in" t-on-change="(ev) => this.addTo('department_ids', ev)">
+                <option value="0">Add a department</option>
+                <t t-foreach="lists.departments || []" t-as="dp" t-key="dp.id"><option t-att-value="dp.id" t-esc="dp.name"/></t>
+              </select>
+            </div>
+            <div class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Jobs</span>
+              <div class="pbrq-picks">
+                <span t-foreach="state.form.job_ids" t-as="cid" t-key="cid" class="pbrq-pick"><t t-esc="nameOf('jobs', cid)"/> <button t-on-click="() => this.removeFrom('job_ids', cid)" title="Take it off"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <select class="pbrq-in" t-on-change="(ev) => this.addTo('job_ids', ev)">
+                <option value="0">Add a job</option>
+                <t t-foreach="lists.jobs || []" t-as="jb" t-key="jb.id"><option t-att-value="jb.id" t-esc="jb.name"/></t>
+              </select>
+            </div>
+            <div t-if="(lists.sites || []).length" class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Sites</span>
+              <div class="pbrq-picks">
+                <span t-foreach="state.form.work_location_ids" t-as="cid" t-key="cid" class="pbrq-pick"><t t-esc="nameOf('sites', cid)"/> <button t-on-click="() => this.removeFrom('work_location_ids', cid)" title="Take it off"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <select class="pbrq-in" t-on-change="(ev) => this.addTo('work_location_ids', ev)">
+                <option value="0">Add a site</option>
+                <t t-foreach="lists.sites" t-as="st" t-key="st.id"><option t-att-value="st.id" t-esc="st.name"/></t>
+              </select>
+            </div>
+            <div class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Countries they work in</span>
+              <div class="pbrq-picks">
+                <span t-foreach="state.form.country_ids" t-as="cid" t-key="cid" class="pbrq-pick"><t t-esc="nameOf('countries', cid)"/> <button t-on-click="() => this.removeFrom('country_ids', cid)" title="Take it off"><t t-out="ic('x',11)"/></button></span>
+              </div>
+              <select class="pbrq-in" t-on-change="(ev) => this.addTo('country_ids', ev)">
+                <option value="0">Add a country</option>
+                <t t-foreach="lists.countries || []" t-as="ct" t-key="ct.id"><option t-att-value="ct.id" t-esc="ct.name"/></t>
+              </select>
+            </div>
+            <div class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Safety groups (Vietnam)</span>
+              <div class="pbrq-toggles">
+                <button t-foreach="lists.safety_groups || []" t-as="gp" t-key="gp.key" class="pbrq-pill"
+                        t-att-class="{ 'is-on': state.form.safety_groups.includes(gp.key) }"
+                        t-on-click="() => this.toggleIn('safety_groups', gp.key)" t-esc="gp.label"/>
+              </div>
+            </div>
+            <div class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Kinds of contract</span>
+              <div class="pbrq-toggles">
+                <button t-foreach="lists.employee_types || []" t-as="et" t-key="et.key" class="pbrq-pill"
+                        t-att-class="{ 'is-on': state.form.employee_types.includes(et.key) }"
+                        t-on-click="() => this.toggleIn('employee_types', et.key)" t-esc="et.label"/>
+              </div>
+            </div>
+            <label class="pbrq-check pbrq-f--wide">
+              <input type="checkbox" t-att-checked="state.form.include_contractors" t-on-change="(ev) => this.setField('include_contractors', ev, 'bool')"/>
+              <span>Contractors too</span>
+            </label>
+            <label class="pbrq-check pbrq-f--wide">
+              <input type="checkbox" t-att-checked="state.form.auto_assign" t-on-change="(ev) => this.setField('auto_assign', ev, 'bool')"/>
+              <span>Assign it by itself — the morning job puts the course on whoever is missing it</span>
+            </label>
+            <label class="pbrq-check pbrq-f--wide">
+              <input type="checkbox" t-att-checked="state.form.counts_for_probation" t-on-change="(ev) => this.setField('counts_for_probation', ev, 'bool')"/>
+              <span>Their trial period waits for it</span>
+            </label>
+            <label class="pbrq-f pbrq-f--wide">
+              <span class="pbrq-f-l">Why it is required (optional)</span>
+              <textarea class="pbrq-in" rows="3" maxlength="2000" t-att-value="state.form.note" t-on-input="(ev) => this.setField('note', ev)"/>
+            </label>
+          </div>
+          <div class="pbrq-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closeDrawer">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!canSave" t-on-click="save">
+              <t t-out="ic('check',15)"/> Save the rule
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

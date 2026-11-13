@@ -1,0 +1,2498 @@
+/** @odoo-module **/
+/* =============================================================================
+   The Guided Journey — Payobook Learn, Phase A.
+
+   OWL owns the shell and the state; the engine builds the inner HTML. That
+   split is deliberate: the spotlight, trace and morph work by measuring and
+   decorating live DOM, which is imperative work that reactive re-rendering
+   fights rather than helps. So OWL renders one host node per view, and the
+   post-render hook runs the visual effects.
+
+   Binding rules from the brief, enforced here rather than left to the CSS:
+     * the spotlight never covers the control it explains (see spotlight.js)
+     * completion needs a right answer, never a click on Next
+     * a wrong answer is a recovery, never a rejection
+     * both languages switch live, without a reload or a lost place
+   ========================================================================== */
+import { Component, markup, onMounted, onPatched, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
+
+import { RT, T, tx, esc, ic, reduced, SP} from "../engine/runtime";
+/* The glossary pass (LEARNOS Phase 2). `gtx` is `tx` plus the hovercard
+   wrapper, and it is used at exactly the sites that insert an authored body
+   RAW — a lesson step, a mission step detail, a scenario card. Everywhere
+   else on this screen goes through esc() and must keep doing so. */
+import { gtx, glossaryOpen, setGlossary, installGlossary, closeGlossary }
+    from "../engine/glossary";
+import { loadContent, composeStations } from "../content/content_loader";
+import { Spot, Trace, setOverlayRoot } from "../engine/spotlight";
+
+/* Where a mission opens when its first step does not say. One entry per
+   Journey line, so a mission never opens on a screen from another section.
+   Phase A draws one line; later phases add rows here, not a second map. */
+const MISSION_HOME = {
+    payrun: "runpayroll",
+    setup: "statutory",
+};
+
+/* The READING order of the lines on the map, and the icon each heading gets.
+ *
+ * LEARNOS PHASE 6: THE ORDER IS AUTHORED IN `docs/tutorial_poc/author/data.js`
+ * AND SHIPS IN THE CONTENT PLANE, because the SERVER needs it too —
+ * `learn.runtime.next_best()` answers "the next required station in reading
+ * order". The constant below is the FALLBACK for a bundle that predates the
+ * key; `get lineOrder()` prefers what the content shipped, and
+ * `test_nextbest::test_15` fails if the two ever disagree. Do not edit this
+ * list on its own: edit the authoring source and regenerate.
+ *
+ * Not the model's selection order and not the station sequence: the generator
+ * numbers stations with one counter across every line in declaration order, so
+ * a new section is APPENDED there to avoid renumbering the ones before it —
+ * which is right for storage and wrong for a page. A learner meets Overview
+ * first and Setup last, whatever order the content happened to be written in.
+ *
+ * A line missing from this list is still drawn, after the ones that are here.
+ * That is deliberate: a new section must never be able to disappear from the
+ * map because somebody forgot a second file. */
+const LINE_ORDER = ["overview", "payrun", "setup", "people", "lifecycle", "workforce", "insights", "compliance"];
+import { SCREENS, practiceShellHTML, shellHTML } from "../engine/screens";
+import { INPUT_ANCHORS } from "../engine/fixture";
+import { looseMatch } from "../engine/input_match";
+import { playableSteps } from "../scenario/scenario_service";
+import { LiveState } from "../live/live_state";
+import { canOpen, lensReachable, openScreen, placeLabel, reachable, resolveLensReach, setReach,
+         LEARN_HUB_XMLID } from "../engine/places";
+/* LEARNREV P3 — the Library (the map view's renderer and its one search),
+   the field index it searches, and the drawer's door for "open this screen
+   with its Guide" / "Ask PayAI". */
+import { ROLE_ORDER, buildIndex, buildLibrary, libraryHTML, practiceRowHTML, resultsHTML, search }
+    from "./library";
+import { loadFieldIndex } from "../content/field_index";
+import { askHelper, guideAt } from "../coach/guide_door";
+/* LEARNREV P4 — the four-line step renderer the Guide panel uses, and the
+   panel's own "where does this step play" rule, for the hand-back. */
+import { isPracticeAnchor, linesHTML, rateHTML, stepRef, stepView } from "../coach/lesson_panel";
+const LP_RETURN_KEY = "pbLearnLessonReturn";
+import { openHub } from "@pb_hub/js/hub_nav";
+
+/* Arrival payloads already acted on. HubShell hands the Lessons lens ONE
+   arrival object per hub visit, so remembering it by identity is what stops a
+   deep link replaying every time the reader switches back to this tab. */
+const CONSUMED_ARRIVALS = new WeakSet();
+import { morphHTML, calcHTML, pipeHTML, runMeter, runPipeline, runTick } from "../engine/visuals";
+
+const LOCAL_PREFS = "pbLearnPrefs";
+
+/* LEARNREV P3 — the chapters, the Lifecycle road, the overall ring, the badge,
+   the streak chip and the tier chips are GONE from this page (owner decision
+   2026-10-17): the Library groups screens like the left menu instead
+   (journey/library.js MENU_ORDER). The `skill_tree` / `streak` bootstrap keys
+   are still read below — other tenants' code may — but nothing draws them. */
+/* Per-browser "skip this month" for the month-end line. */
+const MONTH_END_SKIP = "pbLearnMonthEndSkip";
+
+export class LearnJourney extends Component {
+    static template = "pb_learn.Journey";
+    /* A client action is handed `action`, `actionId`, `className` and
+       `updateActionState` by the action manager. Phase A declared no props at
+       all, which was fine while nothing read them; the deep link needs
+       `props.action.context`, so the component now accepts what it is given.
+       "*" rather than a list, because the set belongs to the action manager. */
+    static props = ["*"];
+
+    setup() {
+        this.orm = useService("orm");
+        // LEARNREV P5b — practice-copy cards rated in this page's life.
+        this._rated = {};
+        // Scenarios: the Journey hosts TRY (over the replica, where the
+        // missions already run) and hands WATCH and DO to the service, whose
+        // overlay is mounted in the web client shell and survives the
+        // navigation those two modes do.
+        this.sc = useService("learn.scenario");
+        // LEARN REFRESH step 1 — a station's "Open" goes to the real screen
+        // where it lives (hub › tab), through engine/places.js.
+        this.action = useService("action");
+        this.overlayRef = useRef("overlay");
+
+        this.state = useState({
+            ready: false,
+            view: "map",            // map | outline | lesson
+            stationKey: null,
+            step: 0,
+            quiz: false,
+            answered: null,         // index of the option chosen
+            morphSide: "before",
+            search: "",
+            // Phase 3 — mission runner.
+            // Deep links. `lesson` opens a lesson outright (PayAI's "Show me");
+            // `suggest` only PULSES a card on the map (the demo first-login
+            // greeting). Two keys because they are two different promises: one
+            // takes you somewhere, the other points.
+            suggest: "",
+            missionKey: null,
+            mStep: 0,
+            mChoice: null,       // key of the option chosen
+            mRecovered: false,   // needed a recovery anywhere in this run
+            mAcked: false,       // consequence card acknowledged on this step
+            mHint: false,
+            mDone: false,
+            mGain: 0,
+            // Phase 1b — a scenario taken in TRY mode, over the replica.
+            // `sNudge` is the gentle correction for a click on the wrong
+            // control: a nudge, never a mark against the learner, and it
+            // clears the moment they get it right.
+            scenarioKey: null,
+            sStep: 0,
+            sNudge: false,
+            sDone: false,
+            // Phase 5 — an input step's mismatch. Separate from `sNudge`,
+            // which is a wrong CONTROL: this one is the right control with the
+            // wrong value in it, and it is the only thing a wrong value can
+            // ever produce. It never advances anything.
+            sMiss: false,
+            // Phase 5 — practice mode, the free-roam sandbox. `pScreen` is the
+            // replica the learner is standing on and survives a trip back to
+            // the map, so re-opening the sandbox resumes where they left it.
+            pScreen: "dashboard",
+            // LEARN REFRESH step 2 — what the replica says after a press on
+            // its rail or tabs that does not open a screen: a tab the practice
+            // company does not have, or any tab during a lesson (where the
+            // lesson moves the screen). Never a dead click.
+            shellNote: "",
+            // LEARNREV P4 — set while a lesson the Guide panel handed over
+            // plays here: {station, lesson, from}.
+            handoff: null,
+            // LEARN v3 — the path. `role` is the learner's pick, or the guess.
+            role: "",
+            roleChosen: false,
+            // LEARN REFRESH step 5 — bumped on each role pick so the chapters
+            // replay their redraw (the hero moment).
+            pathTick: 0,
+            monthEndSkipped: false,
+            lang: "en",
+            motion: "auto",
+            error: "",
+            // LEARNREV P3 — the Library: the role chips shown in the Continue
+            // card, the menu groups opened on a phone, whether this person
+            // may read Team readiness, and the grey "not in your menu" note
+            // on an outline reached from a Guide chip.
+            rolesOpen: false,
+            openGroups: [],
+            team: false,
+            outlineNote: false,
+        });
+        this.rootRef = useRef("root");
+        // The search words and what they found: NOT reactive, so typing
+        // redraws only the results list and the box keeps its caret.
+        this._q = "";
+        this._hits = [];
+        this._openTerm = "";
+        this._fieldRows = [];
+        this._index = null;
+        this._indexKey = "";
+        this._markups = {};
+
+        this.bundle = null;
+        this.progress = {};
+        this.visible = new Set();
+        // The one-shot that keeps a blur and the click that caused it
+        // from being two advances. See `_scenarioClick`.
+        this._blurAdvanced = false;
+        this._onKey = this._onKey.bind(this);
+
+        onWillStart(async () => {
+            this._restorePrefs();
+            await this._loadBundle();
+            this._applyDeepLink();
+        });
+        onMounted(() => {
+            setOverlayRoot(this.overlayRef.el);
+            // A deep link (a Try, a lesson) can land the FIRST render on a
+            // view that needs its spotlight; onPatched does not run for the
+            // first render, so paint it here too (LEARN REFRESH step 4).
+            this._afterPaint();
+            // CAPTURE PHASE, and it is not a style choice. "document, not
+            // window" was necessary and NOT sufficient: Odoo's hotkey service
+            // stops propagation at document-BUBBLE, so a bubble listener here
+            // is silently dead in real Chrome while synthetic dispatch in a
+            // test still works — measured on the Phase 2+3 deploy, on the
+            // welcome card's Escape, and the reason first_login.js has bound
+            // capture ever since. The removal has to match the phase or the
+            // listener is never removed at all.
+            document.addEventListener("keydown", this._onKey, true);
+            document.body.classList.add("lrn-open");
+            this._log("journey_open");
+        });
+        onPatched(() => this._afterPaint());
+        onWillUnmount(() => {
+            // The card lives on document.body, so leaving the Journey with
+            // one open would strand it over the next screen.
+            closeGlossary();
+            Spot.hide();
+            clearTimeout(this._missTimer);
+            document.removeEventListener("keydown", this._onKey, true);
+            document.body.classList.remove("lrn-open");
+            document.body.classList.remove("lrn-on-library");
+        });
+    }
+
+    // ---------------------------------------------------------------- loading
+    _restorePrefs() {
+        // Only the two preferences live in the browser. Progress is a server
+        // record: a learner who moves to the ward laptop keeps their place, and
+        // Product can measure completion at all (analysis §6).
+        try {
+            const p = JSON.parse(window.localStorage.getItem(LOCAL_PREFS) || "{}");
+            // `user.lang` ("vi-VN"): the page's session info is deleted on load on
+            // this version, so the old read always fell back to English (ONECHAT OC2).
+            const sessionLang = String(user.lang || "").toLowerCase();
+            this.state.lang = p.lang || (sessionLang.startsWith("vi") ? "vi" : "en");
+            this.state.motion = p.motion || "auto";
+        } catch {
+            this.state.lang = "en";
+            this.state.motion = "auto";
+        }
+        RT.lang = this.state.lang;
+        RT.motion = this.state.motion;
+    }
+
+    _savePrefs() {
+        try {
+            window.localStorage.setItem(LOCAL_PREFS, JSON.stringify({
+                lang: this.state.lang, motion: this.state.motion,
+            }));
+        } catch {
+            // A locked-down browser profile must not break the lesson.
+        }
+    }
+
+    async _loadBundle() {
+        // TWO sources since Phase 1a, and the split is the whole point: the
+        // CONTENT is a static asset every tenant has identical bytes of, and
+        // the one RPC carries only what is irreducibly about this session —
+        // which stations this reader can reach, their slots, their progress.
+        // The bundle assembled here is the shape the views below have read
+        // since Phase A; nothing downstream of this method changed.
+        let content, runtime;
+        try {
+            [content, runtime] = await Promise.all([
+                loadContent(),
+                this.orm.call("learn.runtime", "bootstrap", []),
+            ]);
+        } catch (e) {
+            this.state.error = e?.message?.data?.message || String(e);
+            return;
+        }
+        this.bundle = {
+            // LEARNOS Phase 6. Three answers the server already worked out,
+            // riding along with the one call this component already makes.
+            // All three are EMPTY when their tenant flag is off, and every
+            // surface below draws nothing on empty rather than drawing an
+            // explanation of why a feature is missing.
+            nextBest: runtime.next_best || {},
+            streak: runtime.streak || {},
+            skillTree: !!runtime.skill_tree,
+            lineOrder: runtime.line_order || [],
+            stations: composeStations(content, runtime),
+            missions: content.missions || [],
+            scenarios: content.scenarios || [],
+            glossary: content.glossary || [],
+            chrome: content.chrome || {},
+            version: content.version || "",
+            tokens: runtime.tokens || {},
+            progress: runtime.progress || {},
+            confidence: runtime.confidence || {},
+            user: runtime.user || {},
+            // LEARN v3 — the learner's path and the month-end date.
+            path: runtime.path || {},
+            // LEARN REFRESH step 1 — where each screen lives in the rail.
+            screens: content.screens || [],
+            // LEARN REFRESH step 5 — retired station keys → their new home.
+            stationAliases: content.station_aliases || {},
+            // LEARNREV P3 — the Library's search (terms) and its Practice
+            // row's wording (the demo company, or a copy).
+            demoWorld: !!runtime.demo_world,
+            // LEARNREV P4 — the company's country: a statutory step reads
+            // the variant for it (coach/lesson_panel.js stepView).
+            country: runtime.country || "",
+        };
+        setReach(runtime.visible_stations);
+        // LEARN REFRESH step 4 — a station whose hub TAB this reader cannot
+        // open says so on its card, asked of the hub's own gates (the same
+        // groups and probes that hide the tab), never of a copied list.
+        try {
+            await resolveLensReach(this.env, this.orm, this.bundle.screens);
+        } catch {
+            // Unknown stays unknown: the card simply makes no claim.
+        }
+        for (const s of this.bundle.stations) {
+            const sc = this.screenOf(s);
+            if (sc && lensReachable(sc) === false) {
+                s.visible = false;
+                s.gated = true;
+            }
+        }
+        RT.tokens = this.bundle.tokens || {};
+        RT.chrome = this.bundle.chrome || {};
+        // The hovercard's match table and its one delegated listener. Built
+        // from the glossary the content plane already carries, so no surface
+        // owns a second copy of the terms.
+        setGlossary(this.bundle.glossary);
+        installGlossary();
+        this.progress = this.bundle.progress || {};
+        this.state.role = (this.bundle.path && this.bundle.path.role) || "";
+        this.state.roleChosen = !!(this.bundle.path && this.bundle.path.role_chosen);
+        try {
+            const me = this.bundle.path && this.bundle.path.month_end;
+            this.state.monthEndSkipped = !!(me && me.month
+                && window.localStorage.getItem(MONTH_END_SKIP) === me.month);
+        } catch {
+            this.state.monthEndSkipped = false;
+        }
+        this.visible = new Set(
+            this.bundle.stations.filter((s) => s.visible).map((s) => s.key));
+        // The rail path for a screen that is reachable but has no menu line of
+        // its own — "Pay Run", "People". Empty for everything the reader can
+        // already see on the rail, so a card only says something when there is
+        // something to say.
+        this.reachOf = new Map(
+            this.bundle.stations.filter((s) => s.reach).map((s) => [s.key, s.reach]));
+        // The server knows the user's own language; honour it the first time
+        // and let the toggle win afterwards.
+        if (!window.localStorage.getItem(LOCAL_PREFS)) {
+            this.state.lang = this.bundle.user?.lang || "en";
+            RT.lang = this.state.lang;
+        }
+        // LEARNREV P3 — two answers the page draws when they arrive, never
+        // waits for: the field cards the search finds, and whether this
+        // person may read Team readiness (learn.path re-asks the gate).
+        this._loadFieldRows();
+        this.orm.call("learn.path", "can_see_team", []).then((ok) => {
+            this.state.team = !!ok;
+        }).catch(() => {
+            // No answer: no Team row, which is what a non-manager sees.
+        });
+        this.state.ready = true;
+    }
+
+    // ----------------------------------------------------------------- lookups
+    /** The content screen a station teaches (same key), or null. */
+    screenOf(station) {
+        const list = (this.bundle && this.bundle.screens) || [];
+        return (station && list.find((x) => x.key === station.key)) || null;
+    }
+
+    /** "Pay Run › Payslips" for a station whose screen lives in a hub. */
+    placeOf(station) {
+        const sc = this.screenOf(station);
+        const list = (this.bundle && this.bundle.screens) || [];
+        return sc && (sc.places || []).some((p) => !p.startsWith("detail:"))
+            ? placeLabel(list, sc) : "";
+    }
+
+    /** "Open" on a station: the real screen, where it lives. */
+    openRealScreen(key) {
+        const st = this.station(key);
+        const sc = this.screenOf(st);
+        if (!sc) {
+            return;
+        }
+        openScreen(this.action, this.bundle.screens, sc).catch(() => {
+            // Nothing opened; the map stays where it is.
+        });
+    }
+
+    get stations() {
+        return this.bundle ? this.bundle.stations : [];
+    }
+
+    station(key) {
+        // LEARN REFRESH step 5 — a retired key (contracts, proration, retro)
+        // lands on the station it folded into.
+        const aliases = (this.bundle && this.bundle.stationAliases) || {};
+        const k = aliases[key] || key;
+        return this.stations.find((s) => s.key === k) || null;
+    }
+
+    get current() {
+        return this.station(this.state.stationKey);
+    }
+
+    get lesson() {
+        const st = this.current;
+        return st && st.lessons.length ? st.lessons[0] : null;
+    }
+
+    get steps() {
+        const l = this.lesson;
+        return l ? l.steps : [];
+    }
+
+    get missions() {
+        return this.bundle ? (this.bundle.missions || []) : [];
+    }
+
+    get mission() {
+        return this.missions.find((m) => m.key === this.state.missionKey) || null;
+    }
+
+    get mSteps() {
+        return this.mission ? this.mission.steps : [];
+    }
+
+    get mCurrent() {
+        return this.mSteps[this.state.mStep] || null;
+    }
+
+    get scenarios() {
+        return this.bundle ? (this.bundle.scenarios || []) : [];
+    }
+
+    get scenario() {
+        return this.scenarios.find((s) => s.key === this.state.scenarioKey) || null;
+    }
+
+    /** The steps this scenario plays in TRY. Filtered through the same
+     *  function the overlay and the Coach use, so the three surfaces agree
+     *  about what step 4 of 7 is (Phase 5). */
+    get sSteps() {
+        return playableSteps(this.scenario, "try");
+    }
+
+    get sCurrent() {
+        return this.sSteps[this.state.sStep] || null;
+    }
+
+    /** Which replica a Try step stands on.
+     *
+     *  Same rule as a mission's: a step with no `screen` of its own has not
+     *  moved the learner, so it is standing on the last screen the scenario
+     *  navigated to — never a default, which would ask a question about a
+     *  screen the learner is not looking at. */
+    _scenarioScreen(step) {
+        if (step && step.screen) {
+            return step.screen;
+        }
+        for (let i = this.state.sStep - 1; i >= 0; i--) {
+            const prev = this.sSteps[i];
+            if (prev && prev.screen) {
+                return prev.screen;
+            }
+        }
+        const sc = this.scenario;
+        return (sc && sc.entry && sc.entry.screen) || "runpayroll";
+    }
+
+    stateOf(key) {
+        return (this.progress[key] || {}).state || "not_started";
+    }
+
+    /* ------------------------------------------------------ LEARN v3 path */
+    /** The station keys REQUIRED on this learner's path, or null when the
+     *  server sent no paths (a stale bundle): then the authored flags stand. */
+    get pathKeys() {
+        const roles = (this.bundle && this.bundle.path && this.bundle.path.roles) || {};
+        const keys = roles[this.state.role];
+        return keys ? new Set(keys) : null;
+    }
+
+    onPath(station) {
+        const keys = this.pathKeys;
+        return keys ? keys.has(station.key) : !!station.required;
+    }
+
+    async setRole(role) {
+        if (!ROLE_ORDER.includes(role) || role === this.state.role) {
+            return;
+        }
+        this.state.role = role;
+        this.state.roleChosen = true;
+        try {
+            const extra = await this.orm.call("learn.path", "set_role", [role]);
+            this.bundle.path = extra || this.bundle.path;
+            // The suggestion comes from the path, so it changes with it.
+            this.bundle.nextBest = await this.orm.call("learn.runtime", "next_best", []) || {};
+        } catch {
+            // The pick still drives this page; the server re-syncs next load.
+        }
+        // The redraw happens once the path AND the next suggestion are both
+        // in, so the Continue card and the path strip change together.
+        this.state.rolesOpen = false;
+        this.state.pathTick = (this.state.pathTick || 0) + 1;
+        this.render(true);
+    }
+
+    /* ------------------------------------------------- LEARNOS Phase 6 */
+
+    /** The reading order, from the content plane, with this file's constant
+     *  as the fallback for a stale bundle. One AUTHORED source
+     *  (docs/tutorial_poc/author/data.js) feeds both this and the server's
+     *  `next_best`, so the map and the suggestion cannot disagree about which
+     *  section comes next. */
+    get lineOrder() {
+        const fromContent = this.bundle && this.bundle.lineOrder;
+        return fromContent && fromContent.length ? fromContent : LINE_ORDER;
+    }
+
+    get nextBest() {
+        return (this.bundle && this.bundle.nextBest) || {};
+    }
+
+    // ------------------------------------------------------------- persistence
+    async _saveProgress(key, vals) {
+        this.progress[key] = Object.assign({}, this.progress[key], vals);
+        try {
+            await this.orm.call("learn.progress", "record", [key, vals]);
+        } catch {
+            // Losing a progress write must never interrupt a lesson. The local
+            // copy still drives the UI; the next write re-syncs it.
+        }
+    }
+
+    async _log(kind, detail) {
+        try {
+            await this.orm.call("learn.event", "log", [kind], {
+                station_key: this.state.stationKey || null,
+                screen: this.steps[this.state.step]?.screen || null,
+                detail: detail === undefined ? null : detail,
+                lang: this.state.lang,
+            });
+        } catch {
+            // Measurement must never be able to break the thing it measures.
+        }
+    }
+
+    // -------------------------------------------------------------- rendering
+    get body() {
+        if (this.state.error) {
+            return markup(`<div class="lrn-panel lrn-blocked"><h3>${ic("alert-triangle")}
+                ${esc(T("noAnswer"))}</h3><p class="lrn-note">${esc(this.state.error)}</p></div>`);
+        }
+        if (!this.state.ready) {
+            return markup(`<div class="lrn-skeleton" aria-busy="true"></div>`);
+        }
+        if (this.state.view === "lesson") {
+            return markup(this._lessonBody());
+        }
+        if (this.state.view === "mission") {
+            return markup(this._missionBody());
+        }
+        if (this.state.view === "scenario") {
+            return markup(this._scenarioBody());
+        }
+        if (this.state.view === "practice") {
+            return markup(this._practiceBody());
+        }
+        if (this.state.view === "missions") {
+            return markup(this._missionListBody());
+        }
+        if (this.state.view === "outline") {
+            return markup(this._outlineBody());
+        }
+        // LEARNREV P3 — the SAME Markup while the Library's HTML is unchanged,
+        // so a redraw for any other reason leaves its DOM (the search box and
+        // its caret, the results drawn into it) alone — the OWL markup-flicker
+        // rule (coach.js `_stable`).
+        void this.state.lang;
+        const html = this._mapBody();
+        const prev = this._markups.map;
+        if (prev !== undefined && String(prev) === html) {
+            return prev;
+        }
+        this._markups.map = markup(html);
+        return this._markups.map;
+    }
+
+    /* ------------------------------------------- LEARNREV P3 — the Library
+       The map view is the Library (journey/library.js renders it, pure):
+       Continue, the path strip, every screen in menu order, Practice. The
+       search draws its results into the page WITHOUT a re-render — the box
+       keeps its caret — and everything else here is a door through a method
+       this component already had (openStation, startLesson, openScenario,
+       openPractice) or through the drawer's door (coach/guide_door.js). */
+    get libraryModel() {
+        const b = this.bundle;
+        return buildLibrary({
+            stations: b.stations,
+            screens: b.screens,
+            scenarios: b.scenarios,
+            missions: b.missions,
+            progress: this.progress,
+            path: Object.assign({}, b.path, { role: this.state.role, role_chosen: this.state.roleChosen }),
+            nextBest: b.nextBest,
+            demoWorld: b.demoWorld,
+            team: this.state.team,
+        });
+    }
+
+    _mapBody() {
+        const model = this.libraryModel;
+        return libraryHTML(model, this.bundle.screens, {
+            practice: this._practiceCardHTML(model),
+            query: this._q,
+            rolesOpen: this.state.rolesOpen,
+            openGroups: new Set(this.state.openGroups),
+            monthEndSkipped: this.state.monthEndSkipped,
+            scenarioKeys: new Set(this.scenarios.filter((s) => !s.retired).map((s) => s.key)),
+        });
+    }
+
+    /** The search index, rebuilt when the language or the field rows change. */
+    _searchIndex() {
+        const key = `${this.state.lang}|${(this._fieldRows || []).length}`;
+        if (this._indexKey !== key) {
+            this._indexKey = key;
+            this._index = buildIndex(this.bundle, this._fieldRows || []);
+        }
+        return this._index;
+    }
+
+    /** The field cards of every screen, in the page's language (S5). */
+    _loadFieldRows() {
+        const lang = this.state.lang;
+        loadFieldIndex(this.orm, lang).then((rows) => {
+            if (this.state.lang !== lang) {
+                return;
+            }
+            this._fieldRows = rows;
+            if (this._q.trim()) {
+                this._renderHits();
+            }
+        });
+    }
+
+    /** Draw the hits for the words in the box, in place. */
+    _renderHits() {
+        const root = this.rootRef.el;
+        const lib = root && root.querySelector(".lrn-lib");
+        const box = lib && lib.querySelector("[data-lib-results]");
+        if (!box) {
+            return;
+        }
+        const q = this._q;
+        this._hits = q.trim() ? search(this._searchIndex(), q) : [];
+        box.innerHTML = resultsHTML(this._hits, q, { openTerm: this._openTerm });
+        lib.classList.toggle("searching", !!q.trim());
+        this._missSoon(q);
+    }
+
+    /** LEARNREV P5a (S4) — a search that finds nothing is the content gap the
+     *  authors want to see. After the person stops typing for a moment, the
+     *  server hears it ONCE per phrase per visit. The server hashes it and
+     *  stores the words only if the owner's switch and the person's own yes
+     *  allow it (learn.feedback.rpc_search_miss); this side keeps nothing. */
+    _missSoon(q) {
+        clearTimeout(this._missTimer);
+        const phrase = String(q || "").trim();
+        if (phrase.length < 3 || (this._hits || []).length) {
+            return;
+        }
+        this._missTimer = setTimeout(async () => {
+            const seen = this._missSeen || (this._missSeen = new Set());
+            const key = phrase.toLowerCase().replace(/\s+/g, " ");
+            if (seen.has(key) || this._q.trim() !== phrase || (this._hits || []).length) {
+                return;
+            }
+            seen.add(key);
+            try {
+                await this.orm.call("learn.feedback", "rpc_search_miss", [phrase, this.state.lang]);
+            } catch {
+                // Measurement must never be able to break the search.
+            }
+        }, 900);
+    }
+
+    /** A row's Guide chip (and Enter on a row): the real screen with the
+     *  Guide docked and This screen open. A screen this person cannot open
+     *  opens its outline instead, with one grey note saying so. */
+    async libGuide(key, opts = {}) {
+        const st = this.station(key);
+        if (!st) {
+            return;
+        }
+        const sc = this.screenOf(st);
+        const blocked = !sc || st.visible === false || st.gated || st.missing
+            || reachable(sc) === false || !canOpen(sc);
+        if (blocked) {
+            this._openOutlineNoted(st.key);
+            return;
+        }
+        this._log("library_guide", opts.field ? `${st.key}:${opts.field}` : st.key);
+        const r = await guideAt(sc.key, { section: opts.field ? "fields" : "screen",
+                                          field: opts.field || "" });
+        if (r === "unreachable" || r === "missing") {
+            this._openOutlineNoted(st.key);
+        } else if (r === "nodrawer") {
+            // No drawer on this page (it always is, but never a dead click).
+            this.openRealScreen(st.key);
+        }
+    }
+
+    _openOutlineNoted(key) {
+        this.openStation(key);
+        this.state.outlineNote = true;
+    }
+
+    /** A search hit, by its index in the list drawn. */
+    _openHit(i) {
+        const h = (this._hits || [])[i];
+        if (!h) {
+            return;
+        }
+        this._log("library_search_open", `${h.kind}:${h.key}`.slice(0, 64));
+        if (h.kind === "screen") {
+            this.openStation(h.key);
+        } else if (h.kind === "field") {
+            const st = this.station(h.screen);
+            if (st) {
+                this.libGuide(st.key, { field: h.field });
+            } else {
+                guideAt(h.screen, { section: "fields", field: h.field });
+            }
+        } else if (h.kind === "term") {
+            this._openTerm = this._openTerm === h.key ? "" : h.key;
+            this._renderHits();
+        } else if (h.kind === "task") {
+            this.openScenario(h.key, h.mode);
+        } else if (h.kind === "lesson") {
+            this.openStation(h.station);
+            if (this.lesson) {
+                this.startLesson();
+                this.state.step = Math.min(h.step, this.steps.length - 1);
+            }
+        }
+    }
+
+    /** The Continue card's button: the lesson itself, resumed where it
+     *  stopped (startLesson's own rule). */
+    libContinue(key) {
+        const st = this.station(key);
+        if (!st) {
+            return;
+        }
+        this.openStation(st.key);
+        if (this.lesson) {
+            this.startLesson();
+        }
+    }
+
+    /* The Practice row (S7): ONE entry into the free-roam sandbox (and the
+       guided practice beside it), at the end of Browse, never inside a menu
+       group — it is every screen at once, with nothing to complete. */
+    _practiceCardHTML(model) {
+        return practiceRowHTML(model || this.libraryModel);
+    }
+
+    toggleGroup(key) {
+        const list = this.state.openGroups.slice();
+        const at = list.indexOf(key);
+        if (at >= 0) {
+            list.splice(at, 1);
+        } else {
+            list.push(key);
+        }
+        this.state.openGroups = list;
+    }
+
+    /* ------------------------------------------------- practice mode: the view
+       The replica with its menu switched on. There is no walkthrough here and
+       no step counter: `data-nav` swaps the screen and everything else on the
+       replica stays inert, which is what it already is outside a scenario.
+
+       The watermark is NOT rendered here. It is rendered by
+       `practiceShellHTML`, unconditionally, so that no state this component
+       holds can produce a sandbox without one. */
+    _practiceBody() {
+        const shell = practiceShellHTML(this.state.pScreen, this.visible, this.state.shellNote);
+        return `${shell}
+        <div class="lrn-playbar" role="group">
+            <span class="lrn-stepno">${esc(T("practiceHint"))}</span>
+            <button class="lrn-btn sm ghost" data-act="p-exit"
+                >${ic("x")}${esc(T("exit"))}</button>
+        </div>`;
+    }
+
+    /* ------------------------------------------------------ scenario: TRY
+       The replica, and the learner drives. Nothing here can reach a record:
+       `shellHTML` renders a fixture, and the click bridge below only ever
+       changes which step of the walkthrough is showing. */
+    _scenarioBody() {
+        const sc = this.scenario;
+        if (!sc) {
+            return "";
+        }
+        if (this.state.sDone) {
+            return this._scenarioDoneBody(sc);
+        }
+        const step = this.sCurrent;
+        if (!step) {
+            return "";
+        }
+        const shell = shellHTML(this._scenarioScreen(step),
+                                { guided: true, visible: this.visible, note: this.state.shellNote });
+        const pct = Math.round((this.state.sStep + 1) / this.sSteps.length * 100);
+        return `${shell}
+        <div class="lrn-playbar" role="group">
+            <span class="lrn-meter"><i style="width:${pct}%"></i></span>
+            <span class="lrn-stepno">${esc(
+                T("step") + " " + (this.state.sStep + 1) + " " + T("of") + " " + this.sSteps.length)}</span>
+            <button class="lrn-btn sm" data-act="s-back"
+                ${this.state.sStep === 0 ? "disabled" : ""}
+                >${ic("chevron-left")}${esc(T("back"))}</button>
+            <button class="lrn-btn sm ghost" data-act="s-exit">${ic("x")}${esc(T("exit"))}</button>
+        </div>`;
+    }
+
+    _scenarioDoneBody(sc) {
+        return `
+        <div class="lrn-quizwrap">
+            <span class="lrn-chip b">${ic("award")}${esc(T("scDone"))}</span>
+            <h2>${esc(tx(sc.name))}</h2>
+            <p class="lrn-lead">${esc(T("scDoneBody"))}</p>
+            <div class="lrn-cta"><button class="lrn-btn pri" data-act="to-map"
+                >${ic("chevron-left")}${esc(T("yourJourney"))}</button></div>
+        </div>`;
+    }
+
+    /** The Try card. An observe step offers Next; a click or input step does
+     *  NOT — the whole point of Try is that the learner finds and presses the
+     *  control, and a Next button beside "press the glowing one" is a way past
+     *  the only thing being taught. */
+    _scenarioCardHTML() {
+        const step = this.sCurrent;
+        if (!step) {
+            return "";
+        }
+        const acts = step.act === "click" || step.act === "input";
+        // An input step says BOTH things: what value is wanted, and that
+        // typing it is what moves the walkthrough. The second half is not
+        // decoration — there is no Next button on this card, so a learner who
+        // does not know Enter is the way on has no way on.
+        const ask = step.act === "input"
+            ? T("scExpected") + ": " + tx(step.value) + " — " + T("scTypeHere")
+            : T("scPressIt");
+        // LEARNREV P4 — a rewritten walkthrough step is four lines, drawn
+        // by the Guide's own renderer; a step not rewritten keeps its body.
+        const view = stepView(step, (this.bundle && this.bundle.country) || "");
+        const said = view.look && !view.legacy
+            ? linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) })
+            : `<div class="lrn-cbody">${gtx(step.body)}</div>`;
+        return `
+        ${step.kicker ? `<div class="lrn-kicker">${esc(tx(step.kicker))}</div>` : ""}
+        <h3>${esc(tx(step.title))}</h3>
+        ${said}
+        ${acts ? `<div class="lrn-scwait">
+            <h4>${ic("target")}${esc(T("scYourTurn"))}</h4>
+            <p>${esc(ask)}</p>
+        </div>` : ""}
+        ${this.state.sMiss
+            ? `<div class="lrn-scmiss">${ic("info")}<span>${esc(T("scNotYet"))}</span></div>` : ""}
+        ${this.state.sNudge
+            ? `<div class="lrn-scnudge">${ic("info")}${esc(T("scNudge"))}</div>` : ""}
+        ${step.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(step.tip))}</span></div>` : ""}
+        ${rateHTML(stepRef("walk", this.scenario && this.scenario.key, step.key), this._rated[stepRef("walk", this.scenario && this.scenario.key, step.key)] || "", "j-rate")}
+        <div class="lrn-ctools">
+            <span class="lrn-chip">${ic("shield-check")}${esc(T("scTryBadge"))}</span>
+            ${acts ? "" : `<button class="lrn-btn sm pri" data-act="s-next"
+                >${esc(T("next"))}${ic("chevron-right")}</button>`}
+        </div>`;
+    }
+
+    /* ---------------------------------------------------------- outline view */
+    _outlineBody() {
+        const s = this.current;
+        if (!s) {
+            return "";
+        }
+        const o = s.outline;
+        const block = (icon, label, value) => value
+            ? `<div class="lrn-obl"><h4>${ic(icon)}${esc(label)}</h4><p>${esc(tx(value))}</p></div>`
+            : "";
+        const mistakes = (o.mistakes || []).map((m) =>
+            `<li>${esc(tx(m))}</li>`).join("");
+
+        return `
+        <div class="lrn-back"><button class="lrn-btn ghost sm" data-act="to-map">
+            ${ic("chevron-left")}${esc(T("yourJourney"))}</button></div>
+        <header class="lrn-ohead">
+            <span class="lrn-cardico big">${ic(s.icon)}</span>
+            <div>
+                <h1>${esc(tx(s.name))}</h1>
+                <p class="lrn-lead">${esc(tx(s.summary))}</p>
+            </div>
+        </header>
+        ${s.kind !== "lesson"
+            ? `<p class="lrn-callout">${ic("info")}${esc(T("outlineNote"))}</p>` : ""}
+        ${this.state.outlineNote
+            ? `<p class="lrn-callout mute">${ic("lock")}${esc(T("libNotInMenuNote"))}</p>`
+            : ""}
+        ${!s.visible
+            ? (this.state.outlineNote ? "" : `<p class="lrn-callout warn">${ic("lock")}${esc(T(s.gated ? "gatedBody" : "notVisibleBody"))}</p>`)
+            : (this.screenOf(s) && canOpen(this.screenOf(s))
+                ? `<div class="lrn-callout lrn-openscreen">${ic("compass")}<span>${this.placeOf(s)
+                    ? `<b>${esc(T("findItIn"))}${SP}${esc(this.placeOf(s))}.</b>` : ""}</span>
+                    <button class="lrn-btn sm pri" data-act="open-screen" data-screen="${esc(s.key)}"
+                        >${ic("arrow-right")}${esc(T("openScreenIn"))}${this.placeOf(s)
+                            ? `${SP}${esc(this.placeOf(s))}` : ""}</button></div>`
+                : (s.reach
+                    ? `<p class="lrn-callout">${ic("compass")}<b>${esc(T("reachVia"))}${SP}${esc(s.reach)}.</b>${SP}${esc(T("reachViaBody"))}</p>`
+                    : ""))}
+        <div class="lrn-obls">
+            ${block("help-circle", T("whatIs"), o.what)}
+            ${block("target", T("whyMatters"), o.why)}
+            ${block("clock", T("whenUse"), o.when)}
+            ${block("lock", T("prereq"), o.prereq)}
+        </div>
+        ${mistakes ? `<div class="lrn-panel"><h3>${ic("alert-triangle")}${esc(T("mistakes"))}</h3>
+            <ul class="lrn-mistakes">${mistakes}</ul></div>` : ""}
+        ${s.kind === "lesson"
+            ? `<div class="lrn-cta"><button class="lrn-btn pri" data-act="start-lesson">
+                 ${ic("play")}${esc(T("fullLesson"))}${SP}· ${s.duration_min}${SP}${esc(T("min"))}</button></div>`
+            : ""}`;
+    }
+
+    /* ----------------------------------------------------------- lesson view */
+    _lessonBody() {
+        const steps = this.steps;
+        if (!steps.length) {
+            return "";
+        }
+        if (this.state.quiz) {
+            return this._quizBody();
+        }
+        // Clamp: a step index carried over from another lesson (or a stored
+        // resume point from before a lesson was rewritten) must never point
+        // past the end — that blanked the Journey with an owl error
+        // (LEARN REFRESH step 5).
+        const st = steps[this.state.step] || steps[0];
+        // LEARNREV P4 — handed over by the Guide panel: this step lives only
+        // in the practice copy, and the shell says so in one line.
+        const handed = !!this.state.handoff;
+        // The practice-copy note rides on the card (_coachCardHTML).
+        const shell = shellHTML(st.screen, { guided: true, visible: this.visible,
+                                             note: this.state.shellNote });
+        const pctDone = Math.round((this.state.step + 1) / steps.length * 100);
+        const back = handed
+            ? `<button class="lrn-btn sm" data-act="l-return">${ic("chevron-left")}${esc(T("lpBackReal"))}</button>` : "";
+        return `${shell}
+        <div class="lrn-playbar" role="group" aria-label="${esc(T("step"))}">
+            ${back}
+            <span class="lrn-meter"><i style="width:${pctDone}%"></i></span>
+            <span class="lrn-stepno">${esc(T("step"))}${SP}${this.state.step + 1}${SP}${esc(T("of"))}${SP}${steps.length}</span>
+            <button class="lrn-btn sm" data-act="l-back" ${this.state.step === 0 ? "disabled" : ""}>
+                ${ic("chevron-left")}${esc(T("back"))}</button>
+            <button class="lrn-btn sm pri" data-act="l-next">
+                ${esc(this.state.step === steps.length - 1 ? T("check") : T("next"))}${ic("chevron-right")}</button>
+            <button class="lrn-btn sm ghost" data-act="l-replay" title="${esc(T("replay"))}"
+                aria-label="${esc(T("replay"))}">${ic("rotate-ccw")}</button>
+            <button class="lrn-btn sm ghost" data-act="l-exit">${ic("x")}${esc(T("exit"))}</button>
+        </div>`;
+    }
+
+    /** The card the spotlight places. Built here, not in the template, because
+     *  it is positioned against a measured rectangle. */
+    _coachCardHTML() {
+        const st = this.steps[this.state.step];
+        if (!st) {
+            return "";
+        }
+        let moment = "";
+        if (st.visual === "calc") {
+            moment = `<div class="lrn-moment">${calcHTML()}</div>`;
+        } else if (st.visual === "pipeline") {
+            moment = `<div class="lrn-moment">${pipeHTML(st.moment_chain, 0)}</div>`;
+        } else if (st.visual === "morph") {
+            moment = `<div class="lrn-moment">${morphHTML(st, this.state.morphSide)}</div>`;
+        }
+        // LEARNREV P4 — a rewritten step is four lines (Look at · It means ·
+        // It affects · Press), drawn by the same renderer the Guide panel
+        // uses, in the company's country. A step not rewritten keeps its body.
+        const view = stepView(st, (this.bundle && this.bundle.country) || "");
+        const body = view.legacy || !view.look
+            ? `<div class="lrn-cbody">${gtx(st.body)}</div>`
+            : linesHTML(view, { text: (p) => tx(p), html: (p) => gtx(p) });
+        // Handed over by the Guide: the card itself says why this step is on
+        // the practice copy (a line in the shell sat under the card).
+        // LEARNREV P5b (S6) — and on a screen this reader cannot open, it says
+        // that instead (every step of such a lesson plays here).
+        const unreach = this.state.handoff && this.state.handoff.why === "unreachable"
+            && !isPracticeAnchor(st.anchor);
+        const handed = this.state.handoff && (isPracticeAnchor(st.anchor) || unreach)
+            ? `<div class="lrn-lp-note ${unreach ? "unreachable" : "practice"}">${ic(unreach ? "lock" : "flask")}<span>${esc(T(unreach ? "lpUnreachableNote" : "lpPracticeNote"))}</span></div>` : "";
+        // LEARNREV P5b — the same thumbs as the Guide's lesson card.
+        const ref = stepRef("lesson", this.lesson && this.lesson.key, this.steps.indexOf(st));
+        return `${handed}
+        ${st.kicker ? `<div class="lrn-kicker">${esc(tx(st.kicker))}</div>` : ""}
+        <h3>${esc(tx(st.title))}</h3>
+        ${body}
+        ${moment}
+        ${st.consequence ? `<div class="lrn-conseq"><h4>${ic("alert-triangle")}${esc(T("consequence"))}</h4>
+            <p>${esc(tx(st.consequence))}</p></div>` : ""}
+        ${view.tip ? `<div class="lrn-tip">${ic("info")}<span>${esc(tx(view.tip))}</span></div>` : ""}
+        ${rateHTML(ref, this._rated[ref] || "", "j-rate")}`;
+    }
+
+    /** LEARNREV P5b — a thumbs press on a practice-copy card (a lesson step or
+     *  a Try step). The card is drawn by the spotlight, not by OWL, so the
+     *  buttons are marked in place; the choice is remembered for this page so
+     *  a redraw keeps it. One rating row through the field cards' seam. */
+    _rateCard(el) {
+        const ref = el.dataset.key || "";
+        if (!ref || this._rated[ref]) {
+            return;
+        }
+        const v = el.dataset.v === "up" ? "up" : "down";
+        this._rated[ref] = v;
+        const group = el.closest(".lrn-fb");
+        for (const b of Array.from((group || el.parentElement).querySelectorAll(".lrn-fbbtn"))) {
+            b.classList.toggle("on", b.dataset.v === v);
+            b.setAttribute("aria-pressed", b.dataset.v === v ? "true" : "false");
+            b.disabled = true;
+        }
+        if (group && !group.querySelector(".lrn-fbthanks")) {
+            const note = document.createElement("span");
+            note.className = "lrn-fbthanks";
+            note.setAttribute("role", "status");
+            note.textContent = T("gThanks");
+            group.appendChild(note);
+        }
+        this.orm.call("learn.guide", "rpc_feedback", ["", ref, v === "up"]).catch(() => {});
+    }
+
+    /* ------------------------------------------------------------- quiz view */
+    _quizBody() {
+        const l = this.lesson;
+        const quiz = l.quizzes[0];
+        if (!quiz) {
+            return this._debriefBody();
+        }
+        const chosen = this.state.answered;
+        const opts = quiz.options.map((o, i) => {
+            const picked = chosen === i;
+            const cls = picked ? (o.correct ? "right" : "wrong") : "";
+            // No verdict heading above the explanation. Every explanation is
+            // authored to open with its own — "Yes.", "Exactly.", "Let's
+            // rethink that." — in both languages, so a heading made the app
+            // say the same sentence twice. The colour and the option's own
+            // mark carry the signal; the words are the content's job.
+            return `
+            <button class="lrn-opt ${cls}" data-opt="${i}" ${chosen !== null ? "disabled" : ""}>
+                <span class="lrn-optmark">${picked ? ic(o.correct ? "check" : "rotate-ccw") : String.fromCharCode(65 + i)}</span>
+                <span>${esc(tx(o.label))}</span>
+            </button>
+            ${picked ? `<div class="lrn-explain ${o.correct ? "ok" : "warn"}">
+                <p>${esc(tx(o.feedback))}</p></div>` : ""}`;
+        }).join("");
+
+        const answeredRight = chosen !== null && quiz.options[chosen].correct;
+        return `
+        <div class="lrn-quizwrap">
+            <header class="lrn-quizhead">
+                <span class="lrn-chip b">${ic("help-circle")}${esc(T("check"))}</span>
+                <p class="lrn-note">${esc(T("checkNote"))}</p>
+            </header>
+            <h2>${esc(tx(quiz.prompt))}</h2>
+            <div class="lrn-opts">${opts}</div>
+            <div class="lrn-quizfoot">
+                ${chosen === null
+                    ? `<button class="lrn-btn ghost" data-act="l-backstep">${ic("chevron-left")}${esc(T("back"))}</button>`
+                    : answeredRight
+                        ? `<button class="lrn-btn pri" data-act="l-finish">${ic("check")}${esc(T("finish"))}</button>`
+                        : `<button class="lrn-btn pri" data-act="l-retry">${ic("rotate-ccw")}${esc(T("tryAgain"))}</button>`}
+            </div>
+        </div>`;
+    }
+
+    _debriefBody() {
+        return `<div class="lrn-quizwrap"><h2>${esc(T("finish"))}</h2>
+            <button class="lrn-btn pri" data-act="l-finish">${esc(T("continueBtn"))}</button></div>`;
+    }
+
+
+    /* ------------------------------------------------------- mission list */
+    _missionListBody() {
+        const cards = this.missions.map((m) => {
+            const done = (this.progress[`mission:${m.key}`] || {}).state === "done";
+            const full = m.kind === "full";
+            // A live capstone is marked on the CARD, not only inside it. It is
+            // the one mission on this list that touches real records, and a
+            // learner should know that before they open it, not after.
+            const live = m.kind === "live";
+            return `
+            <button class="lrn-card ${full || live ? "star" : ""}${SP}${done ? "done" : ""}"
+                    data-mission="${esc(m.key)}">
+                <span class="lrn-cardico">${ic(m.icon)}</span>
+                <span class="lrn-cardmain">
+                    <span class="lrn-cardtitle">${esc(tx(m.name))}
+                        ${done ? ic("check-circle", "ok") : ""}</span>
+                    <span class="lrn-carddesc">${esc(tx(m.summary))}</span>
+                    <span class="lrn-cardmeta">
+                        ${live ? `<span class="lrn-chip a">${ic("zap")}${esc(T("liveBadge"))}</span>` : ""}
+                        <span class="lrn-chip ${full ? "b" : ""}">${ic(full ? "flask" : "list-checks")}
+                            ${esc(live ? T("liveStart") : (full ? T("startMission") : T("outlineMission")))}</span>
+                        <span class="lrn-chip">${ic("clock")}${esc(
+                            T("est") + " " + m.duration_min + " " + T("min"))}</span>
+                    </span>
+                </span>
+            </button>`;
+        }).join("");
+        return `
+        <div class="lrn-back"><button class="lrn-btn ghost sm" data-act="to-map">
+            ${ic("chevron-left")}${esc(T("yourJourney"))}</button></div>
+        <header class="lrn-hero"><div>
+            <h1>${esc(T("missions"))}</h1>
+            <p class="lrn-lead">${esc(T("missionsLead"))}</p>
+        </div></header>
+        <div class="lrn-cards">${cards}</div>`;
+    }
+
+    /* ---------------------------------------------------------- mission run
+       Runs on the PRACTICE REPLICA, never a live screen. A step that says
+       "compute the run" would otherwise create 48 real payslips. */
+    /** Which replica screen a mission step is standing on.
+     *
+     *  A step with no `nav` — a decision, a consequence card — does not move
+     *  the learner; it asks a question about where they already are. So the
+     *  screen is the last one the mission navigated to, not a default.
+     *
+     *  In health_learn this fell back to one hard-coded screen, which was
+     *  invisibly correct for the missions that start there and wrong for every
+     *  other section — a decision asked over the wrong screen entirely. The
+     *  line's own home screen decides instead.
+     */
+    _missionScreen(step) {
+        if (step.nav) {
+            return step.nav;
+        }
+        for (let i = this.state.mStep - 1; i >= 0; i--) {
+            const prev = this.mSteps[i];
+            if (prev && prev.nav) {
+                return prev.nav;
+            }
+        }
+        // Nothing has navigated yet — the mission's own line decides where it
+        // opens, so a mission never opens on a screen from another section.
+        return this.mission.screen || MISSION_HOME[this.mission.line] || "runpayroll";
+    }
+
+    _missionBody() {
+        const m = this.mission;
+        if (!m) {
+            return "";
+        }
+        if (m.kind === "live") {
+            // Live capstones validate REAL actions on REAL records and are
+            // demo-world only (design_v2 §5). Outside it there is nothing to
+            // observe, so the runner says so by name rather than opening a
+            // mission whose steps could never complete. The server refuses too
+            // — this branch is the courtesy, learn.live._live_gate is the gate.
+            return this.isDemo
+                ? this._liveBriefingBody(m)
+                : this._missionUnavailableBody(m);
+        }
+        if (m.kind !== "full") {
+            return this._missionOutlineBody(m);
+        }
+        if (this.state.mDone) {
+            return this._debriefBody(m);
+        }
+        const step = this.mCurrent;
+        if (!step) {
+            return "";
+        }
+        const screen = this._missionScreen(step);
+        const shell = shellHTML(screen, { guided: true, visible: this.visible,
+                                          note: this.state.shellNote });
+        const pct = Math.round((this.state.mStep + 1) / this.mSteps.length * 100);
+        return `${shell}
+        <div class="lrn-playbar" role="group">
+            <span class="lrn-meter"><i style="width:${pct}%"></i></span>
+            <span class="lrn-stepno">${esc(
+                T("step") + " " + (this.state.mStep + 1) + " " + T("of") + " " + this.mSteps.length)}</span>
+            <button class="lrn-btn sm ghost" data-act="m-hint">${ic("lightbulb")}${esc(T("showHint"))}</button>
+            <button class="lrn-btn sm ghost" data-act="m-exit">${ic("x")}${esc(T("exit"))}</button>
+        </div>`;
+    }
+
+    /** A mission this build cannot run. Named, not hidden: a card that opens
+     *  onto nothing is worse than a card that says why. */
+    _missionUnavailableBody(m) {
+        return `
+        <div class="lrn-back"><button class="lrn-btn ghost sm" data-act="to-missions">
+            ${ic("chevron-left")}${esc(T("missions"))}</button></div>
+        <header class="lrn-ohead">
+            <span class="lrn-cardico big">${ic(m.icon)}</span>
+            <div><h1>${esc(tx(m.name))}</h1><p class="lrn-lead">${esc(tx(m.summary))}</p></div>
+        </header>
+        <p class="lrn-callout warn">${ic("lock")}${esc(T("liveNotYet"))}</p>`;
+    }
+
+    /** The live capstone's front door: what is real, and a nudge to rehearse.
+     *
+     *  The nudge is a LINK and never a lock. An account executive driving a
+     *  demo has to be able to jump straight to the climax, and a learner who
+     *  wants to feel the consequence first should be one click from doing so.
+     *  Hard-locking would serve neither of them. */
+    _liveBriefingBody(m) {
+        const rehearsed = (this.progress["mission:m1"] || {}).state === "done";
+        const c = m.consequence || {};
+        return `
+        <div class="lrn-back"><button class="lrn-btn ghost sm" data-act="to-missions">
+            ${ic("chevron-left")}${esc(T("missions"))}</button></div>
+        <header class="lrn-ohead">
+            <span class="lrn-cardico big">${ic(m.icon)}</span>
+            <div><h1>${esc(tx(m.name))}
+                    <span class="lrn-chip a">${ic("zap")}${esc(T("liveBadge"))}</span></h1>
+                <p class="lrn-lead">${esc(tx(m.summary))}</p></div>
+        </header>
+        <div class="lrn-panel">
+            <h3>${ic("alert-triangle")}${esc(T("liveReal"))}</h3>
+            <p class="lrn-note">${esc(T("liveRealBody"))}</p>
+            <div class="lrn-obls">
+                <div class="lrn-obl"><h4>${ic("target")}${esc(T("scope"))}</h4>
+                    <p>${esc(tx(c.scope))}</p></div>
+                <div class="lrn-obl"><h4>${ic("rotate-ccw")}${esc(T("reversible"))}</h4>
+                    <p>${esc(tx(c.reversible))}</p></div>
+                <div class="lrn-obl"><h4>${ic("help-circle")}${esc(T("verify"))}</h4>
+                    <p>${esc(tx(c.verify))}</p></div>
+            </div>
+        </div>
+        ${rehearsed ? "" : `<div class="lrn-panel">
+            <h3>${ic("flask")}${esc(T("liveNudge"))}</h3>
+            <p class="lrn-note">${esc(T("liveNudgeBody"))}</p>
+            <button class="lrn-btn sm" data-mission="m1">${ic("play")}${esc(T("liveNudgeGo"))}</button>
+        </div>`}
+        <div class="lrn-cta">
+            <button class="lrn-btn pri" data-act="live-start">
+                ${ic("zap")}${esc(T("liveStart"))}</button>
+        </div>`;
+    }
+
+    _missionOutlineBody(m) {
+        return `
+        <div class="lrn-back"><button class="lrn-btn ghost sm" data-act="to-missions">
+            ${ic("chevron-left")}${esc(T("missions"))}</button></div>
+        <header class="lrn-ohead">
+            <span class="lrn-cardico big">${ic(m.icon)}</span>
+            <div><h1>${esc(tx(m.name))}</h1><p class="lrn-lead">${esc(tx(m.summary))}</p></div>
+        </header>
+        <p class="lrn-callout">${ic("info")}${esc(tx(m.outline_note))}</p>`;
+    }
+
+    /** The mission's coach card: instruction, detail, and — on a risky step —
+     *  the consequence interception that must be acknowledged first. */
+    _missionCardHTML() {
+        const m = this.mission;
+        const step = this.mCurrent;
+        if (!step) {
+            return "";
+        }
+        if (step.is_decision) {
+            return this._decisionHTML(step);
+        }
+        if (step.is_consequence && !this.state.mAcked) {
+            return this._consequenceHTML(m);
+        }
+        return `
+        <div class="lrn-kicker">${esc(step.is_undo ? T("undoShown") : T("startMission"))}</div>
+        <h3>${esc(tx(step.instruction))}</h3>
+        ${step.detail ? `<div class="lrn-cbody">${gtx(step.detail)}</div>` : ""}
+        ${this.state.mHint && step.hint
+            ? `<div class="lrn-tip">${ic("lightbulb")}<span>${esc(tx(step.hint))}</span></div>` : ""}
+        <div class="lrn-ctools">
+            <button class="lrn-btn sm" data-act="m-back" ${this.state.mStep === 0 ? "disabled" : ""}
+                >${ic("chevron-left")}${esc(T("back"))}</button>
+            <button class="lrn-btn sm pri" data-act="m-next">${esc(T("next"))}${ic("chevron-right")}</button>
+        </div>`;
+    }
+
+    /* The interception. Scope, reversibility, what to verify — the three
+       questions a person actually needs before a risky action, and the reason
+       the mission cannot advance until they have been seen. */
+    _consequenceHTML(m) {
+        const c = m.consequence;
+        return `
+        <div class="lrn-kicker">${esc(T("consequence"))}</div>
+        <h3>${esc(tx(c.title))}</h3>
+        <div class="lrn-conseq">
+            <h4>${ic("target")}${esc(T("scope"))}</h4><p>${esc(tx(c.scope))}</p>
+        </div>
+        <div class="lrn-conseq">
+            <h4>${ic("rotate-ccw")}${esc(T("reversible"))}</h4><p>${esc(tx(c.reversible))}</p>
+        </div>
+        <div class="lrn-conseq">
+            <h4>${ic("shield-check")}${esc(T("verify"))}</h4><p>${esc(tx(c.verify))}</p>
+        </div>
+        <div class="lrn-ctools">
+            <button class="lrn-btn sm ghost" data-act="m-cancel">${esc(T("cancelAct"))}</button>
+            <button class="lrn-btn sm pri" data-act="m-ack">${ic("check")}${esc(T("proceed"))}</button>
+        </div>`;
+    }
+
+    _decisionHTML(step) {
+        const chosen = this.state.mChoice;
+        const picked = chosen ? step.options.find((o) => o.key === chosen) : null;
+        const opts = step.options.map((o) => `
+            <button class="lrn-opt ${chosen === o.key ? (o.correct ? "right" : "wrong") : ""}"
+                    data-mopt="${esc(o.key)}" ${chosen ? "disabled" : ""}>
+                <span>${esc(tx(o.label))}</span>
+            </button>`).join("");
+        return `
+        <div class="lrn-kicker">${esc(T("check"))}</div>
+        <h3>${esc(tx(step.instruction))}</h3>
+        ${step.detail ? `<div class="lrn-cbody">${gtx(step.detail)}</div>` : ""}
+        <div class="lrn-opts">${opts}</div>
+        ${picked && !picked.correct
+            ? `<div class="lrn-explain warn"><p>${gtx(picked.recovery)}</p></div>` : ""}
+        ${this.state.mHint && step.hint && !chosen
+            ? `<div class="lrn-tip">${ic("lightbulb")}<span>${esc(tx(step.hint))}</span></div>` : ""}
+        <div class="lrn-ctools">
+            ${!chosen ? "" : picked.correct
+                ? `<button class="lrn-btn sm pri" data-act="m-next">${esc(T("continueBtn"))}${ic("chevron-right")}</button>`
+                : `<button class="lrn-btn sm pri" data-act="m-retry">${ic("rotate-ccw")}${esc(T("tryAgain"))}</button>`}
+        </div>`;
+    }
+
+    _debriefBody(m) {
+        const list = (rows) => rows.map((r) => `<li>${esc(tx(r))}</li>`).join("");
+        return `
+        <div class="lrn-quizwrap">
+            <span class="lrn-chip b">${ic("award")}${esc(T("debriefTitle"))}</span>
+            <h2>${esc(tx(m.name))}</h2>
+
+            <div class="lrn-panel"><h3>${ic("check-circle")}${esc(T("whatYouDid"))}</h3>
+                <ul class="lrn-mistakes">${list(m.did)}</ul></div>
+
+            <!-- The seeded anomaly, revealed AFTER the decision so it lands as
+                 judgement rather than as trivia. -->
+            <div class="lrn-panel"><h3>${ic("alert-triangle")}${esc(tx(m.anomaly.title))}</h3>
+                <p>${esc(tx(m.anomaly.body))}</p></div>
+
+            <div class="lrn-panel"><h3>${ic("shield-check")}${esc(T("checklist"))}</h3>
+                <ul class="lrn-mistakes">${list(m.check)}</ul></div>
+
+            <p class="lrn-note">${esc(T("confGain"))}: <b>${this.state.mGain || 0}</b>${
+                esc(this.state.mRecovered ? " — " + T("recoveryUsed") : "")}</p>
+
+            <div class="lrn-cta"><button class="lrn-btn pri" data-act="to-missions"
+                >${ic("chevron-left")}${esc(T("backToMissions"))}</button></div>
+        </div>`;
+    }
+
+    // ---------------------------------------------------------- post-render fx
+    _afterPaint() {
+        // LEARNREV P4 (S10) — while the Library is showing, the corner Ask
+        // PayAI launcher stays out of its rows when the Guide is on: the rows'
+        // Guide chips and the search's Ask PayAI are the way in (coach.scss).
+        document.body.classList.toggle("lrn-on-library", this.state.view === "map");
+        // LEARNREV P3 — a role pick redraws the Continue card and the path
+        // strip; they settle in once (CSS, reduced motion respected). The
+        // class lives only on this render's DOM, so a later redraw does not
+        // replay it.
+        if ((this.state.pathTick || 0) !== (this._animatedTick || 0)) {
+            this._animatedTick = this.state.pathTick || 0;
+            const box = this.rootRef.el && this.rootRef.el.querySelector(".lrn-lib-home");
+            if (box && !reduced()) {
+                box.classList.add("anim");
+            }
+        }
+        if (this.state.view === "map") {
+            // A redraw that re-inserted the Library (a role pick, a language
+            // flip) dropped the results drawn into it: draw them again.
+            if (this._q.trim()) {
+                this._renderHits();
+            }
+            Spot.hide();
+            return;
+        }
+        if (this.state.view === "practice") {
+            // No spotlight in the sandbox: nothing is being pointed at, and a
+            // ring left over from the map would be pointing at the wrong page.
+            Spot.hide();
+            return;
+        }
+        if (this.state.view === "scenario") {
+            const step = this.sCurrent;
+            if (!step || this.state.sDone) {
+                Spot.hide();
+                return;
+            }
+            Spot.show(step.anchor, this._scenarioCardHTML());
+            this._markWanted(step);
+            return;
+        }
+        if (this.state.view === "mission") {
+            const m = this.mission;
+            const step = this.mCurrent;
+            if (!m || m.kind !== "full" || this.state.mDone || !step) {
+                Spot.hide();
+                return;
+            }
+            Spot.show(step.target, this._missionCardHTML());
+            return;
+        }
+        if (this.state.view !== "lesson" || this.state.quiz) {
+            Spot.hide();
+            return;
+        }
+        const st = this.steps[this.state.step];
+        if (!st) {
+            return;
+        }
+        Spot.show(st.anchor, this._coachCardHTML());
+        if (st.visual === "trace") {
+            // After the spotlight's own scroll has settled, or the line is
+            // drawn between two rectangles that are about to move.
+            setTimeout(() => Trace.run(st.moment_from, st.moment_to), reduced() ? 0 : 420);
+        } else if (st.visual === "pipeline" && Spot.card) {
+            runPipeline(Spot.card, st.moment_chain);
+        } else if (st.visual === "tick") {
+            // LEARN REFRESH step 3 — the replica's number counts from its
+            // before to its after value (engine/visuals.js runTick).
+            runTick(st.moment_from);
+        } else if (st.visual === "meter") {
+            // LEARN REFRESH step 4 — the pay review's budget meter fills as
+            // the rises go in (engine/visuals.js runMeter).
+            runMeter(st.moment_from);
+        }
+    }
+
+    /** Ring the control a Try step is waiting for, and only that one.
+     *
+     *  The spotlight already dims around it, but the learner is being asked to
+     *  FIND it: the ring is still there when they look up from the card, and it
+     *  is what the nudge points back at after a wrong click. */
+    _markWanted(step) {
+        const root = this.overlayRef.el && this.overlayRef.el.parentElement;
+        const host = root || document;
+        for (const el of host.querySelectorAll(".lrn-scwant")) {
+            el.classList.remove("lrn-scwant");
+        }
+        if (!step.anchor || step.act === "observe") {
+            return;
+        }
+        const want = host.querySelector(`[data-coach="${step.anchor}"]`);
+        if (want) {
+            want.classList.add("lrn-scwant");
+        }
+        // An input step puts the cursor where the answer goes. Without it the
+        // learner reads "type it in the field I am pointing at" and then has
+        // to find the field, which is the one thing the ring was for.
+        // `preventScroll`: the spotlight has already scrolled the anchor into
+        // view and a second scroll fights the first one.
+        if (want && step.act === "input") {
+            const field = want.matches("input") ? want : want.querySelector("input");
+            try {
+                if (field && field !== document.activeElement) {
+                    field.focus({ preventScroll: true });
+                }
+            } catch {
+                // A detached field must not end the walkthrough.
+            }
+        }
+    }
+
+    /* -------------------------------------------------- the Try click bridge
+       The MISSING half of a replica: without this, every control on a practice
+       screen is inert and a Try step can only be walked past with Next, which
+       is a lesson with extra steps rather than a rehearsal.
+
+       Two rules, both from the mode matrix:
+         · the expected control advances the walkthrough;
+         · anything else is a NUDGE. Not a failure, not a mark, and never a
+           silent no-op — a replica control that does nothing when you press it
+           teaches the learner that the product is broken.
+       Returns true when the event belonged to a scenario, so the ordinary
+       Journey handlers below do not also fire on it. */
+    _scenarioClick(ev) {
+        if (this.state.view !== "scenario" || this.state.sDone) {
+            return false;
+        }
+        const hit = ev.target.closest("[data-coach], [data-nav]");
+        if (!hit) {
+            return false;
+        }
+        const step = this.sCurrent;
+        if (!step || step.act === "observe") {
+            // Nothing is being asked for. The replica's controls stay inert
+            // rather than pretending to work.
+            return true;
+        }
+        const key = hit.getAttribute("data-coach");
+        // THE BLUR AND THE CLICK THAT CAUSED IT ARE ONE GESTURE, and without
+        // this they would be two steps. Type the value, press the control the
+        // NEXT step asks for: `focusout` fires first and advances on the
+        // value, then this handler sees the new step with its own anchor
+        // already under the cursor and advances again — so the card for the
+        // step in between is never read. Armed by `_scenarioInputCheck` only
+        // when a blur advanced, and disarmed by the `mousedown` that starts
+        // any LATER click, so a learner who tabs away and comes back never
+        // loses one. Ordering is what makes it exact rather than a timer:
+        // mousedown, then focusout, then click.
+        if (this._blurAdvanced) {
+            this._blurAdvanced = false;
+            if (key && step.anchor && key === step.anchor) {
+                return true;
+            }
+        }
+        const onTarget = !!(key && step.anchor && key === step.anchor);
+        // AN INPUT STEP NEVER ADVANCES ON A CLICK. Pressing the field is how
+        // you start typing in it, and nothing more: the value is what is being
+        // asked for, and a click that walked past the value would make the
+        // step a button-press with a text box beside it. The only advance an
+        // input step has is `_scenarioInputCheck`, below.
+        if (step.act === "input") {
+            this.state.sNudge = !onTarget;
+            return true;
+        }
+        if (step.act === "click" && onTarget) {
+            this.state.sNudge = false;
+            this.sNext();
+        } else {
+            this.state.sNudge = true;
+        }
+        return true;
+    }
+
+    /** THE ONLY PLACE AN INPUT STEP ADVANCES, and the guard is its first
+     *  statement for the same reason `_watchAutoClick` re-asks its own.
+     *
+     *  Everything that could make this fire on the wrong thing is answered
+     *  before `sNext()` is reachable: the view, the step's act, the element
+     *  being INSIDE the anchor the step named, an empty field, and finally the
+     *  value itself through `looseMatch`. A wrong value produces `sMiss` and
+     *  nothing else — there is no branch here that advances without the match,
+     *  and `tests/test_scenario.py::test_15` asserts that structurally rather
+     *  than trusting this paragraph.
+     */
+    _scenarioInputCheck(el, fromBlur) {
+        if (this.state.view !== "scenario" || this.state.sDone) {
+            return;
+        }
+        const step = this.sCurrent;
+        if (!step || step.act !== "input" || !step.anchor) {
+            return;
+        }
+        const host = el.closest("[data-coach]");
+        if (!host || host.getAttribute("data-coach") !== step.anchor) {
+            return;
+        }
+        const typed = el.value || "";
+        if (!typed.trim()) {
+            // Blurring an untouched field is not a wrong answer. Saying it was
+            // would put a correction on the screen for doing nothing.
+            return;
+        }
+        const spec = INPUT_ANCHORS[step.anchor] || {};
+        if (!looseMatch(typed, tx(step.value), spec.kind)) {
+            this.state.sMiss = true;
+            return;
+        }
+        this.state.sMiss = false;
+        this.state.sNudge = false;
+        this._blurAdvanced = !!fromBlur;
+        this.sNext();
+    }
+
+    /* ------------------------------------------- the practice click bridge
+       ONE control does anything in the sandbox: a `data-nav` leaf in the
+       replica's own menu. Everything else on a practice screen is inert,
+       exactly as it is on a lesson's replica — a fake Compute button that
+       "worked" would be teaching the wrong thing about the real one.
+
+       Returns true when the event belonged to the sandbox, so the Journey's
+       own handlers do not also fire on it. */
+    _practiceClick(ev) {
+        if (this.state.view !== "practice") {
+            return false;
+        }
+        const quiet = ev.target.closest("[data-quiet]");
+        if (quiet) {
+            // A tab the practice company does not have. It is really there in
+            // Payobook, so the replica draws it — and says where it lives
+            // rather than doing nothing.
+            this._shellNote(T("replicaQuiet") + SP + quiet.getAttribute("data-quiet") + ".");
+            return true;
+        }
+        const nav = ev.target.closest("[data-nav]");
+        if (!nav) {
+            return false;
+        }
+        this.pNav(nav.getAttribute("data-nav"));
+        return true;
+    }
+
+    /** The replica's rail and tabs during a LESSON, a mission or a Try
+     *  walkthrough: the lesson moves the screen, so a press there says so —
+     *  or, on a tab the practice company does not have, where it lives. */
+    _guidedRailClick(ev) {
+        if (!["lesson", "mission", "scenario"].includes(this.state.view)) {
+            return false;
+        }
+        const hit = ev.target.closest("[data-quiet], .lrn-sb [data-nav], .lrn-lensbar [data-nav], .lrn-subtabs [data-nav], .lrn-crumb [data-nav]");
+        if (!hit) {
+            return false;
+        }
+        const place = hit.getAttribute("data-quiet");
+        this._shellNote(place
+            ? T("replicaQuiet") + SP + place + "."
+            : T("replicaGuided"));
+        return true;
+    }
+
+    /** Show one line under the replica's tab strip for a few seconds. */
+    _shellNote(text) {
+        this.state.shellNote = text;
+        clearTimeout(this._noteTimer);
+        this._noteTimer = setTimeout(() => {
+            this.state.shellNote = "";
+        }, 4500);
+    }
+
+    // -------------------------------------------------------------- behaviour
+    onClick(ev) {
+        // FIRST, and it has to be: a Try step's target is a replica control
+        // carrying `data-coach`, and some of those also carry `data-nav`, which
+        // the mission handlers below would read as ordinary replica navigation.
+        const scenarioBtn = ev.target.closest("[data-scenario]");
+        if (scenarioBtn) {
+            ev.preventDefault();
+            this.openScenario(scenarioBtn.dataset.scenario, scenarioBtn.dataset.mode);
+            return;
+        }
+        // The replica's rail and tab strip BEFORE the Try bridge: a press on
+        // them is never the control a step asks for, and answering it with a
+        // nudge ("that is not the one") would not say what it actually is.
+        if (this._guidedRailClick(ev)) {
+            ev.preventDefault();
+            return;
+        }
+        if (this._scenarioClick(ev)) {
+            ev.preventDefault();
+            return;
+        }
+        if (this._practiceClick(ev)) {
+            ev.preventDefault();
+            return;
+        }
+        const stationBtn = ev.target.closest("[data-station]");
+        if (stationBtn) {
+            this.openStation(stationBtn.dataset.station);
+            return;
+        }
+        const missionBtn = ev.target.closest("[data-mission]");
+        if (missionBtn) {
+            this.openMission(missionBtn.dataset.mission);
+            return;
+        }
+        const mopt = ev.target.closest("[data-mopt]");
+        if (mopt) {
+            this.chooseMission(mopt.dataset.mopt);
+            return;
+        }
+        const opt = ev.target.closest("[data-opt]");
+        if (opt) {
+            this.answer(parseInt(opt.dataset.opt, 10));
+            return;
+        }
+        const act = ev.target.closest("[data-act]");
+        if (!act) {
+            return;
+        }
+        const a = act.dataset.act;
+        const fn = {
+            "to-map": () => this.toMap(),
+            "start-lesson": () => this.startLesson(),
+            "l-next": () => this.next(),
+            "l-back": () => this.back(),
+            "l-backstep": () => this.back(),
+            "l-replay": () => this.replay(),
+            "l-exit": () => this.exitLesson(),
+            // LEARNREV P4 — back to the real screen, the lesson in the Guide.
+            "l-return": () => this._handBack(this._returnIndex(), true),
+            "l-retry": () => this.retry(),
+            "l-finish": () => this.finish(),
+            "to-missions": () => this.toMissions(),
+            "m-next": () => this.mNext(),
+            "m-back": () => this.mBack(),
+            "m-hint": () => { this.state.mHint = !this.state.mHint; },
+            "m-exit": () => this.mExit(),
+            "m-ack": () => { this.state.mAcked = true; },
+            "m-cancel": () => this.mBack(),
+            "m-retry": () => { this.state.mChoice = null; },
+            "live-start": () => this.startLive(),
+            "s-next": () => this.sNext(),
+            "s-back": () => this.sBack(),
+            "s-exit": () => this.sExit(),
+            "to-practice": () => this.openPractice(),
+            "open-screen": () => this.openRealScreen(act.dataset.screen),
+            "p-exit": () => this.pExit(),
+            // LEARNOS Phase 6. The Continue strip opens whatever the server
+            // suggested — a station or the live capstone — through the SAME
+            // two doors everything else on this page uses, so the suggestion
+            // cannot become a third way of starting a lesson.
+            "nb-go": () => {
+                const kind = act.dataset.kind;
+                const key = act.dataset.key;
+                if (kind === "mission") {
+                    this.openMission(key);
+                } else {
+                    this.openStation(key);
+                }
+            },
+            "role": () => this.setRole(act.dataset.role),
+            // LEARNREV P3 — the Library's own doors.
+            "lib-guide": () => this.libGuide(act.dataset.key),
+            "lib-continue": () => this.libContinue(act.dataset.key),
+            "lib-roles": () => { this.state.rolesOpen = !this.state.rolesOpen; },
+            "lib-group": () => this.toggleGroup(act.dataset.group),
+            "lib-hit": () => this._openHit(Number(act.dataset.i)),
+            "lib-ask": () => askHelper(this._q.trim()),
+            "lib-team": () => openHub(this.action, { xmlid: LEARN_HUB_XMLID, lens: "team" }),
+            // LEARNREV P5b — thumbs on a practice-copy card.
+            "j-rate": () => this._rateCard(act),
+            "morph-before": () => { this.state.morphSide = "before"; },
+            "morph-after": () => { this.state.morphSide = "after"; },
+        }[a];
+        if (fn) {
+            ev.preventDefault();
+            fn();
+        }
+    }
+
+    onInput(ev) {
+        // LEARNREV P3 — the one search. Not reactive state: the results list
+        // is redrawn in place and the box keeps its caret.
+        const el = ev.target.closest && ev.target.closest("[data-lib-q]");
+        if (el) {
+            this._q = el.value || "";
+            this._openTerm = "";
+            this._renderHits();
+        }
+    }
+
+    /** Enter, inside a replica field. The check is the same one a blur runs;
+     *  Enter exists because it is what a person types after a value. */
+    onKeydown(ev) {
+        // DISARM FIRST, AND FOR THE KEYBOARD TOO. Enter and Space ACTIVATE a
+        // focused control, which dispatches a click — so a learner who typed
+        // the value, pressed Tab and then pressed Enter on the next button was
+        // having that press swallowed by the one-shot below, silently. The
+        // pointer gesture is disarmed by `mousedown`; this is the same
+        // disarm for the gesture that has no mousedown in it. A silent no-op
+        // on a replica control is the thing the click bridge exists to
+        // prevent, so it may not be how the bridge itself behaves.
+        if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            this._blurAdvanced = false;
+        }
+        // LEARNREV P3 — the Library's keyboard. A row is focusable and Enter
+        // opens its Guide; in the search box Enter opens the first hit,
+        // ArrowDown moves into the results, Escape empties the box.
+        if (this.state.view === "map" && ev.target.closest) {
+            if (this._libraryKey(ev)) {
+                return;
+            }
+        }
+        if (ev.key !== "Enter") {
+            return;
+        }
+        const el = ev.target.closest && ev.target.closest("input");
+        if (!el) {
+            return;
+        }
+        ev.preventDefault();
+        this._scenarioInputCheck(el);
+    }
+
+    /** The Library's keys. True when the key was the Library's. */
+    _libraryKey(ev) {
+        const box = ev.target.closest("[data-lib-q]");
+        if (box) {
+            if (ev.key === "Enter") {
+                ev.preventDefault();
+                if ((this._hits || []).length) {
+                    this._openHit(0);
+                }
+                return true;
+            }
+            if (ev.key === "ArrowDown") {
+                const first = this.rootRef.el && this.rootRef.el.querySelector(".lrn-lib-hit button");
+                if (first) {
+                    ev.preventDefault();
+                    first.focus();
+                }
+                return true;
+            }
+            if (ev.key === "Escape" && box.value) {
+                ev.preventDefault();
+                box.value = "";
+                this._q = "";
+                this._renderHits();
+                return true;
+            }
+            return false;
+        }
+        const hit = ev.target.closest(".lrn-lib-hit button");
+        if (hit && (ev.key === "ArrowDown" || ev.key === "ArrowUp")) {
+            const all = Array.from(this.rootRef.el.querySelectorAll(".lrn-lib-hit button"));
+            const at = all.indexOf(hit);
+            const next = ev.key === "ArrowDown" ? all[at + 1]
+                : (at > 0 ? all[at - 1] : this.rootRef.el.querySelector("[data-lib-q]"));
+            if (next) {
+                ev.preventDefault();
+                next.focus();
+            }
+            return true;
+        }
+        const row = ev.target.matches && ev.target.matches(".lrn-lib-row") ? ev.target : null;
+        if (row && ev.key === "Enter") {
+            ev.preventDefault();
+            this.libGuide(row.dataset.libRow);
+            return true;
+        }
+        return false;
+    }
+
+    /** Leaving the field. Checked too, because somebody who types the value
+     *  and then clicks the control they think comes next should not be told
+     *  they got it wrong — they got it right and moved on. */
+    onFocusOut(ev) {
+        const el = ev.target.closest && ev.target.closest("input");
+        if (el) {
+            this._scenarioInputCheck(el, true);
+        }
+    }
+
+    /** Disarms the one-shot above. It runs BEFORE the blur it may cause, so a
+     *  click that starts fresh always clears a flag left over from a tab-away,
+     *  and a click that caused the blur is armed after it. */
+    onMouseDown() {
+        this._blurAdvanced = false;
+    }
+
+    _onKey(ev) {
+        const typing = /^(INPUT|TEXTAREA)$/.test(ev.target.tagName);
+        if (typing) {
+            return;
+        }
+        // ONE RUNG AT A TIME. A hovercard over a lesson closes on the first
+        // Escape and this stands down for it; the second Escape leaves the
+        // lesson. Every branch below that CLOSES something swallows the key
+        // for the same reason — the arrow branches only move the reader, so
+        // they take the default and leave the key alone.
+        if (ev.key === "Escape" && glossaryOpen()) {
+            return;
+        }
+        if (this.state.view === "practice") {
+            if (ev.key === "Escape") {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.pExit();
+            }
+            return;
+        }
+        if (this.state.view === "scenario") {
+            // NO right-arrow on a step that is waiting for a press. The keyboard
+            // must not be a way past the control the walkthrough is asking for
+            // — that is the same promise the missing Next button makes.
+            const step = this.sCurrent;
+            if (ev.key === "Escape") {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.sExit();
+            } else if (ev.key === "ArrowRight" && step && step.act === "observe") {
+                ev.preventDefault();
+                this.sNext();
+            } else if (ev.key === "ArrowLeft") {
+                ev.preventDefault();
+                this.sBack();
+            }
+            return;
+        }
+        if (this.state.view !== "lesson") {
+            return;
+        }
+        if (ev.key === "Escape") {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.exitLesson();
+        } else if (ev.key === "ArrowRight") {
+            ev.preventDefault();
+            this.next();
+        } else if (ev.key === "ArrowLeft") {
+            ev.preventDefault();
+            this.back();
+        }
+    }
+
+    /* --------------------------------------------------------- deep links
+       PayAI's "Show me" opens `pb_learn.action_learn_journey` with
+       `context.lesson = "<key>"`; the demo first-login greeting opens it with
+       `context.suggest = "LW"`.
+
+       NEITHER MAY EVER BREAK THE JOURNEY. A key that does not resolve — a
+       lesson retired between a cached conversation and today, a station whose
+       leaf is not installed on this tenant, a context somebody hand-typed —
+       falls through to the map, which is exactly where the learner wanted to be
+       anyway. There is no error state here on purpose: the worst outcome of a
+       bad deep link should be an ordinary Journey. */
+    _applyDeepLink() {
+        let ctx = {};
+        try {
+            ctx = (this.props && this.props.action && this.props.action.context) || {};
+        } catch {
+            ctx = {};
+        }
+        // LEARN REFRESH step 1 — inside the Learn hub the map is the Lessons
+        // lens and receives the hub's ARRIVAL, not an action context. The
+        // same grammar the ⌘K rows already use, widened by three words:
+        // "lesson:<key>", "suggest:<key>" and "practice". Applied once per
+        // arrival: coming back to this tab later is not a second deep link.
+        const arrival = this.props && this.props.arrival;
+        if (arrival && arrival.focus && !ctx.pb_focus && !CONSUMED_ARRIVALS.has(arrival)) {
+            CONSUMED_ARRIVALS.add(arrival);
+            const f = String(arrival.focus);
+            // LEARNREV P4 — "lesson:<key>:<step>": the Guide panel handing a
+            // step that lives only in the practice copy over to this player.
+            const lm = /^(lesson|suggest):([A-Za-z0-9_]+)(?::(\d+))?$/.exec(f);
+            if (lm) {
+                ctx = Object.assign({}, ctx, { [lm[1]]: lm[2] },
+                                    lm[3] !== undefined ? { lesson_step: Number(lm[3]) } : {});
+            } else if (f === "practice") {
+                ctx = Object.assign({}, ctx, { practice: 1 });
+            } else {
+                ctx = Object.assign({}, ctx, { pb_focus: f });
+            }
+        }
+        const suggest = typeof ctx.suggest === "string" ? ctx.suggest : "";
+        if (suggest && this._stationOfLesson(suggest)) {
+            this.state.suggest = suggest;
+        }
+        // A scenario deep link. `learn.scenario.begin("…", "try")` opens this
+        // action rather than rendering the replica wherever the learner was
+        // standing, so the Coach drawer, a Journey card and an intent's
+        // `show_me` all reach Try through ONE door.
+        // The Coach's practice-mode entry (Phase 5). One door, same as the
+        // scenario link: the drawer opens this action rather than growing a
+        // second sandbox of its own.
+        if (ctx.practice) {
+            this.openPractice();
+            return;
+        }
+        // LEARNOS Phase 6. The Coach's "Continue" opens the STATION the
+        // server suggested. A station key, not a lesson key: the suggestion is
+        // made over stations (outlines included, which have no lesson to name),
+        // and `openStation` is the same door a card press uses.
+        // LEARN v3 — a ⌘K row arrives with `pb_focus`, the hub's own arrival
+        // key: "station:<key>" or "scenario:<key>:<mode>".
+        const focus = typeof ctx.pb_focus === "string" ? ctx.pb_focus : "";
+        const fm = /^(station|scenario):([a-z0-9_]+)(?::([a-z]+))?$/.exec(focus);
+        if (fm && fm[1] === "station" && this.station(fm[2])) {
+            this.openStation(this.station(fm[2]).key);
+            return;
+        }
+        if (fm && fm[1] === "scenario" && this.scenarios.some((x) => x.key === fm[2])) {
+            this.openScenario(fm[2], fm[3] || "watch");
+            return;
+        }
+        const stKey = typeof ctx.station === "string" ? ctx.station : "";
+        if (stKey && this.station(stKey)) {
+            this.openStation(this.station(stKey).key);
+            return;
+        }
+        const scKey = typeof ctx.scenario === "string" ? ctx.scenario : "";
+        if (scKey && this.scenarios.some((s) => s.key === scKey)) {
+            const mode = typeof ctx.mode === "string" ? ctx.mode : "try";
+            this.openScenario(scKey, mode);
+            return;
+        }
+
+        const key = typeof ctx.lesson === "string" ? ctx.lesson : "";
+        if (!key) {
+            return;
+        }
+        const station = this._stationOfLesson(key);
+        if (!station) {
+            return;                       // unknown key → the map, silently
+        }
+        this.openStation(station.key);
+        this.startLesson();
+        if (Number.isInteger(ctx.lesson_step)) {
+            this.state.step = Math.max(0, Math.min(ctx.lesson_step, this.steps.length - 1));
+            this.state.handoff = this._readHandoff(key);
+        }
+        this._log("lesson_deeplink");
+    }
+
+    /* ---------------------------------------- LEARNREV P4 — the hand-back
+       The Guide panel plays a lesson beside the real screen and hands over
+       only the steps that live in the practice copy. While handed over, Next
+       or Back onto a step about a real control goes BACK to that screen with
+       the lesson in the Guide, at that step; "Back to the real screen" does
+       the same from wherever the reader is. */
+    _readHandoff(lessonKey) {
+        try {
+            const h = JSON.parse(window.sessionStorage.getItem(LP_RETURN_KEY) || "null");
+            return h && h.lesson === lessonKey ? h : null;
+        } catch {
+            return null;
+        }
+    }
+
+    _clearHandoff() {
+        this.state.handoff = null;
+        try {
+            window.sessionStorage.removeItem(LP_RETURN_KEY);
+        } catch {
+            // Nothing to forget.
+        }
+    }
+
+    /** The step to come back at: this one, or the next real one after a
+     *  practice-only step (or the quiz, past the last step). */
+    _returnIndex() {
+        const steps = this.steps;
+        let i = this.state.step;
+        while (i < steps.length && isPracticeAnchor((steps[i] || {}).anchor)) {
+            i += 1;
+        }
+        return i;
+    }
+
+    /** Hand the lesson back to the Guide at step `index` (steps.length = the
+     *  quiz). False when this is not a hand-over, or that step also lives
+     *  only here (the practice copy plays it, as before). */
+    _handBack(index, force) {
+        const h = this.state.handoff;
+        const steps = this.steps;
+        if (!h || index < 0 || index > steps.length) {
+            return false;
+        }
+        const st = steps[index];
+        if (st && isPracticeAnchor(st.anchor)) {
+            return false;
+        }
+        const screenKey = (st && st.screen) || h.from;
+        const screen = (this.bundle.screens || []).find((s) => s.key === screenKey);
+        if (!screen || (reachable(screen) === false && !force)) {
+            return false;
+        }
+        this._clearHandoff();
+        Spot.hide();
+        guideAt(screenKey, { section: "understand", station: h.station, step: index })
+            .then((res) => {
+                if (res !== "here") {
+                    // Could not open it: stay here, on the practice copy.
+                    this.state.handoff = h;
+                }
+            });
+        return true;
+    }
+
+    /** The station carrying a lesson KEY (L1, LW…), or null. */
+    _stationOfLesson(key) {
+        return this.stations.find(
+            (s) => (s.lessons || []).some((l) => l.key === key)) || null;
+    }
+
+    // ------------------------------------------------------------ navigation
+    toMap() {
+        Spot.hide();
+        this.state.view = "map";
+        this.state.stationKey = null;
+        // A finished scenario leaves its card behind otherwise, and the map
+        // would draw the Try view's leftovers the next time it is opened.
+        this.state.scenarioKey = null;
+        this.state.sDone = false;
+        this.state.sNudge = false;
+        this.state.sMiss = false;
+    }
+
+    openStation(key) {
+        this.state.outlineNote = false;
+        this.state.stationKey = key;
+        this.state.step = 0;
+        this.state.quiz = false;
+        this.state.view = "outline";
+        this._log("station_open");
+    }
+
+    startLesson() {
+        const p = this.progress[this.state.stationKey] || {};
+        // Resume ONLY a lesson that is genuinely mid-flight. Re-opening a
+        // finished one used to jump straight to step 10 of 10, which reads as
+        // the app skipping the lesson rather than remembering your place.
+        const resumable = p.state === "in_progress"
+            && (p.step_index || 0) < this.steps.length - 1;
+        this.state.step = resumable ? p.step_index : 0;
+        this.state.quiz = false;
+        this.state.answered = null;
+        this.state.morphSide = "before";
+        this.state.view = "lesson";
+        this._saveProgress(this.state.stationKey, { state: "in_progress", lang: this.state.lang });
+        this._log("lesson_start");
+    }
+
+    next() {
+        if (this.state.quiz) {
+            return;
+        }
+        if (this._handBack(this.state.step + 1)) {
+            return;
+        }
+        if (this.state.step < this.steps.length - 1) {
+            this.state.step += 1;
+            this.state.morphSide = "before";
+            this._saveProgress(this.state.stationKey, { step_index: this.state.step });
+            this._log("step_view", this.state.step);
+        } else {
+            this.state.quiz = true;
+            this.state.answered = null;
+        }
+    }
+
+    back() {
+        if (this.state.quiz) {
+            this.state.quiz = false;
+            this.state.answered = null;
+            return;
+        }
+        if (this.state.step > 0 && this._handBack(this.state.step - 1)) {
+            return;
+        }
+        if (this.state.step > 0) {
+            this.state.step -= 1;
+            this.state.morphSide = "before";
+        }
+    }
+
+    replay() {
+        // Re-run this step's effect without changing position — the single
+        // most-used control for a learner reading in their second language.
+        this._afterPaint();
+    }
+
+    exitLesson() {
+        Spot.hide();
+        this._clearHandoff();
+        this.state.view = "outline";
+        this.state.quiz = false;
+        this._log("lesson_abandon", this.state.step);
+    }
+
+    answer(i) {
+        if (this.state.answered !== null) {
+            return;
+        }
+        const quiz = this.lesson.quizzes[0];
+        const correct = !!quiz.options[i].correct;
+        this.state.answered = i;
+        const p = this.progress[this.state.stationKey] || {};
+        const attempts = (p.attempts || 0) + 1;
+        this._saveProgress(this.state.stationKey, {
+            attempts,
+            first_try_correct: attempts === 1 && correct ? true : !!p.first_try_correct,
+        });
+        this._log("quiz_answer", `${i}:${correct ? "y" : "n"}`);
+    }
+
+    retry() {
+        // Recovery, not rejection: the learner returns to the same question
+        // with the explanation still readable above it.
+        this.state.answered = null;
+    }
+
+    finish() {
+        this._saveProgress(this.state.stationKey, {
+            state: "done",
+            completed_at: this._nowServer(),
+            lang: this.state.lang,
+        });
+        this._log("lesson_complete");
+        Spot.hide();
+        this._clearHandoff();
+        this.state.view = "outline";
+        this.state.quiz = false;
+        this.state.answered = null;
+    }
+
+    _nowServer() {
+        // Odoo stores naive UTC. Send the same shape rather than an ISO string
+        // with a Z, which the ORM would reject.
+        return new Date().toISOString().slice(0, 19).replace("T", " ");
+    }
+
+
+    // ---------------------------------------------------------- missions
+    toMissions() {
+        Spot.hide();
+        this.state.view = "missions";
+        this.state.missionKey = null;
+        this.state.mDone = false;
+    }
+
+    /** Hand the mission to the docked runner and get out of its way.
+     *
+     *  The Journey does NOT drive a live mission: its first step navigates to
+     *  the product, which unmounts this component. LiveState is the handover,
+     *  and LiveHost — mounted in the web client shell beside the Coach — is
+     *  what survives the navigation. */
+    startLive() {
+        const m = this.mission;
+        if (!m || m.kind !== "live" || !this.isDemo) {
+            return;
+        }
+        LiveState.start(m.key);
+        this.state.view = "missions";
+    }
+
+    /** Whether this session is in the demo world at all. Read from the bundle,
+     *  which reads the real group and the real company — never guessed from a
+     *  URL or a company name in the browser. */
+    get isDemo() {
+        return !!(this.bundle && this.bundle.user && this.bundle.user.is_demo);
+    }
+
+    openMission(key) {
+        this.state.missionKey = key;
+        this.state.view = "mission";
+        this.state.mStep = 0;
+        this.state.mChoice = null;
+        this.state.mRecovered = false;
+        this.state.mAcked = false;
+        this.state.mHint = false;
+        this.state.mDone = false;
+        this._log("mission_start", key);
+    }
+
+    mNext() {
+        const step = this.mCurrent;
+        // A risky step cannot be walked past. The interception IS the lesson.
+        if (step && step.is_consequence && !this.state.mAcked) {
+            return;
+        }
+        if (this.state.mStep < this.mSteps.length - 1) {
+            this.state.mStep += 1;
+            this.state.mChoice = null;
+            this.state.mAcked = false;
+            this.state.mHint = false;
+            this._log("mission_step", `${this.state.missionKey}:${this.state.mStep}`);
+        } else {
+            this.finishMission();
+        }
+    }
+
+    mBack() {
+        if (this.state.mStep > 0) {
+            this.state.mStep -= 1;
+            this.state.mChoice = null;
+            this.state.mAcked = false;
+            this.state.mHint = false;
+        }
+    }
+
+    mExit() {
+        Spot.hide();
+        this.state.view = "missions";
+        this._log("mission_abandon", `${this.state.missionKey}:${this.state.mStep}`);
+    }
+
+    chooseMission(optKey) {
+        if (this.state.mChoice) {
+            return;
+        }
+        const step = this.mCurrent;
+        const opt = step.options.find((o) => o.key === optKey);
+        this.state.mChoice = optKey;
+        if (opt && !opt.correct) {
+            // Recovery, not rejection: the learner stays in the mission and
+            // reads why, then chooses again.
+            this.state.mRecovered = true;
+            this._log("mission_recover", `${this.state.missionKey}:${optKey}`);
+        }
+    }
+
+    async finishMission() {
+        Spot.hide();
+        this.state.mDone = true;
+        this._log("mission_complete", this.state.missionKey);
+        await this._saveProgress(`mission:${this.state.missionKey}`, {
+            state: "done", completed_at: this._nowServer(), lang: this.state.lang,
+        });
+        try {
+            this.state.mGain = await this.orm.call("learn.confidence", "award",
+                [this.state.missionKey, this.state.mRecovered]);
+        } catch {
+            this.state.mGain = 0;
+        }
+    }
+
+    // ------------------------------------------------------------ scenarios
+    /** Open a scenario in one of its modes.
+     *
+     *  Try is HOSTED HERE, over the replica. Watch and Do are handed to the
+     *  service, whose overlay lives in the web client shell — its first step
+     *  navigates to the real product, which unmounts this component, so a
+     *  Journey-owned runner could not survive its own first step. */
+    async openScenario(key, mode) {
+        const sc = this.scenarios.find((s) => s.key === key);
+        if (!sc) {
+            return;
+        }
+        const wanted = (sc.modes || []).includes(mode) ? mode : (sc.modes || [])[0];
+        if (wanted !== "try") {
+            await this.sc.load();
+            await this.sc.begin(key, wanted);
+            return;
+        }
+        Spot.hide();
+        this.state.scenarioKey = key;
+        this.state.view = "scenario";
+        this.state.sStep = 0;
+        this.state.sNudge = false;
+        this.state.sMiss = false;
+        this.state.sDone = false;
+        this.sc.logStart(key, "try");
+    }
+
+    sNext() {
+        this.state.sNudge = false;
+        this.state.sMiss = false;
+        if (this.state.sStep < this.sSteps.length - 1) {
+            this.state.sStep += 1;
+            this.sc.record(this.state.scenarioKey, {
+                state: "in_progress", step_index: this.state.sStep,
+            });
+            this.sc.log("scenario_step",
+                        `${this.state.scenarioKey}:try:${this.state.sStep}`);
+        } else {
+            this.sFinish();
+        }
+    }
+
+    sBack() {
+        this.state.sNudge = false;
+        this.state.sMiss = false;
+        if (this.state.sStep > 0) {
+            this.state.sStep -= 1;
+        }
+    }
+
+    sFinish() {
+        Spot.hide();
+        this.state.sDone = true;
+        this.sc.record(this.state.scenarioKey, {
+            state: "done", completed_at: this._nowServer(), lang: this.state.lang,
+        });
+        this.sc.log("scenario_complete", `${this.state.scenarioKey}:try`);
+        // The local copy drives the card's tick without a re-fetch, exactly as
+        // a finished lesson does.
+        this.progress[`scenario:${this.state.scenarioKey}`] = { state: "done" };
+    }
+
+    sExit() {
+        Spot.hide();
+        // Escape on the completion card is a normal close, not an abandon —
+        // the same double-count scenario_service.stop() refuses after done.
+        if (!this.state.sDone) {
+            this.sc.log("scenario_abandon",
+                        `${this.state.scenarioKey}:try:${this.state.sStep}`);
+        }
+        this.state.view = "map";
+        this.state.scenarioKey = null;
+        this.state.sNudge = false;
+        this.state.sMiss = false;
+    }
+
+    // --------------------------------------------------------- practice mode
+    /** Open the free-roam sandbox.
+     *
+     *  THE WHOLE SURFACE IS THESE THREE METHODS AND `_practiceBody`, AND THE
+     *  ONLY SERVER CALL ANY OF THEM MAKES IS `_log`, WHICH WRITES ONE ROW INTO
+     *  `learn.event`.
+     *
+     *  What holds that claim up is a TRIPWIRE, not a proof, and the difference
+     *  is worth stating where somebody might rely on it.
+     *  `tests/test_practice.py` walks this surface syntactically —
+     *  `this.NAME(` edges, `this.orm.call("literal"` sites — and refuses the
+     *  shapes that would let a call hide from that walk: a non-literal model
+     *  name, `this.orm` handed to anything other than its own `.call`, `this`
+     *  aliased to a local, `this[…]` dispatch, and any `.call(` whose receiver
+     *  is not `this.orm`. A determined author can still route around a
+     *  syntactic scan; what they cannot do is route around it BY ACCIDENT, and
+     *  the tripwires are chosen so that every ordinary way of growing this
+     *  code into a server call trips one.
+     */
+    openPractice() {
+        Spot.hide();
+        this.state.view = "practice";
+        this._log("practice_open", this.state.pScreen);
+    }
+
+    /** Switch replica screens. The one thing a control in the sandbox does. */
+    pNav(key) {
+        // `Object.hasOwn`, not `hasOwnProperty.call`: the practice surface is
+        // scanned for `.call(` sites and the only one allowed there is
+        // `this.orm.call`. A second, innocent `.call(` in this method would
+        // have to be exempted by name, and an exemption list on a safety scan
+        // is the beginning of the scan not meaning anything.
+        if (!key || !Object.hasOwn(SCREENS, key)) {
+            return;
+        }
+        this.state.pScreen = key;
+        this.state.shellNote = "";
+        this._log("practice_nav", key);
+    }
+
+    pExit() {
+        Spot.hide();
+        this._log("practice_exit", this.state.pScreen);
+        this.state.view = "map";
+    }
+
+    // -------------------------------------------------------------- settings
+    toggleLang() {
+        this.state.lang = this.state.lang === "en" ? "vi" : "en";
+        RT.lang = this.state.lang;
+        this._savePrefs();
+        // LEARNREV P3 — the search finds the field cards in the new language.
+        this._loadFieldRows();
+    }
+
+    /* LEARNREV P3 — "Reduce motion" left this page's header (G13): the
+       system setting decides, and the switch lives in Learn › Settings
+       (learn_settings.js writes the same `pbLearnPrefs.motion`). */
+
+    // ------------------------------------------------------- template helpers
+    get langLabel() {
+        return this.state.lang === "en" ? "Tiếng Việt" : "English";
+    }
+
+    get brandLabel() {
+        // ERRORS E4-4. The second half is what the header shows for the one
+        // frame before the content bundle arrives, and it was a bare literal —
+        // so on a white-labelled customer the Learn header opened with OUR
+        // name and then corrected itself. `tx` routes it through `_t`, which
+        // every debranding seam reaches.
+        return this.state.ready ? T("brand") : tx("Payobook");
+    }
+
+    get learnLabel() {
+        // LEARNREV P4 (S10): "Learn", the page's own name (the hub title),
+        // not "Payobook · Learning".
+        return this.state.ready ? T("hubTitle") : "";
+    }
+
+    /** Narration for screen readers: the step title, announced on change. */
+    get narration() {
+        if (this.state.view !== "lesson" || this.state.quiz) {
+            return "";
+        }
+        const st = this.steps[this.state.step];
+        return st ? (T("step")) + (SP) + (this.state.step + 1) + (SP) + (T("of")) + (SP) + (this.steps.length) + ". " + (tx(st.title)) : "";
+    }
+}
+
+registry.category("actions").add("learn_journey", LearnJourney);

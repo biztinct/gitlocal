@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_gratuity_payment_wizard" model="ir.ui.view">
+        <field name="name">gratuity.payment.wizard.form</field>
+        <field name="model">gratuity.payment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Process Gratuity Payment">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="payment_date"/>
+                            <field name="reason"/>
+                        </group>
+                    </group>
+                    <group string="Employees">
+                        <field name="employee_ids" nolabel="1">
+                            <tree>
+                                <field name="name"/>
+                                <field name="employee_id"/>
+                                <field name="department_id"/>
+                                <field name="contract_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <p><strong>Gratuity Calculation Info:</strong></p>
+                        <ul>
+                            <li>Minimum 5 years of continuous service required</li>
+                            <li>Formula: (Basic Salary × 15 days × Years of Service) ÷ 26</li>
+                            <li>Maximum limit: ₹20,00,000 as per Indian law</li>
+                            <li>Service period rounded up if more than 6 months in the last year</li>
+                        </ul>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="process_gratuity_payment" string="Calculate & Process Gratuity" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_gratuity_payment_wizard" model="ir.actions.act_window">
+        <field name="name">Process Gratuity Payment</field>
+        <field name="res_model">gratuity.payment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+</odoo>

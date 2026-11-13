@@ -1,0 +1,23 @@
+Design-only validation — 22 October 2026
+
+Passed:
+- HTML parses and static IDs are unique.
+- JavaScript syntax check.
+- Isolated JavaScript logic check (no live payroll / browser interaction): optional
+  empty items do not add blockers; missing salary blocks; pending overtime cannot
+  be overwritten as zero; edits preserve original source values and default to
+  this run; paid days range validation; illustrative employer-value refresh;
+  serialization of the edited draft.
+- Prototype is self-contained: no remote scripts, fonts, APIs or production data.
+
+Not completed:
+- Visual rendering and full interaction checks in Chrome: browser-control calls
+  time out, including the attempted prototype session. Do not describe this as
+  visually verified or production-ready.
+- Server persistence, permissions, approvals, actual source writes, full payroll
+  computations and concurrency are implementation requirements, not functionality
+  of this standalone mockup. See DESIGN.txt.
+
+No PNG or screenshot files were created. No production code, database data or
+payroll configuration was changed by this design work. No production deployment
+was attempted for this proposal.

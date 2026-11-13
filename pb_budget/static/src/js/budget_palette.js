@@ -1,0 +1,108 @@
+/** @odoo-module **/
+/**
+ * The doors into this module.
+ *
+ *   1. Budget is registered in Payroll through the shared report-home helper.
+ *      The soft registry keeps the owning hub independent of this module.
+ *      Its own budget permission gate and arrival filters are preserved.
+ *
+ *   2. **⌘K palette rows, in the 3000 block.** `hub_palette_entries.js`
+ *      auto-numbers its seeded deep links into the 2000s and grows (R41); P2
+ *      took 2200, P3 2400, P4 2500, P5 2600, P6 2700, P7 2800 and P8 2900, so
+ *      P9 starts at **3000**.
+ *
+ *      Every door is an XMLID and never a bare tag: a bare tag is synthesised
+ *      with no action NAME, so anything returning through a breadcrumb lands on
+ *      a crumb labelled "Unnamed".
+ *
+ * Every icon comes from the shared `ic()` set in pb_import_kit — no
+ * module-local map, no emoji.
+ */
+import { registry } from "@web/core/registry";
+import { _t } from "@web/core/l10n/translation";
+import { registerModuleInsight } from "@pb_insights_hub/js/insights_hub";
+import { PbBudgetBoard } from "@pb_budget/js/budget_board";
+
+/**
+ * `pb.budget._require()`, verbatim, plus the system escape it also grants.
+ * The facade refuses independently — this only decides what is OFFERED, and a
+ * gate that drifts from the facade's produces either a door that can only make
+ * an error or a surface nobody can find.
+ */
+export const BUDGET_GATE = [
+    "pb_budget.group_budget_viewer",
+    "pb_budget.group_budget_manager",
+    "pb_budget.group_budget_finance",
+    "base.group_system",
+];
+
+registerModuleInsight("budget", {
+    key: "budget",
+    icon: "gauge",
+    label: _t("Budget"),
+    Component: PbBudgetBoard,
+    groups: BUDGET_GATE,
+    // A DEEP LINK CAN BE MORE SPECIFIC THAN THE LENS: `pb_focus:
+    // "month:2026-03"` opens the board already scoped to March, and
+    // `"month:current"` means this month for ever rather than rotting on a
+    // fixed date. The shell hands the arrival payload only to a lens that has
+    // said it reads one, so this flag is the whole of the wiring.
+    wantsArrival: true,
+}, { sequence: 20 });
+
+const palette = registry.category("pb_hub_palette");
+
+palette.add("bdg_board", {
+    id: "bdg_board",
+    label: _t("Budget"),
+    sublabel: _t("Payroll"),
+    icon: "gauge",
+    groups: BUDGET_GATE,
+    // The presence probe: the actions registry holding this tag is what says
+    // the module shipped its JS.
+    requires: "pb_budget_board",
+    action: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget" },
+}, { sequence: 3000 });
+
+palette.add("bdg_month", {
+    id: "bdg_month",
+    label: _t("Budget this month"),
+    sublabel: _t("Payroll"),
+    icon: "calendar",
+    groups: BUDGET_GATE,
+    requires: "pb_budget_board",
+    // `month:current` and not a date: a row that names a month would be wrong
+    // from the first of the next one.
+    action: { xmlid: "pb_payhub.action_pb_pay_hub", lens: "budget",
+              focus: "month:current" },
+}, { sequence: 3005 });
+
+palette.add("bdg_upload", {
+    id: "bdg_upload",
+    label: _t("Upload a budget"),
+    sublabel: _t("Budgets"),
+    icon: "upload",
+    groups: ["pb_budget.group_budget_manager", "base.group_system"],
+    requires: "pb_budget_board",
+    action: { xmlid: "pb_budget.action_pb_budget_upload" },
+}, { sequence: 3010 });
+
+palette.add("bdg_expenses", {
+    id: "bdg_expenses",
+    label: _t("What HR and the office spent"),
+    sublabel: _t("Budgets"),
+    icon: "receipt",
+    groups: BUDGET_GATE,
+    requires: "pb_budget_board",
+    action: { xmlid: "pb_budget.action_pb_budget_expense" },
+}, { sequence: 3020 });
+
+palette.add("bdg_rows", {
+    id: "bdg_rows",
+    label: _t("Budget rows"),
+    sublabel: _t("Budgets"),
+    icon: "list",
+    groups: BUDGET_GATE,
+    requires: "pb_budget_board",
+    action: { xmlid: "pb_budget.action_pb_budget_rows" },
+}, { sequence: 3030 });

@@ -1,0 +1,6 @@
+# Installed as /etc/cron.d/pb-domain-pending (root, 644). cron.d needs no reload.
+# Issues the HTTPS certificate for any custom domain in /etc/odoo-host-db.map
+# whose DNS now points at this server (see /usr/local/bin/pb-domain-attach).
+# A cron file rather than a systemd timer: `systemctl daemon-reload` on this box
+# has orphaned the odoo-server process before (LSB init script).
+*/10 * * * * root /usr/local/bin/pb-domain-attach --pending >> /var/log/pb-domain-pending.log 2>&1

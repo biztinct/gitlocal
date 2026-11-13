@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Home hub — the rail's first item after the Cycle 5 cutover.
+
+         Test URL: /odoo/action-pb_home_hub
+                   (/bizapp/action-pb_home_hub on the live server, biz_deroute)
+
+         Declared as a RECORD rather than reached by bare tag, so anything that
+         returns through a breadcrumb sees a named action instead of "Unnamed"
+         (W98) — and, more importantly here, so the rail's HOME BUTTON has an
+         `action_xmlid` to find. `pb_sidebar.js::_buildIndex` sets `_homeAction`
+         from the first indexed item that carries an `action_xmlid`, and
+         `navigateHome()` falls back to a raw `/odoo` redirect without one; the
+         Home rail item therefore names this record, not the tag. -->
+    <record id="action_pb_home_hub" model="ir.actions.client">
+        <field name="name">Home</field>
+        <field name="tag">pb_home_hub</field>
+    </record>
+</odoo>

@@ -1,0 +1,1953 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_budget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-09 00:06+0000\n"
+"PO-Revision-Date: 2026-09-09 00:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(burn)s%% of the %(year)s budget is spent against a year that is %(pace)s%%"
+" gone — comfortably inside it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(burn)s%% of the %(year)s budget is spent and the year is %(pace)s%% gone —"
+" about where it should be."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(burn)s%% of the %(year)s budget is spent and the year is %(pace)s%% gone —"
+" spending is running ahead of the calendar."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%(dept)s, %(month)s: “%(what)s” is not a number."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s to %(last)s %(year)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(first)s–%(last)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(month)s came in %(amount)s %(cur)s over budget across %(n)s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(month)s came in %(amount)s %(cur)s under budget across %(n)s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(month)s has no budget set; %(spent)s %(cur)s was spent."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(month)s so far: %(burn)s%% of the month's budget spent with %(pace)s%% of "
+"the month gone."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(month)s — %(spent)s spent of %(budget)s (%(tone)s)."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(month)s — no budget set, %(spent)s spent."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(month)s: %(n)s of %(total)s functions went over budget; %(name)s by the "
+"most (%(amount)s %(cur)s, %(pct)s%% over)."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"%(n)s named a department this system does not have, so they were left out: "
+"%(names)s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s came in %(amount)s under its %(month)s budget — %(pct)s%% less than"
+" was set aside."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s came in close to its %(month)s budget — %(spent)s against "
+"%(budget)s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(name)s has spent %(spent)s with no budget set against it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s is %(gap)s%% ahead of budget pace — %(burn)s%% spent, %(pace)s%% of"
+" the year gone."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s is %(gap)s%% behind budget pace — %(burn)s%% spent, %(pace)s%% of "
+"the year gone."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(name)s is on pace — %(burn)s%% spent against %(pace)s%% of the year."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s is running warm — %(burn)s%% spent against %(pace)s%% of the year."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(name)s spent %(spent)s in %(month)s with no budget set against it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"%(name)s went %(amount)s over budget in %(month)s — %(pct)s%% more than was "
+"set aside."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%(name)s — %(months)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%(new)s added and %(upd)s updated."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%(new)s would be added and %(upd)s updated."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%(period)s so far: %(burn)s%% of the budget for those months spent, with "
+"%(pace)s%% of them gone."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%(quarter)s · %(months)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "%(type)s budget %(scope)s — every figure in %(cur)s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%s cells did not hold a number."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%s department-months updated."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%s empty month cells were left exactly as they are."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%s functions"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "%s had no budget set and were added, flagged."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%s has not started."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%s is finished"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "%s of %s has gone"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%s pay runs have not been summarised yet, so they are not in these figures."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "%s rows"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"%s rows were left alone because there is no exchange rate for the money they"
+" are kept in."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.actions.report,print_report_name:pb_budget.action_report_budget_year
+msgid "'Budget %s' % (object.fy or '')"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "1 function"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "1 row"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"A month you leave empty stays exactly as it is; type 0 to say\n"
+"                    nothing is budgeted."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Add an expense"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Add it"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Added — it counts against %(month)s's %(type)s budget."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_common.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_expense__budget_type__admin
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_budget_type__admin
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_upload_wizard__budget_type__admin
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Admin"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Ahead of the year"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "All"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__amount
+msgid "Amount"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"An expense belongs to HR operations or to Admin. What people are paid comes "
+"from the pay runs themselves and is never typed in here."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_expense.py:0
+msgid ""
+"An expense is what was spent, so it cannot be a negative number. If money "
+"came back, record it as a separate refund with a note saying so."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Anything worth saying about it"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Apply it"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_source__auto
+msgid "Auto actuals"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"Automatic spend figures are switched off. %s department-months would have "
+"been written."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Behind the year"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/models/pb_budget_line.py:0
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.actions.client,name:pb_budget.action_pb_budget_board
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__budget_type
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__forecast_cost
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Budget %(scope)s %(type)s.pdf"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Budget %(scope)s %(type)s.xlsx"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Budget %s"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_actuals
+msgid "Budget actuals writer"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget
+msgid "Budget board — read-only facade"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_source
+msgid "Budget came from"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_expense
+msgid "Budget expense"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_export
+msgid "Budget export"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__budget_type
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_budget_type
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__budget_type
+msgid "Budget for"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"Budget for %(year)s — %(type)s. Put the amount for each month under that "
+"month. Leave a month empty to leave it as it is; type 0 to say nothing is "
+"budgeted. Do not change the department id column."
+msgstr ""
+
+#. module: pb_budget
+#: model:res.groups,name:pb_budget.group_budget_viewer
+msgid "Budget holder"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_line
+msgid "Budget row"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: model:ir.actions.act_window,name:pb_budget.action_pb_budget_rows
+msgid "Budget rows"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.actions.report,name:pb_budget.action_report_budget_year
+msgid "Budget summary"
+msgstr ""
+
+#. module: pb_budget
+#: model:res.groups,name:pb_budget.group_budget_manager
+msgid "Budget team"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Budget template %(year)s %(type)s.xlsx"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+msgid "Budget this month"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_upload_wizard
+msgid "Budget upload"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: model:ir.module.category,name:pb_budget.module_category_budget
+#: model:res.groups.privilege,name:pb_budget.res_groups_privilege_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Budgets"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"Budgets are shown to the people who hold one — a function head, the budget "
+"team or finance. Ask an administrator to add you if you should be seeing "
+"this."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.actions.server,name:pb_budget.cron_budget_actuals_ir_actions_server
+msgid "Budgets: read what has been spent"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__scenario_ref
+msgid "Came from scenario"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Check the file"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Close"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Close to budget"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__company_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__create_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__create_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__create_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__create_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__create_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__create_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__spend_date
+msgid "Date"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model,name:pb_budget.model_hr_department
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__department_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__department_id
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+msgid "Department"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Departments this system does not have"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_hr_department__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_actuals__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_fx__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__display_name
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Download it"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Download the whole matrix"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Drop the filled-in file back"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_source__manual
+msgid "Entered by hand"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Every budget row"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Every department down the side, the twelve months across."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Every expense"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid ""
+"Every figure on this board is %s. Press Escape to go back to the whole year."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Everything"
+msgstr ""
+
+#. module: pb_budget
+#: model:res.groups,comment:pb_budget.group_budget_manager
+msgid ""
+"Everything above, plus uploading a year's budget, entering what HR and the "
+"office spent, and re-reading the payroll figures."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__upload_filename
+msgid "File name"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__attachment_ids
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Files"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__upload_file
+msgid "Filled-in file"
+msgstr ""
+
+#. module: pb_budget
+#: model:res.groups,name:pb_budget.group_budget_finance
+msgid "Finance"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__period_month
+msgid "First day of the month this row covers."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__function_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_function_id
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Function"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__function_head_user_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_function_head_user_id
+msgid "Function head"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Get the template"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_common.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_expense__budget_type__hr_ops
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_budget_type__hr_ops
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_upload_wizard__budget_type__hr_ops
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "HR operations"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Heat"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "How %s compares"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_hr_department__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_actuals__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_fx__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_has_error
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+msgid "Insights"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__write_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__write_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__write_uid
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__write_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__write_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__write_date
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Leadership course for four team leads"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_manual_rate
+msgid ""
+"Leave at 0 to use the exchange rate this system holds. Set it to say what "
+"this row's money is worth in the reporting currency: the reported figure is "
+"this row's amount MULTIPLIED by the rate. One dong in US dollars would be "
+"0.000038."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Leave empty for something the whole company shares"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__department_id
+msgid ""
+"Leave empty for something the whole company shares — it then counts against "
+"the company's own line rather than a team's."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__variance_amount
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+msgid "Left"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__variance_pct
+msgid "Left %"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__currency_id
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_currency_id
+msgid "Money in"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_unbudgeted
+msgid "Money was spent here and no budget was ever set against it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__period_month
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Month"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Month by month"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Monthly average"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"No budget has been set for %(year)s, and %(spent)s %(cur)s has already been "
+"spent across %(n)s."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_rows
+msgid "No budget has been set yet"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "No budget set"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "Nobody budgeted it"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_unbudgeted
+msgid "Nobody budgeted this"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_fx.py:0
+msgid ""
+"Nobody has told this system what one %(src)s is worth in %(dst)s, so these "
+"figures stay in %(src)s. Set an exchange rate, or type one on the budget row"
+" itself."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Not yet"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__note
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_note
+msgid "Note"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Nothing budgeted for this year yet"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Nothing has been budgeted for %s yet."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_expense
+msgid "Nothing has been recorded yet"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "On pace"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "One page for a meeting"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"Only the budget team can change a budget. You can read the figures and "
+"export them."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_rows
+msgid ""
+"Open the Budget lens on Insights and use \"Upload a budget\" —\n"
+"               it gives you a spreadsheet with the year across the top and\n"
+"               every department down the side."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Opening…"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Over budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__supplier
+msgid "Paid to"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Pay figures last read %s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_common.py:0
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_budget_type__manpower
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_upload_wizard__budget_type__manpower
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_search
+msgid "People"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__actual_headcount
+msgid "People paid"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__forecast_headcount
+msgid "People planned"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_budget_type
+msgid ""
+"People — what payroll pays. HR operations — hiring, training, welfare. Admin"
+" — everything the office spends."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__month
+msgid "Period"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__period_month
+msgid "Period (1st of Month)"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Pick a month, a stretch of months, or the whole year"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Pick a quarter"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Pick the filled-in file first."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Press a month, shift-press another, or drag across them."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Put in what it cost."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Q%(n)s %(year)s"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_manual_rate
+msgid "Rate to reporting currency"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Read the budgets again"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Read the pay figures"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Reading"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Reading the budgets…"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Reading the file…"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__currency_mode
+msgid "Reported in"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model,name:pb_budget.model_pb_budget_fx
+msgid "Reporting currency and conversion, for budgets"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Running warm"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Say what the money was for."
+msgstr ""
+
+#. module: pb_budget
+#: model:res.groups,comment:pb_budget.group_budget_finance
+msgid ""
+"See every budget in the companies you work in, and export them. Reads "
+"everything; changes nothing."
+msgstr ""
+
+#. module: pb_budget
+#: model:res.groups,comment:pb_budget.group_budget_viewer
+msgid ""
+"See the budget of the function you lead — what it was given, what it has "
+"spent, and how that compares with where the year is. Granted by name."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Show the whole year again"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__pb_actual_synced_on
+msgid "Spend last read"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_actuals.py:0
+msgid "Spend with no budget set against it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_line__actual_cost
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_list
+msgid "Spent"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Spent vs budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Spreadsheet"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"Start with a spreadsheet: press \"Upload a budget\" and you get one\n"
+"              with every department down the side and the twelve months across\n"
+"              the top. Fill in what you can, drop it back, and the pay figures\n"
+"              fill themselves in beside it every night."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Summary"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Table"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid ""
+"Take the template, fill in a number for each month you want\n"
+"                    to set, and drop it back. Nothing is written until you press\n"
+"                    Apply, and a month you leave empty is left exactly as it is."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"Take the template, fill in a number for each month you want to set,\n"
+"              and drop it back here. Nothing is written until you press Apply."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__template_file
+msgid "Template"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "Template downloaded — %s departments to fill in."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__template_filename
+msgid "Template name"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That could not be built."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That could not be saved."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That file could not be applied."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"That file could not be opened. It needs to be the .xlsx template this screen"
+" gives you — a .csv or an older .xls will not do."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That file could not be read."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"That file has no heading row this screen recognises. Download the template "
+"again and fill that in — the headings are how each column is understood."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "That function could not be opened."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "That function has nothing budgeted for %s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The budget board could not be read."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "The budget report is not installed on this system."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The budgets could not be read"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__currency_id
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_currency_id
+msgid "The currency the budget and the spend on this row are in."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The departments inside it"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "The file is longer than %s rows; the rest was not read."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__period_month
+msgid "The first of the month this expense counts in."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The heat view"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__attachment_ids
+msgid "The invoice, the quote, whatever there is."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "The money"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__spend_date
+msgid "The month this lands in is taken from this date."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "The numbers"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__scenario_ref
+msgid ""
+"The old planning scenario this row was produced from, where it came from "
+"one. A budget entered for the year has none."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The pay figures could not be read."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The pay figures have not been read yet."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.actions.act_window,help:pb_budget.action_pb_budget_expense
+msgid ""
+"The pay runs already say what people were paid. This is for\n"
+"               everything else a budget covers — a training course, an agency\n"
+"               fee, a leaving gift, a new coffee machine. Each one counts\n"
+"               against its month."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "The people"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_function_head_user_id
+msgid ""
+"The person who leads that function, taken from the department's own manager."
+" This is what decides who may see the row."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The spreadsheet has been downloaded."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The summary has been downloaded."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The template could not be built."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_function_id
+msgid "The top-level department this row rolls up into."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "The whole year, with %s in bold — this page is about those months."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "The year is %s gone"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"There is more here than one board can hold, so this is the first\n"
+"                part of it. Narrow the year or the budget to see the rest."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "There is nothing in that file to write — every month cell is empty."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"These are left out. Nothing here creates a department — if one\n"
+"                  is genuinely missing, add it first and upload again."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid ""
+"These budgets are kept in %s different currencies, so they can only be added"
+" up in %s."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid ""
+"This system cannot build spreadsheets at the moment. Ask an administrator to"
+" look at it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid ""
+"This system cannot build spreadsheets at the moment. Use the PDF, or ask an "
+"administrator to look at it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_list
+msgid "Total"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+msgid "Under budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.actions.act_window,name:pb_budget.action_pb_budget_upload
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_upload_form
+msgid "Upload a budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Upload one and it appears here."
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields.selection,name:pb_budget.selection__pb_budget_line__pb_source__upload
+msgid "Uploaded"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Used"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Used %"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Used / year gone"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Variance"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "Variance %"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "What"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_palette.js:0
+#: model:ir.actions.act_window,name:pb_budget.action_pb_budget_expense
+msgid "What HR and the office spent"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid ""
+"What has been spent is read from the approved pay runs\n"
+"                        and from the expenses recorded against this month. It is\n"
+"                        not typed in here."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_expense__name
+msgid "What it was for"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid ""
+"What people are paid comes from the pay runs themselves. This is\n"
+"              for everything else a budget covers."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "What that means"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "What this file would do"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_list
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_search
+msgid "What was spent"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "What was spent on"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__summary
+msgid "What would happen"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_actual_synced_on
+msgid ""
+"When the payroll figures on this row were last read from the analytics "
+"tables."
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "Where it came from"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_line__pb_source
+msgid ""
+"Where the BUDGET figure came from. What was spent is always either the "
+"payroll figures or the expenses entered against it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_line_form
+msgid "Which budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Who was paid"
+msgstr ""
+
+#. module: pb_budget
+#: model:ir.model.fields,help:pb_budget.field_pb_budget_expense__supplier
+msgid "Who was paid. Free text for now."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/pb_budget.py:0
+#: code:addons/pb_budget/wizards/budget_upload.py:0
+msgid "Whole company"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "Whole year"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.view_pb_budget_expense_form
+msgid "Why it was spent, what it covered, who asked for it."
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_export__fy
+#: model:ir.model.fields,field_description:pb_budget.field_pb_budget_upload_wizard__fy
+msgid "Year"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+msgid "Year gone %"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "budget for %s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "budget for the year"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "compared with the budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "functions over budget in %s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "functions running warm or worse"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "left"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "left in %s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "money gone, year gone"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "new"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "no budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "no budget set"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "no data"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "not yet"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "now"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "of %s budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_budget/models/budget_export.py:0
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "spent"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent in %s"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the budget for these months"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent of the month's budget"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/js/budget_board.js:0
+msgid "spent so far"
+msgstr ""
+
+#. module: pb_budget
+#. odoo-javascript
+#: code:addons/pb_budget/static/src/xml/budget_board.xml:0
+msgid "updates"
+msgstr ""
+
+#. module: pb_budget
+#: model_terms:ir.ui.view,arch_db:pb_budget.report_budget_year_document
+msgid "— every figure in"
+msgstr ""

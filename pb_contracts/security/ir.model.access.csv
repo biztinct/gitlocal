@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_contract_proposal_hr,contract proposal HR,model_pb_contract_proposal,hr.group_hr_user,1,1,1,0
+access_pb_contract_proposal_system,contract proposal system,model_pb_contract_proposal,base.group_system,1,1,1,1
+access_pb_contract_proposal_seat,contract proposal anyone asked to decide,model_pb_contract_proposal,base.group_user,1,0,0,0

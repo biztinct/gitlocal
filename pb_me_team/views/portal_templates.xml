@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- MYTEAM — a manager's area on the employee home. The pages reuse
+       pb_me_portal's .pbme kit (tokens, buttons, badges, empty state,
+       ess_icon); `.pbmt-*` is this module's thin layer
+       (static/src/scss/my_team.scss). Every word a person sees is here; the
+       controller and the facade pass facts only. Icon names are always
+       t-value strings (pb_me_portal W87). -->
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_team" name="My team breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="39">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_team'" class="breadcrumb-item active">My team</li>
+      <li t-if="page_name in ('team_approvals', 'team_approval')" class="breadcrumb-item"><a href="/my/team">My team</a></li>
+      <li t-if="page_name == 'team_approvals'" class="breadcrumb-item active">Approvals</li>
+      <li t-if="page_name == 'team_approval'" class="breadcrumb-item"><a href="/my/team/approvals">Approvals</a></li>
+      <li t-if="page_name == 'team_approval' and req" class="breadcrumb-item active" t-out="req['title']"/>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <!-- A face: the photo, or the silhouette the photo rule answers. -->
+  <template id="pbmt_face" name="My team: a face">
+    <img class="pbmt-face" t-att-src="p['photo']" t-att-alt="p['name']" loading="lazy" width="36" height="36"/>
+  </template>
+
+  <!-- Where somebody is today, as one chip. `r` is a row of `today`. -->
+  <template id="pbmt_status" name="My team: today's status chip">
+    <t t-if="r['status'] == 'in'"><span class="pbmt-chip pbmt-chip--green">In since <t t-out="r['since']"/></span></t>
+    <t t-elif="r['status'] == 'late'"><span class="pbmt-chip pbmt-chip--amber">Late · in at <t t-out="r['since']"/></span></t>
+    <t t-elif="r['status'] == 'out'"><span class="pbmt-chip pbmt-chip--slate">Left at <t t-out="r['left']"/></span></t>
+    <t t-elif="r['status'] == 'leave' and r.get('asked')"><span class="pbmt-chip pbmt-chip--amber">Asked for <t t-out="r['leave_type']"/></span></t>
+    <t t-elif="r['status'] == 'leave'"><span class="pbmt-chip pbmt-chip--indigo"><t t-out="r['leave_type']"/> · back after <t t-out="r['until']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></span></t>
+    <t t-elif="r['status'] == 'missing'"><span class="pbmt-chip pbmt-chip--rose">No clock-in yet · due <t t-out="r['planned']"/></span></t>
+    <t t-elif="r['status'] == 'off'"><span class="pbmt-chip pbmt-chip--slate">Day off</span></t>
+    <t t-else=""><span class="pbmt-chip pbmt-chip--slate">Working today</span></t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The "My team" card on the home (pb_me_portal's extra cards)   -->
+  <!-- ============================================================= -->
+  <!-- Full width under Needs you, first among the extras: the faces, where
+       the team is today in a few words, and the approvals waiting — the one
+       solid button on the card. `card` is in scope (pbme_bento's loop). -->
+  <template id="pbme_card_team" name="Employee home: my team card">
+    <t t-set="tm" t-value="card['data']"/>
+    <t t-set="td" t-value="tm['today']"/>
+    <section class="pbme-b pbme-b-extra pbmt-card" data-pbme-slot="my_team" aria-labelledby="pbmt-card-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbmt-card-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="15"/></t>My team</h2>
+        <a class="pbme-lab-link" href="/my/team">Open my team</a>
+      </div>
+      <div class="pbmt-card-body">
+        <div class="pbmt-card-team">
+          <t t-if="tm['size']">
+            <div class="pbmt-faces">
+              <t t-foreach="tm['faces']" t-as="p"><t t-call="pb_me_team.pbmt_face"/></t>
+              <span t-if="tm['more_faces']" class="pbmt-face pbmt-face--more">+<t t-out="tm['more_faces']"/></span>
+            </div>
+            <p class="pbmt-card-line"><b t-out="tm['size']"/> <t t-if="tm['size'] == 1">person reports to you</t><t t-else="">people report to you</t></p>
+            <p t-if="td and td['holiday'] is not None" class="pbmt-card-today">Public holiday today<t t-if="td['holiday']">: <t t-out="td['holiday']"/></t></p>
+            <ul t-elif="td" class="pbmt-today-sum">
+              <li t-if="td['counts'].get('in')" class="is-green"><b t-out="td['counts']['in']"/> in</li>
+              <li t-if="td['counts'].get('late')" class="is-amber"><b t-out="td['counts']['late']"/> late</li>
+              <li t-if="td['counts'].get('missing')" class="is-rose"><b t-out="td['counts']['missing']"/> not in yet</li>
+              <li t-if="td['counts'].get('leave')" class="is-indigo"><b t-out="td['counts']['leave']"/> on leave</li>
+              <li t-if="td['counts'].get('out')"><b t-out="td['counts']['out']"/> gone home</li>
+              <li t-if="td['counts'].get('unknown')"><b t-out="td['counts']['unknown']"/> working</li>
+              <li t-if="td['counts'].get('off')"><b t-out="td['counts']['off']"/> day off</li>
+            </ul>
+          </t>
+          <p t-else="" class="pbmt-card-line">Nobody reports to you, but decisions are waiting on you.</p>
+        </div>
+        <div t-att-class="'pbmt-card-ap%s' % (' is-waiting' if tm['approvals'] else '')">
+          <t t-if="tm['approvals']">
+            <span class="pbmt-card-ap-n" t-out="tm['approvals']"/>
+            <span class="pbmt-card-ap-t"><t t-if="tm['approvals'] == 1">approval waiting for you</t><t t-else="">approvals waiting for you</t></span>
+            <a class="pbme-btn pbme-btn--pri" href="/my/team/approvals"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'inbox'"/></t>Review approvals</a>
+          </t>
+          <t t-else="">
+            <span class="pbmt-card-ap-quiet"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>No approvals waiting</span>
+            <a class="pbme-lab-link" href="/my/team/approvals">See approvals</a>
+          </t>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/team                                                      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_team" name="My team (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmt">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My team</t>
+          <t t-set="hero_sub" t-if="today['size'] == 1">The person who reports to you: where they are today, who is away soon, and what is coming up.</t>
+          <t t-set="hero_sub" t-elif="today['size']">The people who report to you: where they are today, who is away soon, and what is coming up.</t>
+          <t t-set="hero_actions">
+            <a class="pbme-btn pbme-btn--pri" href="/my/team/approvals"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'inbox'"/></t>Approvals<span t-if="approvals_waiting" class="pbmt-btn-n" t-out="approvals_waiting"/></a>
+          </t>
+        </t>
+
+        <!-- Today -->
+        <section t-if="today['size']" class="pbmt-sec" aria-labelledby="pbmt-today-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-today-h">Today<span class="pbmt-sec-date" t-out="today['date']" t-options="{'widget': 'date', 'format': 'EEEE d MMMM'}"/></h2>
+            <p t-if="not today['clock']" class="pbmt-sec-note">Your company does not record clock-ins, so this shows leave only.</p>
+          </div>
+          <p t-if="today['holiday'] is not None" class="pbmt-banner"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'sun'"/><t t-set="isz" t-value="16"/></t>Public holiday today<t t-if="today['holiday']">: <t t-out="today['holiday']"/></t></p>
+          <ul class="pbmt-people">
+            <li t-foreach="today['rows']" t-as="r" t-att-class="'pbmt-person is-%s' % r['status']">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+              <span class="pbmt-person-body">
+                <b class="pbmt-person-n" t-out="r['name']"/>
+                <span t-if="r['job']" class="pbmt-person-j" t-out="r['job']"/>
+                <span t-if="r.get('hours_today')" class="pbmt-person-h"><t t-out="'{:g}'.format(r['hours_today'])"/> h worked today</span>
+              </span>
+              <t t-call="pb_me_team.pbmt_status"/>
+            </li>
+          </ul>
+        </section>
+
+        <!-- The next four weeks -->
+        <section t-if="calendar['size']" class="pbmt-sec" aria-labelledby="pbmt-cal-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-cal-h">Who is away, next 4 weeks</h2>
+            <p class="pbmt-legend"><span class="pbmt-key is-away"/>On leave <span class="pbmt-key is-asked"/>Asked, not yet approved</p>
+          </div>
+          <ul t-if="calendar['clashes']" class="pbmt-clashes">
+            <li t-foreach="calendar['clashes'][:3]" t-as="c"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="15"/></t><b t-out="c['date']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/>: <t t-out="c['away']"/> of <t t-out="calendar['size']"/> people away</li>
+            <li t-if="len(calendar['clashes']) &gt; 3" class="is-more">and <t t-out="len(calendar['clashes']) - 3"/> more busy days</li>
+          </ul>
+          <div class="pbmt-cal-wrap" tabindex="0" aria-label="Team calendar, scroll sideways for more days">
+            <table class="pbmt-cal">
+              <thead>
+                <tr>
+                  <th scope="col" class="pbmt-cal-who"><span class="visually-hidden">Person</span></th>
+                  <th t-foreach="calendar['days']" t-as="d" scope="col" t-att-class="' '.join(c for c in ['pbmt-cal-d', 'is-weekend' if d['weekend'] else '', 'is-today' if d['today'] else '', 'is-clash' if d['clash'] else ''] if c)">
+                    <span class="pbmt-cal-wd" t-out="d['date']" t-options="{'widget': 'date', 'format': 'EEEEE'}"/>
+                    <span class="pbmt-cal-dn" t-out="d['date']" t-options="{'widget': 'date', 'format': 'd'}"/>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="calendar['rows']" t-as="r">
+                  <th scope="row" class="pbmt-cal-who"><t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t><span t-out="r['name']"/></th>
+                  <t t-foreach="calendar['days']" t-as="d">
+                    <t t-set="cell" t-value="r['cells'][d_index]"/>
+                    <td t-att-class="' '.join(c for c in ['pbmt-cal-c', 'is-weekend' if d['weekend'] else '', ('is-%s' % cell) if cell else ''] if c)"><span t-if="cell == 'away'" class="visually-hidden">On leave</span><span t-elif="cell == 'asked'" class="visually-hidden">Asked</span></td>
+                  </t>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Trial periods -->
+        <section t-if="probation" class="pbmt-sec" id="probation" aria-labelledby="pbmt-prob-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-prob-h">Trial periods ending</h2>
+            <p class="pbmt-sec-note">Give your decision before the date: confirm, extend, or end.</p>
+          </div>
+          <ul class="pbmt-list">
+            <li t-foreach="probation" t-as="r" class="pbmt-row">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+              <span class="pbmt-row-body">
+                <b t-out="r['name']"/>
+                <span class="pbmt-row-d">
+                  <t t-if="r['days'] &lt; 0">Ended <t t-out="r['end']" t-options="{'widget': 'date', 'format': 'd MMM'}"/>, no decision yet</t>
+                  <t t-elif="r['days'] == 0">Ends today</t>
+                  <t t-elif="r['days'] == 1">Ends tomorrow</t>
+                  <t t-else="">Ends <t t-out="r['end']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/>, in <t t-out="r['days']"/> days</t>
+                  <t t-if="r['extended']"> · already extended once</t>
+                  <t t-if="r['stage']"> · <t t-out="r['stage']"/></t>
+                </span>
+              </span>
+              <span t-att-class="'pbmt-chip %s' % ('pbmt-chip--rose' if r['days'] &lt;= 7 else 'pbmt-chip--amber')"><t t-if="r['days'] &lt; 0">Overdue</t><t t-else=""><t t-out="max(r['days'], 0)"/> d</t></span>
+              <a t-if="r['url'] and request.env.user.has_group('base.group_user')" class="pbme-btn pbme-btn--out" t-att-href="r['url']">Open the review</a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Coming up -->
+        <section t-if="moments" class="pbmt-sec" aria-labelledby="pbmt-mom-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-mom-h">Coming up</h2>
+          </div>
+          <ul class="pbmt-list">
+            <li t-foreach="moments" t-as="r" class="pbmt-row">
+              <span t-att-class="'pbme-badge pbme-badge--%s' % {'contract': 'amber', 'birthday': 'pink', 'anniversary': 'teal'}[r['kind']]" aria-hidden="true">
+                <t t-if="r['kind'] == 'contract'" t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="16"/></t>
+                <t t-elif="r['kind'] == 'birthday'" t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'gift'"/><t t-set="isz" t-value="16"/></t>
+                <t t-else="" t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'award'"/><t t-set="isz" t-value="16"/></t>
+              </span>
+              <span class="pbmt-row-body">
+                <b t-out="r['name']"/>
+                <span class="pbmt-row-d">
+                  <t t-if="r['kind'] == 'contract'">Contract ends</t>
+                  <t t-elif="r['kind'] == 'birthday'">Birthday</t>
+                  <t t-elif="r['years'] == 1">1 year with the company</t>
+                  <t t-else=""><t t-out="r['years']"/> years with the company</t>
+                </span>
+              </span>
+              <span class="pbmt-row-when">
+                <t t-if="r['days'] == 0">Today</t>
+                <t t-elif="r['days'] == 1">Tomorrow</t>
+                <t t-else="" t-out="r['date']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/>
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- New in the team -->
+        <section t-if="joiners" class="pbmt-sec" aria-labelledby="pbmt-new-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-new-h">New in your team</h2>
+            <p class="pbmt-sec-note">Joined in the last 90 days.</p>
+          </div>
+          <ul class="pbmt-list">
+            <li t-foreach="joiners" t-as="r" class="pbmt-row">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+              <span class="pbmt-row-body">
+                <b t-out="r['name']"/>
+                <span class="pbmt-row-d">Joined <t t-out="r['start']" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/><t t-if="r['buddy']"> · buddy <t t-out="r['buddy']"/></t></span>
+              </span>
+              <span t-if="r['total']" class="pbmt-progress" t-att-aria-label="'%s / %s' % (r['done'] or 0, r['total'])">
+                <span class="pbmt-progress-bar"><i t-att-style="'width: %s%%' % int(100 * (r['done'] or 0) / r['total'])"/></span>
+                <span class="pbmt-progress-t"><t t-out="r['done'] or 0"/> of <t t-out="r['total']"/> first-weeks steps</span>
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Missing clock-ins -->
+        <section t-if="gaps and gaps['rows']" class="pbmt-sec" aria-labelledby="pbmt-gap-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-gap-h">Missing clock-ins this week</h2>
+            <p class="pbmt-sec-note">Working days with no clock-in and no leave. Fix them before pay day.</p>
+          </div>
+          <ul class="pbmt-list">
+            <li t-foreach="gaps['rows']" t-as="r" class="pbmt-row">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+              <span class="pbmt-row-body">
+                <b t-out="r['name']"/>
+                <span class="pbmt-row-d"><t t-foreach="r['days']" t-as="d"><t t-if="not d_first">, </t><t t-out="d" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/></t></span>
+              </span>
+              <span class="pbmt-chip pbmt-chip--rose"><t t-if="len(r['days']) == 1">1 day</t><t t-else=""><t t-out="len(r['days'])"/> days</t></span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Hours worked -->
+        <section t-if="hours and hours['rows']" class="pbmt-sec" id="hours" aria-labelledby="pbmt-hrs-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-hrs-h">Hours worked</h2>
+            <p class="pbmt-legend"><span class="pbmt-key is-away"/>Worked, from clock-ins <span class="pbmt-key is-mark"/>Where they should be by now</p>
+          </div>
+          <div class="pbmt-hrs-head" aria-hidden="true"><span/><span>This week</span><span><t t-out="hours['month']" t-options="{'widget': 'date', 'format': 'MMMM'}"/></span></div>
+          <ul class="pbmt-list pbmt-hrs">
+            <li t-foreach="hours['rows']" t-as="r" class="pbmt-row">
+              <span class="pbmt-hrs-who">
+                <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+                <b t-out="r['name']"/>
+              </span>
+              <t t-foreach="['week', 'month']" t-as="k">
+                <t t-set="h" t-value="r[k]"/>
+                <span t-att-class="'pbmt-hrs-cell is-%s' % h['state']">
+                  <span class="pbmt-hrs-n"><b t-out="'{:g}'.format(h['worked'])"/> of <t t-out="'{:g}'.format(h['planned'])"/> h<span t-if="k == 'month' and r['ot']" class="pbmt-hrs-ot"> · <t t-out="'{:g}'.format(r['ot'])"/> h overtime</span></span>
+                  <span class="pbmt-hrs-bar"><i t-att-style="'width: %s%%' % h['share']"/><em t-if="h['planned']" t-att-style="'left: %s%%' % h['mark']"/></span>
+                  <span t-if="h['state'] == 'short'" class="pbmt-hrs-s"><t t-out="'{:g}'.format(round(h['so_far'] - h['worked'], 1))"/> h behind</span>
+                  <span t-elif="h['state'] == 'over'" class="pbmt-hrs-s"><t t-out="'{:g}'.format(round(h['worked'] - h['so_far'], 1))"/> h ahead</span>
+                  <span t-else="" class="pbmt-hrs-s">On track</span>
+                  <span class="visually-hidden"><t t-if="k == 'week'">This week</t><t t-else="">This month</t></span>
+                </span>
+              </t>
+            </li>
+          </ul>
+          <p class="pbmt-sec-note">Planned hours follow each person's working hours, with leave and public holidays taken out.</p>
+        </section>
+
+        <!-- Overtime -->
+        <section t-if="overtime and overtime['rows']" class="pbmt-sec" aria-labelledby="pbmt-ot-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-ot-h">Overtime in <t t-out="overtime['month']" t-options="{'widget': 'date', 'format': 'MMMM'}"/></h2>
+            <p t-if="overtime['cap']" class="pbmt-sec-note">The limit is <t t-out="'{:g}'.format(overtime['cap'])"/> hours a month per person.</p>
+          </div>
+          <ul class="pbmt-list">
+            <li t-foreach="overtime['rows']" t-as="r" class="pbmt-row">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+              <span class="pbmt-row-body">
+                <b t-out="r['name']"/>
+                <span class="pbmt-row-d"><t t-out="'{:g}'.format(r['approved'])"/> h approved<t t-if="r['asked']"> · <t t-out="'{:g}'.format(r['asked'])"/> h asked</t></span>
+                <span t-if="overtime['cap']" t-att-class="'pbmt-meter%s' % (' is-over' if r['over'] else ' is-near' if r['near'] else '')"><i t-att-style="'width: %s%%' % r['share']"/></span>
+              </span>
+              <span t-att-class="'pbmt-chip %s' % ('pbmt-chip--rose' if r['over'] else 'pbmt-chip--amber' if r['near'] else 'pbmt-chip--slate')"><t t-out="'{:g}'.format(r['total'])"/><t t-if="overtime['cap']"> / <t t-out="'{:g}'.format(overtime['cap'])"/></t> h</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Leave still to take -->
+        <section t-if="balances" class="pbmt-sec" aria-labelledby="pbmt-bal-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-bal-h">Leave still to take</h2>
+            <p class="pbmt-sec-note">Most days left first. Useful to plan the busy months and the end of the year.</p>
+          </div>
+          <ul class="pbmt-list">
+            <li t-foreach="balances" t-as="r" class="pbmt-row">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+              <span class="pbmt-row-body"><b t-out="r['name']"/></span>
+              <span class="pbmt-bal">
+                <span t-foreach="r['kinds']" t-as="k" class="pbmt-bal-k"><b t-out="'{:g}'.format(k['left'])"/> of <t t-out="'{:g}'.format(k['of'])"/> <t t-if="k['unit'] == 'hour'">h</t><t t-else="">d</t><span class="pbmt-bal-t" t-out="k['type']"/></span>
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- The chart around me -->
+        <section t-if="chart and chart['reports']" class="pbmt-sec" aria-labelledby="pbmt-chart-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-chart-h">Your team on the org chart</h2>
+            <a t-if="links['orgchart']" class="pbme-lab-link" href="/my/orgchart">Open the org chart</a>
+          </div>
+          <div class="pbmt-tree">
+            <div t-if="chart['manager']" class="pbmt-node is-up">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="chart['manager']"/></t>
+              <span><b t-out="chart['manager']['name']"/><span class="pbmt-node-j">Your manager</span></span>
+            </div>
+            <div class="pbmt-node is-me">
+              <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="chart['me']"/></t>
+              <span><b t-out="chart['me']['name']"/><span class="pbmt-node-j">You</span></span>
+            </div>
+            <ul class="pbmt-tree-kids">
+              <li t-foreach="chart['reports']" t-as="r">
+                <a t-if="links['orgchart']" class="pbmt-node" t-att-href="'/my/orgchart?focus=%s' % r['id']">
+                  <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+                  <span><b t-out="r['name']"/><span class="pbmt-node-j"><t t-if="r['reports'] == 1">1 person reports to them</t><t t-elif="r['reports']"><t t-out="r['reports']"/> people report to them</t><t t-else="" t-out="r['job']"/></span></span>
+                </a>
+                <span t-else="" class="pbmt-node">
+                  <t t-call="pb_me_team.pbmt_face"><t t-set="p" t-value="r"/></t>
+                  <span><b t-out="r['name']"/><span class="pbmt-node-j" t-out="r['job']"/></span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- I'm away -->
+        <section t-if="handover is not None" class="pbmt-sec" id="away" aria-labelledby="pbmt-away-h">
+          <div class="pbmt-sec-head">
+            <h2 class="pbmt-sec-h" id="pbmt-away-h">I'm away</h2>
+            <p class="pbmt-sec-note">Pass your approvals to a colleague while you are away. New requests go to them. Requests already waiting stay with you.</p>
+          </div>
+          <p t-if="away_done == 'set'" class="pbmt-flash" role="status"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>Done. Your approvals are handed over for those days.</p>
+          <p t-elif="away_done == 'ended'" class="pbmt-flash" role="status"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t>Stopped. New approvals come to you again.</p>
+          <p t-if="away_problem" class="pbmt-problem" role="alert"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t><t t-out="away_problem"/></p>
+          <ul t-if="handover['rows']" class="pbmt-list">
+            <li t-foreach="handover['rows']" t-as="h" class="pbmt-row">
+              <span class="pbme-badge pbme-badge--teal" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-check'"/><t t-set="isz" t-value="16"/></t></span>
+              <span class="pbmt-row-body">
+                <b><t t-out="h['who']"/> looks after your approvals</b>
+                <span class="pbmt-row-d"><t t-out="h['date_from']" t-options="{'widget': 'date', 'format': 'd MMM'}"/> to <t t-out="h['date_to']" t-options="{'widget': 'date', 'format': 'd MMM yyyy'}"/><t t-if="h['reason']"> · <t t-out="h['reason']"/></t></span>
+              </span>
+              <span t-if="h['live']" class="pbmt-chip pbmt-chip--green">In force</span>
+              <span t-else="" class="pbmt-chip pbmt-chip--slate">Coming</span>
+              <form method="post" action="/my/team/away">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="end" t-att-value="h['id']"/>
+                <button type="submit" class="pbme-btn pbme-btn--out">Stop</button>
+              </form>
+            </li>
+          </ul>
+          <form t-if="handover['people']" method="post" action="/my/team/away" class="pbmt-away-form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <label class="pbmt-field"><span class="pbmt-label">Who looks after them</span>
+              <select name="delegate" class="pbmt-input" required="required">
+                <option value="">Choose a colleague…</option>
+                <option t-foreach="handover['people']" t-as="u" t-att-value="u['id']" t-att-selected="'selected' if u['id'] == handover['manager_uid'] else None" t-out="u['name']"/>
+              </select>
+            </label>
+            <label class="pbmt-field"><span class="pbmt-label">First day away</span><input type="date" name="date_from" class="pbmt-input" required="required" t-att-min="handover['today']" t-att-value="handover['today']"/></label>
+            <label class="pbmt-field"><span class="pbmt-label">Last day away</span><input type="date" name="date_to" class="pbmt-input" required="required" t-att-min="handover['today']"/></label>
+            <label class="pbmt-field pbmt-field--wide"><span class="pbmt-label">Why <span class="pbmt-label-sub">Kept with the decisions they make for you</span></span><input type="text" name="reason" class="pbmt-input" maxlength="200" placeholder="Annual leave"/></label>
+            <button type="submit" class="pbme-btn pbme-btn--pri">Hand over my approvals</button>
+          </form>
+          <p t-else="" class="pbmt-sec-note">Nobody else in your company can take approvals yet.</p>
+        </section>
+
+        <!-- More for managers -->
+        <nav t-if="links['training'] or links['hiring']" class="pbmt-more" aria-label="More for managers">
+          <a t-if="links['training']" class="pbmt-more-a" href="/my/training/team"><span class="pbme-badge pbme-badge--pink" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'graduation-cap'"/><t t-set="isz" t-value="16"/></t></span><span><b>Team training</b><span class="pbmt-row-d">Who still has a course to finish</span></span></a>
+          <a t-if="links['hiring']" class="pbmt-more-a" href="/my/hiring"><span class="pbme-badge pbme-badge--amber" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="16"/></t></span><span><b>Hiring</b><span class="pbmt-row-d">Interviews and roles you asked for</span></span></a>
+        </nav>
+
+        <div t-if="not today['size']" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Nobody reports to you</h3>
+          <p>You can still decide the approvals that are waiting on you.</p>
+          <a class="pbme-btn pbme-btn--pri" href="/my/team/approvals">Open approvals</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- Somebody who manages nobody and has nothing to decide. -->
+  <template id="portal_my_team_none" name="My team: not a manager (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmt">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Nobody reports to you</h3>
+          <p>This page is for managers. When someone's record names you as their manager, they appear here.</p>
+          <a class="pbme-btn pbme-btn--ghost" href="/my">Back to my home</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/team/approvals                                            -->
+  <!-- ============================================================= -->
+  <template id="pbmt_ap_card" name="My team: one approval card">
+    <a t-att-class="'pbmt-ap%s%s' % (' is-mine' if c['mine'] else '', ' is-late' if c['late'] else '')" t-att-href="'/my/team/approvals/%s' % c['id']">
+      <span class="pbme-badge pbme-badge--indigo" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'inbox'"/><t t-set="isz" t-value="16"/></t></span>
+      <span class="pbmt-ap-body">
+        <span class="pbmt-ap-meta"><span class="pbmt-ap-kind" t-out="c['process']"/><span t-if="c['late']" class="pbmt-chip pbmt-chip--rose">Late</span><span t-if="c['blocked']" class="pbmt-chip pbmt-chip--amber">Stuck</span></span>
+        <b class="pbmt-ap-t" t-out="c['title']"/>
+        <span class="pbmt-ap-d">
+          <t t-if="c['submitted_by']">From <t t-out="c['submitted_by']"/></t>
+          <t t-if="c['submitted_at']"> · <t t-out="c['submitted_at']" t-options="{'widget': 'datetime', 'format': 'd MMM, HH:mm'}"/></t>
+          <t t-if="c['count']"> · <t t-out="c['count']"/></t>
+          <t t-if="not c['mine'] and c['waiting_for'] and ap['tab'] == 'others'"> · with <t t-out="c['waiting_for']"/></t>
+          <t t-if="ap['tab'] == 'done'"> · <t t-out="c['state_label']"/></t>
+        </span>
+      </span>
+      <span t-if="c['amount']" class="pbmt-ap-amt" t-out="'{:,.0f} {}'.format(c['amount'], c['currency'])"/>
+      <span class="pbme-need-go" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t></span>
+    </a>
+  </template>
+
+  <template id="portal_my_team_approvals" name="Team approvals (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmt">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Approvals</t>
+          <t t-set="hero_sub">What is waiting for your decision, and what is moving for the people in your team.</t>
+        </t>
+
+        <p t-if="done" class="pbmt-flash" role="status"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="16"/></t><t t-if="done == 'approve'">Approved. The person who asked will see it.</t><t t-elif="done == 'return'">Sent back with your note.</t><t t-else="">Turned down with your note.</t></p>
+
+        <div t-if="not ap['can_read']" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'inbox'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Approvals are not open to your login</h3>
+          <p>Ask HR to give your login the right to take part in approvals.</p>
+          <a class="pbme-btn pbme-btn--ghost" href="/my">Back to my home</a>
+        </div>
+
+        <t t-else="">
+          <nav class="pbmt-tabs" aria-label="Which approvals">
+            <a t-att-class="'pbmt-tab%s' % (' is-on' if ap['tab'] == 'mine' else '')" href="/my/team/approvals?tab=mine" t-att-aria-current="'page' if ap['tab'] == 'mine' else None">Waiting for you<span class="pbmt-tab-n" t-out="ap['counts']['mine']"/></a>
+            <a t-att-class="'pbmt-tab%s' % (' is-on' if ap['tab'] == 'others' else '')" href="/my/team/approvals?tab=others" t-att-aria-current="'page' if ap['tab'] == 'others' else None">Waiting on others<span class="pbmt-tab-n" t-out="ap['counts']['others']"/></a>
+            <a t-att-class="'pbmt-tab%s' % (' is-on' if ap['tab'] == 'done' else '')" href="/my/team/approvals?tab=done" t-att-aria-current="'page' if ap['tab'] == 'done' else None">Decided<span class="pbmt-tab-n" t-out="ap['counts']['done']"/></a>
+          </nav>
+          <p t-if="ap['tab'] == 'others' and ap['cards']" class="pbmt-sec-note">About people in your team, decided by somebody else. You can follow them here.</p>
+
+          <ol t-if="ap['cards']" class="pbmt-aps">
+            <li t-foreach="ap['cards']" t-as="c"><t t-call="pb_me_team.pbmt_ap_card"/></li>
+          </ol>
+          <p t-if="ap.get('more')" class="pbmt-sec-note">Showing the newest <t t-out="len(ap['cards'])"/>. Older ones are in the approvals screen of the app.</p>
+
+          <div t-if="not ap['cards']" class="pbme-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="26"/></t></div>
+            <t t-if="ap['tab'] == 'mine'"><h3>Nothing is waiting for you</h3><p>When someone sends you a request, it lands here and on your home page.</p></t>
+            <t t-elif="ap['tab'] == 'others'"><h3>Nothing is moving for your team</h3><p>Requests about your people that somebody else decides show here.</p></t>
+            <t t-else=""><h3>Nothing decided yet</h3><p>Requests you or others have decided for your team show here.</p></t>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/team/approvals/<id>                                       -->
+  <!-- ============================================================= -->
+  <template id="portal_my_team_approval" name="One team approval (ESS)">
+    <t t-call="portal.portal_layout">
+      <t t-set="lv" t-value="req.get('leave')"/>
+      <div class="pbme pbmt pbmt-one">
+        <a class="pbmt-back" href="/my/team/approvals"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>All approvals</a>
+
+        <article class="pbmt-req" aria-labelledby="pbmt-req-t">
+          <header class="pbmt-req-h">
+            <span class="pbme-eyebrow" t-out="req['process']"/>
+            <h1 class="pbmt-req-t" id="pbmt-req-t" t-out="req['title']"/>
+            <p class="pbmt-req-d">
+              <t t-if="req['submitted_by']">From <b t-out="req['submitted_by']"/></t>
+              <t t-if="req['submitted_at']"> · sent <t t-out="req['submitted_at']" t-options="{'widget': 'datetime', 'format': 'd MMM yyyy, HH:mm'}"/></t>
+              <t t-if="req['due_at']"> · due <t t-out="req['due_at']" t-options="{'widget': 'datetime', 'format': 'd MMM, HH:mm'}"/></t>
+            </p>
+            <p class="pbmt-req-chips">
+              <span t-att-class="'pbmt-chip %s' % ('pbmt-chip--amber' if req['state'] in ('pending', 'blocked') else 'pbmt-chip--green' if req['state'] in ('approved', 'applied') else 'pbmt-chip--slate')" t-out="req['state_label']"/>
+              <span t-if="req['late']" class="pbmt-chip pbmt-chip--rose">Late</span>
+              <span t-if="req['mine']" class="pbmt-chip pbmt-chip--indigo">Your decision</span>
+              <span t-elif="req['waiting_for'] and req['state'] in ('pending', 'blocked')" class="pbmt-chip pbmt-chip--slate">With <t t-out="req['waiting_for']"/></span>
+            </p>
+          </header>
+
+          <!-- leave: what a manager needs to decide it -->
+          <section t-if="lv" class="pbmt-leave" aria-labelledby="pbmt-lv-h">
+            <h2 class="pbmt-sub-h" id="pbmt-lv-h">The leave</h2>
+            <dl class="pbmt-facts">
+              <div><dt>Type</dt><dd t-out="lv['type']"/></div>
+              <div><dt>Dates</dt><dd><t t-out="lv['date_from']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/><t t-if="lv['date_to'] != lv['date_from']"> to <t t-out="lv['date_to']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/></t></dd></div>
+              <div><dt>Length</dt><dd><t t-out="'{:g}'.format(lv['days'] or 0)"/> <t t-if="lv['days'] == 1">day</t><t t-else="">days</t></dd></div>
+              <div t-if="lv['balance_after'] is not None"><dt>Left after this</dt><dd t-att-class="'is-low' if lv['balance_after'] &lt; 0 else None"><t t-out="'{:g}'.format(lv['balance_after'])"/> <t t-if="lv['balance_after'] == 1">day</t><t t-else="">days</t></dd></div>
+            </dl>
+            <t t-if="lv.get('team_size')">
+              <p t-if="not lv['away']" class="pbmt-ok"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="15"/></t>Nobody else in your team is away on these days.</p>
+              <t t-else="">
+                <p t-att-class="'pbmt-warn' if len(lv['away']) + 1 &gt;= max(2, 0.3 * lv['team_size']) else 'pbmt-note'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="15"/></t><t t-if="len(lv['away']) == 1">1 other person in your team is away then.</t><t t-else=""><t t-out="len(lv['away'])"/> other people in your team are away then.</t></p>
+                <ul class="pbmt-away">
+                  <li t-foreach="lv['away']" t-as="o"><b t-out="o['name']"/> · <t t-out="o['type']"/> · <t t-out="o['date_from']" t-options="{'widget': 'date', 'format': 'd MMM'}"/><t t-if="o['date_to'] != o['date_from']"> to <t t-out="o['date_to']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></t><t t-if="o['asked']"> (asked, not yet approved)</t></li>
+                </ul>
+              </t>
+            </t>
+          </section>
+
+          <section t-if="req['facts']" class="pbmt-block" aria-labelledby="pbmt-facts-h">
+            <h2 class="pbmt-sub-h" id="pbmt-facts-h">Details, as sent in</h2>
+            <dl class="pbmt-facts">
+              <div t-foreach="req['facts']" t-as="f"><dt t-out="f['label']"/><dd><t t-out="f['value']"/><t t-if="f['unit']"> <t t-out="f['unit']"/></t></dd></div>
+            </dl>
+          </section>
+
+          <section t-if="req['detail']" class="pbmt-block">
+            <h2 t-if="req['detail']['title']" class="pbmt-sub-h" t-out="req['detail']['title']"/>
+            <p t-if="req['detail']['chips']" class="pbmt-req-chips"><span t-foreach="req['detail']['chips']" t-as="ch" class="pbmt-chip pbmt-chip--slate"><t t-out="ch['label']"/>: <t t-out="ch['value']"/></span></p>
+            <div t-if="req['detail']['rows']" class="pbmt-table-wrap">
+              <table class="pbmt-table">
+                <thead t-if="req['detail']['columns']"><tr><th t-foreach="req['detail']['columns']" t-as="col" scope="col" t-out="col"/></tr></thead>
+                <tbody>
+                  <tr t-foreach="req['detail']['rows']" t-as="row" t-att-class="'is-off' if row['tone'] == 'off' else None">
+                    <th scope="row"><t t-out="row['head']"/><span t-if="row['sub']" class="pbmt-table-sub" t-out="row['sub']"/></th>
+                    <td t-foreach="row['cells']" t-as="cell" t-out="cell"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p t-if="req['detail']['note']" class="pbmt-sec-note" t-out="req['detail']['note']"/>
+          </section>
+
+          <section class="pbmt-block" aria-labelledby="pbmt-route-h">
+            <h2 class="pbmt-sub-h" id="pbmt-route-h">Who decides</h2>
+            <ol class="pbmt-route">
+              <li t-foreach="req['steps']" t-as="s" t-att-class="'pbmt-step is-%s' % s['status_label']">
+                <span class="pbmt-step-dot" aria-hidden="true"/>
+                <span class="pbmt-step-body">
+                  <b t-out="s['title']"/>
+                  <span class="pbmt-step-who"><t t-foreach="s['seats']" t-as="seat"><t t-if="not seat_first"><t t-if="s['joint']"> and </t><t t-else=""> or </t></t><t t-out="seat['name']"/><t t-if="seat['mine']"> (you)</t><t t-if="seat['covering_for']">, covering for <t t-out="seat['covering_for']"/></t></t></span>
+                  <span t-if="s['block_reason']" class="pbmt-step-why" t-out="s['block_reason']"/>
+                </span>
+              </li>
+            </ol>
+          </section>
+
+          <section t-if="req['decisions']" class="pbmt-block" aria-labelledby="pbmt-trail-h">
+            <h2 class="pbmt-sub-h" id="pbmt-trail-h">What happened</h2>
+            <ol class="pbmt-trail">
+              <li t-foreach="req['decisions']" t-as="d"><b t-out="d['who']"/> <t t-out="d['action_label']"/><t t-if="d['acting_for']"> for <t t-out="d['acting_for']"/></t><span class="pbmt-trail-when" t-if="d['when']"> · <t t-out="d['when']" t-options="{'widget': 'datetime', 'format': 'd MMM, HH:mm'}"/></span><q t-if="d['reason']" class="pbmt-trail-why" t-out="d['reason']"/></li>
+            </ol>
+          </section>
+
+          <!-- the decision -->
+          <section t-if="req['can_decide'] and req['my_step_key']" class="pbmt-decide" aria-labelledby="pbmt-dec-h">
+            <h2 class="pbmt-sub-h" id="pbmt-dec-h">Your decision</h2>
+            <p t-if="problem" class="pbmt-problem" role="alert"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t><t t-out="problem"/></p>
+            <t t-set="cf" t-value="req.get('conflict')"/>
+            <p t-if="cf" t-att-class="'pbmt-warn' if cf['blocked'] else 'pbmt-note'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="15"/></t><t t-out="cf['text']"/> <t t-out="cf['note']"/></p>
+            <form t-if="not (cf and cf['blocked'])" method="post" t-att-action="'/my/team/approvals/%s/decide' % req['id']" class="pbmt-form">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="step_key" t-att-value="req['my_step_key']"/>
+              <input type="hidden" name="lock_revision" t-att-value="req['lock_revision']"/>
+              <input type="hidden" name="idem" t-att-value="idem"/>
+              <input t-if="cf and cf['grant_id']" type="hidden" name="use_exception" value="1"/>
+              <label class="pbmt-label" for="pbmt-reason">Note <span class="pbmt-label-sub">Needed to send back or turn down. The person who asked reads it.</span></label>
+              <textarea id="pbmt-reason" name="reason" rows="3" maxlength="2000" class="pbmt-textarea" t-out="reason"/>
+              <div class="pbmt-actions">
+                <button type="submit" name="action" value="approve" class="pbme-btn pbme-btn--pri"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/></t>Approve</button>
+                <button type="submit" name="action" value="return" class="pbme-btn pbme-btn--out"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'rotate-ccw'"/></t>Send back</button>
+                <button type="submit" name="action" value="reject" class="pbme-btn pbmt-btn-no">Turn down</button>
+              </div>
+              <p class="pbmt-sec-note" t-out="req['submitted_note']"/>
+            </form>
+          </section>
+          <p t-elif="problem" class="pbmt-problem" role="alert"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t><t t-out="problem"/></p>
+        </article>
+      </div>
+    </t>
+  </template>
+
+  <template id="portal_team_approval_missing" name="Team approval not found (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbmt">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'inbox'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>We could not find that request</h3>
+          <p>It may have been withdrawn, or it is not one you can see.</p>
+          <a class="pbme-btn pbme-btn--pri" href="/my/team/approvals">Open approvals</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- noupdate="1", as every other mail template in this codebase is: a
+         tenant that has reworded one of these must not have it reverted by the
+         next upgrade. Outgoing debranding rides automatically
+         (biz_mail_debrand).
+
+         EVERY ONE OF THESE IS SENT WITH AN EXPLICIT `email_to` in
+         `email_values`. A template's own rendered address can reach mail.mail
+         EMPTY, and the message is then created, queued and addressed to nobody
+         with no error anywhere (R6). The `email_to` field below is kept as
+         documentation of who it is FOR. -->
+
+    <!-- ============= the manager is asked for three to five ============= -->
+    <record id="mail_template_nominate_peers" model="mail.template">
+        <field name="name">Probation: choose the colleagues to ask</field>
+        <field name="model_id" ref="model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s trial period ends soon — who should we ask?</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    trial period ends on
+                    <strong><t t-out="object.trial_end or ''"/></strong>, so it is
+                    time to start their review.
+                </p>
+                <p>
+                    Please choose <strong>three to five colleagues</strong> who
+                    have actually worked with them. Each one gets a private link
+                    and a few days to answer — they do not need to sign in.
+                </p>
+                <p>
+                    Open <strong>Probation</strong> in Payobook and press
+                    "Choose colleagues" on their row.
+                </p>
+                <p style="color:#4A5568;">
+                    Three answers is the minimum on purpose: fewer than that and
+                    one bad week decides somebody's job.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== today is the last day to answer ================== -->
+    <record id="mail_template_deadline_today" model="mail.template">
+        <field name="name">Probation: the answer window closes today</field>
+        <field name="model_id" ref="model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">Last day to answer about {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    The link you were sent about
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    closes at the end of today.
+                </p>
+                <p>
+                    It takes two minutes and it genuinely counts — their trial
+                    period ends on
+                    <strong><t t-out="object.trial_end or ''"/></strong> and the
+                    decision is made from what colleagues say.
+                </p>
+                <p>
+                    If you have already answered, thank you, and please ignore
+                    this.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== the answers are in ================== -->
+    <record id="mail_template_review_ready" model="mail.template">
+        <field name="name">Probation: the answers are in</field>
+        <field name="model_id" ref="model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }}'s probation review is ready to read</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <t t-out="object.feedback_in or 0"/> of
+                    <t t-out="object.feedback_total or 0"/> colleagues have
+                    answered about
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>,
+                    and the report is ready.
+                </p>
+                <p t-if="object.avg_rating">
+                    They were rated
+                    <strong><t t-out="round(object.avg_rating, 1)"/> out of 5</strong>
+                    on average.
+                </p>
+                <p>
+                    A conversation with them has been put in your diary. Read
+                    the report first — it has what colleagues said in their own
+                    words, and anything raised at the 30, 60 and 90 day
+                    check-ins beside it.
+                </p>
+                <p>
+                    Open <strong>Probation</strong> in Payobook to read it and
+                    record what you decide.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== a decision was recorded ================== -->
+    <record id="mail_template_verdict_hr" model="mail.template">
+        <field name="name">Probation: a decision was recorded</field>
+        <field name="model_id" ref="model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hrbp_user_id.email or '' }}</field>
+        <field name="subject">Probation decided: {{ object.employee_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>'s
+                    trial period has been decided.
+                </p>
+                <p t-if="object.verdict == 'pass'">
+                    They are <strong>confirmed</strong>. The confirmation letter
+                    has been prepared, filed with their documents and emailed to
+                    them.
+                </p>
+                <p t-if="object.verdict == 'extend'">
+                    Their trial period has been <strong>extended</strong> and now
+                    ends on
+                    <strong><t t-out="object.new_trial_end or ''"/></strong>. A
+                    second review is already scheduled.
+                </p>
+                <p t-if="object.improvements" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.improvements or ''"/>
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ not confirmed: HR has something to do ============ -->
+    <record id="mail_template_verdict_fail_hr" model="mail.template">
+        <field name="name">Probation: not confirmed — HR to act</field>
+        <field name="model_id" ref="model_pb_probation_review"/>
+        <field name="email_from">{{ (user.email_formatted) }}</field>
+        <field name="email_to">{{ object.hrbp_user_id.email or '' }}</field>
+        <field name="subject">Not confirmed: {{ object.employee_id.name }} — please pick this up</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has <strong>not been confirmed</strong> at the end of their
+                    trial period, which ends on
+                    <strong><t t-out="object.trial_end or ''"/></strong>.
+                </p>
+                <p t-if="object.improvements" style="border-left:3px solid #E2E8F0; padding-left:12px; color:#4A5568;">
+                    <t t-out="object.improvements or ''"/>
+                </p>
+                <p>
+                    The letter has been prepared and filed with their documents.
+                </p>
+                <p style="background:#FDF3E2; border:1px solid #E8B14A; border-radius:10px; padding:12px 14px;">
+                    <strong>Nothing about their leaving has been started.</strong>
+                    That is deliberate. When you are ready, open
+                    <strong>Probation</strong> in Payobook and press
+                    <strong>Start their exit</strong> — that opens the leaving
+                    checklist with the four clearances on it.
+                </p>
+                <br/>
+                The HR team<br/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

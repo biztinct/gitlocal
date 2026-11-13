@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="action_pb_workflow_studio" model="ir.actions.client">
+    <field name="name">Workflow Studio</field><field name="tag">pb_workflow_studio</field>
+  </record>
+  <record id="view_workflow_run_form" model="ir.ui.view">
+    <field name="name">Workflow request</field><field name="model">pb.workflow.run</field>
+    <field name="arch" type="xml"><form create="false" edit="false" delete="false">
+      <header><button name="action_view_submission" type="object" string="View submitted information" class="oe_highlight"/>
+        <button name="action_view_progress" type="object" string="View workflow" groups="pb_lifecycle.group_workflow_viewer"/>
+        <field name="state" widget="statusbar"/></header>
+      <sheet><h1><field name="name"/></h1><group><field name="initiator_id"/><field name="create_date" string="Started"/><field name="company_id"/><field name="ended_at"/></group></sheet>
+    </form></field>
+  </record>
+</odoo>

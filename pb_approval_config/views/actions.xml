@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         Declared as RECORDS rather than reached by a bare tag: a bare tag is
+         synthesised with no action NAME, so anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+
+         THE RETURN DOOR IS ON THE ACTION. The Matrix owns its own header
+         rather than a control panel, so a breadcrumb is invisible while you
+         are on it and the back chip is the only way home. Writing `pb_back`
+         here means every way in — the Settings card, a palette row, a
+         bookmark — arrives with the same way out.
+
+         Test URLs: /odoo/action-pb_approval_config.action_pb_approval_matrix
+                    /odoo/action-pb_approval_config.action_pb_approval_inbox
+         ================================================================== -->
+
+    <record id="action_pb_approval_matrix" model="ir.actions.client">
+        <field name="name">Approval Matrix</field>
+        <field name="tag">pb_approval_matrix</field>
+        <field name="context">{'pb_back': {'label': 'Settings', 'tag': 'pb_settings_hub', 'xmlid': '', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <!-- The inbox's real home is the Approvals lens on the Home screen. This
+         action is the door for anything that has to open it on its own — a
+         link in a message, a bookmark, a palette row — and it carries no back
+         chip, because it IS a home. -->
+
+    <record id="action_pb_approval_inbox" model="ir.actions.client">
+        <field name="name">Approvals</field>
+        <field name="tag">pb_approval_inbox</field>
+    </record>
+
+</odoo>

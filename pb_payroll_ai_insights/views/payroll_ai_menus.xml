@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_payai_root"
+              name="PayAI"
+              web_icon="pb_payroll_ai_insights,static/description/icon.png"
+              sequence="95"/>
+
+    <!-- Chat Menu -->
+    <menuitem id="menu_payai_chat"
+              name="Chat with PayAI"
+              parent="menu_payai_root"
+              action="action_payai_chat_full"
+              sequence="10"/>
+
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_payai_dashboard"
+              name="Dashboard"
+              parent="menu_payai_root"
+              action="action_payai_dashboard"
+              sequence="20"/>
+
+    <!-- History Menu -->
+    <menuitem id="menu_payai_history"
+              name="Chat History"
+              parent="menu_payai_root"
+              action="action_payai_conversations"
+              sequence="30"/>
+
+    <!-- Pulse Alerts Menu -->
+    <menuitem id="menu_payai_pulse"
+              name="Pulse Alerts"
+              parent="menu_payai_root"
+              action="action_payroll_ai_pulse"
+              sequence="40"/>
+
+    <!-- Generate Report Menu -->
+    <menuitem id="menu_payai_report"
+              name="Generate Report"
+              parent="menu_payai_root"
+              action="action_payroll_ai_report_wizard"
+              sequence="50"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_payai_config_parent"
+              name="Configuration"
+              parent="menu_payai_root"
+              sequence="90"
+              groups="group_payai_admin"/>
+
+    <menuitem id="menu_payai_config"
+              name="AI Provider Settings"
+              parent="menu_payai_config_parent"
+              action="action_payroll_ai_config"
+              sequence="10"/>
+</odoo>

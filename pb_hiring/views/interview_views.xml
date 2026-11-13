@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Native arch, skinned by the shared form engine. The day-to-day
+         surface is the Hiring lens's Interviews tab; these are the records
+         behind it, reached from the board, from the command bar and from a
+         candidate's own chatter.
+
+         EVERY `nolabel="1"` FIELD DIRECTLY INSIDE A `<group>` CARRIES
+         `colspan="2"` (R128). An inner group is a two-column grid and a
+         label-less field takes the NARROW cell, so a debrief box renders
+         about 150px wide with a thousand pixels of empty row beside it.
+
+         SEARCH `<group>` TAKES NO `string` OR `expand` on Odoo 19 (R129):
+         either one fails RNG validation and aborts the whole module load,
+         with the real error only in the server log. -->
+
+    <!-- ================================================================ -->
+    <!--  Interviews                                                      -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_interview_list" model="ir.ui.view">
+        <field name="name">pb.hiring.interview.list</field>
+        <field name="model">pb.hiring.interview</field>
+        <field name="arch" type="xml">
+            <list string="Interviews" create="0">
+                <field name="start"/>
+                <field name="candidate_name" width="200px"/>
+                <field name="requisition_id" optional="show"/>
+                <field name="round_no" optional="show"/>
+                <field name="kind" optional="hide"/>
+                <field name="mode" optional="hide"/>
+                <field name="location" optional="hide"/>
+                <field name="recruiter_id" optional="show"/>
+                <field name="feedback_in" optional="show"/>
+                <field name="feedback_total" optional="show"/>
+                <field name="feedback_late" optional="show"
+                       decoration-danger="feedback_late > 0"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'scheduled'"
+                       decoration-warning="state == 'rescheduled'"
+                       decoration-danger="state == 'no_show'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_interview_form" model="ir.ui.view">
+        <field name="name">pb.hiring.interview.form</field>
+        <field name="model">pb.hiring.interview</field>
+        <field name="arch" type="xml">
+            <form string="Interview" create="0">
+                <header>
+                    <button name="action_mark_done" type="object"
+                            string="Mark it done" class="btn-primary"
+                            invisible="state != 'scheduled'"/>
+                    <button name="action_open_applicant" type="object"
+                            string="The candidate"/>
+                    <button name="action_open_event" type="object"
+                            string="The diary entry"
+                            invisible="not event_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="scheduled,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="candidate_name" readonly="1"/></h1>
+                        <h2>
+                            Round <field name="round_no" readonly="1"
+                                         class="oe_inline"/>
+                            · <field name="kind" readonly="1"
+                                     class="oe_inline"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group string="When and where">
+                            <field name="start"/>
+                            <field name="duration_minutes"/>
+                            <field name="stop" readonly="1"/>
+                            <field name="mode"/>
+                            <field name="location"/>
+                        </group>
+                        <group string="Who">
+                            <field name="requisition_id" readonly="1"/>
+                            <field name="applicant_id" readonly="1"/>
+                            <field name="step_id" readonly="1"/>
+                            <field name="recruiter_id"/>
+                            <field name="panel_employee_ids"
+                                   widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="status"
+                         invisible="not late_notice">
+                        <strong>This was moved at short notice.</strong>
+                        Somebody may already have set off.
+                    </div>
+                    <group>
+                        <group string="What the panel said">
+                            <field name="feedback_due_at" readonly="1"/>
+                            <field name="feedback_in" readonly="1"/>
+                            <field name="feedback_total" readonly="1"/>
+                            <field name="feedback_late" readonly="1"/>
+                            <field name="recommendation_avg" readonly="1"/>
+                        </group>
+                        <group string="If nobody came"
+                               invisible="state != 'no_show'">
+                            <field name="no_show_by" readonly="1"/>
+                            <field name="no_show_note" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="The opinions" name="feedback">
+                            <field name="feedback_ids" readonly="1">
+                                <list>
+                                    <field name="panel_employee_id"/>
+                                    <field name="due_at"/>
+                                    <field name="recommendation"/>
+                                    <field name="score_avg"/>
+                                    <field name="submitted_at"/>
+                                    <field name="urgent_sent_at"
+                                           optional="hide"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'submitted'"
+                                           decoration-warning="state == 'pending'"/>
+                                    <button name="action_copy_link"
+                                            type="object"
+                                            string="Their link"
+                                            icon="fa-link"
+                                            invisible="state != 'pending'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Times it has moved" name="moves"
+                              invisible="not reschedule_ids">
+                            <field name="reschedule_ids" readonly="1">
+                                <list>
+                                    <field name="at"/>
+                                    <field name="old_start"/>
+                                    <field name="new_start"/>
+                                    <field name="delay_kind"/>
+                                    <field name="reason" width="300px"/>
+                                    <field name="by_user_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="The debrief" name="debrief">
+                            <group>
+                                <field name="decision"/>
+                                <field name="decided_on" readonly="1"/>
+                            </group>
+                            <group string="What the panel agreed">
+                                <field name="debrief_notes" nolabel="1"
+                                       colspan="2"
+                                       placeholder="What was agreed in the room, while everybody still remembers it…"/>
+                            </group>
+                        </page>
+                        <page string="If it was called off" name="cancelled"
+                              invisible="state not in ('cancelled', 'rescheduled')">
+                            <group>
+                                <field name="cancel_note" nolabel="1"
+                                       colspan="2" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="rescheduled_from_id" readonly="1"/>
+                                <field name="rescheduled_to_id" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_interview_search" model="ir.ui.view">
+        <field name="name">pb.hiring.interview.search</field>
+        <field name="model">pb.hiring.interview</field>
+        <field name="arch" type="xml">
+            <search string="Interviews">
+                <field name="candidate_name"/>
+                <field name="requisition_id"/>
+                <field name="recruiter_id"/>
+                <field name="panel_employee_ids"/>
+                <filter name="coming" string="Still to happen"
+                        domain="[('state', '=', 'scheduled')]"/>
+                <filter name="awaiting" string="Waiting on an opinion"
+                        domain="[('feedback_ids.state', '=', 'pending')]"/>
+                <filter name="no_show" string="Nobody came"
+                        domain="[('state', '=', 'no_show')]"/>
+                <filter name="moved" string="Has been moved"
+                        domain="[('reschedule_ids', '!=', False)]"/>
+                <filter name="mine_panel" string="I am on the panel"
+                        domain="[('panel_employee_ids.user_id', '=', uid)]"/>
+                <filter name="mine_recruit" string="I am recruiting it"
+                        domain="[('recruiter_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="by_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="by_req" string="Hiring request"
+                            context="{'group_by': 'requisition_id'}"/>
+                    <filter name="by_recruiter" string="Recruiter"
+                            context="{'group_by': 'recruiter_id'}"/>
+                    <filter name="by_day" string="Day"
+                            context="{'group_by': 'start:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_interview" model="ir.actions.act_window">
+        <field name="name">Interviews</field>
+        <field name="res_model">pb.hiring.interview</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_coming': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No interview has been arranged yet</p>
+            <p>Open a hiring request on the Hiring board, find the candidate
+               and press Arrange. Everybody gets an invitation with a calendar
+               file, Payobook reminds them the day before and again half an
+               hour before, and afterwards each person on the panel gets their
+               own link to say what they thought.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  What the panel thought                                          -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_feedback_list" model="ir.ui.view">
+        <field name="name">pb.hiring.feedback.list</field>
+        <field name="model">pb.hiring.feedback</field>
+        <field name="arch" type="xml">
+            <list string="What the panel thought" create="0">
+                <field name="interview_id"/>
+                <field name="panel_employee_id" width="180px"/>
+                <field name="applicant_id" optional="show"/>
+                <field name="due_at"/>
+                <field name="recommendation" optional="show"/>
+                <field name="score_avg" optional="show"/>
+                <field name="submitted_at" optional="hide"/>
+                <field name="urgent_sent_at" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'submitted'"
+                       decoration-warning="state == 'pending'"/>
+                <button name="action_copy_link" type="object"
+                        string="Their link" icon="fa-link"
+                        invisible="state != 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_feedback_form" model="ir.ui.view">
+        <field name="name">pb.hiring.feedback.form</field>
+        <field name="model">pb.hiring.feedback</field>
+        <field name="arch" type="xml">
+            <form string="What the panel thought" create="0" edit="0">
+                <header>
+                    <button name="action_open_interview" type="object"
+                            string="The interview" class="btn-primary"/>
+                    <button name="action_copy_link" type="object"
+                            string="Their own link"
+                            invisible="state != 'pending'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,submitted"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="panel_employee_id" readonly="1"/>
+                            <field name="interview_id" readonly="1"/>
+                            <field name="applicant_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="due_at" readonly="1"/>
+                            <field name="submitted_at" readonly="1"/>
+                            <field name="urgent_sent_at" readonly="1"/>
+                            <field name="recommendation" readonly="1"/>
+                            <field name="score_avg" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="What they said">
+                        <field name="notes" nolabel="1" colspan="2"
+                               readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_feedback_search" model="ir.ui.view">
+        <field name="name">pb.hiring.feedback.search</field>
+        <field name="model">pb.hiring.feedback</field>
+        <field name="arch" type="xml">
+            <search string="What the panel thought">
+                <field name="panel_employee_id"/>
+                <field name="interview_id"/>
+                <field name="applicant_id"/>
+                <filter name="pending" string="Still waiting"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter name="chased" string="Already chased"
+                        domain="[('urgent_sent_at', '!=', False)]"/>
+                <filter name="mine" string="Asked of me"
+                        domain="[('panel_user_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="by_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="by_who" string="Who was asked"
+                            context="{'group_by': 'panel_employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_feedback" model="ir.actions.act_window">
+        <field name="name">Feedback owed</field>
+        <field name="res_model">pb.hiring.feedback</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody owes an opinion</p>
+            <p>Everybody who sits on an interview gets their own link
+               afterwards, and a day of working hours to use it. Anybody still
+               missing shows up here, and Payobook chases them once.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  What a panel scores on                                          -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_criterion_list" model="ir.ui.view">
+        <field name="name">pb.hiring.criterion.list</field>
+        <field name="model">pb.hiring.criterion</field>
+        <field name="arch" type="xml">
+            <list string="What a panel scores on" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name" width="240px"/>
+                <field name="help_text" width="420px"/>
+                <field name="company_id"
+                       placeholder="Leave empty for every company"/>
+                <field name="active" widget="boolean_toggle" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_criterion_form" model="ir.ui.view">
+        <field name="name">pb.hiring.criterion.form</field>
+        <field name="model">pb.hiring.criterion</field>
+        <field name="arch" type="xml">
+            <form string="What a panel scores on">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="What a five looks like">
+                        <field name="help_text" nolabel="1" colspan="2"
+                               placeholder="One sentence, so two people scoring the same candidate mean the same thing by a four…"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_criterion" model="ir.actions.act_window">
+        <field name="name">What a panel scores on</field>
+        <field name="res_model">pb.hiring.criterion</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing to score on yet</p>
+            <p>These are the lines every panel member is asked to score, one to
+               five, after an interview. Five are shipped as a starting point;
+               change them, add your own, or switch one off and the next
+               interview asks the new questions. A line with no company set is
+               used by every company.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Where candidates have been (A3's analytics read this)           -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_stage_log_list" model="ir.ui.view">
+        <field name="name">pb.hiring.stage.log.list</field>
+        <field name="model">pb.hiring.stage.log</field>
+        <field name="arch" type="xml">
+            <list string="Where candidates have been" create="0">
+                <field name="at"/>
+                <field name="applicant_id" width="200px"/>
+                <field name="job_id" optional="show"/>
+                <field name="from_stage_id"/>
+                <field name="to_stage_id"/>
+                <field name="by_user_id" optional="show"/>
+                <field name="requisition_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_hiring_stage_log" model="ir.actions.act_window">
+        <field name="name">Where candidates have been</field>
+        <field name="res_model">pb.hiring.stage.log</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has moved yet</p>
+            <p>Every time a candidate moves from one stage to the next,
+               Payobook writes a line here. It is what makes "how long do
+               people wait in each stage" a question with an answer, rather
+               than a feeling.</p>
+        </field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  The interviews on a hiring request and on a candidate           -->
+    <!-- ================================================================ -->
+    <record id="view_pb_hiring_requisition_form_a2" model="ir.ui.view">
+        <field name="name">pb.hiring.requisition.form.a2</field>
+        <field name="model">pb.hiring.requisition</field>
+        <field name="inherit_id" ref="pb_hiring.view_pb_hiring_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Interviews" name="interviews">
+                    <field name="interview_ids" readonly="1">
+                        <list>
+                            <field name="start"/>
+                            <field name="candidate_name"/>
+                            <field name="round_no"/>
+                            <field name="kind"/>
+                            <field name="feedback_in"/>
+                            <field name="feedback_total"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <!-- BY FIELD NAME AND NEVER BY `[@string=…]`: view inheritance
+                 may not select on a string on Odoo 19, and a positional
+                 `group[2]` is a promise about an arch the next change is
+                 free to break. -->
+            <xpath expr="//field[@name='published']" position="after">
+                <field name="selected_applicant_id" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pb_hiring_step_stage" model="ir.ui.view">
+        <field name="name">pb.hiring.requisition.form.step.stage</field>
+        <field name="model">pb.hiring.requisition</field>
+        <field name="inherit_id" ref="pb_hiring.view_pb_hiring_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='step_ids']/list/field[@name='owner_id']"
+                   position="after">
+                <field name="stage_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_form_pb_interviews" model="ir.ui.view">
+        <field name="name">hr.applicant.form.pb.interviews</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="pb_hiring.view_hr_applicant_form_pb_hiring"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='pb_screen_page']" position="after">
+                <page string="Interviews" name="pb_interviews">
+                    <field name="pb_interview_ids" readonly="1">
+                        <list>
+                            <field name="start"/>
+                            <field name="round_no"/>
+                            <field name="kind"/>
+                            <field name="feedback_in"/>
+                            <field name="feedback_total"/>
+                            <field name="recommendation_avg"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                    <separator string="Where they have been"/>
+                    <field name="pb_stage_log_ids" readonly="1">
+                        <list>
+                            <field name="at"/>
+                            <field name="from_stage_id"/>
+                            <field name="to_stage_id"/>
+                            <field name="by_user_id"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

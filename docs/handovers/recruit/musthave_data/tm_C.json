@@ -1,0 +1,317 @@
+[
+ {
+  "tab": "Asset Management",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Use the “Physical” and “Digital” chips above the table to split the register.\n5. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Asset categories” and choose “Asset categories”. to see the 10 ready-made categories and which kind each one is.",
+  "comments": "Every category is marked Physical (laptop, phone, SIM card, ID card, company card, monitor) or Digital (email account, system login, software licence, phone number). HR can add more categories, e.g. a separate one for Zoho logins."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Stay on “The register”. Each row shows the item, category, status, who has it (“With”), country and cost.\n5. Use the country box (“Every country”), the status chips and the search box to narrow the list.\n6. Press “Export” to download the whole register as an Excel file.",
+  "comments": "One register for every country the user can see. The demo has only one item (a spare laptop, VN-LT-00007), so add a few with “Add an item” to see it fill up. Sorting by column is done in the downloaded Excel file (it opens with filters on); the screen itself filters but does not sort by column."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 6,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com), then Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Press “Requests” in the segment bar. Requests raised automatically for joiners appear here (for example the one for Ly Thi Thu) with a suggested spare.\n5. To hand something over: open an item on “The register”, press “Give to someone”, pick the person and write the condition it goes out in.\n6. Open the item again: the drawer shows make and model, cost, invoice, warranty end and “Who has had it” with the date it was given.\n7. Sign in as the employee and go to payobook.com/my, then open “My Things”. The item is listed with a “Yes, I have it” button.",
+  "comments": "When a joiner’s onboarding checklist opens, a laptop request is raised by itself and the laptop step is given to the person who arranges it. Only the laptop is raised automatically today; other items (ID card, email, etc.) are added by hand. The employee sees their items on their own “My Things” page; the HR employee record has no assets tab yet (HR uses the register’s search instead)."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. On “The register”, click an item that is with someone.\n5. Press “Move to someone else”, choose the new person and the condition it is in.\n6. Look at “Who has had it” in the drawer: each holder, from and to dates, who gave it, and the condition “Out” and “Back”.",
+  "comments": "Moving an item closes the old holder’s line with its return date and condition and opens a new line for the new holder. On the demo, first give the spare laptop to someone, then move it, to see the history build up."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Press “Add an item”, fill in what it is, the category and the country, and save.\n5. The new row gets its own code, e.g. VN-LT-00008 (country – category – number). Click it to see its full history.",
+  "comments": "Codes are made automatically per country and category, for physical and digital items alike, and never reused. The history stays with the code for the item’s whole life."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Read the numbers at the top: “Items on the books”, “Out with people”, “Spare in the cupboard”, “Under repair”, “Accounts live”, “Leavers still holding”.\n5. Use the status chips (Spare, Assigned, Under repair, To scrap, Scrapped) and the country box to count by country.\n6. To change a status, open an item and press the status button in the drawer, or tick several rows and press “Change status”.",
+  "comments": "Statuses are Spare / Assigned / Under repair / To scrap / Scrapped (and Available / Active / Switched off for digital items). Warranty end is shown on each item, with a warning when it is ending."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com), then Employee (ess1.demo@payobook.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Press “Add an item”, choose a digital category such as “Email account” or “System login”, put the address in “Serial number or address”, and give it to someone.\n5. Click the “Digital” chip to see every account and its status (Available / Active / Switched off).\n6. When that person leaves and their leaving checklist opens (left menu “Lifecycle”, hub icon “Exits”), a step “Switch off: …” is added for each of their accounts.\n7. The employee sees their accounts on payobook.com/my under “My Things”.",
+  "comments": "Digital items are tracked like physical ones, with Active and Switched off instead of handed back. The switch-off step is added to the leaving checklist automatically; the account itself is switched off by IT in the other system."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 11,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”, then choose “Exits” in the hub’s icon strip.\n3. Open a leaver’s checklist: there is a “Return: …” step for each physical item they still hold.\n4. To take an item back, go to “People” › “Assets”, open the item and press “Take it back”; write the condition it came back in. The return date is recorded.\n5. Until every “Return: …” step is done, the final settlement for that person is held.",
+  "comments": "Returns are mandatory: open returns hold the final settlement, and the return date and condition are recorded. There is no separate sign-off on each return — ticking the step and taking the item back is the record."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 12,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Press “Add an item” and fill in Country, Cost (in the local currency) and “Where it can go”.\n5. Open the item: the drawer shows the country and the cost in local currency with the US dollar amount beside it.",
+  "comments": "Country tag, local currency and the US dollar figure are built. “Where it can go” is a written note only — the system does not stop an item being moved to another country."
+ },
+ {
+  "tab": "Asset Management",
+  "row": 13,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “People”.\n3. In the hub’s icon strip, choose “Assets” (point at the icons to see their names).\n4. Press “Export” for the whole register (inventory, with status, holder and country).\n5. For a country list: choose the country in “Every country”, tick the box at the top of the table to select all, then press “Export these”.\n6. For one person: open an item they hold and press “Their items”.",
+  "comments": "Inventory, country-wise and employee-wise downloads are on the screen as Excel files. The full asset-history and allocation downloads exist in the system but have no button on the screen yet; the history is visible on each item under “Who has had it”."
+ },
+ {
+  "tab": "Probation",
+  "row": 4,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Each row shows a person in their trial period, their trial end date, days left and where their review is.\n5. Press “All reviews” and use the filters “Confirmed” / “Not confirmed” / “Waiting on a decision” to see finished ones (for example Chu Hải Đăng confirmed, Mai Quốc Hưng not confirmed, Đặng Thuý Vân extended).",
+  "comments": "Every employee carries a trial-period status: In probation, Passed, Extended, Not passed or Not applicable. HR sees it here; the employee sees a “Your trial period” card on their own journey page. A line manager only sees it if HR gives them access to Lifecycle — otherwise they are told by email."
+ },
+ {
+  "tab": "Probation",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Press “Policies” at the top of the board.\n5. Each country has its trial length in months and how many days before the end the review opens (Vietnam 2 months; India, Singapore, Indonesia 3 months; 21 days).",
+  "comments": "When a joiner’s onboarding checklist opens, their trial end date is worked out from their country’s policy and written on their contract. HR can change the numbers per country."
+ },
+ {
+  "tab": "Probation",
+  "row": 6,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. To see it work by hand, press “Run today’s steps”: anyone whose trial ends within 21 days gets a review opened and their manager is emailed.\n5. Or press “Start the review” on one person’s row.",
+  "comments": "Built: a review opens by itself 21 days before the trial end and emails the manager. On the demo the nightly job is paused so demo staff with fake addresses are not emailed; it is switched on for Rize’s live system."
+ },
+ {
+  "tab": "Probation",
+  "row": 7,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Find Trần Minh Khôi (colleagues being chosen) and press “Choose colleagues”.\n5. Pick 3 to 5 colleagues (department and time with the company are shown) and press “Send the questions”. Fewer than 3 is refused with a clear message.",
+  "comments": "The manager is emailed asking for 3–5 colleagues, and the chosen names are collected automatically. The email tells the manager to open Probation in Payobook rather than giving a one-click link, so the manager needs Lifecycle access — otherwise HR enters the names for them."
+ },
+ {
+  "tab": "Probation",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com) (to get the link); the colleague needs no sign-in",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Click a person whose colleagues have been asked, then press “Open the review”.\n5. Open the tab “Colleagues asked”; under “Their links” copy one colleague’s link.\n6. Open the link in a private browser window: the form shows the person’s name and the rating questions and comment boxes. Submit it.",
+  "comments": "Each colleague gets an email with a private link and 3 days to answer; no sign-in is needed. The questions are fixed ratings plus written comments; Rize can reword them to match its policy."
+ },
+ {
+  "tab": "Probation",
+  "row": 9,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. On a row where answers are late, press “Another day” to give colleagues one more day (allowed once).\n5. The numbers at the top show “Answers overdue”.",
+  "comments": "Built: reminders for missing nominations and answers, a “last day to answer” alert on the deadline day, and a one-time one-day extension. On the demo the reminder jobs are paused so fake addresses are not emailed; the “Another day” button works."
+ },
+ {
+  "tab": "Probation",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. On a row with answers in, press “Put the answers together”.\n5. Click the row: the report shows average scores per question, every comment, and notes and flags from the 30/60/90-day check-ins.",
+  "comments": "This also happens by itself once every colleague has answered or the deadline passes, and the manager is emailed that the review is ready to read."
+ },
+ {
+  "tab": "Probation",
+  "row": 11,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. On a row at the conversation stage, press “We have talked” and write what was said, then “Save it”.\n5. Press “Decide”: step 1 “Read what they said”, step 2 “Write it down” (what they are good at, what to work on), step 3 “Decide”.\n6. Choose “Confirm them”, “Extend the trial” or “Do not confirm”. The last screen says in plain words what pressing the button will do.",
+  "comments": "A guided path for the 1:1 and the manager’s recommendation. On the demo this is done by HR on the manager’s behalf, because no demo manager login has Lifecycle access."
+ },
+ {
+  "tab": "Probation",
+  "row": 12,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Open Đặng Thuý Vân (round 2, waiting on a decision) and press “Decide”.\n5. After the decision, the person’s trial-period status changes and they leave the board if confirmed; check “All reviews” for the outcome.",
+  "comments": "Outcomes are Passed, Not passed or Extended, and the employee’s status changes to match. “Confirm them” takes effect at once; “Extend” and “Do not confirm” first go to HR (and the CEO for senior roles) for sign-off."
+ },
+ {
+  "tab": "Probation",
+  "row": 13,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. After a decision, open the person’s row and press “The letter” to see the confirmation, extension or non-confirmation letter.\n5. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Letters” and choose “Letters”. to see all letters that were produced.",
+  "comments": "HR is emailed every decision. A letter is prepared and filed for each outcome and the confirmation/extension email goes to the employee. Rize should review the letter wording."
+ },
+ {
+  "tab": "Probation",
+  "row": 14,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Click a row to see the person’s timeline “From their first day to the decision”, with the trial end date and days left.",
+  "comments": "Built: HR is reminded 15 days and 5 days before a trial ends, and the employee sees their trial end on their own journey page. On the demo the reminder job is paused so fake addresses are not emailed. No demo employee login in probation is available to show the employee card."
+ },
+ {
+  "tab": "Probation",
+  "row": 15,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Find a person whose colleagues are answering: the row shows how many have answered out of how many asked (e.g. “2 of 3”).\n5. Press “Open the review” and the tab “Colleagues asked” to see each colleague and whether they have answered.",
+  "comments": "Manager (or HR) chooses the colleagues after being notified; HR and the manager can follow who has answered. Reminders to colleagues are built but paused on the demo."
+ },
+ {
+  "tab": "Probation",
+  "row": 16,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. When the answers are put together, the manager’s 1:1 is planned with 2 days to hold it.\n5. Press “We have talked”, then “Decide”, and fill in “What they are good at”, “What to work on” and the verdict.",
+  "comments": "The final form is mandatory before any outcome is recorded. The 2-day window is set in the system."
+ },
+ {
+  "tab": "Probation",
+  "row": 17,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Press “All reviews” and open a finished one, e.g. Chu Hải Đăng (confirmed) or Đặng Thuý Vân (extended).\n5. For a “Do not confirm” decision, the row offers “Start their exit”, which opens the leaving checklist.",
+  "comments": "Pass sends a congratulations letter and email; Extend lists the areas to improve and schedules a second review; Not passed tells HR, who then starts the exit by hand following local labour law. Nothing about leaving starts by itself."
+ },
+ {
+  "tab": "Probation",
+  "row": 18,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Training courses” and choose “Training courses”. and open “Agronomist essentials” (3 items). Under “Jobs that need it”, add the Agronomist job.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Who has done what” and choose “Who has done what”. to see each person’s items, done or not, and their score.\n3. On the Probation board, a person with a required item still open shows the course chip; pressing “Confirm them” is refused and names the missing items.",
+  "comments": "Mandatory training before confirmation and score tracking are built and work for any job. On the demo the example course is linked to “Site Engineer”, not Agronomist — link it to the Agronomist job to try it. A dated training calendar is not built; courses come with due dates instead."
+ },
+ {
+  "tab": "Probation",
+  "row": 19,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Click a person: their timeline “From their first day to the decision” shows the 30-day, 60-day and 90-day check-ins and any flags raised.\n5. In the left menu, click “Lifecycle” and choose “New joiners” in the hub’s icon strip to see joiners and their checklists.",
+  "comments": "30, 60 and 90-day check-ins are planned automatically for every joiner, owned by their HR partner, and anything flagged feeds the probation report. They are planned when the onboarding checklist opens (not when the joiner first logs in), and they are reminders, not calendar invitations with the joiner."
+ },
+ {
+  "tab": "Probation",
+  "row": 20,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Probation” (point at the icons to see their names).\n4. Press “All reviews”, filter “Confirmed” and open one: the status is Passed and the person is no longer on the board.\n5. In the left menu, click “People” and choose “Goals” in the hub’s icon strip: confirmed staff carry on in the normal goals and review cycle.",
+  "comments": "After passing, the person drops off the probation board and joins the normal goal cycle. The onboarding file is not archived automatically when probation ends; HR closes the onboarding checklist with “Finish”."
+ },
+ {
+  "tab": "PIP",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Manager (lam.ngo@example.com), then HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the manager.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “Ask HR” and choose “Ask HR about someone in my team”.\n3. Choose the team member, write “What have you seen?”, and send it.\n4. Sign in as the HR lead (demo.hr@example.com). In the left menu, click “Lifecycle” and choose “Growth plans” in the hub’s icon strip.\n5. The request is on the board as “A manager asked HR to look”. Press “Take it up”: a first conversation with the manager is put in the diary two days out and the manager is told.",
+  "comments": "HR is emailed when a manager asks. The manager can see only the requests they raised; they cannot see the board."
+ },
+ {
+  "tab": "PIP",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Open a plan at the coaching stage (status “Coaching”).\n5. In the drawer, “The coaching note” starts from the template’s text: fill in the areas to focus on and timelines and press “Save the note”.\n6. If coaching works, close it there with no formal plan and nothing filed.",
+  "comments": "Two starter templates are included (“Delivery and quality — 6 weeks”, “Working with the team — 4 weeks”), each with focus areas and starter coaching text. HR can add more under “Templates”."
+ },
+ {
+  "tab": "PIP",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Open a plan at the coaching stage. Under “Objectives” press “Add one” and fill in “What has to change”, “What good looks like” and the target.\n5. Press “Start the plan”. The plan runs for the template’s weeks, the check-ins go in the diary and a letter is filed.",
+  "comments": "A plan cannot start without at least one objective with a measure of success. Look at Nghiêm Hải Yến for a running plan."
+ },
+ {
+  "tab": "PIP",
+  "row": 7,
+  "supported": "Partly",
+  "solution": "Built; the rest follows later",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Open Nghiêm Hải Yến’s plan. “The conversations” lists each weekly check-in as planned, held or did not happen.\n5. Under “Objectives”, press On track / At risk / Met / Not met to update each objective.\n6. Press “Run today’s checks” to flag check-ins that did not happen.",
+  "comments": "Weekly or every-two-weeks check-ins are planned automatically for the whole plan, and objectives can be updated at any time. Recording what was said at each check-in is not yet possible from this screen, and the check-in reminder emails are built but paused on the demo."
+ },
+ {
+  "tab": "PIP",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Open Đinh Gia Huy’s plan (“Being evaluated”).\n5. Press “Ask their manager”: the manager gets a private link asking how each objective went. Their answers show under “What their manager said at the end”.\n6. Press “Decide”, go through each objective, give a rating out of 5 and choose “Completed successfully” or “Not completed”.",
+  "comments": "HR is emailed when the manager’s answers come back and when a decision is recorded. A “not completed” decision first goes to HR for sign-off."
+ },
+ {
+  "tab": "PIP",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Press “Closed plans” and open Tô Đức Thắng: it shows “Closed — left the company”.",
+  "comments": "When a resignation is approved for someone on a plan, the plan closes by itself, the planned check-ins are cancelled and HR is emailed. The person then follows the normal leaving checklist."
+ },
+ {
+  "tab": "PIP",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Press “Closed plans” and open Đinh Gia Huy’s earlier plan (“Completed successfully”).\n5. The drawer shows the decision, the final rating and the letter.",
+  "comments": "When a plan is completed successfully it closes, the rating goes onto their performance record, and the employee and manager are emailed. The person goes back to normal employment with nothing else to do."
+ },
+ {
+  "tab": "PIP",
+  "row": 11,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. In the left menu, click “Lifecycle”.\n3. In the hub’s icon strip, choose “Growth plans” (point at the icons to see their names).\n4. Press “Who sees what”: switch on or off whether the person can see their own plan and whether the asking manager can see their request.\n5. Access is given per person on the Access screen: “HR — growth plans” or “Head of HR — growth plans”, for the companies they work in.",
+  "comments": "Only people given the growth-plan HR or Head of HR access see plans, and only for their own companies (one company per country gives country-level control). General HR and Lifecycle access do not include it. A person without access does not even see the tab."
+ }
+]

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pb_timesheet_packet_list" model="ir.ui.view">
+        <field name="name">pb.timesheet.packet.list</field>
+        <field name="model">pb.timesheet.packet</field>
+        <field name="arch" type="xml">
+            <list string="Weekly timesheets" create="0">
+                <field name="week_start"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="reg_hours" sum="Worked hours"/>
+                <field name="ot_hours" sum="Overtime hours"/>
+                <field name="total_hours" sum="Total hours"/>
+                <field name="days_with_hours" optional="hide"/>
+                <field name="late_submission" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'pending'"
+                       decoration-danger="state in ('returned', 'rejected')"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_timesheet_packet_form" model="ir.ui.view">
+        <field name="name">pb.timesheet.packet.form</field>
+        <field name="model">pb.timesheet.packet</field>
+        <field name="arch" type="xml">
+            <form string="Weekly timesheet" create="0">
+                <header>
+                    <button name="action_submit_week" type="object"
+                            string="Send this week in for approval"
+                            class="btn-primary"
+                            invisible="state in ('pending', 'approved')"/>
+                    <button name="action_open_request" type="object"
+                            string="Open in Approvals"
+                            invisible="state in ('draft',)"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,pending,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="department_id" readonly="1"/>
+                            <field name="week_start" readonly="1"/>
+                            <field name="week_end" readonly="1"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="reg_hours" readonly="1"/>
+                            <field name="ot_hours" readonly="1"/>
+                            <field name="bonus_hours" readonly="1"/>
+                            <field name="total_hours" readonly="1"/>
+                            <field name="days_with_hours" readonly="1"/>
+                            <field name="scheduled_hours" readonly="1"/>
+                            <field name="variance_pct" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="What happened to it">
+                        <group>
+                            <field name="submitted_uid" readonly="1"/>
+                            <field name="submitted_at" readonly="1"/>
+                            <field name="attempt" readonly="1"/>
+                            <field name="late_submission" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="packet_note" readonly="1"/>
+                            <field name="ot_apply_note" readonly="1"/>
+                            <field name="source_hash" readonly="1" groups="base.group_no_one"/>
+                            <field name="approved_hash" readonly="1" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_timesheet_packet_search" model="ir.ui.view">
+        <field name="name">pb.timesheet.packet.search</field>
+        <field name="model">pb.timesheet.packet</field>
+        <field name="arch" type="xml">
+            <search string="Weekly timesheets">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="week_start"/>
+                <filter name="f_pending" string="Waiting for approval"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter name="f_approved" string="Approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="f_open" string="Not sent in"
+                        domain="[('state', 'in', ('draft', 'returned'))]"/>
+                <separator/>
+                <filter name="f_late" string="Sent in after the cut-off"
+                        domain="[('late_submission', '=', True)]"/>
+                <!-- A bare <group>: Odoo 19's search schema rejects `expand`
+                     and `string` here, and the whole view then fails to parse
+                     with a message about a `field` element (ledger). -->
+                <group>
+                    <filter name="g_week" string="Week"
+                            context="{'group_by': 'week_start'}"/>
+                    <filter name="g_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="g_dept" string="Department"
+                            context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_timesheet_packet" model="ir.actions.act_window">
+        <field name="name">Weekly timesheets</field>
+        <field name="res_model">pb.timesheet.packet</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_timesheet_packet_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No weeks have been sent in yet</p>
+            <p>A week appears here the moment somebody sends it in from the weekly grid.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60). The HR lead asked to agree to a
+         new hire must be able to open the proposal, and the engine re-checks
+         that before it accepts a decision. The wide rule ships with the
+         narrow one: an HR user is also a plain internal user. -->
+
+    <record id="rule_newhire_proposal_seat" model="ir.rule">
+        <field name="name">New hire: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_newhire_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_newhire_proposal_hr" model="ir.rule">
+        <field name="name">New hire: HR</field>
+        <field name="model_id" ref="model_pb_newhire_proposal"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

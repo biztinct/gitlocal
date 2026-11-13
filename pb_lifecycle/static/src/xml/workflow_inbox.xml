@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       WF2 P4a (D1) — the Tasks group and the task drawer, added to the one
+       Approvals inbox. Add-only xpaths: the approval cards, their order,
+       the tabs and the drawer are untouched. Loop variables: `tk`.
+       ==================================================================== -->
+
+  <t t-name="pb_lifecycle.PbInboxTasks" t-inherit="pb_approval_config.PbInbox" t-inherit-mode="extension">
+
+    <xpath expr="//div[hasclass('pbam-reqs--skel')]" position="before">
+      <section t-if="showTasks" class="pbwfi-group" aria-labelledby="pbwfi-group-h">
+        <div class="pbwfi-group-head">
+          <h3 id="pbwfi-group-h"><t t-out="ic('checkCircle',15)"/> <span>Tasks</span></h3>
+          <span class="pbwfi-count" t-esc="state.tasks.length"/>
+          <span t-if="taskLateCount" class="pbim-badge pbam-err"><t t-esc="taskLateCount"/> late</span>
+          <span class="pbwfi-hint">Work a workflow has asked of you. Approvals are below.</span>
+        </div>
+        <div class="pbam-reqs pbwfi-list">
+          <div t-foreach="state.tasks" t-as="tk" t-key="'task-' + tk.id"
+               class="pbam-req pbwfi-task" role="button" tabindex="0"
+               t-att-class="{ 'is-mine': tk.mine, 'is-leaving': state.taskLeaving[tk.id], 'is-team': tk.can_take }"
+               t-on-click="() => this.openTask(tk)"
+               t-on-keydown="(ev) => this.onTaskKey(ev, tk)">
+            <span class="pbam-icsq pbwfi-ic" t-att-class="{ 'pbam-icsq-rose': tk.late, 'pbam-icsq-amber': tk.sent_back }">
+              <t t-out="ic(tk.task_kind === 'confirm' ? 'checkCircle' : tk.task_kind === 'input' ? 'fileText' : 'check', 17)"/>
+            </span>
+            <div class="pbam-reqmain">
+              <div class="pbam-reqt">
+                <span t-esc="tk.title"/>
+                <span t-if="tk.sent_back" class="pbim-badge pbam-warn">Sent back</span>
+                <span t-elif="tk.late" class="pbim-badge pbam-err">Late</span>
+              </div>
+              <div class="pbam-reqs2">
+                <span t-esc="tk.verb"/> · <span t-esc="tk.sub"/>
+                <t t-if="tk.submitted_by"> · <span class="pbam-lbl">started by</span> <span t-esc="tk.submitted_by"/></t>
+              </div>
+              <div class="pbam-facts">
+                <span t-if="tk.team" class="pbam-f pbwfi-team">
+                  <t t-out="ic('users',12)"/>
+                  <span t-if="tk.team.taken">Team: <t t-esc="tk.team.name"/> · <t t-esc="tk.team.taken_by"/> has it</span>
+                  <span t-else="">Team: <t t-esc="tk.team.name"/> · nobody has taken it</span>
+                </span>
+                <span t-elif="tk.waiting_for and !tk.mine" class="pbam-f">
+                  <t t-out="ic('user',12)"/> <span><span class="pbam-lbl">With</span> <b t-esc="tk.waiting_for"/></span>
+                </span>
+                <span t-if="tk.covering_for" class="pbam-f">
+                  <t t-out="ic('plane',12)"/> <span>Covering for <t t-esc="tk.covering_for"/></span>
+                </span>
+                <span t-if="tk.sent_back and tk.return_note" class="pbam-f">
+                  <t t-out="ic('undo',12)"/> <span t-esc="tk.return_note"/>
+                </span>
+              </div>
+            </div>
+            <div class="pbam-reqright">
+              <div t-if="tk.due_day" class="pbam-due" t-att-class="{ 'is-late': tk.late }">
+                <t t-out="ic('clock',11)"/> <span><span class="pbam-lbl">Due</span> <t t-esc="taskDay(tk.due_day)"/></span>
+              </div>
+              <button t-if="tk.can_take" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.taskBusy"
+                      t-on-click.stop="() => this.takeTask(tk)">Take it</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </xpath>
+
+    <xpath expr="//div[@t-elif='!cards.length']" position="attributes">
+      <attribute name="t-elif">!cards.length and !showTasks</attribute>
+    </xpath>
+    <xpath expr="//div[@t-elif='!cards.length and !showTasks']" position="after">
+      <div t-elif="!cards.length" class="pbwfi-noapprovals">
+        <t t-out="ic('checkCircle',15)"/> <span>No approvals are waiting for you right now.</span>
+      </div>
+    </xpath>
+
+    <xpath expr="//t[@t-if='state.openId']" position="after">
+      <t t-if="state.taskOpen">
+        <div class="pbam-scrim" t-on-click="() => this.closeTask()"/>
+        <aside class="pbam-drawer pbam-drawer-wide pbwfi-drawer" role="dialog" aria-modal="true" aria-labelledby="pbwfi-drawer-h">
+          <div class="pbam-dh">
+            <span class="pbam-icsq"><t t-out="ic('checkCircle',17)"/></span>
+            <div>
+              <h2 id="pbwfi-drawer-h" t-esc="state.taskOpen.title"/>
+              <p class="pbim-sub" t-esc="state.taskOpen.sub"/>
+            </div>
+            <button class="pbam-x" aria-label="Close" t-on-click="() => this.closeTask()">
+              <t t-out="ic('x',18)"/>
+            </button>
+          </div>
+          <div t-if="state.taskOpen.can_take" class="pbwfi-take">
+            <t t-out="ic('users',16)"/>
+            <span>For the team <b t-esc="state.taskOpen.team.name"/>. Nobody has taken it yet: take it so the others know you have it.</span>
+            <button class="pbim-btn primary" t-att-disabled="state.taskBusy" t-on-click="() => this.takeTask(state.taskOpen)">Take it</button>
+          </div>
+          <div t-elif="state.taskOpen.can_release" class="pbwfi-take is-mine">
+            <t t-out="ic('users',16)"/>
+            <span>You took this for the team <b t-esc="state.taskOpen.team.name"/>.</span>
+            <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.taskBusy" t-on-click="() => this.releaseTask(state.taskOpen)">Put it back</button>
+          </div>
+          <div t-if="state.taskOpen.covering_for" class="pbim-note pbam-note-amber pbwfi-cover">
+            <t t-out="ic('plane',14)"/> <span>You are covering for <t t-esc="state.taskOpen.covering_for"/> while they are away.</span>
+          </div>
+          <iframe class="pbwfi-frame" t-att-src="taskUrl(state.taskOpen)" title="Task"/>
+        </aside>
+      </t>
+    </xpath>
+
+  </t>
+
+</templates>

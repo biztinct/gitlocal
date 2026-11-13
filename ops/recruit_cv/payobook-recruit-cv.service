@@ -1,0 +1,46 @@
+[Unit]
+Description=Payobook private CV extraction
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=recruit-cv
+Group=recruit-cv
+WorkingDirectory=/odoo/services/recruit_cv
+EnvironmentFile=/etc/payobook/recruit-cv.env
+Environment=HF_HOME=/var/lib/recruit-cv/models
+Environment=OMP_NUM_THREADS=2
+Environment=MKL_NUM_THREADS=2
+Environment=OPENBLAS_NUM_THREADS=2
+Environment=TOKENIZERS_PARALLELISM=false
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+Environment=DO_NOT_TRACK=1
+Environment=HF_HUB_DISABLE_TELEMETRY=1
+ExecStart=/odoo/venvs/recruit-cv/bin/uvicorn app:app --host 127.0.0.1 --port 18080 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=30
+MemoryAccounting=yes
+MemoryHigh=1900M
+MemoryMax=2300M
+MemorySwapMax=256M
+CPUQuota=150%
+CPUWeight=20
+TasksMax=96
+Nice=10
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+InaccessiblePaths=-/odoo/.local -/odoo/backups -/odoo/archives -/etc/odoo-server.conf
+ReadWritePaths=/var/lib/recruit-cv
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

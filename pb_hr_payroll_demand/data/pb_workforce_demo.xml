@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Skills -->
-        <record id="pb_workforce_skill_employee_relations" model="pb.workforce.skill">
+        <!-- Skills: Create in Odoo's hr.skill instead of custom model.
+             These link to hr.skill (from hr_skills module) so they appear
+             on employee profiles and can be used for gap analysis. -->
+
+        <!-- We need a skill type first -->
+        <record id="hr_skill_type_workforce" model="hr.skill.type">
+            <field name="name">Workforce Planning</field>
+        </record>
+
+        <record id="hr_skill_employee_relations" model="hr.skill">
             <field name="name">Employee Relations Strategy</field>
-            <field name="category">business</field>
-            <field name="description">Structured approach for coaching, investigations, and risk mitigation.</field>
+            <field name="skill_type_id" ref="hr_skill_type_workforce"/>
         </record>
-        <record id="pb_workforce_skill_change_enablement" model="pb.workforce.skill">
+        <record id="hr_skill_change_enablement" model="hr.skill">
             <field name="name">Change Enablement</field>
-            <field name="category">leadership</field>
-            <field name="description">Supports adoption of new people processes and tooling.</field>
+            <field name="skill_type_id" ref="hr_skill_type_workforce"/>
         </record>
-        <record id="pb_workforce_skill_data_storytelling" model="pb.workforce.skill">
+        <record id="hr_skill_data_storytelling" model="hr.skill">
             <field name="name">Data Storytelling</field>
-            <field name="category">digital</field>
-            <field name="description">Translate workforce trends into business-ready insights.</field>
+            <field name="skill_type_id" ref="hr_skill_type_workforce"/>
         </record>
-        <record id="pb_workforce_skill_workforce_planning" model="pb.workforce.skill">
+        <record id="hr_skill_workforce_planning" model="hr.skill">
             <field name="name">Strategic Workforce Planning</field>
-            <field name="category">business</field>
-            <field name="description">Scenario modelling, demand translation, and portfolio prioritisation.</field>
+            <field name="skill_type_id" ref="hr_skill_type_workforce"/>
         </record>
-        <record id="pb_workforce_skill_compensation_design" model="pb.workforce.skill">
+        <record id="hr_skill_compensation_design" model="hr.skill">
             <field name="name">Compensation Design</field>
-            <field name="category">compliance</field>
-            <field name="description">Design and audit reward frameworks for multi-country footprint.</field>
+            <field name="skill_type_id" ref="hr_skill_type_workforce"/>
         </record>
 
         <!-- Capabilities -->
@@ -37,7 +40,7 @@
             <field name="vision_statement">Deliver proactive people support across the organisation</field>
             <field name="last_review_date">2024-09-01</field>
             <field name="note">Focus on harmonising onboarding, lifecycle and policy compliance for hybrid workforce.</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_employee_relations'), ref('pb_workforce_skill_change_enablement')])]"/>
+            <field name="skill_ids" eval="[(6, 0, [ref('hr_skill_employee_relations'), ref('hr_skill_change_enablement')])]"/>
         </record>
         <record id="pb_workforce_capability_digital_hr" model="pb.workforce.capability">
             <field name="name">Digital HR Insights</field>
@@ -47,7 +50,7 @@
             <field name="vision_statement">Unlock data-driven workforce decisions with modern analytics</field>
             <field name="last_review_date">2024-10-15</field>
             <field name="note">Standing up dashboards, adoption support, and predictive analytics pilots.</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_data_storytelling'), ref('pb_workforce_skill_workforce_planning')])]"/>
+            <field name="skill_ids" eval="[(6, 0, [ref('hr_skill_data_storytelling'), ref('hr_skill_workforce_planning')])]"/>
         </record>
         <record id="pb_workforce_capability_total_rewards" model="pb.workforce.capability">
             <field name="name">Total Rewards &amp; Mobility</field>
@@ -57,7 +60,7 @@
             <field name="vision_statement">Competitive, equitable compensation experiences</field>
             <field name="last_review_date">2024-07-01</field>
             <field name="note">Maintain regional parity, support internal mobility and quarterly benchmarking.</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_compensation_design'), ref('pb_workforce_skill_workforce_planning')])]"/>
+            <field name="skill_ids" eval="[(6, 0, [ref('hr_skill_compensation_design'), ref('hr_skill_workforce_planning')])]"/>
         </record>
 
         <!-- Subactivities -->
@@ -103,7 +106,7 @@
             <field name="headcount_target">6.0</field>
             <field name="salary_average">7500.0</field>
             <field name="last_review_date">2024-09-10</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_employee_relations'), ref('pb_workforce_skill_change_enablement')])]"/>
+            <field name="skill_ids" eval="[(6, 0, [ref('hr_skill_employee_relations'), ref('hr_skill_change_enablement')])]"/>
         </record>
         <record id="pb_workforce_role_analytics_lead" model="pb.workforce.role">
             <field name="name">Workforce Analytics Lead</field>
@@ -119,7 +122,7 @@
             <field name="headcount_target">3.0</field>
             <field name="salary_average">9200.0</field>
             <field name="last_review_date">2024-10-05</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_data_storytelling'), ref('pb_workforce_skill_workforce_planning')])]"/>
+            <field name="skill_ids" eval="[(6, 0, [ref('hr_skill_data_storytelling'), ref('hr_skill_workforce_planning')])]"/>
         </record>
         <record id="pb_workforce_role_comp_specialist" model="pb.workforce.role">
             <field name="name">Compensation Specialist</field>
@@ -135,7 +138,7 @@
             <field name="headcount_target">3.0</field>
             <field name="salary_average">6800.0</field>
             <field name="last_review_date">2024-08-18</field>
-            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_compensation_design'), ref('pb_workforce_skill_workforce_planning')])]"/>
+            <field name="skill_ids" eval="[(6, 0, [ref('hr_skill_compensation_design'), ref('hr_skill_workforce_planning')])]"/>
         </record>
 
         <!-- Role Focus Areas -->

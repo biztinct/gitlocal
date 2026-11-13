@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tag the multi-sheet import wizard form so import_wizard.scss can re-skin
+         it to the modern design system (engine/markup untouched). -->
+    <record id="view_multisheet_import_wizard_form_studio" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.import.wizard.form.studio</field>
+        <field name="model">hr.formula.multisheet.import.wizard</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_multisheet_import_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class">pbfs-iw</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

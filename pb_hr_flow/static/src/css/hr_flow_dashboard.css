@@ -1,0 +1,18 @@
+/* ==========================================
+   HR Flow Dashboard — Layout & Control Overrides
+   ==========================================
+   1. Make the form view full-width (remove chatter space)
+   2. Hide form controls via JS (see control_panel_home_icon.js)
+   ========================================== */
+
+/* ── Full-width layout: remove the chatter gap ── */
+.hr-flow-form .o_form_sheet_bg {
+    max-width: none !important;
+    flex: 1 1 100% !important;
+    margin-right: 0 !important;
+}
+
+.hr-flow-form.o_form_view {
+    /* Prevent Odoo from reserving chatter column space */
+    max-width: none !important;
+}

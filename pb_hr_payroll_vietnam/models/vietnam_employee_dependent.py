@@ -51,7 +51,7 @@ class VietnamEmployeeDependent(models.Model):
     # ==========================================
     effective_from = fields.Date(
         string='Effective From',
-        required=True,
+        required=False,
         default=fields.Date.today,
         help="Start date of tax deduction eligibility"
     )
@@ -96,15 +96,17 @@ class VietnamEmployeeDependent(models.Model):
     def _compute_currently_eligible(self):
         today = fields.Date.today()
         for dep in self:
-            is_in_period = dep.effective_from <= today
+            is_in_period = bool(dep.effective_from and dep.effective_from <= today)
             if dep.effective_to:
                 is_in_period = is_in_period and today <= dep.effective_to
             dep.is_currently_eligible = is_in_period and dep.status == 'eligible'
 
-    @api.constrains('effective_from', 'effective_to')
+    @api.constrains('effective_from', 'effective_to', 'status')
     def _check_dates(self):
         for dep in self:
-            if dep.effective_to and dep.effective_from > dep.effective_to:
+            if dep.status == 'eligible' and not dep.effective_from:
+                raise ValidationError(_("An eligible dependent needs a verified Effective From date."))
+            if dep.effective_from and dep.effective_to and dep.effective_from > dep.effective_to:
                 raise ValidationError(_("Effective From must be before Effective To."))
 
     @api.constrains('date_of_birth')

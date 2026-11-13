@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The guided setup is a full page, not a pop-up: it owns the screen for
+         as long as it takes, and it can be left and resumed. -->
+    <record id="action_pb_blueprint" model="ir.actions.client">
+        <field name="name">New configuration</field>
+        <field name="tag">pb_blueprint</field>
+    </record>
+</odoo>

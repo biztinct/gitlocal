@@ -1,0 +1,358 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_me_expense
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-11 09:00+0000\n"
+"PO-Revision-Date: 2026-11-11 09:00+0000\n"
+"Last-Translator: Payobook\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was approved"
+msgstr "Klaim pengeluaran Anda telah disetujui"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was refused"
+msgstr "Klaim pengeluaran Anda ditolak"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was paid"
+msgstr "Klaim pengeluaran Anda telah dibayar"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "1 receipt"
+msgstr "1 struk"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "%s receipts"
+msgstr "%s struk"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was approved"
+msgstr "Klaim Anda telah disetujui"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s for %(total)s (%(what)s) was approved."
+msgstr "Klaim pengeluaran %(ref)s sebesar %(total)s (%(what)s) telah disetujui."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Finance pays it next. We will email you again when it has been paid."
+msgstr "Bagian keuangan akan membayarnya berikutnya. Kami akan mengirim email lagi setelah dibayar."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was refused"
+msgstr "Klaim Anda ditolak"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s for %(total)s (%(what)s) was refused."
+msgstr "Klaim pengeluaran %(ref)s sebesar %(total)s (%(what)s) ditolak."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "You can fix it and send it again from your claim."
+msgstr "Anda dapat memperbaikinya dan mengirimkannya lagi dari klaim Anda."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "No reason was given."
+msgstr "Tidak ada alasan yang diberikan."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was paid"
+msgstr "Klaim Anda telah dibayar"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s was paid: %(total)s on %(day)s."
+msgstr "Klaim pengeluaran %(ref)s telah dibayar: %(total)s pada %(day)s."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Hello %s,"
+msgstr "Halo %s,"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Hello,"
+msgstr "Halo,"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The reason given"
+msgstr "Alasan yang diberikan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Open your claim"
+msgstr "Buka klaim Anda"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The employee gets an email that their claim was approved, with a link to it."
+msgstr "Karyawan menerima email bahwa klaimnya disetujui, dengan tautan ke klaim tersebut."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The employee gets an email that their claim was refused, with the reason and a link to fix it."
+msgstr "Karyawan menerima email bahwa klaimnya ditolak, beserta alasan dan tautan untuk memperbaikinya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "The employee gets an email that their claim was paid, with the amount and the date."
+msgstr "Karyawan menerima email bahwa klaimnya telah dibayar, beserta jumlah dan tanggalnya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Refused — your turn"
+msgstr "Ditolak — giliran Anda"
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_approved
+msgid "Expense claim: approved (to the employee)"
+msgstr "Klaim pengeluaran: disetujui (ke karyawan)"
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_refused
+msgid "Expense claim: refused (to the employee)"
+msgstr "Klaim pengeluaran: ditolak (ke karyawan)"
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_paid
+msgid "Expense claim: paid (to the employee)"
+msgstr "Klaim pengeluaran: dibayar (ke karyawan)"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim was sent back"
+msgstr "Klaim pengeluaran Anda dikembalikan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your claim was sent back"
+msgstr "Klaim Anda dikembalikan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Your expense claim %(ref)s for %(total)s (%(what)s) was sent back to you."
+msgstr "Klaim pengeluaran %(ref)s sebesar %(total)s (%(what)s) dikembalikan kepada Anda."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Change what is asked below, then send it again from your claim."
+msgstr "Ubah sesuai yang diminta di bawah, lalu kirim lagi dari klaim Anda."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "When a claim is sent back, the employee gets an email with the reason and a link to fix it."
+msgstr "Saat klaim dikembalikan, karyawan menerima email beserta alasan dan tautan untuk memperbaikinya."
+
+#. module: pb_me_expense
+#: model:mail.template,name:pb_me_expense.mail_template_claim_returned
+msgid "Expense claim: sent back (to the employee)"
+msgstr "Klaim pengeluaran: dikembalikan (ke karyawan)"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_messages.py:0
+msgid "Expenses"
+msgstr "Pengeluaran"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Expense claim"
+msgstr "Klaim pengeluaran"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The employee starts a claim, or it comes back to them"
+msgstr "Karyawan memulai klaim, atau klaim dikembalikan kepadanya"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The employee sends the claim"
+msgstr "Karyawan mengirim klaim"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The last approver says yes"
+msgstr "Pemberi persetujuan terakhir menyetujui"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Every receipt on the claim has been paid"
+msgstr "Semua struk pada klaim sudah dibayar"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "An approver says no"
+msgstr "Pemberi persetujuan menolak"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Every receipt on the claim is marked approved."
+msgstr "Semua struk pada klaim ditandai disetujui."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid ""
+"Every receipt is marked refused with the approver’s reason, which the employee sees on their claim."
+msgstr ""
+"Semua struk ditandai ditolak beserta alasan dari pemberi persetujuan, yang dilihat karyawan pada klaimnya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "The employee home shows the employee a “fix and resend” reminder."
+msgstr ""
+"Beranda karyawan menampilkan pengingat “perbaiki dan kirim ulang” kepada karyawan."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid ""
+"When a claim is sent back or taken back, its receipts can be changed and sent again."
+msgstr ""
+"Saat klaim dikembalikan atau ditarik kembali, struknya bisa diubah dan dikirim lagi."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_contract.py:0
+msgid "Expenses has not opened this value to workflows."
+msgstr "Pengeluaran belum membuka nilai ini untuk alur kerja."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Receipts"
+msgstr "Struk"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "receipt"
+msgstr "struk"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Description"
+msgstr "Keterangan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Category"
+msgstr "Kategori"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/workflow_lines.py:0
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_me_expense
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__draft
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Draft"
+msgstr "Draf"
+
+#. module: pb_me_expense
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__submitted
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Waiting approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Approved — being paid"
+msgstr "Disetujui — sedang dibayar"
+
+#. module: pb_me_expense
+#. odoo-python
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__paid
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_me_expense
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__approved
+msgid "Approved"
+msgstr "Disetujui"
+
+#. module: pb_me_expense
+#: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__refused
+msgid "Refused"
+msgstr "Ditolak"

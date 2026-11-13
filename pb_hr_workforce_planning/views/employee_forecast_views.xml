@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Employee Forecast Tree -->
+    <record id="view_wfp_forecast_tree" model="ir.ui.view">
+        <field name="name">wfp.employee.forecast.tree</field>
+        <field name="model">wfp.employee.forecast</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="increase_pct > 10" decoration-success="increase_pct > 0 and increase_pct &lt;= 5" decoration-warning="increase_pct > 5 and increase_pct &lt;= 10" decoration-muted="is_excluded">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="country_code"/>
+                <field name="location" optional="hide"/>
+                <field name="current_base" widget="monetary" string="Cur. Base"/>
+                <field name="current_gross" widget="monetary" string="Cur. Gross"/>
+                <field name="current_employer_cost" widget="monetary" string="Cur. Employer"/>
+                <field name="current_total_cost" widget="monetary" string="Cur. TCOW"/>
+                <field name="forecast_base" widget="monetary" string="Fcst. Base"/>
+                <field name="forecast_gross" widget="monetary" string="Fcst. Gross"/>
+                <field name="forecast_employer_cost" widget="monetary" string="Fcst. Employer"/>
+                <field name="forecast_total_cost" widget="monetary" string="Fcst. TCOW"/>
+                <field name="increase_amount" widget="monetary" string="Increase"/>
+                <field name="increase_pct" string="Inc. %"/>
+                <field name="applied_rule_name" string="Rule"/>
+                <field name="is_excluded" column_invisible="True"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Employee Forecast Pivot -->
+    <record id="view_wfp_forecast_pivot" model="ir.ui.view">
+        <field name="name">wfp.employee.forecast.pivot</field>
+        <field name="model">wfp.employee.forecast</field>
+        <field name="arch" type="xml">
+            <pivot string="Workforce Forecast Analysis">
+                <field name="department_id" type="row"/>
+                <field name="current_total_cost" type="measure"/>
+                <field name="forecast_total_cost" type="measure"/>
+                <field name="increase_amount" type="measure"/>
+                <field name="current_employer_cost" type="measure"/>
+                <field name="forecast_employer_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Employee Forecast Graph -->
+    <record id="view_wfp_forecast_graph" model="ir.ui.view">
+        <field name="name">wfp.employee.forecast.graph</field>
+        <field name="model">wfp.employee.forecast</field>
+        <field name="arch" type="xml">
+            <graph string="Department Cost Comparison" type="bar">
+                <field name="department_id"/>
+                <field name="current_total_cost" type="measure"/>
+                <field name="forecast_total_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Search -->
+    <record id="view_wfp_forecast_search" model="ir.ui.view">
+        <field name="name">wfp.employee.forecast.search</field>
+        <field name="model">wfp.employee.forecast</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="applied_rule_name"/>
+                <filter name="excluded" string="Excluded" domain="[('is_excluded','=',True)]"/>
+                <filter name="active" string="Active" domain="[('is_excluded','=',False)]"/>
+                <separator/>
+                <filter name="high_increase" string="Increase &gt; 5%" domain="[('increase_pct','&gt;',5)]"/>
+                <group>
+                    <filter name="by_dept" string="Department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter name="by_job" string="Job Position" domain="[]" context="{'group_by': 'job_id'}"/>
+                    <filter name="by_rule" string="Applied Rule" domain="[]" context="{'group_by': 'applied_rule_name'}"/>
+                    <filter name="by_manager" string="Manager" domain="[]" context="{'group_by': 'manager_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_wfp_forecast" model="ir.actions.act_window">
+        <field name="name">Employee Forecasts</field>
+        <field name="res_model">wfp.employee.forecast</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_wfp_forecast_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+</odoo>

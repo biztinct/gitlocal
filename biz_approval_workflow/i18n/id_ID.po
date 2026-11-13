@@ -1,0 +1,64 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-12 22:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Other request"
+msgstr "Permintaan lain"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Someone writes down what they are asking for"
+msgstr "Seseorang menuliskan apa yang mereka minta"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "An approver sends it back to be changed"
+msgstr "Pemberi persetujuan mengembalikannya untuk diubah"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "Someone sends it for a sign-off"
+msgstr "Seseorang mengirimkannya untuk disetujui"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "The last approver says yes"
+msgstr "Pemberi persetujuan terakhir menyetujui"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "An approver says no"
+msgstr "Pemberi persetujuan menolak"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/workflow_contract.py:0
+msgid "The person who asked takes it back"
+msgstr "Orang yang meminta menariknya kembali"

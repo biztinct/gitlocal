@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ======================= letter templates ======================= -->
+
+    <record id="view_letter_template_list" model="ir.ui.view">
+        <field name="name">pb.letter.template.list</field>
+        <field name="model">pb.letter.template</field>
+        <field name="arch" type="xml">
+            <list string="Letter templates">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="letter_type"/>
+                <field name="vault_category_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_letter_template_form" model="ir.ui.view">
+        <field name="name">pb.letter.template.form</field>
+        <field name="model">pb.letter.template</field>
+        <field name="arch" type="xml">
+            <form string="Letter template">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Template"/>
+                        <h1><field name="name" placeholder="e.g. Experience letter"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="letter_type"/>
+                            <field name="subject" placeholder="What the letter is called on the page"/>
+                        </group>
+                        <group>
+                            <field name="vault_category_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Placeholders you can use.</strong>
+                        Write the letter as you want it read, and put one of these
+                        where a detail belongs — it is replaced when the letter is
+                        prepared, and left exactly as typed if it is misspelt, so
+                        nothing is ever silently dropped.
+                        <div class="mt-1">
+                            <code>${employee_name}</code> · <code>${job_title}</code> ·
+                            <code>${department}</code> · <code>${company}</code> ·
+                            <code>${date}</code> · <code>${joining_date}</code> ·
+                            <code>${extra}</code>
+                        </div>
+                    </div>
+                    <field name="body_html" widget="html"
+                           placeholder="Dear ${employee_name}, …"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_letter_template" model="ir.actions.act_window">
+        <field name="name">Letter templates</field>
+        <field name="res_model">pb.letter.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write your first letter</p>
+            <p>A letter template is the wording your company uses every time —
+               an experience letter, a probation result, an incentive award.
+               Prepare one for a person and it becomes a PDF, filed in their
+               documents.</p>
+        </field>
+    </record>
+
+    <!-- ========================= the letters ========================= -->
+
+    <record id="view_hr_letter_list" model="ir.ui.view">
+        <field name="name">pb.hr.letter.list</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="arch" type="xml">
+            <list string="Letters" create="false">
+                <field name="create_date" string="Created"/>
+                <field name="employee_id"/>
+                <field name="template_id"/>
+                <field name="letter_type" optional="show"/>
+                <field name="subject" optional="hide"/>
+                <field name="generated_by" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'sent'"
+                       decoration-info="state == 'generated'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_letter_form" model="ir.ui.view">
+        <field name="name">pb.hr.letter.form</field>
+        <field name="model">pb.hr.letter</field>
+        <field name="arch" type="xml">
+            <form string="Letter">
+                <header>
+                    <button name="action_generate" type="object" string="Prepare"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_generate" type="object" string="Prepare again"
+                            invisible="state == 'draft'"/>
+                    <button name="action_send" type="object" string="Email it"
+                            class="btn-primary" invisible="state == 'draft'"/>
+                    <button name="action_open_pdf" type="object" string="Open the PDF"
+                            invisible="not attachment_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,generated,sent"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="template_id"/>
+                            <field name="subject"/>
+                        </group>
+                        <group>
+                            <field name="case_id"/>
+                            <field name="generated_at"/>
+                            <field name="generated_by"/>
+                            <field name="attachment_id"/>
+                            <field name="document_id" string="Filed in documents"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="The letter" name="letter">
+                            <field name="rendered_html" widget="html" readonly="1"/>
+                        </page>
+                        <page string="Extra details" name="extra">
+                            <field name="context_json"
+                                   placeholder='{"extra": "a sentence only this letter needs"}'/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_letter" model="ir.actions.act_window">
+        <field name="name">Letters</field>
+        <field name="res_model">pb.hr.letter</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No letters yet</p>
+            <p>Letters appear here once a journey prepares one, or once you
+               prepare one by hand from a template.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         Everything that ever arrived, and what Payobook did with it.
+
+         The list is ordered newest first and the OUTCOME is a badge, because
+         the only question anybody opens this screen with is "did that work?"
+         The payload is on the form and nowhere else — it is engineering
+         evidence, not something to skim past on the way to an answer.
+         ================================================================== -->
+
+    <record id="view_zoho_inbox_list" model="ir.ui.view">
+        <field name="name">pb.zoho.inbox.list</field>
+        <field name="model">pb.zoho.inbox</field>
+        <field name="arch" type="xml">
+            <list string="Arrivals" create="false">
+                <field name="received_at" string="Received"/>
+                <field name="person_name" string="Name on the record"/>
+                <field name="employee_id" string="Employee"/>
+                <field name="status_value" string="Status word" optional="show"/>
+                <field name="action_taken" string="What happened"/>
+                <field name="case_id" string="Journey started" optional="show"/>
+                <field name="source" string="Came in by" optional="show"/>
+                <field name="employee_number" optional="hide"/>
+                <field name="zoho_record_id" optional="hide"/>
+                <field name="rule_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" string="Outcome" widget="badge"
+                       decoration-success="state == 'applied'"
+                       decoration-warning="state == 'review'"
+                       decoration-muted="state == 'skipped'"
+                       decoration-danger="state == 'error'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_zoho_inbox_form" model="ir.ui.view">
+        <field name="name">pb.zoho.inbox.form</field>
+        <field name="model">pb.zoho.inbox</field>
+        <field name="arch" type="xml">
+            <form string="Arrival" create="false" edit="false">
+                <header>
+                    <button name="action_view_employee" type="object"
+                            string="Open the employee" class="btn-secondary"
+                            invisible="not employee_id"/>
+                    <button name="action_view_case" type="object"
+                            string="Open the journey" class="btn-secondary"
+                            invisible="not case_id"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="applied,review,skipped,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_summary" readonly="1"/></h1>
+                        <h3 class="text-muted"><field name="action_taken" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Who">
+                            <field name="employee_id"/>
+                            <field name="employee_number"/>
+                            <field name="zoho_record_id"/>
+                            <field name="status_value"/>
+                        </group>
+                        <group string="What Payobook did">
+                            <field name="received_at"/>
+                            <field name="source"/>
+                            <field name="trigger"/>
+                            <field name="rule_id"/>
+                            <field name="case_id"/>
+                            <field name="duplicate_of_id"/>
+                            <field name="external_event_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Details" invisible="not error_note">
+                        <field name="error_note" colspan="2" nolabel="1" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="What arrived" name="payload">
+                            <field name="payload_json" widget="text" readonly="1"
+                                   nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_zoho_inbox_search" model="ir.ui.view">
+        <field name="name">pb.zoho.inbox.search</field>
+        <field name="model">pb.zoho.inbox</field>
+        <field name="arch" type="xml">
+            <search string="Arrivals">
+                <field name="person_name" string="Name"/>
+                <field name="employee_id"/>
+                <field name="employee_number"/>
+                <field name="status_value"/>
+                <filter name="filter_review" string="Needs a look"
+                        domain="[('state', '=', 'review')]"/>
+                <filter name="filter_error" string="Went wrong"
+                        domain="[('state', '=', 'error')]"/>
+                <filter name="filter_applied" string="Applied"
+                        domain="[('state', '=', 'applied')]"/>
+                <filter name="filter_skipped" string="Already had it"
+                        domain="[('state', '=', 'skipped')]"/>
+                <separator/>
+                <filter name="filter_push" string="Live push"
+                        domain="[('source', '=', 'webhook')]"/>
+                <filter name="filter_file" string="File upload"
+                        domain="[('source', '=', 'file')]"/>
+                <separator/>
+                <filter name="filter_today" string="Today"
+                        domain="[('received_at', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <group>
+                    <filter name="group_state" string="Outcome"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_source" string="Came in by"
+                            context="{'group_by': 'source'}"/>
+                    <filter name="group_day" string="Day"
+                            context="{'group_by': 'received_at:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_zoho_inbox" model="ir.actions.act_window">
+        <field name="name">Arrivals from the connected system</field>
+        <field name="res_model">pb.zoho.inbox</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has arrived yet</p>
+            <p>Every joiner and leaver the connected system sends over shows up
+               here, with what Payobook did about it. Nothing is ever deleted
+               from this list, so it is also the answer to "why did that
+               happen?".</p>
+            <p>No connection wired up yet? Upload the file your HR team already
+               exports — the result is exactly the same.</p>
+        </field>
+    </record>
+
+    <record id="action_zoho_inbox_review" model="ir.actions.act_window">
+        <field name="name">Arrivals that need a look</field>
+        <field name="res_model">pb.zoho.inbox</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'review')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is waiting for you</p>
+            <p>Records land here when Payobook will not guess: a status word no
+               rule covers, or a record that could be two different people.
+               Nothing was changed for any of them.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The hub's client action. Test URL: /odoo/action-pb_time_hub -->
+    <record id="action_pb_time_hub" model="ir.actions.client">
+        <field name="name">Time</field>
+        <field name="tag">pb_time_hub</field>
+    </record>
+</odoo>

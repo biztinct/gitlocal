@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the next
+         tick after installation.
+
+         WHY DAILY AND NOT HALF-HOURLY. The analytics facts rebuild themselves
+         every thirty minutes (`pb_explorer.cron_pb_explorer_build`); this job
+         reads them. A budget board that re-reads a whole year every half hour
+         is a lot of work for a number that changes when a pay run is approved,
+         which is a handful of times a month. Daily, plus a "read it again"
+         button on the lens for the moment somebody has just approved one.
+
+         IT IS IDEMPOTENT BY CONSTRUCTION, not by a stamp: it SETS the spend
+         columns rather than adding to them, so running it twice, or ten times,
+         or after a partial failure, leaves the same figures. The stamp it
+         writes (`pb_budget.actuals_last_run`) is what the screen says, not what
+         makes it safe.
+
+         The `model_id` is a CONCRETE model. `pb.budget.actuals` is abstract and
+         an ir.cron pointing at an abstract model is a trap the framework gives
+         no warning for, so the job is anchored on the expense model and calls the
+         service by name — the same shape `pb_explorer`'s own build cron uses. -->
+
+    <record id="cron_budget_actuals" model="ir.cron">
+        <field name="name">Budgets: read what has been spent</field>
+        <field name="model_id" ref="model_pb_budget_expense"/>
+        <field name="state">code</field>
+        <field name="code">env['pb.budget.actuals'].cron_sync()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

@@ -54,24 +54,38 @@
               sequence="16"
               groups="pb_hr_payroll_formula.group_formula_manager"/>
 
-    <!-- Payroll Import Submenu -->
+    <!-- Pay Data Submenu.
+         JOURNEY J2 — every label here says what it MOVES and when you use it.
+         "New Import" and "Import Batches" sat side by side saying neither, next
+         to a "Import from Excel" button on the scheme form that sets up columns
+         instead of loading numbers. Doing, and browsing what you have done, are
+         now spelled differently. -->
     <menuitem id="menu_formula_import"
-              name="Payroll Import"
+              name="Pay Data"
               parent="menu_formula_root"
               sequence="20"
               groups="pb_hr_payroll_formula.group_formula_manager"/>
 
     <menuitem id="menu_import_batches"
-              name="Import Batches"
+              name="Past Pay Data Loads"
               parent="menu_formula_import"
               action="action_payroll_import_batch"
               sequence="10"/>
 
     <menuitem id="menu_import_new"
-              name="New Import"
+              name="Load Pay Data…"
               parent="menu_formula_import"
-              action="action_payroll_import_batch_new"
+              action="action_payroll_load_pay_data"
               sequence="20"/>
+
+    <!-- RD54 — the same load, starting on the connected system instead of a
+         file. Beside the one above rather than replacing it: both sources are
+         legitimate and which one you want is a decision, not a default. -->
+    <menuitem id="menu_import_from_feed"
+              name="Load From Connected System…"
+              parent="menu_formula_import"
+              action="action_payroll_load_from_feed"
+              sequence="25"/>
 
     <!-- Integration Submenu -->
     <menuitem id="menu_formula_integrations"
@@ -91,6 +105,18 @@
               parent="menu_formula_integrations"
               action="action_field_mapping"
               sequence="20"/>
+
+    <menuitem id="menu_api_data_store"
+              name="API Data Store"
+              parent="menu_formula_integrations"
+              action="action_api_data_store"
+              sequence="30"/>
+
+    <menuitem id="menu_transformation_rules"
+              name="Transformation Rules"
+              parent="menu_formula_integrations"
+              action="action_api_transformation_rule"
+              sequence="40"/>
 
     <!-- Testing Submenu -->
     <menuitem id="menu_formula_testing"

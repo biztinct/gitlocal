@@ -1,0 +1,281 @@
+[
+ {
+  "tab": "LnD",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); learner side: Employee (demo.learner@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Learn” in the left menu, then “Training”.\n3. Open the course “DEMO Agronomist basics”: see its lessons (video, document, article, quiz) and its test.\n4. Press “Question bank” at the top to see every test question in one place; “New test” builds a new test.\n5. Press “Assign a course”, pick the course, the people and the date it is due by.\n6. Learner side: sign in as demo.learner@example.com, open the “My training” card, open a lesson and press “Mark as done”.\n7. The test shows “Test locked” until every lesson is done; after “Take the test” the score shows at once, then the certificate.",
+  "comments": "The employee and their manager each get an email when someone is put on a course. Reminders go 3 days and 1 day before the due date and on the day, then every 3 days; the manager is told 2 days late and the HR lead 5 days late. The employee can press “Ask for more time” and must pick a reason (off sick, family emergency, something else); the manager decides. Putting every new agronomist on the course automatically on day one is built but switched off until Rize names the induction course; until then HR presses “Assign a course”."
+ },
+ {
+  "tab": "LnD",
+  "row": 5,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); employee side: Employee (diep.thai@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Learn” in the left menu, then “Training”.\n3. Open “Assignments”, under “Why:” press “Trial period”: Thái Ngọc Diệp’s course is past its date.\n4. Click “Lifecycle” in the left menu, then “Probation”, and press “Open their trial period” on a person: the courses they still owe are listed.\n5. A trial period cannot be confirmed with “Decide” while a required course is unfinished; the screen names the course.\n6. Employee side: sign in as diep.thai@example.com, click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My training” and choose “My training”.",
+  "comments": "A course given for the trial period is linked to the probation review automatically. If it runs late the manager is emailed after 2 days and the HR lead after 5. On the demo the HR lead is “DEMO HR Lead”; Rize names its real HR lead."
+ },
+ {
+  "tab": "LnD",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); manager side: Manager (lam.ngo@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Learn” in the left menu, then “Training”.\n3. Press “Assign a course”, pick a course and the managers (one by one, a whole department or everyone in one job), choose “Leadership programme” as the reason and set the due date.\n4. “Assignments” shows how far each person is; “Show finished ones too” adds the finished ones.\n5. Open a course: everyone on it, their progress and certificates.\n6. Manager side: sign in as lam.ngo@example.com, click the search bar (or press Ctrl+K / ⌘K), type “My training” and choose it; the “My team's training” page shows the team’s courses.",
+  "comments": "Passing a course test issues a certificate automatically and files it on the person’s record. For an outside course, the certificate is uploaded with the cost claim (see the training budget line)."
+ },
+ {
+  "tab": "LnD",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Employee (diep.thai@example.com); approver: HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in at payobook.com as diep.thai@example.com.\n2. Click the search bar at the top of the screen (or press Ctrl+K / ⌘K), type “My training” and choose “My training”, then open “My training allowance” (or go to payobook.com/my/training/claims).\n3. See the yearly allowance, what is used, and press “Claim a course back”: upload the receipt and the completion certificate and send it.\n4. HR side: sign in with the HR lead login, click “Learn” in the left menu, then “Training”, and open “Claims” to agree or turn down the claim.\n5. Agreed claims appear as an item the pay team adds to a pay run.",
+  "comments": "Each company has a yearly allowance, with a personal override if needed. The 5,000,000 ₫ on the demo is a made-up figure; Rize sets the real one and decides whether claims above it are allowed. An agreed claim never changes a payslip by itself; the pay team adds it to a pay run."
+ },
+ {
+  "tab": "LnD",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Learn” in the left menu, then “Training”.\n3. Open “Comes round again”: “DEMO Fire safety, every year” and “DEMO Site safety, every year” are set up.\n4. Press “New schedule”: choose the course, who it is for (a department or a job) and how often.\n5. Open “Assignments” and press “Send the reminders now” to send today’s reminders straight away.",
+  "comments": "A schedule puts people on the course again on its own when it comes round, and never puts the same person on it twice. Reminders and the manager / HR lead warnings work as for any other course. Rize says which courses come round yearly."
+ },
+ {
+  "tab": "LnD",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Insights” in the left menu, then “Training”.\n3. Pick a period with “Last 30 days”, “Last 3 months”, “Last 6 months”, “Last year”, or type your own From and To dates.\n4. Read the tiles: “Finished”, “Passed the test”, “Past their date”, “Still to do”, “Average score”, “More time agreed”.\n5. Press “Download the spreadsheet” for the report.",
+  "comments": "Completion, pass rate and overdue counts work for any date range and download to a spreadsheet. A weekly or monthly report emailed automatically is built but switched off on the demo; Rize tells us who should get it and whether weekly or monthly, and we turn it on."
+ },
+ {
+  "tab": "LnD",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); learner side: Employee (demo.learner@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Learn” in the left menu, then “Training”.\n3. Press “Assign a course”, choose the course, the agronomists, the due date and “One-off” as the reason.\n4. Open “Assignments” to follow progress; “More time” lists anyone who asked for extra time and why.\n5. Learner side: sign in as demo.learner@example.com, open the “My training” card, work through the lessons; the test unlocks when they are done and shows the score straight away.\n6. “Question bank” at the top of the Training screen holds every question written.",
+  "comments": "Same course, test and reminder engine as the day-one training, given out whenever needed with its own deadline. Emails go to the employee and manager at the start, reminders before and after the due date, then warnings to the manager (2 days late) and HR lead (5 days late). The employee must give a reason to ask for more time."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 4,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Recruiter (demo.recruiter@example.com); then HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in at payobook.com as demo.recruiter@example.com.\n2. Click “Lifecycle” in the left menu, then “Hiring”.\n3. Open the DEMO Territory Manager request and the signed offer for Cao Minh Khoa; press “Confirm they joined”.\n4. Sign in with the HR lead login, click “Lifecycle”, then “New joiners”: the person appears with their joining checklist.\n5. The first step, “Choose their buddy”, emails the hiring manager “Who will be …’s buddy?” on the next daily run (or press “Run today's steps”).",
+  "comments": "Closing the offer creates the employee, the contract and the joining checklist in one go, and the checklist starts the buddy request to the manager. A person arriving from Zoho starts the same checklist. On the demo this has already happened for Ly Thi Thu."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 5,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. On a joiner’s card whose “Buddy” line says “Choose one” (one of the DEMO Joiner cards), press “Choose one”.\n4. Everybody is listed with a note beside each name saying why they may not suit; pick one.",
+  "comments": "One buddy is chosen per joiner, plus a stand-in while they are away; there is no second named buddy. Location is shown as a warning next to the name, not a filter. The manager gets the email, but choosing on screen needs access to the New joiners screen, so today HR (or a manager given that access) makes the choice."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 6,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. On a joiner’s card press “Choose one” (or “Cover” where a buddy exists) and search any colleague.\n4. Read the note under each name: fewer than 6 months here, not permanent staff, still in their own trial period (all rule them out), different work location (warning), already a buddy to several people (warning).",
+  "comments": "The checks run automatically for every name. Tenure counts from the joining date; staff whose employment type is empty are flagged rather than refused. Same location is a preference, as asked, so it shows as a warning."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 7,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic; buddy side: Buddy (ess1.demo@payobook.com)",
+  "clicks": "1. Happens by itself when HR or the manager picks a buddy on “Lifecycle” → “New joiners”.\n2. The buddy gets “You are …’s buddy” (what the job is, and that the catch-ups are in their diary on the My Buddy page).\n3. The joiner gets “Meet your buddy, …” with the buddy’s name, job and email.\n4. To see the buddy side: sign in as ess1.demo@payobook.com and go to payobook.com/my/buddy: Trần Minh Khôi is listed with the catch-up dates.",
+  "comments": "Two separate emails go out the moment a buddy is chosen. The catch-up schedule itself lives on the buddy’s My Buddy page rather than in the email."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 8,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Buddy (ess1.demo@payobook.com); HR lead (demo.hr@example.com) for the board",
+  "clicks": "1. Sign in at payobook.com as ess1.demo@payobook.com.\n2. Go to payobook.com/my/buddy (“My Buddy”).\n3. Under “People you are looking after”, Trần Minh Khôi shows six catch-ups, two weeks apart.\n4. On the one that is due, write “What did you talk about?”, tick “Something here needs HR to look at it” if needed, and press “Mark this catch-up done”.\n5. “Hand this over while I am away” picks a stand-in and dates; HR is told.\n6. HR side: “Lifecycle” → “New joiners”, press “Cover” on a card to set a stand-in.",
+  "comments": "Catch-ups are planned automatically every 14 days, six times, when the buddy is named. A flagged catch-up turns red for HR. Cover while the buddy is on leave is set by the buddy or HR; it is not taken from the leave calendar automatically."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 9,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “People” in the left menu, then “Assets”.\n3. Press “Requests”: a laptop request was raised by itself for each new joiner, e.g. AR/2026/0046 for Ly Thi Thu, needed 12 days before her first day.\n4. Open it: “Suggested spare” shows a spare laptop already in stock before anything is bought.\n5. The request goes through the manager’s and then the final sign-off before the item is handed over.",
+  "comments": "The request is raised automatically when the joining checklist opens and is due 12 days before the joining date. The system looks for a spare first; buying only starts after the sign-off. Who signs off is set in the approval settings."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 10,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “People” in the left menu, then “Assets”.\n3. Open “Spare laptop (Facilities)” (VN-LT-00007), or press “Add an item”.\n4. The record holds make and model, serial number, cost in local currency with the US dollar value worked out, new or reused, bought on, arrived on, warranty, and who has it now.\n5. “Export” downloads the whole register.",
+  "comments": "Every field asked for is on the record. The demo has only one laptop in the register, with few fields filled in. The form does not force every field to be filled; Rize can tell us which ones must be compulsory."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 11,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead, then Employee (ess1.demo@payobook.com)",
+  "clicks": "1. As the HR lead, hand an item over first (for example the spare laptop VN-LT-00007 to Bùi Hữu Bảo): “People” → “Assets”, open the item and give it to the person.\n2. The employee signs in and opens “My Things” (payobook.com/my/assets).\n3. They press “Yes, I have it”; the date and time they confirmed are recorded.",
+  "comments": "The employee confirms receipt on their own page, and the condition noted at handover is shown to them. They cannot type their own condition notes or delivery date; the confirmation time is used. A joiner only gets their sign-in on the first day, so confirmation happens from day one, not before."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 12,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. Press “Open their journey” on a joiner’s card.\n4. The step “Tool access” is there, given to IT, due 5 days before the first day, with a reminder and a warning if it runs late.",
+  "comments": "Tool access is a checklist step with an owner, a due date, reminders and escalation. There is no special form for which tools, email format or groups; the IT owner works it out with the manager and ticks it off. Digital accounts can be logged in the assets register."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 13,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “Journeys”, and open a joiner’s journey.\n3. On the step “Tell us about you” press “Copy link” and send it to the joiner.\n4. The joiner opens the link without signing in and answers five short questions (what to call them, where they are from, three surprising facts, hobbies, what to ask them about).",
+  "comments": "The form and its private link work, and the answers feed the welcome card. The link is not emailed to the joiner on its own the day before; HR copies and sends it today. Sending it automatically is a small addition if Rize wants it."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 14,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: on the joining day the welcome card is built from the joiner’s own answers and emailed to their team.\n2. To see it: “Lifecycle” → “New joiners”, press “Open their journey” on Ly Thi Thu; the step “Welcome card to the team” is done.\n3. “Run today's steps” sends anything due today straight away.",
+  "comments": "The card goes by email only; Slack was left out by agreement. It goes to the joiner’s team and stops itself above 60 people so it can never go to the whole company by mistake."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 15,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: on the joining day the manager and the joiner both get “Welcome, … — your first day” with a 9:00 meeting invitation attached.\n2. To see it: “Lifecycle” → “New joiners”, “Open their journey” on Ly Thi Thu; the step “Day-one introduction” is done.",
+  "comments": "The invitation is a calendar file attached to the email, so it drops into whatever calendar each person uses; there is no live link to Google or Microsoft calendars (agreed). Start hour is a setting (9:00 now)."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 16,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "Automatic",
+  "clicks": "1. Nothing to press: the joiner’s sign-in is created when their record arrives, and the sign-in email goes on the joining day.\n2. To see it: “Lifecycle” → “New joiners”, “Open their journey”; the step is “Send their sign-in details”.",
+  "comments": "The details are held back until the first day so a link does not sit in an inbox for weeks. If Rize staff will sign in with their Zoho account instead, this email can simply be left as the welcome link."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 17,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "New joiner (khoi.tran@example.com)",
+  "clicks": "1. Sign in at payobook.com as khoi.tran@example.com.\n2. Open “My Journey”: your steps (tasks assigned to you, with “I have done this”), your HR contact, your buddy and “Your team”.\n3. Press “See who's who” (or open “Who's Who”) for the org chart; click any face to see their team and manager.\n4. Open “My Leave” for leave balances, and “My Pay Package” for what you are paid and covered by.",
+  "comments": "Org chart, manager, team, tasks, leave balances and pay package are all on the employee’s own pages. Written leave policies are not shown on the leave page; they can be put in Documents. Pay details only show once a pay package exists for the person."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 18,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); joiner side: New joiner (khoi.tran@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. Press “HR partner rules”: which HR person looks after which country or department.\n4. Each joiner card shows “HR contact”.\n5. Joiner side: sign in as khoi.tran@example.com and open “My Journey”: the “Your HR contact” card with an “Email …” button.",
+  "comments": "The HR contact is set automatically from the rules when the joining checklist opens, before the first login. On the demo most joiners point at a Payobook test account; Rize adds rules with its real HR people."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 19,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); joiner side: New joiner (khoi.tran@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. Each card shows “Their record … % complete”; hover to see what is missing.\n4. Joiner side: on “My Journey” the step “Finish your own details” (3 days after joining) and the card “Still to fill in” with “Open my profile”.\n5. On “Profile” the joiner asks to change phone, address and emergency contact; “Documents” takes uploads such as experience letters.",
+  "comments": "The reminder and the escalation to HR (3 days after the due date) are built. Photo, address, emergency contact, ID and bank account are tracked. Blood group and dependants are not on the record, and the employee cannot upload their own photo; Zoho stays the master for these details, so they may be collected there."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 20,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. Each card shows “Welcome session” with its date.\n4. Press “Welcome sessions” to see every session and who is in it; mark one done after it happens.",
+  "comments": "Every joiner is put into the next session on or after their first day automatically. Sessions are every two weeks on Tuesday now; weekly or another day is a setting. The session content itself is run by HR."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 21,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com); joiner side: New joiner (khoi.tran@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “Probation”.\n3. Everyone in a trial period is listed with the end date and days left.\n4. Joiner side: “My Journey” shows a trial-period card.",
+  "comments": "HR is reminded 15 and 5 days before the trial period ends, and the review opens on its own 21 days before. Covered in full on the Probation tab."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 22,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “Probation”.\n3. On Trần Minh Khôi press “Choose colleagues”, pick 3 to 5 people and press “Send the questions”.\n4. Each colleague gets a private link; the card shows how many have answered; “Another day” gives one extra day once.",
+  "comments": "The manager is emailed to choose the colleagues; colleagues are reminded and get a last-day alert. Choosing on screen needs access to the Probation screen. Covered in full on the Probation tab."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 23,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “Probation”.\n3. After the answers are in (“Put the answers together”), the manager has the 1:1 and presses “We have talked”, then “Decide”.\n4. The decision form asks for strengths, areas to improve, ratings and the verdict: “Confirm them”, “Extend the trial” or “Do not confirm”.",
+  "comments": "The 1:1 is due 2 days after the answers are put together. Covered in full on the Probation tab."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 24,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “Probation”.\n3. Open “DEMO Probation Colleague” (waiting on the HR lead) and press “Review recommendation”, then “Approve recommendation” or “Request changes”.\n4. Confirm sends the congratulations letter; Extend needs a one-month improvement plan; Do not confirm tells HR and shows “Start their exit”.",
+  "comments": "Letters go out from templates Rize can reword. The exit for a failed trial is started by HR, never automatically, so local labour rules can be followed. Covered in full on the Probation tab."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 25,
+  "supported": "Ready, switched off",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Learn” in the left menu, then “Training”.\n3. Open “Day one”: rules saying which courses a new joiner (or a job such as Agronomist) starts on day one.\n4. Click “Lifecycle” → “Probation” → “Open their trial period”: required courses and test scores are listed, and “Decide” refuses to confirm while one is unfinished.",
+  "comments": "The training block on confirmation and the score tracking are live. Putting agronomists on their courses automatically on day one is switched off until Rize names the induction course; then we turn it on. Covered in full on the Probation and LnD tabs."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 26,
+  "supported": "Partly",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “New joiners”.\n3. Press “Open their journey” on a joiner: under “Conversations” the 30-, 60- and 90-day check-ins are already dated, owned by their HR contact.\n4. “How it is going” shows the joiner’s own one-tap answers at day 7, 30 and 60.",
+  "comments": "The three check-ins are planned automatically with the HR contact when the joining checklist opens, and the HR contact is emailed on the day. They are not sent as calendar invitations to the joiner; the HR contact books the call. The topics for each check-in are not preset on a form."
+ },
+ {
+  "tab": "Onboarding & Orientation",
+  "row": 27,
+  "supported": "Yes",
+  "solution": "Built for Rize in Payobook",
+  "try_as": "HR lead (demo.hr@example.com)",
+  "clicks": "1. Sign in as the HR lead (demo.hr@example.com).\n2. Click “Lifecycle” in the left menu, then “Journeys”, and open a joining checklist.\n3. Press “Finish” when everything is settled; the checklist is kept with its history.\n4. After confirmation the person leaves the Probation list; regular goal check-ins carry on under “People” → “Goals”.",
+  "comments": "The joining file stays on record after it is finished, with every step, check-in and letter. Covered in full on the Probation tab."
+ }
+]

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         UPDATES P2c — scheduled changes are written on their day.
+
+         Hourly, so a change starts within the hour after midnight in its
+         company's own time zone. Each change is written in its own
+         transaction through the same all-or-none write an approval uses;
+         one that cannot be written is sent back with the reason, never half
+         written and never retried silently. With nothing scheduled it reads
+         one empty list and stops.
+         ================================================================== -->
+    <record id="ir_cron_records_start_scheduled" model="ir.cron">
+        <field name="name">Records: start scheduled changes</field>
+        <field name="model_id" ref="model_pb_records_apply"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_start_scheduled()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

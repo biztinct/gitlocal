@@ -1,0 +1,154 @@
+[
+ {
+  "area": "B-amber-followup",
+  "kind": "still_broken",
+  "id": "crit-3",
+  "text": "Re-run on the current tree with stubbed registry.match. Real send-backs whose reason contains none of the _FIX_WORD words still go to Send payslips. The new _RETURN_WITH_REASON only catches a fixed list of words (because / wrong / missing / fix ...). Every one of these is 'send_payslips' now; prev is the tree before this pass and HEAD is the shipped code. 'Send it all back, the payslips show last month's rates' -> {'run': 'it all back, the'}. 'Send them all back as the payslips have the old overtime rate'. 'Send that back, payslips aren't right'. 'Send the stuff that's waiting back, the payslips are off'. 'Send the run Mai sent in back, the payslips need another look'. 'Send the June run you sent me back, payslips have old rates'. 'Send what Mai sent back to her, two payslips have old rates'. 'Send the one that's pending back, payslips look off'. 'Send the June run that is pending back to Mai, payslips have old rates'. 'Send all that back, the payslips show the old rate'. 'Send all back, payslips show old rates'. 'Send the run that's waiting on me back, payslips need updating'. Worst case: 'Email the June payslips back to Mai to update' -> send_payslips {'run': 'June'}. That resolves to an approved June run and offers to email its payslips. The email verbs have no _NOT_SEND_BACK guard, only the fix-word list. Of my 33 send-back sentences, 13 still reach send_payslips (33 of 33 at HEAD; 14 before this pass, so this pass fixed only one). The new test lists only sentences that contain a fix word, so it cannot catch this. Timing is fine: under 10 ms on 300-character inputs."
+ },
+ {
+  "area": "B-amber-followup",
+  "kind": "regression",
+  "text": "New RunPayroll._period_words_to_scheme (normalise_texts, ~line 414) moves every non-month word of the period slot into the scheme. That includes words that belong to the month phrase itself. The real scheme is then cut off and read as PEOPLE, and the plan is refused. Phrase path, prev vs now: 'Run the end of May payroll for Retail End-Month' was May + Retail End-Month; now scheme 'end' and people 'Retail End-Month', refused with 'I could not find \"Retail End-Month\" among the people this scheme pays.' 'Chạy lương cuối tháng 5 cho Bán lẻ' (end-of-May run) was May + Bán lẻ; now people 'cuối', refused. 'Chạy lương giữa tháng 5 cho Bán lẻ' gives people 'giữa' and 'Chạy lương kỳ 1 tháng 5 cho Bán lẻ' gives people '1', both refused (both resolved before). 'Run the May month payroll for Retail End-Month' gives scheme 'month' and people 'Retail End-Month'. 'Run end of month payroll for Retail End-Month', 'Run this pay period's payroll for Retail End-Month', 'Run 2031 payroll for Retail End-Month' and 'Run 13th month payroll for Retail End-Month' all drop the period to the default month and refuse with the period words as a person's name. 'Run June '31 payroll' gives people \"'31\". 'Run June and July payroll' gives people 'and July'."
+ },
+ {
+  "area": "B-amber-followup",
+  "kind": "regression",
+  "text": "The same _period_words_to_scheme runs on model-filled slots and on pencil or answer edits. runner.run calls normalise_texts on every path (runner.py:731), and the pencil writes texts[slot]=text, then re-runs (runner.py:1054-1062). These slot dicts resolved correctly before this pass and are now broken. {'period':'the month of May','scheme':'Retail End-Month'} gives scheme 'month' (ambiguous question) and people 'Retail End-Month' (refused). The same happens for 'May month' and 'month of May 2031'. {'period':'end of May', ...} gives people 'Retail End-Month', refused. {'period':'mid May','scheme':'Retail End-Month'} silently resolves the scheme to Payobook Retail MID-Month, and 'Retail End-Month' becomes people (refused). {'period':'May of this year'}, {'period':'May 1 to May 31'}, {'period':'the May period'} and {'period':'this pay period'} drop the period to the default month and refuse on people. 'early May 2031', '1-31 May 2031' and 'pay period May' refuse on people 'early' / '1-31' / 'pay period'. The fix should run only on the phrase-table capture before 'payroll', and should keep month-phrase words (end/mid/early/of/month/period/cuối/giữa/kỳ N) in the period."
+ },
+ {
+  "area": "B-amber-followup",
+  "kind": "regression",
+  "text": "_period_words_to_scheme joins the two parts with a literal ' for ' ('%s for %s'). The 'for' token then stops _covers_scheme from reading both halves together as one scheme. 'Run mid-month payroll for Retail' (and 'end-month', and '... for Retail for May') gives scheme 'mid-month' (Payobook Retail Mid-Month) and people 'Retail', refused with 'I could not find \"Retail\" among the people this scheme pays.' Before this pass it asked the scheme question."
+ },
+ {
+  "area": "AC-red-runner",
+  "kind": "still_broken",
+  "id": "regression:/Users/adity/Documents/GitHub/gitlocal/pb_payai_actions/payai/runner.py",
+  "text": "Both halves are only partly fixed. I stub-ran runner.py lines 61-226 against the current tree. (1) only_thanks() folds the accent marks away, so it repeats the fold-collision bug this same pass fixed for the cancel words. 'cam' (cảm), 'vang' (vâng), 'hieu' (hiểu), 'tot' (tốt) and 'biet' also match other words: vắng (absent), cấm, Hiếu (a common first name), Tốt. Real send-back reasons are now swallowed as thanks. only_thanks gives True for 'Hiếu đã vắng' (Hiếu was absent), 'Vắng nhiều quá' (too many absences), 'Vắng rồi', 'anh Hiếu' and 'Cấm'. handle() then returns None, the words go to the answers, and no reason is stored. Nothing in test_crit4k checks marks, so the tests cannot catch this. Fix: check the thanks words with their own marks, as _vi_marks_fit does for the cancel words. (2) Many ordinary thanks still become the reason (only_thanks False, not cancel): 'Thanks, that helps', 'That makes sense, thanks', 'Thanks, that is clear', 'Thanks for explaining', 'ok, makes sense', 'Tuyệt vời, cảm ơn', 'Cảm ơn, rõ rồi', 'Cảm ơn đã giải thích'. (3) The marks check cannot tell the unaccented name Huy from the cancel word 'huy'. So 'Huy không duyệt' (Huy did not approve) and 'Huy từ chối' (Huy refused) cancel the open send-back question: cancel_words(...) is True, and the 'about' words are 'Send the June 2031 Payai Retail run back'. 'Huy đi' and 'Huy nhé' also cancel."
+ },
+ {
+  "area": "AC-red-runner",
+  "kind": "still_broken",
+  "id": "P3:wf-10",
+  "text": "The implementer says so too: pb_audit/models/pb_audit_console.py:406 still builds the status label from the raw selection, dict(self.env['payai.task']._fields['state'].selection). Every PayAI status, including the new 'Replaced by a newer request' and 'Changed before it was done', shows in English on a Vietnamese Audit console row. Lines 262 and 353 have the same pattern. Fixing it needs a change in pb_audit, outside this cluster. Only the payai_task.py states and where they are written are done."
+ },
+ {
+  "area": "AC-red-runner",
+  "kind": "still_broken",
+  "id": "P3:sec-4",
+  "text": "Deferred, not fixed. It belongs to the FIX-1b Access-rule stage. Red actions are not yet refused here when the asker's Approvals screen is locked for them in Access and delegations."
+ },
+ {
+  "area": "AC-red-runner",
+  "kind": "regression",
+  "text": "New in this pass: only_thanks() (around line 219, using _THANKS_WORDS and _THANKS_GLUE on fold()ed words) swallows real Vietnamese send-back reasons whose folded words match thanks words. Stub results: only_thanks('Hiếu đã vắng') is True, and so are 'Vắng nhiều quá', 'Vắng rồi', 'anh Hiếu', 'Chị Tốt' and 'Cấm'. While a reason question is open, typed_answer() returns None for these and handle() returns None (it skips the phrase table and the reason), so the approver's real reason is never recorded and the question just stays open. English 'see the info'-style glue gives some false positives too, for example 'ok see the info' and 'the help is good'."
+ },
+ {
+  "area": "AC-red-runner",
+  "kind": "regression",
+  "text": "test_crit4k only checks thanks forms and mixed English reasons. No marked Vietnamese word that folds onto a thanks word is tested (vắng, Hiếu, cấm), so the new false positives cannot fail any test. test_crit4l has no unaccented-name case such as 'Huy không duyệt', which still cancels."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "still_broken",
+  "id": "P4:vi-1",
+  "text": "The reviewer's 7 sentences are fixed, but other everyday question endings still start an action. Today = 13 Oct 2026, current tree: 'chạy lương tháng 6 lúc nào' gives run_payroll {period:'tháng 6 lúc nào'} with looks_like_question False. 'chạy lương tháng 6 hôm nào' gives run_payroll the same way. 'gửi phiếu lương tháng 6 khi nào được' gives send_payslips {run:'tháng 6 khi nào được'}. 'gửi phiếu lương tháng 6 hả' gives send_payslips, and 'duyệt yêu cầu của Lan hả' / '… sao' give approve_item. 'lúc nào' (a common synonym of 'khi nào') and 'hôm nào' are missing from _QUESTION_TAIL_VI, and 'khi nào' followed by 'được' is not covered. Because looks_like_question is False, ask_model is reached as well. Side effect: a lower-case English surname 'approve leave for chua' is now None (counted as a question)."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "still_broken",
+  "id": "P4:vi-2",
+  "text": "Only the resolver half is done. The Red path still silently reads unmarked 'thang sau' as next month. registry.match('duyet bang luong thang sau') gives approve_item {item:'bang luong thang sau'}. actions_red.match_cards (line 234) still calls parse_period, which returns 1–30 Nov 2026, with query ['bang','luong']. resolve.item_query, which would ask 'June or next month?', is never called anywhere in payai/*.py (grep: no caller outside resolve.py)."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "still_broken",
+  "id": "P4:vi-4",
+  "text": "Only the resolver half is done. The Red narrowing still drops the names. actions_red.ITEM_STOP still holds 'minh','dang','do','thang', and match_cards still calls tokens(rest, ITEM_STOP), not item_query. Results: 'duyệt tăng ca của Minh' gives Red query ['tang','ca'] (any overtime request); 'duyệt nghỉ phép của Thắng' gives ['nghi','phep']; 'duyệt yêu cầu của Đặng' gives [] ; 'duyệt đơn của Đỗ Hùng' gives ['don','hung']. That is exactly the reviewer's repro, unchanged. (Smaller point: person_words('Anh Tuấn') gives ['Tuấn'], so a leading capital Anh or Chi that is part of a given name is still dropped.)"
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "still_broken",
+  "id": "P4:vi-10",
+  "text": "The reviewer's table passes, but other common year and count words still give a wrong month, labelled as said. parse_period('tháng 1 sang năm') ('sang năm' means next year) gives Jan 2026 with 'sang nam' left over (should be Jan 2027). 'năm tháng trước' (five months ago) gives Sep 2026 with 'nam' left over, so it is quietly read as last month. 'tháng 1 năm sau nữa' gives Jan 2027 with 'nua' left (should be 2028). 'tháng sáu tới' gives June 2026 (past) with 'toi' left."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "still_broken",
+  "id": "P4:vi-12",
+  "text": "The run_payroll repros are fixed, but the Red half and other 'cho tôi' shapes are not. (1) Red: 'duyệt bảng lương tháng 13' gives approve_item. match_cards' parse_period returns None, and 'thang' plus the digit are stripped, so the query is ['bang','luong'] and every waiting pay run of any month matches. item_query's 'tháng 13' question is never used. (2) 'cho tôi xem bảng lương tháng 6' (show me the June run) gives update_pay_data {person:'tôi xem bảng', field:'lương tháng', value:'6'}. In _LEAD_VI, the 'cho (toi|minh) (?=xem)' branch eats its space and then needs another one, so the lead never cuts. The same happens unmarked. (3) 'chạy lương tháng 6 cho bạn' gives period 'tháng 6 cho'."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "still_broken",
+  "id": "regression:pb_payai_actions/tests/__init__.py",
+  "text": "Still not wired. tests/__init__.py imports fix_red, fix_amber, fix_runner and fix_client but not test_payai_fix_vi. None of the cluster D tests (vi1…vi12, crit3, test5, wf9, the second-pass tables) will run on p0clone until the main loop adds 'from . import test_payai_fix_vi'. The file compiles, and 20 of its 21 reading tests pass under stubs; test_vi4 needs a real database."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "regression",
+  "text": "parse_day step 3 (the vi-6 rewrite, regex '\\b(?:ngay\\s+)?(\\d{1,2})\\s+(thang\\b.*)$') reads a month COUNT as a DAY, against parse_period's own vi-10 reading. In vi_VN and en_US alike: '2 tháng trước' (two months ago) gives 2 Sep 2026 'said' (parse_period: Aug 2026). '6 tháng trước' gives 6 Sep 2026 (parse_period: Apr 2026). '10 tháng trước' gives 10 Sep 2026 (parse_period: Dec 2025). '3 tháng tới' gives 3 Nov 2026 (parse_period: Jan 2027). '2 tháng sau' gives 2 Nov 2026 (parse_period: Dec 2026). So 'đổi phụ cấp của Linh thành 500.000 từ 6 tháng trước' sets an effective date of 6 Sep 2026 and shows it as said. Also, _YEAR_SAID does not mark '<n> tháng nữa' as explicit, so _nearest re-picks the year: 'mười hai tháng nữa' gives 1 Oct 2026 (should be Oct 2027) and '13 tháng nữa' gives 1 Nov 2026 (should be Nov 2027)."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "regression",
+  "text": "The new _TAIL_VI tails 'ban(\\s+oi)?', 'thoi' and 'luon' cut a final name, capitalised or not. 'duyệt nghỉ phép của Bạn' / '… của Thôi' / '… của Luôn' give item 'nghỉ phép của' (HEAD kept the name). filler_word treats capital 'Bạn' / 'Thôi' as filler because they are marked. 'luon' has no spelling check at all."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "regression",
+  "text": "_folded_ok rejects mixed typing inside the order verb itself, and the unmarked 'huy' is now refused even in lower case. 'tu chối yêu cầu', 'Từ chói nghỉ phép của Lan', 'Tư chối yêu cầu', 'huy bỏ phiếu lương', 'huy bảng lương tháng 6' and 'Huy bảng lương tháng 6' all went from reject_item / never_destructive at HEAD to None, which falls through to the model. Also: unmarked 'bac bang luong thang 6' (an accentless 'bác') went from reject_item to None. Lower severity: only the refusal or plan card is lost."
+ },
+ {
+  "area": "D-vietnamese",
+  "kind": "regression",
+  "text": "_NOT_A_DELTA spares only 'làm thêm', so the real allowance name 'phụ cấp thêm giờ' (overtime allowance) is now blocked: 'đổi phụ cấp thêm giờ của Linh thành 500.000' gives None (it was update_pay_data)."
+ },
+ {
+  "area": "H-access",
+  "kind": "still_broken",
+  "id": "regression:/Users/adity/Documents/GitHub/gitlocal/pb_payai_actions/tests/__init__.py",
+  "text": "Still not wired in the current tree. tests/__init__.py imports p1-p4, fix_red, fix_amber, fix_runner and fix_client, but not test_payai_fix_access or test_payai_fix_vi. None of fb01-fb18 or fs01-fs04 (or the fix_vi tests) will run on p0clone until the main loop adds `from . import test_payai_fix_access` and `from . import test_payai_fix_vi`. Both files compile. Under stubs, the sentence tables in fb07, fb11 and fb16 pass up to their Odoo parts, and fb12, fb14, fb17 and the fb08 static scan pass in full. Everything that needs Odoo (fs01-fs04, fb09, fb15, the end-to-end cards) is unproven."
+ },
+ {
+  "area": "H-access",
+  "kind": "still_broken",
+  "id": "FIX-1b:3",
+  "text": "Some plain access orders still miss the never card. Checked with the stubbed registry.match on the current tree: 'put Lan in the payroll managers group' -> None; 'Lan needs to be able to approve payroll' -> None; \"I'm going on leave, Lan will approve for me\" -> None; 'see it as Lan' and 'view as Lan' -> None; 'show Lan's passport' -> None; 'what roles does Lan have' and 'which permissions does Lan have' -> None. 'open the Screens lens', 'open the screens tab', 'open user management' and 'open the people passport for Lan' -> open_screen, and gate.names_access is False for 'Screens lens', 'user management', 'Users', 'Navigation', 'Passports' and 'Who can open each screen', so the model's open_screen call does not get the never card either. 'approve the request from Lan for the payroll manager role' -> approve_item. Impact is cosmetic only: no denied door survives the store, Ctx or param_gate, and gate.access_request refuses a roles-process request on the server. Nothing in Access can be opened or changed. But requirement 3 (an order to change, lend or open roles or delegations gets the never card) is still not met for these wordings."
+ },
+ {
+  "area": "H-access",
+  "kind": "regression",
+  "text": "Minor false positive: 'change the approver note' now gets the never_access card. The pattern `^(?:replace|swap|switch|change|remove|reassign)\\s+(?:the\\s+|my\\s+|...)?(?:\\S+\\s+)?(?:approvers?|...)` matches any 'change the approver …'. Without never_access the sentence went to None, so no action is lost. Only the answer changes, to a refusal about access. 'approve the role change for Lan in the June run' also moved from approve_item to never_access, but that is defensible because 'role change' is the access request's own name. A corpus of about 110 ordinary EN and VI payroll orders (allowances named admin, role or access; admin team or department; Quyền as a name; approvals inbox; approval matrix; hand-over of payslips; leave and overtime requests) showed no other change from before never_access."
+ },
+ {
+  "area": "G-cross",
+  "kind": "note",
+  "text": "BLOCKING for the 3 new pb_approval_config lines: PoFileReader merges pb_approval_config/i18n/pb_approval_config.pot into the .po, and polib's merge marks every .po entry missing from the .pot as obsolete. 'You cannot open this request.', 'Moving a step…' and 'Refused' are therefore DROPPED on the server; I checked this with the server's own reader. Cluster G may edit only *.po, so the main loop must append the ready-made block in /private/tmp/claude-502/-Users-adity-Documents-GitHub-gitlocal/fe2ffeca-966f-4b61-8539-7531416d50ca/scratchpad/g/pb_approval_config_pot_addition.txt to pb_approval_config.pot, then re-run the gate. About 88 older pb_approval_config .po rows are already dead the same way (798 rows flat vs 710 merged)."
+ },
+ {
+  "area": "G-cross",
+  "kind": "note",
+  "text": "Ledger gotcha candidate PA58: a module with i18n/<module>.pot loads ONLY msgids that are in the .pot; polib merge obsoletes the rest silently. Any new code string in such a module needs a .pot line as well as a .po line."
+ },
+ {
+  "area": "G-cross",
+  "kind": "note",
+  "text": "Learn (cluster F) and test_payai_p4.test_08 (cluster D / main loop): after copy-2 and copy-6 the PayAI card button says 'Thu hồi' and the cards say 'đợt lương'. The Runs lesson's Vietnamese text in pb_learn/static/content/learn_content.json still says 'nút Rút lại trên thẻ' and 'Gửi duyệt bảng lương tháng 6'. To align: change the Learn vi to 'Thu hồi' / 'đợt lương', and change test_08's expected 'Rút lại' to 'Thu hồi'. test_08's registry.match lines using 'bảng lương' can stay, because the parser still reads it. Until then test_08 passes but the lesson names a button that is no longer there."
+ },
+ {
+  "area": "G-cross",
+  "kind": "note",
+  "text": "Deploy: code strings go live from disk at restart. Two msgstrs are stored values that need a module upgrade on the DBs that have the module: 'Discard' → 'Huỷ bỏ' is a view term of pb_payai_actions (payobook only), and 'Pay Runs' → 'Các đợt lương' is also the name of pb_payruns' two window/client actions. Without the upgrade the old stored Vietnamese stays (LOOK lesson: a translation fix is two fixes)."
+ },
+ {
+  "area": "G-cross",
+  "kind": "note",
+  "text": "runner.py: the typed-word fallback `word = (action.shown_word() if action else '') or 'the word'` is a bare English literal, so a Vietnamese user would read 'the word' if shown_word() is ever empty. It should go through _lt (cluster C/D)."
+ },
+ {
+  "area": "G-cross",
+  "kind": "note",
+  "text": "Pre-existing, outside FIX-1, not changed: pb_payruns/i18n/vi_VN.po has 8 entries with no '#:' occurrence line, all from models/hr_payslip_run.py except one whose source I did not find. They never load, so those messages (submit-for-approval / split / delete refusals) stay English. om_hr_payroll has about 40 _() strings with no Vietnamese entry at all."
+ }
+]

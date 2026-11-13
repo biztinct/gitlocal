@@ -24,8 +24,7 @@
                     <br/>
                 </div>
             </field>
-            <field name="report_template" ref="om_hr_payroll.action_report_payslip"/>
-            <field name="report_name">{{ (object.employee_id.name or '').replace('/','_') }}</field>
+            <!-- report_template and report_name fields removed - deprecated in Odoo 19 -->
         </record>
 
     </data>

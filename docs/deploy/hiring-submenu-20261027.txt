@@ -1,0 +1,25 @@
+Hiring set-up submenu correction — 27 October 2026 Sydney
+Runtime commit: 8b1fc94387e6559b1b30120e711393f2db4bc92f
+
+Cause: the pb_hiring_setup client action rendered the standalone setup component
+rather than the shared Hiring HubShell, so it had no submenu rail.
+Fix: add a Set-up lens with the existing setup role gates and hiring access probe.
+The legacy setup action now uses the same workspace with Set-up selected by
+default. Existing Settings, palette and board links keep their original action ID.
+
+Deployment: Payobook19v2, /odoo/odoo-server/addons only.
+Active DBs: payobook, payobook_template, p0clone, rize.
+Static-only deployment; installed pb_hiring version 19.0.2.16.2 retained and
+verified on all four. All 154 combined custom addon trees verified before/after.
+Standard addons and ABM untouched. Prior changed files archived in deployment stage.
+
+PASS: syntax/diff checks and both action configurations expose the same six lenses.
+PASS: deployed p0clone TestTheDoors + TestSourceGates, 14 tests, no failures/errors.
+Test transactions rolled back and external mail delivery disabled.
+PASS: HTTP 200 on payobook.com, rize.payobook.com and p0clone.payobook.com.
+PASS: Chrome direct setup link displays the Hiring rail and Set-up selected.
+PASS: Chrome Set-up -> Applicants -> Set-up round trip.
+PASS: Chrome Back to hiring board -> Set-up through the normal Hiring action.
+PASS: Chrome console has no warnings/errors. No business settings edited.
+Screenshots inspected inline; no test screenshot files saved.
+Server receipt: /tmp/payobook-hiring-submenu-20261027/receipt.json

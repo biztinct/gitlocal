@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Wrap the action container so BizSidebar can sit to its left.
+         Composes with other sidebar modules (e.g. pb_sidebar): each wrapper
+         only rails when it actually contains a rendered .biz-sidebar
+         (see :has() guard in biz_sidebar.scss). -->
+    <t t-name="web.WebClient" t-inherit="web.WebClient" t-inherit-mode="extension">
+        <xpath expr="//ActionContainer" position="replace">
+            <div class="biz-layout-wrapper biz-menu-layout">
+                <BizSidebar/>
+                <ActionContainer/>
+            </div>
+        </xpath>
+    </t>
+
+    <t t-name="biz_theme.BizSidebar">
+        <aside t-if="visible" class="biz-sidebar biz-menu-sidebar">
+            <div class="biz-sidebar-brand biz-menu-sidebar__brand">
+                <div class="biz-menu-sidebar__logo">
+                    <t t-esc="(app and app.name or '?')[0]"/>
+                </div>
+                <div class="biz-sidebar-label biz-menu-sidebar__brand-tx">
+                    <div class="biz-menu-sidebar__brand-name" t-esc="app and app.name"/>
+                </div>
+                <button class="biz-sidebar-toggle biz-menu-sidebar__toggle"
+                        t-on-click.stop="toggleCollapse" title="Collapse / expand sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="biz-menu-sidebar__nav">
+                <t t-foreach="sections" t-as="section" t-key="section.id">
+                    <button t-if="section.isSection"
+                            class="biz-sidebar-label biz-menu-sidebar__section"
+                            t-on-click="() => this.toggleSection(section.id)">
+                        <span t-esc="section.name"/>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             t-attf-class="biz-menu-sidebar__chev {{ isSectionCollapsed(section.id) ? '' : 'open' }}">
+                            <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                    </button>
+                    <t t-if="!section.isSection or !isSectionCollapsed(section.id)">
+                        <t t-foreach="section.items" t-as="item" t-key="item.id">
+                            <button t-attf-class="biz-sidebar-item biz-menu-sidebar__item {{ item.sub ? 'biz-sidebar-sub sub' : '' }} {{ state.activeId === item.id ? 'active' : '' }}"
+                                    t-att-title="item.name"
+                                    t-on-click="() => this.onItemClick(item)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path t-att-d="item.iconPath"/>
+                                </svg>
+                                <span class="biz-sidebar-label" t-esc="item.name"/>
+                            </button>
+                        </t>
+                    </t>
+                </t>
+            </nav>
+        </aside>
+    </t>
+
+</templates>

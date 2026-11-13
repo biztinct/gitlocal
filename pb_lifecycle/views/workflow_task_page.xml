@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       WF2 P4a (R5, D16) — a workflow task done OUTSIDE the app:
+         * on the employee home   /my/todo/<id>       (employee-home login)
+         * by a private link      /workflow/t/<key>    (no login at all)
+       ONE body for both, so the two can never drift. It renders every
+       field type Studio forms offer (text, long answer, number, date,
+       email, dropdown, multiple choices, yes/no, file, line items, record
+       choice, heading). Files work on the employee home only; record
+       choices work in the app only — the page says so in plain words.
+       Every value is t-esc'd / t-att'd: nothing a person typed is ever
+       rendered as markup. No record data beyond the step's own words, the
+       designer's fields and the record's name. Lucide icons inline.
+       ================================================================== -->
+
+  <template id="wt_icon" name="Workflow task icon">
+    <t t-set="isz" t-value="isz or 18"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbwt-ic" aria-hidden="true">
+      <t t-if="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'check-circle'"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></t>
+      <t t-elif="icon == 'clipboard'"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'alert'"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></t>
+      <t t-elif="icon == 'undo'"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></t>
+      <t t-elif="icon == 'link-off'"><path d="M9 17H7A5 5 0 0 1 7 7"/><path d="M15 7h2a5 5 0 0 1 4 8"/><path d="M8 12h4"/><path d="m2 2 20 20"/></t>
+      <t t-elif="icon == 'paperclip'"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></t>
+      <t t-elif="icon == 'arrow-left'"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></t>
+      <t t-elif="icon == 'list-checks'"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></t>
+      <t t-elif="icon == 'bell'"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></t>
+      <t t-else=""><circle cx="12" cy="12" r="10"/></t>
+    </svg>
+  </template>
+
+  <!-- ===== one form field ===== -->
+  <template id="wt_field" name="Workflow task field">
+    <t t-set="fid" t-value="f.get('id')"/>
+    <t t-set="ftype" t-value="f.get('type')"/>
+    <t t-set="val" t-value="values.get(fid)"/>
+    <t t-set="ro" t-value="fid in (t.get('readonly') or [])"/>
+    <t t-set="err" t-value="errors.get(fid)"/>
+    <h2 t-if="ftype == 'section'" class="pbwt-section" t-esc="f.get('label')"/>
+    <div t-else="" t-att-class="'pbwt-field%s' % (' has-error' if err else '')">
+      <label class="pbwt-label" t-att-for="'f_%s' % fid">
+        <t t-esc="f.get('label')"/>
+        <span t-if="f.get('required') and not ro" class="pbwt-req" aria-hidden="true">*</span>
+        <small t-if="ro" class="pbwt-from">From the record</small>
+      </label>
+      <p t-if="f.get('visible_if')" class="pbwt-help">Only needed if an earlier answer says so.</p>
+      <t t-if="f.get('unsupported')">
+        <div class="pbwt-cannot">
+          <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'paperclip' if ftype == 'file' else 'alert'"/><t t-set="isz" t-value="15"/></t>
+          <span t-if="ftype == 'file'">Files cannot be sent from this page. Ask <t t-esc="t.get('company') or 'whoever sent this'"/> how to send it.</span>
+          <span t-else="">This one is chosen inside the app. Ask <t t-esc="t.get('company') or 'whoever sent this'"/> to fill it in for you.</span>
+        </div>
+      </t>
+      <t t-elif="ro">
+        <input class="pbwt-input" type="text" disabled="disabled" t-att-id="'f_%s' % fid" t-att-value="'' if val is None else val"/>
+      </t>
+      <t t-elif="ftype == 'textarea'">
+        <textarea class="pbwt-input" rows="4" t-att-id="'f_%s' % fid" t-att-name="'f_%s' % fid"
+                  t-att-required="'required' if f.get('required') else None" t-esc="val or ''"/>
+      </t>
+      <t t-elif="ftype in ('text', 'number', 'date', 'email')">
+        <input class="pbwt-input" t-att-type="'text' if ftype == 'text' else ftype"
+               t-att-step="'any' if ftype == 'number' else None"
+               t-att-min="f.get('min') if ftype == 'number' and f.get('min') is not None else None"
+               t-att-id="'f_%s' % fid" t-att-name="'f_%s' % fid"
+               t-att-value="'' if val is None else val"
+               t-att-required="'required' if f.get('required') else None"/>
+      </t>
+      <t t-elif="ftype == 'select'">
+        <select class="pbwt-input" t-att-id="'f_%s' % fid" t-att-name="'f_%s' % fid"
+                t-att-required="'required' if f.get('required') else None">
+          <option value="">Choose one…</option>
+          <t t-foreach="f.get('options') or []" t-as="opt">
+            <option t-att-value="opt" t-att-selected="'selected' if opt == val else None" t-esc="opt"/>
+          </t>
+        </select>
+      </t>
+      <t t-elif="ftype == 'multiselect'">
+        <div class="pbwt-choices" role="group" t-att-aria-label="f.get('label')">
+          <t t-foreach="f.get('options') or []" t-as="opt">
+            <label class="pbwt-choice">
+              <input type="checkbox" t-att-name="'f_%s' % fid" t-att-value="opt"
+                     t-att-checked="'checked' if opt in (val or []) else None"/>
+              <span t-esc="opt"/>
+            </label>
+          </t>
+        </div>
+      </t>
+      <t t-elif="ftype == 'boolean'">
+        <div class="pbwt-choices pbwt-yesno" role="radiogroup" t-att-aria-label="f.get('label')">
+          <label class="pbwt-choice"><input type="radio" t-att-name="'f_%s' % fid" value="yes" t-att-checked="'checked' if val is True else None"/><span>Yes</span></label>
+          <label class="pbwt-choice"><input type="radio" t-att-name="'f_%s' % fid" value="no" t-att-checked="'checked' if val is False else None"/><span>No</span></label>
+        </div>
+      </t>
+      <t t-elif="ftype == 'file'">
+        <t t-foreach="(t.get('files') or {}).get(fid) or []" t-as="fl">
+          <label class="pbwt-choice pbwt-file">
+            <input type="checkbox" t-att-name="'keep_%s' % fid" t-att-value="fl['id']" checked="checked"/>
+            <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="14"/></t>
+            <span t-esc="fl['name']"/>
+          </label>
+        </t>
+        <input class="pbwt-input pbwt-upload" type="file" multiple="multiple" t-att-id="'f_%s' % fid" t-att-name="'f_%s' % fid"/>
+        <p class="pbwt-help">Up to 10 files, 10 MB each.</p>
+      </t>
+      <t t-elif="ftype == 'rows'">
+        <div class="pbwt-rows">
+          <div class="pbwt-rowhead"><span>What it is</span><span>Amount</span></div>
+          <t t-foreach="(val or []) + [{}, {}, {}]" t-as="ln">
+            <div class="pbwt-row">
+              <input class="pbwt-input" type="text" t-att-name="'rows_%s_description' % fid"
+                     t-att-value="ln.get('description') or ''" t-att-aria-label="'Line %s: what it is' % (ln_index + 1)"/>
+              <input class="pbwt-input" type="number" step="any" min="0" t-att-name="'rows_%s_amount' % fid"
+                     t-att-value="'' if ln.get('amount') is None else ln.get('amount')"
+                     t-att-aria-label="'Line %s: amount' % (ln_index + 1)"/>
+            </div>
+          </t>
+          <p class="pbwt-help">Leave a line empty to skip it.</p>
+        </div>
+      </t>
+      <p t-if="f.get('help')" class="pbwt-help" t-esc="f.get('help')"/>
+      <p t-if="err" class="pbwt-err" role="alert" t-esc="err"/>
+    </div>
+  </template>
+
+  <!-- ===== the body: every state of one task ===== -->
+  <template id="workflow_task_body" name="Workflow task body">
+    <div class="pbwt-card">
+      <t t-if="state in ('thanks', 'done')">
+        <div class="pbwt-state is-ok">
+          <span class="pbwt-state-ic"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="30"/></t></span>
+          <h1 t-if="state == 'thanks'">Thanks — sent.</h1>
+          <h1 t-else="">Thanks, this is already done.</h1>
+          <p t-if="state == 'thanks'">Nothing more to do here. <t t-if="mode == 'link'">You can close this page.</t></p>
+          <p t-else="">There is nothing more to do here.</p>
+          <a t-if="mode == 'home'" class="pbwt-btn pbwt-btn--ghost" href="/my/todo">
+            <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="16"/></t>Back to my tasks
+          </a>
+        </div>
+      </t>
+      <t t-elif="state == 'gone'">
+        <div class="pbwt-state">
+          <span class="pbwt-state-ic is-muted"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'link-off'"/><t t-set="isz" t-value="30"/></t></span>
+          <h1>This link has run out.</h1>
+          <p>Ask whoever sent it to you for a new one. A new link always replaces the old one.</p>
+        </div>
+      </t>
+      <t t-else="">
+        <div class="pbwt-head">
+          <span class="pbwt-head-ic"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'check-circle' if t['kind'] == 'confirm' else 'clipboard'"/><t t-set="isz" t-value="22"/></t></span>
+          <div>
+            <div class="pbwt-eyebrow"><t t-esc="t['workflow']"/><t t-if="t.get('record')"> · <t t-esc="t['record']"/></t></div>
+            <h1 class="pbwt-h1" t-esc="t['name']"/>
+          </div>
+        </div>
+        <div class="pbwt-chips">
+          <span t-if="t.get('late')" class="pbwt-chip is-late"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="13"/></t>Late · it was due <t t-esc="t.get('due')"/></span>
+          <span t-elif="t.get('due')" class="pbwt-chip"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="13"/></t>Needed by <t t-esc="t.get('due')"/></span>
+        </div>
+        <div t-if="t.get('sent_back')" class="pbwt-back" role="note">
+          <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="18"/></t>
+          <div>
+            <b>Sent back<t t-if="t['sent_back'].get('by')"> by <t t-esc="t['sent_back']['by']"/></t> for changes</b>
+            <p t-if="t['sent_back'].get('note')">“<t t-esc="t['sent_back']['note']"/>”</p>
+            <p t-else="">Check your answers, change what is needed and send it again.</p>
+          </div>
+        </div>
+        <p t-if="t.get('instructions')" class="pbwt-instructions" t-esc="t['instructions']"/>
+        <div t-if="errors" class="pbwt-alert" role="alert">
+          <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t>
+          <span t-if="errors.get('_outcome')" t-esc="errors['_outcome']"/>
+          <span t-elif="errors.get('_form')" t-esc="errors['_form']"/>
+          <span t-else="">A few answers need a look. They are marked below.</span>
+        </div>
+        <form t-att-action="post_url" method="post" enctype="multipart/form-data" class="pbwt-form">
+          <input t-if="request" type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <t t-if="t['kind'] == 'input'">
+            <t t-foreach="t.get('fields') or []" t-as="f"><t t-call="pb_lifecycle.wt_field"/></t>
+            <div class="pbwt-actions">
+              <button type="submit" class="pbwt-btn pbwt-btn--primary">
+                <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>Send my answers
+              </button>
+            </div>
+          </t>
+          <t t-else="">
+            <div t-if="t['kind'] == 'confirm'" class="pbwt-read" tabindex="0" aria-label="What you are asked to confirm" t-esc="t.get('text')"/>
+            <div t-if="t['kind'] == 'task'" class="pbwt-field">
+              <label class="pbwt-label" for="pbwt-comment">Add a note (optional)</label>
+              <textarea id="pbwt-comment" name="comment" rows="3" maxlength="2000" class="pbwt-input"
+                        placeholder="Anything the next person should know"><t t-esc="values.get('comment') or ''"/></textarea>
+            </div>
+            <div class="pbwt-actions">
+              <t t-foreach="t.get('buttons') or []" t-as="b">
+                <button type="submit" name="outcome" t-att-value="b['key']"
+                        t-att-class="'pbwt-btn %s' % ('pbwt-btn--primary' if b_first else 'pbwt-btn--ghost')">
+                  <t t-if="b_first"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></t>
+                  <t t-if="t['kind'] == 'task' and len(t.get('buttons') or []) == 1 and b['label'] == 'Done'">Mark it done</t>
+                  <t t-else="" t-esc="b['label']"/>
+                </button>
+              </t>
+            </div>
+          </t>
+        </form>
+        <p t-if="mode == 'link'" class="pbwt-fine">This link is just for you and works once. You do not need to sign in.</p>
+      </t>
+    </div>
+  </template>
+
+  <!-- ===== on the employee home ===== -->
+  <template id="workflow_my_task_page" name="Workflow task (employee home)">
+    <t t-call="portal.portal_layout">
+      <t t-set="additional_title" t-value="t.get('name') or 'My tasks'"/>
+      <div class="pbme pbwt pbwt-home">
+        <a class="pbwt-backlink" href="/my/todo"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>My tasks</a>
+        <!-- WF2 P4b: where the whole thing is, above the task. -->
+        <div t-if="wf_strip and state == 'ok'" class="pbwfs-wrap pbwfs-wrap--task">
+          <t t-call="pb_lifecycle.workflow_strip_page"><t t-set="s" t-value="wf_strip"/></t>
+        </div>
+        <t t-call="pb_lifecycle.workflow_task_body"/>
+      </div>
+    </t>
+  </template>
+
+  <template id="workflow_my_tasks_page" name="My tasks (employee home)">
+    <t t-call="portal.portal_layout">
+      <t t-set="additional_title" t-value="'My tasks'"/>
+      <div class="pbme pbwt pbwt-home">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My tasks</t>
+          <t t-set="hero_sub">Things a workflow has asked you to do, and notices for you.</t>
+        </t>
+        <section class="pbwt-list" aria-labelledby="pbwt-list-h">
+          <h2 class="pbwt-list-h" id="pbwt-list-h"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'list-checks'"/><t t-set="isz" t-value="16"/></t>Waiting for you</h2>
+          <t t-if="tasks">
+            <a t-foreach="tasks" t-as="tk" class="pbwt-item" t-att-href="'/my/todo/%s' % tk['id']">
+              <span t-att-class="'pbwt-item-ic%s' % (' is-late' if tk['late'] else '')"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'check-circle' if tk['kind'] == 'confirm' else 'clipboard'"/><t t-set="isz" t-value="18"/></t></span>
+              <span class="pbwt-item-t">
+                <b><t t-esc="tk['verb']"/>: <t t-esc="tk['name']"/></b>
+                <small><t t-esc="tk['workflow']"/><t t-if="tk['due']"> · <t t-if="tk['late']">Late, it was due</t><t t-else="">Needed by</t> <t t-esc="tk['due']"/></t></small>
+              </span>
+            </a>
+          </t>
+          <div t-else="" class="pbwt-quiet">
+            <t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'check-circle'"/><t t-set="isz" t-value="18"/></t>
+            <span>Nothing is waiting for you. When a workflow needs you, it shows here and on your home page.</span>
+          </div>
+        </section>
+        <section t-if="notices" class="pbwt-list" aria-labelledby="pbwt-notice-h">
+          <h2 class="pbwt-list-h" id="pbwt-notice-h"><t t-call="pb_lifecycle.wt_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="16"/></t>For you</h2>
+          <div t-foreach="notices" t-as="nt" t-att-class="'pbwt-notice%s' % ('' if nt['read'] else ' is-new')">
+            <div class="pbwt-notice-t">
+              <b t-esc="nt['subject']"/>
+              <p t-esc="nt['body']"/>
+              <small t-esc="nt['when']"/>
+            </div>
+            <form t-if="not nt['read']" method="post" t-att-action="'/my/todo/notice/%s/read' % nt['id']">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <button type="submit" class="pbwt-btn pbwt-btn--ghost pbwt-btn--sm">Mark as read</button>
+            </form>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ===== the "For you" card on the employee home ===== -->
+  <template id="pbme_card_workflow_notices" name="Employee home: workflow notices">
+    <t t-set="wn" t-value="card['data']"/>
+    <section class="pbme-b pbme-b-extra pbwt-homecard" data-pbme-slot="workflow_notices" aria-labelledby="pbwt-card-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbwt-card-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'bell'"/><t t-set="isz" t-value="15"/></t>For you</h2>
+        <a class="pbme-lab-link" href="/my/todo">See all</a>
+      </div>
+      <ul class="pbwt-homecard-list">
+        <li t-foreach="wn['rows']" t-as="nr">
+          <b t-esc="nr['subject']"/>
+          <span t-esc="nr['body']"/>
+        </li>
+      </ul>
+      <p t-if="wn['more']" class="pbwt-help"><t t-esc="wn['more']"/> more on My tasks.</p>
+    </section>
+  </template>
+
+  <!-- ===== by private link: a bare page, the company only ===== -->
+  <template id="workflow_link_page" name="Workflow task (by link)">
+    <t t-call="web.frontend_layout">
+      <t t-set="additional_title" t-value="t.get('name') if state == 'ok' and t else 'Your task'"/>
+      <t t-set="no_header" t-value="True"/>
+      <t t-set="no_footer" t-value="True"/>
+      <div id="wrap" class="pbwt pbwt-link">
+        <div class="pbwt-brand" t-if="company_id">
+          <img class="pbwt-logo" t-att-src="'/web/binary/company_logo?company=%s' % company_id" alt="" loading="lazy"/>
+          <span t-esc="company_name"/>
+        </div>
+        <t t-call="pb_lifecycle.workflow_task_body"/>
+      </div>
+    </t>
+  </template>
+
+</odoo>

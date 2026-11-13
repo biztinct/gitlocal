@@ -1,0 +1,36 @@
+<odoo>
+  <record id="policy_edition_company_rule" model="ir.rule">
+    <field name="name">Absence policy company boundary</field><field name="model_id" ref="model_pb_leave_policy_edition"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="policy_edition_published_rule" model="ir.rule">
+    <field name="name">Read published absence policy</field><field name="model_id" ref="model_pb_leave_policy_edition"/>
+    <field name="domain_force">[('state', '=', 'published')]</field><field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    <field name="perm_write" eval="False"/><field name="perm_create" eval="False"/><field name="perm_unlink" eval="False"/>
+  </record>
+  <record id="policy_edition_manager_rule" model="ir.rule">
+    <field name="name">Manage policy drafts</field><field name="model_id" ref="model_pb_leave_policy_edition"/>
+    <field name="domain_force">[(1, '=', 1)]</field><field name="groups" eval="[(4, ref('hr_holidays.group_hr_holidays_manager'))]"/>
+  </record>
+  <record id="policy_rule_company_rule" model="ir.rule">
+    <field name="name">Absence rule company boundary</field><field name="model_id" ref="model_pb_leave_policy_rule"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="policy_rule_published_rule" model="ir.rule">
+    <field name="name">Read published absence rules</field><field name="model_id" ref="model_pb_leave_policy_rule"/>
+    <field name="domain_force">[('edition_id.state', '=', 'published')]</field><field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    <field name="perm_write" eval="False"/><field name="perm_create" eval="False"/><field name="perm_unlink" eval="False"/>
+  </record>
+  <record id="policy_rule_manager_rule" model="ir.rule">
+    <field name="name">Manage absence rule drafts</field><field name="model_id" ref="model_pb_leave_policy_rule"/>
+    <field name="domain_force">[(1, '=', 1)]</field><field name="groups" eval="[(4, ref('hr_holidays.group_hr_holidays_manager'))]"/>
+  </record>
+  <record id="policy_posting_company_rule" model="ir.rule">
+    <field name="name">Entitlement audit company boundary</field><field name="model_id" ref="model_pb_leave_policy_posting"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+  <record id="policy_settlement_company_rule" model="ir.rule">
+    <field name="name">Leave settlement company boundary</field><field name="model_id" ref="model_pb_leave_policy_settlement"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+</odoo>

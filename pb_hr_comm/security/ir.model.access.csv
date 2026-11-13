@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_hr_comm_post_staff,Announcement — the ones I look after,model_pb_hr_comm_post,base.group_user,1,1,0,0
+access_pb_hr_comm_post_user,Announcement — announcements officer,model_pb_hr_comm_post,pb_hr_comm.group_comm_user,1,1,1,0
+access_pb_hr_comm_post_manager,Announcement — head of announcements,model_pb_hr_comm_post,pb_hr_comm.group_comm_manager,1,1,1,1
+access_pb_hr_comm_post_admin,Announcement — announcements administrator,model_pb_hr_comm_post,pb_hr_comm.group_comm_admin,1,1,1,1
+access_pb_hr_comm_template_staff,Template — everybody reads what they may use,model_pb_hr_comm_template,base.group_user,1,0,0,0
+access_pb_hr_comm_template_user,Template — announcements officer,model_pb_hr_comm_template,pb_hr_comm.group_comm_user,1,1,1,0
+access_pb_hr_comm_template_manager,Template — head of announcements,model_pb_hr_comm_template,pb_hr_comm.group_comm_manager,1,1,1,1
+access_pb_hr_comm_template_admin,Template — announcements administrator,model_pb_hr_comm_template,pb_hr_comm.group_comm_admin,1,1,1,1
+access_pb_hr_comm_delivery_staff,Who got it — on an announcement I look after,model_pb_hr_comm_delivery,base.group_user,1,0,0,0
+access_pb_hr_comm_delivery_user,Who got it — announcements officer,model_pb_hr_comm_delivery,pb_hr_comm.group_comm_user,1,0,0,0
+access_pb_hr_comm_delivery_manager,Who got it — head of announcements,model_pb_hr_comm_delivery,pb_hr_comm.group_comm_manager,1,1,1,0
+access_pb_hr_comm_delivery_admin,Who got it — announcements administrator,model_pb_hr_comm_delivery,pb_hr_comm.group_comm_admin,1,1,1,1
+access_pb_hr_comm_default_staff,Who looks after announcements — everybody reads,model_pb_hr_comm_default,base.group_user,1,0,0,0
+access_pb_hr_comm_default_user,Who looks after announcements — officer,model_pb_hr_comm_default,pb_hr_comm.group_comm_user,1,0,0,0
+access_pb_hr_comm_default_manager,Who looks after announcements — head,model_pb_hr_comm_default,pb_hr_comm.group_comm_manager,1,1,1,1
+access_pb_hr_comm_default_admin,Who looks after announcements — administrator,model_pb_hr_comm_default,pb_hr_comm.group_comm_admin,1,1,1,1

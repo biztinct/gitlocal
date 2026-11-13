@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         ONE MORE STEP ON THE JOINING CHECKLIST, and it runs itself.
+
+         It is added to the template the joining checklist already uses,
+         from THIS module, because the key is the contract: nothing in the
+         onboarding module has to know training exists. Sequence 65 puts it
+         between the day-one introduction (60) and the sign-in details (70) —
+         the induction is part of the first day, and it is assigned once the
+         person has actually arrived.
+
+         `noupdate="1"` so a business that has reworded, re-sequenced or
+         switched this step off on a live database keeps its own version.
+
+         EXISTING RUNNING CHECKLISTS DO NOT GET IT (R31): a case copies its
+         steps when it opens, so somebody who joined last week keeps the
+         checklist they were given. Only checklists opened after this module
+         is upgraded carry the step — which is the right behaviour and is said
+         out loud here because the first question anybody asks is "why is it
+         not on Mai's list".
+         ================================================================== -->
+
+    <record id="step_training_day1" model="pb.journey.template.step">
+        <field name="template_id" ref="pb_onboarding.journey_template_rize_onboarding"/>
+        <field name="sequence">65</field>
+        <field name="name">Put them on their first courses</field>
+        <field name="description">Runs itself on the joining day: the courses every new joiner has to do are added to their own training page, with a date to finish them by. If no day-one courses have been set up yet, the step simply says so.</field>
+        <field name="assignee_rule">hr</field>
+        <field name="anchor">doj</field>
+        <field name="offset_days">0</field>
+        <field name="step_kind">task</field>
+        <field name="automation_key">training_day1</field>
+    </record>
+
+</data>
+</odoo>

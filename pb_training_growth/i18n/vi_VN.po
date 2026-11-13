@@ -1,0 +1,165 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 19:20+0000\n"
+"PO-Revision-Date: 2026-10-21 19:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%(path)s · %(pct)s%%"
+msgstr "%(path)s · %(pct)s%%"
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%(what)s now points at the learning path %(path)s."
+msgstr "%(what)s nay gắn với lộ trình học tập %(path)s."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%(who)s is already on %(path)s."
+msgstr "%(who)s đã ở trong %(path)s."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%(who)s is on %(path)s. The first course is on their list."
+msgstr ""
+"%(who)s đã vào %(path)s. Khóa học đầu tiên đã có trong danh sách của họ."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%(who)s is put on the learning path %(path)s for %(what)s."
+msgstr "%(who)s được đưa vào lộ trình học tập %(path)s cho mục tiêu %(what)s."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%s has no login yet, so there is nowhere for the courses to appear."
+msgstr "%s chưa có tài khoản, nên các khóa học không có chỗ để hiển thị."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%s no longer points at a learning path."
+msgstr "%s không còn gắn với lộ trình học tập nào."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%s · finished"
+msgstr "%s · đã hoàn thành"
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "%s · not on it yet"
+msgstr "%s · chưa vào lộ trình"
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "An objective"
+msgstr "Một mục tiêu"
+
+#. module: pb_training_growth
+#. odoo-javascript
+#: code:addons/pb_training_growth/static/src/xml/growth_path.xml:0
+msgid "Enrol"
+msgstr "Đưa vào"
+
+#. module: pb_training_growth
+#: model:ir.model.fields,field_description:pb_training_growth.field_pb_training_path_enrolment__objective_id
+msgid "For the growth-plan objective"
+msgstr "Cho mục tiêu của kế hoạch phát triển"
+
+#. module: pb_training_growth
+#: model:ir.model,name:pb_training_growth.model_pb_pip_objective
+msgid "Growth Plan Objective"
+msgstr "Mục tiêu kế hoạch phát triển"
+
+#. module: pb_training_growth
+#. odoo-javascript
+#: code:addons/pb_training_growth/static/src/xml/growth_path.xml:0
+#: model:ir.model.fields,field_description:pb_training_growth.field_pb_pip_objective__path_id
+msgid "Learning path"
+msgstr "Lộ trình học tập"
+
+#. module: pb_training_growth
+#. odoo-javascript
+#: code:addons/pb_training_growth/static/src/xml/growth_path.xml:0
+msgid "No learning path"
+msgstr "Không có lộ trình học tập"
+
+#. module: pb_training_growth
+#: model:ir.model.fields,field_description:pb_training_growth.field_pb_pip_objective__path_enrolment_id
+msgid "On the path"
+msgstr "Trong lộ trình"
+
+#. module: pb_training_growth
+#: model:ir.model.fields,field_description:pb_training_growth.field_pb_pip_objective__path_percent
+msgid "Path done (%)"
+msgstr "Lộ trình đã xong (%)"
+
+#. module: pb_training_growth
+#: model:ir.model.fields,field_description:pb_training_growth.field_pb_pip_objective__path_words
+msgid "Path in words"
+msgstr "Lộ trình bằng lời"
+
+#. module: pb_training_growth
+#: model:ir.model,name:pb_training_growth.model_pb_training_path_enrolment
+msgid "Person on a learning path"
+msgstr "Người trong lộ trình"
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "Pick a learning path for this objective first."
+msgstr "Hãy chọn lộ trình học tập cho mục tiêu này trước."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "That did not work."
+msgstr "Không thực hiện được."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "That learning path belongs to another company."
+msgstr "Lộ trình học tập này thuộc công ty khác."
+
+#. module: pb_training_growth
+#. odoo-python
+#: code:addons/pb_training_growth/models/growth.py:0
+msgid "That objective could not be found."
+msgstr "Không tìm thấy mục tiêu này."
+
+#. module: pb_training_growth
+#. odoo-javascript
+#: code:addons/pb_training_growth/static/src/js/growth_path.js:0
+msgid "The learning path is taken off the objective."
+msgstr "Đã bỏ lộ trình học tập khỏi mục tiêu."
+
+#. module: pb_training_growth
+#: model:ir.model.fields,help:pb_training_growth.field_pb_pip_objective__path_id
+msgid "The learning path that builds what this objective asks for."
+msgstr "Lộ trình học tập giúp đạt điều mục tiêu này yêu cầu."
+
+#. module: pb_training_growth
+#. odoo-javascript
+#: code:addons/pb_training_growth/static/src/js/growth_path.js:0
+msgid "The objective now points at that learning path."
+msgstr "Mục tiêu nay gắn với lộ trình học tập đó."

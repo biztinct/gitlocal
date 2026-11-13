@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- A seat is also a read (ledger AM60). A verdict route starts with the
+         person's own manager, who holds no HR role at all — and the engine
+         re-checks `check_access('read')` before it lets them decide.
+
+         WRITE as well as read for a plain internal user, and deliberately:
+         the manager who presses "Not passed" is the one whose press writes
+         the proposal down, and `biz.approval.engine.submit` checks write
+         access on the record it is sending in. The row itself is readonly
+         everywhere it matters — every field on it is `readonly=True` and the
+         change it describes is carried out by the engine, never by an edit. -->
+
+    <record id="rule_verdict_proposal_mine" model="ir.rule">
+        <field name="name">Verdict: mine, and the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_verdict_proposal"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_verdict_proposal_hr" model="ir.rule">
+        <field name="name">Verdict: HR</field>
+        <field name="model_id" ref="model_pb_verdict_proposal"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

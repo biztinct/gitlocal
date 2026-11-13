@@ -1,0 +1,822 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-15 10:00+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  Approval Matrix phase 7 — the doors whose press IS the change.
+# ===================================================================
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Closed because they are leaving"
+msgstr "Đóng vì họ sắp nghỉ việc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
+msgid "Extended"
+msgstr "Được gia hạn"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "HR lifecycle team"
+msgstr "Nhóm vòng đời nhân sự"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Months with the company"
+msgstr "Số tháng làm việc tại công ty"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/security/verdict_approval_rules.xml:0
+msgid "Not passed"
+msgstr "Không đạt"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "That review is no longer here."
+msgstr "Đợt đánh giá đó không còn ở đây."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/__manifest__.py:0
+msgid "The verdict"
+msgstr "Kết luận"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Their manager"
+msgstr "Quản lý của họ"
+
+# ===================================================================
+#  Approval Matrix phase 7 — what the browser walk found.
+# ===================================================================
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "%s month(s)"
+msgstr "%s tháng"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "About"
+msgstr "Về"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
+msgid "Extended by"
+msgstr "Gia hạn thêm"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/feedback_ext.py:0
+msgid "Record"
+msgstr "Hồ sơ"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_review.py:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/security/verdict_approval_rules.xml:0
+msgid "Verdict"
+msgstr "Kết luận"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/probation_policy.py:0
+msgid "What"
+msgstr "Nội dung"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/controllers/portal.py:0
+msgid "What happens"
+msgstr "Điều gì sẽ xảy ra"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/verdict_approval.py:0
+msgid "What has to improve"
+msgstr "Điều cần cải thiện"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "%s with answers overdue"
+msgstr "%s có câu trả lời quá hạn"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "1 with answers overdue"
+msgstr "1 có câu trả lời quá hạn"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Answers overdue"
+msgstr "Câu trả lời quá hạn"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Choose peers"
+msgstr "Chọn đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Colleagues are answering"
+msgstr "Đồng nghiệp đang trả lời"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Decided and recorded"
+msgstr "Đã quyết định và ghi nhận"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Ending within a week"
+msgstr "Kết thúc trong vòng một tuần"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Gather perspectives"
+msgstr "Thu thập ý kiến"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "HR & leadership review"
+msgstr "Nhân sự và lãnh đạo xem xét"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "In a trial period"
+msgstr "Đang thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Manager conversation"
+msgstr "Trao đổi với quản lý"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Not started, or colleagues being chosen"
+msgstr "Chưa bắt đầu, hoặc đang chọn đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Reviews running"
+msgstr "Đánh giá đang chạy"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Share the outcome"
+msgstr "Thông báo kết quả"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Showing %s of %s people at %s"
+msgstr "Đang hiển thị %s trên %s người ở bước %s"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Showing %s of %s people in a trial period"
+msgstr "Đang hiển thị %s trên %s người đang thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid ""
+"Showing all %s people in a trial period · press a step or a number to narrow"
+" it"
+msgstr ""
+"Đang hiển thị tất cả %s người đang thử việc · bấm một bước hoặc một con số "
+"để thu hẹp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid ""
+"Showing all 1 person in a trial period · press a step or a number to narrow "
+"it"
+msgstr ""
+"Đang hiển thị 1 người đang thử việc · bấm một bước hoặc một con số để thu "
+"hẹp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Showing nobody in a trial period yet"
+msgstr "Chưa có ai đang thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "The 1:1 and the manager's recommendation"
+msgstr "Buổi trao đổi 1:1 và đề xuất của quản lý"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "The recommendation is being signed off"
+msgstr "Đề xuất đang được phê duyệt"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Waiting on a decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Show all"
+msgstr "Hiện tất cả"
+
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+# ===================================================================
+#  Quiet board (2026-09-23): numbers line, numbered steps, showing line.
+# ===================================================================
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Probation"
+msgstr "Thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:65
+msgid "Run today's steps"
+msgstr "Chạy các bước hôm nay"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:328
+msgid "Colleagues asked"
+msgstr "Đồng nghiệp được hỏi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:447
+msgid "Send the questions"
+msgstr "Gửi câu hỏi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:524
+msgid "Confirm them"
+msgstr "Xác nhận chính thức"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:529
+msgid "Extend the trial"
+msgstr "Kéo dài thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:534
+msgid "Do not confirm"
+msgstr "Không xác nhận"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:258
+msgid "Choose colleagues"
+msgstr "Chọn đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:338
+msgid "What everybody said"
+msgstr "Mọi người đã nói gì"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Peers"
+msgstr "Đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Answers"
+msgstr "Phản hồi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Meeting"
+msgstr "Trao đổi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Sign-off"
+msgstr "Phê duyệt"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Outcome"
+msgstr "Kết quả"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Probation reviews"
+msgstr "Đánh giá thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Training courses"
+msgstr "Khoá đào tạo"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Who has done what"
+msgstr "Ai đã hoàn thành gì"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "Probation policies"
+msgstr "Chính sách thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_palette.js:0
+msgid "People"
+msgstr "Con người"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "All in trial"
+msgstr "Tất cả đang thử việc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Awaiting decision"
+msgstr "Đang chờ quyết định"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid ""
+"Colleagues were asked, the answer window has closed and answers are missing."
+msgstr ""
+"Đồng nghiệp đã được hỏi, hạn trả lời đã qua và vẫn còn thiếu câu trả lời."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Colleagues' answers"
+msgstr "Câu trả lời của đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Consolidating"
+msgstr "Đang tổng hợp"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/pb_contractlife.py:0
+#: model:ir.model.fields,field_description:pb_contract_lifecycle.field_pb_contract_review__name
+#: model:ir.model.fields,field_description:pb_probation.field_pb_probation_review__verdict
+#: model_terms:ir.ui.view,arch_db:pb_contract_lifecycle.view_pb_contract_review_search
+#: model_terms:ir.ui.view,arch_db:pb_probation.view_pb_probation_review_search
+msgid "Decision"
+msgstr "Quyết định"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Ending within 7 days"
+msgstr "Kết thúc trong 7 ngày"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Feedback running"
+msgstr "Đang lấy phản hồi"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "First round"
+msgstr "Vòng đầu tiên"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Job position"
+msgstr "Vị trí công việc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Joined"
+msgstr "Ngày vào làm"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Manager 1:1"
+msgstr "Trao đổi 1:1 với quản lý"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Name, A to Z"
+msgstr "Tên, từ A đến Z"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Needs somebody"
+msgstr "Cần người xử lý"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Newest joiners first"
+msgstr "Người mới vào làm trước"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "No end date"
+msgstr "Không có ngày kết thúc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "No job position"
+msgstr "Chưa có vị trí công việc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "No start date"
+msgstr "Không có ngày bắt đầu"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "No team"
+msgstr "Chưa có nhóm"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Nobody matches these filters"
+msgstr "Không có ai khớp với các bộ lọc này"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Nobody matches “%s”. Check the spelling, or search by job or team."
+msgstr ""
+"Không có ai khớp với “%s”. Hãy kiểm tra chính tả, hoặc tìm theo công việc "
+"hay nhóm."
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Nobody named"
+msgstr "Chưa chỉ định ai"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Not recorded"
+msgstr "Chưa ghi nhận"
+
+#. module: pb_probation
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Not started"
+msgstr "Chưa bắt đầu"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "Nothing could be listed just now. Show everybody to start again."
+msgstr "Hiện chưa liệt kê được gì. Hãy hiển thị mọi người để bắt đầu lại."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Nothing overdue"
+msgstr "Không có gì quá hạn"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Overdue"
+msgstr "Quá hạn"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Peers being chosen"
+msgstr "Đang chọn đồng nghiệp"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Review round"
+msgstr "Vòng đánh giá"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Review status"
+msgstr "Trạng thái đánh giá"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Review step"
+msgstr "Bước đánh giá"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Scheduled"
+msgstr "Đã lên lịch"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Second round or later"
+msgstr "Vòng thứ hai trở đi"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Show"
+msgstr "Hiển thị"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Show everybody in a trial period"
+msgstr "Hiển thị mọi người đang thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "The five steps of a probation review, as on the strip above the cards."
+msgstr ""
+"Năm bước của một đợt đánh giá thử việc, như trên dải phía trên các thẻ."
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "The trial periods could not be loaded. Try again in a moment."
+msgstr "Không tải được danh sách thử việc. Vui lòng thử lại sau giây lát."
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid ""
+"There are %s people in a trial period, but none of them fits every filter "
+"you have set. Remove a filter above, or start again from everybody."
+msgstr ""
+"Có %s người đang thử việc, nhưng không ai khớp với tất cả bộ lọc bạn đã "
+"chọn. Hãy bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại với mọi người."
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid ""
+"There is 1 person in a trial period, but they do not fit every filter you "
+"have set. Remove a filter above, or start again from everybody."
+msgstr ""
+"Có 1 người đang thử việc, nhưng người này không khớp với tất cả bộ lọc bạn "
+"đã chọn. Hãy bỏ bớt một bộ lọc ở trên, hoặc bắt đầu lại với mọi người."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Trial ends latest first"
+msgstr "Thử việc kết thúc muộn nhất trước"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Trial ends soonest first"
+msgstr "Thử việc sắp kết thúc trước"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Trial period ends"
+msgstr "Thời gian thử việc kết thúc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Trial periods are looked after by the HR team."
+msgstr "Thời gian thử việc do bộ phận nhân sự phụ trách."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/pb_probation.py:0
+msgid "Trial status"
+msgstr "Trạng thái thử việc"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+#: code:addons/pb_probation/static/src/xml/probation_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_probation
+#. odoo-javascript
+#: code:addons/pb_probation/static/src/js/probation_board.js:0
+msgid "people"
+msgstr "người"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Vietnamese
+# ===================================================================
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid "Trial periods"
+msgstr "Thời gian thử việc"
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"%s days before a trial period ends, a review opens and the manager is asked to choose who gives feedback."
+msgstr ""
+"%s ngày trước khi thời gian thử việc kết thúc, một buổi đánh giá được mở và quản lý được nhờ chọn người góp ý."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"%s days before a trial period ends, a review can open for the manager (opening these by itself is switched off here)."
+msgstr ""
+"%s ngày trước khi thời gian thử việc kết thúc, có thể mở một buổi đánh giá cho quản lý (việc tự mở đang tắt ở đây)."
+
+#. module: pb_probation
+#. odoo-python
+#: code:addons/pb_probation/models/workflow_timetable.py:0
+msgid ""
+"While a trial-period review is open, HR (or else the manager) gets a to-do %(far)s days and again %(near)s days before the trial period ends."
+msgstr ""
+"Trong khi buổi đánh giá thử việc đang mở, nhân sự (nếu không có thì quản lý) nhận được một việc cần làm %(far)s ngày và một lần nữa %(near)s ngày trước khi thời gian thử việc kết thúc."

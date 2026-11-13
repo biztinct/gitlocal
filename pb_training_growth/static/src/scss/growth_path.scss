@@ -1,0 +1,25 @@
+// =====================================================================
+//  Growth plans × learning paths (LEARNING L3) — .pgr-*
+//  A quiet chip on the objective (grey until somebody is on the path,
+//  indigo while they are, rose late, green finished) and a slim picker.
+// =====================================================================
+.pgr-path {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin: 6px 0 4px;
+}
+.pgr-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+    background: #F8FAFC; color: var(--pbim-muted, #64748B);
+    border: 1px solid var(--pbim-line, #E2E8F0);
+    &.is-go { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); border-color: #CBC2EE; }
+    &.is-bad { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
+    &.is-ok { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+}
+.pgr-pick { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 0 auto; font-size: 12px; }
+.pgr-pick-l { color: var(--pbim-muted, #64748B); }
+.pgr-in {
+    font: inherit; font-size: 12px; width: auto; max-width: 220px;
+    border: 1px solid var(--pbim-line, #E2E8F0); border-radius: 8px; padding: 3px 8px;
+    background: var(--pbim-surface, #fff); color: var(--pbim-ink, #1B1733);
+}

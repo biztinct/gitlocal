@@ -1,0 +1,934 @@
+// =============================================================================
+//  Rize — landing page + sign-in page
+//  Tenant-only styling (installed on the `rize` database).
+//  Palette sampled from rize.farm: deep paddy green, harvest gold, husk cream.
+//  Everything is scoped under .rz-* so no other frontend page is touched.
+// =============================================================================
+
+:root {
+    --rz-night:    #07110A;
+    --rz-forest:   #101F0B;
+    --rz-paddy:    #192D06;
+    --rz-olive:    #4D5F3D;
+    --rz-gold:     #CC9900;
+    --rz-gold-lt:  #E7C46B;
+    --rz-gold-hi:  #F2D800;
+    --rz-cream:    #FAEED3;
+    --rz-mist:     rgba(250, 238, 211, 0.72);
+}
+
+// -----------------------------------------------------------------------------
+//  Neutralise the generic website chrome on our two pages.
+//  The `no_header` / `no_footer` t-set does not survive the website page render,
+//  so we hide the stock header/footer with :has, scoped to our own pages only.
+//  (Same technique as pb_website — see that module's landing.scss.)
+// -----------------------------------------------------------------------------
+body:has(#wrap.rz-home),
+body:has(.rz-login) {
+    background: var(--rz-night);
+
+    #wrapwrap > header,
+    #wrapwrap > footer,
+    header#top,
+    header.o_header_standard,
+    .o_header_affix,
+    #footer,
+    .o_footer,
+    .o_frontend_to_backend_nav,
+    .o_frontend_to_backend_edit_btn { display: none !important; }
+
+    #wrapwrap { padding-top: 0 !important; }
+}
+
+// -----------------------------------------------------------------------------
+//  Shared backdrop: a dawn rice field
+// -----------------------------------------------------------------------------
+.rz-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    &__sky {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(130% 95% at 50% 104%, rgba(204, 153, 0, .50) 0%, rgba(204, 153, 0, .10) 46%, rgba(204, 153, 0, 0) 68%),
+            linear-gradient(180deg, var(--rz-night) 0%, var(--rz-forest) 44%, var(--rz-paddy) 100%);
+    }
+
+    // Low sun sitting on the horizon.
+    &__sun {
+        position: absolute;
+        left: 50%;
+        bottom: 16%;
+        // Interpolated: Sass owns the bare min() name and rejects mixed units.
+        width: #{"min(58vw, 680px)"};
+        aspect-ratio: 1;
+        transform: translate(-50%, 50%);
+        border-radius: 50%;
+        background: radial-gradient(circle,
+            rgba(242, 216, 128, .62) 0%,
+            rgba(204, 153, 0, .34) 36%,
+            rgba(204, 153, 0, 0) 70%);
+        filter: blur(2px);
+        animation: rzBreathe 11s ease-in-out infinite;
+    }
+
+    &__svg {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        width: 100%;
+        height: #{"min(62vh, 560px)"};
+        display: block;
+    }
+
+    // The far bank of the paddy.
+    &__ridge {
+        fill: rgba(25, 45, 6, .82);
+    }
+
+    &__row--far  { color: rgba(126, 144, 88, .40); }
+    &__row--mid  { color: rgba(62, 82, 34, .78); }
+    &__row--near { color: rgba(9, 19, 5, .97); }
+
+    // A soft veil so the text above always stays readable.
+    &__haze {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg,
+            rgba(7, 17, 10, .55) 0%,
+            rgba(7, 17, 10, .18) 34%,
+            rgba(7, 17, 10, .00) 62%);
+    }
+}
+
+.rz-sway {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: rzSway 7s ease-in-out infinite;
+    will-change: transform;
+}
+.rz-sway--1 { animation-duration: 6.2s;  animation-delay: -0.4s; }
+.rz-sway--2 { animation-duration: 7.4s;  animation-delay: -1.9s; }
+.rz-sway--3 { animation-duration: 8.6s;  animation-delay: -3.1s; }
+.rz-sway--4 { animation-duration: 5.8s;  animation-delay: -2.4s; }
+.rz-sway--5 { animation-duration: 9.3s;  animation-delay: -0.9s; }
+.rz-sway--6 { animation-duration: 6.9s;  animation-delay: -4.2s; }
+
+@keyframes rzSway {
+    0%, 100% { transform: rotate(-1.7deg); }
+    50%      { transform: rotate(2.0deg); }
+}
+@keyframes rzBreathe {
+    0%, 100% { opacity: .78; transform: translate(-50%, 50%) scale(1); }
+    50%      { opacity: 1;   transform: translate(-50%, 50%) scale(1.06); }
+}
+@keyframes rzRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+}
+
+// -----------------------------------------------------------------------------
+//  Shared bits
+// -----------------------------------------------------------------------------
+.rz-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .62rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .01em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+
+    &:hover { text-decoration: none; transform: translateY(-1px); }
+    &:focus-visible { outline: 2px solid var(--rz-gold-lt); outline-offset: 3px; }
+
+    &--lg { padding: .82rem 1.7rem; font-size: 1rem; }
+
+    &--gold {
+        background: linear-gradient(135deg, var(--rz-gold-lt) 0%, var(--rz-gold) 100%);
+        color: #1B1403;
+        box-shadow: 0 8px 24px rgba(204, 153, 0, .28);
+        &:hover { color: #1B1403; box-shadow: 0 12px 30px rgba(204, 153, 0, .38); }
+    }
+
+    &--ghost {
+        color: var(--rz-cream);
+        border-color: rgba(250, 238, 211, .32);
+        background: rgba(250, 238, 211, .04);
+        &:hover { color: #fff; border-color: rgba(250, 238, 211, .6); background: rgba(250, 238, 211, .10); }
+    }
+}
+
+// =============================================================================
+//  LANDING PAGE
+// =============================================================================
+.rz-home {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--rz-cream);
+    background: var(--rz-night);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+
+    > *:not(.rz-field) { position: relative; z-index: 2; }
+
+    // :where() keeps the reset at zero specificity so the block rules below win.
+    *, *::before, *::after { box-sizing: border-box; }
+    :where(h1, h2, h3, p, ul) { margin: 0; }
+    :where(ul) { list-style: none; padding: 0; }
+    :where(a) { color: inherit; text-decoration: none; }
+    :where(img, svg) { display: block; max-width: 100%; }
+}
+
+.rz-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.4rem clamp(1.1rem, 5vw, 4rem);
+
+    &__brand img {
+        height: 34px;
+        width: auto;
+        display: block;
+        filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .45));
+    }
+
+    &__right {
+        display: flex;
+        align-items: center;
+        gap: clamp(.7rem, 2vw, 1.6rem);
+    }
+
+    &__link {
+        color: var(--rz-mist);
+        font-size: .92rem;
+        font-weight: 500;
+        text-decoration: none;
+        &:hover { color: var(--rz-cream); text-decoration: none; }
+    }
+}
+
+.rz-hero {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: center;
+    padding: clamp(1.5rem, 5vh, 4rem) clamp(1.1rem, 5vw, 4rem) clamp(1.2rem, 3vh, 2.4rem);
+
+    &__inner {
+        max-width: 860px;
+        animation: rzRise .9s cubic-bezier(.2, .7, .3, 1) both;
+    }
+
+    &__title {
+        margin: 1.1rem 0 0;
+        font-size: clamp(2.6rem, 7.2vw, 5.2rem);
+        line-height: 1.02;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: #fff;
+
+        &-gold {
+            display: block;
+            background: linear-gradient(100deg, var(--rz-gold-lt) 0%, var(--rz-gold-hi) 48%, var(--rz-gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    }
+
+    &__sub {
+        margin: 1.4rem 0 0;
+        max-width: 41rem;
+        font-size: clamp(1.02rem, 1.5vw, 1.22rem);
+        line-height: 1.65;
+        color: var(--rz-mist);
+    }
+
+    &__cta {
+        margin-top: 2.2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .8rem;
+    }
+}
+
+.rz-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .38rem .9rem .38rem .7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(231, 196, 107, .3);
+    background: rgba(204, 153, 0, .10);
+    color: var(--rz-gold-lt);
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+
+    &__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--rz-gold-hi);
+        box-shadow: 0 0 0 0 rgba(242, 216, 128, .7);
+        animation: rzPulse 2.6s ease-out infinite;
+    }
+}
+
+@keyframes rzPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(242, 216, 128, .55); }
+    70%  { box-shadow: 0 0 0 9px rgba(242, 216, 128, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(242, 216, 128, 0); }
+}
+
+.rz-countries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.6rem;
+    margin: 2rem 0 0;
+    padding: 1rem 0 0;
+    list-style: none;
+    border-top: 1px solid rgba(250, 238, 211, .14);
+
+    li {
+        font-size: .84rem;
+        font-weight: 600;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: rgba(250, 238, 211, .55);
+    }
+}
+
+.rz-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    padding: 0 clamp(1.1rem, 5vw, 4rem) clamp(1.2rem, 3vh, 2.2rem);
+}
+
+.rz-card {
+    padding: 1.5rem 1.5rem 1.6rem;
+    border-radius: 18px;
+    border: 1px solid rgba(250, 238, 211, .12);
+    background: rgba(7, 17, 10, .42);
+    backdrop-filter: blur(9px);
+    transition: transform .22s ease, border-color .22s ease, background .22s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        border-color: rgba(231, 196, 107, .38);
+        background: rgba(7, 17, 10, .58);
+    }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(204, 153, 0, .14);
+        color: var(--rz-gold-lt);
+
+        svg { width: 21px; height: 21px; }
+    }
+
+    h3 {
+        margin: 1rem 0 .35rem;
+        font-size: 1.06rem;
+        font-weight: 650;
+        color: #fff;
+    }
+
+    p {
+        margin: 0;
+        font-size: .93rem;
+        line-height: 1.55;
+        color: rgba(250, 238, 211, .62);
+    }
+}
+
+.rz-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    padding: 1.2rem clamp(1.1rem, 5vw, 4rem) 1.7rem;
+    border-top: 1px solid rgba(250, 238, 211, .10);
+    font-size: .82rem;
+    color: rgba(250, 238, 211, .48);
+
+    &__tag { font-style: italic; }
+}
+
+// =============================================================================
+//  SIGN-IN PAGE
+// =============================================================================
+.rz-login {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.1rem;
+    overflow: auto;
+    background: var(--rz-night);
+    color: var(--rz-cream);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    &__card {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 400px;
+        padding: 2.1rem 2rem 1.6rem;
+        border-radius: 22px;
+        border: 1px solid rgba(250, 238, 211, .14);
+        background: rgba(10, 20, 10, .72);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, .55);
+        animation: rzRise .7s cubic-bezier(.2, .7, .3, 1) both;
+    }
+
+    &__brand {
+        display: block;
+        text-align: center;
+
+        img {
+            display: block;
+            height: 38px;
+            width: auto;
+            margin: 0 auto;
+            filter: drop-shadow(0 2px 12px rgba(0, 0, 0, .5));
+        }
+    }
+
+    &__welcome {
+        margin: .7rem 0 1.6rem;
+        text-align: center;
+        font-size: .78rem;
+        font-weight: 600;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: rgba(231, 196, 107, .85);
+    }
+
+    &__foot {
+        margin: 1.5rem 0 0;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(250, 238, 211, .12);
+        text-align: center;
+        font-size: .76rem;
+        color: rgba(250, 238, 211, .42);
+    }
+
+    // --- Odoo's own form markup, re-skinned in place ---------------------------
+    label,
+    .form-label { color: rgba(250, 238, 211, .78); font-size: .85rem; font-weight: 600; }
+
+    .form-control,
+    .form-select {
+        background-color: rgba(255, 255, 255, .05);
+        border: 1px solid rgba(250, 238, 211, .18);
+        color: var(--rz-cream);
+        border-radius: 12px;
+        padding: .62rem .85rem;
+
+        &::placeholder { color: rgba(250, 238, 211, .34); }
+        &:focus {
+            background-color: rgba(255, 255, 255, .08);
+            border-color: var(--rz-gold);
+            color: #fff;
+            box-shadow: 0 0 0 .2rem rgba(204, 153, 0, .22);
+        }
+    }
+
+    // The native dropdown list itself is painted by the OS, so keep its
+    // options readable rather than cream-on-white.
+    .form-select option { color: #16210E; background: #fff; }
+
+    // Anything Odoo or an auth add-on drops in here (passkey, OAuth providers)
+    // arrives as a light Bootstrap button — re-skin it as a quiet ghost button.
+    .btn:not(.btn-primary):not(.btn-link):not(.o_show_password) {
+        background-color: rgba(250, 238, 211, .06);
+        border: 1px solid rgba(250, 238, 211, .22);
+        color: var(--rz-cream);
+        border-radius: 999px;
+        font-weight: 600;
+
+        &:hover, &:focus {
+            background-color: rgba(250, 238, 211, .13);
+            border-color: rgba(250, 238, 211, .45);
+            color: #fff;
+        }
+    }
+
+    .input-group .btn {
+        border-radius: 0 12px 12px 0;
+        border-left: 0;
+        background-color: rgba(255, 255, 255, .05);
+        border-color: rgba(250, 238, 211, .18);
+        color: rgba(250, 238, 211, .6);
+        &:hover { color: var(--rz-gold-lt); }
+    }
+
+    .input-group .form-control { border-radius: 12px 0 0 12px; }
+
+    // The passkey / OAuth entries arrive as Bootstrap list-group items (white).
+    .list-group,
+    .list-group-item {
+        background-color: rgba(250, 238, 211, .06);
+        border-color: rgba(250, 238, 211, .22);
+        color: var(--rz-cream);
+        border-radius: 14px;
+
+        &:hover, &:focus {
+            background-color: rgba(250, 238, 211, .13);
+            color: #fff;
+        }
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--rz-gold-lt) 0%, var(--rz-gold) 100%);
+        border: 0;
+        color: #1B1403;
+        font-weight: 650;
+        border-radius: 999px;
+        padding: .68rem 1rem;
+        box-shadow: 0 8px 24px rgba(204, 153, 0, .28);
+
+        &:hover, &:focus, &:active {
+            background: linear-gradient(135deg, var(--rz-gold-hi) 0%, var(--rz-gold) 100%);
+            color: #1B1403;
+            box-shadow: 0 12px 30px rgba(204, 153, 0, .38);
+        }
+    }
+
+    .btn-link,
+    a {
+        color: var(--rz-gold-lt);
+        &:hover { color: var(--rz-gold-hi); }
+    }
+
+    .alert-danger {
+        background: rgba(190, 60, 40, .16);
+        border-color: rgba(234, 73, 46, .45);
+        color: #FFC8BC;
+    }
+    .alert-success {
+        background: rgba(77, 95, 61, .25);
+        border-color: rgba(150, 190, 110, .45);
+        color: #DFF3C8;
+    }
+}
+
+// =============================================================================
+//  EVERY OTHER PUBLIC PAGE (careers, contact, thank-you) — rz_shell frame
+// =============================================================================
+.rz-nav__link.is-active { color: var(--rz-gold-lt); }
+
+@media (max-width: 560px) {
+    .rz-nav__link--wide { display: none; }
+}
+
+.rz-main {
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: clamp(1rem, 4vh, 2.6rem) clamp(1.1rem, 5vw, 4rem) clamp(2.5rem, 8vh, 5rem);
+    animation: rzRise .8s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+.rz-gold-text {
+    background: linear-gradient(100deg, var(--rz-gold-lt) 0%, var(--rz-gold-hi) 48%, var(--rz-gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+// --- Page heading --------------------------------------------------------------
+.rz-page-head {
+    max-width: 760px;
+    margin-bottom: 2.2rem;
+
+    &__title {
+        margin: 1rem 0 0;
+        font-size: clamp(2.3rem, 6vw, 4rem);
+        line-height: 1.04;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    &__sub {
+        margin: 1.1rem 0 0;
+        font-size: clamp(1rem, 1.4vw, 1.14rem);
+        line-height: 1.65;
+        color: var(--rz-mist);
+    }
+}
+
+.rz-search {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    max-width: 440px;
+    margin-top: 1.6rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(250, 238, 211, .2);
+    background: rgba(7, 17, 10, .5);
+    backdrop-filter: blur(9px);
+    color: rgba(250, 238, 211, .55);
+    transition: border-color .18s ease;
+
+    &:focus-within { border-color: var(--rz-gold); }
+
+    svg { width: 18px; height: 18px; flex: none; }
+
+    input {
+        flex: 1;
+        min-width: 0;
+        padding: .72rem 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--rz-cream);
+        font: inherit;
+
+        &::placeholder { color: rgba(250, 238, 211, .4); }
+    }
+}
+
+// --- Role cards on /jobs -------------------------------------------------------
+.rz-jobs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.rz-job {
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    padding: 1.4rem 1.5rem 1.3rem;
+    border-radius: 18px;
+    border: 1px solid rgba(250, 238, 211, .12);
+    background: rgba(7, 17, 10, .55);
+    backdrop-filter: blur(10px);
+    color: var(--rz-cream);
+    transition: transform .22s ease, border-color .22s ease, background .22s ease;
+
+    &:hover, &:focus-visible {
+        transform: translateY(-3px);
+        border-color: rgba(231, 196, 107, .45);
+        background: rgba(7, 17, 10, .7);
+        color: var(--rz-cream);
+    }
+    &:focus-visible { outline: 2px solid var(--rz-gold-lt); outline-offset: 3px; }
+
+    &__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .6rem;
+    }
+
+    &__dept {
+        font-size: .76rem;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--rz-gold-lt);
+    }
+
+    &__title {
+        font-size: 1.22rem;
+        line-height: 1.3;
+        font-weight: 650;
+        color: #fff;
+    }
+
+    &__go {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: auto;
+        padding-top: .5rem;
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--rz-gold-lt);
+
+        svg { width: 16px; height: 16px; transition: transform .2s ease; }
+    }
+    &:hover &__go svg { transform: translateX(3px); }
+}
+
+.rz-chip {
+    padding: .18rem .6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(250, 238, 211, .25);
+    font-size: .72rem;
+    font-weight: 600;
+    color: rgba(250, 238, 211, .7);
+    white-space: nowrap;
+}
+
+.rz-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem 1.1rem;
+
+    li {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .9rem;
+        color: rgba(250, 238, 211, .7);
+    }
+
+    svg { width: 16px; height: 16px; flex: none; color: rgba(231, 196, 107, .8); }
+}
+
+.rz-pager {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+
+    .pagination { margin: 0; gap: .3rem; }
+    .page-link {
+        border-radius: 999px !important;
+        border: 1px solid rgba(250, 238, 211, .2);
+        background: rgba(7, 17, 10, .55);
+        color: var(--rz-cream);
+    }
+    .page-item.active .page-link {
+        background: var(--rz-gold);
+        border-color: var(--rz-gold);
+        color: #1B1403;
+    }
+    .page-item.disabled .page-link { opacity: .4; }
+}
+
+// --- Short notice pages (and the empty jobs list) ------------------------------
+.rz-notice {
+    max-width: 560px;
+    margin: clamp(1rem, 8vh, 5rem) auto 0;
+    padding: 2.4rem 2rem 2.2rem;
+    border-radius: 22px;
+    border: 1px solid rgba(250, 238, 211, .14);
+    background: rgba(10, 20, 10, .66);
+    backdrop-filter: blur(16px);
+    text-align: center;
+
+    &--inline { margin-top: 0; }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: rgba(204, 153, 0, .14);
+        color: var(--rz-gold-lt);
+
+        svg { width: 26px; height: 26px; }
+    }
+
+    &__title {
+        margin: 1.1rem 0 0;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -.02em;
+        color: #fff;
+    }
+
+    &__text {
+        margin: .7rem auto 0;
+        max-width: 30rem;
+        line-height: 1.6;
+        color: var(--rz-mist);
+    }
+
+    &__cta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .7rem;
+        margin-top: 1.6rem;
+    }
+}
+
+// --- One role -----------------------------------------------------------------
+.rz-role {
+    max-width: 860px;
+    margin: 0 auto;
+
+    &__head { margin: 1.4rem 0 1.8rem; }
+
+    &__title {
+        margin: 1rem 0 .9rem;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -.03em;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    &__cta { margin-top: 1.6rem; }
+
+    // Shown instead of Apply to signed-in people looking at a role that is not public.
+    &__closed {
+        display: flex;
+        align-items: flex-start;
+        gap: .8rem;
+        max-width: 560px;
+        margin-top: 1.6rem;
+        padding: 1rem 1.2rem;
+        border-radius: 16px;
+        border: 1px dashed rgba(231, 196, 107, .45);
+        background: rgba(7, 17, 10, .55);
+
+        svg { width: 20px; height: 20px; flex: none; margin-top: .15rem; color: var(--rz-gold-lt); }
+        strong { display: block; color: #fff; font-weight: 650; }
+        span { display: block; margin-top: .2rem; font-size: .92rem; line-height: 1.55; color: var(--rz-mist); }
+    }
+
+    &__foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.4rem;
+        padding: 1.3rem 1.5rem;
+        border-radius: 18px;
+        border: 1px solid rgba(250, 238, 211, .12);
+        background: rgba(7, 17, 10, .55);
+        backdrop-filter: blur(10px);
+
+        p { color: var(--rz-mist); }
+    }
+}
+
+.rz-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--rz-gold-lt);
+
+    svg { width: 16px; height: 16px; }
+    &:hover { color: var(--rz-gold-hi); }
+}
+
+// The advert itself sits on husk-cream paper so long text stays easy to read.
+.rz-paper {
+    padding: clamp(1.4rem, 4vw, 2.6rem);
+    border-radius: 20px;
+    background: var(--rz-cream);
+    color: #22301A;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, .35);
+}
+
+.rz-advert {
+    font-size: 1.02rem;
+    line-height: 1.7;
+
+    h1, h2, h3, h4, h5 { margin: 1.4em 0 .5em; color: var(--rz-paddy); font-weight: 700; line-height: 1.25; }
+    h1, h2 { font-size: 1.45rem; }
+    h3, h4, h5 { font-size: 1.15rem; }
+    > :first-child, > :first-child > :first-child { margin-top: 0; }
+    p { margin: 0 0 .9em; }
+    ul, ol { margin: 0 0 1em; padding-left: 1.3rem; }
+    ul { list-style: disc; }
+    ol { list-style: decimal; }
+    li { margin: .25em 0; }
+    a { color: #7A5A00; text-decoration: underline; }
+    img { max-width: 100%; height: auto; border-radius: 12px; }
+    // Any Bootstrap section an advert was pasted with must not paint its own background.
+    section, .container { padding-left: 0; padding-right: 0; background: transparent !important; }
+
+    &--empty p { margin: 0; color: #4D5F3D; }
+}
+
+// --- The Hiring app's application form, framed in Rize colours ----------------
+// Its own stylesheet (pb_hiring portal_hiring.scss) paints a light page in purple;
+// here the page is the rice field and the form is the cream paper.
+.rz-site .pb-apply {
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--rz-cream);
+
+    .pb-apply-wrap { max-width: 900px; }
+    .pb-apply-back { color: var(--rz-gold-lt); }
+    .pb-apply-heading {
+        padding: 1.6rem 0 1.6rem;
+        h1 { color: #fff; margin: .6rem 0; }
+        p { color: var(--rz-mist); }
+    }
+    .pb-apply-heading .pb-apply-eyebrow { color: var(--rz-gold-lt); }
+
+    .pb-apply-card {
+        background: var(--rz-cream);
+        border-color: transparent;
+        border-radius: 20px;
+        color: #22301A;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, .35);
+
+        .pb-apply-eyebrow { color: #7A5A00; }
+        h2 { color: var(--rz-paddy); }
+        p, small { color: #5B6650; }
+    }
+    .pb-apply-path { border-color: rgba(34, 48, 26, .14); a { color: #7A5A00; } }
+    footer { border-color: rgba(34, 48, 26, .14); }
+    input, select, textarea {
+        border-color: rgba(34, 48, 26, .2);
+        background: #fff;
+        color: #22301A;
+        &:focus { outline: 2px solid rgba(204, 153, 0, .35); border-color: var(--rz-gold); }
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--rz-gold-lt) 0%, var(--rz-gold) 100%);
+        border: 0;
+        border-radius: 999px;
+        color: #1B1403;
+        font-weight: 650;
+        &:hover, &:focus { color: #1B1403; background: linear-gradient(135deg, var(--rz-gold-hi) 0%, var(--rz-gold) 100%); }
+    }
+}
+
+// -----------------------------------------------------------------------------
+//  Motion preferences
+// -----------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+    .rz-sway,
+    .rz-field__sun,
+    .rz-eyebrow__dot,
+    .rz-hero__inner,
+    .rz-main,
+    .rz-login__card {
+        animation: none !important;
+    }
+    .rz-btn, .rz-card, .rz-job { transition: none; }
+}

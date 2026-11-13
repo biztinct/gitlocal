@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RD46 — "Show the calculation", beside Recompute Formulas.
+
+         Placed on the payslip and not on the employee record: the question is
+         about one person in one period, and only a payslip is both. See the
+         model's module docstring for the full reasoning.
+
+         Shown on the same condition as Recompute Formulas so the two travel
+         together — a payslip that can be recomputed by the formula engine is
+         exactly one whose calculation can be shown. -->
+    <record id="view_hr_payslip_form_show_calculation" model="ir.ui.view">
+        <field name="name">hr.payslip.form.show.calculation</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id"
+               ref="pb_hr_payroll_formula.view_hr_payslip_form_json_tabs"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_recompute_formula_lines']"
+                   position="after">
+                <button name="action_show_calculation"
+                        type="object"
+                        string="Show the calculation"
+                        invisible="calculation_method != 'formula' and struct_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

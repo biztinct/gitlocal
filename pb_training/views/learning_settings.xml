@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================================================================
+         LEARNING L6 — Settings › HR › Learning. One screen with five tabs
+         (Report pack · Reminders · Feedback · Country packs · Day one); each
+         Settings card is a RECORD (never a bare tag, W98) that opens the
+         screen on its own tab through the action's context.
+         ================================================================== -->
+    <record id="action_pb_training_settings" model="ir.actions.client">
+        <field name="name">Learning settings</field>
+        <field name="tag">pb_training_settings</field>
+        <field name="target">current</field>
+    </record>
+    <record id="action_pb_training_settings_pack" model="ir.actions.client">
+        <field name="name">Report pack</field>
+        <field name="tag">pb_training_settings</field>
+        <field name="target">current</field>
+        <field name="context">{'pb_settings_tab': 'report_pack'}</field>
+    </record>
+    <record id="action_pb_training_settings_reminders" model="ir.actions.client">
+        <field name="name">Reminders</field>
+        <field name="tag">pb_training_settings</field>
+        <field name="target">current</field>
+        <field name="context">{'pb_settings_tab': 'reminders'}</field>
+    </record>
+    <record id="action_pb_training_settings_feedback" model="ir.actions.client">
+        <field name="name">Feedback</field>
+        <field name="tag">pb_training_settings</field>
+        <field name="target">current</field>
+        <field name="context">{'pb_settings_tab': 'feedback'}</field>
+    </record>
+    <record id="action_pb_training_settings_packs" model="ir.actions.client">
+        <field name="name">Country packs</field>
+        <field name="tag">pb_training_settings</field>
+        <field name="target">current</field>
+        <field name="context">{'pb_settings_tab': 'country_packs'}</field>
+    </record>
+    <record id="action_pb_training_settings_day_one" model="ir.actions.client">
+        <field name="name">Day one</field>
+        <field name="tag">pb_training_settings</field>
+        <field name="target">current</field>
+        <field name="context">{'pb_settings_tab': 'day_one'}</field>
+    </record>
+</odoo>

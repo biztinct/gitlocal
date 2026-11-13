@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Settings › HR › Required training (LEARNING L2). Reuses the Required
+       lens's .pbrq tokens. Comments ruled with `=` (R35); loop variable
+       `pk` (R1); translatable text nodes on one line (LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbRequiredSettings">
+    <div class="pbim pbrq pbrqs" t-att-class="{ 'pbrqs--embedded': props.packsOnly }">
+      <div class="pbrq-wrap">
+
+        <t t-if="!state.loaded">
+          <div class="pbrq-hero pbrq-skel" aria-busy="true">
+            <div class="pbrq-skel-line pbrq-skel-line--s"/>
+            <div class="pbrq-skel-line"/>
+          </div>
+        </t>
+
+        <div t-elif="state.failed" class="pbrq-panel pbrq-empty">
+          <div class="pbrq-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The settings could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment.</p>
+          <button class="pbim-btn primary" t-on-click="() => this.load()"><t t-out="ic('refresh',15)"/> Try again</button>
+        </div>
+
+        <div t-elif="!allowed" class="pbrq-panel pbrq-empty">
+          <div class="pbrq-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>These settings are for the training team</h2>
+          <p>Ask your HR administrator to add you to it.</p>
+        </div>
+
+        <t t-else="">
+          <section t-if="!props.packsOnly" class="pbrq-hero">
+            <div class="pbrq-eyebrow"><t t-out="ic('listChecks',14)"/> Required training</div>
+            <p class="pbrq-headline">Country packs for <t t-esc="d.company"/></p>
+            <p class="pbrqs-sub">A pack writes the legal training rules for one country into this company. Its rules arrive with Assign it by itself switched off, so nothing reaches anybody until you have read them.</p>
+          </section>
+
+          <section class="pbrq-panel pbrqs-packs">
+            <div t-foreach="d.packs || []" t-as="pk" t-key="pk.cc" class="pbrqs-pack" t-att-class="{ 'is-on': pk.on }">
+              <div class="pbrqs-pack-main">
+                <b t-esc="pk.label"/>
+                <span class="pbrq-dim" t-esc="pk.blurb"/>
+                <span class="pbrq-dim pbrqs-count" t-esc="packWords(pk)"/>
+                <span t-if="pk.note" class="pbrq-note" t-esc="pk.note"/>
+              </div>
+              <div class="pbrqs-pack-act">
+                <button t-if="pk.on" class="pbim-btn ghost" t-on-click="() => this.review(pk)">
+                  <t t-out="ic('listChecks',14)"/> Review the rules
+                </button>
+                <button class="pbrqs-switch" role="switch" t-att-aria-checked="pk.on ? 'true' : 'false'"
+                        t-att-class="{ 'is-on': pk.on }" t-att-disabled="!canManage or state.switching === pk.cc"
+                        t-on-click="() => this.toggle(pk)" t-att-title="pk.label">
+                  <span class="pbrqs-knob"/>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- LEARNING L6: inside Settings › Learning the three switches live
+               on the Reminders and Day one tabs; only the packs show here. -->
+          <section t-if="!props.packsOnly" class="pbrq-panel pbrqs-dials">
+            <h3><t t-out="ic('sliders',15)"/> Switches</h3>
+            <label class="pbrqs-dial">
+              <span><b>Renewal window</b><span class="pbrq-dim">How many days before a certificate runs out it counts as expiring, and its refresher course is put on.</span></span>
+              <input class="pbrq-in" type="number" min="0" max="365" t-att-value="state.form.renew_before" t-att-disabled="!canManage" t-on-input="(ev) => this.setField('renew_before', ev)"/>
+            </label>
+            <label class="pbrqs-dial">
+              <span><b>Most required courses in one morning</b><span class="pbrq-dim">A safety rail: the morning job stops here and carries on the next day.</span></span>
+              <input class="pbrq-in" type="number" min="0" max="10000" t-att-value="state.form.enforce_cap" t-att-disabled="!canManage" t-on-input="(ev) => this.setField('enforce_cap', ev)"/>
+            </label>
+            <label class="pbrqs-dial">
+              <span><b>Day-one courses from the joining checklist</b><span class="pbrq-dim">The older day-one rules put their courses on a new joiner when the checklist step runs.</span></span>
+              <input type="checkbox" t-att-checked="state.form.day1" t-att-disabled="!canManage" t-on-change="(ev) => this.setField('day1', ev, 'bool')"/>
+            </label>
+            <div class="pbrqs-foot">
+              <button class="pbim-btn ghost" t-on-click="openMatrix"><t t-out="ic('layoutGrid',14)"/> Open the matrix</button>
+              <button t-if="canManage" class="pbim-btn primary" t-att-disabled="state.saving" t-on-click="save"><t t-out="ic('check',15)"/> Save</button>
+            </div>
+          </section>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

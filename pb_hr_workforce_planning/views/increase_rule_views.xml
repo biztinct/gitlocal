@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Increase Rule Form (standalone for complex rules) -->
+    <record id="view_wfp_increase_rule_form" model="ir.ui.view">
+        <field name="name">wfp.increase.rule.form</field>
+        <field name="model">wfp.increase.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Rule Definition">
+                            <field name="name"/>
+                            <field name="sequence"/>
+                            <field name="increase_type"/>
+                            <field name="increase_pct" invisible="increase_type != 'percentage'"/>
+                            <field name="increase_amount" invisible="increase_type != 'fixed_amount'"/>
+                            <field name="merit_matrix_id" invisible="increase_type != 'merit_matrix'"/>
+                            <field name="component_target"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Scope">
+                            <field name="apply_to"/>
+                            <field name="department_ids" widget="many2many_tags" invisible="apply_to != 'department'"/>
+                            <field name="job_ids" widget="many2many_tags" invisible="apply_to != 'job'"/>
+                            <field name="location" invisible="apply_to != 'location'"/>
+                            <field name="country_code" invisible="apply_to != 'country'"/>
+                            <field name="custom_domain" invisible="apply_to != 'custom_filter'"/>
+                        </group>
+                    </group>
+                    <group string="Additional Filters">
+                        <group>
+                            <field name="exclude_probation"/>
+                            <field name="min_tenure_months"/>
+                        </group>
+                        <group>
+                            <field name="min_salary"/>
+                            <field name="max_salary"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

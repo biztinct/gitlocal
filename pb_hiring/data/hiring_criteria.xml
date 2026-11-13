@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         THE FIVE LINES A PANEL SCORES ON, shipped because a blank scoring
+         sheet is a scoring sheet nobody fills in.
+
+         COMPANY-LESS ON PURPOSE (R8). `company_id` defaults to the loading
+         user's company, so a seed that carries one installs onto whichever
+         company ran the install and the company rule then hides it from
+         every other one — a panel in Singapore would open a feedback page
+         with no questions on it at all.
+
+         `noupdate="1"` so a business that has reworded or re-sequenced these
+         keeps its wording. They are a TEMPLATE, not a rule: editing them
+         under Settings changes what the next interview asks.
+
+         Each one says what a five looks like, because two people scoring the
+         same candidate have to mean the same thing by a four or the average
+         underneath is arithmetic performed on nothing.
+         ================================================================== -->
+
+    <record id="criterion_role_skills" model="pb.hiring.criterion">
+        <field name="name">Can they do the job</field>
+        <field name="sequence">10</field>
+        <field name="help_text">Five: they have done this exact work well, and could start on Monday.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="criterion_problem_solving" model="pb.hiring.criterion">
+        <field name="name">How they think</field>
+        <field name="sequence">20</field>
+        <field name="help_text">Five: given a problem they had never seen, they asked the right question first.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="criterion_communication" model="pb.hiring.criterion">
+        <field name="name">How they explain things</field>
+        <field name="sequence">30</field>
+        <field name="help_text">Five: a person outside their field would have followed every word.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="criterion_values" model="pb.hiring.criterion">
+        <field name="name">How they would be to work with</field>
+        <field name="sequence">40</field>
+        <field name="help_text">Five: you would put them in front of a customer, or in a room with a difficult colleague, without worrying.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="criterion_motivation" model="pb.hiring.criterion">
+        <field name="name">Why they want this job</field>
+        <field name="sequence">50</field>
+        <field name="help_text">Five: they wanted this role at this company, and could say why without being asked twice.</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</data>
+</odoo>

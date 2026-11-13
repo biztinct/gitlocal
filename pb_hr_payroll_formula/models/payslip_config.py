@@ -29,6 +29,26 @@ class HrPayslipConfig(models.Model):
         string='Label',
         help="Display label for the identifier (optional)."
     )
+    # F9 — Payslip Studio: this model doubles as the payslip SECTION.
+    label_vi = fields.Char(
+        string='Label (VI)',
+        help="Vietnamese section title shown on the payslip when the reader's language is Vietnamese."
+    )
+    color_key = fields.Char(
+        string='Colour',
+        default='slate',
+        help="Section accent colour key used by the Payslip Studio."
+    )
+    collapse_when_empty = fields.Boolean(
+        string='Hide when empty',
+        default=False,
+        help="Omit this section from the printed payslip when it has no visible lines."
+    )
+    note_html = fields.Html(
+        string='Section Content',
+        sanitize=True,
+        help="Optional formatted text or table shown below the section title."
+    )
 
     def name_get(self):
         result = []
@@ -40,8 +60,9 @@ class HrPayslipConfig(models.Model):
             result.append((record.id, name))
         return result
 
-    _sql_constraints = [
-        ('identifier_config_uniq',
-         'unique(identifier, salary_structure_id)',
-         'Identifier must be unique per salary structure.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _identifier_config_uniq = models.Constraint(
+        'unique(identifier, salary_structure_id)',
+        'Identifier must be unique per salary structure.')

@@ -1,0 +1,26 @@
+{
+  "database": "rize",
+  "config_id": 4760,
+  "code": "RIZE_VIETNAM_MASTER_V3",
+  "advisory_code": "VNTECH",
+  "advisory_name": "Trợ cấp tư vấn kỹ thuật (Technical advisory allowance)",
+  "advisory_source": "Monthly adjustments|Trợ cấp tư vấn kỹ thuật (Technical advisory allowance)",
+  "remove_codes": ["VNTECH1", "VNTECH2", "VNTECH3", "VNTECH4"],
+  "time_order": ["VNSTDDAYS", "VNPAIDDAYS", "VNWEEKHRS", "VNLEAVEWD", "VNLEAVESTD"],
+  "adjustment_order": [
+    "VNUNIFORM", "VNFREETEL", "VNSEVER", "VNFREOTH", "VNEXTRANS",
+    "VNTECH", "VNY2S2", "VNPRODUCT", "VNACTBONUS", "VNREFERRAL",
+    "VNOTHTAX", "VNPREADD", "VNPREDED", "VNBENEFIT", "VNHOLPAY",
+    "VNADVANCE", "VNDEDUCT", "VNNETADD", "VNPITREF",
+    "VNTRIP", "VNPREMIUM", "VNSUPPORT", "VNPITMAN"
+  ],
+  "policies": [
+    "One manually entered monthly technical advisory payment, with no formula or recurring contract default.",
+    "Keep original permanent column identities and all other payroll formulas unchanged.",
+    "Migrate calculation tests from the four source payments to their agreed total.",
+    "Retain all 11 recurring placeholders and separate registered tax dependents.",
+    "Employee records remains the protected, ignored-on-monthly-upload worksheet.",
+    "Configuration data applies only to rize; shared application code is deployed to all databases.",
+    "Any October test using historical attendance or payments must be labelled accordingly and remain Draft."
+  ]
+}

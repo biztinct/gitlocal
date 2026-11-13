@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Who picks up Ask HR questions (per company, D6: an
+         ir.config_parameter, read and written by res.config.settings). -->
+    <record id="res_config_settings_view_form_ask_hr" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ask.hr</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='employees_setting_container']" position="after">
+                <block title="Ask HR" name="pb_ask_hr_setting_container">
+                    <setting id="pb_ask_hr_owner_setting" company_dependent="1"
+                             help="New questions are assigned to this person and appear on their to-do list. Leave empty to let the HR team pick them up from the queue.">
+                        <field name="pb_ask_hr_owner_id" options="{'no_create': True}"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

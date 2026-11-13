@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- ================================================= THE CATALOGUE
+       Ten parts of the product that can be sold on their own, seeded so the
+       matrix is never empty on a fresh platform. Editable afterwards from the
+       cockpit's Catalogue tab — and NOT `noupdate`, so a correction to a
+       sentence here reaches the platform on the next upgrade.
+
+       EVERY ONE OF THESE WAS CHECKED AGAINST A REAL DOOR before it was
+       written down. A switch for something with no rail entry, no tile and no
+       search row is a switch that does nothing, and the fastest way to make
+       the owner stop trusting the screen is to give him one of those.
+
+       MODE, AND THE RULE BEHIND IT. A whole mission that a customer has not
+       bought is shown LOCKED: the padlock where Insights would be is the most
+       honest sales line the product has, and taking the entry away means the
+       customer never learns the thing exists. A single tab INSIDE a mission is
+       HIDDEN: a padlock on one tab of a screen somebody uses every day is
+       clutter, not an offer. Both are one click to change per feature.
+
+       Section rules use `=` and never a doubled hyphen: two dashes inside an
+       XML comment is a parse error that takes the whole file with it. -->
+
+  <!-- ============================================= whole missions (lock) -->
+  <record id="feature_insights" model="pb.feature">
+    <field name="key">insights</field>
+    <field name="name">Insights &amp; Explorer</field>
+    <field name="blurb">Pay trends, the data explorer and workforce analytics.</field>
+    <field name="area">insights</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">lock</field>
+    <field name="lock_text">Insights is not switched on for your company. Ask Payobook to switch it on and see where your pay bill is going.</field>
+    <field name="sequence">10</field>
+  </record>
+
+  <record id="feature_workforce" model="pb.feature">
+    <field name="key">workforce</field>
+    <field name="name">Workforce</field>
+    <field name="blurb">Schedules, attendance, overtime, time off and business trips.</field>
+    <field name="area">workforce</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">lock</field>
+    <field name="lock_text">Workforce is not switched on for your company. Ask Payobook to switch it on for schedules, attendance and overtime.</field>
+    <field name="sequence">20</field>
+  </record>
+
+  <record id="feature_lifecycle" model="pb.feature">
+    <field name="key">lifecycle</field>
+    <field name="name">Lifecycle journeys</field>
+    <field name="blurb">Joining, probation, changes and leaving, as guided journeys.</field>
+    <field name="area">people</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">lock</field>
+    <field name="lock_text">Lifecycle is not switched on for your company. Ask Payobook to switch it on and run joining and leaving as a journey.</field>
+    <field name="sequence">30</field>
+  </record>
+
+  <record id="feature_compliance" model="pb.feature">
+    <field name="key">compliance</field>
+    <field name="name">Compliance</field>
+    <field name="blurb">Government filings and the audit trail behind every change.</field>
+    <field name="area">compliance</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">lock</field>
+    <field name="lock_text">Compliance is not switched on for your company. Ask Payobook to switch it on for filings and the audit trail.</field>
+    <field name="sequence">40</field>
+  </record>
+
+  <record id="feature_learn" model="pb.feature">
+    <field name="key">learn</field>
+    <field name="name">Learn</field>
+    <field name="blurb">Guided lessons and practice runs for the people using Payobook.</field>
+    <field name="area">learn</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">lock</field>
+    <field name="lock_text">Learn is not switched on for your company. Ask Payobook to switch it on and train your team inside the product.</field>
+    <field name="sequence">50</field>
+  </record>
+
+  <!-- ====================================== one tab inside one (hide) -->
+  <record id="feature_bank_ocr" model="pb.feature">
+    <field name="key">bank_ocr</field>
+    <field name="name">Bank statement scanning</field>
+    <field name="blurb">Read a bank statement and check it against what was paid.</field>
+    <field name="area">compliance</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">hide</field>
+    <field name="lock_text">Bank statement scanning is not switched on for your company.</field>
+    <field name="sequence">60</field>
+  </record>
+
+  <record id="feature_young_workers" model="pb.feature">
+    <field name="key">young_workers</field>
+    <field name="name">Young workers</field>
+    <field name="blurb">The extra checks the law asks for on employees under age.</field>
+    <field name="area">compliance</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">hide</field>
+    <field name="lock_text">Young workers is not switched on for your company.</field>
+    <field name="sequence">70</field>
+  </record>
+
+  <record id="feature_fullfinal" model="pb.feature">
+    <field name="key">fullfinal</field>
+    <field name="name">Full &amp; Final settlement</field>
+    <field name="blurb">The last pay of somebody who is leaving, worked out in one place.</field>
+    <field name="area">pay</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">hide</field>
+    <field name="lock_text">Full &amp; Final settlement is not switched on for your company.</field>
+    <field name="sequence">80</field>
+  </record>
+
+  <record id="feature_retro_proration" model="pb.feature">
+    <field name="key">retro_proration</field>
+    <field name="name">Retro &amp; Proration</field>
+    <field name="blurb">Backdated changes and part-month pay, with the audit behind them.</field>
+    <field name="area">pay</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">hide</field>
+    <field name="lock_text">Retro and Proration are not switched on for your company.</field>
+    <field name="sequence">90</field>
+  </record>
+
+  <record id="feature_people_plan" model="pb.feature">
+    <field name="key">people_plan</field>
+    <field name="name">Workforce planning</field>
+    <field name="blurb">Headcount and pay-bill planning against the year ahead.</field>
+    <field name="area">people</field>
+    <field name="default_on" eval="True"/>
+    <field name="mode">hide</field>
+    <field name="lock_text">Workforce planning is not switched on for your company.</field>
+    <field name="sequence">100</field>
+  </record>
+
+  <!-- ================================== THE PLATFORM'S OWN ANSWER
+       The master runs the same reader as every customer, so it gets the same
+       kind of answer written onto it — with EVERY feature on, whatever the
+       defaults above happen to say. The owner has to be able to see the whole
+       product to sell it, and a default switched off for new customers must
+       never take a door off his own screen.
+
+       Not through the push, which refuses the master by design (messages go
+       OUT from here). Re-run on every upgrade, so a feature added to the
+       catalogue is switched on here the moment it exists. -->
+  <function model="pb.tenants" name="_push_features_here"/>
+</odoo>

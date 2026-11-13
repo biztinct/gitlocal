@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- WF2 P5c — "Repeat for each…" on the task cards of the Approvals inbox.
+       Add-only xpaths on the P4a Tasks group: the line on a card, one heading
+       per repeat with "Do all in turn", the grouped card beyond five, and the
+       "next in turn" line in the drawer. Loop variable: `tk` (P4a's). -->
+  <t t-name="pb_lifecycle.PbInboxTaskLines" t-inherit="pb_approval_config.PbInbox" t-inherit-mode="extension">
+
+    <xpath expr="//span[hasclass('pbwfi-count')]" position="attributes">
+      <attribute name="t-esc">taskCountAll</attribute>
+    </xpath>
+
+    <!-- The heading sits above the first card of a group, inside the same
+         loop: the card's loop moves onto a wrapper (same variable, same key). -->
+    <xpath expr="//div[hasclass('pbwfi-task')]" position="attributes">
+      <attribute name="t-foreach"/>
+      <attribute name="t-as"/>
+      <attribute name="t-key"/>
+    </xpath>
+    <xpath expr="//div[hasclass('pbwfi-task')]" position="replace">
+      <t t-foreach="state.tasks" t-as="tk" t-key="'task-' + tk.id">
+        <div t-if="taskGroupHead(tk)" class="pbwfi-turnhead">
+          <t t-out="ic('repeat',14)"/>
+          <span><b t-esc="tk.group.title"/><t t-if="tk.record"> · <t t-esc="tk.record"/></t> · <t t-esc="tk.group.size"/> to do, one for each line</span>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click.stop="() => this.startTurn(tk)">Do all in turn</button>
+        </div>
+        <t>$0</t>
+      </t>
+    </xpath>
+
+    <xpath expr="//div[hasclass('pbwfi-task')]//div[hasclass('pbam-facts')]" position="inside">
+      <span t-if="tk.line and tk.kind !== 'task_group'" class="pbam-f pbwfi-line">
+        <t t-out="ic('repeat',12)"/> <span t-esc="tk.line.words"/>
+      </span>
+      <span t-if="tk.kind === 'task_group'" class="pbam-f pbwfi-line">
+        <t t-out="ic('listChecks',12)"/> <span>One for each line · worked through one after another</span>
+      </span>
+    </xpath>
+
+    <xpath expr="//div[hasclass('pbwfi-task')]//div[hasclass('pbam-reqright')]" position="inside">
+      <button t-if="tk.kind === 'task_group'" class="pbim-btn primary pbim-btn-sm"
+              t-on-click.stop="() => this.startTurn(tk)">Do all in turn</button>
+    </xpath>
+
+    <xpath expr="//aside[hasclass('pbwfi-drawer')]//p[hasclass('pbim-sub')]" position="after">
+      <p t-if="state.taskTurn" class="pbwfi-turnnote">
+        <t t-out="ic('repeat',13)"/>
+        <span>Doing all in turn · <t t-esc="taskTurnLeft()"/> left, this one included. The next opens when you finish.</span>
+      </p>
+    </xpath>
+  </t>
+</templates>

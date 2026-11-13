@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Headcount Change Tree -->
+    <record id="view_wfp_headcount_tree" model="ir.ui.view">
+        <field name="name">wfp.headcount.change.tree</field>
+        <field name="model">wfp.headcount.change</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="change_type"/>
+                <field name="planned_date"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="headcount"/>
+                <field name="expected_salary" widget="monetary"/>
+                <field name="estimated_monthly_cost" widget="monetary"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Headcount Change Form -->
+    <record id="view_wfp_headcount_form" model="ir.ui.view">
+        <field name="name">wfp.headcount.change.form</field>
+        <field name="model">wfp.headcount.change</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="change_type"/>
+                            <field name="planned_date"/>
+                            <field name="state"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="department_id"/>
+                            <field name="job_id"/>
+                            <field name="grade_id"/>
+                            <field name="headcount"/>
+                        </group>
+                    </group>
+                    <group invisible="change_type not in ('new_hire', 'replacement', 'elimination')">
+                        <group>
+                            <field name="expected_salary"/>
+                        </group>
+                    </group>
+                    <group invisible="change_type not in ('promotion', 'transfer')">
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="new_salary"/>
+                            <field name="new_department_id"/>
+                        </group>
+                    </group>
+                    <group invisible="change_type != 'attrition'">
+                        <group>
+                            <field name="attrition_pct"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="estimated_monthly_cost"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_wfp_headcount" model="ir.actions.act_window">
+        <field name="name">Headcount Changes</field>
+        <field name="res_model">wfp.headcount.change</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

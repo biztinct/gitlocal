@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- =================================================================
+       UPDATES P5 (D20) — year-to-date figures before Payobook.
+       Called from pb_updates.PbUpdatesDesk (same component), so every
+       method is the desk's own (js/updates_ytd.js).
+       ================================================================= -->
+
+  <!-- The way out under "Nobody else … can approve bank details yet"
+       (UPDATES P6 deviation 1). Expects `fix` in scope. -->
+  <t t-name="pb_updates.WayOut">
+    <div t-if="fix" class="pbu-wayout" data-p5="way-out">
+      <t t-if="fix.links and fix.links.length">
+        <button t-foreach="fix.links" t-as="lk" t-key="lk.key" type="button"
+                t-attf-class="pbu-wayout-link {{ lk_first ? 'is-pri' : '' }}" t-att-data-fix="lk.key"
+                t-on-click.stop="() => this.openWayOut(lk)">
+          <t t-out="icon(lk.icon, 14)"/><span t-esc="lk.label"/><t t-out="icon('arrowRight', 12)"/>
+        </button>
+      </t>
+      <span t-elif="fix.ask" class="pbu-wayout-ask"><t t-out="icon('info', 13)"/><span t-esc="fix.ask"/></span>
+    </div>
+  </t>
+
+  <!-- The fourth kind's own fields on Start. -->
+  <t t-name="pb_updates.YtdStart">
+    <div class="pbu-month pbu-ytd-date">
+      <span class="pbu-label">Tax year</span>
+      <div class="pbu-seg" role="radiogroup" aria-label="Tax year">
+        <button t-foreach="ytdYears" t-as="yr" t-key="yr" type="button" role="radio"
+                t-att-aria-checked="ytdYear === yr ? 'true' : 'false'"
+                t-on-click="() => this.setYtdYear(yr)" t-esc="yr"/>
+      </div>
+      <label for="pbu-ytd-covers" class="pbu-label">Figures cover up to</label>
+      <input id="pbu-ytd-covers" type="date" class="pbu-input pbu-date" t-att-value="state.ytdCovers"
+             t-att-min="ytdInfo.min" t-att-max="ytdInfo.max" t-on-change="onYtdCovers"/>
+      <p class="pbu-sub pbu-month-line"><t t-out="icon('history', 13)"/><span t-esc="ytdCoversLine"/></p>
+    </div>
+    <p t-if="ytdCoversError" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="ytdCoversError"/></p>
+    <p t-if="state.ytdCoversNote" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="state.ytdCoversNote"/></p>
+    <div class="pbu-ytd-figs" aria-label="Figures in the sheet">
+      <span t-foreach="ytdInfo.figures" t-as="f" t-key="f.key" class="pbu-chip pbu-chip--pri">
+        <t t-out="icon(f.count ? 'calendar' : f.item ? 'banknote' : 'history', 12)"/><t t-esc="f.label"/>
+      </span>
+    </div>
+    <div class="pbu-note">
+      <t t-out="icon('shieldCheck', 16)"/>
+      <div><b>Nothing here changes how tax is calculated.</b> The figures are kept beside the payslips: they show on the Year-to-date figures screen and on each person's tax summary. A pay run receives one only where a payroll manager has chosen which pay item gets it.</div>
+    </div>
+  </t>
+
+  <!-- The Apply step's card for the fourth kind. -->
+  <t t-name="pb_updates.YtdApply">
+    <section t-if="ytdApply" class="pbu-when-card pbu-month-card pbu-ytd-card" aria-labelledby="pbu-ytd-h">
+      <div class="pbu-when-head">
+        <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('history', 16)"/></span>
+        <div>
+          <h3 id="pbu-ytd-h" class="pbu-h3" t-esc="ytdCardTitle"/>
+          <p class="pbu-sub">A later sheet replaces a figure; CLEAR removes one. A figure a finished payslip has used can no longer be changed here.</p>
+        </div>
+      </div>
+      <div class="pbu-totals pbu-ytd-totals">
+        <span t-foreach="ytdApply.cols" t-as="c" t-key="c.key" class="pbu-total is-earn">
+          <small t-esc="c.label"/><b t-esc="c.total"/>
+        </span>
+      </div>
+      <p class="pbu-when-sum" aria-live="polite">
+        <t t-if="state.ytdOutlook"><t t-out="icon(ytdOutIcon, 14)"/><span t-esc="state.ytdOutlook.line"/></t>
+        <t t-else=""><span class="pbu-spin sm"/><span>Working out who approves these…</span></t>
+      </p>
+    </section>
+  </t>
+
+  <!-- The year-to-date view. -->
+  <t t-name="pb_updates.YtdView">
+    <section class="pbu-card pbu-flow pbu-ytd" aria-labelledby="pbu-ytdv-h">
+      <header class="pbu-ytd-head">
+        <button type="button" class="pbim-btn ghost pbim-btn-sm" t-on-click="backFromYtd">
+          <t t-out="icon('back', 14)"/> Updates
+        </button>
+        <div class="pbu-ytd-title">
+          <span class="pbu-ib pbu-ib--pri"><t t-out="icon('history', 20)"/></span>
+          <div>
+            <h1 id="pbu-ytdv-h" class="pbu-h1">Year-to-date figures</h1>
+            <p class="pbu-lead">Before Payobook, plus paid in Payobook, for each person and figure. Nothing here changes how tax is calculated.</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="pbu-ytd-bar">
+        <div class="pbu-seg" role="radiogroup" aria-label="Tax year">
+          <button t-foreach="ytdView ? [ytdView.this_year, ytdView.last_year] : []" t-as="yr" t-key="yr" type="button" role="radio"
+                  t-att-aria-checked="state.ytd.year === yr ? 'true' : 'false'"
+                  t-on-click="() => this.setViewYear(yr)" t-esc="yr"/>
+        </div>
+        <label class="pbu-ytd-search">
+          <t t-out="icon('search', 14)"/>
+          <input type="search" class="pbu-input" placeholder="Find a person by name or code"
+                 aria-label="Find a person" t-att-value="state.ytd.search" t-on-input="onYtdSearch"/>
+        </label>
+        <span class="pbu-ytd-gap"/>
+        <button t-if="ytdView and ytdView.may_setup" type="button" class="pbim-btn ghost"
+                t-att-aria-expanded="state.ytd.setupOpen ? 'true' : 'false'" t-on-click="toggleYtdSetup">
+          <t t-out="icon('settings', 15)"/> Set up
+        </button>
+        <button type="button" class="pbim-btn outline" t-att-disabled="state.ytd.downloading" t-on-click="downloadYtdView">
+          <span t-if="state.ytd.downloading" class="pbu-spin sm"/><t t-else="" t-out="icon('download', 15)"/> Download
+        </button>
+        <button t-if="ytdInfo.may_send" type="button" class="pbim-btn primary" t-on-click="() => this.newUpdate('ytd')">
+          <t t-out="icon('upload', 15)"/> Load figures
+        </button>
+      </div>
+      <p t-if="state.ytd.msg" t-attf-class="pbu-msg pbu-msg--{{ state.ytd.tone }}" role="status">
+        <t t-out="icon(state.ytd.tone === 'ok' ? 'checkCircle' : 'alert', 14)"/><span t-esc="state.ytd.msg"/>
+      </p>
+
+      <div t-if="ytdStrip.length" class="pbu-ytd-strip" aria-live="polite">
+        <span t-foreach="ytdStrip" t-as="c" t-key="c.key" t-attf-class="pbu-chip pbu-chip--{{ c.tone }}">
+          <t t-out="icon(c.icon, 12)"/><t t-esc="c.label"/>
+        </span>
+      </div>
+      <p t-if="ytdUncountedLine" class="pbu-inline-note"><t t-out="icon('info', 14)"/><span t-esc="ytdUncountedLine"/></p>
+
+      <!-- Set up: a payroll manager. -->
+      <section t-if="state.ytd.setupOpen" class="pbu-ytd-setup" aria-labelledby="pbu-ytds-h">
+        <h2 id="pbu-ytds-h" class="pbu-h2"><t t-out="icon('settings', 18)"/> Set up year-to-date figures</h2>
+        <p t-if="state.ytd.setupMsg" class="pbu-refuse" role="alert"><t t-out="icon('alert', 15)"/><span t-esc="state.ytd.setupMsg"/></p>
+        <div t-if="!state.ytd.setup" class="pbu-sub"><span class="pbu-spin sm"/> Opening the set-up…</div>
+        <t t-else="">
+          <div class="pbu-ytd-sgrid">
+            <div class="pbu-ytd-sbox">
+              <h3 class="pbu-h3">Paid in Payobook adds up</h3>
+              <p class="pbu-sub">For each figure, the pay items of finished payslips that count towards it.</p>
+              <ul class="pbu-ytd-figlist">
+                <li t-foreach="ytdSetupFigures" t-as="f" t-key="f.key">
+                  <b t-esc="f.label"/>
+                  <span class="pbu-ytd-codes">
+                    <span t-foreach="f.codes" t-as="c" t-key="c.code" class="pbu-chip pbu-chip--info">
+                      <t t-esc="c.label"/>
+                      <button type="button" class="pbu-chip-x" t-att-aria-label="'Remove ' + c.label"
+                              t-att-disabled="state.ytd.setupBusy" t-on-click="() => this.removeFigureCode(f, c.code)">
+                        <t t-out="icon('x', 11)"/>
+                      </button>
+                    </span>
+                    <span t-if="!f.codes.length" class="pbu-faint">Not counted yet</span>
+                  </span>
+                  <select class="pbu-select pbu-select-sm" t-att-aria-label="'Add a pay item to ' + f.label"
+                          t-att-disabled="state.ytd.setupBusy" t-on-change="(ev) => this.addFigureCode(f, ev)">
+                    <option value="">Add a pay item…</option>
+                    <t t-foreach="ytdItemsFor(f)" t-as="i" t-key="i.code">
+                      <option t-att-value="i.code" t-esc="i.label"/>
+                    </t>
+                  </select>
+                </li>
+              </ul>
+              <h3 class="pbu-h3">Pay items as figures of their own</h3>
+              <ul class="pbu-ytd-figlist">
+                <li t-foreach="ytdItemFigures" t-as="f" t-key="f.key">
+                  <b t-esc="f.label"/>
+                  <span class="pbu-ytd-codes"><span class="pbu-chip pbu-chip--muted" t-esc="f.key"/></span>
+                  <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.ytd.setupBusy"
+                          t-on-click="() => this.removeItemFigure(f)"><t t-out="icon('x', 13)"/> Remove</button>
+                </li>
+                <li t-if="!ytdItemFigures.length" class="pbu-faint">None yet.</li>
+              </ul>
+              <select class="pbu-select" aria-label="Add a pay item as a figure" t-att-disabled="state.ytd.setupBusy"
+                      t-on-change="addItemFigure">
+                <option value="">Add a pay item as a figure…</option>
+                <t t-foreach="state.ytd.setup.items" t-as="i" t-key="i.code">
+                  <option t-att-value="i.code" t-esc="i.label"/>
+                </t>
+              </select>
+            </div>
+
+            <div class="pbu-ytd-sbox">
+              <h3 class="pbu-h3">Send to a pay run</h3>
+              <p class="pbu-sub">Nothing reaches any pay run until you choose here which pay item receives which figure. If the pay data file has a different number, the pay run stops and asks. A run from application data never receives them: use Download for the pay run.</p>
+              <div t-foreach="state.ytd.setup.schemes" t-as="sc" t-key="sc.id" class="pbu-ytd-scheme">
+                <div class="pbu-ytd-scheme-h">
+                  <t t-out="icon('layers', 15)"/><b t-esc="sc.name"/>
+                  <span t-if="sc.application" class="pbu-chip pbu-chip--warn">From application data</span>
+                </div>
+                <ul class="pbu-ytd-maps">
+                  <li t-foreach="sc.maps" t-as="m" t-key="m.id">
+                    <span class="pbu-ytd-map-t" t-esc="ytdMapLine(m)"/>
+                    <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.ytd.setupBusy"
+                            t-on-click="() => this.removeMap(m)"><t t-out="icon('x', 13)"/> Stop</button>
+                  </li>
+                  <li t-if="!sc.maps.length" class="pbu-faint">No pay item of this scheme receives a figure.</li>
+                </ul>
+                <t t-set="row" t-value="ytdAddRow(sc)"/>
+                <div t-if="sc.inputs.length" class="pbu-ytd-addmap">
+                  <select class="pbu-select" aria-label="Pay item" t-on-change="(ev) => this.setAdd(sc, 'code', ev)">
+                    <t t-foreach="sc.inputs" t-as="i" t-key="i.code">
+                      <option t-att-value="i.code" t-att-selected="row.code === i.code" t-esc="i.label + ' (' + i.code + ')'"/>
+                    </t>
+                  </select>
+                  <span class="pbu-sub" t-esc="ytdReceivesWord"/>
+                  <select class="pbu-select" aria-label="Figure" t-on-change="(ev) => this.setAdd(sc, 'figure', ev)">
+                    <t t-foreach="state.ytd.setup.figures" t-as="f" t-key="f.key">
+                      <option t-att-value="f.key" t-att-selected="row.figure === f.key" t-esc="f.label"/>
+                    </t>
+                  </select>
+                  <select class="pbu-select" aria-label="What it receives" t-on-change="(ev) => this.setAdd(sc, 'basis', ev)">
+                    <t t-foreach="ytdBases(row)" t-as="b" t-key="b.value">
+                      <option t-att-value="b.value" t-att-selected="row.basis === b.value" t-esc="b.label"/>
+                    </t>
+                  </select>
+                  <button type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.ytd.setupBusy"
+                          t-on-click="() => this.saveMap(sc)"><t t-out="icon('plus', 13)"/> Add</button>
+                </div>
+              </div>
+              <p t-if="!state.ytd.setup.schemes.length" class="pbu-faint">No active pay scheme has a pay item a pay run fills in.</p>
+            </div>
+          </div>
+        </t>
+      </section>
+
+      <!-- Download for the pay run: the mapped pay items, worked out. -->
+      <section t-if="ytdView and ytdView.schemes.length" class="pbu-ytd-payrun" aria-labelledby="pbu-ytdp-h">
+        <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('fileSpreadsheet', 16)"/></span>
+        <div class="pbu-ytd-payrun-t">
+          <h3 id="pbu-ytdp-h" class="pbu-h3">Download for the pay run</h3>
+          <p class="pbu-sub" t-if="ytdPayrunScheme and ytdPayrunScheme.application">This scheme runs from application data: its pay run takes these pay items from Monthly adjustments. The sheet has them ready, one row per person and pay item.</p>
+          <p class="pbu-sub" t-else="">The pay items that receive a figure, with the value a payslip of that pay period gets.</p>
+          <div class="pbu-row">
+            <select class="pbu-select" aria-label="Pay scheme" t-on-change="onPayrunScheme">
+              <t t-foreach="ytdView.schemes" t-as="sc" t-key="sc.id">
+                <option t-att-value="sc.id" t-att-selected="state.ytd.payrun.config === (sc.id + '')" t-esc="sc.name"/>
+              </t>
+            </select>
+            <select class="pbu-select" aria-label="Pay period" t-on-change="onPayrunMonth">
+              <t t-foreach="ytdView.months" t-as="mo" t-key="mo.value">
+                <option t-att-value="mo.value" t-att-selected="state.ytd.payrun.month === mo.value" t-esc="mo.label"/>
+              </t>
+            </select>
+            <button type="button" class="pbim-btn outline" t-att-disabled="state.ytd.payrun.busy" t-on-click="downloadForPayrun">
+              <span t-if="state.ytd.payrun.busy" class="pbu-spin sm"/><t t-else="" t-out="icon('download', 15)"/> Download
+            </button>
+          </div>
+          <p t-if="state.ytd.payrun.msg" t-attf-class="pbu-msg pbu-msg--{{ state.ytd.payrun.tone }}" role="status">
+            <t t-out="icon(state.ytd.payrun.tone === 'ok' ? 'checkCircle' : 'alert', 14)"/><span t-esc="state.ytd.payrun.msg"/>
+          </p>
+        </div>
+      </section>
+
+      <div t-if="!ytdView and state.ytd.busy" class="pbu-sub"><span class="pbu-spin sm"/> Reading the figures…</div>
+      <div t-elif="ytdView and !ytdView.rows.length" class="pbu-empty">
+        <span class="pbu-ib pbu-ib--muted"><t t-out="icon('history', 20)"/></span>
+        <div>
+          <b t-esc="ytdEmptyTitle"/>
+          <p>People show up here once they have figures from before Payobook, or a finished payslip this tax year.</p>
+        </div>
+      </div>
+      <div t-elif="ytdView" t-attf-class="pbu-scroll pbu-ytd-wrap {{ state.ytd.busy ? 'is-busy' : '' }}">
+        <table class="pbu-ytd-t">
+          <thead>
+            <tr>
+              <th scope="col" class="pbu-ytd-who">Person</th>
+              <th t-foreach="ytdView.figures" t-as="f" t-key="f.key" scope="col" class="num" t-esc="f.label"/>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="ytdView.rows" t-as="r" t-key="r.emp_id">
+              <th scope="row" class="pbu-ytd-who">
+                <b t-esc="r.name"/>
+                <span class="pbu-sub" t-esc="ytdWhoLine(r)"/>
+                <span t-if="r.missing" class="pbu-chip pbu-chip--warn" t-att-title="ytdMissingTitle(r)">
+                  <t t-out="icon('alert', 11)"/><t t-esc="ytdMissingLabel(r)"/>
+                </span>
+                <span t-if="r.start_missing" class="pbu-chip pbu-chip--warn" t-att-title="ytdStartTitle(r)" data-p5c="start">
+                  <t t-out="icon('alert', 11)"/><t t-esc="ytdStartLabel(r)"/>
+                </span>
+                <span t-if="r.twice_labels and r.twice_labels.length" class="pbu-chip pbu-chip--info" t-att-title="ytdTwiceTitle(r)" data-p5c="twice">
+                  <t t-out="icon('copy', 11)"/><t t-esc="ytdTwiceLabel(r)"/>
+                </span>
+              </th>
+              <td t-foreach="ytdView.figures" t-as="f" t-key="f.key"
+                  t-attf-class="num pbu-ytd-cell {{ ytdCellTone(r, f) }}" t-att-data-state="ytdCellState(r, f)">
+                <t t-set="c" t-value="ytdCell(r, f)"/>
+                <t t-if="c and c.total_label">
+                  <b t-if="c.year_total" class="pbu-ytd-total" t-esc="c.total_label"/>
+                  <span t-else="" class="pbu-ytd-total is-open" t-att-title="c.note">
+                    <small t-esc="ytdKnownWord"/><t t-esc="c.total_label"/>
+                  </span>
+                  <span class="pbu-ytd-parts">
+                    <span t-att-class="c.has_before ? 'is-before' : 'is-none'" t-att-title="c.source"><t t-esc="c.has_before ? c.before_label : '—'"/></span>
+                    <span class="pbu-ytd-plus">+</span>
+                    <button t-if="c.detail" type="button" t-attf-class="pbu-ytd-how {{ c.counted ? 'is-paid' : 'is-none' }}"
+                            t-att-aria-expanded="ytdHowOpen(r, f) ? 'true' : 'false'" t-att-aria-label="ytdHowAria(r, f)"
+                            t-att-title="ytdHowAria(r, f)" t-on-click.stop="(ev) => this.openYtdHow(r, f, ev)">
+                      <t t-esc="c.counted ? (c.paid_label or '0') : '—'"/><t t-out="icon('listChecks', 11)"/>
+                    </button>
+                    <span t-else="" t-att-class="c.counted ? 'is-paid' : 'is-none'"><t t-esc="c.counted ? (c.paid_label or '0') : '—'"/></span>
+                  </span>
+                  <span t-if="c.joined_label" class="pbu-chip pbu-chip--pri pbu-ytd-chip pbu-ytd-joined" t-att-title="c.note" data-p5d="joined">
+                    <t t-out="icon('userPlus', 11)"/><t t-esc="c.joined_label"/>
+                  </span>
+                  <span t-if="c.chip" class="pbu-chip pbu-chip--warn pbu-ytd-chip" t-att-title="c.note">
+                    <t t-out="icon('alert', 11)"/><t t-esc="c.chip"/>
+                  </span>
+                  <span t-if="c.advance_label" class="pbu-ytd-adv" t-esc="ytdAdvanceLine(c)"/>
+                  <span t-if="c.below_zero" class="pbu-chip pbu-chip--info pbu-ytd-chip" t-att-title="c.below_note">
+                    <t t-out="icon('minusCircle', 11)"/><t t-esc="ytdBelowWord"/>
+                  </span>
+                </t>
+                <span t-else="" class="pbu-faint">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- UPDATES P5c — "How this number was worked out", one cell at a time. -->
+      <div t-if="state.ytd.how" class="pbu-ytd-pop" role="dialog" aria-modal="false" aria-labelledby="pbu-ytd-pop-h"
+           t-att-style="ytdHowStyle" t-on-click.stop="() => {}" t-on-keydown="onYtdHowKey">
+        <div class="pbu-ytd-pop-head">
+          <span class="pbu-ib pbu-ib--pri sm"><t t-out="icon('listChecks', 15)"/></span>
+          <div class="pbu-ytd-pop-t">
+            <h3 id="pbu-ytd-pop-h" class="pbu-h3">How this number was worked out</h3>
+            <p class="pbu-sub" t-esc="ytdHowSubtitle"/>
+          </div>
+          <button type="button" class="pbu-ytd-pop-x" aria-label="Close" t-on-click="closeYtdHow">
+            <t t-out="icon('x', 14)"/>
+          </button>
+        </div>
+        <div t-if="state.ytd.how.busy" class="pbu-sub"><span class="pbu-spin sm"/> Reading the payslips…</div>
+        <p t-elif="state.ytd.how.msg" class="pbu-refuse" role="alert"><t t-out="icon('alert', 14)"/><span t-esc="state.ytd.how.msg"/></p>
+        <t t-else="">
+          <t t-set="hd" t-value="state.ytd.how.data"/>
+          <p t-if="hd.items and hd.items.length" class="pbu-ytd-pop-items">
+            <t t-out="icon('sigma', 12)"/><span t-esc="ytdHowItemsLine"/>
+          </p>
+          <div t-if="hd.counted.length" class="pbu-ytd-pop-list" role="list" aria-label="Payslips counted">
+            <div t-foreach="hd.counted" t-as="it" t-key="it.id" role="listitem"
+                 t-attf-class="pbu-ytd-pop-row {{ it.missing ? 'is-missing' : '' }} {{ it.below ? 'is-below' : '' }}">
+              <span class="pbu-ytd-pop-mark"><t t-out="icon(it.missing ? 'minus' : (it.why ? 'info' : 'check'), 12)"/></span>
+              <span class="pbu-ytd-pop-what">
+                <b t-esc="it.run"/>
+                <small t-esc="it.period"/>
+                <small t-if="it.why" class="pbu-ytd-pop-why" t-esc="it.why"/>
+              </span>
+              <span class="pbu-ytd-pop-amt" t-esc="it.amount or (hd.count ? it.month : '—')"/>
+            </div>
+          </div>
+          <p t-else="" class="pbu-sub">No finished payslip counts towards this yet.</p>
+          <div class="pbu-ytd-pop-sum">
+            <span t-if="hd.before_label"><small>Before Payobook</small><b class="is-before" t-esc="hd.before_label"/></span>
+            <span><small>Paid in Payobook</small><b class="is-paid" t-esc="hd.paid_label or '—'"/></span>
+            <span><small t-esc="hd.year_total ? ytdLegend.total : ytdKnownWord"/><b t-esc="hd.total_label or '—'"/></span>
+          </div>
+          <p t-if="hd.joined_label" class="pbu-inline-note pbu-ytd-pop-joined" data-p5d="joined"><t t-out="icon('userPlus', 13)"/><span t-esc="hd.joined_label"/></p>
+          <p t-if="hd.note and !hd.year_total" class="pbu-inline-note pbu-ytd-pop-note"><t t-out="icon('alert', 13)"/><span t-esc="hd.note"/></p>
+          <details t-if="hd.left.length" class="pbu-ytd-pop-left">
+            <summary><t t-out="icon('eyeOff', 12)"/><span t-esc="ytdHowLeftLine"/></summary>
+            <div t-foreach="hd.left" t-as="it" t-key="it.id" class="pbu-ytd-pop-row is-left">
+              <span class="pbu-ytd-pop-mark"><t t-out="icon('minus', 12)"/></span>
+              <span class="pbu-ytd-pop-what"><b t-esc="it.run"/><small t-esc="it.period"/><small class="pbu-ytd-pop-why" t-esc="it.why"/></span>
+              <span class="pbu-ytd-pop-amt is-none" t-esc="it.amount or ''"/>
+            </div>
+          </details>
+        </t>
+      </div>
+
+      <div t-if="ytdView and ytdView.rows.length" class="pbu-ytd-foot">
+        <span class="pbu-sub pbu-ytd-legend"><span class="is-before" t-esc="ytdLegend.before"/> + <span class="is-paid" t-esc="ytdLegend.paid"/> = <b t-esc="ytdLegend.total"/></span>
+        <span class="pbu-ytd-gap"/>
+        <span class="pbu-sub" t-esc="ytdPageLine"/>
+        <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="!ytdHasPrev" t-on-click="() => this.ytdPage(-1)">
+          <t t-out="icon('back', 13)"/> Previous
+        </button>
+        <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="!ytdHasNext" t-on-click="() => this.ytdPage(1)">
+          Next <t t-out="icon('arrow', 13)"/>
+        </button>
+      </div>
+    </section>
+  </t>
+</templates>

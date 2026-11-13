@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_employee_vault.Employee360Drawer">
+    <div class="pev pbim">
+      <div class="pev-scrim" t-att-class="{ 'shown': state.shown }" t-on-click="close"/>
+      <aside class="pev-drawer ppl" t-att-class="{ 'shown': state.shown }" t-on-click.stop="">
+
+        <!-- ===================== loading / error ===================== -->
+        <div t-if="!state.loaded" class="pev-busy"><div class="pev-spin"/><span>Loading…</span></div>
+
+        <t t-elif="d.error">
+          <div class="pev-head">
+            <button class="pev-x" t-on-click="close"><t t-out="ic('x',18)"/></button>
+          </div>
+          <div class="pev-empty"><t t-out="ic('alert',30)"/><p t-esc="d.error"/></div>
+        </t>
+
+        <t t-else="">
+          <!-- ===================== header ===================== -->
+          <div class="pev-head">
+            <div class="pev-head-id">
+              <div class="pev-ava" t-att-style="profile.avatar ? ('background-image:url(' + profile.avatar + ')') : ''">
+                <span t-if="!profile.avatar" t-esc="profile.initials"/>
+              </div>
+              <div class="pev-head-tx">
+                <h2 t-esc="profile.name"/>
+                <div class="pev-chips">
+                  <span class="pev-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="profile.job"/></span>
+                  <span class="pev-chip" t-if="profile.manager"><t t-out="ic('user',13)"/> <t t-esc="profile.manager"/></span>
+                  <span t-attf-class="pev-chip tone-{{ stateCls(profile.contract and profile.contract.state) }}">
+                    <t t-out="ic('fileText',13)"/> <t t-esc="(profile.contract and profile.contract.state_label) || '—'"/>
+                  </span>
+
+                  <!-- The chip seam. Another module may add one line of its
+                       own about this person — GROUP P2's "Paid by" is the
+                       first — without forking a drawer that would then be two
+                       drawers to keep in step forever. Absent modules add
+                       nothing and this row reads exactly as it did. -->
+                  <t t-foreach="extraChips" t-as="chip" t-key="chip.key">
+                    <t t-component="chip.Component" t-props="chipPropsFor(chip)"/>
+                  </t>
+                </div>
+              </div>
+            </div>
+            <div class="pev-head-side">
+              <div class="pev-tenure" t-if="profile.tenure_label and profile.tenure_label !== '—'">
+                <span class="l">Tenure</span><span class="v" t-esc="profile.tenure_label"/>
+              </div>
+              <button class="pev-full" t-if="contractId" t-on-click="openContract" title="Open this person's current contract">
+                <t t-out="ic('fileText',14)"/> Contract
+              </button>
+              <button class="pev-full" t-on-click="openFull" title="Open the complete employee record — every field, editable">
+                <t t-out="ic('external',14)"/> Full details
+              </button>
+              <button class="pev-x" t-on-click="close"><t t-out="ic('x',18)"/></button>
+            </div>
+          </div>
+
+          <!-- ===================== tabs ===================== -->
+          <div class="pev-tabs">
+            <button t-attf-class="pev-tab {{ state.tab === 'profile' ? 'on' : '' }}" t-on-click="() => this.setTab('profile')">
+              <t t-out="ic('user',15)"/> Profile
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'personal' ? 'on' : '' }}" t-on-click="() => this.setTab('personal')">
+              <t t-out="ic('idCard',15)"/> Personal
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'job' ? 'on' : '' }}" t-on-click="() => this.setTab('job')">
+              <t t-out="ic('briefcase',15)"/> Job
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'pay' ? 'on' : '' }}" t-on-click="() => this.setTab('pay')">
+              <t t-out="ic('banknote',15)"/> Pay &amp; tax
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'documents' ? 'on' : '' }}" t-on-click="() => this.setTab('documents')">
+              <t t-out="ic('fileText',15)"/> Documents
+              <span class="pev-tab-c" t-if="(d.documents || []).length" t-esc="d.documents.length"/>
+            </button>
+            <button t-attf-class="pev-tab {{ state.tab === 'timeline' ? 'on' : '' }}" t-on-click="() => this.setTab('timeline')">
+              <t t-out="ic('history',15)"/> Timeline
+              <span class="pev-tab-c" t-if="d.timeline_total" t-esc="d.timeline_total"/>
+            </button>
+          </div>
+
+          <div class="pev-body">
+
+            <!-- ==================== PROFILE ==================== -->
+            <t t-if="state.tab === 'profile'">
+              <!-- contract lifecycle rail -->
+              <div class="pev-rail" t-if="profile.pipeline">
+                <t t-foreach="profile.pipeline" t-as="st" t-key="st.key">
+                  <div t-attf-class="pev-rail-step {{ st.done ? 'done' : '' }} {{ st.current ? 'current' : '' }}">
+                    <span class="dot"/><span class="lbl" t-esc="st.label"/>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pev-grid">
+                <div class="pev-cell">
+                  <span class="k"><t t-out="ic('banknote',14)"/> Monthly wage</span>
+                  <span class="v" t-if="d.unmask_wage" t-esc="money(profile.contract and profile.contract.wage)"/>
+                  <span class="v muted" t-else="" title="Visible to payroll managers only">••••••</span>
+                </div>
+                <div class="pev-cell">
+                  <span class="k"><t t-out="ic('building',14)"/> Department</span>
+                  <span class="v" t-esc="profile.dept || '—'"/>
+                </div>
+                <div class="pev-cell">
+                  <span class="k"><t t-out="ic('user',14)"/> Manager</span>
+                  <span class="v" t-esc="profile.manager || '—'"/>
+                </div>
+                <div class="pev-cell" t-if="d.costcenter">
+                  <span class="k"><t t-out="ic('briefcase',14)"/> Cost centre</span>
+                  <span class="v" t-esc="d.costcenter"/>
+                </div>
+                <div class="pev-cell">
+                  <span class="k"><t t-out="ic('calendar',14)"/> Joined</span>
+                  <span class="v" t-esc="profile.join_date || '—'"/>
+                </div>
+                <div class="pev-cell">
+                  <span class="k"><t t-out="ic('mail',14)"/> Email</span>
+                  <span class="v" t-esc="profile.email || '—'"/>
+                </div>
+                <div class="pev-cell">
+                  <span class="k"><t t-out="ic('phone',14)"/> Phone</span>
+                  <span class="v" t-esc="profile.phone || '—'"/>
+                </div>
+                <div class="pev-cell" t-if="profile.contract and profile.contract.structure">
+                  <span class="k"><t t-out="ic('fileText',14)"/> Structure</span>
+                  <span class="v" t-esc="profile.contract.structure"/>
+                </div>
+                <div class="pev-cell" t-if="profile.contract and profile.contract.id">
+                  <span class="k"><t t-out="ic('calendar',14)"/> Contract dates</span>
+                  <span class="v"><t t-esc="profile.contract.date_start || '—'"/> → <t t-if="profile.contract.date_end" t-esc="profile.contract.date_end"/><t t-else="">no end date</t></span>
+                </div>
+                <div class="pev-cell" t-if="profile.counts">
+                  <span class="k"><t t-out="ic('history',14)"/> On record</span>
+                  <span class="v">
+                    <t t-esc="profile.counts.contracts"/> <span t-if="profile.counts.contracts === 1">contract</span><span t-else="">contracts</span>
+                    · <t t-esc="profile.counts.payslips"/> <span t-if="profile.counts.payslips === 1">payslip</span><span t-else="">payslips</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- statutory readiness chips -->
+              <div class="pev-stats" t-if="profile.statutory">
+                <span t-attf-class="pev-stat {{ profile.statutory.bank ? 'ok' : 'off' }}"><t t-out="ic('creditCard',14)"/> Bank <t t-esc="profile.statutory.bank ? 'on file' : 'missing'"/></span>
+                <span t-attf-class="pev-stat {{ profile.statutory.tax ? 'ok' : 'off' }}"><t t-out="ic('stamp',14)"/> Tax</span>
+                <span t-attf-class="pev-stat {{ profile.statutory.insurance ? 'ok' : 'off' }}"><t t-out="ic('shield',14)"/> Insurance</span>
+              </div>
+            </t>
+
+            <!-- ============ PERSONAL · JOB · PAY & TAX (read-only) ============ -->
+            <t t-if="['personal', 'job', 'pay'].includes(state.tab)">
+              <div t-if="!groups(state.tab).length" class="pev-empty"><t t-out="ic('inbox',30)"/><p>Nothing recorded here yet.</p></div>
+              <t t-foreach="groups(state.tab)" t-as="grp" t-key="grp.key">
+                <section class="pev-sec">
+                  <div class="pev-sec-h">
+                    <span class="ci" t-out="ic(grp.icon,15)"/>
+                    <span class="cn" t-esc="grp.title"/>
+                    <span class="cc"><t t-esc="grp.filled"/> / <t t-esc="grp.rows.length"/></span>
+                  </div>
+                  <dl class="pev-kv">
+                    <t t-foreach="grp.rows" t-as="row" t-key="row.key">
+                      <div t-attf-class="pev-kv-row {{ row.empty ? 'is-empty' : '' }}">
+                        <dt t-esc="row.label"/>
+                        <dd t-esc="row.empty ? '—' : row.value"/>
+                      </div>
+                    </t>
+                  </dl>
+                </section>
+              </t>
+            </t>
+
+            <div class="pev-more" t-if="['profile', 'personal', 'job', 'pay'].includes(state.tab)">
+              <span>Something missing, or need to change a detail?</span>
+              <button class="pev-btn ghost" t-on-click="openFull"><t t-out="ic('external',14)"/> Full details</button>
+            </div>
+
+            <!-- ==================== DOCUMENTS ==================== -->
+            <t t-if="state.tab === 'documents'">
+              <div t-if="state.uploading" class="pev-uploading"><div class="pev-spin sm"/> Uploading…</div>
+              <t t-foreach="docsByCategory()" t-as="grp" t-key="grp.cat.id">
+                <div class="pev-catblock">
+                  <div class="pev-cathead">
+                    <span class="ci" t-out="catIcon(grp.cat.code)"/>
+                    <span class="cn" t-esc="grp.cat.name"/>
+                    <span class="cc" t-if="grp.docs.length" t-esc="grp.docs.length"/>
+                    <span class="cr" t-if="grp.cat.requires_expiry">expiry required</span>
+                  </div>
+
+                  <div class="pev-docgrid">
+                    <t t-foreach="grp.docs" t-as="doc" t-key="doc.id">
+                      <div class="pev-doc">
+                        <div class="pev-doc-top">
+                          <span class="pev-doc-ic" t-out="ic(doc.mimetype === 'application/pdf' ? 'fileText' : 'image',18)"/>
+                          <span class="pev-doc-name" t-esc="doc.name"/>
+                          <span t-attf-class="pev-shield {{ doc.verified ? 'on' : '' }}"
+                                t-att-title="doc.verified ? ('Verified by ' + doc.verified_by + ' · ' + doc.verified_at) : 'Not verified'"
+                                t-out="ic(doc.verified ? 'shieldCheck' : 'shield',16)"/>
+                        </div>
+                        <div class="pev-doc-meta">
+                          <span t-if="doc.issue_date"><t t-esc="doc.issue_date"/></span>
+                          <span t-attf-class="pev-exp {{ expiryCls(doc) }}" t-esc="expiryLabel(doc)"/>
+                        </div>
+                        <div class="pev-doc-actions">
+                          <a class="pev-mini" t-att-href="doc.view_url" target="_blank"><t t-out="ic('external',14)"/> View</a>
+                          <button class="pev-mini" t-if="!doc.verified" t-att-disabled="state.busy" t-on-click="() => this.verify(doc, true)"><t t-out="ic('check',14)"/> Verify</button>
+                          <button class="pev-mini" t-if="doc.verified" t-att-disabled="state.busy" t-on-click="() => this.verify(doc, false)"><t t-out="ic('shield',14)"/> Unverify</button>
+                          <button class="pev-mini danger" t-if="d.can_manage" t-att-disabled="state.busy" t-on-click="() => this.del(doc)"><t t-out="ic('trash',14)"/></button>
+                        </div>
+                      </div>
+                    </t>
+
+                    <!-- drop zone -->
+                    <div class="pev-drop" t-on-click="() => this.triggerPick(grp.cat.id)"
+                         t-on-drop="(ev) => this.onDrop(grp.cat.id, ev)" t-on-dragover="onDragOver">
+                      <t t-out="ic('upload',20)"/>
+                      <span>Drop a file or click to upload</span>
+                      <small>JPG · PNG · PDF</small>
+                      <input type="file" class="pev-hidden-file" t-att-id="'pev-file-' + grp.cat.id"
+                             accept="image/png,image/jpeg,application/pdf"
+                             t-on-change="(ev) => this.onFilePicked(grp.cat.id, ev)"/>
+                    </div>
+                  </div>
+                </div>
+              </t>
+              <div t-if="!(d.categories || []).length" class="pev-empty"><t t-out="ic('inbox',30)"/><p>No document categories configured.</p></div>
+            </t>
+
+            <!-- ==================== TIMELINE ==================== -->
+            <t t-if="state.tab === 'timeline'">
+              <div t-if="!(d.timeline || []).length" class="pev-empty"><t t-out="ic('history',30)"/><p>No history yet.</p><small>Changes to this employee will appear here from now on.</small></div>
+
+              <div t-else="" class="pev-tl">
+                <t t-foreach="timelineRows()" t-as="row" t-key="row.key">
+                  <div t-if="row.sep" class="pev-tl-sep"><span t-esc="row.label"/></div>
+                  <div t-else="" t-attf-class="pev-tl-item tone-{{ kindTone(row.kind) }}">
+                    <span class="pev-tl-ic" t-out="ic(row.icon,15)"/>
+                    <div class="pev-tl-body">
+                      <div class="pev-tl-line1">
+                        <span class="t" t-esc="row.title"/>
+                        <span class="when" t-esc="relDate(row.stamp)" t-att-title="row.stamp"/>
+                      </div>
+                      <div class="pev-tl-detail" t-if="row.detail" t-esc="row.detail"/>
+                      <div class="pev-tl-actor" t-if="row.actor">
+                        <span class="a-av" t-att-style="row.actor_avatar ? ('background-image:url(' + row.actor_avatar + ')') : ''"/>
+                        <span t-esc="row.actor"/>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pev-tl-more" t-if="hasMoreTimeline">
+                <span class="cnt">Showing <t t-esc="(d.timeline || []).length"/> of <t t-esc="d.timeline_total"/></span>
+                <button class="pev-btn ghost" t-att-disabled="state.busy" t-on-click="loadMore">Load more</button>
+              </div>
+            </t>
+
+          </div>
+        </t>
+      </aside>
+    </div>
+  </t>
+
+  <!-- ==================================================================
+       FILLIN P2 B4 — answers Payobook filled in that nobody has checked.
+       Rendered only when there is at least one (quiet board pattern).
+       ================================================================== -->
+  <t t-name="pb_employee_vault.FillinChip">
+    <button t-if="state.n" type="button" class="pev-chip pev-chip-fill"
+            t-att-title="tooltip" t-on-click.stop="open">
+      <t t-out="ic('sparkles',13)"/> <t t-esc="label"/>
+    </button>
+  </t>
+
+</templates>

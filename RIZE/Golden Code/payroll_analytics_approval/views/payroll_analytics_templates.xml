@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Professional Analytics Templates -->
+    <template id="payroll_analytics_dashboard_template" name="Payroll Analytics Dashboard">
+        <div class="analytics-dashboard">
+            
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1 class="dashboard-title">
+                            <i class="fa fa-bar-chart-o"/> Payroll Analytics Dashboard
+                        </h1>
+                        <p class="dashboard-subtitle">
+                            <t t-esc="analytics.period_name"/> • Final Approval Review
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <div class="status-badge">
+                            <span t-att-class="'badge badge-' + ('success' if analytics.state == 'approved' else 'warning' if analytics.state == 'ready' else 'info')">
+                                <t t-esc="analytics.state.upper()"/>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Metrics Cards -->
+            <div class="metrics-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="metric-card metric-employees">
+                            <div class="metric-icon">
+                                <i class="fa fa-users"/>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-value"><t t-esc="analytics.total_employees"/></h3>
+                                <p class="metric-label">Total Employees</p>
+                                <div class="metric-change">
+                                    <span t-att-class="'change-indicator ' + ('positive' if analytics.employee_change &gt; 0 else 'negative' if analytics.employee_change &lt; 0 else 'neutral')">
+                                        <i t-att-class="'fa fa-arrow-' + ('up' if analytics.employee_change &gt; 0 else 'down' if analytics.employee_change &lt; 0 else 'right')"/>
+                                        <t t-esc="abs(analytics.employee_change or 0)"/> vs last month
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="metric-card metric-payroll">
+                            <div class="metric-icon">
+                                <i class="fa fa-money"/>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-value">
+                                    <t t-esc="'{:,.0f}'.format(analytics.total_payroll)"/>
+                                </h3>
+                                <p class="metric-label">Total Payroll</p>
+                                <div class="metric-change">
+                                    <span t-att-class="'change-indicator ' + ('positive' if analytics.payroll_change &gt; 0 else 'negative' if analytics.payroll_change &lt; 0 else 'neutral')">
+                                        <i t-att-class="'fa fa-arrow-' + ('up' if analytics.payroll_change &gt; 0 else 'down' if analytics.payroll_change &lt; 0 else 'right')"/>
+                                        <t t-esc="'{:.1f}%'.format(abs(analytics.payroll_change or 0))"/> vs last month
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="metric-card metric-average">
+                            <div class="metric-icon">
+                                <i class="fa fa-calculator"/>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-value">
+                                    <t t-esc="'{:,.0f}'.format(analytics.average_salary)"/>
+                                </h3>
+                                <p class="metric-label">Average Salary</p>
+                                <div class="metric-change">
+                                    <span t-att-class="'change-indicator ' + ('positive' if analytics.avg_salary_change &gt; 0 else 'negative' if analytics.avg_salary_change &lt; 0 else 'neutral')">
+                                        <i t-att-class="'fa fa-arrow-' + ('up' if analytics.avg_salary_change &gt; 0 else 'down' if analytics.avg_salary_change &lt; 0 else 'right')"/>
+                                        <t t-esc="'{:.1f}%'.format(abs(analytics.avg_salary_change or 0))"/> vs last month
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="metric-card metric-variance">
+                            <div class="metric-icon">
+                                <i class="fa fa-line-chart"/>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-value">
+                                    <t t-esc="'{:.1f}%'.format(analytics.variance_percentage or 0)"/>
+                                </h3>
+                                <p class="metric-label">Variance</p>
+                                <div class="metric-change">
+                                    <span t-att-class="'change-indicator ' + ('positive' if (analytics.variance_percentage or 0) &lt; 5 else 'negative' if (analytics.variance_percentage or 0) &gt; 15 else 'neutral')">
+                                        <i t-att-class="'fa fa-' + ('check' if (analytics.variance_percentage or 0) &lt; 5 else 'exclamation-triangle' if (analytics.variance_percentage or 0) &gt; 15 else 'info')"/>
+                                        <t t-if="(analytics.variance_percentage or 0) &lt; 5">Normal Range</t>
+                                        <t t-elif="(analytics.variance_percentage or 0) &gt; 15">High Variance</t>
+                                        <t t-else="">Moderate</t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="row">
+                    <!-- Salary Components Chart -->
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h4><i class="fa fa-pie-chart"/> Salary Components Breakdown</h4>
+                                <div class="chart-controls">
+                                    <select class="form-control form-control-sm" id="components-view-toggle">
+                                        <option value="total">Total Amount</option>
+                                        <option value="average">Average per Employee</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="chart-body">
+                                <canvas id="components-chart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Month Comparison Chart -->
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h4><i class="fa fa-bar-chart"/> Month-over-Month Comparison</h4>
+                                <div class="chart-controls">
+                                    <button class="btn btn-sm btn-outline-primary" data-period="3">3 Months</button>
+                                    <button class="btn btn-sm btn-outline-primary active" data-period="6">6 Months</button>
+                                    <button class="btn btn-sm btn-outline-primary" data-period="12">12 Months</button>
+                                </div>
+                            </div>
+                            <div class="chart-body">
+                                <canvas id="comparison-chart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Components Table -->
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="components-table-card">
+                            <div class="table-header">
+                                <h4><i class="fa fa-table"/> Detailed Component Analysis</h4>
+                                <div class="table-controls">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Search components..." id="components-search"/>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="components-table">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Component</th>
+                                            <th>Code</th>
+                                            <th class="text-right">Current Total</th>
+                                            <th class="text-right">Previous Total</th>
+                                            <th class="text-right">Variance</th>
+                                            <th class="text-right">Avg per Employee</th>
+                                            <th class="text-center">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="components-table-body">
+                                        <!-- Component rows will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Decision Support Section -->
+            <div class="decision-section">
+                <div class="section-header">
+                    <h4><i class="fa fa-lightbulb-o"/> Decision Support &amp; Anomaly Detection</h4>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="recommendation-card">
+                            <h5><i class="fa fa-check-circle text-success"/> Recommendations</h5>
+                            <ul id="recommendations-list">
+                                <!-- Recommendations will be populated by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="warning-card">
+                            <h5><i class="fa fa-warning text-warning"/> Items to Review</h5>
+                            <ul id="warnings-list">
+                                <!-- Warnings will be populated by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Anomaly Alerts -->
+                <div class="row mt-3" id="anomaly-alerts">
+                    <div class="col-md-12">
+                        <div class="alert-section">
+                            <!-- Anomaly alerts will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-section">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-success btn-lg mr-3" id="final-approve-btn" t-if="analytics.state == 'ready'">
+                            <i class="fa fa-check"/> Final Approve Payroll
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg mr-3" id="export-bank-btn" t-if="analytics.state == 'approved'">
+                            <i class="fa fa-download"/> Export Bank File
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-lg" id="view-detailed-report-btn">
+                            <i class="fa fa-file-text"/> View Detailed Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Include Chart.js and Custom Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <script>
+            // Initialize dashboard when DOM is ready
+            $(document).ready(function() {
+                if (typeof PayrollAnalyticsDashboard !== 'undefined') {
+                    PayrollAnalyticsDashboard.init({
+                        analyticsId: <t t-esc="analytics.id"/>,
+                        chartData: <t t-raw="analytics.get_chart_data()"/>,
+                        components: <t t-raw="analytics.salary_components"/>,
+                        comparisons: <t t-raw="analytics.comparison_data"/>,
+                        anomalies: <t t-raw="analytics.anomaly_alerts"/>
+                    });
+                }
+            });
+        </script>
+    </template>
+    
+    <!-- Bank Export Success Template -->
+    <template id="bank_export_success_template" name="Bank Export Success">
+        <div class="export-success">
+            <div class="alert alert-success">
+                <h4><i class="fa fa-check-circle"/> Export Successful!</h4>
+                <p>Bank disbursement file has been generated successfully.</p>
+                <ul>
+                    <li>Total Records: <t t-esc="total_records"/></li>
+                    <li>Total Amount: <t t-esc="total_amount"/></li>
+                    <li>File Format: <t t-esc="file_format"/></li>
+                    <li>Generated: <t t-esc="export_date"/></li>
+                </ul>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Anomaly Alert Template -->
+    <template id="anomaly_alert_template" name="Anomaly Alert">
+        <div t-att-class="'alert alert-' + alert_type + ' anomaly-alert'">
+            <h5><i t-att-class="'fa fa-' + icon"/> <t t-esc="title"/></h5>
+            <p><t t-esc="message"/></p>
+            <t t-if="details">
+                <small class="text-muted"><t t-esc="details"/></small>
+            </t>
+        </div>
+    </template>
+    
+    <!-- Country Dashboard Tiles Template -->
+    <template id="payroll_dashboard_tiles_template" name="Payroll Dashboard Tiles">
+        <div class="payroll-dashboard-tiles">
+            
+            <!-- Payroll Approval Tile -->
+            <div class="dashboard-tile payroll-approval-tile" data-action="payroll_approval">
+                <div class="tile-icon">
+                    <i class="fa fa-gavel"/>
+                </div>
+                <div class="tile-content">
+                    <h3>Payroll Approval</h3>
+                    <p class="tile-subtitle">Level 2 Approve</p>
+                    <div class="tile-stats">
+                        <span class="stat-number" id="pending-approvals-count">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+                <div class="tile-footer">
+                    <span class="tile-action">Click to Review →</span>
+                </div>
+            </div>
+            
+            <!-- Bank Export Tile -->
+            <div class="dashboard-tile bank-export-tile" data-action="bank_export">
+                <div class="tile-icon">
+                    <i class="fa fa-university"/>
+                </div>
+                <div class="tile-content">
+                    <h3>Bank Export</h3>
+                    <p class="tile-subtitle">Salary Disbursement</p>
+                    <div class="tile-stats">
+                        <span class="stat-number" id="ready-exports-count">0</span>
+                        <span class="stat-label">Ready</span>
+                    </div>
+                </div>
+                <div class="tile-footer">
+                    <span class="tile-action">Export CSV →</span>
+                </div>
+            </div>
+            
+            <!-- Analytics Overview Tile -->
+            <div class="dashboard-tile analytics-overview-tile" data-action="analytics_overview">
+                <div class="tile-icon">
+                    <i class="fa fa-line-chart"/>
+                </div>
+                <div class="tile-content">
+                    <h3>Analytics</h3>
+                    <p class="tile-subtitle">Performance Overview</p>
+                    <div class="tile-stats">
+                        <span class="stat-number" id="total-employees-count">0</span>
+                        <span class="stat-label">Employees</span>
+                    </div>
+                </div>
+                <div class="tile-footer">
+                    <span class="tile-action">View Report →</span>
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+</odoo>

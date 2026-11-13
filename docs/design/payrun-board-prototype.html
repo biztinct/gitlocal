@@ -1,0 +1,987 @@
+<title>Pay Run Board</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: the live Payobook hub frame (dark rail + lens rail) around one board.
+   Hero = "this month" card; three step lanes; a peek panel on the right.
+   Single light look on purpose: the product is light-only. */
+:root{
+  --bg:#F4F5FB; --lane:#ECEDF6; --card:#FFFFFF; --ink:#1E1B2E; --ink2:#3F3B57; --muted:#6F6B86; --faint:#9D99B4;
+  --line:#E4E5F1; --line2:#D6D7E8;
+  --p:#5A4BB0; --p600:#4A3D96; --p-deep:#241F52; --p-soft:#EDEAF8; --p-soft2:#DDD6F2; --p-wash:#F3F0FB; --p-ring:rgba(90,75,176,.22);
+  --amber:#B45309; --amber-soft:#FEF3C7; --amber-line:#FCD34D;
+  --green:#0F7B4F; --green-soft:#D9F2E4; --green-line:#A3DBBE;
+  --rose:#DC2655; --rose-soft:#FFE4E8; --rose-line:#FDA4B4;
+  --slate:#64748B; --slate-soft:#EDF0F4;
+  --navy:#0E1133; --hub:#1E1B4B;
+  --sh-1:0 1px 2px rgba(30,27,46,.06),0 1px 1px rgba(30,27,46,.03);
+  --sh-2:0 12px 30px rgba(60,50,130,.13),0 2px 6px rgba(30,27,46,.06);
+  --sh-3:0 24px 60px rgba(36,31,82,.22),0 4px 12px rgba(30,27,46,.08);
+  --r-lane:20px; --r-card:14px; --r-btn:10px;
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13.5px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+input{font-family:inherit}
+.ic{display:inline-flex;width:1em;height:1em;flex:none;vertical-align:-.12em}
+.ic svg{width:100%;height:100%;display:block}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--p);outline-offset:2px;border-radius:6px}
+
+/* ============================================================ frame */
+.app{display:grid;grid-template-columns:68px 1fr;height:100%;min-height:0}
+.rail{background:var(--navy);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px}
+.rail .logo{width:34px;height:34px;border-radius:10px;background:var(--p);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px;margin-bottom:14px}
+.rail .ri{width:40px;height:38px;border-radius:10px;display:grid;place-items:center;color:#9A97C7;font-size:17px;border:0;background:transparent}
+.rail .ri.on{background:var(--p);color:#fff}
+.rail .spacer{flex:1}
+.rail .av{width:32px;height:32px;border-radius:50%;background:#2E2A6B;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.main{display:grid;grid-template-rows:auto 1fr;min-height:0;min-width:0}
+.hubbar{height:52px;background:var(--hub);display:flex;align-items:center;gap:14px;padding:0 18px;color:#fff}
+.hubbar .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px}
+.hubbar .brand .bi{width:26px;height:26px;border-radius:8px;background:var(--p);display:grid;place-items:center;font-size:13px}
+.hubbar .chip{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:4px 10px;color:#D9D6F5}
+.hubbar .hs{flex:0 1 360px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:7px 12px;color:#B9B6DD;font-size:12.5px;margin-left:10px}
+.hubbar .hs kbd{margin-left:auto;font:600 10px var(--font);background:rgba(255,255,255,.12);border-radius:5px;padding:2px 6px;color:#D9D6F5}
+.hubbar .hsp{flex:1}
+.hubbar .hi{color:#B9B6DD;font-size:16px;background:none;border:0}
+.hubbar .hav{width:28px;height:28px;border-radius:50%;background:#3E3A86;display:grid;place-items:center;font-size:11px;font-weight:700}
+.hubbar .co{font-size:12.5px;color:#D9D6F5;font-weight:600}
+.body{display:grid;grid-template-columns:62px 1fr;min-height:0}
+.lens{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px}
+.lens .li{width:40px;height:38px;border-radius:10px;display:grid;place-items:center;color:#7A7794;font-size:17px;border:0;background:transparent;position:relative}
+.lens .li.on{background:var(--p-soft);color:var(--p)}
+.lens .li:hover{background:var(--bg)}
+.scroll{overflow:auto;min-height:0;position:relative}
+.wrap{max-width:1500px;margin:0 auto;padding-block:22px 120px;padding-inline:28px}
+
+/* ============================================================ top row */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+.top h1{font-size:19px;font-weight:800;letter-spacing:-.01em;margin:0}
+.top .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line2);background:#fff;color:var(--ink2);border-radius:var(--r-btn);padding:8px 13px;font-size:12.5px;font-weight:700;line-height:1;transition:background .14s,border-color .14s,color .14s,transform .12s,box-shadow .14s;white-space:nowrap}
+.btn:hover{border-color:var(--p-soft2);background:var(--p-wash);color:var(--p-deep)}
+.btn.primary{background:var(--p);border-color:var(--p);color:#fff;box-shadow:0 4px 12px rgba(90,75,176,.22)}
+.btn.primary:hover{background:var(--p600);border-color:var(--p600);color:#fff;transform:translateY(-1px)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--p-wash);color:var(--p-deep);border-color:transparent}
+.btn.danger{color:var(--rose)}
+.btn.danger:hover{background:var(--rose-soft);border-color:var(--rose-line);color:var(--rose)}
+.btn.lg{padding:11px 18px;font-size:13.5px;border-radius:12px}
+.btn.icon{padding:8px;width:32px;height:32px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn .ic{font-size:14px}
+
+/* ============================================================ hero */
+.hero{display:grid;grid-template-columns:minmax(260px,1.05fr) minmax(300px,1.4fr) minmax(240px,.9fr);gap:0;background:var(--p-wash);border:1px solid var(--p-soft2);border-radius:var(--r-lane);margin-bottom:18px;overflow:hidden;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.hero > div{padding:20px 24px;min-width:0}
+.hero .h-a{border-right:1px solid var(--p-soft2)}
+.hero .eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--p);display:flex;align-items:center;gap:7px}
+.hero .eyebrow .ic{font-size:13px}
+.hero .month{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:4px 0 2px;color:var(--p-deep)}
+.hero .range{font-size:12.5px;color:var(--muted);font-weight:600}
+.journey{display:flex;align-items:flex-start;margin-top:16px;position:relative}
+.journey .jn{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;min-width:0}
+.journey .jn::before{content:"";position:absolute;top:10px;left:50%;right:-50%;height:2px;background:var(--p-soft2)}
+.journey .jn:last-child::before{display:none}
+.journey .jn.done::before{background:var(--p)}
+.journey .dot{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--p-soft2);display:grid;place-items:center;position:relative;z-index:1;font-size:11px;color:#fff;transition:all .3s}
+.journey .jn.done .dot{background:var(--p);border-color:var(--p)}
+.journey .jn.now .dot{border-color:var(--p);box-shadow:0 0 0 5px var(--p-ring);animation:pulse 2.4s ease-in-out infinite}
+.journey .jn.now .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--p)}
+.journey .jl{font-size:10.5px;font-weight:700;color:var(--faint);text-align:center;line-height:1.2;white-space:nowrap}
+.journey .jn.done .jl,.journey .jn.now .jl{color:var(--p-deep)}
+.hero .stage{margin-top:12px;font-size:12px;color:var(--muted);font-weight:600}
+.hero .stage b{color:var(--p-deep)}
+.hero .h-b{display:flex;flex-direction:column;justify-content:center;gap:10px;border-right:1px solid var(--p-soft2)}
+.hero .say{font-size:17px;font-weight:600;line-height:1.45;color:var(--ink);text-wrap:balance;letter-spacing:-.005em}
+.hero .say button{all:unset;cursor:pointer;color:var(--p);font-weight:800;border-bottom:2px solid var(--p-soft2);transition:border-color .14s}
+.hero .say button:hover{border-color:var(--p)}
+.hero .say button.on{background:var(--p-soft);border-radius:4px;border-color:var(--p);padding:0 3px}
+.hero .ask{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.hero .ask.amber{color:var(--amber)}
+.hero .ask .pd{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.9}
+.hero .ask.amber .pd{animation:pulse 2s ease-in-out infinite}
+.hero .h-c{display:flex;flex-direction:column;justify-content:center;gap:12px}
+.hero .lbl{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero .big{font-size:30px;font-weight:800;letter-spacing:-.025em;color:var(--p-deep);line-height:1.05}
+.hero .big small{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;margin-left:6px}
+.hero .meta{font-size:12.5px;color:var(--muted);font-weight:600}
+.hero .next{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero .next .why{font-size:12px;color:var(--muted);font-weight:600}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--p-ring)}50%{box-shadow:0 0 0 9px rgba(90,75,176,.08)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ============================================================ toolbar */
+.tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line2);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--p);color:#fff}
+.seg button:not(.on):hover{color:var(--ink)}
+.vsep{width:1px;height:22px;background:var(--line2)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line2);background:#fff;color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;transition:all .14s;display:inline-flex;align-items:center;gap:6px}
+.chip:hover{color:var(--ink);border-color:var(--p-soft2)}
+.chip.on{background:var(--p-soft);border-color:var(--p);color:var(--p)}
+.chip .mg{width:16px;height:16px;border-radius:5px;font-size:8px;font-weight:800;display:grid;place-items:center}
+.tools .grow{flex:1}
+.search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line2);border-radius:10px;padding:0 10px;height:34px;width:240px;color:var(--muted)}
+.search:focus-within{border-color:var(--p);box-shadow:0 0 0 3px var(--p-ring)}
+.search input{border:0;outline:0;background:transparent;flex:1;min-width:0;font-size:12.5px;color:var(--ink)}
+.search kbd{font:600 10px var(--font);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--muted)}
+.showing{font-size:12px;color:var(--muted);margin:-6px 0 12px;display:flex;align-items:center;gap:8px;min-height:18px}
+.showing b{color:var(--ink)}
+.showing .lnk{all:unset;cursor:pointer;color:var(--p);font-weight:700;border-bottom:1px solid var(--p-soft2)}
+
+/* ============================================================ lanes */
+.board{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;align-items:start;transition:grid-template-columns .45s cubic-bezier(.2,.8,.2,1)}
+.board.f1{grid-template-columns:1fr 64px 64px}
+.board.f2{grid-template-columns:64px 1fr 64px}
+.board.f3{grid-template-columns:64px 64px 1fr}
+.lane{background:var(--lane);border-radius:var(--r-lane);padding:8px;min-height:240px;display:flex;flex-direction:column;position:relative;min-width:0;transition:background .3s}
+.lane.collapsed{padding:8px 0;min-height:420px;align-items:center;cursor:pointer;overflow:hidden}
+.lane.collapsed:hover{background:#E4E5F1}
+.lane .lh{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px 11px;display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;box-shadow:var(--sh-1);transition:box-shadow .15s,border-color .15s,background .15s;position:relative}
+.lane .lh:hover{border-color:var(--p-soft2);box-shadow:var(--sh-2)}
+.lane .lh.on{border-color:var(--p);box-shadow:0 0 0 3px var(--p-ring)}
+.lh .row{display:flex;align-items:center;gap:10px}
+.lh .n{font-size:11px;font-weight:800;color:#fff;background:var(--slate);border-radius:7px;padding:3px 7px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.lane.l-waiting .lh .n{background:var(--amber)}
+.lane.l-done .lh .n{background:var(--green)}
+.lh .t{font-size:14px;font-weight:800;flex:1;letter-spacing:-.005em}
+.lh .c{font-size:11.5px;font-weight:800;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap;transition:transform .2s}
+.lh .c.bump{animation:bump .4s ease}
+.lh .c.has{color:var(--ink)}
+.lh .flag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--amber);background:var(--amber-soft);border-radius:8px;padding:4px 9px;align-self:flex-start}
+.lh .flag.rose{color:var(--rose);background:var(--rose-soft)}
+.lh .flag.me{animation:glow 2.4s ease-in-out infinite}
+.lh .flag .ic{font-size:13px}
+.lh .hint{font-size:11.5px;color:var(--faint);font-weight:600}
+.lh .arrow{position:absolute;right:-21px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:#fff;border:1px solid var(--line2);display:grid;place-items:center;color:var(--faint);font-size:12px;z-index:2;box-shadow:var(--sh-1)}
+.lane:last-child .lh .arrow{display:none}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(180,83,9,0)}50%{box-shadow:0 0 0 4px rgba(180,83,9,.14)}}
+.lane.collapsed .lh{display:none}
+.lane .slim{display:none}
+.lane.collapsed .slim{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:8px;width:100%}
+.lane .slim .n{font-size:11px;font-weight:800;color:#fff;background:var(--slate);border-radius:7px;padding:3px 7px}
+.lane.l-waiting .slim .n{background:var(--amber)}
+.lane.l-done .slim .n{background:var(--green)}
+.lane .slim .vt{writing-mode:vertical-rl;transform:rotate(180deg);font-size:12.5px;font-weight:800;color:var(--ink2);letter-spacing:.01em}
+.lane .slim .ct{font-size:11.5px;font-weight:800;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 8px}
+.lane .slim .mg{width:22px;height:22px;border-radius:7px;font-size:9px}
+.lane .slimmg{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.lane .cards{display:flex;flex-direction:column;gap:10px;padding-top:10px;min-width:0}
+.lane.collapsed .cards,.lane.collapsed .empty{display:none}
+.lane.wide .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));align-items:start}
+.lane.wide .mdiv,.lane.wide .mhead,.lane.wide .mcol{grid-column:1/-1}
+.empty{padding:34px 18px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.5;display:flex;flex-direction:column;align-items:center;gap:8px}
+.empty .ei{width:40px;height:40px;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;color:var(--faint);font-size:18px}
+.empty b{color:var(--ink2)}
+.mdiv{display:flex;align-items:center;gap:10px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:6px 6px 0}
+.mdiv::after{content:"";flex:1;height:1px;background:var(--line2)}
+.mhead{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 8px 4px;color:var(--ink2);width:100%;box-sizing:border-box}
+.mhead .ch{font-size:13px;color:var(--faint);transition:transform .2s;display:inline-flex}
+.mhead.open .ch{transform:rotate(90deg)}
+.mhead .mt{font-size:12.5px;font-weight:800;flex:1;display:flex;align-items:baseline;gap:8px}
+.mhead .mt span{font-size:11.5px;font-weight:600;color:var(--muted)}
+.mhead .mm{font-size:12px;font-weight:800;color:var(--green)}
+.mhead .mgs{display:flex;gap:3px}
+.mhead .mgs .mg{width:18px;height:18px;border-radius:5px;font-size:7.5px}
+.mcol{height:0;overflow:hidden}
+
+/* ============================================================ card */
+.mg{display:grid;place-items:center;font-weight:800;letter-spacing:.02em;flex:none}
+.mg.indigo{background:var(--p-soft);color:var(--p)} .mg.teal{background:#D6F1EC;color:#0F766E} .mg.blue{background:#DCE8FD;color:#1D4ED8}
+.mg.amber{background:var(--amber-soft);color:var(--amber)} .mg.rose{background:var(--rose-soft);color:#BE123C} .mg.violet{background:#F0E4FF;color:#7E22CE}
+.mg.slate{background:var(--slate-soft);color:var(--slate)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-1);position:relative;transition:box-shadow .18s,border-color .18s,transform .18s;min-width:0}
+.card:hover{box-shadow:var(--sh-2);border-color:var(--p-soft2);transform:translateY(-2px)}
+.card.sel{border-color:var(--p);box-shadow:0 0 0 3px var(--p-ring)}
+.card.cur{border-color:var(--p)}
+.card.busy{pointer-events:none}
+.card.busy::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 100%);background-size:200% 100%;animation:shimmer 1s linear infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.card.me{border-color:var(--amber-line)}
+.card.me::before{content:"";position:absolute;left:-1px;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--amber)}
+.card .main{padding:13px 14px 10px;cursor:pointer}
+.card .ct{display:flex;gap:11px;align-items:flex-start}
+.card .mg{width:34px;height:34px;border-radius:10px;font-size:11.5px;margin-top:1px}
+.card .nm{font-size:13.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-.005em}
+.card .pd{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.card .pd .k{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--rose);background:var(--rose-soft);border-radius:5px;padding:1px 6px}
+.card .pd .k.b{color:var(--p);background:var(--p-soft)}
+.card .ck{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line2);background:#fff;display:grid;place-items:center;color:#fff;font-size:11px;opacity:0;transition:opacity .14s,background .14s,border-color .14s;z-index:1}
+.card:hover .ck,.card.sel .ck,.board.selecting .ck{opacity:1}
+.card.sel .ck{background:var(--p);border-color:var(--p)}
+.card .money{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:12px}
+.card .money .l{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.card .money .v{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--ink)}
+.card .money .v.cn{color:var(--rose)}
+.card .sub{font-size:12px;color:var(--muted);font-weight:600;margin-top:5px}
+.card .sub b{color:var(--ink2);font-weight:700}
+.note{margin-top:10px;border-radius:9px;padding:8px 10px;display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4}
+.note .ic{font-size:14px;margin-top:1px;flex:none}
+.note .hd{font-weight:800;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;display:block;margin-bottom:1px}
+.note .nx{display:block;font-weight:700;margin-top:2px}
+.note.amber{background:var(--amber-soft);color:var(--ink)}.note.amber .hd,.note.amber .ic,.note.amber .nx{color:var(--amber)}
+.note.rose{background:var(--rose-soft);color:var(--ink)}.note.rose .hd,.note.rose .ic,.note.rose .nx{color:var(--rose)}
+.route{margin-top:10px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.route .r1{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:800;color:var(--ink2)}
+.route .r1 .st{color:var(--muted);font-weight:700}
+.route .segs{display:flex;gap:3px}
+.route .segs i{flex:1;height:4px;border-radius:2px;background:var(--line2)}
+.route .segs i.d{background:var(--green)}
+.route .segs i.c{background:var(--amber)}
+.route .who{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-weight:600}
+.route .who b{color:var(--ink)}
+.route .who.me b{color:var(--amber)}
+.avs{display:inline-flex}
+.av{width:20px;height:20px;border-radius:50%;background:var(--p-soft2);color:var(--p-deep);font-size:8.5px;font-weight:800;display:grid;place-items:center;border:2px solid #fff;margin-left:-6px}
+.av:first-child{margin-left:0}
+.av.me{background:var(--amber);color:#fff}
+.deliv{margin-top:11px}
+.deliv .segs{display:flex;gap:4px}
+.deliv .segs span{flex:1;height:5px;border-radius:3px;background:var(--line2);position:relative}
+.deliv .segs span.d{background:var(--green)}
+.deliv .segs span.n{background:var(--p-soft2);box-shadow:inset 0 0 0 1.5px var(--p)}
+.deliv .ls{display:flex;justify-content:space-between;margin-top:5px}
+.deliv .ls span{font-size:9.5px;font-weight:700;color:var(--faint);letter-spacing:.02em;flex:1;text-align:center}
+.deliv .ls span.d{color:var(--green)}
+.deliv .ls span.n{color:var(--p)}
+.deliv .st{font-size:12px;font-weight:600;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:6px}
+.deliv .st.ok{color:var(--green)}
+.deliv .st .ic{font-size:13px}
+.foot{display:flex;align-items:center;gap:6px;padding:0 10px 10px 14px;position:relative}
+.foot .btn{padding:8px 12px;font-size:12px}
+.foot .btn.primary{flex:1}
+.foot .wait{flex:1;font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:7px}
+.foot .wait .ic{font-size:13px;color:var(--amber)}
+.foot .sp{flex:1}
+.foot .more{margin-left:auto}
+.menu{position:absolute;right:8px;bottom:44px;background:#fff;border:1px solid var(--line2);border-radius:12px;box-shadow:var(--sh-2);padding:6px;min-width:190px;z-index:20;animation:rise .18s ease both}
+.menu button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink2);width:100%;box-sizing:border-box}
+.menu button:hover{background:var(--p-wash);color:var(--p-deep)}
+.menu button .ic{font-size:14px;color:var(--muted)}
+.menu button.danger{color:var(--rose)}
+.menu button.danger:hover{background:var(--rose-soft)}
+.menu .mdiv2{height:1px;background:var(--line);margin:4px 2px}
+.confirm{padding:0 14px 12px}
+.confirm .q{font-size:12.5px;line-height:1.45;margin-bottom:8px}
+.confirm label{display:block;font-size:11px;font-weight:800;margin-bottom:4px}
+.confirm label span{font-weight:600;color:var(--muted)}
+.confirm textarea{display:block;width:100%;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font:inherit;font-size:12px;resize:vertical;margin-bottom:8px}
+.confirm textarea:focus{outline:0;border-color:var(--rose-line);box-shadow:0 0 0 3px var(--rose-soft)}
+.confirm .a{display:flex;gap:6px}
+.confirm .a .btn{flex:1}
+.confirm .a .btn.danger{background:var(--rose-soft);border-color:var(--rose-line)}
+
+/* ============================================================ rejected drawer */
+.rej{margin-top:26px}
+.rej .rh{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-size:12.5px;font-weight:700;padding:6px 0}
+.rej .rh .ic{transition:transform .15s;font-size:13px}
+.rej .rh.open .ic{transform:rotate(90deg)}
+.rej .rh .c{background:var(--rose-soft);color:var(--rose);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800}
+.rej .list{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.rej .rr{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;font-size:12.5px}
+.rej .rr:hover{border-color:var(--p-soft2)}
+.rej .rr .mg{width:26px;height:26px;border-radius:8px;font-size:9px}
+.rej .rr .nm{font-weight:700}
+.rej .rr .why{font-size:12px;color:var(--muted);margin-top:2px}
+.rej .rr .why b{color:var(--rose)}
+.rej .rr .em,.rej .rr .pd{color:var(--muted);font-weight:600;white-space:nowrap}
+
+/* ============================================================ list view */
+.tbl{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh-1)}
+.tbl .tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--bg);cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{color:var(--ink)}
+th.r,td.r{text-align:right}
+td{padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--p-wash)}
+td .nm{display:flex;align-items:center;gap:10px;font-weight:700}
+td .mg{width:26px;height:26px;border-radius:8px;font-size:9px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.pill i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.draft{background:var(--slate-soft);color:var(--slate)}.pill.waiting{background:var(--amber-soft);color:var(--amber)}.pill.done{background:var(--green-soft);color:var(--green)}.pill.cancel{background:var(--rose-soft);color:var(--rose)}
+.pill.approved{background:var(--p-soft);color:var(--p)}
+
+/* ============================================================ peek panel */
+.peek-bg{position:fixed;inset:0;background:rgba(14,17,51,.28);z-index:40;animation:fade .2s ease both;backdrop-filter:blur(1px)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.peek{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:#fff;z-index:41;box-shadow:var(--sh-3);display:flex;flex-direction:column;animation:slidein .32s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slidein{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.peek .ph{padding:18px 22px 14px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.peek .ph .mg{width:42px;height:42px;border-radius:12px;font-size:13px}
+.peek .ph .t{font-size:15px;font-weight:800;line-height:1.3;letter-spacing:-.01em}
+.peek .ph .s{font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.peek .ph .x{margin-left:auto}
+.peek .pb{overflow:auto;padding:4px 22px 20px;flex:1}
+.peek section{padding:16px 0;border-bottom:1px solid var(--line)}
+.peek section:last-child{border-bottom:0}
+.peek h3{margin:0 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.steps3{display:flex;gap:6px}
+.steps3 .s{flex:1;border-radius:10px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);font-size:11.5px;font-weight:700;color:var(--faint);display:flex;flex-direction:column;gap:3px}
+.steps3 .s .k{font-size:10px;letter-spacing:.06em}
+.steps3 .s.d{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+.steps3 .s.n{background:var(--p-soft);border-color:var(--p);color:var(--p-deep)}
+.steps3 .s.w{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+.fig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fig .f{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.fig .f .k{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fig .f .v{font-size:15px;font-weight:800;letter-spacing:-.01em;margin-top:2px}
+.fig .f.net{grid-column:1/-1;background:var(--p-wash);border-color:var(--p-soft2)}
+.fig .f.net .v{font-size:22px;color:var(--p-deep)}
+.fig .f.net .full{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:1px}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;margin-top:10px;color:var(--green)}
+.chk.bad{color:var(--rose)}
+.chk .ic{font-size:15px}
+.tl{display:flex;flex-direction:column}
+.tl .e{display:grid;grid-template-columns:22px 1fr;gap:10px;position:relative;padding-bottom:14px}
+.tl .e::before{content:"";position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--line)}
+.tl .e:last-child::before{display:none}
+.tl .e .d{width:22px;height:22px;border-radius:50%;border:2px solid var(--line2);background:#fff;display:grid;place-items:center;font-size:11px;color:#fff}
+.tl .e.d .d{background:var(--green);border-color:var(--green)}
+.tl .e.n .d{border-color:var(--amber);box-shadow:0 0 0 4px rgba(180,83,9,.12)}
+.tl .e.n .d::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--amber)}
+.tl .e .w{font-size:12.5px;font-weight:700;line-height:1.35}
+.tl .e .m{font-size:11.5px;color:var(--muted);font-weight:600}
+.tl .e.n .w{color:var(--amber)}
+.hist .e .w{font-weight:600;color:var(--ink2)}
+.hist .e .w b{font-weight:800;color:var(--ink)}
+.hist .e .d{width:8px;height:8px;border:0;background:var(--line2);margin:7px auto 0}
+.hist .e::before{left:10px;top:18px}
+.peek .pf{padding:12px 22px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;background:#fff}
+.peek .pf .primary{flex:1}
+.peek .pf .open{margin-left:auto}
+
+/* ============================================================ bulk bar, toasts, help, sheet */
+.bulk{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--p-deep);color:#fff;border-radius:16px;padding:10px 10px 10px 18px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh-3);z-index:30;animation:up .25s cubic-bezier(.2,.8,.2,1) both;max-width:calc(100vw - 32px)}
+@keyframes up{from{transform:translate(-50%,16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.bulk .n{font-weight:800;font-size:13px;white-space:nowrap}
+.bulk .n small{font-weight:600;color:#C9C4EE;margin-left:6px}
+.bulk .btn{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff}
+.bulk .btn:hover{background:rgba(255,255,255,.16);color:#fff}
+.bulk .btn.primary{background:#fff;color:var(--p-deep);border-color:#fff;box-shadow:none}
+.bulk .btn.primary:hover{background:var(--p-soft)}
+.toasts{position:fixed;right:22px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:60}
+.toast{background:var(--p-deep);color:#fff;border-radius:12px;padding:10px 14px;font-size:12.5px;font-weight:600;box-shadow:var(--sh-3);display:flex;align-items:center;gap:10px;animation:up2 .25s ease both;max-width:360px}
+.toast.ok .ic{color:#7EE2AD}.toast.info .ic{color:#C9C4EE}
+@keyframes up2{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.kbd-hint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);font-size:11px;color:var(--faint);font-weight:600;display:flex;gap:12px;z-index:5;pointer-events:none}
+.kbd-hint kbd{font:700 10px var(--font);background:#fff;border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:var(--muted)}
+.sheet-bg{position:fixed;inset:0;background:rgba(14,17,51,.32);z-index:50;display:grid;place-items:center;animation:fade .2s ease both;padding:16px}
+.sheet{background:#fff;border-radius:18px;width:min(520px,100%);box-shadow:var(--sh-3);padding:22px;animation:rise .25s ease both;max-height:90vh;overflow:auto}
+.sheet h2{margin:0 0 6px;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.sheet p{margin:0 0 14px;color:var(--muted);font-size:13px}
+.sheet .lst{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.sheet .lst .it{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12.5px;font-weight:600}
+.sheet .lst .it .mg{width:26px;height:26px;border-radius:8px;font-size:9px}
+.sheet .lst .it .v{margin-left:auto;font-weight:800}
+.sheet .a{display:flex;gap:8px;justify-content:flex-end}
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:6px}
+.keys div{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink2);font-weight:600;padding:5px 0;border-bottom:1px solid var(--line)}
+.keys kbd{font:700 11px var(--font);background:var(--bg);border:1px solid var(--line2);border-radius:5px;padding:1px 7px;color:var(--ink)}
+
+/* ============================================================ skeleton */
+.sk{background:linear-gradient(90deg,#E9EAF3 25%,#F3F4FA 50%,#E9EAF3 75%);background-size:200% 100%;animation:shimmer 1.3s linear infinite;border-radius:10px}
+
+/* ============================================================ prototype controls */
+.proto{position:fixed;left:84px;bottom:16px;z-index:35;background:#fff;border:1px solid var(--line2);border-radius:14px;box-shadow:var(--sh-2);padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:12px}
+.proto .pl{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.proto select{font:600 12px var(--font);border:1px solid var(--line2);border-radius:8px;padding:5px 8px;color:var(--ink);background:#fff}
+.proto .btn{padding:6px 10px;font-size:11.5px}
+
+/* ============================================================ responsive */
+@media (max-width:1180px){
+  .hero{grid-template-columns:1fr 1fr}
+  .hero .h-c{grid-column:1/-1;border-top:1px solid var(--p-soft2);flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .hero .h-b{border-right:0}
+  .board,.board.f1,.board.f2,.board.f3{grid-template-columns:1fr}
+  .lane.collapsed{min-height:0;flex-direction:row;padding:8px 14px}
+  .lane.collapsed .slim{flex-direction:row;padding:0}
+  .lane.collapsed .slim .vt{writing-mode:horizontal-tb;transform:none}
+  .lane .lh .arrow{display:none}
+  .lane.wide .cards{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}.rail{display:none}.body{grid-template-columns:1fr}.lens{display:none}
+  .hubbar .hs,.hubbar .co{display:none}
+  .wrap{padding-inline:16px}
+  .hero{grid-template-columns:1fr}.hero .h-a{border-right:0;border-bottom:1px solid var(--p-soft2)}
+  .hero .h-c{flex-direction:column;align-items:flex-start}
+  .search{width:100%}
+  .proto{left:16px;right:16px;flex-wrap:wrap}
+  .kbd-hint{display:none}
+  .peek .ph,.peek .pb,.peek .pf{padding-inline:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <aside class="rail" aria-label="Payobook">
+    <div class="logo">P</div>
+    <button class="ri" title="Home"></button>
+    <button class="ri on" title="Pay Run"></button>
+    <button class="ri" title="People"></button>
+    <button class="ri" title="Sources"></button>
+    <button class="ri" title="Mapping"></button>
+    <button class="ri" title="Insights"></button>
+    <button class="ri" title="Access"></button>
+    <button class="ri" title="Learn"></button>
+    <div class="spacer"></div>
+    <div class="av">A</div>
+  </aside>
+  <div class="main">
+    <header class="hubbar">
+      <div class="brand"><span class="bi" id="bi"></span> Pay Run</div>
+      <span class="chip" id="hubchip">Oct 2026 · Stage 2 / 5</span>
+      <div class="hs"><span class="ic" id="hsic"></span> Search surfaces, actions… <kbd>⌘K</kbd></div>
+      <div class="hsp"></div>
+      <button class="hi" id="hi1" title="Settings"></button>
+      <span class="hav">A</span>
+      <span class="co">Payobook Vietnam JSC</span>
+    </header>
+    <div class="body">
+      <nav class="lens" aria-label="Pay Run screens" id="lensrail"></nav>
+      <div class="scroll" id="scroll">
+        <div class="wrap" id="root"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="layer"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ---------------------------------------------------------------- icons (Lucide) */
+const P = {
+  zap:'<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  sliders:'<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>',
+  home:'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  refresh:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  compass:'<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  trending:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  percent:'<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  book:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  receipt:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+  table:'<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  file:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+  filetext:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  sheet:'<rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/>',
+  journal:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+  card:'<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  banknote:'<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+  grid:'<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  list:'<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
+  chevr:'<path d="m9 18 6-6-6-6"/>', chevd:'<path d="m6 9 6 6 6-6"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  more:'<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  rotate:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  mail:'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  keyboard:'<rect width="20" height="16" x="2" y="4" rx="2" ry="2"/><path d="M6 8h.001"/><path d="M10 8h.001"/><path d="M14 8h.001"/><path d="M18 8h.001"/><path d="M8 12h.001"/><path d="M12 12h.001"/><path d="M16 12h.001"/><path d="M7 16h10"/>',
+  inbox:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  ext:'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  usercheck:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/>',
+  checkc:'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  sparkles:'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  edit:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+  wallet:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+};
+const I = (n, s) => `<span class="ic"${s?` style="font-size:${s}px"`:''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n]||''}</svg></span>`;
+
+/* ---------------------------------------------------------------- data */
+const TODAY = new Date(2026, 9, 11);
+const DIVS = {
+  information_technology:{label:'Information Technology',short:'IT',hue:'indigo',people:400,pp:36.3e6},
+  retail:{label:'Retail',short:'RT',hue:'teal',people:902,pp:20.6e6},
+  logistics:{label:'Logistics',short:'LG',hue:'blue',people:700,pp:20.4e6},
+  manufacturing:{label:'Manufacturing',short:'MF',hue:'amber',people:1250,pp:17.8e6},
+  construction:{label:'Construction',short:'CN',hue:'rose',people:980,pp:19.1e6},
+  corporate_office:{label:'Corporate Office',short:'CO',hue:'violet',people:310,pp:48.2e6},
+};
+const MONTHS = {
+  '2026-11':{label:'November 2026',short:'Nov 2026',range:'1 – 30 Nov 2026',sort:6},
+  '2026-10':{label:'October 2026',short:'Oct 2026',range:'1 – 31 Oct 2026',sort:5},
+  '2026-09':{label:'September 2026',short:'Sep 2026',range:'1 – 30 Sep 2026',sort:4},
+  '2026-08':{label:'August 2026',short:'Aug 2026',range:'1 – 31 Aug 2026',sort:3},
+  '2026-07':{label:'July 2026',short:'Jul 2026',range:'1 – 31 Jul 2026',sort:2},
+  '2026-06':{label:'June 2026',short:'Jun 2026',range:'1 – 30 Jun 2026',sort:1},
+};
+const THIS_MONTH = '2026-10';
+const PEOPLE = {lan:'Lan Nguyen',minh:'Minh Tran',hoa:'Hoa Le',you:'You'};
+const ROUTE = ['Division head sign-off','Finance sign-off','Payroll manager sign-off'];
+let _id = 100;
+function mk(div, month, state, o = {}) {
+  const d = DIVS[div]; const people = o.people ?? d.people; const net = o.net ?? people * d.pp;
+  const gross = net / 0.815, ded = gross - net, cost = gross * 0.215;
+  const m = MONTHS[month];
+  const run = {
+    id: ++_id, div, month, state, people, net, gross, ded, cost,
+    kind: o.kind || 'monthly',
+    name: o.name || `Payobook ${d.label} — End-Month Payroll · ${m.label}`,
+    period: o.period || m.range, balanceOk: o.balanceOk ?? true, gap: o.gap || 0, unsourced: o.unsourced || 0,
+    awaitingMe: !!o.awaitingMe, route: o.route || null, sentBack: o.sentBack || null, rejected: o.rejected || null,
+    delivery: o.delivery || null, history: o.history || [], creditNote: !!o.creditNote,
+  };
+  if (state === 'done' && !run.delivery) run.delivery = {approvedOn:'—',bankFile:true,paidOn:'—',slipsSent:people,journals:true};
+  return run;
+}
+const paidDelivery = (ap, paid) => ({approvedOn:ap,bankFile:true,paidOn:paid,slipsSent:null,journals:true});
+function pastMonth(month, ap, paid) {
+  return Object.keys(DIVS).map(k => mk(k, month, 'done', {delivery:paidDelivery(ap, paid),
+    history:[['Prepared by Hoa Le', ap.replace(/\d+ /, m => (parseInt(m)-5)+' ')],['Submitted for approval','—'],['Approved (3 of 3 sign-offs)',ap],['Paid · bank file sent',paid],['Payslips emailed',paid],['Journals posted',paid]]}));
+}
+function scenarioData(s) {
+  if (s === 'new') return {runs:[], divisions:false};
+  if (s === 'small') {
+    const o = (m, st, ex) => mk('corporate_office', m, st, Object.assign({people:48, net:48*31.5e6, name:`Monthly payroll · ${MONTHS[m].label}`}, ex||{}));
+    return {divisions:false, runs:[
+      o('2026-10','draft',{history:[['Prepared by you','9 Oct 2026']]}),
+      o('2026-09','done',{delivery:paidDelivery('28 Sep 2026','30 Sep 2026')}),
+      o('2026-08','done',{delivery:paidDelivery('28 Aug 2026','31 Aug 2026')}),
+      o('2026-07','done',{delivery:paidDelivery('28 Jul 2026','31 Jul 2026')}),
+    ]};
+  }
+  const past = [...pastMonth('2026-09','28 Sep 2026','30 Sep 2026'), ...pastMonth('2026-08','27 Aug 2026','31 Aug 2026'), ...pastMonth('2026-07','29 Jul 2026','31 Jul 2026'), ...pastMonth('2026-06','26 Jun 2026','30 Jun 2026')];
+  past.push(mk('retail','2026-09','done',{kind:'topup',people:38,net:38*4.2e6,name:'Retail top-up — Sep 2026',period:'1 – 30 Sep 2026',delivery:paidDelivery('2 Oct 2026','3 Oct 2026')}));
+  const rejected = [
+    mk('retail','2026-09','cancel',{rejected:{by:'Hoa Le',why:'Made twice by mistake — the other September run is the real one.',on:'4 Sep 2026'}}),
+    mk('logistics','2026-08','cancel',{rejected:{by:'Lan Nguyen',why:'Wrong scheme picked; re-run under Logistics (shift).',on:'6 Aug 2026'}}),
+  ];
+  if (s === 'calm') {
+    const oct = Object.keys(DIVS).filter(k => k !== 'corporate_office').map(k => mk(k, '2026-10', 'done', {delivery:paidDelivery('9 Oct 2026','10 Oct 2026')}));
+    oct.push(mk('corporate_office','2026-10','done',{delivery:{approvedOn:'10 Oct 2026',bankFile:false,paidOn:null,slipsSent:0,journals:false},
+      history:[['Prepared by Hoa Le','3 Oct 2026'],['Submitted for approval','6 Oct 2026'],['Approved (3 of 3 sign-offs)','10 Oct 2026']]}));
+    return {divisions:true, runs:[...oct, ...past, ...rejected]};
+  }
+  // month-end (default)
+  const oct = [
+    mk('information_technology','2026-10','draft',{history:[['Prepared by Hoa Le','8 Oct 2026']]}),
+    mk('retail','2026-10','draft',{unsourced:12, history:[['Prepared by Hoa Le','8 Oct 2026']]}),
+    mk('logistics','2026-10','draft',{sentBack:{by:'Lan Nguyen',why:'Overtime for the warehouse night shift is missing. Re-import the September timesheet and send it in again.',on:'9 Oct 2026'},
+      history:[['Prepared by Hoa Le','6 Oct 2026'],['Submitted for approval','7 Oct 2026'],['Sent back by Lan Nguyen at Finance sign-off','9 Oct 2026']]}),
+    mk('manufacturing','2026-10','waiting',{route:{step:2,title:ROUTE[1],with:['minh'],doneBy:['lan']},
+      history:[['Prepared by Hoa Le','6 Oct 2026'],['Submitted for approval','7 Oct 2026'],['Division head signed off · Lan Nguyen','8 Oct 2026'],['Waiting for Finance sign-off · Minh Tran','since 8 Oct']]}),
+    mk('construction','2026-10','waiting',{awaitingMe:true, route:{step:1,title:ROUTE[0],with:['you'],doneBy:[]},
+      history:[['Prepared by Hoa Le','7 Oct 2026'],['Submitted for approval','9 Oct 2026'],['Waiting for your sign-off (Division head)','since 9 Oct']]}),
+    mk('corporate_office','2026-10','done',{delivery:{approvedOn:'10 Oct 2026',bankFile:false,paidOn:null,slipsSent:0,journals:false},
+      history:[['Prepared by Hoa Le','3 Oct 2026'],['Submitted for approval','6 Oct 2026'],['Approved (3 of 3 sign-offs)','10 Oct 2026']]}),
+    mk('retail','2026-10','done',{kind:'awards',people:1,net:17.0e6,name:'Awards run — Oct 2026',delivery:paidDelivery('5 Oct 2026','6 Oct 2026')}),
+    mk('retail','2026-11','draft',{kind:'bonus',people:1,net:15.2e6,name:'Retail bonus run — Nov 2026',period:'1 – 30 Nov 2026',history:[['Prepared by Hoa Le','10 Oct 2026']]}),
+  ];
+  return {divisions:true, runs:[...oct, ...past, ...rejected]};
+}
+
+/* ---------------------------------------------------------------- state */
+const S = {
+  scenario:'monthend', runs:[], hasDivisions:true, loading:false,
+  period:'all', division:'all', q:'', view:'board', focus:'', hero:'',
+  selected:new Set(), peek:null, menu:null, confirming:null, rejectNote:'',
+  openMonths:new Set(['2026-10']), showRejected:false, busy:null,
+  cur:null, sheet:null, sort:{k:'month',d:-1},
+};
+function loadScenario(s) {
+  S.scenario = s; S.selected.clear(); S.peek = null; S.menu = null; S.confirming = null; S.focus=''; S.hero=''; S.division='all'; S.period='all'; S.q=''; S.cur=null; S.sheet=null;
+  S.openMonths = new Set(['2026-10']);
+  if (s === 'loading') { S.loading = true; S.runs = []; render(); return; }
+  S.loading = false;
+  const d = scenarioData(s); S.runs = d.runs; S.hasDivisions = d.divisions; render();
+}
+
+/* ---------------------------------------------------------------- formatting */
+const fmt = (n) => { const a = Math.abs(n); const s = n < 0 ? '−' : ''; if (a >= 1e9) return s + '₫' + (a/1e9).toFixed(2) + 'B'; if (a >= 1e6) return s + '₫' + (a/1e6).toFixed(1) + 'M'; if (a >= 1e3) return s + '₫' + Math.round(a/1e3) + 'K'; return s + '₫' + Math.round(a); };
+const full = (n) => '₫' + Math.round(n).toLocaleString('en-US');
+const nf = (n) => n.toLocaleString('en-US');
+const plural = (n, one, many) => n === 1 ? `1 ${one}` : `${nf(n)} ${many}`;
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials = (n) => n === 'You' ? 'ME' : n.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+const mono = (r, cls) => { const d = DIVS[r.div]; return `<span class="mg ${S.hasDivisions ? d.hue : 'slate'} ${cls||''}">${S.hasDivisions ? d.short : 'PR'}</span>`; };
+
+/* ---------------------------------------------------------------- derived */
+const live = () => S.runs.filter(r => r.state !== 'cancel');
+const monthRuns = () => live().filter(r => r.month === THIS_MONTH);
+const isPaid = (r) => r.state === 'done' && r.delivery && !!r.delivery.paidOn;
+const stageOf = (r) => r.state === 'draft' ? 2 : r.state === 'waiting' ? 3 : (r.state === 'done' && r.delivery && r.delivery.paidOn && r.delivery.slipsSent !== 0) ? 5 : 4;
+function monthStage() { const rs = monthRuns(); return rs.length ? Math.min(...rs.map(stageOf)) : 1; }
+const STAGES = ['Not started','Drafting','In approval','Approved','Delivered'];
+function visible(r) {
+  if (S.division !== 'all' && r.div !== S.division) return false;
+  if (S.period === 'month' && r.month !== THIS_MONTH) return false;
+  if (S.hero === 'drafts' && r.state !== 'draft') return false;
+  if (S.hero === 'waiting' && r.state !== 'waiting') return false;
+  if (S.hero === 'topay' && !(r.state === 'done' && !isPaid(r))) return false;
+  if (S.hero === 'paid' && !isPaid(r)) return false;
+  if (S.hero === 'me' && !r.awaitingMe) return false;
+  if (S.hero === 'back' && !r.sentBack) return false;
+  if (S.hero) { if (r.month !== THIS_MONTH) return false; }
+  if (S.q) { const q = S.q.toLowerCase(); if (!(r.name.toLowerCase().includes(q) || MONTHS[r.month].label.toLowerCase().includes(q) || DIVS[r.div].label.toLowerCase().includes(q))) return false; }
+  return true;
+}
+const sortRuns = (a, b) => MONTHS[b.month].sort - MONTHS[a.month].sort || (b.kind === 'monthly') - (a.kind === 'monthly') || b.people - a.people;
+const colRuns = (st) => live().filter(r => r.state === st && visible(r)).sort(sortRuns);
+const COLS = [{k:'draft',t:'Draft',n:'01',hint:'Still being prepared. Submit when the figures are right.'},{k:'waiting',t:'Waiting for approval',n:'02',hint:'With the people on its sign-off route.'},{k:'done',t:'Done',n:'03',hint:'Approved. Pay, deliver payslips and post journals from here.'}];
+
+/* ---------------------------------------------------------------- render */
+const root = document.getElementById('root');
+function render() {
+  const before = snap();
+  root.innerHTML = S.loading ? skeleton() : [topRow(), hero(), tools(), showing(), S.view === 'board' ? board() : list(), rejected()].join('');
+  document.getElementById('layer').innerHTML = [peek(), bulk(), sheet()].join('');
+  document.getElementById('hubchip').textContent = `Oct 2026 · Stage ${monthStage()} / 5`;
+  flip(before);
+}
+function snap() { const m = {}; root.querySelectorAll('[data-card]').forEach(el => m[el.dataset.card] = el.getBoundingClientRect()); return m; }
+function flip(before) {
+  root.querySelectorAll('[data-card]').forEach(el => { const b = before[el.dataset.card]; if (!b) return; const a = el.getBoundingClientRect(); const dx = b.left - a.left, dy = b.top - a.top;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) el.animate([{transform:`translate(${dx}px,${dy}px)`,opacity:.7},{transform:'none',opacity:1}], {duration:520, easing:'cubic-bezier(.2,.8,.2,1)'}); });
+}
+function skeleton() {
+  return `<div class="top"><div><div class="sk" style="width:120px;height:20px"></div><div class="sk" style="width:260px;height:12px;margin-top:8px"></div></div><div class="sk" style="width:130px;height:36px"></div></div>
+  <div class="sk" style="height:168px;border-radius:20px;margin-bottom:18px"></div>
+  <div style="display:flex;gap:8px;margin-bottom:16px">${'<div class="sk" style="width:110px;height:32px;border-radius:999px"></div>'.repeat(6)}</div>
+  <div class="board">${[0,1,2].map(() => `<div class="lane"><div class="sk" style="height:62px;border-radius:14px"></div><div class="cards">${'<div class="sk" style="height:150px;border-radius:14px"></div>'.repeat(3)}</div></div>`).join('')}</div>
+  <p style="color:var(--muted);font-size:12.5px;margin-top:16px">Loading your pay runs…</p>`;
+}
+function topRow() {
+  return `<div class="top"><div><h1>Pay runs</h1><div class="sub">Every pay run from draft to paid. Approve, pay, report and export without leaving this board.</div></div>
+  <button class="btn" data-act="newrun">${I('zap')} Run payroll</button></div>`;
+}
+function hero() {
+  const rs = monthRuns();
+  const d = rs.filter(r => r.state === 'draft'), w = rs.filter(r => r.state === 'waiting'), me = rs.filter(r => r.awaitingMe), back = rs.filter(r => r.sentBack);
+  const topay = rs.filter(r => r.state === 'done' && !isPaid(r)), paid = rs.filter(isPaid);
+  const net = rs.reduce((s, r) => s + r.net, 0), people = rs.filter(r => r.kind === 'monthly').reduce((s, r) => s + r.people, 0);
+  const st = monthStage();
+  const link = (k, txt) => `<button data-act="hero" data-k="${k}" class="${S.hero === k ? 'on' : ''}">${txt}</button>`;
+  let say, ask = '', askTone = '', next, why = '';
+  if (!rs.length) {
+    say = `No pay run covers <b>October</b> yet.`; ask = 'Start when the month’s figures are in.'; next = {act:'newrun',label:'Run payroll for October',icon:'zap'};
+  } else {
+    const parts = [];
+    if (d.length) parts.push(link('drafts', plural(d.length,'is still a draft','are still drafts')));
+    if (w.length) parts.push(link('waiting', plural(w.length,'is waiting for a sign-off','are waiting for a sign-off')));
+    if (topay.length) parts.push(link('topay', plural(topay.length,'is approved and ready to pay','are approved and ready to pay')));
+    if (paid.length) parts.push(link('paid', plural(paid.length,'is paid and delivered','are paid and delivered')));
+    const lead = `<b>${plural(rs.length,'pay run','pay runs')}</b> this month${S.hasDivisions ? ' across ' + plural(new Set(rs.map(r=>r.div)).size,'division','divisions') : ''}. `;
+    say = lead + (parts.length === 1 ? parts[0].replace(/^(<button[^>]*>)(\w)/, (m,a,b)=>a+b.toUpperCase()) : parts.slice(0,-1).join(', ') + ' and ' + parts[parts.length-1]) + '.';
+    if (me.length) { ask = `${plural(me.length,'pay run is','pay runs are')} waiting on you.`; askTone = 'amber'; next = {act:'approve',id:me[0].id,label: me.length === 1 ? 'Open the approval' : 'Open your approvals',icon:'usercheck'}; why = me.length === 1 ? `${DIVS[me[0].div].label} · ${me[0].route.title}` : ''; }
+    else if (back.length) { ask = `${plural(back.length,'pay run was','pay runs were')} sent back to be fixed.`; askTone = 'amber'; next = {act:'peek',id:back[0].id,label:'See what to fix',icon:'rotate'}; }
+    else if (d.length) { ask = 'Nothing is waiting on you.'; next = {act:'bulksubmit',label: d.length === 1 ? 'Submit the draft' : `Submit ${d.length} drafts for approval`,icon:'send'}; why = 'Each goes to its own sign-off route.'; }
+    else if (topay.length) { ask = 'Nothing is waiting on you.'; next = {act:'paydeliver',id:topay[0].id,label: topay.length === 1 ? `Pay & Deliver ${DIVS[topay[0].div].label}` : `Pay & Deliver ${topay.length} runs`,icon:'banknote'}; why = `${fmt(topay.reduce((s,r)=>s+r.net,0))} to ${nf(topay.reduce((s,r)=>s+r.people,0))} people`; }
+    else { ask = 'October is complete.'; askTone = 'green'; next = {act:'newrun',label:'Run payroll for November',icon:'zap'}; }
+    if (back.length && me.length) why = `${plural(back.length,'run','runs')} also sent back to be fixed.`;
+  }
+  return `<section class="hero" data-coach="pk-kpis" aria-label="This month">
+    <div class="h-a">
+      <div class="eyebrow">${I('calendar')} This month</div>
+      <div class="month">October 2026</div>
+      <div class="range">1 – 31 Oct 2026 · pay day 31 Oct</div>
+      <div class="journey">${STAGES.map((s, i) => `<div class="jn ${i+1 < st ? 'done' : i+1 === st ? 'now' : ''}"><div class="dot">${i+1 < st ? I('check',11) : ''}</div><div class="jl">${s}</div></div>`).join('')}</div>
+      <div class="stage">Stage <b>${st} of 5</b> · <b>${STAGES[st-1]}</b>${st < 5 && rs.length ? ' — the month moves when its slowest run does' : ''}</div>
+    </div>
+    <div class="h-b">
+      <div class="say">${say}</div>
+      <div class="ask ${askTone}"><span class="pd"></span>${ask}</div>
+    </div>
+    <div class="h-c">
+      <div><div class="lbl">Net pay this month</div><div class="big num">${rs.length ? fmt(net) : '—'}${rs.length ? `<small>VND</small>` : ''}</div>
+      <div class="meta">${rs.length ? `${nf(people)} people · ${plural(rs.length,'pay run','pay runs')}` : 'Nothing computed yet'}</div></div>
+      <div class="next"><button class="btn primary lg" data-act="${next.act}" ${next.id ? `data-id="${next.id}"` : ''}>${I(next.icon)} ${next.label}</button>${why ? `<span class="why">${why}</span>` : ''}</div>
+    </div>
+  </section>`;
+}
+function tools() {
+  const divs = S.hasDivisions ? `<span class="vsep"></span><div class="chips" data-coach="pk-divchips"><button class="chip ${S.division==='all'?'on':''}" data-act="div" data-k="all">All divisions</button>${Object.entries(DIVS).map(([k,d]) => `<button class="chip ${S.division===k?'on':''}" data-act="div" data-k="${k}"><span class="mg ${d.hue}">${d.short}</span>${d.label}</button>`).join('')}</div>` : '';
+  return `<div class="tools">
+    <div class="seg" role="group" aria-label="Period"><button class="${S.period==='all'?'on':''}" data-act="period" data-k="all">All months</button><button class="${S.period==='month'?'on':''}" data-act="period" data-k="month">October only</button></div>
+    ${divs}<div class="grow"></div>
+    <label class="search">${I('search',14)}<input id="q" placeholder="Find a pay run" value="${esc(S.q)}" aria-label="Find a pay run"><kbd>/</kbd></label>
+    <div class="seg" role="group" aria-label="View"><button class="${S.view==='board'?'on':''}" data-act="view" data-k="board" title="Board">${I('grid',13)}</button><button class="${S.view==='list'?'on':''}" data-act="view" data-k="list" title="List">${I('list',13)}</button></div>
+    <button class="btn ghost icon" data-act="keysheet" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">${I('keyboard',15)}</button>
+  </div>`;
+}
+function showing() {
+  const all = live().length, shown = live().filter(visible).length;
+  const narrowed = S.focus || S.hero || S.division !== 'all' || S.period === 'month' || S.q;
+  if (!all) return `<div class="showing">No pay runs yet.</div>`;
+  if (!narrowed) return `<div class="showing">Showing <b>all ${plural(all,'pay run','pay runs')}</b> · press a step, a division or a phrase in the sentence above to narrow it</div>`;
+  const where = [];
+  if (S.focus) where.push('at ' + COLS.find(c=>c.k===S.focus).t);
+  if (S.division !== 'all') where.push('in ' + DIVS[S.division].label);
+  if (S.period === 'month' || S.hero) where.push('in October');
+  if (S.q) where.push(`matching “${esc(S.q)}”`);
+  return `<div class="showing">Showing <b>${shown} of ${plural(all,'pay run','pay runs')}</b> ${where.join(' · ')} <button class="lnk" data-act="showall">Show all</button></div>`;
+}
+function laneHead(c, rs) {
+  const all = live().filter(r => r.state === c.k);
+  let flag = '';
+  if (c.k === 'waiting') { const me = all.filter(r => r.awaitingMe).length; if (me) flag = `<span class="flag me">${I('usercheck')}${plural(me,'is waiting on you','are waiting on you')}</span>`; else if (all.length) flag = `<span class="flag">${I('clock')}${plural(all.length,'waiting for a sign-off','waiting for a sign-off')}</span>`; }
+  if (c.k === 'draft') { const b = all.filter(r => r.sentBack).length, u = all.filter(r => r.unsourced).length; if (b) flag = `<span class="flag">${I('rotate')}${plural(b,'sent back to be fixed','sent back to be fixed')}</span>`; else if (u) flag = `<span class="flag rose">${I('alert')}${plural(u,'run has payslips with no data','runs have payslips with no data')}</span>`; }
+  if (c.k === 'done') { const tp = all.filter(r => !isPaid(r)).length; if (tp) flag = `<span class="flag" style="color:var(--p);background:var(--p-soft)">${I('banknote')}${plural(tp,'approved, not paid yet','approved, not paid yet')}</span>`; }
+  const on = S.focus === c.k;
+  return `<button class="lh ${on?'on':''}" data-act="focus" data-k="${c.k}" aria-pressed="${on}" title="${on?'Show every step':'Show only this step'}">
+    <span class="row"><span class="n">${c.n}</span><span class="t">${c.t}</span><span class="c ${all.length?'has':''}" data-count="${c.k}">${plural(all.length,'pay run','pay runs')}</span></span>
+    ${flag || `<span class="hint">${c.hint}</span>`}
+    <span class="arrow">${I('arrow',12)}</span></button>`;
+}
+function board() {
+  const f = S.focus ? 'f' + (COLS.findIndex(c => c.k === S.focus) + 1) : '';
+  return `<div class="board ${f} ${S.selected.size?'selecting':''}" data-coach="pk-tabs">${COLS.map(c => {
+    const rs = colRuns(c.k), collapsed = S.focus && S.focus !== c.k, all = live().filter(r => r.state === c.k);
+    const slim = `<div class="slim"><span class="n">${c.n}</span><span class="vt">${c.t}</span><span class="ct">${all.length}</span><div class="slimmg">${all.slice(0,4).map(r => mono(r)).join('')}</div></div>`;
+    return `<div class="lane l-${c.k} ${collapsed?'collapsed':''} ${S.focus===c.k?'wide':''}" ${collapsed?`data-act="focus" data-k="${c.k}" role="button" title="Open ${c.t}"`:''}>
+      ${laneHead(c, rs)}${slim}
+      ${rs.length ? `<div class="cards">${c.k === 'done' ? doneGroups(rs) : plainGroups(rs)}</div>` : emptyLane(c)}
+    </div>`; }).join('')}</div>`;
+}
+function emptyLane(c) {
+  const narrowed = S.division !== 'all' || S.period === 'month' || S.q || S.hero;
+  const txt = {
+    draft: narrowed ? ['Nothing in draft here.', ''] : ['No drafts.', 'Press <b>Run payroll</b> to start a new pay run.'],
+    waiting: narrowed ? ['Nothing waiting here.', ''] : ['Nothing is waiting.', 'A run you submit sits here until everyone on its route has signed it off.'],
+    done: narrowed ? ['Nothing approved here yet.', ''] : ['Nothing approved yet.', 'Approved runs land here, ready to pay and deliver.'],
+  }[c.k];
+  const ic = {draft:'edit',waiting:'inbox',done:'checkc'}[c.k];
+  return `<div class="empty"><span class="ei">${I(ic)}</span><div><b>${txt[0]}</b>${txt[1] ? `<div>${txt[1]}</div>` : ''}</div>${c.k==='draft' && !narrowed ? `<button class="btn" data-act="newrun" style="margin-top:4px">${I('zap')} Run payroll</button>` : ''}</div>`;
+}
+function plainGroups(rs) {
+  const months = [...new Set(rs.map(r => r.month))];
+  if (months.length < 2) return rs.map(card).join('');
+  return months.map(m => `<div class="mdiv">${MONTHS[m].label}</div>${rs.filter(r => r.month === m).map(card).join('')}`).join('');
+}
+function doneGroups(rs) {
+  const months = [...new Set(rs.map(r => r.month))];
+  if (months.length < 2) return rs.map(card).join('');
+  return months.map(m => { const mr = rs.filter(r => r.month === m); const open = S.openMonths.has(m) || !!S.q; const net = mr.reduce((s,r)=>s+r.net,0); const unpaid = mr.filter(r=>!isPaid(r)).length;
+    return `<button class="mhead ${open?'open':''}" data-act="month" data-k="${m}" aria-expanded="${open}"><span class="ch">${I('chevr')}</span><span class="mt">${MONTHS[m].label}<span>${plural(mr.length,'run','runs')}${unpaid ? ` · ${unpaid} to pay` : ''}</span></span>${open ? '' : `<span class="mgs">${mr.slice(0,6).map(r=>mono(r)).join('')}</span>`}<span class="mm num">${fmt(net)}</span></button>${open ? mr.map(card).join('') : ''}`; }).join('');
+}
+function card(r) {
+  const sel = S.selected.has(r.id), busy = S.busy === r.id;
+  const d = DIVS[r.div];
+  const kind = r.kind !== 'monthly' ? `<span class="k b">${r.kind === 'topup' ? 'Top-up' : r.kind === 'bonus' ? 'Bonus' : 'Awards'}</span>` : '';
+  let notes = '';
+  if (r.sentBack) notes += `<div class="note amber">${I('rotate')}<div><span class="hd">Sent back by ${r.sentBack.by}</span>${esc(r.sentBack.why)}</div></div>`;
+  if (r.unsourced) notes += `<div class="note rose">${I('alert')}<div><span class="hd">${plural(r.unsourced,'payslip has no source data','payslips have no source data')}</span>Their figures are scheme defaults, not real pay. <span class="nx">Check the import before you submit →</span></div></div>`;
+  if (!r.balanceOk) notes += `<div class="note rose">${I('alert')}<div><span class="hd">Figures don’t add up</span>${fmt(r.gap)} is unaccounted for between gross, deductions and net. <span class="nx">Open the run to see which component →</span></div></div>`;
+  let mid = '';
+  if (r.state === 'waiting' && r.route) {
+    const segs = ROUTE.map((_, i) => `<i class="${i < r.route.step-1 ? 'd' : i === r.route.step-1 ? 'c' : ''}"></i>`).join('');
+    const who = r.route.with.map(k => PEOPLE[k]);
+    mid = `<div class="route" data-coach="pk-route"><div class="r1"><span>Sign-off ${r.route.step} of ${ROUTE.length} · ${r.route.title}</span><span class="st">${r.awaitingMe ? 'your turn' : 'in progress'}</span></div><div class="segs">${segs}</div>
+      <div class="who ${r.awaitingMe?'me':''}"><span class="avs">${who.map(n => `<span class="av ${n==='You'?'me':''}">${initials(n)}</span>`).join('')}</span>${r.awaitingMe ? '<b>Waiting on you</b>' : `With <b>${who.join(', ')}</b>`}</div></div>`;
+  }
+  if (r.state === 'done') {
+    const dl = r.delivery; const steps = [['Approved', true], ['Bank file', dl.bankFile], ['Paid', !!dl.paidOn], ['Payslips', dl.slipsSent !== 0], ['Journals', dl.journals]];
+    const nextI = steps.findIndex(s => !s[1]);
+    mid = `<div class="deliv"><div class="segs">${steps.map((s, i) => `<span class="${s[1]?'d':i===nextI?'n':''}"></span>`).join('')}</div><div class="ls">${steps.map((s, i) => `<span class="${s[1]?'d':i===nextI?'n':''}">${s[0]}</span>`).join('')}</div>
+      <div class="st ${nextI<0?'ok':''}">${nextI < 0 ? `${I('checkc')} Paid ${dl.paidOn} · ${nf(r.people)} payslips sent · journals posted` : nextI === 1 || nextI === 2 ? `${I('banknote')} Approved ${dl.approvedOn} · not paid yet` : nextI === 3 ? `${I('mail')} Paid ${dl.paidOn} · payslips not sent yet` : `${I('journal')} Paid ${dl.paidOn} · journals not posted yet`}</div></div>`;
+  }
+  let foot = '';
+  if (S.confirming === r.id) {
+    foot = `<div class="confirm" data-coach="pk-reject-why"><div class="q">Reject <b>“${esc(r.name)}”</b>? Every payslip in it is cancelled.</div><label for="why-${r.id}">Why? <span>(required)</span></label><textarea id="why-${r.id}" rows="2" placeholder="For example: made twice by mistake" data-why="${r.id}">${esc(S.rejectNote)}</textarea>
+      <div class="a"><button class="btn" data-act="keep">Keep it</button><button class="btn danger" data-act="reject-go" data-id="${r.id}" ${S.rejectNote.trim()?'':'disabled'}>Reject run</button></div></div>`;
+  } else {
+    const more = `<div style="position:relative;margin-left:auto"><button class="btn ghost icon more" data-act="menu" data-id="${r.id}" aria-label="More actions">${I('more')}</button>${S.menu === r.id ? menu(r) : ''}</div>`;
+    if (r.state === 'draft') foot = `<div class="foot" data-coach="pk-card-actions"><button class="btn primary" data-act="submit" data-id="${r.id}">${I('send')} Submit for approval</button><button class="btn ghost danger" data-act="reject" data-id="${r.id}">Reject</button>${more}</div>`;
+    else if (r.state === 'waiting') foot = r.awaitingMe
+      ? `<div class="foot" data-coach="pk-card-actions"><button class="btn primary" data-act="approve" data-id="${r.id}">${I('usercheck')} Open the approval</button>${more}</div>`
+      : `<div class="foot" data-coach="pk-card-actions"><span class="wait">${I('clock')} Waiting for ${r.route.with.map(k=>PEOPLE[k]).join(', ')}</span>${more}</div>`;
+    else foot = isPaid(r)
+      ? `<div class="foot" data-coach="pk-card-actions"><button class="btn" data-act="report" data-id="${r.id}">${I('filetext')} Report</button><button class="btn" data-act="excel" data-id="${r.id}">${I('sheet')} Excel</button>${more}</div>`
+      : `<div class="foot" data-coach="pk-card-actions"><button class="btn primary" data-act="paydeliver" data-id="${r.id}">${I('banknote')} Pay &amp; Deliver</button>${more}</div>`;
+  }
+  return `<article class="card ${sel?'sel':''} ${busy?'busy':''} ${r.awaitingMe?'me':''} ${S.cur===r.id?'cur':''}" data-card="${r.id}" data-coach="pk-card">
+    <button class="ck" data-act="sel" data-id="${r.id}" aria-label="Select" aria-pressed="${sel}">${sel ? I('check',11) : ''}</button>
+    <div class="main" data-act="peek" data-id="${r.id}">
+      <div class="ct">${mono(r)}<div style="min-width:0;flex:1"><div class="nm">${esc(r.name)}</div><div class="pd">${r.period}${kind}${r.creditNote ? '<span class="k">refund</span>' : ''}</div></div></div>
+      <div class="money"><span class="l">Net pay</span><span class="v num">${fmt(r.net)}</span></div>
+      <div class="sub"><b>${nf(r.people)}</b> ${r.people === 1 ? 'person' : 'people'} · gross <b class="num">${fmt(r.gross)}</b></div>
+      ${notes}${mid}
+    </div>${foot}</article>`;
+}
+function menu(r) {
+  const it = (act, ic, lbl, cls) => `<button data-act="${act}" data-id="${r.id}" class="${cls||''}">${I(ic)}${lbl}</button>`;
+  let items = '';
+  if (r.state === 'done') items += it('report','filetext','Payroll report') + it('excel','sheet','Download Excel') + it('journals','journal','Journals') + it('payments','card','Payments') + (isPaid(r) ? '' : it('paydeliver','banknote','Pay & Deliver')) + '<div class="mdiv2"></div>';
+  if (r.state === 'draft') items += it('excel','sheet','Download Excel') + '<div class="mdiv2"></div>';
+  items += it('peek','ext','Quick look') + it('open','ext','Open the full run');
+  if (r.state !== 'done') items += '<div class="mdiv2"></div>' + it('reject','x','Reject this run','danger');
+  return `<div class="menu" role="menu">${items}</div>`;
+}
+function rejected() {
+  const rs = S.runs.filter(r => r.state === 'cancel' && (S.division === 'all' || r.div === S.division));
+  if (!rs.length) return '';
+  return `<div class="rej" data-coach="pk-rejected"><button class="rh ${S.showRejected?'open':''}" data-act="rej">${I('chevr')} Rejected pay runs <span class="c">${rs.length}</span></button>
+    ${S.showRejected ? `<div class="list">${rs.map(r => `<div class="rr" data-act="peek" data-id="${r.id}">${mono(r)}<div><div class="nm">${esc(r.name)}</div><div class="why"><b>Why (${r.rejected.by}, ${r.rejected.on}):</b> ${esc(r.rejected.why)}</div></div><span class="pd">${r.period}</span><span class="em">${nf(r.people)} people</span></div>`).join('')}</div>` : ''}</div>`;
+}
+function list() {
+  const rs = live().filter(visible).filter(r => !S.focus || r.state === S.focus);
+  const k = S.sort.k, d = S.sort.d;
+  rs.sort((a, b) => { let v = 0; if (k === 'month') v = MONTHS[a.month].sort - MONTHS[b.month].sort; else if (k === 'name') v = a.name.localeCompare(b.name); else if (k === 'state') v = COLS.findIndex(c=>c.k===a.state) - COLS.findIndex(c=>c.k===b.state); else v = a[k] - b[k]; return v * d; });
+  const th = (key, lbl, r) => `<th class="${r?'r':''}" data-act="sort" data-k="${key}">${lbl}${S.sort.k===key ? (S.sort.d>0?' ↑':' ↓') : ''}</th>`;
+  const status = (r) => r.state === 'draft' ? (r.sentBack ? `<span class="pill waiting"><i></i>Sent back</span>` : `<span class="pill draft"><i></i>Draft</span>`) : r.state === 'waiting' ? `<span class="pill waiting"><i></i>${r.awaitingMe ? 'Waiting on you' : 'With ' + r.route.with.map(k=>PEOPLE[k]).join(', ')}</span>` : isPaid(r) ? `<span class="pill done"><i></i>Paid ${r.delivery.paidOn}</span>` : `<span class="pill approved"><i></i>Approved · to pay</span>`;
+  const act = (r) => r.state === 'draft' ? `<button class="btn" data-act="submit" data-id="${r.id}">Submit</button>` : r.awaitingMe ? `<button class="btn" data-act="approve" data-id="${r.id}">Open approval</button>` : r.state === 'done' && !isPaid(r) ? `<button class="btn" data-act="paydeliver" data-id="${r.id}">Pay &amp; Deliver</button>` : r.state === 'done' ? `<button class="btn ghost" data-act="report" data-id="${r.id}">Report</button>` : '';
+  return `<div class="tbl"><div class="tw"><table><thead><tr>${th('name','Pay run')}${th('month','Period')}${th('state','Where it is')}${th('people','People',1)}${th('gross','Gross',1)}${th('net','Net pay',1)}<th class="r"></th></tr></thead>
+  <tbody>${rs.map(r => `<tr data-act="peek" data-id="${r.id}"><td><div class="nm">${mono(r)}<span>${esc(r.name)}</span></div></td><td style="color:var(--muted);font-weight:600;white-space:nowrap">${r.period}</td><td>${status(r)}</td><td class="r num">${nf(r.people)}</td><td class="r num">${fmt(r.gross)}</td><td class="r num" style="font-weight:800">${fmt(r.net)}</td><td class="r" data-stop="1">${act(r)}</td></tr>`).join('') || `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Nothing matches.</td></tr>`}</tbody></table></div></div>`;
+}
+function peek() {
+  const r = S.runs.find(x => x.id === S.peek); if (!r) return '';
+  const d = DIVS[r.div];
+  const stepCls = (i) => { const s = r.state === 'draft' ? 0 : r.state === 'waiting' ? 1 : r.state === 'done' ? 2 : -1; return i < s ? 'd' : i === s ? (i === 1 && r.awaitingMe ? 'w' : 'n') : ''; };
+  const st3 = `<div class="steps3">${COLS.map((c, i) => `<div class="s ${stepCls(i)}"><span class="k">${c.n}</span>${c.t}</div>`).join('')}</div>`;
+  let where = '';
+  if (r.state === 'draft') where = r.sentBack ? `<p style="margin:10px 0 0;font-size:12.5px;color:var(--amber);font-weight:700">Sent back by ${r.sentBack.by} on ${r.sentBack.on}: <span style="color:var(--ink);font-weight:600">${esc(r.sentBack.why)}</span></p>` : `<p style="margin:10px 0 0;font-size:12.5px;color:var(--muted)">Still being prepared. When the figures are right, submit it and it goes to its sign-off route.</p>`;
+  if (r.state === 'waiting') where = `<div class="tl" style="margin-top:12px">${ROUTE.map((t, i) => { const done = i < r.route.step-1, now = i === r.route.step-1; const who = now ? r.route.with.map(k=>PEOPLE[k]).join(', ') : done ? PEOPLE[r.route.doneBy[i] || 'lan'] : PEOPLE[['lan','minh','hoa'][i]]; return `<div class="e ${done?'d':now?'n':''}"><div class="d">${done?I('check',11):''}</div><div><div class="w">${t}</div><div class="m">${done ? `Signed off by ${who}` : now ? (r.awaitingMe ? 'Waiting on you' : `With ${who}`) : `Next: ${who}`}</div></div></div>`; }).join('')}</div>`;
+  if (r.state === 'done') { const dl = r.delivery; const steps = [['Approved', true, dl.approvedOn], ['Bank file made', dl.bankFile, ''], ['Paid', !!dl.paidOn, dl.paidOn || ''], ['Payslips emailed', dl.slipsSent !== 0, dl.slipsSent === null ? `${nf(r.people)} sent` : dl.slipsSent ? `${nf(dl.slipsSent)} sent` : ''], ['Journals posted', dl.journals, '']]; const nextI = steps.findIndex(s => !s[1]);
+    where = `<div class="tl" style="margin-top:12px">${steps.map((s, i) => `<div class="e ${s[1]?'d':i===nextI?'n':''}"><div class="d">${s[1]?I('check',11):''}</div><div><div class="w">${s[0]}</div><div class="m">${s[1] ? (s[2] || 'done') : i === nextI ? 'next' : 'later'}</div></div></div>`).join('')}</div>`; }
+  if (r.state === 'cancel') where = `<p style="margin:10px 0 0;font-size:12.5px;color:var(--rose);font-weight:700">Rejected by ${r.rejected.by} on ${r.rejected.on}: <span style="color:var(--ink);font-weight:600">${esc(r.rejected.why)}</span></p>`;
+  const primary = r.state === 'draft' ? `<button class="btn primary" data-act="submit" data-id="${r.id}">${I('send')} Submit for approval</button>` : r.awaitingMe ? `<button class="btn primary" data-act="approve" data-id="${r.id}">${I('usercheck')} Open the approval</button>` : r.state === 'done' && !isPaid(r) ? `<button class="btn primary" data-act="paydeliver" data-id="${r.id}">${I('banknote')} Pay &amp; Deliver</button>` : r.state === 'done' ? `<button class="btn" data-act="report" data-id="${r.id}">${I('filetext')} Report</button><button class="btn" data-act="excel" data-id="${r.id}">${I('sheet')} Excel</button>` : '';
+  return `<div class="peek-bg" data-act="closepeek"></div><aside class="peek" role="dialog" aria-label="${esc(r.name)}">
+    <div class="ph">${mono(r)}<div style="min-width:0"><div class="t">${esc(r.name)}</div><div class="s">${r.period} · ${nf(r.people)} ${r.people===1?'person':'people'}${S.hasDivisions ? ` · ${d.label}` : ''}</div></div><button class="btn ghost icon x" data-act="closepeek" aria-label="Close">${I('x')}</button></div>
+    <div class="pb">
+      <section><h3>Where it is</h3>${st3}${where}</section>
+      <section><h3>The money</h3><div class="fig">
+        <div class="f net"><div class="k">Net pay</div><div class="v num">${fmt(r.net)}</div><div class="full num">${full(r.net)} VND</div></div>
+        <div class="f"><div class="k">Gross</div><div class="v num">${fmt(r.gross)}</div></div><div class="f"><div class="k">Deductions</div><div class="v num">${fmt(r.ded)}</div></div>
+        <div class="f"><div class="k">Employer cost</div><div class="v num">${fmt(r.cost)}</div></div><div class="f"><div class="k">Net per person</div><div class="v num">${fmt(r.net / r.people)}</div></div></div>
+        <div class="chk ${r.balanceOk?'':'bad'}">${I(r.balanceOk?'checkc':'alert')} ${r.balanceOk ? 'Gross − deductions = net. The figures add up.' : `${fmt(r.gap)} unaccounted for. Open the run to see which component.`}</div>
+        ${r.unsourced ? `<div class="chk bad">${I('alert')} ${plural(r.unsourced,'payslip was','payslips were')} computed with no source data.</div>` : ''}</section>
+      ${r.history.length ? `<section><h3>What happened</h3><div class="tl hist">${r.history.map(h => `<div class="e"><div class="d"></div><div><div class="w"><b>${esc(h[0])}</b></div><div class="m">${esc(h[1])}</div></div></div>`).join('')}</div></section>` : ''}
+    </div>
+    <div class="pf">${primary}<button class="btn ghost open" data-act="open" data-id="${r.id}">Open the full run ${I('ext')}</button></div></aside>`;
+}
+function bulk() {
+  if (!S.selected.size) return '';
+  const rs = [...S.selected].map(id => S.runs.find(r => r.id === id)).filter(Boolean);
+  const allDraft = rs.every(r => r.state === 'draft'), net = rs.reduce((s, r) => s + r.net, 0);
+  return `<div class="bulk" role="toolbar"><span class="n">${plural(rs.length,'pay run','pay runs')} selected<small class="num">${fmt(net)} net</small></span>
+    ${allDraft ? `<button class="btn primary" data-act="bulksubmit-sel">${I('send')} Submit for approval</button>` : ''}
+    <button class="btn" data-act="bulkexcel">${I('sheet')} Download Excel</button><button class="btn ghost" data-act="clearsel" style="color:#C9C4EE">Clear</button></div>`;
+}
+function sheet() {
+  if (!S.sheet) return '';
+  if (S.sheet.kind === 'submit') {
+    const rs = S.sheet.ids.map(id => S.runs.find(r => r.id === id));
+    return `<div class="sheet-bg" data-act="closesheet"><div class="sheet" data-stop="1" role="dialog" aria-label="Submit for approval"><h2>Submit ${plural(rs.length,'pay run','pay runs')} for approval?</h2><p>Each one goes to its own sign-off route. You can still reject a run while it waits.</p>
+      <div class="lst">${rs.map(r => `<div class="it">${mono(r)}<span>${esc(r.name)}</span><span class="v num">${fmt(r.net)}</span></div>`).join('')}</div>
+      <div class="a"><button class="btn" data-act="closesheet">Not now</button><button class="btn primary" data-act="bulksubmit-go">${I('send')} Submit ${rs.length > 1 ? 'all ' + rs.length : ''}</button></div></div></div>`;
+  }
+  if (S.sheet.kind === 'keys') return `<div class="sheet-bg" data-act="closesheet"><div class="sheet" data-stop="1" role="dialog" aria-label="Keyboard"><h2>Keyboard</h2><p>Move around the board without the mouse.</p>
+    <div class="keys"><div>Move between runs<span><kbd>↑</kbd> <kbd>↓</kbd></span></div><div>Move between steps<span><kbd>←</kbd> <kbd>→</kbd></span></div><div>Quick look<span><kbd>Enter</kbd></span></div><div>Select / unselect<span><kbd>Space</kbd></span></div><div>Submit a draft<span><kbd>S</kbd></span></div><div>Find a run<span><kbd>/</kbd></span></div><div>Close / clear<span><kbd>Esc</kbd></span></div><div>This help<span><kbd>?</kbd></span></div></div>
+    <div class="a"><button class="btn primary" data-act="closesheet">Got it</button></div></div></div>`;
+  return '';
+}
+function kbd() { return `<div class="kbd-hint"><span><kbd>↑↓←→</kbd> move</span><span><kbd>Enter</kbd> quick look</span><span><kbd>Space</kbd> select</span><span><kbd>S</kbd> submit</span><span><kbd>?</kbd> all keys</span></div>`; }
+
+/* ---------------------------------------------------------------- toasts */
+function toast(msg, tone = 'ok') { const t = document.createElement('div'); t.className = 'toast ' + tone; t.innerHTML = `${I(tone === 'ok' ? 'checkc' : 'sparkles')}<span>${msg}</span>`; document.getElementById('toasts').appendChild(t); setTimeout(() => { t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3200); }
+
+/* ---------------------------------------------------------------- actions */
+function bumpCount(k) { const el = root.querySelector(`[data-count="${k}"]`); if (el) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); } }
+function submit(ids) {
+  ids = ids.filter(id => { const r = S.runs.find(x => x.id === id); return r && r.state === 'draft'; }); if (!ids.length) return;
+  S.busy = ids[0]; S.menu = null; render();
+  setTimeout(() => {
+    ids.forEach(id => { const r = S.runs.find(x => x.id === id); r.state = 'waiting'; r.sentBack = null; r.route = {step:1,title:ROUTE[0],with:['lan'],doneBy:[]}; r.history.push(['Submitted for approval','11 Oct 2026']); S.selected.delete(id); });
+    S.busy = null; render(); bumpCount('waiting'); bumpCount('draft');
+    toast(ids.length === 1 ? 'Pay run sent in for approval.' : `${ids.length} pay runs sent in for approval.`);
+  }, 650);
+}
+function act(el, ev) {
+  const a = el.dataset.act, id = +el.dataset.id, k = el.dataset.k; const r = id ? S.runs.find(x => x.id === id) : null;
+  switch (a) {
+    case 'newrun': toast('Opens the Run step (the pay run wizard).', 'info'); break;
+    case 'hero': S.hero = S.hero === k ? '' : k; S.focus = ''; render(); break;
+    case 'div': S.division = k; render(); break;
+    case 'period': S.period = k; render(); break;
+    case 'view': S.view = k; render(); break;
+    case 'focus': S.focus = S.focus === k ? '' : k; S.hero = ''; render(); break;
+    case 'showall': S.focus = ''; S.hero = ''; S.division = 'all'; S.period = 'all'; S.q = ''; render(); break;
+    case 'month': if (S.openMonths.has(k)) S.openMonths.delete(k); else S.openMonths.add(k); render(); break;
+    case 'sel': if (ev.shiftKey && S.lastSel) { const col = colRuns(r.state).map(x => x.id); const a1 = col.indexOf(S.lastSel), b1 = col.indexOf(id); if (a1 > -1 && b1 > -1) col.slice(Math.min(a1,b1), Math.max(a1,b1)+1).forEach(x => S.selected.add(x)); } else if (S.selected.has(id)) S.selected.delete(id); else S.selected.add(id); S.lastSel = id; render(); break;
+    case 'clearsel': S.selected.clear(); render(); break;
+    case 'peek': S.peek = id; S.menu = null; S.cur = id; render(); break;
+    case 'closepeek': S.peek = null; render(); break;
+    case 'menu': S.menu = S.menu === id ? null : id; render(); break;
+    case 'submit': submit([id]); S.peek = null; break;
+    case 'bulksubmit': S.sheet = {kind:'submit', ids: monthRuns().filter(x => x.state === 'draft').map(x => x.id)}; render(); break;
+    case 'bulksubmit-sel': S.sheet = {kind:'submit', ids:[...S.selected]}; render(); break;
+    case 'bulksubmit-go': { const ids = S.sheet.ids; S.sheet = null; submit(ids); break; }
+    case 'bulkexcel': toast(`Preparing one Excel file for ${plural(S.selected.size,'pay run','pay runs')}…`, 'info'); break;
+    case 'closesheet': S.sheet = null; render(); break;
+    case 'approve': toast('Opens this request in Approvals, where you decide.', 'info'); S.menu = null; break;
+    case 'reject': S.confirming = id; S.rejectNote = ''; S.menu = null; S.peek = null; render(); setTimeout(() => { const t = root.querySelector(`[data-why="${id}"]`); t && t.focus(); }, 30); break;
+    case 'keep': S.confirming = null; S.rejectNote = ''; render(); break;
+    case 'reject-go': { const why = S.rejectNote.trim(); if (!why) return; r.state = 'cancel'; r.rejected = {by:'You', why, on:'11 Oct 2026'}; S.confirming = null; S.rejectNote = ''; S.selected.delete(id); render(); toast('Pay run rejected.'); break; }
+    case 'rej': S.showRejected = !S.showRejected; render(); break;
+    case 'paydeliver': toast('Opens Pay & Deliver for this run (bank file, payslips, journals).', 'info'); S.menu = null; S.peek = null; render(); break;
+    case 'report': toast('Opening the payroll report…', 'info'); S.menu = null; render(); break;
+    case 'excel': toast('Downloading the Excel file…', 'info'); S.menu = null; render(); break;
+    case 'journals': toast('Opens the journals for this run.', 'info'); S.menu = null; render(); break;
+    case 'payments': toast('Opens the payments for this run.', 'info'); S.menu = null; render(); break;
+    case 'open': toast('Opens the full pay run record.', 'info'); S.menu = null; S.peek = null; render(); break;
+    case 'keysheet': S.sheet = {kind:'keys'}; render(); break;
+    case 'sort': S.sort = S.sort.k === k ? {k, d:-S.sort.d} : {k, d: k === 'name' ? 1 : -1}; render(); break;
+  }
+}
+document.addEventListener('click', (ev) => {
+  const stop = ev.target.closest('[data-stop]'); const el = ev.target.closest('[data-act]');
+  if (!el) { if (S.menu) { S.menu = null; render(); } return; }
+  if (stop && !stop.contains(el)) return;
+  if (el.dataset.act === 'peek' && ev.target.closest('.card .ck, .foot, .confirm')) return;
+  if (el.dataset.act === 'focus' && el.classList.contains('lane') && ev.target.closest('.card')) return;
+  ev.stopPropagation(); act(el, ev);
+});
+document.addEventListener('input', (ev) => {
+  if (ev.target.id === 'q') { S.q = ev.target.value; const pos = ev.target.selectionStart; render(); const q = document.getElementById('q'); q.focus(); q.setSelectionRange(pos, pos); }
+  if (ev.target.dataset.why) { S.rejectNote = ev.target.value; const b = root.querySelector('[data-act="reject-go"]'); if (b) b.disabled = !S.rejectNote.trim(); }
+});
+document.addEventListener('keydown', (ev) => {
+  const tag = (ev.target.tagName || '').toLowerCase(); const typing = tag === 'input' || tag === 'textarea' || tag === 'select';
+  if (ev.key === 'Escape') { if (typing && ev.target.id === 'q') { S.q = ''; ev.target.blur(); render(); return; } if (ev.target.dataset && ev.target.dataset.why) { S.confirming = null; S.rejectNote=''; render(); return; } if (S.sheet) { S.sheet = null; render(); return; } if (S.peek) { S.peek = null; render(); return; } if (S.menu) { S.menu = null; render(); return; } if (S.selected.size) { S.selected.clear(); render(); return; } if (S.focus || S.hero) { S.focus = ''; S.hero = ''; render(); } return; }
+  if (typing) { if (ev.key === 'Enter' && (ev.metaKey || ev.ctrlKey) && ev.target.dataset.why) { const id = +ev.target.dataset.why; if (S.rejectNote.trim()) act({dataset:{act:'reject-go', id}}, ev); } return; }
+  if (ev.key === '/') { ev.preventDefault(); const q = document.getElementById('q'); q && q.focus(); return; }
+  if (ev.key === '?') { S.sheet = {kind:'keys'}; render(); return; }
+  if (S.view !== 'board' || S.loading) return;
+  const cols = COLS.map(c => colRuns(c.k).filter(r => c.k !== 'done' || S.openMonths.has(r.month) || S.q || colRuns('done').every(x=>x.month===r.month)).map(r => r.id));
+  let ci = cols.findIndex(c => c.includes(S.cur)), ri = ci > -1 ? cols[ci].indexOf(S.cur) : -1;
+  const move = (dc, dr) => { if (ci < 0) { ci = cols.findIndex(c => c.length); ri = 0; } else { if (dc) { let n = ci; do { n = (n + dc + 3) % 3; } while (!cols[n].length && n !== ci); ci = n; ri = Math.min(ri, cols[ci].length - 1); } if (dr) ri = Math.max(0, Math.min(cols[ci].length - 1, ri + dr)); } if (ci < 0 || !cols[ci] || !cols[ci].length) return; S.cur = cols[ci][ri]; render(); const el = root.querySelector(`[data-card="${S.cur}"]`); el && el.scrollIntoView({block:'nearest', behavior:'smooth'}); };
+  if (ev.key === 'ArrowDown') { ev.preventDefault(); move(0, 1); } else if (ev.key === 'ArrowUp') { ev.preventDefault(); move(0, -1); }
+  else if (ev.key === 'ArrowRight') { ev.preventDefault(); move(1, 0); } else if (ev.key === 'ArrowLeft') { ev.preventDefault(); move(-1, 0); }
+  else if (ev.key === 'Enter' && S.cur) { S.peek = S.cur; render(); }
+  else if (ev.key === ' ' && S.cur) { ev.preventDefault(); if (S.selected.has(S.cur)) S.selected.delete(S.cur); else S.selected.add(S.cur); render(); }
+  else if ((ev.key === 's' || ev.key === 'S') && S.cur) { submit([S.cur]); }
+});
+
+/* ---------------------------------------------------------------- static chrome */
+(function chrome() {
+  const railIcons = ['home','zap','users','refresh','compass','trending','shield','book'];
+  document.querySelectorAll('.rail .ri').forEach((b, i) => b.innerHTML = I(railIcons[i]));
+  document.getElementById('bi').innerHTML = I('zap',13); document.getElementById('hsic').innerHTML = I('search',13); document.getElementById('hi1').innerHTML = I('sliders');
+  const lenses = [['zap','Run'],['calendar','Runs'],['receipt','Payslips'],['table','Results'],['download','Import'],['send','Deliver'],['percent','Adjust'],['file','Settle']];
+  document.getElementById('lensrail').innerHTML = lenses.map((l, i) => `<button class="li ${i===1?'on':''}" title="${l[1]}">${I(l[0])}</button>`).join('');
+  const proto = document.createElement('div'); proto.className = 'proto';
+  proto.innerHTML = `<span class="pl">Prototype · try a situation</span><label><span class="sr">Scenario</span><select id="scen"><option value="monthend">Month-end: drafts, sign-offs, one waiting on you</option><option value="calm">Month almost done: one run left to pay</option><option value="small">Small company: one pay run a month</option><option value="new">New customer: nothing run yet</option><option value="loading">Loading</option></select></label>`;
+  document.body.appendChild(proto);
+  proto.querySelector('#scen').addEventListener('change', (e) => loadScenario(e.target.value));
+})();
+loadScenario('monthend');
+</script>

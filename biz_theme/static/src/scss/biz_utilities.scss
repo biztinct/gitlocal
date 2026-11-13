@@ -1,0 +1,183 @@
+// ============================================================================
+// BIZ THEME — GENERIC RESPONSIVE / LAYOUT UTILITIES
+// ============================================================================
+// Small, additive class API any cockpit or kit module can adopt.
+// Breakpoints + mixins come from biz_breakpoints.scss (primary variables
+// bundle, so they are visible here and in every other module's SCSS).
+// ============================================================================
+
+// ---- Text truncation (fixes flex titles wrapping into multiple lines) ----
+.biz-truncate {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// ---- Horizontal scroll container (tables, wide toolbars on small screens) --
+.biz-scroll-x {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    scrollbar-width: thin;
+}
+
+// ---- Per-breakpoint visibility gates ----
+@include biz-down($biz-bp-xl) { .biz-hide-xl { display: none !important; } }
+@include biz-down($biz-bp-lg) { .biz-hide-lg { display: none !important; } }
+@include biz-down($biz-bp-md) { .biz-hide-md { display: none !important; } }
+@include biz-down($biz-bp-sm) { .biz-hide-sm { display: none !important; } }
+
+.biz-only-lg { display: none !important; }
+@include biz-down($biz-bp-lg) { .biz-only-lg { display: inline-flex !important; } }
+.biz-only-md { display: none !important; }
+@include biz-down($biz-bp-md) { .biz-only-md { display: inline-flex !important; } }
+
+// ---- Icon-only buttons below xl: hide the child span label, keep the icon --
+@include biz-down($biz-bp-xl) {
+    .biz-icon-only-lg > span:not(.biz-keep) {
+        display: none;
+    }
+    .biz-icon-only-lg {
+        gap: 0 !important;
+    }
+}
+
+// ---- Cockpit header scaffold: stacked rows that never wrap chaotically ----
+.biz-cockpit-head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+
+    .biz-cockpit-head__row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+}
+
+// ---- Overflow "More" menu chrome (consumer supplies trigger + items) ----
+.biz-more-menu {
+    position: relative;
+
+    .biz-more-menu__panel {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        min-width: 200px;
+        background: var(--vu-surface-card, #fff);
+        border: 1px solid var(--vu-border-soft, #E0E0E0);
+        border-radius: var(--vu-radius-md, 8px);
+        box-shadow: var(--vu-shadow-lg, 0 4px 16px rgba(0, 0, 0, .15));
+        padding: 6px;
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        > button, > a {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            border: none;
+            background: none;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 7px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--vu-text-primary, #212121);
+            font-family: inherit;
+            cursor: pointer;
+
+            &:hover {
+                background: var(--vu-surface-hover, #EDEAF8);
+            }
+        }
+    }
+}
+
+// ---- Skeleton shimmer (non-blocking loading placeholders) ----
+.biz-skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--vu-surface-muted, #F0F1F5);
+    border-radius: 8px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .65), transparent);
+        animation: biz-skeleton-sweep 1.3s ease-in-out infinite;
+    }
+}
+
+.biz-skeleton--text {
+    height: 12px;
+    border-radius: 6px;
+}
+
+.biz-skeleton--title {
+    height: 20px;
+    width: 40%;
+    border-radius: 7px;
+}
+
+.biz-skeleton--row {
+    height: 38px;
+    border-radius: 9px;
+}
+
+.biz-skeleton--card {
+    height: 120px;
+    border-radius: 14px;
+}
+
+@keyframes biz-skeleton-sweep {
+    100% { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .biz-skeleton::after { animation: none; }
+}
+
+// ---- Empty state (friendly no-records / no-results block) ----
+.biz-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    padding: 48px 24px;
+    color: var(--vu-text-secondary, #424242);
+
+    .biz-empty__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--vu-surface-muted, #F5F5F5);
+        color: var(--vu-brand-primary, #5A4BB0);
+
+        svg { width: 26px; height: 26px; }
+    }
+
+    .biz-empty__title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--vu-text-primary, #212121);
+    }
+
+    .biz-empty__hint {
+        font-size: 12.5px;
+        max-width: 420px;
+    }
+}

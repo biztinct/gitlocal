@@ -1,0 +1,11 @@
+<odoo noupdate="1">
+  <record id="cron_google_calendar_notifications" model="ir.cron">
+    <field name="name">Calendar: Google change notifications and recovery</field>
+    <field name="model_id" ref="model_pb_calendar_google_channel"/>
+    <field name="state">code</field>
+    <field name="code">model._cron_process()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">minutes</field>
+    <field name="active" eval="True"/>
+  </record>
+</odoo>

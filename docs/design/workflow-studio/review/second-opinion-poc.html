@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Workflow Studio Proposal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout concept: the existing Studio shell (steps on the left, the process in the middle, settings on the right)
+   with one renderer for stages that can be laid out as a Journey, a board By stage, or a Flowchart. */
+:root{
+  --bg:#F4F5FB; --card:#FFFFFF; --ink:#1E1B2E; --muted:#5F6B7F; --line:#E2E8F0;
+  --brand:#5A4BB0; --brand-hover:#4A3D96; --brand-soft:#EDEAF8; --brand-light:#CBC2EE; --on-brand:#FFFFFF;
+  --ok:#2E7D4F; --ok-soft:#E3F3EA; --info:#2563EB; --info-soft:#E6EEFE;
+  --warn:#B45F06; --warn-soft:#FDF1DD; --err:#C81E5B; --err-soft:#FCE7EF; --locked:#EEF0F6;
+  --shadow:0 1px 2px rgba(30,27,46,.05),0 6px 18px rgba(30,27,46,.05);
+  --font:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#15131F; --card:#1F1C2D; --ink:#ECEAF6; --muted:#A3A7BD; --line:#34304A;
+  --brand:#A99BF0; --brand-hover:#BDB2F5; --brand-soft:#2C2748; --brand-light:#4A4080; --on-brand:#17132B;
+  --ok:#62C792; --ok-soft:#1B3327; --info:#82ADFF; --info-soft:#1B2947;
+  --warn:#F0A94A; --warn-soft:#3A2C14; --err:#F47AA6; --err-soft:#3D1B2A; --locked:#262338;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#15131F; --card:#1F1C2D; --ink:#ECEAF6; --muted:#A3A7BD; --line:#34304A;
+  --brand:#A99BF0; --brand-hover:#BDB2F5; --brand-soft:#2C2748; --brand-light:#4A4080; --on-brand:#17132B;
+  --ok:#62C792; --ok-soft:#1B3327; --info:#82ADFF; --info-soft:#1B2947;
+  --warn:#F0A94A; --warn-soft:#3A2C14; --err:#F47AA6; --err-soft:#3D1B2A; --locked:#262338;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--brand-light);outline-offset:2px;border-radius:8px}
+.wrap{max-width:1440px;margin:0 auto;padding-block:18px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+#view{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.2px}
+.brand .mark{width:34px;height:34px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center}
+.tag{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap;background:var(--locked);color:var(--muted)}
+.tag.new{background:var(--ok-soft);color:var(--ok)}
+.tag.yours{background:var(--brand-soft);color:var(--brand)}
+.tag.live{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--locked);padding:4px;border-radius:12px}
+.seg button{border:0;background:none;padding:7px 13px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted);min-height:36px;display:inline-flex;gap:7px;align-items:center}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--brand);box-shadow:var(--shadow)}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.nav button{border:1px solid transparent;background:none;padding:9px 14px;border-radius:10px;font-weight:600;color:var(--muted);min-height:40px;display:inline-flex;gap:8px;align-items:center}
+.nav button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+h1{font-size:24px;line-height:1.25;letter-spacing:-.5px;margin:0;text-wrap:balance}
+h2{font-size:18px;margin:0;letter-spacing:-.2px}
+h3{font-size:15px;margin:0}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grow{flex:1;min-width:0}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 13px;font-weight:600;min-height:40px;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--brand-light)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.primary:hover{background:var(--brand-hover)}
+.btn.ghost{border-color:transparent;background:none;color:var(--brand)}
+.btn.sm{min-height:34px;padding:5px 10px;font-size:13px}
+.btn[disabled]{opacity:.4;cursor:default}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.head{display:flex;flex-direction:column;gap:12px}
+.etabs{display:flex;gap:20px;flex-wrap:wrap;border-top:1px solid var(--line);margin:0 -18px -16px;padding:0 18px}
+.etabs button{border:0;background:none;padding:12px 2px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;display:inline-flex;gap:7px;align-items:center}
+.etabs button[aria-pressed="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+.say{font-size:18px;font-weight:600;letter-spacing:-.2px;line-height:1.8;border:0;background:none;text-align:left;padding:0}
+.chip{display:inline-block;background:var(--brand-soft);color:var(--brand);border-radius:8px;padding:0 9px;font-weight:600}
+/* three-column builder */
+.builder{display:grid;grid-template-columns:232px minmax(0,1fr);gap:14px;align-items:start}
+.builder.has-side{grid-template-columns:232px minmax(0,1fr) 340px}
+.palette{position:sticky;top:10px;display:flex;flex-direction:column;gap:6px;padding:14px 10px;max-height:calc(100vh - 20px);overflow:auto}
+.palette label{font-size:12px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:4px;padding:0 4px 6px}
+.palette select{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 8px;font-size:14px;width:100%}
+.pitem{border:0;background:none;display:flex;gap:9px;align-items:center;padding:6px;border-radius:9px;text-align:left;font-weight:600;font-size:13.5px;width:100%;line-height:1.3}
+.pitem:hover{background:var(--brand-soft)}
+.pitem small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.palette.flash{box-shadow:0 0 0 3px var(--brand-light)}
+.work{min-width:0;display:flex;flex-direction:column;gap:10px}
+.boardwrap{overflow-x:auto;padding-bottom:6px}
+.board{display:grid;gap:12px}
+.l-board{grid-auto-flow:column;grid-auto-columns:minmax(244px,1fr);min-width:min-content}
+.l-journey{max-width:720px;margin:0 auto;width:100%}
+.l-flow{justify-items:center;gap:0}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;min-width:0}
+.stage.yours{border-color:var(--brand-light)}
+.stage.grp{border-style:dashed}
+.stage.here{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.stagehead{padding:12px 14px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:5px}
+.stagename{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;flex-wrap:wrap}
+.stagename .n{width:24px;height:24px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.stagename .n.done{background:var(--ok-soft);color:var(--ok)}
+.owner,.gate{font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.owner .ic,.gate .ic{width:14px;height:14px;margin-top:2px}
+.stagebody{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.native{background:var(--locked);border-radius:10px;padding:8px 10px;font-size:13px;display:flex;gap:8px;align-items:flex-start}
+.native .ic{width:15px;height:15px;margin-top:2px;color:var(--muted)}
+.native .from{display:block;color:var(--muted);font-size:12px}
+.native button{border:0;background:none;color:var(--brand);font-weight:600;font-size:12px;padding:0;margin-left:auto;white-space:nowrap}
+.steps{display:flex;flex-direction:column;gap:8px;min-height:8px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 8px 10px 11px;display:flex;gap:10px;align-items:flex-start;box-shadow:var(--shadow);position:relative;transition:border-color .15s;text-align:left;width:100%}
+.step:hover{border-color:var(--brand-light)}
+.step.sel{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.step.dragging{opacity:.35}
+.step .body{min-width:0;flex:1}
+.step .t{font-weight:600;font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+.step .s{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.badge{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none}
+.badge .ic{width:16px;height:16px}
+.badge.sm{width:24px;height:24px;border-radius:7px}
+.c-info{background:var(--info-soft);color:var(--info)}
+.c-warn{background:var(--warn-soft);color:var(--warn)}
+.c-grey{background:var(--locked);color:var(--muted)}
+.c-brand{background:var(--brand-soft);color:var(--brand)}
+.c-ok{background:var(--ok-soft);color:var(--ok)}
+.grip{border:0;background:none;color:var(--muted);padding:4px 2px;touch-action:none;cursor:grab;border-radius:6px;opacity:.6}
+.paths{display:grid;gap:6px;margin-top:8px}
+.pathrow{border:1px dashed var(--line);border-radius:9px;padding:6px 8px;font-size:13px;min-width:0}
+.pathrow b{display:block;font-weight:600}
+.mini{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.mini .ic{width:13px;height:13px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.who{display:inline-flex;align-items:center;gap:5px}
+.dropline{height:4px;border-radius:4px;background:var(--brand);width:100%}
+.ghost-card{position:fixed;z-index:50;pointer-events:none;width:240px;transform:rotate(1.5deg);opacity:.95}
+.add{border:1px dashed var(--brand-light);background:none;color:var(--brand);border-radius:10px;padding:8px;font-weight:600;font-size:14px;display:flex;gap:6px;align-items:center;justify-content:center;min-height:38px;width:100%}
+.add:hover{background:var(--brand-soft)}
+.exit{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.exit .ic{width:15px;height:15px;margin-top:2px;color:var(--err)}
+/* flowchart layout */
+.l-flow .stage{background:none;border:0;align-items:center;width:100%}
+.l-flow .stagehead{border:1px solid var(--brand-light);background:var(--brand-soft);border-radius:999px;padding:6px 16px;align-items:center;text-align:center;margin-top:18px;position:relative}
+.l-flow .stagehead .owner,.l-flow .stagehead .gate{display:none}
+.l-flow .stagebody{align-items:center;width:100%;padding:0;gap:0}
+.l-flow .label{display:none}
+.l-flow .steps{align-items:center;width:100%;gap:0}
+.l-flow .step,.l-flow .native,.l-flow .add{width:min(360px,100%);margin-top:18px;position:relative}
+.l-flow .step::before,.l-flow .native::before,.l-flow .add::before,.l-flow .stagehead::before{content:"";position:absolute;left:50%;top:-19px;height:18px;width:2px;background:var(--brand-light)}
+.l-flow .stage:first-child .stagehead::before{display:none}
+.l-flow .paths{grid-auto-flow:column;grid-auto-columns:1fr}
+.l-flow .add{border-style:dotted;min-height:30px;padding:3px;font-size:12px}
+/* snake */
+.snake{display:flex;flex-direction:column;gap:6px}
+.srow{display:flex;gap:6px;align-items:stretch}
+.srow.rev{flex-direction:row-reverse}
+.scell{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:6px}
+.srow.rev .scell{flex-direction:row-reverse}
+.spill{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center;overflow-wrap:anywhere;background:var(--card)}
+.spill.st{background:var(--brand-soft);border-color:var(--brand-light);color:var(--brand)}
+.spill.nat{background:var(--locked);border-color:transparent;font-weight:500}
+.sarrow{color:var(--muted);flex:none}
+.srow.rev .sarrow{transform:scaleX(-1)}
+.sturn{display:flex;color:var(--muted);padding:0 14px}
+.sturn.r{justify-content:flex-end}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
+.pcol{background:var(--locked);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+/* inspector + forms */
+.side{display:flex;flex-direction:column;gap:12px;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}
+.fld{font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:5px}
+.fld.inline{flex-direction:row;align-items:center;gap:8px;font-weight:500}
+input[type=text],input[type=number],input[type=date],select,textarea{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 10px;min-height:40px;width:100%;font-size:15px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--brand)}
+.warnbox{background:var(--warn-soft);border-radius:12px;padding:12px;font-size:14px;display:flex;flex-direction:column;gap:8px}
+.warnbox b{color:var(--warn);display:flex;gap:6px;align-items:center}
+.q{display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:6px}
+.rulebox{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px}
+.rulebox .r3{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+/* stages manager */
+.overlay{position:fixed;inset:0;background:rgba(20,16,40,.45);z-index:40;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(680px,100%);height:100%;overflow:auto;padding:22px max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) 20px;display:flex;flex-direction:column;gap:12px}
+.srowm{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.srowm.yours{border-color:var(--brand-light)}
+.between{border:0;background:none;color:var(--brand);font-weight:600;font-size:13px;display:flex;gap:6px;align-items:center;justify-content:center;padding:2px;opacity:.75;width:100%}
+.between:hover{opacity:1}
+.opt{border:1px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;gap:10px;align-items:flex-start;font-size:14px;background:var(--card);text-align:left;width:100%}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.opt small{display:block;color:var(--muted)}
+/* record + activity */
+.hero{background:var(--brand-soft);border:1px solid var(--brand-light);border-radius:16px;padding:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.hero .line{font-size:20px;font-weight:700;letter-spacing:-.3px;line-height:1.35;text-wrap:balance}
+.state{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.st-done{background:var(--ok-soft);color:var(--ok)} .st-now{background:var(--brand);color:var(--on-brand)} .st-next{background:var(--locked);color:var(--muted)}
+.step.now{border-color:var(--brand);animation:pulse 1.8s ease-in-out 2}
+.step.done{opacity:.8}
+.seat{display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 0}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--brand-soft)}50%{box-shadow:0 0 0 6px var(--brand-soft)}}
+.bar{height:10px;border-radius:6px;background:var(--brand-light)}
+.bar.slow{background:var(--warn)}
+.checkrow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.checkrow:last-child{border-bottom:0}
+.checkrow .ic{margin-top:2px}
+.inbox{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.inbox.open{grid-template-columns:minmax(0,380px) minmax(0,1fr)}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;text-align:left;width:100%}
+.item.sel{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.item .due{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+.form{display:flex;flex-direction:column;gap:14px;max-width:640px}
+.form .f{display:flex;flex-direction:column;gap:6px}
+.form .f>label,.form legend{font-weight:600;font-size:15px;padding:0}
+.form fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.yn{display:flex;gap:8px}
+.yn button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;min-height:40px;font-weight:600}
+.yn button[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+.errt{color:var(--err);font-size:13px} .req{color:var(--err)}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+tr.grp td{background:var(--locked);font-weight:700;font-size:13px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;display:flex;gap:12px;align-items:center;max-width:min(92vw,560px);font-size:14px;z-index:60;box-shadow:var(--shadow)}
+#toast button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline}
+#toast.bad{background:var(--err);color:#fff}
+@media (max-width:1100px){
+  .builder,.builder.has-side{grid-template-columns:minmax(0,1fr)}
+  .palette,.side{position:static;max-height:none}
+  .palette .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px}
+  .pitem small{display:none}
+}
+@media (max-width:900px){
+  .inbox.open{grid-template-columns:minmax(0,1fr)}
+  .l-board{grid-auto-flow:row;grid-auto-columns:auto;min-width:0}
+  .nav{margin-left:0}
+  h1{font-size:21px} .hero .line{font-size:17px} .say{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="mark" id="mark"></span>Workflow Studio <span class="tag">Proposed · made-up data</span></div>
+    <nav class="nav" id="nav" aria-label="Screens"></nav>
+  </header>
+  <main id="view"></main>
+</div>
+<div id="sheet"></div>
+<div id="toast" hidden role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+const P={
+ lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ email:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+ task:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>',
+ form:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/>',
+ wait:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ path:'<path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+ parallel:'<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/>',
+ approval:'<path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/><path d="m9 12 2 2 4-4"/>',
+ action:'<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+ group:'<path d="m12 2 9 5-9 5-9-5z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/>',
+ reference:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+ stage:'<path d="M4 22V4s1-1 4-1 5 2 8 2 4-1 4-1v12s-1 1-4 1-5-2-8-2-4 1-4 1"/>',
+ back:'<path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 8"/>',
+ update:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+ create:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/>',
+ notify:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+ confirm:'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+ each:'<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+ start:'<path d="m6 3 14 9-14 9z"/>', end:'<rect x="5" y="5" width="14" height="14" rx="2"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ grip:'<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>', down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
+ up:'<path d="m6 15 6-6 6 6"/>', dn:'<path d="m6 9 6 6 6-6"/>', trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>', check:'<path d="M20 6 9 17l-5-5"/>',
+ alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+ inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ flow:'<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h5a4 4 0 0 1 4 4v5"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+ exit:'<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>'
+};
+const ic=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const low=s=>s.charAt(0).toLowerCase()+s.slice(1);
+const fmt=n=>Number(n).toLocaleString('en-US');
+/* type: [name, hint, colour, group, is new] */
+const T={
+ form:['Ask for details','A form with many questions','c-info','main'],
+ task:['Give someone a task','With a due date','c-warn','main'],
+ approval:['Get approval','Route comes from Approval Matrix','c-ok','main'],
+ email:['Send a message','Uses a saved message','c-info','main'],
+ path:['Choose a path','Different steps for different cases','c-brand','main'],
+ wait:['Wait','For a time, a date or a rule','c-grey','main'],
+ parallel:['Do at the same time','Several people in parallel','c-brand','more'],
+ group:['Add a saved group','Reuse a set of steps','c-brand','more'],
+ action:['Do something in the app','An action the app area offers','c-ok','more'],
+ reference:['Note what already happens','A reminder, it runs nothing','c-grey','more'],
+ stage:['Move to a stage','Put the record in a stage','c-brand','new',1],
+ back:['Send back for changes','Return to an earlier step','c-warn','new',1],
+ update:['Update the record','Set a value, from a safe list','c-ok','new',1],
+ create:['Create something','A task, a letter, a request','c-ok','new',1],
+ notify:['Tell someone in the app','A notice, not an email','c-info','new',1],
+ confirm:['Ask someone to confirm','Read and agree, one tap','c-warn','new',1],
+ each:['Repeat for each line','Once per item on the record','c-brand','new',1],
+ start:['Start another workflow','Hand over to another process','c-brand','new',1],
+ end:['Stop here','End the workflow early','c-grey','new',1]};
+const HUMAN=['form','task','approval','parallel','confirm'];
+const PEOPLE={'Employee':'#2563EB','Manager':'#B45F06','Manager’s manager':'#7C3AED','Finance officer':'#2E7D4F','Finance team (anyone)':'#15803D','IT officer':'#0E7490','Payroll officer':'#9D2F8A','Person who starts it':'#2563EB','Automatic':'#64748B'};
+const LATE=['Remind them, then tell their manager','Give it to their backup','Carry on without it','Take another path'];
+const DUE=['No due date','Same day','1 working day','2 working days','5 working days','7 days'];
+
+const EX={
+ expense:{label:'Expense claim',area:'Expenses',locked:true,what:'an expense claim',event:'is created',rule:null,
+  tests:[{k:'amount',label:'Amount',t:'num',v:6400000,unit:' ₫'},{k:'paper',label:'Has the paper receipt',t:'yn',v:'no'}],
+  stages:[
+   {name:'Draft',kind:'core',gate:'The employee starts a claim',native:[],steps:['e1']},
+   {name:'Waiting approval',kind:'core',gate:'The employee sends the claim',native:[{k:'approval',text:'Manager checks, then Finance when it is over 5,000,000 ₫',from:'Approval Matrix',open:1,route:[['Manager','Linh Nguyen'],['Finance','Hoa Pham']]},{k:'email',text:'Message to the approver: a claim is waiting',from:'Built into Expenses'}],steps:['e2']},
+   {name:'Approved',kind:'core',gate:'The last approver says yes',native:[{k:'email',text:'Message to the employee: your claim is approved',from:'Built into Expenses'}],steps:['e4','e6']},
+   {name:'Payment scheduled',kind:'yours',enter:'person',enterWho:'Finance officer',sla:'3 days',must:true,native:[],steps:['e3']},
+   {name:'Paid',kind:'core',gate:'Finance marks the claim as paid',native:[],steps:['e5']}],
+  exit:'If an approver says no, the claim becomes Refused and the employee is told. Steps after that point are skipped.',
+  steps:{
+   e1:{type:'form',title:'Receipt details',who:'Employee',due:'2 working days',late:LATE[0],qs:[['What was it for?','Short answer',1],['Amount on the receipt','Amount',1],['Date on the receipt','Date',1],['Do you have the paper receipt?','Yes / No',1],['Photo of the receipt','File',0]]},
+   e2:{type:'wait',title:'Nobody decided in 3 working days',who:'Automatic',waitv:'Then remind the approver and tell the Finance officer'},
+   e4:{type:'path',title:'Paper receipt missing?',who:'Automatic',needs:'e1',paths:[{label:'No paper receipt',rule:{k:'paper',op:'is',v:'no'},steps:[['task','Bring the receipt within 7 days','Employee']]},{label:'Otherwise',steps:[]}]},
+   e6:{type:'task',title:'Add a note for the audit file',who:'Manager’s manager',due:'2 working days',late:LATE[1],when:{k:'amount',op:'>',v:20000000,text:'Amount is over 20,000,000 ₫'}},
+   e3:{type:'task',title:'Send the payment to the bank',who:'Finance team (anyone)',due:'2 working days',late:LATE[0],must:true},
+   e5:{type:'email',title:'Tell the employee the money is on its way',who:'Employee',msg:'Claim paid'}},
+  record:{name:'Claim EXP-0412 · Client dinner',sub:'Tran Minh · 6,400,000 ₫ · sent 3 Nov',stage:1,done:['e1'],seat:1},
+  time:[['Draft',0.4],['Waiting approval',3.8],['Approved',0.6],['Payment scheduled',1.2],['Paid',0.1]],versions:[{n:1,note:'First version',by:'Ash',on:'2 Nov'}],live:true},
+ leave:{label:'Leave request',area:'Time off',locked:true,what:'a leave request',event:'is created',rule:{k:'days',op:'>',v:5,text:'Days is over 5'},
+  tests:[{k:'days',label:'Days',t:'num',v:10,unit:' days'},{k:'urgent',label:'Can be called if urgent',t:'yn',v:'yes'}],
+  stages:[
+   {name:'To send',kind:'core',gate:'The employee starts a request',native:[],steps:['l1']},
+   {name:'Waiting approval',kind:'core',gate:'The employee sends the request',native:[{k:'approval',text:'The employee’s manager decides',from:'Approval Matrix',open:1,route:[['Manager','Quang Bui']]},{k:'email',text:'Message to the manager: a request is waiting',from:'Built into Time off'}],steps:[]},
+   {name:'Approved',kind:'core',gate:'The manager says yes',native:[{k:'action',text:'Leave balance is reduced',from:'Built into Time off'},{k:'email',text:'Message to the employee: leave approved',from:'Built into Time off'}],steps:['l2','l3']},
+   {name:'Before the leave',kind:'group',native:[],steps:['l4']}],
+  exit:'If the manager says no, the request becomes Refused and the employee is told.',
+  steps:{
+   l1:{type:'form',title:'Handover notes',who:'Employee',due:'2 working days',late:LATE[0],qs:[['Who covers your work?','Person',1],['What must not be missed?','Long answer',1],['Can we call you if it is urgent?','Yes / No',1]]},
+   l2:{type:'task',title:'Confirm the cover person',who:'Manager',due:'2 working days',late:LATE[1],needs:'l1'},
+   l3:{type:'parallel',title:'Get ready, at the same time',who:'Payroll officer and IT officer',paths:[{label:'Payroll officer',steps:[['task','Check unpaid days for this month','Payroll officer']]},{label:'IT officer',steps:[['task','Set the out-of-office reply','IT officer']]}]},
+   l4:{type:'wait',title:'One day before the leave starts',who:'Automatic',waitv:'Then send the team a reminder'}},
+  record:{name:'Leave · Mai Le · 17 to 28 Nov',sub:'Annual leave · 10 days · sent 6 Nov',stage:1,done:['l1'],seat:0},
+  time:[['To send',0.2],['Waiting approval',1.9],['Approved',0.8],['Before the leave',6.0]],versions:[],live:false},
+ equip:{label:'New process: equipment request',area:'you',locked:false,what:'an equipment request',event:'is started by a person',rule:null,
+  tests:[{k:'cost',label:'Rough cost',t:'num',v:3500000,unit:' ₫'}],
+  stages:[
+   {name:'Request',kind:'yours',enter:'auto',native:[],steps:['n1']},
+   {name:'Review',kind:'yours',enter:'auto',native:[],steps:['n2']},
+   {name:'Hand over',kind:'yours',enter:'auto',sla:'1 week',native:[],steps:['n3','n4']},
+   {name:'Done',kind:'yours',enter:'auto',native:[],steps:[]}],
+  exit:'If approval is refused, the request closes and the person who started it is told.',
+  steps:{
+   n1:{type:'form',title:'What do you need?',who:'Person who starts it',due:'No due date',qs:[['What do you need?','Choose one',1],['Why do you need it?','Long answer',1],['Rough cost','Amount',1],['Needed by','Date',0]]},
+   n2:{type:'approval',title:'Get approval',who:'Manager',needs:'n1',when:{k:'cost',op:'>',v:2000000,text:'Rough cost is over 2,000,000 ₫'}},
+   n3:{type:'task',title:'Order it or hand it over',who:'IT officer',due:'5 working days',late:LATE[0]},
+   n4:{type:'notify',title:'Tell them it is ready',who:'Person who starts it'}},
+  record:{name:'Request · Laptop stand',sub:'Started by Duc Vo · 5 Nov',stage:1,done:['n1'],seat:0},
+  time:[['Request',0.1],['Review',1.4],['Hand over',4.2],['Done',0]],versions:[],live:false}
+};
+const S={ex:'expense',page:'editor',tab:'build',view:'journey',sel:null,addTo:0,people:false,zoom:1,hist:[],inbox:'all',open:null,form:{},err:{},warn:null,warnText:'',stages:false,ns:null,tv:{},preview:null,kept:[]};
+const cur=()=>EX[S.ex];
+const INBOX=[
+ {id:'a1',kind:'approval',title:'Approve an expense claim · 6,400,000 ₫',sub:'Tran Minh · Client dinner',due:'Due tomorrow'},
+ {id:'f1',kind:'form',title:'Receipt details',sub:'Your claim EXP-0415 · Taxi to airport',due:'Due Friday'},
+ {id:'t1',kind:'task',title:'Send the payment to the bank',sub:'Claim EXP-0398 · anyone in Finance can pick this up',due:'Due in 2 days'},
+ {id:'t2',kind:'task',title:'Confirm the cover person',sub:'Leave · Mai Le · 17 to 28 Nov',due:'Due Thursday'}];
+
+/* ---------- helpers ---------- */
+let toastTimer;
+function toast(text,undoable=false,bad=false){const t=document.getElementById('toast');t.className=bad?'bad':'';t.innerHTML=`<span>${esc(text)}</span>${undoable?'<button data-act="undo">Undo</button>':''}`;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.hidden=true,bad?7000:5000);}
+const snap=()=>{S.hist.push(JSON.stringify({ex:S.ex,data:cur()}));if(S.hist.length>40)S.hist.shift();};
+function undo(){const h=S.hist.pop();if(!h)return toast('Nothing to undo.');const o=JSON.parse(h);EX[o.ex]=o.data;S.ex=o.ex;S.sel=null;S.warn=null;S.ns=null;render();toast('Undone.');}
+function place(id){const st=cur().stages;for(let i=0;i<st.length;i++){const j=st[i].steps.indexOf(id);if(j>=0)return [i,j];}return null;}
+const before=(a,b)=>a[0]<b[0]||a[0]===b[0]&&a[1]<b[1];
+function check(){const d=cur();for(const [id,s] of Object.entries(d.steps)){if(s.needs&&d.steps[s.needs]){const a=place(s.needs),b=place(id);if(a&&b&&!before(a,b))return `“${s.title}” uses what “${d.steps[s.needs].title}” collects, so it has to come after it.`;}}return '';}
+function countsAs(i){const st=cur().stages;for(let j=i;j>=0;j--)if(st[j].kind==='core')return st[j].name;return '';}
+function gateText(st,i){if(st.kind==='core')return st.gate;if(st.kind==='group')return 'Not a real stage. It only groups steps in this picture.';
+ if(st.enter==='person')return `${st.enterWho||'A person'} presses “Move to ${st.name}”`;if(st.enter==='rule'&&st.rule)return st.rule.text;return i===0?'The workflow starts':'The steps before are finished';}
+function sub(s){const a=[];
+ if(s.type==='form')a.push(`${(s.qs||[]).length} questions`);
+ if(s.due&&s.due!=='No due date'&&HUMAN.includes(s.type))a.push('Due in '+low(s.due));
+ if(s.type==='email')a.push('Saved message: '+(s.msg||'choose one'));
+ if(s.type==='wait')a.push(s.waitv||'Choose how long');
+ if(s.type==='stage')a.push('To: '+(s.target||'choose a stage'));
+ if(s.type==='back')a.push('Back to: '+(s.target||'choose a step'));
+ if(s.type==='update')a.push(`${s.field||'Choose a field'} → ${s.value||'value'}`);
+ if(s.type==='create')a.push(s.make||'Choose what to create');
+ if(s.type==='start')a.push(s.wf||'Choose a workflow');
+ if(s.type==='approval')a.push('Route from Approval Matrix');
+ if(s.type==='each')a.push('For each '+(s.per||'line'));
+ return a.join(' · ');}
+function ruleOk(r,vals){if(!r)return true;const x=vals[r.k];if(r.op==='>')return Number(x)>Number(r.v);if(r.op==='<')return Number(x)<Number(r.v);if(r.op==='is')return String(x)===String(r.v);return String(x)!==String(r.v);}
+function ruleText(r){const f=cur().tests.find(t=>t.k===r.k);if(!f)return '';return f.t==='yn'?`${f.label} is ${r.op==='is'?'':'not '}${r.v==='yes'?'Yes':'No'}`:`${f.label} is ${r.op==='>'?'over':r.op==='<'?'under':r.op==='is'?'exactly':'not'} ${fmt(r.v)}${f.unit||''}`;}
+function ruleBuilder(target,current){const d=cur();return `<div class="rulebox"><span class="small">${current?`Now: <b>${esc(current.text)}</b>`:'Now: <b>Always</b>'}</span>
+  <select id="r-k" aria-label="What to look at">${d.tests.map(t=>`<option value="${t.k}">${esc(t.label)}</option>`).join('')}<option disabled>More fields from ${esc(d.area==='you'?'earlier answers':d.area)}…</option></select>
+  <div class="r3"><select id="r-op" aria-label="Compare"><option value=">">is over</option><option value="<">is under</option><option value="is">is</option><option value="not">is not</option></select><input type="text" id="r-v" placeholder="Value, or yes / no" aria-label="Value"></div>
+  <div class="row"><button class="btn sm" data-act="setrule" data-target="${target}">Use this rule</button>${current?`<button class="btn sm ghost" data-act="clearrule" data-target="${target}">Always</button>`:''}</div></div>`;}
+function readRule(){const k=document.getElementById('r-k').value,f=cur().tests.find(t=>t.k===k);let op=document.getElementById('r-op').value,v=document.getElementById('r-v').value.trim().toLowerCase();
+ if(!f||!v){toast('Type a value for the rule.',false,true);return null;}
+ if(f.t==='yn'){if(!['yes','no'].includes(v)){toast('For this one, type yes or no.',false,true);return null;}if(op==='>'||op==='<')op='is';}
+ else{v=Number(v.replace(/[^0-9.]/g,''));if(!(v>=0)){toast('Type a number.',false,true);return null;}}
+ const r={k,op,v};r.text=ruleText(r);return r;}
+
+/* ---------- step cards + stages (one renderer, three layouts) ---------- */
+function whoHtml(s){return `<span class="who">${S.people?`<span class="dot" style="background:${PEOPLE[s.who]||'#64748B'}"></span>`:''}${esc(s.who)}</span>`;}
+function pathsHtml(s){return s.paths?`<div class="paths">${s.paths.map(p=>`<div class="pathrow"><b>${esc(p.label)}</b>${p.rule?`<span class="muted">${esc(ruleText(p.rule))}</span>`:''}${p.steps.map(m=>`<span class="mini">${ic(m[0])}${esc(m[1])} · ${esc(m[2])}</span>`).join('')||'<span class="muted">Nothing extra</span>'}</div>`).join('')}</div>`:'';}
+function stepCard(id,edit,state){const s=cur().steps[id];if(!s)return '';const m=sub(s);
+ const st=state?`<span class="state st-${state}">${{done:'Done',now:'Now',next:'Later'}[state]}</span>`:'';
+ return `<div class="step ${S.sel===id&&edit?'sel':''} ${state||''}" data-id="${id}" ${edit?`tabindex="0" role="button" aria-label="${esc(T[s.type][0])}: ${esc(s.title)}. Enter to edit. Alt and arrow keys to move."`:''}>
+  <span class="badge ${T[s.type][2]}">${ic(s.type)}</span>
+  <span class="body"><span class="t">${esc(s.title)}</span><br><span class="s">${whoHtml(s)}${m?' · '+esc(m):''}</span>${s.when?`<br><span class="tag yours">Only when: ${esc(s.when.text)}</span>`:''}${s.must?` <span class="tag">Must finish before leaving</span>`:''}${pathsHtml(s)}</span>
+  ${edit?`<button class="grip" data-grip aria-label="Drag to move" tabindex="-1">${ic('grip')}</button>`:st}</div>`;}
+function nativeRow(n,extra){return `<div class="native">${ic(n.k)}<span>${esc(n.text)}<span class="from">${esc(n.from)}</span>${extra||''}</span>${n.open&&!extra?`<button data-act="matrix">Open</button>`:''}</div>`;}
+function stageTag(st,i){const d=cur();return st.kind==='core'?`<span class="owner">${ic('lock')}${esc(d.area)} owns this stage</span>`:st.kind==='group'?`<span class="owner">${ic('list')}Heading only</span>`:`<span class="owner">${ic('stage')}Your stage${d.locked?` · counts as “${esc(countsAs(i))}” in ${esc(d.area)}`:''}${st.sla?` · target ${esc(st.sla)}`:''}</span>`;}
+function stagesView(layout){const d=cur();
+ return `<div class="boardwrap"><div class="board l-${layout}" ${layout==='flow'?`style="zoom:${S.zoom}"`:''}>${d.stages.map((st,i)=>`<section class="stage ${st.kind==='yours'&&d.locked?'yours':''} ${st.kind==='group'?'grp':''}" data-stage="${i}" aria-label="Stage ${i+1}: ${esc(st.name)}">
+   <div class="stagehead"><div class="stagename"><span class="n">${i+1}</span>${esc(st.name)}</div>${stageTag(st,i)}<span class="gate">${ic('arrow')}<span>Gets here when: ${esc(low(gateText(st,i)))}</span></span></div>
+   <div class="stagebody">${st.native.length?`<span class="label">Already happens here</span>${st.native.map(n=>nativeRow(n)).join('')}<span class="label">Your added steps</span>`:''}
+    <div class="steps" data-list="${i}">${st.steps.map(id=>stepCard(id,true)).join('')}</div>
+    <button class="add" data-act="addto" data-stage="${i}">${ic('plus')} Add a step</button></div></section>`).join('')}</div></div>
+  <p class="exit">${ic('exit')}<span>${esc(d.exit)}</span></p>`;}
+function snake(){const d=cur(),seq=[];
+ d.stages.forEach((st,i)=>{seq.push({c:'st',h:`${i+1}. ${esc(st.name)}`});st.native.forEach(n=>seq.push({c:'nat',h:ic(n.k)+esc(n.from==='Approval Matrix'?'Approval route':n.text.split(':')[0])}));st.steps.forEach(id=>{const s=d.steps[id];seq.push({c:'',id,h:`<span class="badge sm ${T[s.type][2]}">${ic(s.type)}</span>${esc(s.title)}`});});});
+ const w=(document.querySelector('.work')?.clientWidth||900)-40,cols=Math.max(2,Math.min(5,Math.floor(w/190))),rows=[];
+ for(let i=0;i<seq.length;i+=cols){const r=seq.slice(i,i+cols),rev=(i/cols)%2===1,last=i+cols>=seq.length;
+  rows.push(`<div class="srow ${rev?'rev':''}">${Array.from({length:cols},(_,j)=>r[j]?`<div class="scell"><div class="spill ${r[j].c}" ${r[j].id?`data-pick="${r[j].id}" role="button" tabindex="0"`:''}>${r[j].h}</div>${j<r.length-1?`<span class="sarrow">${ic('arrow')}</span>`:''}</div>`:'<div class="scell"></div>').join('')}</div>`);
+  if(!last)rows.push(`<div class="sturn ${rev?'':'r'}">${ic('down')}</div>`);}
+ return `<section class="card snake" aria-label="The whole process in order"><p class="small muted" style="margin-bottom:6px">Left to right, then right to left on the next row. Purple are stages, grey already happens, white are your steps. Click a step to open it.</p>${rows.join('')}</section>`;}
+function peopleView(){const d=cur(),g={};d.stages.forEach(st=>st.steps.forEach(id=>{const s=d.steps[id];(g[s.who]??=[]).push([id,st.name]);(s.paths||[]).forEach(p=>p.steps.forEach(m=>{if(m[2]!==s.who)(g[m[2]]??=[]).push([null,st.name,m]);}));}));
+ return `<div class="people">${Object.entries(g).map(([who,rows])=>`<section class="pcol"><h3 class="who"><span class="dot" style="background:${PEOPLE[who]||'#64748B'}"></span>${esc(who)}</h3>${rows.map(r=>r[0]?stepCard(r[0],true):`<div class="step"><span class="badge ${T[r[2][0]][2]}">${ic(r[2][0])}</span><span class="body"><span class="t">${esc(r[2][1])}</span><br><span class="s">In ${esc(r[1])}</span></span></div>`).join('')}</section>`).join('')}</div><p class="small muted">Who approves, and their backups, stay in Approval Matrix.</p>`;}
+
+/* ---------- builder ---------- */
+function palette(){const d=cur(),grp=g=>Object.entries(T).filter(([,v])=>v[3]===g).map(([k,v])=>`<button class="pitem" data-act="add" data-type="${k}"><span class="badge sm ${v[2]}">${ic(k)}</span><span>${v[0]}<small>${v[1]}</small></span></button>`).join('');
+ return `<aside class="card palette" id="palette" aria-label="Steps you can add"><label>Add to stage<select id="pal-stage">${d.stages.map((s,i)=>`<option value="${i}" ${i===S.addTo?'selected':''}>${i+1}. ${esc(s.name)}</option>`).join('')}</select></label>
+  <span class="label">Everyday steps</span><div class="items">${grp('main')}</div>
+  <span class="label">More</span><div class="items">${grp('more')}</div>
+  <span class="label">New in this proposal</span><div class="items">${grp('new')}</div></aside>`;}
+function startText(d){return `When <span class="chip">${esc(d.what)}</span> <span class="chip">${esc(d.event)}</span>, <span class="chip">${d.rule?'and '+esc(low(d.rule.text)):'for everyone'}</span>`;}
+function buildTab(){const d=cur(),views=[['journey','Journey'],['board','By stage',1],['across','Across'],['flow','Flowchart'],['people','People']];
+ const bar=`<div class="card row"><button class="say grow" data-act="selstart" aria-label="Change when this starts">${startText(d)}</button><button class="btn sm" data-act="selstart">${ic('update')} Change</button></div>
+  <div class="row"><div class="seg" role="group" aria-label="View">${views.map(v=>`<button data-act="view" data-v="${v[0]}" aria-pressed="${S.view===v[0]}">${v[1]}${v[2]?' <span class="tag new">New</span>':''}</button>`).join('')}</div><span class="grow"></span>
+   ${S.view==='flow'?`<button class="btn sm" data-act="zoom" data-z="-0.1" aria-label="Zoom out">−</button><span class="small muted">${Math.round(S.zoom*100)}%</span><button class="btn sm" data-act="zoom" data-z="0.1" aria-label="Zoom in">+</button>`:''}
+   <button class="btn sm" data-act="people" aria-pressed="${S.people}">${ic('user')} Show who</button><button class="btn" data-act="stages">${ic('stage')} Stages <span class="tag new">New</span></button></div>`;
+ const body=S.view==='across'?snake():S.view==='people'?peopleView():stagesView(S.view);
+ const hint=['journey','board','flow'].includes(S.view)?'<p class="small muted">Drag a card by its handle to change the order, also into another stage. Keyboard: select a card, hold Alt and press the arrow keys.</p>':'';
+ return bar+`<div class="builder ${S.sel?'has-side':''}">${palette()}<div class="work">${body}${hint}</div>${S.sel?inspector():''}</div>`;}
+function fsel(label,prop,opts,val){return `<label class="fld">${label}<select data-f="${prop}">${opts.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`;}
+function inspector(){const d=cur();
+ if(S.sel==='start')return `<aside class="card side" aria-label="When it starts"><div class="row"><h2 class="grow">When it starts</h2><button class="btn ghost sm" data-act="close" aria-label="Close">${ic('x')}</button></div>
+  <label class="fld">Start when ${esc(d.what)}<select id="i-event">${['is created','is started by a person','has a field changed','reaches a date on the record','has its approval finished','is due on a schedule (every week or month)'].map(o=>`<option ${o===d.event?'selected':''}>${o}</option>`).join('')}</select></label>
+  <span class="label">Only for these records</span>${ruleBuilder('start',d.rule)}
+  <p class="small muted">Other workflows can run for the same kind of record. The check before turning on lists them, so nothing is done twice.</p></aside>`;
+ const s=d.steps[S.sel];if(!s)return '';const p=place(S.sel),h=HUMAN.includes(s.type);
+ const warn=S.warn===S.sel?`<div class="warnbox"><b>${ic('alert')} This may be a double-up</b><span>${esc(S.warnText)}</span><div class="row"><button class="btn sm" data-act="remove">Do not add it</button><button class="btn sm" data-act="keep">Keep it, it is different</button></div></div>`:'';
+ let x='';
+ if(s.type==='approval')x+=`<p class="small muted">Who approves, backups and amount limits are set in Approval Matrix. This step only says where approval sits.</p><button class="btn sm" data-act="matrix">${ic('approval')} Open Approval Matrix</button>`;
+ else x+=fsel(h?'Who does it':s.type==='email'||s.type==='notify'?'Who gets it':'Runs as',  'who',Object.keys(PEOPLE),s.who);
+ if(h&&s.type!=='approval')x+=fsel('Due','due',DUE,s.due||DUE[0])+fsel('If nobody acts in time','late',LATE,s.late||LATE[0]);
+ if(s.type==='task'||s.type==='confirm')x+=fsel('Buttons the person sees','out',['Done','Done / Cannot do','Yes / No','Agree'],s.out||'Done');
+ if(s.type==='form')x+=`<span class="label">Questions</span>${s.qs.map((q,i)=>`<div class="q"><input type="text" value="${esc(q[0])}" data-q="${i}" aria-label="Question ${i+1}"><select data-qt="${i}" aria-label="Answer type">${['Short answer','Long answer','Amount','Number','Date','Yes / No','Choose one','Choose many','Person','File','List of lines'].map(o=>`<option ${o===q[1]?'selected':''}>${o}</option>`).join('')}</select></div>`).join('')}<div class="row"><button class="btn sm" data-act="addq">${ic('plus')} Add a question</button><span class="small muted">Each can be required, or shown only after an earlier answer.</span></div>`;
+ if(s.type==='email')x+=fsel('Saved message','msg',['Claim paid','Reminder','Thank you','Ready to collect'],s.msg)+`<button class="btn sm" data-act="msgedit">${ic('update')} Edit this message</button>`;
+ if(s.type==='wait')x+=fsel('Wait','waitk',['For a set time','Until a date on the record','Until a rule is true','If nobody acts'],s.waitk||'For a set time')+`<label class="fld">Details<input type="text" data-f="waitv" value="${esc(s.waitv||'')}"></label>`;
+ if(s.type==='stage')x+=fsel('Move the record to','target',d.stages.filter(t=>t.kind!=='group').map(t=>t.name),s.target)+`<p class="small muted">Stages owned by ${esc(d.area)} can only be reached the way ${esc(d.area)} allows. Your own stages can always be chosen.</p>`;
+ if(s.type==='back')x+=fsel('Send back to','target',Object.values(d.steps).filter(t=>HUMAN.includes(t.type)&&t!==s).map(t=>t.title),s.target)+`<p class="small muted">The person gets it again with your note. Steps in between run again.</p>`;
+ if(s.type==='update')x+=fsel('Field','field',['Note','Priority','Payment date','Cost centre'],s.field)+`<label class="fld">Set it to<input type="text" data-f="value" value="${esc(s.value||'')}"></label><p class="small muted">Only fields the app area marks as safe appear here. Status and money fields are never in this list.</p>`;
+ if(s.type==='create')x+=fsel('Create','make',['A task for another team','A letter from a template','An asset request','A calendar entry'],s.make);
+ if(s.type==='start')x+=fsel('Workflow','wf',['Joiner checklist','Leaver checklist','Equipment request'],s.wf);
+ if(s.type==='each')x+=fsel('Repeat for each','per',['line on the claim','day of leave','item requested'],s.per);
+ if(s.paths)x+=`<span class="label">${s.type==='parallel'?'Lanes':'Paths'}</span>${s.paths.map(pp=>`<div class="pathrow"><b>${esc(pp.label)}</b>${pp.rule?esc(ruleText(pp.rule)):s.type==='path'?'When nothing above fits':''}</div>`).join('')}<button class="btn sm" data-act="addpath">${ic('plus')} Add a ${s.type==='parallel'?'lane':'path'}</button>${s.type==='parallel'?fsel('Carry on when','join',['Everyone has finished','The first one has finished'],s.join||'Everyone has finished'):''}`;
+ return `<aside class="card side" aria-label="Step settings"><div class="row"><h2 class="grow">${T[s.type][0]}</h2><button class="btn ghost sm" data-act="close" aria-label="Close">${ic('x')}</button></div>${warn}
+  <label class="fld">Name<input type="text" data-f="title" value="${esc(s.title)}"></label>${x}
+  ${fsel('Stage','_stage',d.stages.map(t=>t.name),d.stages[p[0]].name)}
+  ${s.type!=='approval'||!d.locked?`<span class="label">Only do this step when</span>${ruleBuilder('step',s.when)}`:''}
+  ${h?`<label class="fld inline"><input type="checkbox" data-f="must" ${s.must?'checked':''}> Must be finished before the record leaves this stage</label>`:''}
+  <label class="fld">Guidance for the person (optional)<textarea data-f="notes" rows="2">${esc(s.notes||'')}</textarea></label>
+  ${s.needs?`<p class="small muted">Uses answers from “${esc(d.steps[s.needs]?.title||'')}”, so it must come after it.</p>`:''}
+  <div class="row"><button class="btn sm" data-act="dup">Duplicate</button><button class="btn sm" data-act="remove" style="color:var(--err)">Remove</button></div></aside>`;}
+
+/* ---------- stages manager ---------- */
+function stageSheet(){const d=cur();if(!S.stages)return '';
+ const form=i=>{const n=S.ns;return `<div class="card" style="display:grid;gap:10px;border-color:var(--brand)"><h3>New stage after “${esc(d.stages[i-1]?.name||'the start')}”</h3>
+  <label class="fld">Name<input type="text" id="ns-name" value="${esc(n.name)}" placeholder="For example: Payment scheduled"></label>
+  <span class="label">What is it?</span>
+  <button class="opt" data-act="nskind" data-v="yours" aria-pressed="${n.kind==='yours'}">${ic('stage')}<span><b>A real stage</b><small>People see it on the record and in lists. ${d.locked?`${esc(d.area)} still treats the record as “${esc(countsAs(i-1))}”, so its reports and rules keep working.`:''}</small></span></button>
+  <button class="opt" data-act="nskind" data-v="group" aria-pressed="${n.kind==='group'}">${ic('list')}<span><b>Just a heading</b><small>Groups steps in this picture only. This is what Sections do today.</small></span></button>
+  ${n.kind==='yours'?`<span class="label">How does a record get here?</span>
+  <button class="opt" data-act="nsenter" data-v="auto" aria-pressed="${n.enter==='auto'}">${ic('arrow')}<span><b>By itself</b><small>As soon as the steps in the stage before are finished.</small></span></button>
+  <button class="opt" data-act="nsenter" data-v="person" aria-pressed="${n.enter==='person'}">${ic('user')}<span><b>A person moves it</b><small>They get a “Move to” button on the record.</small></span></button>
+  ${n.enter==='person'?`<label class="fld">Who may move it<select id="ns-who">${Object.keys(PEOPLE).filter(p=>p!=='Automatic').map(p=>`<option ${p===n.enterWho?'selected':''}>${p}</option>`).join('')}</select></label>`:''}
+  <button class="opt" data-act="nsenter" data-v="rule" aria-pressed="${n.enter==='rule'}">${ic('path')}<span><b>When a rule is true</b><small>${n.rule?esc(n.rule.text):'For example: amount is over 20,000,000 ₫.'}</small></span></button>
+  ${n.enter==='rule'?ruleBuilder('ns',n.rule):''}
+  <label class="fld">Target time in this stage<select id="ns-sla">${['No target','1 day','3 days','1 week','2 weeks'].map(o=>`<option ${o===n.sla?'selected':''}>${o}</option>`).join('')}</select></label>
+  <label class="fld inline"><input type="checkbox" id="ns-must" ${n.must?'checked':''}> A record cannot leave until every step here is finished</label>`:''}
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="nscancel">Cancel</button><button class="btn primary" data-act="nssave" data-i="${i}">Add this stage</button></div></div>`;};
+ const rows=d.stages.map((st,i)=>`${S.ns&&S.ns.at===i?form(i):i>0||!d.locked?`<button class="between" data-act="nsopen" data-i="${i}">${ic('plus')} Add a stage here</button>`:''}
+  <div class="srowm ${st.kind!=='core'?'yours':''}"><span class="stagename grow"><span class="n">${i+1}</span>${st.kind==='core'?esc(st.name):`<input type="text" value="${esc(st.name)}" data-sname="${i}" aria-label="Stage name" style="max-width:220px">`}
+   <span class="tag ${st.kind==='core'?'':'yours'}">${st.kind==='core'?'Owned by '+esc(d.area):st.kind==='group'?'Heading only':'Yours'}</span>${st.sla?`<span class="tag">Target ${esc(st.sla)}</span>`:''}</span>
+   ${st.kind==='core'?`<button class="btn sm ghost" data-act="openarea">${ic('lock')} Open in ${esc(d.area)}</button>`:`<button class="btn sm" data-act="stup" data-i="${i}" aria-label="Move earlier" ${i<=(d.locked?1:0)?'disabled':''}>${ic('up')}</button><button class="btn sm" data-act="stdn" data-i="${i}" aria-label="Move later" ${i>=d.stages.length-1?'disabled':''}>${ic('dn')}</button><button class="btn sm" data-act="stdel" data-i="${i}" aria-label="Delete stage" ${d.stages.length<2?'disabled':''}>${ic('trash')}</button>`}
+   <span class="small muted" style="flex-basis:100%">Gets here when: ${esc(low(gateText(st,i)))}${st.kind==='yours'&&d.locked?` · counts as “${esc(countsAs(i))}” in ${esc(d.area)}`:''} · ${st.steps.length} step${st.steps.length===1?'':'s'}</span></div>`).join('');
+ const end=S.ns&&S.ns.at===d.stages.length?form(d.stages.length):`<button class="between" data-act="nsopen" data-i="${d.stages.length}">${ic('plus')} Add a stage at the end</button>`;
+ return `<div class="overlay" data-act="stagesclose"><div class="sheet" role="dialog" aria-label="Stages" data-stop>
+  <div class="row"><h1 class="grow">Stages</h1><button class="btn" data-act="stagesclose">Done</button></div>
+  <p class="muted">${d.locked?`Stages with a lock belong to ${esc(d.area)}. You can add your own stages between them, here, without any programming.`:'This is your own process, so every stage is yours. Name them, add more, and put them in order.'}</p>
+  ${rows}${end}
+  <p class="small muted">${ic('exit')} ${esc(d.exit)}</p></div></div>`;}
+function stageOp(a,b){const d=cur(),i=Number(b.dataset.i);
+ if(a==='nsopen'){S.ns={at:i,name:'',kind:'yours',enter:'auto',enterWho:'Finance officer',sla:'No target',must:false,rule:null};return true;}
+ if(a==='nscancel'){S.ns=null;return true;}
+ if(a==='nskind'||a==='nsenter'){readNs();S.ns[a==='nskind'?'kind':'enter']=b.dataset.v;return true;}
+ if(a==='nssave'){readNs();const n=S.ns;if(!n.name.trim()){toast('Give the stage a name.',false,true);return true;}if(n.enter==='rule'&&n.kind==='yours'&&!n.rule){toast('Choose the rule, or pick another way in.',false,true);return true;}
+  snap();d.stages.splice(i,0,{name:n.name.trim().slice(0,40),kind:n.kind,enter:n.enter,enterWho:n.enterWho,rule:n.rule,sla:n.sla==='No target'||n.kind==='group'?'':n.sla,must:n.must,native:[],steps:[]});S.ns=null;S.addTo=i;
+  toast(`Stage “${n.name.trim()}” added. Now add steps to it.`,true);return true;}
+ if(a==='stup'||a==='stdn'){const j=a==='stup'?i-1:i+1;if(j<(d.locked?1:0)||j>=d.stages.length)return true;snap();const [st]=d.stages.splice(i,1);d.stages.splice(j,0,st);const pr=check();if(pr){undo();toast(pr,false,true);}return true;}
+ if(a==='stdel'){snap();const [st]=d.stages.splice(i,1);const to=d.stages[Math.max(0,i-1)];to.steps.push(...st.steps);S.addTo=0;const pr=check();if(pr){undo();toast(pr,false,true);return true;}toast(`Stage removed. Its ${st.steps.length} step${st.steps.length===1?'':'s'} moved to “${to.name}”.`,true);return true;}
+ if(a==='openarea'){toast(`In the real app this opens ${d.area} settings and brings you back here.`);return true;}
+ return false;}
+function readNs(){if(!S.ns)return;const g=id=>document.getElementById(id);if(g('ns-name'))S.ns.name=g('ns-name').value;if(g('ns-who'))S.ns.enterWho=g('ns-who').value;if(g('ns-sla'))S.ns.sla=g('ns-sla').value;if(g('ns-must'))S.ns.must=g('ns-must').checked;}
+
+/* ---------- try it out ---------- */
+function tryTab(){const d=cur(),v=S.tv[S.ex]??=Object.fromEntries(d.tests.map(t=>[t.k,t.v]));
+ const inputs=d.tests.map(t=>`<label class="fld">${esc(t.label)}${t.t==='yn'?`<select data-tv="${t.k}"><option value="yes" ${v[t.k]==='yes'?'selected':''}>Yes</option><option value="no" ${v[t.k]==='no'?'selected':''}>No</option></select>`:`<input type="number" data-tv="${t.k}" value="${esc(v[t.k])}">`}</label>`).join('');
+ let out='';
+ if(S.preview===S.ex){if(!ruleOk(d.rule,v))out=`<div class="card"><b>This record would not start the workflow.</b><p class="muted">${esc(d.rule.text)} is not true for these values.</p></div>`;
+  else out=`<div class="card" style="display:grid;gap:4px">${d.stages.map((st,i)=>`<div class="checkrow"><span class="badge sm c-brand">${i+1}</span><span class="grow"><b>${esc(st.name)}</b><span class="small muted"> · ${esc(low(gateText(st,i)))}</span>
+   ${st.native.map(n=>`<span class="mini">${ic(n.k)}Already happens: ${esc(n.text)}</span>`).join('')}
+   ${st.steps.map(id=>{const s=d.steps[id],ok=ruleOk(s.when,v);const taken=s.type==='path'?s.paths.find(p=>!p.rule||ruleOk(p.rule,v)):null;
+    return `<span class="mini" style="${ok?'color:var(--ink)':'text-decoration:line-through'}">${ic(ok?'check':'x')}${esc(s.title)}${ok?'':' · skipped, '+esc(low(s.when.text))+' is not true'}${taken?` · takes “${esc(taken.label)}”${taken.steps.length?': '+esc(taken.steps.map(m=>m[1]).join(', ')):''}`:''}</span>`;}).join('')}</span></div>`).join('')}</div>`;}
+ return `<div class="card" style="display:grid;gap:12px;max-width:760px"><div><h2>Try it with example values</h2><p class="muted">Nothing is sent and no record changes.</p></div><div class="row" style="align-items:flex-end">${inputs}<button class="btn primary" data-act="simulate">${ic('start')} Show what would happen</button></div></div>${out}`;}
+
+/* ---------- review ---------- */
+function reviewTab(){const d=cur(),issues=[],pr=check();if(pr)issues.push(pr);
+ Object.values(d.steps).forEach(s=>{if(s.type==='stage'&&!s.target)issues.push(`“${s.title}” needs a stage to move to.`);if(s.type==='email'&&!s.msg)issues.push(`“${s.title}” needs a saved message.`);});
+ d.stages.forEach(st=>{if(st.kind==='yours'&&!st.steps.length&&st.enter==='auto'&&d.locked)issues.push(`Stage “${st.name}” has no steps, so records would pass straight through it.`);});
+ const nat=d.stages.flatMap(st=>st.native.map(n=>`${st.name}: ${n.text} (${n.from})`));
+ const row=(ok,t)=>`<div class="checkrow"><span style="color:var(--${ok?'ok':'warn'})">${ic(ok?'check':'alert')}</span><span>${esc(t)}</span></div>`;
+ return `<div class="card" style="max-width:820px;display:grid;gap:6px"><h2>${issues.length?'A few things to finish':'Ready to publish'}</h2>
+  ${issues.map(t=>row(false,t)).join('')||row(true,'Every step has a person, a stage and what it needs.')}
+  ${row(true,'Approvals stay in Approval Matrix. This workflow cannot skip them.')}
+  ${S.kept.length?row(false,`You kept ${S.kept.length} step${S.kept.length>1?'s':''} that may repeat something the app already does.`):row(true,'Nothing is sent or done twice.')}
+  ${row(true,'Records already in progress keep the version they started with.')}</div>
+ <div class="card" style="max-width:820px;display:grid;gap:6px"><h3>Already happens for these records</h3>${nat.map(t=>`<span class="mini">${ic('lock')}${esc(t)}</span>`).join('')||'<span class="muted small">Nothing built in. This process is all yours.</span>'}</div>
+ <div class="card" style="max-width:820px;display:grid;gap:10px"><label class="fld">What changed? (optional)<input type="text" id="v-note" placeholder="For example: added a Payment scheduled stage"></label>
+  <div class="row"><button class="btn primary" data-act="publish" ${issues.length?'disabled':''}>Publish a version</button><button class="btn" data-act="pilot">${d.pilot?'Stop the one-record trial':'Try on one record first'}</button><button class="btn" data-act="live" ${d.versions.length?'':'disabled'}>${d.live?'Pause new starts':'Turn on for everyone'}</button>
+  <span class="tag ${d.live?'live':''}">${d.live?'On':'Off'}</span>${d.pilot?'<span class="tag warn">Trial on one record</span>':''}</div>
+  <h3>Versions</h3>${d.versions.map(v=>`<div class="row small"><b>Version ${v.n}</b><span class="muted grow">${esc(v.note)} · ${esc(v.by)} · ${esc(v.on)}</span><button class="btn sm" data-act="restore">Use as draft</button></div>`).join('')||'<span class="muted small">Your first version will appear here.</span>'}</div>`;}
+
+/* ---------- activity: one record + where time goes ---------- */
+function autoRun(){const d=cur(),r=d.record,st=d.stages[r.stage];if(!st)return;const route=st.native.find(n=>n.route);if(route&&r.seat<route.route.length)return;for(const id of st.steps){if(r.done.includes(id))continue;if(HUMAN.includes(d.steps[id].type))return;r.done.push(id);}}
+function recItems(i){const d=cur(),st=d.stages[i],r=d.record,out=[];
+ st.native.filter(n=>n.route).forEach(n=>n.route.forEach((seat,k)=>out.push({key:'seat'+k,who:seat[1],what:`${seat[0]} check`,done:i<r.stage||k<r.seat})));
+ st.steps.forEach(id=>out.push({key:id,who:d.steps[id].who,what:d.steps[id].title,done:r.done.includes(id),auto:!HUMAN.includes(d.steps[id].type)}));return out;}
+function recFinished(){const d=cur(),r=d.record;return r.stage>=d.stages.length||(r.stage===d.stages.length-1&&!recItems(r.stage).some(x=>!x.done));}
+function activityTab(){const d=cur(),r=d.record,fin=recFinished(),pending=fin?[]:recItems(r.stage).filter(x=>!x.done&&!x.auto),nx=d.stages[r.stage+1];
+ const line=fin?'Everything is finished for this record.':pending.length?`Waiting for ${pending[0].who}: ${low(pending[0].what)}.`:nx&&nx.kind==='yours'&&nx.enter==='person'?`Waiting for ${nx.enterWho} to move it to ${nx.name}.`:`Nobody is holding this up. Next: ${nx?low(gateText(nx,r.stage+1)):'the last step finishes'}.`;
+ const max=Math.max(...d.time.map(t=>t[1]),1);
+ return `<section class="hero"><div><p class="small muted">${esc(r.name)} · ${esc(r.sub)}</p><p class="line">${esc(line)}</p></div><div class="row"><button class="btn" data-act="nudge">Send a reminder</button><button class="btn" data-act="runmenu">Hold, hand to someone else, cancel</button><button class="btn primary" data-act="forward">Play the next thing (demo)</button></div></section>
+ <div class="boardwrap"><div class="board l-board">${d.stages.map((st,i)=>{const state=i<r.stage||fin?'done':i===r.stage?'now':'next';
+  return `<section class="stage ${state==='now'?'here':''}"><div class="stagehead"><div class="stagename"><span class="n ${state==='done'?'done':''}">${state==='done'?ic('check'):i+1}</span>${esc(st.name)}<span class="state st-${state}" style="margin-left:auto">${{done:'Done',now:'Here now',next:'Later'}[state]}</span></div></div>
+   <div class="stagebody">${st.native.map(n=>nativeRow(n,n.route?`<span style="display:block;margin-top:4px">${n.route.map((seat,k)=>{const sd=i<r.stage||(i===r.stage&&k<r.seat),sn=i===r.stage&&k===r.seat;return `<span class="seat"><span class="state st-${sd?'done':sn?'now':'next'}">${sd?'Approved':sn?'Deciding':'Later'}</span>${esc(seat[0])} · ${esc(seat[1])}</span>`;}).join('')}</span>`:' ')).join('')}
+   <div class="steps">${st.steps.map(id=>stepCard(id,false,r.done.includes(id)?'done':state==='now'&&pending[0]?.key===id?'now':'next')).join('')||(st.native.length?'':'<p class="small muted">No steps here.</p>')}</div></div></section>`;}).join('')}</div></div>
+ <div class="card" style="display:grid;gap:8px;max-width:820px"><h3>Where the time goes <span class="tag new">New</span></h3><p class="small muted">Average days a record spends in each stage, last 90 days. The slowest stage is marked.</p>
+  ${d.time.map(t=>`<div class="row small"><span style="width:150px">${esc(t[0])}</span><span class="grow"><span class="bar ${t[1]===max?'slow':''}" style="display:block;width:${Math.max(2,t[1]/max*100)}%"></span></span><span style="width:60px;text-align:right;font-variant-numeric:tabular-nums">${t[1].toFixed(1)} d</span></div>`).join('')}</div>`;}
+function forward(){const d=cur(),r=d.record;if(recFinished()){r.stage=1;r.done=r.done.slice(0,1);r.seat=0;render();return toast('Demo restarted.');}
+ const st=d.stages[r.stage],route=st.native.find(n=>n.route);
+ if(route&&r.seat<route.route.length){const seat=route.route[r.seat];r.seat++;autoRun();render();return toast(`${seat[1]} approved.`);}
+ const next=st.steps.find(id=>!r.done.includes(id));
+ if(next){r.done.push(next);autoRun();render();return toast(`“${d.steps[next].title}” is done.`);}
+ r.stage++;r.seat=0;autoRun();render();toast(r.stage<d.stages.length?`Moved to ${d.stages[r.stage].name}.`:'Finished.');}
+
+/* ---------- my work ---------- */
+function inboxView(){const rows=INBOX.filter(x=>!x.gone&&(S.inbox==='all'||x.kind===S.inbox)),open=INBOX.find(x=>x.id===S.open&&!x.gone);
+ return `<div><h1>My work</h1><p class="muted">Approvals, tasks and forms in one list.</p></div>
+ <div class="seg" role="group" aria-label="Show">${[['all','Everything'],['approval','Approvals'],['task','Tasks'],['form','Forms']].map(c=>`<button data-act="inbox" data-k="${c[0]}" aria-pressed="${S.inbox===c[0]}">${c[1]}</button>`).join('')}</div>
+ <div class="inbox ${open?'open':''}"><div class="list">${rows.map(x=>`<button class="item ${S.open===x.id?'sel':''}" data-act="openitem" data-id="${x.id}"><span class="badge ${T[x.kind][2]}">${ic(x.kind)}</span><span style="min-width:0"><b>${esc(x.title)}</b><br><span class="small muted">${esc(x.sub)}</span></span><span class="due">${esc(x.due)}</span></button>`).join('')||'<p class="muted">All done. Nothing is waiting for you.</p>'}</div>${open?itemPanel(open):''}</div>`;}
+function itemPanel(x){if(x.kind==='form'){const f=S.form,e=S.err,er=k=>e[k]?`<span class="errt">${esc(e[k])}</span>`:'';
+  return `<form class="card form" id="taskform" novalidate><div><h2>${esc(x.title)}</h2><p class="small muted">${esc(x.sub)} · about 1 minute</p></div>
+  <div class="f"><label for="f-what">What was it for? <span class="req">*</span></label><input type="text" id="f-what" value="${esc(f.what||'')}">${er('what')}</div>
+  <div class="f"><label for="f-amt">Amount on the receipt (₫) <span class="req">*</span></label><input type="number" id="f-amt" min="0" inputmode="numeric" value="${esc(f.amt||'')}">${er('amt')}</div>
+  <div class="f"><label for="f-date">Date on the receipt <span class="req">*</span></label><input type="date" id="f-date" value="${esc(f.date||'')}">${er('date')}</div>
+  <div class="f"><label for="f-type">Type of cost</label><select id="f-type">${['Travel','Meals','Client entertainment','Office supplies'].map(o=>`<option ${f.type===o?'selected':''}>${o}</option>`).join('')}</select></div>
+  <fieldset><legend>Do you have the paper receipt? <span class="req">*</span></legend><div class="yn"><button type="button" data-act="yn" data-v="yes" aria-pressed="${f.paper==='yes'}">Yes</button><button type="button" data-act="yn" data-v="no" aria-pressed="${f.paper==='no'}">No</button></div>${er('paper')}</fieldset>
+  ${f.paper==='no'?`<div class="f"><label for="f-why">Why not? <span class="req">*</span></label><input type="text" id="f-why" value="${esc(f.why||'')}">${er('why')}</div>`:''}
+  <div class="f"><label for="f-file">Photo of the receipt</label><input type="file" id="f-file" accept="image/*,application/pdf"></div>
+  <div class="row" style="justify-content:flex-end"><button type="button" class="btn" data-act="later">Save for later</button><button type="submit" class="btn primary">Send</button></div></form>`;}
+ return `<div class="card form"><div><h2>${esc(x.title)}</h2><p class="small muted">${esc(x.sub)} · ${esc(x.due)}</p></div>
+  <p>${x.kind==='approval'?'Receipt details are filled in. You are the first of two people to check this claim.':'When you have done this, mark it done and the process moves to the next step.'}</p>
+  <div class="row" style="justify-content:flex-end"><button class="btn" data-act="finish" data-msg="Handed to someone else. They have it in their list now.">Hand to someone else</button>${x.kind==='approval'?`<button class="btn" data-act="finish" data-msg="Sent back to the employee with your note.">Send back</button><button class="btn primary" data-act="finish" data-msg="Approved. Finance is next.">Approve</button>`:`<button class="btn primary" data-act="finish" data-msg="Marked done. The process moves on.">Mark as done</button>`}</div></div>`;}
+function readForm(){for(const k of ['what','amt','date','type','why']){const el=document.getElementById('f-'+k);if(el)S.form[k]=el.value;}}
+function sendForm(){readForm();const f=S.form,e={};if(!f.what?.trim())e.what='Say what the cost was for.';if(!(Number(f.amt)>0))e.amt='Enter the amount on the receipt.';if(!f.date)e.date='Choose the date on the receipt.';if(!f.paper)e.paper='Choose Yes or No.';if(f.paper==='no'&&!f.why?.trim())e.why='Say why there is no paper receipt.';
+ S.err=e;if(Object.keys(e).length){render();document.getElementById('f-'+Object.keys(e)[0])?.focus();return toast('A few answers are still needed.',false,true);}
+ INBOX.find(x=>x.id===S.open).gone=true;S.open=null;S.form={};render();toast('Sent. Your claim moves on to approval.');}
+
+/* ---------- what's covered ---------- */
+const COVER=[
+ ['Starting a workflow'],
+ ['A person starts it','y','y'],['When a record is created, a field changes, or a date arrives','y','y'],['After an approval is finished','y','y'],['On a schedule, such as every Monday','n','d'],['Only for matching records','y','y'],['Several workflows for the same kind of record','n','d'],
+ ['Stages'],
+ ['See the record’s real stages','y','y'],['Add your own stage without programming','n','y'],['Choose how a record enters a stage: by itself, by a person, by a rule','n','y'],['Hold a record in a stage until its steps are finished','n','y'],['Target time per stage, and where time goes','n','y'],['Rename a shared stage','p','y'],['Headings that only group steps (Sections today)','y','y'],
+ ['Steps'],
+ ['Form with many question types, save and come back','y','y'],['Task with a due date','y','y'],['Approval from Approval Matrix','y','y'],['Message from a saved template','y','y'],['Different paths, and work at the same time','y','y'],['Wait for a time, a date or a rule','y','y'],['Saved groups of steps','y','y'],['Move the record to a stage','p','y'],['Send back for changes','p','y'],['Update the record, create a task or letter','n','y'],['In-app notice, ask someone to confirm','n','y'],['Repeat for each line, start another workflow, stop early','n','y'],
+ ['People'],
+ ['A named person, a role, the manager, a person on the record','y','y'],['A team where anyone can pick it up, the manager’s manager','n','y'],['Reminders, backups and passing it on when late','n','y'],['Hand a task to someone else','n','y'],['Employees and people without a staff login can take part','n','d'],['One list for approvals, tasks and forms','n','y'],
+ ['Control'],
+ ['Journey, Across, Flowchart and People views','y','y'],['By stage view','n','y'],['Drag to reorder with Undo','y','y'],['Try with example values','y','y'],['Draft, publish, versions, go back to an old version','y','y'],['Try on one record before everyone','p','y'],['Warning before doing something the app already does','p','y'],['Hold, cancel or retry a record’s run','y','d'],['Vietnamese and Indonesian wording','n','d']];
+function coverView(){const pill=(v,proto)=>v==='y'?`<span class="tag live">${proto?'Shown here':'Yes'}</span>`:v==='p'?'<span class="tag warn">Partly</span>':v==='d'?'<span class="tag yours">Designed, not clickable</span>':'<span class="tag">No</span>';
+ return `<div><h1>What a good workflow tool should cover</h1><p class="muted" style="max-width:70ch">Everything the Studio does today is kept. The right column shows what this proposal adds. The list is drawn from what leading workflow products are known for; it was not re-checked against each vendor.</p></div>
+ <div class="tw"><table><thead><tr><th>Feature</th><th>In the Studio today</th><th>In this proposal</th></tr></thead><tbody>${COVER.map(r=>r.length===1?`<tr class="grp"><td colspan="3">${esc(r[0])}</td></tr>`:`<tr><td>${esc(r[0])}</td><td>${pill(r[1])}</td><td>${pill(r[2],1)}</td></tr>`).join('')}</tbody></table></div>`;}
+
+/* ---------- shell ---------- */
+function editor(){const d=cur();
+ return `<div class="seg" role="group" aria-label="Example process">${Object.entries(EX).map(([k,v])=>`<button data-act="ex" data-k="${k}" aria-pressed="${S.ex===k}">${esc(v.label)}</button>`).join('')}</div>
+ <div class="card head"><div class="row"><span class="badge c-brand">${ic('flow')}</span><div class="grow"><h1>${esc(d.label.replace('New process: ','').replace(/^./,c=>c.toUpperCase()))} workflow</h1><span class="small muted">${esc(d.area==='you'?'Your own process':d.area)} · ${Object.keys(d.steps).length} steps · ${d.stages.length} stages</span></div>
+  <span class="tag ${d.live?'live':''}">${d.live?'On':d.versions.length?'Published, off':'Draft'}</span><button class="btn sm" data-act="undo">${ic('back')} Undo</button></div>
+  <div class="etabs">${[['build','Build','flow'],['try','Try it out','start'],['review','Review','approval'],['activity','Activity','list']].map(t=>`<button data-act="tab" data-t="${t[0]}" aria-pressed="${S.tab===t[0]}">${ic(t[2])}${t[1]}</button>`).join('')}</div></div>
+ ${S.tab==='build'?buildTab():S.tab==='try'?tryTab():S.tab==='review'?reviewTab():activityTab()}`;}
+function render(){
+ document.getElementById('mark').innerHTML=ic('flow');
+ document.getElementById('nav').innerHTML=[['editor','Workflow','flow'],['inbox','My work','inbox'],['cover','What is covered','list']].map(t=>`<button data-act="page" data-p="${t[0]}" aria-pressed="${S.page===t[0]}">${ic(t[2])}${t[1]}</button>`).join('');
+ document.getElementById('view').innerHTML=S.page==='editor'?editor():S.page==='inbox'?inboxView():coverView();
+ document.getElementById('sheet').innerHTML=S.page==='editor'?stageSheet():'';}
+function addStep(type){const d=cur(),stage=Math.min(S.addTo,d.stages.length-1);snap();const id='x'+Date.now().toString(36);
+ d.steps[id]={type,title:T[type][0],who:type==='task'||type==='approval'?'Manager':['form','confirm'].includes(type)?'Employee':'Automatic',...(HUMAN.includes(type)?{due:'2 working days',late:LATE[0]}:{}),...(type==='form'?{qs:[['First question','Short answer',1]]}:{}),...(type==='path'?{paths:[{label:'First case',steps:[]},{label:'Otherwise',steps:[]}]}:{}),...(type==='parallel'?{paths:[{label:'Lane 1',steps:[]},{label:'Lane 2',steps:[]}]}:{})};
+ d.stages[stage].steps.push(id);S.sel=id;S.warn=null;
+ const all=d.stages.flatMap(st=>st.native.map(n=>[st,n])),clash=type==='email'?d.stages[stage].native.find(n=>n.k==='email'):type==='approval'?(all.find(x=>x[1].k==='approval')||[])[1]:null;
+ if(clash){S.warn=id;S.warnText=type==='email'?`${d.area} already sends “${clash.text}” at this stage. People would get two messages.`:`${d.area} already asks for approval: “${clash.text}”. A second approval step would ask the same people twice.`;}
+ if(['journey','board','flow'].includes(S.view)===false)S.view='journey';
+ render();document.querySelector('.side input[data-f="title"]')?.select();}
+function move(id,toStage,index){const d=cur(),from=place(id);if(!from)return;const backup=JSON.stringify(d);
+ d.stages[from[0]].steps.splice(from[1],1);if(from[0]===toStage&&from[1]<index)index--;
+ index=Math.max(0,Math.min(index,d.stages[toStage].steps.length));
+ if(from[0]===toStage&&from[1]===index){d.stages[from[0]].steps.splice(from[1],0,id);return;}
+ d.stages[toStage].steps.splice(index,0,id);const problem=check();
+ if(problem){EX[S.ex]=JSON.parse(backup);render();return toast(problem,false,true);}
+ S.hist.push(JSON.stringify({ex:S.ex,data:JSON.parse(backup)}));render();
+ toast(`Moved “${d.steps[id].title}” to ${d.stages[toStage].name}. It now runs in that order.`,true);document.querySelector(`.step[data-id="${id}"]`)?.focus();}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');
+ if(!b){const pick=e.target.closest('[data-pick]');if(pick){S.sel=pick.dataset.pick;return render();}
+  const st=e.target.closest('.step[data-id][tabindex]');if(st&&!dragged){S.sel=st.dataset.id;render();}return;}
+ const a=b.dataset.act,d=cur();
+ if(a==='stagesclose'){if(e.target.closest('[data-stop]')&&!e.target.closest('button[data-act="stagesclose"]'))return;S.stages=false;S.ns=null;}
+ else if(stageOp(a,b)){}
+ else if(a==='page'){S.page=b.dataset.p;S.sel=null;S.stages=false;}
+ else if(a==='tab'){S.tab=b.dataset.t;S.sel=null;}
+ else if(a==='ex'){S.ex=b.dataset.k;S.sel=null;S.warn=null;S.addTo=0;S.ns=null;}
+ else if(a==='view')S.view=b.dataset.v;
+ else if(a==='zoom')S.zoom=Math.max(.6,Math.min(1.4,S.zoom+Number(b.dataset.z)));
+ else if(a==='people')S.people=!S.people;
+ else if(a==='stages')S.stages=true;
+ else if(a==='undo')return undo();
+ else if(a==='selstart')S.sel='start';
+ else if(a==='addto'){S.addTo=Number(b.dataset.stage);render();const p=document.getElementById('palette');p.classList.add('flash');p.scrollIntoView({block:'nearest',behavior:'smooth'});setTimeout(()=>p.classList.remove('flash'),1200);return toast(`Pick a step on the left to add to “${d.stages[S.addTo].name}”.`);}
+ else if(a==='add')return addStep(b.dataset.type);
+ else if(a==='close')S.sel=null;
+ else if(a==='keep'){S.kept.push(S.sel);S.warn=null;toast('Kept. Review will list it before you turn the workflow on.');}
+ else if(a==='remove'){snap();const p=place(S.sel);if(p)d.stages[p[0]].steps.splice(p[1],1);delete d.steps[S.sel];S.kept=S.kept.filter(x=>x!==S.sel);S.sel=null;S.warn=null;render();return toast('Step removed.',true);}
+ else if(a==='dup'){snap();const p=place(S.sel),id='x'+Date.now().toString(36);d.steps[id]=JSON.parse(JSON.stringify(d.steps[S.sel]));d.steps[id].title+=' (copy)';d.stages[p[0]].steps.splice(p[1]+1,0,id);S.sel=id;}
+ else if(a==='addq'){snap();d.steps[S.sel].qs.push(['New question','Short answer',0]);}
+ else if(a==='addpath'){snap();const s=d.steps[S.sel];s.paths.splice(s.type==='path'?s.paths.length-1:s.paths.length,0,{label:s.type==='path'?'Another case':'Lane '+(s.paths.length+1),steps:[]});}
+ else if(a==='setrule'||a==='clearrule'){const r=a==='setrule'?readRule():null;if(a==='setrule'&&!r)return;const t=b.dataset.target;if(t==='ns'){readNs();S.ns.rule=r;}else{snap();if(t==='start')d.rule=r;else d.steps[S.sel].when=r;}}
+ else if(a==='matrix')return toast('In the real app this opens Approval Matrix on this route, and brings you back to this exact step.');
+ else if(a==='msgedit')return toast('In the real app this opens the message editor that exists today, and brings you back here.');
+ else if(a==='simulate'){document.querySelectorAll('[data-tv]').forEach(el=>S.tv[S.ex][el.dataset.tv]=el.value);S.preview=S.ex;}
+ else if(a==='publish'){d.versions.unshift({n:(d.versions[0]?.n||0)+1,note:document.getElementById('v-note').value.trim()||'Published',by:'You',on:'today'});toast(`Version ${d.versions[0].n} published. It is not on yet.`);}
+ else if(a==='pilot'){d.pilot=!d.pilot;toast(d.pilot?'Running for one record only. Everyone else is unaffected.':'Trial stopped.');}
+ else if(a==='live'){d.live=!d.live;if(d.live)d.pilot=false;toast(d.live?'On. New records follow this version.':'Paused. Records already in progress carry on.');}
+ else if(a==='restore')return toast('That version is now your draft. Nothing live has changed.');
+ else if(a==='nudge')return toast('Reminder sent (demo only, nothing was really sent).');
+ else if(a==='runmenu')return toast('Here you could hold this record, hand the current task to someone else, or cancel the run.');
+ else if(a==='forward')return forward();
+ else if(a==='inbox'){S.inbox=b.dataset.k;S.open=null;}
+ else if(a==='openitem'){S.open=b.dataset.id;S.err={};}
+ else if(a==='yn'){readForm();S.form.paper=b.dataset.v;}
+ else if(a==='later'){readForm();S.open=null;render();return toast('Saved. You can finish it later from My work.');}
+ else if(a==='finish'){INBOX.find(x=>x.id===S.open).gone=true;S.open=null;render();return toast(b.dataset.msg);}
+ render();});
+document.addEventListener('submit',e=>{if(e.target.id==='taskform'){e.preventDefault();sendForm();}});
+document.addEventListener('change',e=>{const t=e.target,d=cur();
+ if(t.id==='pal-stage'){S.addTo=Number(t.value);return;}
+ if(t.id==='i-event'){snap();d.event=t.value;return render();}
+ if(t.dataset.sname){const v=t.value.trim();if(v){snap();d.stages[Number(t.dataset.sname)].name=v.slice(0,40);render();}return;}
+ const s=d.steps[S.sel];if(!s)return;
+ if(t.dataset.f==='_stage'){const to=d.stages.findIndex(x=>x.name===t.value);return move(S.sel,to,d.stages[to].steps.length);}
+ if(t.dataset.f){snap();s[t.dataset.f]=t.type==='checkbox'?t.checked:t.value;if(t.dataset.f==='title'&&!t.value.trim())s.title=T[s.type][0];return render();}
+ if(t.dataset.q){snap();s.qs[Number(t.dataset.q)][0]=t.value;return render();}
+ if(t.dataset.qt){snap();s.qs[Number(t.dataset.qt)][1]=t.value;return render();}});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&S.stages){S.stages=false;S.ns=null;return render();}
+ if((e.metaKey||e.ctrlKey)&&e.key==='z'&&!e.target.closest('input,textarea,select')){e.preventDefault();return undo();}
+ if(e.target.matches?.('[data-pick]')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();S.sel=e.target.dataset.pick;return render();}
+ const st=e.target.closest?.('.step[data-id][tabindex]');if(!st||e.target!==st)return;const id=st.dataset.id,p=place(id);
+ if(e.key==='Enter'||e.key===' '){e.preventDefault();S.sel=id;render();return;}
+ if(!e.altKey||!p)return;const n=cur().stages.length,vert=S.view!=='board',prev=vert?'ArrowUp':'ArrowLeft',next=vert?'ArrowDown':'ArrowRight';
+ if(!vert&&e.key==='ArrowUp'&&p[1]>0){e.preventDefault();move(id,p[0],p[1]-1);}
+ else if(!vert&&e.key==='ArrowDown'&&p[1]<cur().stages[p[0]].steps.length-1){e.preventDefault();move(id,p[0],p[1]+2);}
+ else if(vert&&e.key===prev){e.preventDefault();if(p[1]>0)move(id,p[0],p[1]-1);else if(p[0]>0)move(id,p[0]-1,cur().stages[p[0]-1].steps.length);}
+ else if(vert&&e.key===next){e.preventDefault();if(p[1]<cur().stages[p[0]].steps.length-1)move(id,p[0],p[1]+2);else if(p[0]<n-1)move(id,p[0]+1,0);}
+ else if(!vert&&e.key===prev&&p[0]>0){e.preventDefault();move(id,p[0]-1,cur().stages[p[0]-1].steps.length);}
+ else if(!vert&&e.key===next&&p[0]<n-1){e.preventDefault();move(id,p[0]+1,0);}});
+
+/* ---------- drag with mouse, pen or finger ---------- */
+let drag=null,dragged=false;
+document.addEventListener('pointerdown',e=>{if(S.page!=='editor'||S.tab!=='build'||!['journey','board','flow'].includes(S.view))return;const card=e.target.closest('.step[data-id][tabindex]');if(!card)return;
+ const onGrip=e.target.closest('[data-grip]');if(!onGrip&&e.pointerType!=='mouse')return;if(e.button)return;
+ drag={id:card.dataset.id,x:e.clientX,y:e.clientY,card,on:false};dragged=false;});
+document.addEventListener('pointermove',e=>{if(!drag)return;
+ if(!drag.on){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<7)return;drag.on=true;dragged=true;drag.ghost=drag.card.cloneNode(true);drag.ghost.classList.add('ghost-card');document.body.appendChild(drag.ghost);drag.card.classList.add('dragging');drag.line=document.createElement('div');drag.line.className='dropline';}
+ e.preventDefault();drag.ghost.style.left=e.clientX+10+'px';drag.ghost.style.top=e.clientY+8+'px';
+ const stage=document.elementFromPoint(e.clientX,e.clientY)?.closest('.stage[data-stage]');drag.to=null;
+ if(!stage){drag.line.remove();return;}
+ const list=stage.querySelector('[data-list]'),cards=[...list.querySelectorAll(':scope > .step:not(.dragging)')];
+ let at=cards.findIndex(c=>{const r=c.getBoundingClientRect();return e.clientY<r.top+r.height/2;});if(at<0)at=cards.length;
+ list.insertBefore(drag.line,cards[at]||null);
+ const all=[...list.querySelectorAll(':scope > .step')],ref=cards[at];drag.to=[Number(stage.dataset.stage),ref?all.indexOf(ref):all.length];},{passive:false});
+function endDrag(){if(!drag)return;const d=drag;drag=null;if(!d.on)return;d.ghost.remove();d.line.remove();d.card.classList.remove('dragging');
+ if(d.to)move(d.id,d.to[0],d.to[1]);setTimeout(()=>dragged=false,0);}
+document.addEventListener('pointerup',endDrag);document.addEventListener('pointercancel',endDrag);
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(S.page==='editor'&&S.tab==='build'&&S.view==='across')render();},150);});
+render();
+</script>
+</body>
+</html>

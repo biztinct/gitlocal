@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+  <!-- ==================================================================
+       WHAT IS DELIBERATELY NOT HERE
+       ==================================================================
+       No ir.model.access row and no ir.rule for hr.shift.planning or
+       hr.overtime.request. Both are officer models with no base.group_user
+       ACL (pb_hr_workforce/security/ir.model.access.csv), and P8 keeps it
+       that way: the portal reads them SUDO, scoped to the employee the
+       facade resolved from the session, so the widening is one employee
+       wide and lasts one request. Adding an ACL row would open the model
+       to every internal user and then rely on a record rule to close it
+       again — strictly more surface for strictly no gain, since no ESS
+       page reads those models through a generic ORM call.
+
+       No new rule for hr.attendance.correction either: pb_attendance_flow
+       already ships `correction_rule_user_own_and_reports` (own + direct
+       reports) for base.group_user, with the matching ACL row. The portal
+       creates through it AS THE REAL USER and the model's own create path
+       is what stamps create_uid. What P8 adds is the target FORCING, and
+       that lives in pb.ess.workforce.request_fix, not in a rule — a rule
+       can only refuse a bad value, it cannot decide what the right one is
+       (I-H3).
+       ================================================================== -->
+
+  <!-- The employee's own shift acknowledgment lives on hr.shift.planning
+       and is written only through the sentinel (see shift_planning_ack.py).
+       There is no group that may write it, on purpose. -->
+
+</odoo>

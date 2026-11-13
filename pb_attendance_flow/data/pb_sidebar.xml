@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- UNFROZEN by Workforce P1a (W13/W13.1): this file shipped noupdate="1", so
+     `-u pb_attendance_flow` silently applied nothing to the record below. The
+     attribute flip only changes what a FRESH install records; on every existing
+     database the stored `ir_model_data.noupdate` flag has to be cleared too —
+     that is what migrations/19.0.1.0.4/post-migrate.py does. -->
+<odoo noupdate="0">
+    <!-- RETIRED by Workforce P1a: absorbed into the Time hub as its Exceptions
+         and Import lenses (the same component, mounted twice with
+         embedded="true"). The client action stays alive for P1b to retire;
+         only the rail entry goes. Sequence 25 collides with nothing, so it is
+         left where it is. -->
+    <record id="item_attendance_control" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Attendance Control</field>
+        <field name="icon">clock</field>
+        <field name="sequence">25</field>
+        <field name="action_xmlid">pb_attendance_flow.action_pb_attendance_flow</field>
+        <field name="action_tag">pb_attendance_flow</field>
+        <field name="match_action_tags">pb_attendance_flow</field>
+        <field name="active" eval="False"/>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer'), ref('hr_attendance.group_hr_attendance_manager'), ref('om_hr_payroll.group_hr_payroll_manager'), ref('hr.group_hr_manager')])]"/>
+    </record>
+</odoo>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payobook — Option A · Skinned Native</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css"/>
+<link rel="stylesheet" href="assets/palettes.css"/>
+<link rel="stylesheet" href="assets/app.css"/>
+<style>
+  /* Option A — keep the native Odoo feel: tidy lists, classic forms, just themed */
+  .a-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .line-tbl td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
+  .line-tbl tr.total td{border-top:2px solid var(--pb-border);font-weight:800;background:var(--pb-surface-2);}
+  .stat-btns{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+  .stat-btn{display:flex;align-items:center;gap:10px;border:1px solid var(--pb-border);background:var(--pb-surface);border-radius:12px;padding:10px 16px;cursor:pointer;}
+  .stat-btn .n{font-size:18px;font-weight:800;color:var(--pb-brand);} .stat-btn .l{font-size:11px;color:var(--pb-muted);text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+  .backlink{color:var(--pb-muted);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;gap:6px;align-items:center;margin-bottom:12px;}
+  .backlink:hover{color:var(--pb-brand);}
+</style>
+</head>
+<body>
+<div id="app-root"></div>
+<script src="assets/data.js"></script>
+<script>
+const $ = (id)=>document.getElementById(id);
+
+function statusbar(states, current){
+  const order = states.map(s=>s.k);
+  const curIdx = order.indexOf(current);
+  return `<div class="statusbar">`+states.map((s,i)=>{
+    const cls = i<curIdx ? "done-st" : (i===curIdx?"cur":"");
+    return `<div class="st ${cls}">${s.l}</div>`;
+  }).join("")+`</div>`;
+}
+
+const PAYSLIP_STATES=[{k:"draft",l:"Draft"},{k:"level1",l:"HR Manager pending"},{k:"level2",l:"GM pending"},{k:"done",l:"Done"}];
+const FORMULA_STATES=[{k:"draft",l:"Draft"},{k:"testing",l:"Testing"},{k:"validated",l:"Validated"},{k:"active",l:"Active"}];
+
+/* ---- payslip line items synthesised from the record ---- */
+function slipLines(p){
+  const basic=Math.round(p.gross*0.72), allow=Math.round(p.gross*0.16), ot=Math.round(p.gross*0.07), bonus=p.gross-basic-allow-ot;
+  return [
+    ["Lương cơ bản (Basic salary)","MCLNGHL",basic],
+    ["Phụ cấp (Allowances)","PHCPPCCC",allow],
+    ["Lương tăng ca (Overtime)","LNGTNGCA",ot],
+    ["Thưởng HQCV (Performance bonus)","NHMCHQCV",bonus],
+    ["— Tổng thu nhập (Gross)","GROSS",p.gross,"sub"],
+    ["BHXH-BHYT-BHTN (Social insurance)","BHXH",-p.si],
+    ["Thuế TNCN (Personal income tax)","TNCN",-p.pit],
+    ["Thực nhận (Net pay)","NET",p.net,"total"],
+  ];
+}
+
+const A = {
+  /* ---- Payslip: list <-> form ---- */
+  openSlip(id){
+    const p = PB.payslips.find(x=>x.id===id);
+    const lines = slipLines(p);
+    $("wf-run").innerHTML = `
+      <div class="backlink" onclick="A.runList()">← Employee Payslips</div>
+      <div class="a-actions mb-4">
+        <button class="btn btn-ghost">↩ Refund</button>
+        <button class="btn btn-ghost">✖ Cancel Payslip</button>
+        <button class="btn btn-soft">${PB.icon('mail',15)} Send E-Mail</button>
+        <button class="btn btn-primary">${PB.icon('printer',14)} Print Payslip</button>
+        <button class="btn btn-soft">${PB.icon('refresh',14)} Recompute Formulas</button>
+        <div style="flex:1"></div>
+        ${statusbar(PAYSLIP_STATES, p.state)}
+      </div>
+      <div class="form-hero mb-4">
+        <div class="av">${PB.initials(p.emp)}</div>
+        <div><div class="h-title">${p.emp}</div><div class="h-sub">${p.title} · ${p.dept} · ${PB.run.period}</div></div>
+        <div class="h-right"><div style="font-size:12px;color:#C9BEF0">Net pay</div><div style="font-size:22px;font-weight:800">${PB.fmtFull(p.net)}</div></div>
+      </div>
+      ${p.flag?`<div class="card card-pad mb-4" style="border-left:3px solid var(--pb-warn);background:var(--pb-warn-tint)">
+        <strong>${PB.icon('alert',14)} Needs attention:</strong> ${p.flag}</div>`:""}
+      <div class="grid-2 mb-4">
+        <div class="sec-card"><h4>Employee &amp; Period</h4>
+          <div class="f-grid">
+            <span class="lab">Employee</span><span class="val link">${p.emp}</span>
+            <span class="lab">Period</span><span class="val">${PB.run.period}</span>
+            <span class="lab">Contract</span><span class="val link">${p.emp} — 2026-02-01</span>
+            <span class="lab">Structure</span><span class="val link">${PB.run.structure}</span>
+          </div>
+        </div>
+        <div class="sec-card"><h4>Status</h4>
+          <div class="f-grid">
+            <span class="lab">Company</span><span class="val">${PB.run.company}</span>
+            <span class="lab">Currency</span><span class="val">VND</span>
+            <span class="lab">Batch</span><span class="val link">${PB.run.name}</span>
+            <span class="lab">State</span><span class="val">${PB.badge(p.state)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="tabs" id="slip-tabs">
+        <button class="active" data-t="comp">Salary Computation</button>
+        <button data-t="worked">Worked Days &amp; Inputs</button>
+        <button data-t="cat">Details by Category</button>
+        <button data-t="json">Formula JSON</button>
+      </div>
+      <div id="slip-tab-body"></div>`;
+    A._slipP = p;
+    A.slipTab("comp");
+    document.querySelectorAll("#slip-tabs button").forEach(b=>b.onclick=()=>{
+      document.querySelectorAll("#slip-tabs button").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active"); A.slipTab(b.dataset.t);
+    });
+  },
+  slipTab(t){
+    const p=A._slipP, lines=slipLines(p), body=$("slip-tab-body");
+    if(t==="comp"){
+      body.innerHTML = `<div class="tbl-wrap"><table class="tbl line-tbl">
+        <thead><tr><th>Description</th><th>Code</th><th style="text-align:right">Amount (VND)</th></tr></thead>
+        <tbody>${lines.map(l=>`<tr class="${l[3]==='total'?'total':''}">
+          <td ${l[3]==='sub'?'style="font-weight:700"':''}>${l[0]}</td><td class="mono muted">${l[1]}</td>
+          <td class="amt" style="${l[2]<0?'color:var(--pb-danger)':''}">${l[2]<0?'-':''}${Math.abs(l[2]).toLocaleString('en-US')}</td></tr>`).join("")}
+        </tbody></table></div>`;
+    } else if(t==="worked"){
+      body.innerHTML = `<div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Description</th><th>Code</th><th style="text-align:right">Days/Hours</th></tr></thead>
+        <tbody>
+        <tr><td>Công đi làm ngày thường (Worked days)</td><td class="mono muted">CNGILMNGYTHNG</td><td class="amt">22</td></tr>
+        <tr><td>Tăng ca ngày thường (Overtime hours)</td><td class="mono muted">TNGCANGYTHNG</td><td class="amt">8</td></tr>
+        <tr><td>Phép năm (Annual leave)</td><td class="mono muted">PHPNM</td><td class="amt">1</td></tr>
+        </tbody></table></div>`;
+    } else if(t==="cat"){
+      body.innerHTML = `<div class="grid-2">
+        <div class="sec-card"><h4>Earnings</h4><div class="f-grid">
+          <span class="lab">Basic</span><span class="val mono">${Math.round(p.gross*0.72).toLocaleString()}</span>
+          <span class="lab">Allowances</span><span class="val mono">${Math.round(p.gross*0.16).toLocaleString()}</span>
+          <span class="lab">Gross</span><span class="val mono" style="font-weight:800">${p.gross.toLocaleString()}</span>
+        </div></div>
+        <div class="sec-card"><h4>Deductions</h4><div class="f-grid">
+          <span class="lab">Insurance</span><span class="val mono">${p.si.toLocaleString()}</span>
+          <span class="lab">Income tax</span><span class="val mono">${p.pit.toLocaleString()}</span>
+          <span class="lab">Net</span><span class="val mono" style="font-weight:800;color:var(--pb-accent-600)">${p.net.toLocaleString()}</span>
+        </div></div></div>`;
+    } else {
+      body.innerHTML = `<div class="card card-pad"><pre style="margin:0;font-size:12px;color:var(--pb-ink-2);white-space:pre-wrap">{
+  "MCLNGHL": ${Math.round(p.gross*0.72)},
+  "PHCPPCCC": ${Math.round(p.gross*0.16)},
+  "BHXH": ${p.si},
+  "TNCN": ${p.pit},
+  "NET": ${p.net}
+}</pre></div>`;
+    }
+  },
+  runList(){ $("wf-run").innerHTML = WF.run.render(); WF.run.mounted($("wf-run")); },
+
+  /* ---- Formula: list <-> form, + import drawer ---- */
+  openConfig(code){
+    const c = PB.formulaConfigs.find(x=>x.code===code);
+    $("wf-formula").innerHTML = `
+      <div class="backlink" onclick="A.formulaList()">← Formula Configurations</div>
+      <div class="a-actions mb-3">
+        <button class="btn btn-ghost">Set to Draft</button>
+        <button class="btn btn-primary" onclick="A.importDrawer()">${PB.icon('upload',15)} Import from Excel</button>
+        <button class="btn btn-soft">${PB.icon('refresh',14)} Regenerate Formulas</button>
+        <button class="btn btn-ghost">Archive</button>
+        <div style="flex:1"></div>
+        ${statusbar(FORMULA_STATES, c.state)}
+      </div>
+      <div class="form-hero mb-4">
+        <div class="av">${PB.icon('calculator',16)}</div>
+        <div><div class="h-title">${c.name} <span style="font-size:13px;opacity:.7">(${c.country})</span></div>
+        <div class="h-sub">Reference ${c.code} · ${c.cycle} · ${c.structure}</div></div>
+        <div class="h-right"><span class="badge b-level1">${c.validation}</span></div>
+      </div>
+      <div class="stat-btns">
+        <div class="stat-btn"><span style="font-size:18px">${PB.icon('upload',15)}</span><div><div class="n">Import</div><div class="l">Payroll data</div></div></div>
+        <div class="stat-btn"><span style="font-size:18px">▦</span><div><div class="n">Grid</div><div class="l">Open Excel grid</div></div></div>
+        <div class="stat-btn"><div><div class="n">${c.formulas}</div><div class="l">Formulas</div></div></div>
+        <div class="stat-btn"><div><div class="n">${c.tests}</div><div class="l">Tests</div></div></div>
+        <div class="stat-btn"><div><div class="n">${c.rules}</div><div class="l">Rules</div></div></div>
+      </div>
+      <div class="grid-2 mb-4">
+        <div class="sec-card"><h4>Configuration</h4><div class="f-grid">
+          <span class="lab">Reference Code</span><span class="val field-edit">${c.code}</span>
+          <span class="lab">Country</span><span class="val">${c.country}</span>
+          <span class="lab">Payroll Structure</span><span class="val link">${c.structure}</span>
+          <span class="lab">Cycle Type</span><span class="val">${c.cycle}</span>
+          <span class="lab">Data Source</span><span class="val">Excel connector <span class="field-auto">auto</span></span>
+        </div></div>
+        <div class="sec-card"><h4>Status</h4><div class="f-grid">
+          <span class="lab">Validation</span><span class="val">${c.validation}</span>
+          <span class="lab">Last Validated</span><span class="val">Feb 21, 6:14 PM</span>
+          <span class="lab">Validated By</span><span class="val link">Mitchell Admin</span>
+          <span class="lab">Currency</span><span class="val link">${c.currency}</span>
+        </div></div>
+      </div>
+      <div class="tabs"><button class="active">Formula Rules (${c.rules})</button><button>Sample Data &amp; Testing</button><button>Test Results</button><button>Grid Settings</button></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Col</th><th>Component</th><th>Code</th><th>Type</th><th>Valid</th></tr></thead>
+        <tbody>${PB.formulaRules.map(r=>`<tr>
+          <td class="mono" style="font-weight:700">${r.col}</td><td>${r.name}</td>
+          <td class="mono muted">${r.code}</td>
+          <td>${r.type==='calc'?'<span class="badge b-violet">Calculated</span>':'<span class="badge b-info">Input</span>'}</td>
+          <td style="color:var(--pb-accent);font-weight:700">✓</td></tr>`).join("")}
+        </tbody></table></div>`;
+  },
+  formulaList(){ $("wf-formula").innerHTML = WF.formula.render(); WF.formula.mounted($("wf-formula")); },
+  importDrawer(){
+    PB.openDrawer(`<div><strong>Import from Excel</strong><div class="muted" style="font-size:12px">Payroll data → ${PB.run.name}</div></div>`, `
+      <div class="rail mb-4">
+        <div class="step done"><div class="dot">✓</div><div class="lab">Upload</div></div><div class="bar"></div>
+        <div class="step cur"><div class="dot">2</div><div class="lab">Map columns</div></div><div class="bar"></div>
+        <div class="step"><div class="dot">3</div><div class="lab">Validate</div></div>
+      </div>
+      <div class="card card-pad mb-3" style="border:2px dashed var(--pb-border);text-align:center">
+        <div style="font-size:30px">${PB.icon('file-text',15)}</div><div style="font-weight:600">April_2026_VPTQ.xlsx</div>
+        <div class="muted" style="font-size:12px">7 rows detected · color-coded import ✓</div>
+      </div>
+      <div class="sec-card mb-3"><h4>Column mapping</h4><div class="f-grid">
+        <span class="lab">Column G</span><span class="val">→ MCLNGHL <span class="field-auto">matched</span></span>
+        <span class="lab">Column H</span><span class="val">→ PHCPPCCC <span class="field-auto">matched</span></span>
+        <span class="lab">Column Y</span><span class="val">→ LNGNGYTH <span class="field-auto">matched</span></span>
+      </div></div>
+      <button class="btn btn-primary btn-lg" style="width:100%" onclick="PB.closeDrawer()">Validate &amp; Import 7 rows →</button>`);
+  },
+
+  /* ---- Analytics tabs ---- */
+  anaTab(t){
+    document.querySelectorAll("#ana-tabs button").forEach(x=>x.classList.remove("active"));
+    document.querySelector(`#ana-tabs button[data-t="${t}"]`).classList.add("active");
+    const b=$("ana-body"), a=PB.analytics;
+    if(t==="cost"){
+      b.innerHTML=`<div class="grid-2">
+        <div class="card card-pad"><div class="card-title">${PB.icon('bar-chart',16)} Cost breakdown by department</div><div class="mt-4">${PB.barChart(a.departments)}</div></div>
+        <div class="card card-pad"><div class="card-title">${PB.icon('layers',16)} Salary components</div><div class="mt-4">${PB.barChart(a.components)}</div></div></div>`;
+    } else if(t==="stat"){
+      b.innerHTML=`<div class="card card-pad"><div class="card-title">${PB.icon('shield',16)} Statutory contributions (employee + employer)</div>
+        <div class="grid-3 mt-4">
+        <div class="sec-card"><h4>BHXH (Social)</h4><div style="font-size:22px;font-weight:800">${PB.fmtVND(a.contributions*0.62)}</div></div>
+        <div class="sec-card"><h4>BHYT (Health)</h4><div style="font-size:22px;font-weight:800">${PB.fmtVND(a.contributions*0.21)}</div></div>
+        <div class="sec-card"><h4>BHTN (Unempl.)</h4><div style="font-size:22px;font-weight:800">${PB.fmtVND(a.contributions*0.17)}</div></div>
+        </div></div>`;
+    } else if(t==="head"){
+      b.innerHTML=`<div class="card card-pad"><div class="card-title">${PB.icon('users',16)} Headcount by department</div><div class="mt-4">${PB.barChart(a.departments.map(d=>({name:d.name,amt:Math.round(d.cost/9000000)})))}</div></div>`;
+    } else {
+      b.innerHTML=`<div class="card card-pad"><div class="card-title">${PB.icon('clipboard-check',16)} Approval queue</div>
+        <div class="tbl-wrap mt-4"><table class="tbl"><thead><tr><th>Run</th><th>Headcount</th><th>Net total</th><th>Stage</th><th></th></tr></thead>
+        <tbody>${a.approvals.map(ap=>`<tr><td style="font-weight:600">${ap.name}</td><td>${ap.headcount}</td>
+          <td class="mono">${PB.fmtFull(ap.amount)}</td><td><span class="badge b-level2">${ap.stage}</span></td>
+          <td><button class="btn btn-primary btn-sm">Approve</button></td></tr>`).join("")}</tbody></table></div></div>`;
+    }
+  }
+};
+
+/* ---------------- Workflow renderers ---------------- */
+const WF = {
+  home: { render(){
+    const r=PB.run;
+    return `<div class="page-head"><div><h1>Payroll overview</h1><div class="desc">${PB.run.company} · welcome back</div></div>
+      <div class="a-actions"><button class="btn btn-ghost">${PB.icon('refresh',14)} Refresh</button><button class="btn btn-primary" onclick="PB.go('run')">${PB.icon('zap',15)} New payroll run</button></div></div>
+    <div class="kpi-grid mb-6">
+      <div class="kpi k-blue"><div class="lbl">Headcount<span class="ico">${PB.icon('users',16)}</span></div><div class="val">${PB.analytics.headcount}</div><div class="sub">across 6 departments</div></div>
+      <div class="kpi"><div class="lbl">Current run net<span class="ico">${PB.icon('wallet',16)}</span></div><div class="val">${PB.fmtVND(r.totalNet)}</div><div class="sub">${r.name} · ${r.headcount} payslips</div></div>
+      <div class="kpi k-amber"><div class="lbl">Pending approval<span class="ico">${PB.icon('clock',16)}</span></div><div class="val">3</div><div class="sub">awaiting GM sign-off</div></div>
+      <div class="kpi k-red"><div class="lbl">Exceptions<span class="ico">${PB.icon('alert',15)}</span></div><div class="val">${r.exceptions}</div><div class="sub">need review before run</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card card-pad"><div class="card-title">${PB.icon('calendar',16)} Recent payroll batches</div>
+        <div class="tbl-wrap mt-4"><table class="tbl"><thead><tr><th>Batch</th><th>Payslips</th><th>Status</th></tr></thead>
+        <tbody>${PB.batches.map(b=>`<tr style="cursor:pointer" onclick="PB.go('run')"><td style="font-weight:600">${b.name}</td><td>${b.count}</td><td>${PB.badge(b.state)}</td></tr>`).join("")}</tbody></table></div>
+      </div>
+      <div class="card card-pad"><div class="card-title">${PB.icon('zap',15)} Quick actions</div>
+        <div class="mt-4" style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-soft" style="justify-content:flex-start" onclick="PB.go('run')">${PB.icon('receipt',15)} Review current payslips</button>
+          <button class="btn btn-soft" style="justify-content:flex-start" onclick="PB.go('formula')">${PB.icon('calculator',16)} Open formula configuration</button>
+          <button class="btn btn-soft" style="justify-content:flex-start" onclick="PB.go('analytics')">${PB.icon('trending-up',16)} View analytics &amp; approvals</button>
+          <button class="btn btn-soft" style="justify-content:flex-start" onclick="PB.go('formula')">${PB.icon('download',15)} Import payroll data</button>
+        </div>
+      </div>
+    </div>`;
+  }},
+
+  run: { render(){
+    const groups = {}; PB.payslips.forEach(p=>{ (groups[PB.run.name]=groups[PB.run.name]||[]).push(p); });
+    return `<div class="page-head"><div><h1>Employee Payslips</h1><div class="desc">${PB.run.structure} · ${PB.run.period}</div></div>
+      <div class="a-actions"><button class="btn btn-ghost">⤓ Export</button><button class="btn btn-primary">${PB.icon('plus',14)} New</button></div></div>
+    <div class="chips mb-4"><span class="chip active">${PB.run.name} (7)</span><span class="chip">February 2026 (7)</span><span class="chip">October 2025 (14)</span></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Employee</th><th>Payslip Name</th><th>Period</th><th>Gross</th><th>Net</th><th>Status</th><th></th></tr></thead>
+      <tbody>${PB.payslips.map(p=>`<tr style="cursor:pointer" onclick="A.openSlip(${p.id})">
+        <td><span class="av-chip">${PB.avatar(p.emp,p.color,'sm')}<span style="font-weight:600">${p.emp}</span></span></td>
+        <td>${p.emp} - April 2026</td><td class="muted">Apr 1 – Apr 30</td>
+        <td class="mono">${PB.fmtVND(p.gross)}</td><td class="mono" style="font-weight:600">${PB.fmtVND(p.net)}</td>
+        <td>${PB.badge(p.state)}</td>
+        <td>${p.flag?'<span title="'+p.flag+'">${PB.icon('alert',15)}</span>':''}</td></tr>`).join("")}
+      </tbody></table></div>`;
+  }, mounted(){} },
+
+  formula: { render(){
+    return `<div class="page-head"><div><h1>Formula Configurations</h1><div class="desc">Excel-driven payroll formula engine</div></div>
+      <div class="a-actions"><button class="btn btn-primary">${PB.icon('plus',14)} New</button></div></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Code</th><th>Configuration</th><th>Country</th><th>Structure</th><th>Rules</th><th>Validation</th><th>Status</th></tr></thead>
+      <tbody>${PB.formulaConfigs.map(c=>`<tr style="cursor:pointer" onclick="A.openConfig('${c.code}')">
+        <td class="mono" style="font-weight:700;color:var(--pb-brand)">${c.code}</td><td style="font-weight:600">${c.name}</td>
+        <td>${c.country}</td><td>${c.structure}</td><td class="mono">${c.rules}</td>
+        <td><span class="badge b-level1">${c.validation}</span></td><td>${PB.badge(c.state)}</td></tr>`).join("")}
+      </tbody></table></div>`;
+  }, mounted(){} },
+
+  analytics: { render(){
+    const a=PB.analytics;
+    return `<div class="page-head"><div><h1>HR Analytics Dashboard</h1><div class="desc">Final approval review · all countries</div></div>
+      <div class="a-actions"><span class="badge b-done" style="padding:7px 14px">READY FOR APPROVAL</span><button class="btn btn-ghost">⤓ Export</button></div></div>
+    <div class="kpi-grid mb-6">
+      <div class="kpi k-blue"><div class="lbl">Total employees<span class="ico">${PB.icon('users',16)}</span></div><div class="val">${a.headcount}</div><div class="sub">5/5 reporting</div></div>
+      <div class="kpi"><div class="lbl">Monthly payroll<span class="ico">${PB.icon('wallet',16)}</span></div><div class="val">${PB.fmtVND(a.payroll)}</div><div class="sub"><span class="up">↗ ${a.payrollTrendPct}%</span> vs prev month</div></div>
+      <div class="kpi k-amber"><div class="lbl">Average net<span class="ico">${PB.icon('calculator',16)}</span></div><div class="val">${PB.fmtVND(a.avgNet)}</div><div class="sub">${a.conversionNote}</div></div>
+      <div class="kpi k-red"><div class="lbl">Contributions<span class="ico">${PB.icon('shield',16)}</span></div><div class="val">${PB.fmtVND(a.contributions)}</div><div class="sub">statutory (SI+HI+UI)</div></div>
+    </div>
+    <div class="tabs" id="ana-tabs">
+      <button class="active" data-t="cost" onclick="A.anaTab('cost')">Personnel Costs</button>
+      <button data-t="stat" onclick="A.anaTab('stat')">Statutory Contributions</button>
+      <button data-t="head" onclick="A.anaTab('head')">Headcount</button>
+      <button data-t="appr" onclick="A.anaTab('appr')">Approval Queue</button>
+    </div>
+    <div id="ana-body"></div>`;
+  }, mounted(){ A.anaTab('cost'); } },
+};
+
+PB.mountShell({ tag:"OPTION A", name:"Skinned Native", bodyClass:"opt-a", role:"officer", start:"home", workflows: WF });
+</script>
+</body>
+</html>

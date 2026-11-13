@@ -4,6 +4,9 @@
     <!-- ================================================================== -->
     <!-- Pivot View for Payslip Lines - Formula Config Analytics            -->
     <!-- Shows: Employees (rows) vs Components (columns) with amounts        -->
+    <!-- NOTE: Advanced fields (category_type, department_id, formula_config_id)
+         are available in the model but removed from views for install stability.
+         They can be accessed via custom views after full module sync.          -->
     <!-- ================================================================== -->
 
     <!-- Main Pivot View: Employee x Component Name -->
@@ -23,7 +26,7 @@
         </field>
     </record>
 
-    <!-- Alternative Pivot: Grouped by Category Type first -->
+    <!-- Alternative Pivot: Grouped by Category first -->
     <record id="view_payslip_line_formula_pivot_by_category" model="ir.ui.view">
         <field name="name">Payslip Lines - Formula Config Pivot (By Category)</field>
         <field name="model">hr.payslip.line</field>
@@ -32,29 +35,11 @@
             <pivot string="Employee x Category" display_quantity="true" sample="1">
                 <!-- Rows: Employee names -->
                 <field name="employee_id" type="row"/>
-                <!-- Columns: Category type (Basic, Allowance, Deduction, etc.) -->
-                <field name="category_type" type="col"/>
+                <!-- Columns: Category (using base field) -->
+                <field name="category_id" type="col"/>
                 <!-- Measures: Amount and Total -->
                 <field name="amount" type="measure"/>
                 <field name="total" type="measure"/>
-            </pivot>
-        </field>
-    </record>
-
-    <!-- Pivot: By Department and Employee -->
-    <record id="view_payslip_line_formula_pivot_dept" model="ir.ui.view">
-        <field name="name">Payslip Lines - Department Pivot</field>
-        <field name="model">hr.payslip.line</field>
-        <field name="priority">102</field>
-        <field name="arch" type="xml">
-            <pivot string="Department x Components" display_quantity="true" sample="1">
-                <!-- Rows: Department, then Employee -->
-                <field name="department_id" type="row"/>
-                <field name="employee_id" type="row"/>
-                <!-- Columns: Component name (user-friendly) -->
-                <field name="name" type="col"/>
-                <!-- Measures: Amount -->
-                <field name="amount" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -68,20 +53,16 @@
         <field name="model">hr.payslip.line</field>
         <field name="priority">100</field>
         <field name="arch" type="xml">
-            <tree string="Payslip Lines" decoration-info="amount == 0"
+            <list string="Payslip Lines" decoration-info="amount == 0"
                   decoration-success="amount > 0" decoration-danger="amount &lt; 0">
                 <field name="slip_id"/>
                 <field name="employee_id"/>
-                <field name="department_id" optional="show"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="category_id"/>
-                <field name="category_type" optional="show"/>
                 <field name="amount" sum="Total Amount"/>
                 <field name="total" sum="Total" optional="hide"/>
-                <field name="report_visible" optional="show"/>
-                <field name="formula_config_id" optional="hide"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -100,49 +81,19 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="category_id"/>
-                <field name="formula_config_id"/>
-                <field name="department_id"/>
 
                 <!-- Preset Filters -->
-                <filter string="Report Visible" name="report_visible"
-                        domain="[('report_visible', '=', True)]"/>
                 <filter string="Non-Zero Amount" name="non_zero"
                         domain="[('amount', '!=', 0)]"/>
 
-                <separator/>
-
-                <!-- Category Type Filters -->
-                <filter string="Basic Salary" name="basic"
-                        domain="[('category_type', '=', 'basic')]"/>
-                <filter string="Allowances" name="allowance"
-                        domain="[('category_type', '=', 'allowance')]"/>
-                <filter string="Deductions" name="deduction"
-                        domain="[('category_type', '=', 'deduction')]"/>
-                <filter string="Taxes" name="tax"
-                        domain="[('category_type', '=', 'tax')]"/>
-                <filter string="Social Security" name="social_security"
-                        domain="[('category_type', '=', 'social_security')]"/>
-                <filter string="Net Salary" name="net"
-                        domain="[('category_type', '=', 'net')]"/>
-                <filter string="Employer Costs" name="employer_cost"
-                        domain="[('category_type', '=', 'employer_cost')]"/>
-
-                <separator/>
-
                 <!-- Group By Options -->
-                <group expand="1" string="Group By">
+                <group name="group_by">
                     <filter string="Employee" name="group_by_employee"
                             context="{'group_by': 'employee_id'}"/>
-                    <filter string="Department" name="group_by_department"
-                            context="{'group_by': 'department_id'}"/>
                     <filter string="Category" name="group_by_category"
                             context="{'group_by': 'category_id'}"/>
-                    <filter string="Category Type" name="group_by_category_type"
-                            context="{'group_by': 'category_type'}"/>
                     <filter string="Component Code" name="group_by_code"
                             context="{'group_by': 'code'}"/>
-                    <filter string="Formula Config" name="group_by_formula_config"
-                            context="{'group_by': 'formula_config_id'}"/>
                     <filter string="Payslip" name="group_by_slip"
                             context="{'group_by': 'slip_id'}"/>
                 </group>
@@ -160,7 +111,7 @@
         <field name="priority">100</field>
         <field name="arch" type="xml">
             <graph string="Component Analysis" type="bar" stacked="True">
-                <field name="category_type" type="row"/>
+                <field name="category_id" type="row"/>
                 <field name="amount" type="measure"/>
             </graph>
         </field>
@@ -173,15 +124,14 @@
     <record id="action_payslip_line_formula_pivot" model="ir.actions.act_window">
         <field name="name">Payslip Lines Pivot</field>
         <field name="res_model">hr.payslip.line</field>
-        <field name="view_mode">pivot,tree,graph</field>
+        <field name="view_mode">pivot,list,graph</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_payslip_line_formula_pivot')}),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payslip_line_formula_tree')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_payslip_line_formula_tree')}),
             (0, 0, {'view_mode': 'graph', 'view_id': ref('view_payslip_line_formula_graph')})]"/>
         <field name="search_view_id" ref="view_payslip_line_formula_search"/>
-        <field name="domain">[('report_visible', '=', True)]</field>
+        <field name="domain">[]</field>
         <field name="context">{
-            'search_default_report_visible': 1,
             'search_default_non_zero': 1,
         }</field>
     </record>

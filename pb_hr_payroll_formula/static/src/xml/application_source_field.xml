@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_hr_payroll_formula.ApplicationSourceField">
+        <span t-if="props.readonly" t-esc="label" t-att-title="value"/>
+        <select t-else="" class="o_input" t-att-value="value" t-on-change="onChange" t-att-title="value" aria-label="Application source">
+            <option value="">Employee / contract mapping</option>
+            <option t-foreach="options" t-as="option" t-key="option.key" t-att-value="option.key" t-att-selected="option.key === value">
+                <t t-esc="option.label"/><t t-if="option.unit"> · <t t-esc="option.unit"/></t>
+            </option>
+        </select>
+    </t>
+</templates>

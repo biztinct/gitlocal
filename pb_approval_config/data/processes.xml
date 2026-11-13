@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         THE CATALOGUE: every process that can need a sign-off.
+
+         A row names the business object it approves where one exists. It is
+         NOT a claim that the object is wired up: "Wired up" is worked out by
+         the engine from the object itself, so a row can never pretend to be
+         protecting something it is not. Until the owning module signs the
+         adapter contract the row reads "Not connected yet" and can be
+         drafted but never published.
+
+         `money` marks the processes where money leaves the company. It never
+         blocks anything: publishing a one-person route for one of them raises
+         a warning the publisher confirms, and the confirmation is recorded.
+         ================================================================== -->
+
+    <!-- ============================================================ Pay -->
+    <record id="process_payrun" model="biz.approval.process">
+        <field name="key">payrun</field>
+        <field name="name">Pay run</field>
+        <field name="area">pay</field>
+        <field name="model_name">hr.payslip.run</field>
+        <field name="description">A whole pay run, before its payslips are confirmed.</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="process_reopen" model="biz.approval.process">
+        <field name="key">reopen</field>
+        <field name="name">Reopen an approved run</field>
+        <field name="area">pay</field>
+        <field name="description">Taking an already approved pay run back to draft.</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="process_retro" model="biz.approval.process">
+        <field name="key">retro</field>
+        <field name="name">Retro adjustments and carry-overs</field>
+        <field name="area">pay</field>
+        <field name="description">Pay owed from an earlier month, added to this one.</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="process_fnf" model="biz.approval.process">
+        <field name="key">fnf</field>
+        <field name="name">Full and final settlement</field>
+        <field name="area">pay</field>
+        <field name="description">The last payment to somebody who is leaving.</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="process_month" model="biz.approval.process">
+        <field name="key">month</field>
+        <field name="name">Close or reopen a payroll month</field>
+        <field name="area">pay</field>
+        <field name="description">Locking a month, or unlocking one that was closed.</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- ====================================================== Money out -->
+    <record id="process_bankfile" model="biz.approval.process">
+        <field name="key">bankfile</field>
+        <field name="name">Bank file creation</field>
+        <field name="area">money</field>
+        <field name="model_name">pb.pay.delivery</field>
+        <field name="money" eval="True"/>
+        <field name="description">Making the file the bank pays from.</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="process_release" model="biz.approval.process">
+        <field name="key">release</field>
+        <field name="name">Payment release</field>
+        <field name="area">money</field>
+        <field name="money" eval="True"/>
+        <field name="description">Letting the bank actually move the money.</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="process_journal" model="biz.approval.process">
+        <field name="key">journal</field>
+        <field name="name">Payroll journal and funding</field>
+        <field name="area">money</field>
+        <field name="money" eval="True"/>
+        <field name="description">The accounting entry for pay, and the money put aside for it.</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="process_payslips" model="biz.approval.process">
+        <field name="key">payslips</field>
+        <field name="name">Payslip send-out</field>
+        <field name="area">money</field>
+        <field name="description">Sending people their payslips.</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="process_filing" model="biz.approval.process">
+        <field name="key">filing</field>
+        <field name="name">Government filings</field>
+        <field name="area">money</field>
+        <field name="description">What is declared to the authorities each period.</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <!-- ======================================================= Pay data -->
+    <record id="process_records" model="biz.approval.process">
+        <field name="key">records</field>
+        <field name="name">Records Desk bulk changes</field>
+        <field name="area">data</field>
+        <field name="model_name">pb.records.apply</field>
+        <field name="description">Changing many people's details in one go.</field>
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="process_runonly" model="biz.approval.process">
+        <field name="key">runonly</field>
+        <field name="name">"This run only" pay data</field>
+        <field name="area">data</field>
+        <field name="description">A figure entered for one pay run and nothing else.</field>
+        <field name="sequence">120</field>
+    </record>
+
+    <record id="process_loads" model="biz.approval.process">
+        <field name="key">loads</field>
+        <field name="name">Past pay data loads</field>
+        <field name="area">data</field>
+        <field name="description">Loading pay data for months that are already over.</field>
+        <field name="sequence">130</field>
+    </record>
+
+    <record id="process_arrivals" model="biz.approval.process">
+        <field name="key">arrivals</field>
+        <field name="name">Arrivals from a connected system</field>
+        <field name="area">data</field>
+        <field name="description">New people and changes picked up from another system.</field>
+        <field name="sequence">140</field>
+    </record>
+
+    <!-- ========================================================= People -->
+    <record id="process_paychange" model="biz.approval.process">
+        <field name="key">paychange</field>
+        <field name="name">Pay change</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.pay.change</field>
+        <field name="description">A rise, a cut or a move to a different pay level.</field>
+        <field name="sequence">150</field>
+    </record>
+
+    <record id="process_contract" model="biz.approval.process">
+        <field name="key">contract</field>
+        <field name="name">Salary and contract changes</field>
+        <field name="area">people</field>
+        <field name="description">A new contract, or a change to the terms of one.</field>
+        <field name="sequence">160</field>
+    </record>
+
+    <record id="process_master" model="biz.approval.process">
+        <field name="key">master</field>
+        <field name="name">Employee record changes</field>
+        <field name="area">people</field>
+        <field name="model_name">hr.employee</field>
+        <field name="description">Changes to somebody's own details.</field>
+        <field name="sequence">170</field>
+    </record>
+
+    <record id="process_trip" model="biz.approval.process">
+        <field name="key">trip</field>
+        <field name="name">Business trips</field>
+        <field name="area">people</field>
+        <field name="description">Travel for work, and what it costs.</field>
+        <field name="sequence">180</field>
+    </record>
+
+    <record id="process_assets" model="biz.approval.process">
+        <field name="key">assets</field>
+        <field name="name">Asset requests</field>
+        <field name="area">people</field>
+        <field name="description">Equipment somebody asks the company for.</field>
+        <field name="sequence">190</field>
+    </record>
+
+    <record id="process_awards" model="biz.approval.process">
+        <field name="key">awards</field>
+        <field name="name">Awards and recognition</field>
+        <field name="area">people</field>
+        <field name="money" eval="True"/>
+        <field name="description">A bonus or a prize given for good work.</field>
+        <field name="sequence">200</field>
+    </record>
+
+    <record id="process_resign" model="biz.approval.process">
+        <field name="key">resign</field>
+        <field name="name">Resignations and contract extensions</field>
+        <field name="area">people</field>
+        <field name="description">Somebody leaving, or staying longer.</field>
+        <field name="sequence">210</field>
+    </record>
+
+    <record id="process_verdict" model="biz.approval.process">
+        <field name="key">verdict</field>
+        <field name="name">Probation and growth-plan verdicts</field>
+        <field name="area">people</field>
+        <field name="description">The decision at the end of a trial or improvement period.</field>
+        <field name="sequence">220</field>
+    </record>
+
+    <record id="process_newhire" model="biz.approval.process">
+        <field name="key">newhire</field>
+        <field name="name">New hire and first contract</field>
+        <field name="area">people</field>
+        <field name="description">Taking somebody on, and what they are paid.</field>
+        <field name="sequence">230</field>
+    </record>
+
+    <!-- =========================================================== Time -->
+    <record id="process_timesheet" model="biz.approval.process">
+        <field name="key">timesheet</field>
+        <field name="name">Weekly timesheet</field>
+        <field name="area">time</field>
+        <field name="model_name">hr.attendance.weekentry</field>
+        <field name="description">The hours somebody says they worked in a week.</field>
+        <field name="sequence">240</field>
+    </record>
+
+    <record id="process_overtime" model="biz.approval.process">
+        <field name="key">overtime</field>
+        <field name="name">Overtime</field>
+        <field name="area">time</field>
+        <field name="model_name">hr.overtime.request</field>
+        <field name="description">Extra hours, before they are worked or paid.</field>
+        <field name="sequence">250</field>
+    </record>
+
+    <record id="process_leave" model="biz.approval.process">
+        <field name="key">leave</field>
+        <field name="name">Leave</field>
+        <field name="area">time</field>
+        <field name="model_name">hr.leave</field>
+        <field name="description">Time off, of any kind.</field>
+        <field name="sequence">260</field>
+    </record>
+
+    <record id="process_correction" model="biz.approval.process">
+        <field name="key">correction</field>
+        <field name="name">Attendance corrections</field>
+        <field name="area">time</field>
+        <field name="description">Fixing a clock-in or clock-out after the fact.</field>
+        <field name="sequence">270</field>
+    </record>
+
+    <record id="process_unlock" model="biz.approval.process">
+        <field name="key">unlock</field>
+        <field name="name">Unlock a locked day</field>
+        <field name="area">time</field>
+        <field name="description">Reopening a day that has already been closed off.</field>
+        <field name="sequence">280</field>
+    </record>
+
+    <!-- ================================================= Setup and rules -->
+    <record id="process_scheme" model="biz.approval.process">
+        <field name="key">scheme</field>
+        <field name="name">Scheme change</field>
+        <field name="area">setup</field>
+        <field name="model_name">hr.formula.config</field>
+        <field name="description">A change to how pay is worked out.</field>
+        <field name="sequence">290</field>
+    </record>
+
+    <record id="process_statutory" model="biz.approval.process">
+        <field name="key">statutory</field>
+        <field name="name">Statutory rates and tax tables</field>
+        <field name="area">setup</field>
+        <field name="description">The rates the law sets, as this app holds them.</field>
+        <field name="sequence">300</field>
+    </record>
+
+    <record id="process_bands" model="biz.approval.process">
+        <field name="key">bands</field>
+        <field name="name">Pay bands and guidance</field>
+        <field name="area">setup</field>
+        <field name="description">What each job is meant to pay, and the limits on a rise.</field>
+        <field name="sequence">310</field>
+    </record>
+
+    <record id="process_fx" model="biz.approval.process">
+        <field name="key">fx</field>
+        <field name="name">Exchange rates and budgets</field>
+        <field name="area">setup</field>
+        <field name="description">What one currency is worth in another, and what is set aside.</field>
+        <field name="sequence">320</field>
+    </record>
+
+    <record id="process_schememap" model="biz.approval.process">
+        <field name="key">schememap</field>
+        <field name="name">Who is paid by which scheme</field>
+        <field name="area">setup</field>
+        <field name="description">Moving people between pay schemes.</field>
+        <field name="sequence">330</field>
+    </record>
+
+    <record id="process_mappings" model="biz.approval.process">
+        <field name="key">mappings</field>
+        <field name="name">Connected-system mappings and sync times</field>
+        <field name="area">setup</field>
+        <field name="description">Which field comes from where, and how often it is read.</field>
+        <field name="sequence">340</field>
+    </record>
+
+    <!-- ======================================================= Platform -->
+    <record id="process_roles" model="biz.approval.process">
+        <field name="key">roles</field>
+        <field name="name">Role grants and access hand-overs</field>
+        <field name="area">platform</field>
+        <field name="description">Giving somebody access, or letting somebody stand in.</field>
+        <field name="sequence">350</field>
+    </record>
+
+    <record id="process_support" model="biz.approval.process">
+        <field name="key">support</field>
+        <field name="name">Support access</field>
+        <field name="area">platform</field>
+        <field name="description">Letting a support engineer into your data, for a while.</field>
+        <field name="sequence">360</field>
+    </record>
+
+    <record id="process_tenant" model="biz.approval.process">
+        <field name="key">tenant</field>
+        <field name="name">Suspend, delete or change plan</field>
+        <field name="area">platform</field>
+        <field name="description">The biggest changes to the account itself.</field>
+        <field name="sequence">370</field>
+    </record>
+
+    <record id="process_demo" model="biz.approval.process">
+        <field name="key">demo</field>
+        <field name="name">Example data on a real account</field>
+        <field name="area">platform</field>
+        <field name="description">Putting made-up records beside your real ones.</field>
+        <field name="sequence">380</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Declared as a RECORD rather than reached by a bare tag: a bare tag is
+         synthesised with no action NAME, so anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+
+         Test URL: /odoo/action-pb_group
+         Its real home is the Group panel behind the Settings cog. -->
+
+    <!-- The RETURN DOOR is on the action itself, and that is deliberate.
+
+         This screen owns its own header rather than a control panel, so a
+         breadcrumb is invisible while you are on it; the back chip is the
+         only way home. Writing `pb_back` here rather than at each door means
+         every way in — the Settings card, a ⌘K row, a bookmark — arrives with
+         the same way out, and the action keeps its NAME, so the crumb the
+         exchange-rate list draws over it reads "Group" and not "Unnamed". -->
+
+    <record id="action_pb_group" model="ir.actions.client">
+        <field name="name">Group</field>
+        <field name="tag">pb_group</field>
+        <field name="context">{'pb_back': {'label': 'Settings', 'tag': 'pb_settings_hub', 'xmlid': '', 'lens': '', 'context': {}}}</field>
+    </record>
+
+    <!-- The exchange-rate list, named in this product's own words. The
+         platform's own rate action is bound to one currency at a time
+         (its domain reads `active_id`), so it cannot be a door from a
+         coverage cell; this one can, and it says "Exchange rates" rather
+         than "Show Currency Rates". -->
+
+    <record id="action_pb_exchange_rates" model="ir.actions.act_window">
+        <field name="name">Exchange rates</field>
+        <field name="res_model">res.currency.rate</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiley_face">No exchange rates yet</p>
+            <p>Add a rate and every group figure that needs it appears. Until then, amounts stay in the money they were paid in.</p>
+        </field>
+    </record>
+
+</odoo>

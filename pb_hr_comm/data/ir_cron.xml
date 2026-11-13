@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         TWO JOBS. ONE SENDS, ONE REMINDS.
+
+         `numbercall` and `doall` were REMOVED from `ir.cron` in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         WHY THE SENDER RUNS EVERY TEN MINUTES AND NOT EVERY NIGHT. An
+         announcement is booked for a MOMENT — half past eight on Monday,
+         because that is when people read their email — and a nightly job can
+         only ever send it at whatever time the night runs. Ten minutes is
+         close enough that nobody notices and far enough apart that the burst
+         cap has time to drain a company-wide send.
+
+         BOTH ROWS ARE ACTIVE AND THE SENDING IS A SWITCH. `pb_hr_comm.
+         send_mail` silences the emails without disabling the row, so a
+         business that has turned it off can still see the job is there and
+         the log still reports what it WOULD have sent — a thing that is off
+         and does not say so is reported as broken (R54). A cron row that is
+         switched off instead cannot say anything at all.
+         ================================================================== -->
+
+    <record id="cron_comm_send" model="ir.cron">
+        <field name="name">Announcements: send the ones that are due</field>
+        <field name="model_id" ref="model_pb_hr_comm_automation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send()</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_comm_nudge" model="ir.cron">
+        <field name="name">Announcements: remind whoever looks after one</field>
+        <field name="model_id" ref="model_pb_hr_comm_automation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_nudge()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

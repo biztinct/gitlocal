@@ -1,0 +1,39 @@
+ATTENDANCE CONNECTOR — GUIDED SETUP
+
+Administrator entry points
+Settings > Connect (Integrations) > Attendance > Attendance connectors
+Workforce > Time > Time clocks > Data connectors
+Open or create a source, then choose Guided setup / invite IT.
+The same page and underlying connector serve both entry points.
+
+IT without a Payobook login
+An attendance manager creates an invitation in the guided page, then shares the
+link directly with IT. The page provides the Windows ZIP, pairing-code creation,
+read-only source setup instructions and a limited connection-health summary.
+No payroll, employee records, raw punches or configuration-write access is given.
+The page is English. Installation still runs on the Windows attendance PC.
+
+Invitation lifecycle
+- 5-day, per-connector capability. Only the digest is persisted server-side.
+- The secret is in a URL fragment and sent only in an Authorization header.
+  It does not appear in server URL logs or referrers. Share it privately.
+- Link rotation invalidates the old link and its unused pairing code.
+- Pairing codes expire in 30 minutes, or sooner if the invitation expires.
+- A paired installation cannot be replaced through the IT page.
+- Revoking/expiring the invitation does not revoke an already paired PC.
+- Replace / manually pair PC and Revoke installation access remain manager-only
+  actions on the authenticated source form, with explicit confirmation.
+- Managers can always reopen the guide; expired invitations need a new link.
+- The download is protected by manager login or a valid setup invitation.
+- Anonymous page loads expose only the generic setup shell.
+
+Verification and limitations
+The page separates paired, successful read, pending queue and contact overdue.
+A successful upload does not prove Task Scheduler is enabled or that staff have
+downloaded every biometric terminal. Confirm a later unattended sync on Windows.
+Keep the PC awake; logged-off tasks need IT configuration under the same account.
+The pilot Windows ZIP remains unsigned. Follow local security approval policy.
+
+The connector reads the MDB only; Mitaco terminal downloads remain manual.
+Data-review exceptions do not pause collection. No existing tenant is activated
+by installing this UI. Source configuration and publishing remain explicit.

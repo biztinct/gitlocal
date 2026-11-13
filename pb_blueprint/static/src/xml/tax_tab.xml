@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==========================================================
+     Tax and protection. No double hyphen inside any comment in
+     this file (BP9), and no comment between t-if siblings (BP10).
+     ========================================================== -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_blueprint.TaxTab">
+    <div class="pbbp-tax" t-on-keydown="onKeydown">
+
+      <div class="pbbp-tax-boot" t-if="state.loading">
+        <div class="pbim-spin"/>
+        <span>Reading the tax settings…</span>
+      </div>
+      <div class="pbbp-card" t-elif="state.error">
+        <div class="pbim-empty">
+          <span class="i" t-out="ic('alert', 22)"/>
+          <b>These settings could not be opened</b>
+          <p t-esc="state.error"/>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.load()">
+            <t t-out="ic('refresh', 14)"/> Try again
+          </button>
+        </div>
+      </div>
+      <t t-else="">
+
+        <div class="pbbp-alert is-info" t-if="!editable">
+          <span class="i" t-out="ic('lock', 18)"/>
+          <div>
+            <b>These values are read only here</b>
+            <p t-esc="data.readonly_reason"/>
+          </div>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+            <t t-out="ic('table', 14)"/> Open the grid
+          </button>
+        </div>
+
+        <!-- ========== where the numbers come from ========== -->
+        <section class="pbbp-card pbbp-tax-pack">
+          <header class="pbbp-card-head">
+            <span class="pbbp-card-ic" t-out="ic('landmark', 18)"/>
+            <div>
+              <h2 t-if="pack" t-esc="pack.name"/>
+              <h2 t-else="">No rule pack for this country yet</h2>
+              <p t-if="pack" t-esc="packLine"/>
+              <p t-else="">Nothing is filled in for you, and nothing is checked against a
+                 published set of values. Everything below is yours to set.</p>
+            </div>
+            <span t-attf-class="pbim-badge {{ packStatusClass }} pbbp-tax-status"
+                  t-esc="packStatusLabel"/>
+          </header>
+
+          <p class="pbbp-tax-auth" t-if="pack and pack.authority">
+            <span class="i" t-out="ic('scrollText', 14)"/>
+            <t t-esc="pack.authority"/>
+          </p>
+
+          <div class="pbbp-tax-packb">
+            <button class="pbim-btn primary pbim-btn-sm"
+                    t-if="editable and data.status === 'drift'"
+                    t-att-disabled="state.busy"
+                    t-on-click="openSync">
+              <t t-out="ic('refresh', 14)"/> Use the pack's values
+            </button>
+            <button class="pbbp-changelink" t-if="pack" t-on-click="toggleSource">
+              <t t-if="state.sourceOpen">Hide where these come from</t>
+              <t t-else="">Where these values come from</t>
+            </button>
+          </div>
+
+          <div class="pbbp-tax-source" t-if="state.sourceOpen and pack">
+            <p>Every statutory value below is set by this pack. Change one here and
+               this configuration stops following the pack for that value until you
+               take the pack's again — nothing else is affected, and the difference
+               is shown at the top of this card.</p>
+            <dl class="pbbp-sum">
+              <dt>Named in</dt>
+              <dd t-esc="pack.authority or 'Not recorded'"/>
+              <dt>In force from</dt>
+              <dd t-esc="pack.effective_date ? longDate(pack.effective_date) : 'Not dated'"/>
+              <dt>Values it carries</dt>
+              <dd t-esc="pack.item_count"/>
+            </dl>
+          </div>
+        </section>
+
+        <!-- ========== the bands ========== -->
+        <section class="pbbp-card">
+          <header class="pbbp-card-head">
+            <span class="pbbp-card-ic" t-out="ic('barChart', 18)"/>
+            <div>
+              <h2>Income tax bands</h2>
+              <p t-if="table">Each band charges its own rate on the slice of income inside
+                 it. The end of a band is where the next one starts, so two bands can never
+                 overlap and no income can fall between them.</p>
+              <p t-else="">There is no income tax table in this configuration yet.</p>
+            </div>
+            <span class="pbim-chip" t-if="table" t-esc="table.code"/>
+          </header>
+
+          <div class="pbim-seg pbbp-tax-tables" t-if="tables.length > 1">
+            <button t-foreach="tables" t-as="tb" t-key="tb.id"
+                    t-attf-class="pbim-segbtn {{ state.tableId === tb.id ? 'on' : '' }}"
+                    t-on-click="() => this.setTable(tb.id)">
+              <t t-esc="tb.name"/>
+            </button>
+          </div>
+
+          <div class="pbbp-tax-empty" t-if="!table">
+            <p class="pbbp-note">No income-tax table yet. Add one from the grid, or start
+               from a Vietnam starting point on the Start step.</p>
+            <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.props.onGrid()">
+              <t t-out="ic('table', 14)"/> Open the grid
+            </button>
+          </div>
+          <t t-else="">
+            <div class="pbbp-tax-tablewrap">
+              <table class="pbbp-tax-bands">
+                <thead>
+                  <tr>
+                    <th class="is-num">Monthly income from</th>
+                    <th class="is-num">to</th>
+                    <th class="is-num">Rate</th>
+                    <th class="is-act"><span class="pbbp-sr">Remove</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="rows" t-as="row" t-key="row.index"
+                      t-attf-class="{{ isTryBand(row) ? 'is-try' : '' }}">
+                    <td class="is-num">
+                      <input type="text" inputmode="numeric"
+                             t-att-disabled="!editable or row.index === 0"
+                             t-att-value="group(row.lower)"
+                             t-on-input="(ev) => this.onBandLower(row.index, ev)"
+                             t-on-keydown="(ev) => this.onBandKey(row.index, ev)"
+                             t-on-blur="onBandBlur"
+                             t-attf-aria-label="Band {{ row.index + 1 }} starts at"/>
+                      <small t-if="row.index === 0">from the first dong</small>
+                    </td>
+                    <td class="is-num is-derived">
+                      <t t-if="row.last">No upper limit</t>
+                      <t t-else="" t-esc="group(row.upper)"/>
+                    </td>
+                    <td class="is-num">
+                      <span class="pbbp-tax-pct">
+                        <input type="text" inputmode="decimal"
+                               t-att-disabled="!editable"
+                               t-att-value="percent(row.rate)"
+                               t-on-input="(ev) => this.onBandRate(row.index, ev)"
+                               t-on-keydown="(ev) => this.onBandKey(row.index, ev)"
+                               t-attf-aria-label="Band {{ row.index + 1 }} rate"/>
+                        <b>%</b>
+                      </span>
+                    </td>
+                    <td class="is-act">
+                      <button class="pbbp-iconb" t-if="editable and rows.length > 1 and row.index > 0"
+                              t-attf-title="Remove the band starting at {{ group(row.lower) }}"
+                              t-on-click="() => this.removeBand(row.index)"
+                              t-out="ic('trash', 14)"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="pbbp-se-bad" t-if="state.bandError" t-esc="state.bandError"/>
+
+            <div class="pbbp-tax-bandsb" t-if="editable">
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="addBand">
+                <t t-out="ic('plus', 14)"/> Add a band
+              </button>
+              <div class="pbim-modal__sp"/>
+              <button class="pbim-btn primary pbim-btn-sm"
+                      t-att-disabled="!canSaveBands" t-on-click="saveBands">
+                <t t-if="state.busy">Saving…</t>
+                <t t-else="">Save the bands</t>
+              </button>
+            </div>
+
+            <!-- ========== try an income ========== -->
+            <div class="pbbp-tax-try">
+              <div class="pbbp-tax-try-l">
+                <label for="pbbp-try">Try an income</label>
+                <input id="pbbp-try" type="range" min="0" max="200000000" step="500000"
+                       t-att-value="state.tryIncome" t-on-input="onTry"/>
+                <input class="pbbp-tax-try-n" type="text" inputmode="numeric"
+                       aria-label="Income to try"
+                       t-att-value="group(state.tryIncome)" t-on-input="onTry"/>
+              </div>
+              <div class="pbbp-tax-try-r">
+                <span class="pbbp-tax-try-lbl">Income tax</span>
+                <span class="pbbp-tax-try-was" t-if="tryTaxBefore" t-esc="tryTaxBefore"/>
+                <b class="pbbp-tax-try-num" t-esc="group(tryTax)"/>
+                <span class="pbbp-tax-try-cur" t-esc="currency"/>
+                <span class="pbbp-tax-try-eff">effective rate <b t-esc="tryRate"/>%</span>
+              </div>
+            </div>
+            <p class="pbbp-tax-try-note">After relief and the contributions that count
+               against tax. This is the same arithmetic every payslip uses.</p>
+          </t>
+        </section>
+
+        <!-- ========== relief ========== -->
+        <section class="pbbp-card" t-if="relief.length">
+          <header class="pbbp-card-head">
+            <span class="pbbp-card-ic" t-out="ic('userCheck', 18)"/>
+            <div>
+              <h2>Relief before tax</h2>
+              <p>Taken off before the bands are applied, for the person and for everybody
+                 they have registered as a dependant.</p>
+            </div>
+          </header>
+          <div class="pbbp-tax-vals">
+            <t t-foreach="relief" t-as="row" t-key="row.code">
+              <t t-call="pb_blueprint.TaxValue"/>
+            </t>
+          </div>
+        </section>
+
+        <!-- ========== insurance ========== -->
+        <section class="pbbp-card" t-if="insurance.length">
+          <header class="pbbp-card-head">
+            <span class="pbbp-card-ic" t-out="ic('shield', 18)"/>
+            <div>
+              <h2>Insurance follows eligibility</h2>
+              <p>The ceilings contributions stop at, and the share the employee and the
+                 employer each pay.</p>
+            </div>
+          </header>
+          <div class="pbbp-tax-vals">
+            <t t-foreach="insurance" t-as="row" t-key="row.code">
+              <t t-call="pb_blueprint.TaxValue"/>
+            </t>
+          </div>
+
+          <div class="pbbp-tax-prefs">
+            <div class="pbbp-tax-pref">
+              <label>Insurable pay is</label>
+              <div class="pbim-seg">
+                <button t-attf-class="pbim-segbtn {{ state.prefs.basis === 'contract' ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setPref('basis', 'contract')">
+                  The contract salary
+                </button>
+                <button t-attf-class="pbim-segbtn {{ state.prefs.basis === 'actual' ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setPref('basis', 'actual')">
+                  What was actually paid
+                </button>
+              </div>
+              <small t-if="state.prefs.basis === 'contract'">A short month does not reduce
+                 anybody's cover: the contract figure is used whatever was paid.</small>
+              <small t-else="">Every earning marked as counting toward insurance is added up,
+                 then capped.</small>
+            </div>
+
+            <div class="pbbp-tax-pref">
+              <label>Round money to</label>
+              <div class="pbim-seg">
+                <button t-attf-class="pbim-segbtn {{ state.prefs.rounding === '0' ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setPref('rounding', '0')">
+                  The nearest whole amount
+                </button>
+                <button t-attf-class="pbim-segbtn {{ state.prefs.rounding === 'down' ? 'on' : '' }}"
+                        t-att-disabled="!editable"
+                        t-on-click="() => this.setPref('rounding', 'down')">
+                  Always downward
+                </button>
+              </div>
+              <small>Applies to every component that rounds. Components set to keep every
+                 decimal are left exactly as they are.</small>
+            </div>
+          </div>
+
+          <p class="pbbp-note">Foreign employees follow a distinct eligibility plan.
+             Unemployment insurance does not apply to them.</p>
+
+          <div class="pbbp-tax-vb">
+            <button class="pbbp-changelink" t-if="props.onComponents"
+                    t-on-click="() => this.props.onComponents('ins')">
+              Review the insurance components
+            </button>
+            <div class="pbim-modal__sp"/>
+            <button class="pbim-btn primary pbim-btn-sm" t-if="editable"
+                    t-att-disabled="!canSaveValues" t-on-click="saveValues">
+              <t t-if="state.busy">Saving…</t>
+              <t t-else="">Save these values</t>
+            </button>
+          </div>
+        </section>
+
+        <!-- ========== other tax routes ========== -->
+        <section class="pbbp-card pbbp-tax-routes">
+          <button class="pbbp-se-disc-h" t-on-click="toggleRoutes"
+                  t-att-aria-expanded="state.routesOpen ? 'true' : 'false'">
+            <span class="i" t-out="ic(state.routesOpen ? 'chevronDown' : 'chevron', 15)"/>
+            <b>Other ways income can be taxed</b>
+            <span class="pbim-badge muted" t-if="routes.length" t-esc="routes.length"/>
+          </button>
+
+          <div t-if="state.routesOpen">
+            <div class="pbbp-tax-vals" t-if="routes.length">
+              <t t-foreach="routes" t-as="row" t-key="row.code">
+                <t t-call="pb_blueprint.TaxValue"/>
+              </t>
+            </div>
+            <p class="pbbp-note" t-else="">This configuration taxes every employee as a
+               resident on an ordinary contract. The Vietnam · Complete starting point adds
+               a route for people who are not tax resident and one for contracts shorter
+               than three months.</p>
+          </div>
+        </section>
+
+        <!-- ========== taking the pack's values ========== -->
+        <div class="pbim-modal-scrim" t-if="state.syncOpen" t-on-click="closeSync">
+          <div class="pbim-modal pbbp-tax-sync" t-on-click.stop="" role="dialog"
+               aria-modal="true">
+            <div class="pbim-modal__head">
+              <div>
+                <div class="pbim-modal__ttl">Use the pack's values</div>
+                <div class="pbim-modal__sub" t-esc="packLine"/>
+              </div>
+              <div class="pbim-modal__sp"/>
+              <button class="pbim-modal__x" title="Close" aria-label="Close"
+                      t-on-click="closeSync" t-out="ic('x', 16)"/>
+            </div>
+            <div class="pbim-modal__body">
+              <p class="pbbp-se-hint">These are the values that differ. Nothing else is
+                 touched, and the change is recorded against this configuration.</p>
+              <div class="pbbp-tax-tablewrap">
+                <table class="pbbp-tax-bands">
+                  <thead>
+                    <tr>
+                      <th>Value</th>
+                      <th class="is-num">Now</th>
+                      <th class="is-num">The pack</th>
+                      <th class="is-num">Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="drift" t-as="d" t-key="d.code">
+                      <td>
+                        <b t-esc="d.label"/>
+                        <code class="pbbp-tax-code" t-esc="d.component"/>
+                      </td>
+                      <td class="is-num" t-esc="showValue(d.current, d.number_format)"/>
+                      <td class="is-num" t-esc="showValue(d.target, d.number_format)"/>
+                      <td t-attf-class="is-num {{ d.delta > 0 ? 'is-up' : 'is-down' }}">
+                        <t t-esc="d.delta > 0 ? '+' : ''"/><t t-esc="showValue(d.delta, d.number_format)"/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pbbp-tax-unmatched" t-if="unmatched.length">
+                <span class="pbbp-eyebrow">Not used by this configuration</span>
+                <p>The pack also carries
+                  <t t-foreach="unmatched" t-as="u" t-key="u.code">
+                    <b t-esc="u.label"/><t t-if="!u_last">, </t>
+                  </t>. There is no matching value here, so nothing is written for them.</p>
+              </div>
+            </div>
+            <div class="pbim-modal__foot">
+              <button class="pbim-btn ghost" t-on-click="closeSync">Leave them as they are</button>
+              <button class="pbim-btn primary" t-on-click="doSync">
+                Use the pack's values
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </t>
+    </div>
+  </t>
+
+  <!-- ==========================================================
+       One statutory value: a number, the pack's figure beside it
+       when they differ, and one press to take the pack's back.
+       ========================================================== -->
+  <t t-name="pb_blueprint.TaxValue">
+    <div t-attf-class="pbbp-tax-val {{ row.differs ? 'is-differs' : '' }}">
+      <label t-attf-for="pbbp-v-{{ row.code }}" t-esc="row.label"/>
+      <div class="pbbp-tax-val-in">
+        <input t-attf-id="pbbp-v-{{ row.code }}" type="text" inputmode="decimal"
+               t-att-disabled="!editable"
+               t-att-value="typed(row)"
+               t-att-class="valueError(row) ? 'is-bad' : ''"
+               t-on-input="(ev) => this.onValue(row, ev)"/>
+        <b class="pbbp-tax-unit" t-if="row.number_format === 'percentage'">%</b>
+        <b class="pbbp-tax-unit" t-else="" t-esc="currency"/>
+      </div>
+      <small class="pbbp-err" t-if="valueError(row)" t-esc="valueError(row)"/>
+      <button class="pbbp-tax-restore" t-elif="row.differs and editable"
+              t-on-click="() => this.restorePack(row)">
+        <t t-out="ic('undo', 12)"/> <t t-esc="packHint(row)"/>
+      </button>
+      <small t-else="" class="pbbp-tax-code" t-esc="row.code"/>
+    </div>
+  </t>
+
+</templates>

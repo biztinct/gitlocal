@@ -1,0 +1,993 @@
+/**
+ * BFSI AI Coach Panel - Expandable Pill → Centered Modal
+ *
+ * Design: Minimized floating pill at bottom-right that opens
+ * into a premium centered modal with blurred backdrop.
+ * Inspired by ChatGPT, Intercom, and Linear AI assistants.
+ */
+
+// ── Variables ──
+$primary-color: #4F46E5;
+$primary-dark: #3730A3;
+$primary-light: #6366F1;
+$primary-glow: rgba(79, 70, 229, 0.15);
+$accent-violet: #7C3AED;
+$accent-violet-light: #A78BFA;
+$success-color: #10B981;
+$warning-color: #F59E0B;
+$danger-color: #EF4444;
+$text-primary: #1e1b4b;
+$text-secondary: #6B7280;
+$text-muted: #9CA3AF;
+$chat-bg: #F5F3FF;
+
+// ── Animations ──
+$spring-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+$smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============================================
+// KEYFRAMES
+// ============================================
+
+@keyframes pillPulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba($primary-color, 0.25); }
+    50% { box-shadow: 0 4px 30px rgba($primary-color, 0.45); }
+}
+
+@keyframes avatarBreathing {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 0.3; }
+}
+
+@keyframes avatarRing1 {
+    0%, 100% { transform: scale(1); opacity: 0.25; }
+    50% { transform: scale(1.3); opacity: 0.05; }
+}
+
+@keyframes avatarRing2 {
+    0%, 100% { transform: scale(1); opacity: 0.15; }
+    50% { transform: scale(1.5); opacity: 0.03; }
+}
+
+@keyframes avatarRing3 {
+    0%, 100% { transform: scale(1); opacity: 0.1; }
+    50% { transform: scale(1.7); opacity: 0; }
+}
+
+@keyframes backdropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalExpandFromPill {
+    0% {
+        opacity: 0;
+        transform: translate(calc(-50% + 300px), calc(-50% + 300px)) scale(0.05);
+        border-radius: 60px;
+    }
+    40% {
+        opacity: 1;
+        border-radius: 36px;
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        border-radius: 24px;
+    }
+}
+
+@keyframes msgSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes typingDots {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+}
+
+@keyframes meshGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes typingPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba($accent-violet, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba($accent-violet, 0); }
+}
+
+@keyframes pillBounceIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+// ============================================
+// ROOT CONTAINER
+// ============================================
+
+.bfsi-ai-coach-panel {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    z-index: 1050;
+}
+
+// ============================================
+// PILL MODE (Minimized — Bottom Right)
+// ============================================
+
+.bfsi-coach-pill {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px 10px 12px;
+    background: #2d2a6e;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 60px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba($primary-color, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    transition: all 0.3s $spring-ease;
+    animation: pillBounceIn 0.5s $spring-ease, pillPulse 4s ease-in-out infinite;
+
+    &:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 8px 32px rgba($primary-color, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    }
+
+    &:active {
+        transform: translateY(-1px) scale(0.98);
+    }
+}
+
+.pill-avatar {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+
+    i {
+        position: relative;
+        z-index: 2;
+    }
+
+    .pill-avatar-glow {
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba($accent-violet-light, 0.4), transparent 70%);
+        animation: avatarBreathing 3s ease-in-out infinite;
+    }
+}
+
+// Custom AI Coach icon image (used everywhere the robot icon was)
+.ai-coach-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+}
+
+// Sizing per context
+.pill-avatar .ai-coach-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.avatar-core .ai-coach-icon {
+    width: 34px;
+    height: 34px;
+}
+
+.ai-msg-avatar .ai-coach-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.pill-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.pill-title {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+}
+
+.pill-status {
+    font-size: 10px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pill-expand-icon {
+    font-size: 11px;
+    opacity: 0.5;
+    margin-left: 4px;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    &.online {
+        background: $success-color;
+        box-shadow: 0 0 6px rgba($success-color, 0.6);
+    }
+}
+
+// ============================================
+// EXPANDED MODE (Centered Modal)
+// ============================================
+
+.bfsi-coach-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1049;
+    background: rgba(15, 15, 35, 0.4);
+    backdrop-filter: blur(8px) saturate(180%);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    animation: backdropIn 0.25s ease-out;
+}
+
+.bfsi-coach-modal {
+    position: fixed;
+    z-index: 1050;
+    top: 50%;
+    left: 50%;
+    /* transform handled by animation keyframes */
+    width: 700px;
+    max-width: calc(100vw - 40px);
+    height: 85vh;
+    max-height: 800px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalExpandFromPill 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+    // Subtle border glow
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 25px;
+        background: linear-gradient(135deg, rgba($primary-color, 0.3), rgba($accent-violet, 0.15), transparent, rgba($primary-color, 0.1));
+        z-index: -1;
+    }
+}
+
+// ── Modal Header ──
+
+.bfsi-coach-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: #2d2a6e;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+
+    // Frosted glass overlay
+    &::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba($accent-violet-light, 0.12), transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+}
+
+.modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 1;
+}
+
+// Animated Avatar (expanded mode)
+.modal-avatar {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-core {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    position: relative;
+    z-index: 3;
+    backdrop-filter: blur(4px);
+}
+
+.avatar-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    &.ring-1 { animation: avatarRing1 3s ease-in-out infinite; }
+    &.ring-2 { animation: avatarRing2 3.5s ease-in-out infinite 0.5s; }
+    &.ring-3 { animation: avatarRing3 4s ease-in-out infinite 1s; }
+}
+
+.modal-title-group {
+    z-index: 1;
+
+    h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: white;
+        letter-spacing: 0.3px;
+    }
+}
+
+.modal-status {
+    font-size: 12px;
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.modal-header-actions {
+    display: flex;
+    gap: 4px;
+    z-index: 1;
+}
+
+.modal-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        transform: scale(1.05);
+    }
+}
+
+// ── KPI Context Bar ──
+
+.bfsi-coach-context-bar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #fafafe;
+    border-bottom: 1px solid rgba($primary-color, 0.06);
+    flex-shrink: 0;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar { display: none; }
+}
+
+.context-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: white;
+    border: 1px solid rgba($primary-color, 0.08);
+    border-radius: 20px;
+    font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    .chip-icon {
+        font-size: 13px;
+    }
+
+    .chip-label {
+        color: $text-muted;
+        font-weight: 500;
+    }
+
+    .chip-value {
+        font-weight: 700;
+        color: $text-primary;
+
+        &.good { color: $success-color; }
+        &.medium { color: $warning-color; }
+        &.low { color: $danger-color; }
+    }
+}
+
+// ── Chat Messages Area ──
+
+.bfsi-coach-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    // Animated mesh gradient background
+    background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 25%, #f0f9ff 50%, #f5f3ff 75%, #faf5ff 100%);
+    background-size: 400% 400%;
+    animation: meshGradient 25s ease infinite;
+
+    // Subtle dot pattern overlay
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba($primary-color, 0.04) 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+    }
+
+    // Custom scrollbar
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+        background: rgba($primary-color, 0.15);
+        border-radius: 10px;
+        &:hover { background: rgba($primary-color, 0.3); }
+    }
+}
+
+// ── Message Bubbles ──
+
+.coach-message {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    max-width: 88%;
+
+    &.msg-animate-in {
+        animation: msgSlideIn 0.35s $smooth-ease both;
+    }
+
+    &.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+
+        .message-bubble {
+            background: #4F46E5;
+            color: white;
+            border-radius: 20px 20px 4px 20px;
+            box-shadow: 0 3px 14px rgba($primary-color, 0.25);
+        }
+
+        .msg-meta {
+            text-align: right;
+        }
+    }
+
+    &.assistant {
+        align-self: flex-start;
+
+        .message-bubble {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f7ff 100%);
+            color: $text-primary;
+            border-radius: 20px 20px 20px 4px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba($primary-color, 0.08);
+        }
+
+        &.greeting .message-bubble {
+            background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #ffffff 100%);
+            border: 1px solid rgba($primary-color, 0.12);
+        }
+
+        &.error .message-bubble {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            color: $danger-color;
+        }
+    }
+}
+
+.msg-avatar {
+    flex-shrink: 0;
+}
+
+.ai-msg-avatar, .user-msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.ai-msg-avatar {
+    background: #3730A3;
+    color: white;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.25);
+
+    &.typing-pulse {
+        animation: typingPulse 1.5s ease-in-out infinite;
+    }
+}
+
+.user-msg-avatar {
+    background: $primary-color;
+    color: white;
+}
+
+.msg-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-bubble {
+    padding: 12px 16px;
+    line-height: 1.6;
+    font-size: 14px;
+    word-wrap: break-word;
+
+    // Reset numbered-item counter at the bubble level
+    counter-reset: ai-num-counter;
+
+    // ── Rich AI Content Formatting ──
+
+    .ai-paragraph {
+        margin: 0 0 8px 0;
+        &:last-child { margin-bottom: 0; }
+    }
+
+    .ai-heading {
+        font-weight: 700;
+        color: $text-primary;
+        margin: 14px 0 6px 0;
+        padding-bottom: 4px;
+        line-height: 1.3;
+        &:first-child { margin-top: 0; }
+    }
+
+    h2.ai-heading {
+        font-size: 16px;
+        border-bottom: 2px solid rgba($primary-color, 0.15);
+        padding-bottom: 6px;
+    }
+    h3.ai-heading { font-size: 15px; }
+    h4.ai-heading { font-size: 14px; color: $primary-color; }
+
+    strong { font-weight: 700; color: $text-primary; }
+    em { font-style: italic; color: $text-secondary; }
+
+    // Numbered items — CSS counter
+    .ai-numbered-item {
+        position: relative;
+        padding: 6px 0 6px 28px;
+        line-height: 1.5;
+        font-size: 13.5px;
+        counter-increment: ai-num-counter;
+
+        &::before {
+            content: counter(ai-num-counter) ".";
+            position: absolute;
+            left: 0;
+            top: 6px;
+            color: $primary-color;
+            font-weight: 800;
+            font-size: 13px;
+            min-width: 18px;
+        }
+
+        & + .ai-numbered-item {
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+    }
+
+    // Bullet lists
+    .ai-bullet-list {
+        margin: 4px 0;
+        padding-left: 0;
+        list-style: none;
+
+        li {
+            position: relative;
+            padding: 3px 0 3px 20px;
+            line-height: 1.5;
+            font-size: 13px;
+            color: $text-secondary;
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: 4px;
+                top: 10px;
+                width: 5px;
+                height: 5px;
+                background: $accent-violet;
+                border-radius: 50%;
+            }
+
+            & + li {
+                border-top: 1px solid rgba(0, 0, 0, 0.03);
+            }
+        }
+    }
+
+    // Code blocks
+    .ai-code-block {
+        background: #1e1e2e;
+        color: #cdd6f4;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 8px 0;
+        overflow-x: auto;
+        font-size: 12.5px;
+        font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+        line-height: 1.5;
+        border: 1px solid #313244;
+
+        code {
+            background: transparent;
+            padding: 0;
+            font-size: inherit;
+            color: inherit;
+        }
+    }
+
+    .ai-inline-code {
+        background: rgba($primary-color, 0.08);
+        color: $primary-color;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12.5px;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-weight: 500;
+    }
+
+    // Blockquotes
+    .ai-blockquote {
+        border-left: 3px solid $primary-color;
+        padding: 8px 12px;
+        margin: 8px 0;
+        background: rgba($primary-color, 0.04);
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: $text-secondary;
+        font-size: 13.5px;
+    }
+
+    // Horizontal divider
+    .ai-divider {
+        border: none;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba($primary-color, 0.2), transparent);
+        margin: 12px 0;
+    }
+}
+
+// ── Message Meta ──
+
+.msg-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.msg-time {
+    font-size: 11px;
+    color: $text-muted;
+}
+
+.msg-feedback {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    .coach-message:hover & {
+        opacity: 1;
+    }
+}
+
+.feedback-btn {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+
+    &:hover {
+        background: rgba($primary-color, 0.06);
+        border-color: rgba($primary-color, 0.12);
+        transform: scale(1.15);
+    }
+}
+
+// ── Message Actions ──
+
+.msg-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.msg-action-chip {
+    padding: 5px 12px;
+    border: 1px solid rgba($primary-color, 0.15);
+    border-radius: 16px;
+    background: rgba($primary-color, 0.04);
+    color: $primary-color;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba($primary-color, 0.1);
+        border-color: rgba($primary-color, 0.25);
+        transform: translateY(-1px);
+    }
+}
+
+// ── Typing Indicator ──
+
+.typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px !important;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+
+    span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: $primary-color;
+        animation: typingDots 1.4s infinite ease-in-out;
+
+        &:nth-child(2) { animation-delay: 0.2s; }
+        &:nth-child(3) { animation-delay: 0.4s; }
+    }
+}
+
+.typing-label {
+    font-size: 12px;
+    color: $text-muted;
+    font-style: italic;
+}
+
+// ── Quick Actions ──
+
+.bfsi-coach-quick-actions {
+    padding: 8px 20px;
+    border-top: 1px solid rgba($primary-color, 0.06);
+    background: #fafafe;
+    flex-shrink: 0;
+}
+
+.quick-actions-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+
+    &::-webkit-scrollbar { display: none; }
+}
+
+.qa-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1px solid rgba($primary-color, 0.12);
+    border-radius: 20px;
+    background: white;
+    color: $primary-color;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+
+    i {
+        font-size: 11px;
+        opacity: 0.7;
+    }
+
+    &:hover {
+        background: rgba($primary-color, 0.06);
+        border-color: rgba($primary-color, 0.25);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba($primary-color, 0.1);
+    }
+}
+
+// ── Chat Input Area ──
+
+.bfsi-coach-input-area {
+    padding: 12px 20px 16px;
+    border-top: 1px solid rgba($primary-color, 0.08);
+    background: white;
+    flex-shrink: 0;
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.coach-input {
+    flex: 1;
+    border: 1.5px solid rgba($primary-color, 0.12);
+    border-radius: 16px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: none;
+    min-height: 44px;
+    max-height: 120px;
+    background: #fafafe;
+    color: $text-primary;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+        background: white;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.08);
+    }
+
+    &::placeholder {
+        color: $text-muted;
+    }
+}
+
+.send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: $primary-color;
+    border: none;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.3);
+    transition: all 0.2s;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background: $primary-light;
+        box-shadow: 0 4px 14px rgba($primary-color, 0.4);
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    i {
+        font-size: 16px;
+        color: white;
+    }
+}
+
+.input-hint {
+    font-size: 11px;
+    color: $text-muted;
+    text-align: center;
+    margin-top: 6px;
+    opacity: 0.6;
+}
+
+// ── Learning content link ──
+
+.msg-learning {
+    margin-top: 8px;
+
+    .learning-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        background: rgba($primary-color, 0.06);
+        color: $primary-color;
+        border-radius: 8px;
+        font-size: 12px;
+        text-decoration: none;
+        transition: all 0.2s;
+
+        &:hover {
+            background: rgba($primary-color, 0.12);
+        }
+    }
+}
+
+// ============================================
+// MOBILE RESPONSIVE
+// ============================================
+
+@media (max-width: 767px) {
+    .bfsi-coach-pill {
+        bottom: 16px;
+        right: 16px;
+        padding: 8px 14px 8px 10px;
+    }
+
+    .bfsi-coach-modal {
+        width: calc(100vw - 16px);
+        height: 90vh;
+        max-height: none;
+        border-radius: 20px 20px 0 0;
+        top: auto;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .bfsi-coach-messages {
+        padding: 16px;
+    }
+
+    .coach-message {
+        max-width: 92%;
+    }
+}

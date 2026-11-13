@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         THE NATIVE FORMS BEHIND THE BOARD.
+
+         The board is where the work happens; these are where somebody opens
+         ONE record to see everything about it, and where the HR team sets the
+         year up. Three rules bit this codebase and are kept here:
+
+           * `nolabel="1"` INSIDE A `<group>` NEEDS `colspan="2"` (R128). An
+             inner group is a two-column grid — narrow label, wide value — and
+             a label-less field takes the NARROW cell, so a description box
+             comes out 150px wide with a thousand pixels of empty row beside
+             it.
+           * A SEARCH `<group>` TAKES NO `string` OR `expand` (R129). It fails
+             RNG validation and aborts the whole module load, with the real
+             error only in the server log. Write `<group name="group_by">`
+             bare.
+           * DO NOT DEFAULT A LIST TO `group_by` (R130). Odoo opens groups
+             COLLAPSED, so the screen lands on five headings and zero rows.
+         ================================================================== -->
+
+    <!-- ==================================================================
+         THE BOARD — a client action RECORD and never a bare tag. A bare tag
+         is synthesised with no action NAME, so anything returning through a
+         breadcrumb lands on a crumb labelled "Unnamed".
+         ================================================================== -->
+    <record id="action_pb_goals_board" model="ir.actions.client">
+        <field name="name">Goals</field>
+        <field name="tag">pb_goals_board</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- The employee's own page, as an action, so the command bar can open
+         it: the palette contract knows exactly two doors — a client-action
+         tag and an xmlid — and there is no URL door (R180). -->
+    <record id="action_my_goals" model="ir.actions.act_url">
+        <field name="name">My goals</field>
+        <field name="url">/my/goals</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- ==================================================================
+         THE GOAL YEAR
+         ================================================================== -->
+    <record id="view_pb_goal_cycle_list" model="ir.ui.view">
+        <field name="name">pb.goal.cycle.list</field>
+        <field name="model">pb.goal.cycle</field>
+        <field name="arch" type="xml">
+            <list string="Goal years">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="mid_year_date" optional="show"/>
+                <field name="submission_days" optional="hide"/>
+                <field name="set_count" string="Goal sheets"/>
+                <field name="locked_count" string="Agreed"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'open'"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_cycle_form" model="ir.ui.view">
+        <field name="name">pb.goal.cycle.form</field>
+        <field name="model">pb.goal.cycle</field>
+        <field name="arch" type="xml">
+            <form string="Goal year">
+                <header>
+                    <button name="action_open" type="object" string="Open it"
+                            class="btn-primary" invisible="state == 'open'"
+                            help="People can be given their goal sheets once it is open. Only one goal year can be open at a time."/>
+                    <button name="action_close" type="object"
+                            string="Close it" invisible="state != 'open'"/>
+                    <button name="action_back_to_draft" type="object"
+                            string="Back to being set up"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sets" type="object"
+                                class="oe_stat_button" icon="fa-bullseye">
+                            <field name="set_count" widget="statinfo"
+                                   string="Goal sheets"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Goal year"/>
+                        <h1><field name="name" placeholder="FY2026"/></h1>
+                    </div>
+                    <group>
+                        <group string="When it runs">
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="mid_year_date"/>
+                        </group>
+                        <group string="How it works">
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                            <field name="submission_days"/>
+                            <field name="locked_count"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Anything to say about this year">
+                        <field name="note" nolabel="1" colspan="2"
+                               placeholder="What this year is about, and anything people should keep in mind when they write their goals."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_cycle_search" model="ir.ui.view">
+        <field name="name">pb.goal.cycle.search</field>
+        <field name="model">pb.goal.cycle</field>
+        <field name="arch" type="xml">
+            <search string="Goal years">
+                <field name="name"/>
+                <filter name="f_open" string="Open"
+                        domain="[('state', '=', 'open')]"/>
+                <filter name="f_closed" string="Closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <group name="group_by">
+                    <filter name="gb_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="gb_company" string="Company"
+                            context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_cycle" model="ir.actions.act_window">
+        <field name="name">Goal years</field>
+        <field name="res_model">pb.goal.cycle</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Set up a goal year</p>
+            <p>A goal year is the dates everybody's goals belong to — when it
+               starts, when it ends, and how long somebody gets to write
+               theirs. Make one, open it, and everyone can start.</p>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE GOAL SHEET
+         ================================================================== -->
+    <record id="view_pb_goal_set_list" model="ir.ui.view">
+        <field name="name">pb.goal.set.list</field>
+        <field name="model">pb.goal.set</field>
+        <field name="arch" type="xml">
+            <list string="Goal sheets">
+                <field name="employee_id"/>
+                <field name="cycle_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="manager_employee_id" string="Manager"
+                       optional="show"/>
+                <field name="deadline"/>
+                <field name="goal_count" string="Goals"/>
+                <field name="weight_total" string="Weights"/>
+                <field name="progress" widget="percentage" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'locked'"
+                       decoration-warning="state == 'returned'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_set_form" model="ir.ui.view">
+        <field name="name">pb.goal.set.form</field>
+        <field name="model">pb.goal.set</field>
+        <field name="arch" type="xml">
+            <form string="Goal sheet">
+                <header>
+                    <button name="action_goals_submit" type="object"
+                            string="Send it in" class="btn-primary"
+                            invisible="state not in ('draft', 'returned')"/>
+                    <button name="action_goals_manager_ok" type="object"
+                            string="Agree the goals"
+                            invisible="state != 'submitted'"
+                            help="Set the weights first — they have to add up to 100."/>
+                    <button name="action_goals_lock" type="object"
+                            string="Agree and lock" class="btn-primary"
+                            invisible="state != 'manager_ok'"/>
+                    <button name="action_goals_send_back" type="object"
+                            string="Send it back"
+                            invisible="state not in ('submitted', 'manager_ok')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,manager_ok,locked"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_goals" type="object"
+                                class="oe_stat_button" icon="fa-list-ul">
+                            <field name="goal_count" widget="statinfo"
+                                   string="Goals"/>
+                        </button>
+                    </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="state != 'returned' or not return_note">
+                        <strong>Sent back:</strong>
+                        <field name="return_note" readonly="1" nolabel="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Whose, and for when">
+                            <field name="employee_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="cycle_id"
+                                   readonly="state != 'draft'"/>
+                            <field name="deadline"/>
+                            <field name="joined_on"/>
+                        </group>
+                        <group string="Where it has got to">
+                            <field name="manager_employee_id"/>
+                            <field name="weight_total"/>
+                            <field name="progress" widget="percentage"/>
+                            <field name="locked_at"/>
+                            <field name="locked_by_id"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="The goals" name="goals">
+                            <field name="goal_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="title"/>
+                                    <field name="weight"
+                                           string="Weight (out of 100)"/>
+                                    <field name="date_end" string="Done by"/>
+                                    <field name="self_rating"
+                                           string="Their own view"/>
+                                    <field name="kr_count" string="Key results"
+                                           readonly="1"/>
+                                    <field name="progress"
+                                           widget="percentage" readonly="1"/>
+                                    <field name="locked" readonly="1"
+                                           optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_set_search" model="ir.ui.view">
+        <field name="name">pb.goal.set.search</field>
+        <field name="model">pb.goal.set</field>
+        <field name="arch" type="xml">
+            <search string="Goal sheets">
+                <field name="employee_id"/>
+                <field name="cycle_id"/>
+                <field name="department_id"/>
+                <filter name="f_open" string="Still to be agreed"
+                        domain="[('state', 'in', ('draft', 'returned', 'submitted', 'manager_ok'))]"/>
+                <filter name="f_waiting" string="Waiting on somebody"
+                        domain="[('state', 'in', ('submitted', 'manager_ok'))]"/>
+                <filter name="f_back" string="Sent back"
+                        domain="[('state', '=', 'returned')]"/>
+                <filter name="f_locked" string="Agreed and locked"
+                        domain="[('state', '=', 'locked')]"/>
+                <separator/>
+                <filter name="f_mine" string="My team's"
+                        domain="[('manager_user_id', '=', uid)]"/>
+                <group name="group_by">
+                    <filter name="gb_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="gb_cycle" string="Goal year"
+                            context="{'group_by': 'cycle_id'}"/>
+                    <filter name="gb_dept" string="Part of the business"
+                            context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_set" model="ir.actions.act_window">
+        <field name="name">Goal sheets</field>
+        <field name="res_model">pb.goal.set</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ==================================================================
+         THE GOAL AND ITS KEY RESULTS
+         ================================================================== -->
+    <record id="view_pb_goal_form" model="ir.ui.view">
+        <field name="name">pb.goal.form</field>
+        <field name="model">pb.goal</field>
+        <field name="arch" type="xml">
+            <form string="Goal">
+                <sheet>
+                    <div class="alert alert-info" role="alert"
+                         invisible="not locked">
+                        This goal has been agreed and locked, so it cannot be
+                        reworded. The figures on its key results still move.
+                    </div>
+                    <div class="oe_title">
+                        <label for="title" string="The goal"/>
+                        <h1><field name="title"
+                                   placeholder="Grow the north region"/></h1>
+                    </div>
+                    <group>
+                        <group string="When">
+                            <field name="set_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group string="How much it counts">
+                            <field name="weight"/>
+                            <field name="self_rating"/>
+                            <field name="progress" widget="percentage"
+                                   readonly="1"/>
+                            <field name="locked" readonly="1"/>
+                            <field name="template_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Why it matters and what good looks like">
+                        <field name="description" nolabel="1" colspan="2"
+                               placeholder="What changes if this goes well, and how anybody would know."/>
+                    </group>
+                    <notebook>
+                        <page string="Key results" name="krs">
+                            <field name="kr_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="title"/>
+                                    <field name="measure"
+                                           string="In what"/>
+                                    <field name="target"/>
+                                    <field name="current"
+                                           string="Where it is now"/>
+                                    <field name="progress"
+                                           string="How far along"/>
+                                    <field name="due_date" string="By when"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_list" model="ir.ui.view">
+        <field name="name">pb.goal.list</field>
+        <field name="model">pb.goal</field>
+        <field name="arch" type="xml">
+            <list string="Goals">
+                <field name="sequence" widget="handle"/>
+                <field name="employee_id"/>
+                <field name="title"/>
+                <field name="weight"/>
+                <field name="date_end" string="Done by"/>
+                <field name="kr_count" string="Key results"/>
+                <field name="progress" widget="percentage"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_kr_history_list" model="ir.ui.view">
+        <field name="name">pb.goal.kr.history.list</field>
+        <field name="model">pb.goal.kr.history</field>
+        <field name="arch" type="xml">
+            <list string="Every move" create="false">
+                <field name="at"/>
+                <field name="kr_id"/>
+                <field name="progress"/>
+                <field name="current"/>
+                <field name="note"/>
+                <field name="by_user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         THE TEMPLATES
+         ================================================================== -->
+    <record id="view_pb_goal_template_list" model="ir.ui.view">
+        <field name="name">pb.goal.template.list</field>
+        <field name="model">pb.goal.template</field>
+        <field name="arch" type="xml">
+            <list string="Goal templates">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="title" width="280px"/>
+                <field name="job_ids" widget="many2many_tags" optional="show"/>
+                <field name="department_ids" widget="many2many_tags"
+                       optional="hide"/>
+                <field name="used_count" string="Used"/>
+                <field name="company_id" groups="base.group_multi_company"
+                       optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_goal_template_form" model="ir.ui.view">
+        <field name="name">pb.goal.template.form</field>
+        <field name="model">pb.goal.template</field>
+        <field name="arch" type="xml">
+            <form string="Goal template">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="What this template is for"/>
+                        <h1><field name="name"
+                                   placeholder="Grow a region"/></h1>
+                    </div>
+                    <group>
+                        <group string="Who it is offered to">
+                            <field name="job_ids" widget="many2many_tags"/>
+                            <field name="department_ids"
+                                   widget="many2many_tags"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                        <group string="How it is doing">
+                            <field name="used_count"/>
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group string="The goal, as it will be written">
+                        <field name="title" nolabel="1" colspan="2"
+                               placeholder="Grow the north region"/>
+                    </group>
+                    <group string="Why it matters and what good looks like">
+                        <field name="description" nolabel="1" colspan="2"
+                               placeholder="What changes if this goes well, and how anybody would know."/>
+                    </group>
+                    <group string="Key results, one per line">
+                        <field name="kr_titles" nolabel="1" colspan="2"
+                               placeholder="New customers in the north&#10;Revenue from the north&#10;Visits a month"/>
+                    </group>
+                    <group string="Notes for the HR team">
+                        <field name="note" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_goal_template" model="ir.actions.act_window">
+        <field name="name">Goal templates</field>
+        <field name="res_model">pb.goal.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Write a goal template</p>
+            <p>A template is what a good goal looks like for somebody doing a
+               particular job. People copy it onto their own page with one
+               press and then own every word of it.</p>
+        </field>
+    </record>
+
+</odoo>

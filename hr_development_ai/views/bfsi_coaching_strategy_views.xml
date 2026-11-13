@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Coaching Strategy Views -->
+    <record id="view_bfsi_coaching_strategy_list" model="ir.ui.view">
+        <field name="name">bfsi.coaching.strategy.list</field>
+        <field name="model">bfsi.coaching.strategy</field>
+        <field name="arch" type="xml">
+            <list string="Coaching Strategies">
+                <field name="name"/>
+                <field name="banker_id" widget="many2one_avatar_employee"/>
+                <field name="manager_id" widget="many2one_avatar_employee"/>
+                <field name="kpi_snapshot_date"/>
+                <field name="ai_confidence" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-info="state == 'generated'" decoration-success="state == 'completed'" decoration-warning="state == 'in_use'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bfsi_coaching_strategy_form" model="ir.ui.view">
+        <field name="name">bfsi.coaching.strategy.form</field>
+        <field name="model">bfsi.coaching.strategy</field>
+        <field name="arch" type="xml">
+            <form string="Coaching Strategy">
+                <header>
+                    <button name="action_generate_strategy" type="object" string="Generate AI Strategy" class="btn-primary" icon="fa-magic" invisible="state != 'draft'"/>
+                    <button name="action_start_roleplay" type="object" string="Practice Roleplay" icon="fa-comments" invisible="state not in ['generated', 'reviewed']"/>
+                    <button name="action_create_session" type="object" string="Start Coaching Session" class="btn-success" icon="fa-play" invisible="state not in ['generated', 'reviewed']"/>
+                    <button name="action_mark_complete" type="object" string="Mark Complete" invisible="state != 'in_use'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,generated,in_use,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-line-chart" name="%(action_bfsi_performance_kpi)d" type="action" context="{'search_default_employee_id': banker_id}">
+                            <span class="o_stat_text">View KPIs</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <div class="vu-section">
+                        <div class="vu-section__title">
+                            <span class="vu-section__icon" data-icon="clipboard-list"/>
+                            <div>
+                                <span>Strategy Overview</span>
+                                <small class="text-muted d-block">Target banker, AI analysis and configuration</small>
+                            </div>
+                        </div>
+                        <div class="vu-section-grid">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="users-group"/>
+                                    <span>Target Banker</span>
+                                </div>
+                                <group col="2">
+                                    <field name="banker_id" widget="many2one_avatar_employee"/>
+                                    <field name="branch_id"/>
+                                    <field name="performance_kpi_id" options="{'no_open': True}"/>
+                                </group>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="timeline"/>
+                                    <span>Strategy Info</span>
+                                </div>
+                                <group col="2">
+                                    <field name="manager_id" widget="many2one_avatar_employee"/>
+                                    <field name="kpi_snapshot_date"/>
+                                    <field name="ai_provider" invisible="1"/>
+                                    <field name="ai_confidence" widget="percentpie"/>
+                                    <field name="generation_date"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <page string="Performance Analysis" name="analysis">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="activity"/>
+                                    <span>Performance Summary</span>
+                                </div>
+                                <field name="performance_summary" nolabel="1" widget="html"/>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <span>Root Cause Analysis</span>
+                                </div>
+                                <field name="root_cause_analysis" nolabel="1" widget="html"/>
+                            </div>
+                            <div class="vu-section-grid">
+                                <div class="vu-card">
+                                    <div class="vu-card__title">
+                                        <span class="vu-section__icon" data-icon="shield-check"/>
+                                        <span>Identified Strengths</span>
+                                    </div>
+                                    <group>
+                                        <field name="strengths" nolabel="1" widget="text"/>
+                                    </group>
+                                </div>
+                                <div class="vu-card">
+                                    <div class="vu-card__title">
+                                        <span class="vu-section__icon" data-icon="alert-triangle"/>
+                                        <span>Improvement Areas</span>
+                                    </div>
+                                    <group>
+                                        <field name="improvement_areas" nolabel="1" widget="text"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+                        <page string="Coaching Strategy" name="strategy">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="tag"/>
+                                    <span>Coaching Themes</span>
+                                </div>
+                                <field name="coaching_themes" nolabel="1"/>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                    <span>AI Coaching Strategy</span>
+                                </div>
+                                <field name="ai_strategy" nolabel="1" widget="html"/>
+                            </div>
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="clipboard-list"/>
+                                    <span>Proposed Coaching Plan</span>
+                                </div>
+                                <field name="proposed_plan" nolabel="1" widget="html"/>
+                            </div>
+                        </page>
+                        <page string="Session Guide" name="session_guide">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="file-text"/>
+                                    <span>Step-by-Step Session Guide</span>
+                                </div>
+                                <field name="session_guide" nolabel="1"/>
+                            </div>
+                            <div class="vu-section-grid">
+                                <div class="vu-card">
+                                    <div class="vu-card__title">
+                                        <span class="vu-section__icon" data-icon="book-open"/>
+                                        <span>Opening Questions</span>
+                                    </div>
+                                    <group>
+                                        <field name="opening_questions" nolabel="1"/>
+                                    </group>
+                                </div>
+                                <div class="vu-card">
+                                    <div class="vu-card__title">
+                                        <span class="vu-section__icon" data-icon="activity"/>
+                                        <span>Probing Questions</span>
+                                    </div>
+                                    <group>
+                                        <field name="probing_questions" nolabel="1"/>
+                                    </group>
+                                </div>
+                            </div>
+                            <div class="vu-section-grid">
+                                <div class="vu-card">
+                                    <div class="vu-card__title">
+                                        <span class="vu-section__icon" data-icon="shield-check"/>
+                                        <span>Closing Questions</span>
+                                    </div>
+                                    <group>
+                                        <field name="closing_questions" nolabel="1"/>
+                                    </group>
+                                </div>
+                                <div class="vu-card">
+                                    <div class="vu-card__title">
+                                        <span class="vu-section__icon" data-icon="heart-pulse"/>
+                                        <span>Coaching Tips</span>
+                                    </div>
+                                    <group>
+                                        <field name="coaching_tips" nolabel="1"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+                        <page string="Roleplay Scenarios" name="roleplay">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="users-group"/>
+                                    <span>Practice Scenarios</span>
+                                </div>
+                                <field name="roleplay_scenarios" nolabel="1"/>
+                            </div>
+                            <div class="vu-card" invisible="not roleplay_conversation">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="timeline"/>
+                                    <span>Practice Conversation History</span>
+                                </div>
+                                <field name="roleplay_conversation" nolabel="1" readonly="1"/>
+                            </div>
+                        </page>
+                        <page string="Learning Recommendations" name="learning">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="book-open"/>
+                                    <span>Recommended Learning</span>
+                                </div>
+                                <field name="learning_recommendations" nolabel="1"/>
+                            </div>
+                        </page>
+                        <page string="Linked Session" name="session" invisible="not coaching_session_id">
+                            <div class="vu-card">
+                                <div class="vu-card__title">
+                                    <span class="vu-section__icon" data-icon="calendar"/>
+                                    <span>Linked Coaching Session</span>
+                                </div>
+                                <group>
+                                    <field name="coaching_session_id"/>
+                                </group>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_bfsi_coaching_strategy_search" model="ir.ui.view">
+        <field name="name">bfsi.coaching.strategy.search</field>
+        <field name="model">bfsi.coaching.strategy</field>
+        <field name="arch" type="xml">
+            <search string="Search Strategies">
+                <field name="name"/>
+                <field name="banker_id"/>
+                <field name="manager_id"/>
+                <field name="branch_id"/>
+                <separator/>
+                <filter name="generated" string="Generated" domain="[('state', '=', 'generated')]"/>
+                <filter name="in_use" string="In Use" domain="[('state', '=', 'in_use')]"/>
+                <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
+                <group>
+                    <filter name="group_by_banker" string="Banker" context="{'group_by': 'banker_id'}"/>
+                    <filter name="group_by_manager" string="Manager" context="{'group_by': 'manager_id'}"/>
+                    <filter name="group_by_branch" string="Branch" context="{'group_by': 'branch_id'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Roleplay Wizard View -->
+    <record id="view_bfsi_coaching_roleplay_wizard_form" model="ir.ui.view">
+        <field name="name">bfsi.coaching.roleplay.wizard.form</field>
+        <field name="model">bfsi.coaching.roleplay.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Coaching Roleplay Practice">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Practice Mode:</strong> The AI will simulate how the banker might respond.
+                        Use this to practice your coaching conversation before the real session.
+                    </div>
+                    <group>
+                        <group string="Current Scenario">
+                            <field name="strategy_id" invisible="1"/>
+                            <field name="banker_id" readonly="1"/>
+                            <field name="scenario_index" invisible="1"/>
+                            <field name="current_scenario" widget="text" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Conversation" class="pe-3">
+                        <field name="conversation_history" widget="text" readonly="1" placeholder="Conversation will appear here..." class="w-100"/>
+                    </group>
+                    <group invisible="not ai_response">
+                        <group string="Banker Response (AI)">
+                            <field name="ai_response" widget="text" readonly="1"/>
+                        </group>
+                        <group string="Coaching Feedback" invisible="not feedback">
+                            <field name="feedback" widget="html" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Your Message">
+                        <field name="manager_message" widget="text" placeholder="Type your coaching message here..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_send_message" type="object" string="Send Message" class="btn-primary"/>
+                    <button name="action_next_scenario" type="object" string="Next Scenario" class="btn-secondary"/>
+                    <button name="action_save_practice" type="object" string="Save Practice" class="btn-success"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_bfsi_coaching_strategy" model="ir.actions.act_window">
+        <field name="name">Coaching Strategies</field>
+        <field name="res_model">bfsi.coaching.strategy</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_by_banker': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Generate your first coaching strategy
+            </p>
+            <p>AI-generated coaching strategies help you prepare for effective coaching sessions.</p>
+        </field>
+    </record>
+
+</odoo>

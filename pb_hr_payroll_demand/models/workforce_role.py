@@ -40,8 +40,8 @@ class WorkforceRole(models.Model):
         string='Key Performance Indicators',
     )
     skill_ids = fields.Many2many(
-        'pb.workforce.skill',
-        'pb_workforce_skill_role_rel',
+        'hr.skill',
+        'pb_workforce_hr_skill_role_rel',
         'role_id',
         'skill_id',
         string='Required Skills',
@@ -228,7 +228,7 @@ class WorkforceRole(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'pb.workforce.demand.plan',
-            'view_mode': 'tree,form,graph,pivot',
+            'view_mode': 'list,form,graph,pivot',
             'name': _('Demand Plans - %s') % self.name,
             'domain': [('role_id', '=', self.id)],
             'context': {

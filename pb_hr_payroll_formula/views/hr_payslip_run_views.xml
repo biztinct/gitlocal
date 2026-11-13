@@ -13,4 +13,26 @@
             </xpath>
         </field>
     </record>
+
+    <!-- RUNSRC B2 — standard working days sits beside the period it belongs
+         to, because that is the question it answers: how long is a full month
+         on THIS run. -->
+    <record id="view_hr_payslip_run_form_std_work_days" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.std.work.days</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='credit_note']" position="before">
+                <label for="pb_std_work_days"/>
+                <div>
+                    <field name="pb_std_work_days" class="oe_inline"/>
+                    <div class="text-muted small"
+                         invisible="not pb_std_work_days_note">
+                        <field name="pb_std_work_days_note" nolabel="1"
+                               readonly="1" class="oe_inline"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
 </odoo>

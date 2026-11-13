@@ -1,0 +1,356 @@
+[
+ {
+  "msgid": "Decide · your decision at %(step)s · PayAI cannot undo it",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Decide · your decision as %(step)s · PayAI cannot undo it"
+ },
+ {
+  "msgid": "Decide · your decision · PayAI cannot undo it",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Approved at %(step)s. It moves to %(next)s%(who)s.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Approved as %(step)s. It moves to %(next)s%(who)s."
+ },
+ {
+  "msgid": "Approved at %(step)s. That was the last step, so it goes ahead.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Approved as %s. That was the last step, so it goes ahead."
+ },
+ {
+  "msgid": "Approved at %(step)s. That was the last step: the run is approved. Nobody has been paid yet.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Approved as %s. That was the last step: the run is approved. Nobody has been paid yet."
+ },
+ {
+  "msgid": "Approved. It moves to %(next)s%(who)s.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Approved. That was the last step, so it goes ahead.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Approved. That was the last step: the run is approved. Nobody has been paid yet.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Your approval at %(step)s is recorded. The step still waits for %(who)s.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Your approval as %(step)s is recorded. The step still waits for %(who)s."
+ },
+ {
+  "msgid": "Your approval is recorded. The step still waits for %(who)s.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Your approval is recorded.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Your approval is recorded, but it cannot move on: %s",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "nobody could be found to decide the next step.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "%(first)s or %(last)s",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "%s · nobody can decide it yet",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "The next step",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "the next step",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "After you it stops at %s: nobody can decide that step yet, so it waits there until whoever looks after approvals sets it up.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Your seat for %s still waits on this step",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "You hold %(n)s seats on this step. This approval counts for one; ask me again to approve the one you hold for %(whose)s.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "you, for %s",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "\"%(what)s\" is waiting for %(who)s at \"%(step)s\". It comes to you at \"%(mine)s\" after that.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "\"%(what)s\" now waits for %(who)s at \"%(step)s\".",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "It comes to you after this step",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "You have already approved your part",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Learn to read a pay run",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "PayAI never uses an exception: open your approvals to use it there.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "An exception exists for this. PayAI never uses one: open your approvals to approve it yourself with a written reason."
+ },
+ {
+  "msgid": "Nothing was sent",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "I could not remind %s: their sign-in cannot receive reminders. Nothing was sent.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "%s gets a note on the request and a to-do.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Turn something down",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Reject something"
+ },
+ {
+  "msgid": "Turn down",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Reject"
+ },
+ {
+  "msgid": "Turn down %s",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Reject %s"
+ },
+ {
+  "msgid": "Turned down",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Rejected"
+ },
+ {
+  "msgid": "turned down",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "rejected"
+ },
+ {
+  "msgid": "Turning down",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Rejecting"
+ },
+ {
+  "msgid": "Turn down a request that is waiting for your decision, with a reason; confirmed by typing TURN DOWN.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Reject a request that is waiting for your decision, with a reason; confirmed by typing REJECT."
+ },
+ {
+  "msgid": "Turn down the May bonus run because it was paid twice",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Reject the May bonus run because it was paid twice"
+ },
+ {
+  "msgid": "Why is it turned down? Type the reason.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Why is it rejected? Type the reason."
+ },
+ {
+  "msgid": "The run is turned down and every payslip in it is cancelled. It cannot be sent again; a new run has to be prepared.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "The run is rejected and every payslip in it is cancelled. It cannot be sent again; a new run has to be prepared."
+ },
+ {
+  "msgid": "Turned down. %s is told why.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Rejected. %s is told why."
+ },
+ {
+  "msgid": "Turned down. The run and its payslips are cancelled, and %s is told why.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt",
+  "replaces": "Rejected. The run and its payslips are cancelled, and %s is told why."
+ },
+ {
+  "msgid": "(removed, no replacement) You were part of preparing or sending this in, so you cannot also approve it. Ask someone else, or ask for an exception to be set up.",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt-removed"
+ },
+ {
+  "msgid": "(removed, no replacement) approver",
+  "file": "pb_payai_actions/payai/actions_red.py",
+  "kind": "_lt-removed"
+ },
+ {
+  "msgid": "%(n)s people this scheme pays are called \"%(name)s\". Type more of the name, or open the screen to pick them.",
+  "file": "pb_payai_actions/payai/actions_amber.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "%(name)s left on %(date)s (marked %(status)s). They are in this run because you named them.",
+  "file": "pb_payai_actions/payai/actions_amber.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "%(name)s is marked %(status)s, which a usual run leaves out. They are in this run because you named them.",
+  "file": "pb_payai_actions/payai/actions_amber.py",
+  "kind": "_lt"
+ },
+ {
+  "msgid": "Not stated",
+  "file": "pb_payai_actions/payai/actions_amber.py",
+  "kind": "_lt (new to this module; same msgid already translated in pb_hr_payroll_formula's catalogue, reuse its VI)"
+ },
+ {
+  "msgid": "I could not hear back from the server, so I cannot tell yet whether it went through. Press the button again to see what happened. It will not be done twice.",
+  "file": "pb_payai_actions/static/src/js/chat_patch.js",
+  "kind": "_t (new; shown only for a typed Red decision whose reply was lost — the old msgid stays in use for every other call)"
+ },
+ {
+  "msgid": "This request could not be opened.",
+  "file": "pb_approval_config/static/src/js/inbox.js",
+  "kind": "_t (new)"
+ },
+ {
+  "msgid": "You cannot open this request.",
+  "file": "pb_approval_config/models/inbox_facade.py",
+  "kind": "_ (new, python)"
+ },
+ {
+  "msgid": "Nothing was done. %s",
+  "file": "pb_payai_actions/static/src/js/chat_patch.js",
+  "kind": "notification (JS _t)"
+ },
+ {
+  "msgid": "That did not go through on the server. Nothing was done; try again in a moment.",
+  "file": "pb_payai_actions/static/src/js/chat_patch.js",
+  "kind": "notification (JS _t)",
+  "replaces": "I could not hear back from the server, so I cannot tell yet whether it went through. Press the button again to see what happened. It will not be done twice. (only when the server answered with a non-user exception on a decide card)"
+ },
+ {
+  "msgid": "Type <b>Send the June run for approval</b> to PayAI. It answers with a <b>plan card</b>: the run, its people and net pay, and who approves next. Nothing happens until you press <b>Do it</b>. Sent the wrong one? For 10 minutes, while nobody has decided, <b>Withdraw</b> on the card brings it back to Draft.",
+  "file": "docs/tutorial_poc/author/data.js (-> pb_learn/static/content/learn_content.json)",
+  "kind": "learn-content B() pair (VI written inline: '...Gửi nhầm? Trong 10 phút, khi chưa ai quyết định, nút <b>Rút lại</b> trên thẻ đưa nó về Nháp.'); not a .po msgid",
+  "replaces": "Type <b>Send the June run for approval</b> to PayAI. It answers with a <b>plan card</b>: the run, its people and net pay, and who approves next. Nothing happens until you press <b>Do it</b>. Sent the wrong one? <b>Withdraw</b> on the card brings it back to Draft for 10 minutes, while nobody has decided."
+ },
+ {
+  "msgid": "Running payroll works the same way: the plan card names the period, the scheme and the people, and for 10 minutes Undo deletes the draft run.",
+  "file": "docs/tutorial_poc/author/data.js (-> pb_learn/static/content/learn_content.json)",
+  "kind": "learn-content B() pair (VI written inline: '...và trong 10 phút, Hoàn tác xoá đợt lương nháp.'); not a .po msgid",
+  "replaces": "Running payroll works the same way: the plan card names the period, the scheme and the people, and Undo deletes the draft run for 10 minutes."
+ },
+ {
+  "msgid": "Which request do you mean?",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)"
+ },
+ {
+  "msgid": "I could not work out which request you mean.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)"
+ },
+ {
+  "msgid": "%s is not among the people this scheme pays.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)"
+ },
+ {
+  "msgid": "%s was picked before this change and no longer fits.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)"
+ },
+ {
+  "msgid": "This one is confirmed only by typing %s in the box on the card. Pressing a button never counts.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)",
+  "replaces": "Approvals, send-backs and rejections are confirmed by typing %s on the card. A tap or a spoken yes never counts."
+ },
+ {
+  "msgid": "This one is confirmed only by typing %s in the box on the card. A spoken go-ahead never counts.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)",
+  "replaces": "Approvals, send-backs and rejections are confirmed by typing %s on the card. A tap or a spoken yes never counts."
+ },
+ {
+  "msgid": "This one is confirmed only by typing %s in the box on the card. A go-ahead typed in the chat never counts.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)",
+  "replaces": "Approvals, send-backs and rejections are confirmed by typing %s on the card. A tap or a spoken yes never counts."
+ },
+ {
+  "msgid": "Things changed since I showed you this plan, so nothing was done. This is where it stands now.",
+  "file": "pb_payai_actions/payai/runner.py",
+  "kind": "_lt (python code string)"
+ },
+ {
+  "msgid": "Replaced by a newer request",
+  "file": "pb_payai_actions/models/payai_task.py",
+  "kind": "selection label (model term, payai.task.state)"
+ },
+ {
+  "msgid": "Changed before it was done",
+  "file": "pb_payai_actions/models/payai_task.py",
+  "kind": "selection label (model term, payai.task.state)"
+ },
+ {
+  "msgid": "I could not find \"%s\" among the people this scheme pays, and a run can only be narrowed to people or an employment status.",
+  "file": "pb_payai_actions/payai/actions_amber.py",
+  "kind": "_lt (new)"
+ }
+]

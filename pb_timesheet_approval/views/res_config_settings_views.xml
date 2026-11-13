@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_pb_timesheets"
+            model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pb.timesheets</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="120"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <div id="pb_timesheet_approval_settings">
+                    <block title="Weekly timesheets" name="pb_timesheet_approval">
+                        <setting id="pb_timesheet_payroll_setting"
+                                 string="Payroll reads approved timesheets"
+                                 help="Hours, worked days and overtime come from weeks that have been approved, instead of from whatever is recorded at the moment the pay run happens.">
+                            <field name="pb_timesheet_payroll"/>
+                        </setting>
+                        <setting id="pb_timesheet_block_run_setting"
+                                 string="Block the run until every week is approved"
+                                 help="Off by default: an unapproved week is a note on the pay run, not a refusal."
+                                 invisible="not pb_timesheet_payroll">
+                            <field name="pb_timesheet_block_run"/>
+                        </setting>
+                    </block>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

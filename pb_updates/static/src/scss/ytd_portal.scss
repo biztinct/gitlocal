@@ -1,0 +1,18 @@
+// UPDATES P5d (D29) — the employee tax summary: a mid-month advance row says
+// why it is not in the year's totals (indigo pill), and the note under the table.
+.pbme {
+    .pbme-taxrow-adv {
+        display: inline-flex; align-items: center; margin-left: 8px; padding: 2px 9px;
+        border-radius: 999px; background: var(--pbim-soft, #EEEBFA); color: var(--pbim-primary, #5A4BB0);
+        font-size: 11px; font-weight: 700; white-space: nowrap; vertical-align: middle;
+    }
+    // UPDATES P5e (D33) — counted for now: outlined, with a clock, may wrap.
+    .pbme-taxrow-adv-now {
+        gap: 5px; background: transparent; border: 1px solid var(--pbim-primary, #5A4BB0);
+        padding: 1px 9px; white-space: normal; line-height: 1.35;
+        .pbme-taxrow-adv-ic { width: 12px; height: 12px; flex: none; }
+    }
+    .pbme-taxnote-adv {
+        .pbme-ic { color: var(--pbim-primary, #5A4BB0); }
+    }
+}

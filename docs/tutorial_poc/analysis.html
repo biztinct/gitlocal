@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Payobook Learn — Analysis &amp; Recommendation</title>
+<style>
+/* ==========================================================================
+   Payobook Learn — Analysis & Recommendation
+   Self-contained document. Tokens mirror pb_theme/primary_variables.scss.
+   Solid colours only — no gradients. Lucide SVG icons only — no emoji.
+   ========================================================================== */
+:root {
+  --pb-primary: #5A4BB0;
+  --pb-primary-hover: #4A3D96;
+  --pb-primary-dark: #241F52;
+  --pb-primary-light: #CBC2EE;
+  --pb-primary-soft: #EDEAF8;
+  --pb-accent: #0891B2;
+  --pb-accent-soft: #E0F4F9;
+  --pb-money: #0F8A63;
+  --pb-money-soft: #E7F8F1;
+  --pb-warn: #B7791F;
+  --pb-warn-soft: #FDF3E0;
+  --pb-danger: #C0332A;
+  --pb-danger-soft: #FDECEC;
+  --pb-ink: #212121;
+  --pb-ink-2: #424242;
+  --pb-muted: #64748B;
+  --pb-border: #E2E8F0;
+  --pb-canvas: #F4F5FB;
+  --pb-card: #FFFFFF;
+  --pb-radius: 14px;
+  --pb-shadow: 0 1px 2px rgba(36,31,82,.06), 0 8px 24px rgba(36,31,82,.08);
+  --pb-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body {
+  font-family: var(--pb-font); color: var(--pb-ink); background: var(--pb-canvas);
+  font-size: 15px; line-height: 1.62; -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+a { color: var(--pb-primary); text-decoration-color: var(--pb-primary-light); text-underline-offset: 3px; }
+a:hover { color: var(--pb-primary-hover); }
+:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: 3px; border-radius: 4px; }
+
+.ic { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; flex: none; vertical-align: -3px; }
+.ic.lg { width: 20px; height: 20px; }
+
+/* ---------------------------------------------------------------- layout */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px 96px; display: grid; grid-template-columns: 232px 1fr; gap: 40px; align-items: start; }
+
+/* masthead */
+.mast { grid-column: 1 / -1; padding: 40px 0 26px; border-bottom: 1px solid var(--pb-border); margin-bottom: 34px; }
+.mast .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; color: var(--pb-primary-dark); margin-bottom: 18px; }
+.mast .brand .dot { width: 30px; height: 30px; border-radius: 9px; background: var(--pb-primary); color: #fff; display: flex; align-items: center; justify-content: center; }
+.mast .brand .thin { font-weight: 600; color: var(--pb-primary); }
+.mast h1 { font-size: 34px; line-height: 1.18; letter-spacing: -.022em; color: var(--pb-primary-dark); max-width: 20ch; }
+.mast .standfirst { margin-top: 12px; font-size: 16.5px; color: var(--pb-ink-2); max-width: 62ch; }
+.mast .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; background: var(--pb-primary-soft); color: var(--pb-primary); }
+.chip.green { background: var(--pb-money-soft); color: var(--pb-money); }
+.chip.amber { background: var(--pb-warn-soft); color: var(--pb-warn); }
+.chip.cyan  { background: var(--pb-accent-soft); color: var(--pb-accent); }
+.chip.slate { background: #EEF2F7; color: var(--pb-muted); }
+.chip.solid { background: var(--pb-primary); color: #fff; }
+
+.btn { display: inline-flex; align-items: center; gap: 7px; border-radius: 10px; padding: 9px 15px; font-weight: 600; font-size: 13.5px; border: 1px solid transparent; text-decoration: none; transition: background .15s, border-color .15s; }
+.btn.primary { background: var(--pb-primary); color: #fff; }
+.btn.primary:hover { background: var(--pb-primary-hover); color: #fff; }
+.btn.outline { background: #fff; color: var(--pb-primary); border-color: var(--pb-primary-light); }
+.btn.outline:hover { background: var(--pb-primary-soft); }
+
+/* table of contents */
+.toc { position: sticky; top: 24px; }
+.toc .toc-h { font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--pb-muted); padding: 0 12px 8px; }
+.toc a { display: flex; gap: 10px; align-items: baseline; padding: 7px 12px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--pb-ink-2); text-decoration: none; border-left: 2px solid transparent; }
+.toc a:hover { background: var(--pb-primary-soft); color: var(--pb-primary); }
+.toc a .n { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--pb-primary); min-width: 12px; }
+.toc .toc-foot { margin-top: 16px; padding: 12px; border-top: 1px solid var(--pb-border); display: flex; flex-direction: column; gap: 8px; }
+
+/* article */
+.doc { min-width: 0; }
+section { scroll-margin-top: 24px; margin-bottom: 46px; }
+h2 { font-size: 23px; letter-spacing: -.015em; color: var(--pb-primary-dark); display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
+h2 .h-ic { width: 34px; height: 34px; border-radius: 10px; background: var(--pb-primary-soft); color: var(--pb-primary); display: flex; align-items: center; justify-content: center; flex: none; }
+h2 .n { font-size: 13px; font-weight: 800; color: var(--pb-primary); font-variant-numeric: tabular-nums; }
+h3 { font-size: 17px; color: var(--pb-primary-dark); margin: 26px 0 8px; letter-spacing: -.01em; }
+h4 { font-size: 13.5px; color: var(--pb-ink-2); margin: 16px 0 6px; }
+p { margin: 10px 0; max-width: 76ch; }
+.lede { color: var(--pb-ink-2); max-width: 72ch; }
+ul, ol { margin: 10px 0 10px 22px; max-width: 74ch; }
+li { margin: 5px 0; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875em; background: var(--pb-primary-soft); color: var(--pb-primary-dark); padding: 1.5px 6px; border-radius: 5px; }
+strong { color: var(--pb-ink); }
+.small { font-size: 13px; }
+.muted { color: var(--pb-muted); }
+
+/* cards & callouts */
+.card { background: var(--pb-card); border: 1px solid var(--pb-border); border-radius: var(--pb-radius); box-shadow: var(--pb-shadow); padding: 20px 22px; }
+.callout { border-radius: var(--pb-radius); padding: 16px 18px; display: flex; gap: 12px; margin: 16px 0; font-size: 14px; }
+.callout .ic { margin-top: 2px; }
+.callout.rec { background: var(--pb-primary-soft); color: var(--pb-primary-dark); border-left: 4px solid var(--pb-primary); }
+.callout.warn { background: var(--pb-warn-soft); color: #7A5310; border-left: 4px solid var(--pb-warn); }
+.callout.info { background: var(--pb-accent-soft); color: #0A5B70; border-left: 4px solid var(--pb-accent); }
+.callout.good { background: var(--pb-money-soft); color: #0B5C44; border-left: 4px solid var(--pb-money); }
+
+/* tables */
+.tbl-scroll { overflow-x: auto; margin: 16px 0; border: 1px solid var(--pb-border); border-radius: var(--pb-radius); background: #fff; box-shadow: var(--pb-shadow); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--pb-muted); font-weight: 800; padding: 11px 14px; border-bottom: 1px solid var(--pb-border); background: #FBFBFE; position: sticky; top: 0; }
+td { padding: 11px 14px; border-bottom: 1px solid #F0F2F8; vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tr.group td { background: var(--pb-primary-soft); font-weight: 800; color: var(--pb-primary-dark); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; padding: 8px 14px; }
+tbody tr:not(.group):hover td { background: #FAFAFE; }
+td.win { background: var(--pb-money-soft) !important; font-weight: 700; color: #0B5C44; }
+.dash { color: var(--pb-muted); }
+
+/* concept blocks */
+.concept { border: 1px solid var(--pb-border); border-radius: var(--pb-radius); background: #fff; box-shadow: var(--pb-shadow); padding: 22px 24px; margin: 18px 0; }
+.concept > header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.concept > header .c-ic { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex: none; }
+.concept.c1 .c-ic { background: var(--pb-primary-soft); color: var(--pb-primary); }
+.concept.c2 .c-ic { background: var(--pb-money-soft); color: var(--pb-money); }
+.concept.c3 .c-ic { background: var(--pb-accent-soft); color: var(--pb-accent); }
+.concept > header h3 { margin: 0; font-size: 18px; }
+.facts { display: grid; grid-template-columns: 148px 1fr; gap: 2px 18px; margin-top: 14px; font-size: 13.5px; border-top: 1px solid var(--pb-border); padding-top: 14px; }
+.facts dt { font-weight: 700; color: var(--pb-primary); padding: 6px 0; }
+.facts dd { padding: 6px 0; color: var(--pb-ink-2); max-width: 70ch; }
+.pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.pro-con > div { border-radius: 11px; padding: 13px 15px; font-size: 13.5px; }
+.pro-con .pros { background: var(--pb-money-soft); color: #0B5C44; }
+.pro-con .cons { background: var(--pb-warn-soft); color: #7A5310; }
+.pro-con h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: inherit; opacity: .85; }
+.pro-con ul { margin: 0 0 0 18px; max-width: none; }
+
+/* roadmap */
+.phases { display: flex; flex-direction: column; gap: 0; margin: 18px 0; padding-left: 26px; position: relative; }
+.phases::before { content: ""; position: absolute; left: 7px; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--pb-primary-soft); }
+.phase { position: relative; padding: 14px 0 14px 4px; }
+.phase::before { content: ""; position: absolute; left: -26px; top: 20px; width: 13px; height: 13px; border-radius: 50%; background: #fff; border: 3px solid var(--pb-primary); }
+.phase h4 { margin: 0 0 3px; font-size: 14.5px; color: var(--pb-primary-dark); display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.phase p { margin: 4px 0 0; font-size: 13.5px; color: var(--pb-ink-2); }
+
+/* metrics */
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric { background: #fff; border: 1px solid var(--pb-border); border-radius: 12px; padding: 14px 16px; }
+.metric .m-k { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--pb-primary); margin-bottom: 4px; }
+.metric b { display: block; font-size: 14px; color: var(--pb-ink); }
+.metric span { font-size: 12.5px; color: var(--pb-muted); }
+
+/* numbered list of questions */
+ol.qs { counter-reset: q; list-style: none; margin-left: 0; }
+ol.qs li { counter-increment: q; position: relative; padding-left: 34px; margin: 11px 0; max-width: 76ch; }
+ol.qs li::before { content: counter(q); position: absolute; left: 0; top: 1px; width: 23px; height: 23px; border-radius: 50%; background: var(--pb-primary-soft); color: var(--pb-primary); font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+ol.qs li.open::before { background: var(--pb-warn-soft); color: var(--pb-warn); }
+
+footer.doc-foot { grid-column: 1 / -1; border-top: 1px solid var(--pb-border); margin-top: 20px; padding-top: 22px; font-size: 12.5px; color: var(--pb-muted); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 940px) {
+  .wrap { grid-template-columns: 1fr; gap: 0; }
+  .toc { position: static; margin-bottom: 30px; border: 1px solid var(--pb-border); border-radius: var(--pb-radius); background: #fff; padding: 12px; }
+  .toc-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .toc a { border-left: 0; }
+  .mast h1 { font-size: 27px; }
+  .pro-con { grid-template-columns: 1fr; }
+  .facts { grid-template-columns: 1fr; gap: 0; }
+  .facts dt { padding-bottom: 0; }
+}
+@media print {
+  body { background: #fff; font-size: 11pt; }
+  .toc, .mast .meta { display: none; }
+  .wrap { grid-template-columns: 1fr; padding: 0; max-width: none; }
+  .card, .concept, .tbl-scroll { box-shadow: none; break-inside: avoid; }
+  section { break-inside: avoid-page; }
+}
+</style>
+</head>
+<body>
+
+<!-- Lucide icon sprite (inline; no external requests) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><defs>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M7 21h10"/><path d="M4 7h16"/><path d="m6 7-3 6a3 3 0 0 0 6 0z"/><path d="m18 7-3 6a3 3 0 0 0 6 0z"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M10 2v6.34L5.34 16.4A2 2 0 0 0 7.07 20h9.86a2 2 0 0 0 1.73-3.6L14 8.34V2"/><line x1="7.5" y1="14" x2="16.5" y2="14"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><line x1="9" y1="13" x2="9" y2="15"/><line x1="15" y1="13" x2="15" y2="15"/></symbol>
+  <symbol id="i-trending-up" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+  <symbol id="i-help-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17.01"/></symbol>
+  <symbol id="i-list-checks" viewBox="0 0 24 24"><path d="m3 7 2 2 4-4"/><path d="m3 17 2 2 4-4"/><line x1="13" y1="6" x2="21" y2="6"/><line x1="13" y1="12" x2="21" y2="12"/><line x1="13" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-lightbulb" viewBox="0 0 24 24"><path d="M12 2a6 6 0 0 0-4.2 10.3c.8.7 1.2 1.7 1.2 2.7h6c0-1 .4-2 1.2-2.7A6 6 0 0 0 12 2z"/><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/></symbol>
+  <symbol id="i-alert-triangle" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8.01"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-git-branch" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="brand"><span class="dot"><svg class="ic lg"><use href="#i-zap"/></svg></span> Payobook <span class="thin">Learn</span></div>
+    <h1>Analysis &amp; Recommendation</h1>
+    <p class="standfirst">Rethinking the in-app tutorial for Pay Run and Setup: three prototyped concepts, a coverage
+      matrix against the real menu inventory, a decision table, and a staged recommendation that reuses what Payobook already ships.</p>
+    <div class="meta">
+      <span class="chip solid"><svg class="ic"><use href="#i-book-open"/></svg> Design analysis</span>
+      <span class="chip cyan">Scope: Pay Run + Setup</span>
+      <span class="chip green">EN / VI</span>
+      <span class="chip slate">Companion to the runnable prototype</span>
+      <a class="chip amber" href="design_v2.html" style="text-decoration:none">Delivery plan superseded by the v2 implementation design →</a>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <div class="toc-h">Contents</div>
+    <div class="toc-list">
+      <a href="#coverage"><span class="n">1</span> Coverage matrix</a>
+      <a href="#concepts"><span class="n">2</span> The three concepts</a>
+      <a href="#decision"><span class="n">3</span> Decision table</a>
+      <a href="#recommendation"><span class="n">4</span> Recommendation</a>
+      <a href="#roadmap"><span class="n">5</span> Phased roadmap</a>
+      <a href="#metrics"><span class="n">6</span> Success metrics</a>
+      <a href="#assumptions"><span class="n">7</span> Assumptions &amp; questions</a>
+      <a href="#integration"><span class="n">8</span> Integration checklist</a>
+    </div>
+    <div class="toc-foot">
+      <a class="btn primary" href="index.html"><svg class="ic"><use href="#i-play"/></svg> Open the prototype</a>
+      <a class="btn outline" href="README.md"><svg class="ic"><use href="#i-book-open"/></svg> README</a>
+    </div>
+  </nav>
+
+  <article class="doc">
+
+    <!-- ============================================================ 1 -->
+    <section id="coverage">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-grid"/></svg></span><span><span class="n">01</span><br/>Coverage matrix</span></h2>
+      <p class="lede">Every Pay Run and Setup submenu, mapped to its tutorial content in each concept. Inventory verified
+        against <code>pb_sidebar/data/pb_sidebar_data.xml</code> (active items only).</p>
+      <p class="small muted"><strong>★ Full</strong> = fully playable in the prototype · <strong>Outline</strong> = bilingual
+        what / why / when / prerequisites / mistakes content written and shown.</p>
+
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr><th style="width:24%">Sidebar item (EN / VI)</th><th style="width:25%">1 · Journey</th><th style="width:25%">2 · Simulator</th><th style="width:26%">3 · Companion</th></tr></thead>
+          <tbody>
+            <tr class="group"><td colspan="4">Pay Run · Chạy lương</td></tr>
+            <tr><td><strong>Run Payroll</strong><br/><span class="muted small">Chạy bảng lương</span></td>
+                <td><span class="chip"><svg class="ic"><use href="#i-star"/></svg> Full lesson L1</span><br/><span class="small">8 steps + quiz</span></td>
+                <td><span class="chip green"><svg class="ic"><use href="#i-star"/></svg> Mission 1</span><br/><span class="small">full playthrough</span></td>
+                <td>Context card + 4 intents (what-next, affect-run, check-final, practice)</td></tr>
+            <tr><td><strong>Pay Runs</strong><br/><span class="muted small">Đợt tính lương</span></td>
+                <td>Outline station</td><td>Mission 1 submit leg + Mission 3 outline</td>
+                <td>Approve / fix intents; pipeline explainer screen</td></tr>
+            <tr><td><strong>Payslips</strong><br/><span class="muted small">Phiếu lương</span></td>
+                <td>Outline station; L2 trace &amp; morph steps land here</td><td>Mission 1 anomaly inspection</td>
+                <td>“Why is pay different” calc breakdown; BHXH glossary answer</td></tr>
+            <tr><td><strong>Import Data</strong><br/><span class="muted small">Nhập dữ liệu</span></td>
+                <td>Outline station</td><td>Referenced in M1 consequence (“verify import first”)</td>
+                <td>Context card + intents; mock 4-step screen</td></tr>
+            <tr><td><strong>Full &amp; Final</strong><br/><span class="muted small">Quyết toán thôi việc</span></td>
+                <td>Outline station</td><td class="dash">— production phase</td>
+                <td>Context card + intents; mock settlement screen</td></tr>
+            <tr><td><strong>Proration Audit</strong><br/><span class="muted small">Soát xét ngày công</span></td>
+                <td>Outline station</td><td class="dash">— production phase</td>
+                <td>Context card; mock audit screen (factor table)</td></tr>
+            <tr><td><strong>Retro Adjustments</strong><br/><span class="muted small">Điều chỉnh hồi tố</span></td>
+                <td>Outline station</td><td>Referenced in M1 quiz &amp; fix-error answer</td>
+                <td>Context card; mock retro ledger</td></tr>
+
+            <tr class="group"><td colspan="4">Setup · Thiết lập</td></tr>
+            <tr><td><strong>Formula Engine</strong><br/><span class="muted small">Công thức lương</span></td>
+                <td>Outline station</td><td>Mission 4 outline</td>
+                <td>Why-setup intent; mock 3-pane studio</td></tr>
+            <tr><td><strong>Salary Structures</strong><br/><span class="muted small">Cấu trúc lương</span></td>
+                <td>Outline station (legacy framing)</td><td class="dash">—</td>
+                <td>Context card; mock legacy screen</td></tr>
+            <tr><td><strong>Statutory (Insurance &amp; Tax)</strong><br/><span class="muted small">Bảo hiểm &amp; Thuế</span></td>
+                <td><span class="chip"><svg class="ic"><use href="#i-star"/></svg> Full lesson L2</span><br/><span class="small">7 steps + quiz</span></td>
+                <td><span class="chip green"><svg class="ic"><use href="#i-star"/></svg> Mission 2</span><br/><span class="small">full playthrough</span></td>
+                <td>“What happens if I change this rate” consequence answer</td></tr>
+            <tr><td><strong>Integrations</strong><br/><span class="muted small">Tích hợp</span></td>
+                <td>Outline station</td><td class="dash">— production phase</td>
+                <td>Context card; mock connector screen</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">Overview items (Dashboard, Approvals) exist in the shell and are used by lessons and answers,
+        but are out of tutorial scope this phase, as instructed.</p>
+    </section>
+
+    <!-- ============================================================ 2 -->
+    <section id="concepts">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-layers"/></svg></span><span><span class="n">02</span><br/>The three concepts</span></h2>
+
+      <div class="concept c1">
+        <header><span class="c-ic"><svg class="ic lg"><use href="#i-map"/></svg></span>
+          <h3>Option 1 — Cinematic Guided Journey</h3><span class="chip">Watch, then understand</span></header>
+        <p><strong>Central idea:</strong> learning as a visible, story-shaped path. The map turns “a pile of menus” into two
+          lines with stations, dependencies and a destination; the player turns each screen into a narrated scene where
+          animation carries meaning — spotlight means <em>look here</em>, the trace-dot means <em>this rate becomes this
+          payslip line</em>, the morph means <em>this is what your change does</em>.</p>
+        <div class="callout good"><svg class="ic"><use href="#i-check-circle"/></svg>
+          <span><strong>Removes classroom coaching by</strong> replacing the trainer’s projector walkthrough. Narration,
+          camera movement and before/after do what a trainer’s pointing and talking does — on demand, at the learner’s
+          pace, in their language.</span></div>
+        <div class="pro-con">
+          <div class="pros"><h4>Advantages</h4><ul>
+            <li>Best first impression; strongest “wow”.</li>
+            <li>Best at teaching <em>causality</em> (Setup → Pay Run tracing).</li>
+            <li>Lowest cognitive load; linear, so progress means something.</li>
+            <li>Cheap to keep accurate — steps anchor to <code>data-coach</code> selectors that already exist for pb_coach.</li>
+          </ul></div>
+          <div class="cons"><h4>Disadvantages &amp; risks</h4><ul>
+            <li>Passive — watching is not doing.</li>
+            <li>Completion becomes theatre if quizzes are shallow.</li>
+            <li>Long lessons compete with a payroll clerk’s patience.</li>
+            <li>Anchors break silently when screens change; needs anchor-lint in CI.</li>
+          </ul></div>
+        </div>
+        <dl class="facts">
+          <dt>Complexity</dt><dd>Low–Medium. ~70% already exists in <code>pb_coach</code> (spotlight, tours, welcome modal, launcher). New: journey-map surface, autoplay player, trace/morph moments, quizzes, progress persistence.</dd>
+          <dt>Accessibility</dt><dd>Good — narration is text (<code>aria-live</code>), the player is keyboardable, reduced motion swaps animation for instant states. Spotlight must keep 4.5:1 contrast on the dimmed layer.</dd>
+          <dt>Localisation</dt><dd>Tour content moves from JS literals into translatable records — about a day of plumbing, after which Vietnamese is a content task.</dd>
+          <dt>Maintenance</dt><dd>Per-screen change touches 1–3 steps. The outline data model doubles as written documentation.</dd>
+          <dt>Best for</dt><dd>First-week users; the guided-trial demo world; anyone who answers “give me the complete journey”.</dd>
+        </dl>
+      </div>
+
+      <div class="concept c2">
+        <header><span class="c-ic"><svg class="ic lg"><use href="#i-flask"/></svg></span>
+          <h3>Option 2 — Safe Payroll Simulator</h3><span class="chip green">Learn by doing — safely</span></header>
+        <p><strong>Central idea:</strong> payroll competence is judgement, not navigation. The simulator makes the
+          <em>decisions</em> the curriculum: consequence previews before risky actions, seeded anomalies,
+          misconception-recovery when the learner takes the tempting-but-wrong path, and a confidence score earned by choices.</p>
+        <div class="callout good"><svg class="ic"><use href="#i-check-circle"/></svg>
+          <span><strong>Removes classroom coaching by</strong> replacing the supervised “first payroll with a senior watching
+          over your shoulder”. The recovery dialogs are that senior colleague saying “let’s rethink that” — available
+          forever, without embarrassment.</span></div>
+        <div class="pro-con">
+          <div class="pros"><h4>Advantages</h4><ul>
+            <li>Deepest learning — doing and failing safely.</li>
+            <li>Directly reduces real errors: the missions rehearse the top three (blind compute, blind accept, live-rate edit).</li>
+            <li>Confidence score is a readiness signal managers can trust.</li>
+            <li>Vietnamese-realistic data makes it feel like work, not a game.</li>
+          </ul></div>
+          <div class="cons"><h4>Disadvantages &amp; risks</h4><ul>
+            <li>Most expensive to build honestly — each mission is a state machine.</li>
+            <li>Divergence from real screens if built as replicas.</li>
+            <li>Seeded scenarios go stale unless generated.</li>
+            <li>A badly-tuned recovery dialog reads as patronising.</li>
+          </ul></div>
+        </div>
+        <div class="callout info"><svg class="ic"><use href="#i-lightbulb"/></svg>
+          <span><strong>Payobook’s unfair advantage:</strong> <code>pb_demo</code> already provides a regenerable practice world
+          with real screens, partial read-only security and a live June run. Missions can run on the <em>real</em> UI against
+          demo data, which kills the replica-divergence risk entirely.</span></div>
+        <dl class="facts">
+          <dt>Complexity</dt><dd>Medium–High as a separate surface; Medium on top of <code>pb_demo</code>. New work: the mission engine (steps, validation, consequence interception, debrief) plus seeded anomalies in the demo generator.</dd>
+          <dt>Accessibility</dt><dd>Inherits the host app; consequence and recovery dialogs are standard modals; no timers by design.</dd>
+          <dt>Localisation</dt><dd>Mission copy is structured strings; the practice data in pb_demo is already bilingual.</dd>
+          <dt>Maintenance</dt><dd>Highest per-workflow cost. Keep missions few and canonical — five to eight total, not exhaustive.</dd>
+          <dt>Best for</dt><dd>Users about to run their first real payroll; managers certifying readiness; experienced payroll people who want to try rather than read.</dd>
+        </dl>
+      </div>
+
+      <div class="concept c3">
+        <header><span class="c-ic"><svg class="ic lg"><use href="#i-bot"/></svg></span>
+          <h3>Option 3 — Contextual AI Learning Companion</h3><span class="chip cyan">Ask anything, anywhere</span></header>
+        <p><strong>Central idea:</strong> the tutor is ambient. Instead of “go learn”, the user asks from where they stand,
+          and the answer arrives grounded in the current screen, their role and the current data — as guidance with pointing,
+          steps, calculations and warnings, never as an action performed on their behalf.</p>
+        <div class="callout good"><svg class="ic"><use href="#i-check-circle"/></svg>
+          <span><strong>Removes classroom coaching by</strong> replacing the post-training support channel (“quick question…”).
+          It is the only concept that helps at the moment of need, forever — including long after onboarding.</span></div>
+        <div class="pro-con">
+          <div class="pros"><h4>Advantages</h4><ul>
+            <li>Zero-navigation help; personalises for free (screen + role + state are the context).</li>
+            <li>The “why is this number X” calc-explainer is a genuine support-ticket killer.</li>
+            <li>Bridges to the other concepts — “Show me” is a micro-journey, “Let me practise” hands off to the simulator.</li>
+            <li>Substrate exists: <code>pb_payroll_ai_insights</code> already has screen-context, intent classification and tour-launching.</li>
+          </ul></div>
+          <div class="cons"><h4>Disadvantages &amp; risks</h4><ul>
+            <li>An LLM answering payroll and legal questions needs hard guard-rails — grounding corpus, refusal styles, no invented rates.</li>
+            <li>Discoverability: a dock can be ignored.</li>
+            <li>Per-query cost.</li>
+            <li>A bad answer damages trust faster than no answer; bilingual quality needs review, not just translation.</li>
+          </ul></div>
+        </div>
+        <dl class="facts">
+          <dt>Complexity</dt><dd>Medium. The dock, rich-answer blocks and highlight engine are prototype-proven here; the backend extends the existing PayAI engine with a learning-content retrieval layer and permission-aware answer filters.</dd>
+          <dt>Accessibility</dt><dd>Chat and blocks are screen-reader friendly; point-at highlights need a text fallback (“in the sidebar, under Setup”); a language switch must also switch any voice output.</dd>
+          <dt>Localisation</dt><dd>Answers are generated in the user’s language, but the <em>grounding corpus</em> must exist in Vietnamese — the same content as Option 1’s lessons, so it is a shared asset.</dd>
+          <dt>Maintenance</dt><dd>Lowest per-screen cost once grounded: content lives in one corpus; a new screen needs a context blurb and suggested questions.</dd>
+          <dt>Best for</dt><dd>Everyone after week one; experienced users with one-off questions; returning users; read-only roles needing explanation rather than training.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============================================================ 3 -->
+    <section id="decision">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-scale"/></svg></span><span><span class="n">03</span><br/>Decision table</span></h2>
+      <p class="lede">Green marks the strongest option on each criterion.</p>
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr><th style="width:34%">Criterion</th><th>1 · Journey</th><th>2 · Simulator</th><th>3 · Companion</th></tr></thead>
+          <tbody>
+            <tr><td>First-run onboarding power</td><td class="win">Excellent</td><td>Good</td><td>Fair</td></tr>
+            <tr><td>Depth of learning (retention)</td><td>Good</td><td class="win">Excellent</td><td>Good</td></tr>
+            <tr><td>Moment-of-need help</td><td>Poor</td><td>Poor</td><td class="win">Excellent</td></tr>
+            <tr><td>Error prevention on real runs</td><td>Good</td><td class="win">Excellent</td><td>Good</td></tr>
+            <tr><td>Build cost on current codebase</td><td class="win">Low–Med <span class="muted">(pb_coach exists)</span></td><td>Med <span class="muted">(pb_demo exists)</span></td><td>Med <span class="muted">(PayAI exists)</span></td></tr>
+            <tr><td>Ongoing content maintenance</td><td>Medium</td><td>High</td><td class="win">Low <span class="muted">(shared corpus)</span></td></tr>
+            <tr><td>Accuracy risk as the app evolves</td><td>Anchor drift</td><td>Scenario drift</td><td>Grounding drift <span class="muted">(worst if unmanaged)</span></td></tr>
+            <tr><td>Localisation effort</td><td>Content only</td><td>Content only</td><td>Corpus + generation QA</td></tr>
+            <tr><td>Wow factor for demos and sales</td><td class="win">High</td><td>High</td><td>Medium–High</td></tr>
+            <tr><td>Measurable mastery signal</td><td>Quiz scores</td><td class="win">Confidence by decisions</td><td>Question-resolution rate</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================ 4 -->
+    <section id="recommendation">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-award"/></svg></span><span><span class="n">04</span><br/>Recommendation</span></h2>
+
+      <div class="callout rec"><svg class="ic lg"><use href="#i-award"/></svg>
+        <span style="font-size:15px"><strong>Build the staged hybrid: Journey → Companion → Simulator, on a single shared
+        content spine.</strong> No single option removes the trainer alone. The Journey teaches the map, the Simulator builds
+        the hands, the Companion answers the moment.</span></div>
+
+      <p>The prototype deliberately demonstrates the seams: companion answers link into lessons and missions, lesson outlines
+        feed companion answers, and mission debriefs produce the same checklists the companion serves.</p>
+
+      <h3>Why this order</h3>
+      <ol>
+        <li><strong>Journey first</strong> — it is the cheapest leap from what exists (pb_coach already ships spotlight tours,
+          a launcher, and AI “Show me”), and it <em>creates the content spine</em> that both other options consume: the
+          per-station what / why / when / prerequisites / mistakes plus the lesson steps. Nothing built here is throwaway.</li>
+        <li><strong>Companion second</strong> — PayAI already has screen-context and tour-launching. Adding the learning
+          corpus and rich-answer blocks (steps with point-at, calculation tables, consequence warnings, role-aware refusals)
+          converts existing plumbing into the support-ticket killer.</li>
+        <li><strong>Simulator last</strong> — the most expensive and most valuable <em>after</em> users know the map, and
+          because running missions on the real UI over <code>pb_demo</code> data deserves the mission-engine investment to
+          be done carefully, once.</li>
+      </ol>
+
+      <h3>What ships in the first release</h3>
+      <div class="pro-con">
+        <div class="pros"><h4>Phase 1 — must include</h4><ul>
+          <li>Journey map for Pay Run and Setup</li>
+          <li>Four full lessons: Run Payroll, Pay Runs &amp; approvals, Statutory, Formula Engine</li>
+          <li>Outlines for every remaining submenu</li>
+          <li>Quizzes and progress persistence</li>
+          <li>English / Vietnamese, reduced motion, resume</li>
+        </ul></div>
+        <div class="cons"><h4>Can follow later</h4><ul>
+          <li>Autoplay narration voice</li>
+          <li>Confidence scoring</li>
+          <li>Celebration and motion polish</li>
+          <li>The remaining lessons</li>
+        </ul></div>
+      </div>
+
+      <h3>Technical foundations required</h3>
+      <ul>
+        <li><strong>A <code>pb.learn.content</code> model</strong> — stations, lessons, steps, outlines, quizzes; translatable,
+          exported to the frontend as JSON. Single source for the Journey, the Companion’s grounding, and mission copy.</li>
+        <li><strong>An anchor registry</strong> — every <code>data-coach</code> selector named in content is checked by a CI
+          script against the rendered templates, so screen changes fail loudly rather than silently.</li>
+        <li><strong>Progress persistence per user</strong> (<code>pb.learn.progress</code>).</li>
+        <li><strong>PayAI grounding retrieval</strong> over the content model.</li>
+        <li><strong>A mission engine</strong> — an OWL service intercepting real actions inside the demo company.</li>
+      </ul>
+
+      <div class="callout warn"><svg class="ic"><use href="#i-alert-triangle"/></svg>
+        <span><strong>Keeping it accurate as the app changes:</strong> content lives beside code in module data files;
+        anchor-lint runs in CI; PRs touching Pay Run or Setup screens carry a content-owner review; and the Companion’s
+        fallback answer explicitly admits when it does not know rather than guessing.</span></div>
+    </section>
+
+    <!-- ============================================================ 5 -->
+    <section id="roadmap">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-calendar"/></svg></span><span><span class="n">05</span><br/>Phased roadmap</span></h2>
+      <div class="phases">
+        <div class="phase">
+          <h4>Phase 1 — Pay Run &amp; Setup proof of value <span class="chip slate">3–4 weeks</span></h4>
+          <p>Content model and anchor lint; journey map with four full lessons plus outlines; quizzes, progress, EN/VI.
+            Ship to the demo world first — guided-trial users are the safest beta cohort.</p>
+        </div>
+        <div class="phase">
+          <h4>Phase 2 — Remaining menus + Companion <span class="chip slate">3–4 weeks</span></h4>
+          <p>People, Insights and Workforce stations; PayAI learning intents grounded in the content model; rich-answer
+            blocks, point-at highlights and role-aware refusals; “Show me” and “Open lesson” bridges.</p>
+        </div>
+        <div class="phase">
+          <h4>Phase 3 — Personalisation &amp; Simulator <span class="chip slate">4–6 weeks</span></h4>
+          <p>Starting modes; role-filtered paths; resume and re-teach (struggled twice → offer a simpler explanation plus a
+            mission); the mission engine on pb_demo with five canonical missions; confidence scoring; manager view.</p>
+        </div>
+        <div class="phase">
+          <h4>Phase 4 — Optimisation with behavioural data <span class="chip slate">ongoing</span></h4>
+          <p>Lesson-abandonment funnels; question clustering that becomes new content; English-versus-Vietnamese
+            comprehension gaps; quiz-item analysis; support-ticket deflection tracking. Prune what nobody uses.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ 6 -->
+    <section id="metrics">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-trending-up"/></svg></span><span><span class="n">06</span><br/>Success metrics</span></h2>
+      <h3>Primary</h3>
+      <div class="metrics">
+        <div class="metric"><div class="m-k">Lead metric</div><b>Time to first successful pay run</b><span>From first login to an approved run</span></div>
+        <div class="metric"><div class="m-k">Quality</div><b>Setup errors per new company</b><span>Statutory misconfigurations caught in review</span></div>
+        <div class="metric"><div class="m-k">Quality</div><b>Pay-run corrections</b><span>Retro adjustments attributable to operator error</span></div>
+        <div class="metric"><div class="m-k">Cost</div><b>Support requests per active user</b><span>Target: −40% on question-type tickets</span></div>
+        <div class="metric"><div class="m-k">Cost</div><b>Self-service resolution rate</b><span>Answer not followed by a ticket within 24h</span></div>
+      </div>
+      <h3>Secondary</h3>
+      <ul>
+        <li>Lesson completion rate and the exact abandonment point.</li>
+        <li>Quiz first-try correctness, per item.</li>
+        <li>Mission completion and recovery-dialog frequency — a <em>healthy</em> recovery rate proves the simulator is
+          teaching, not merely confirming what people already knew.</li>
+        <li>Confidence-score distribution versus manager sign-off.</li>
+        <li>Repeat visits to help content — should fall per user over time.</li>
+        <li>English versus Vietnamese completion and comprehension deltas, which flag translation-quality problems.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================ 7 -->
+    <section id="assumptions">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-help-circle"/></svg></span><span><span class="n">07</span><br/>Assumptions &amp; open questions</span></h2>
+      <p class="small muted">Amber numbers are open questions needing your decision; the rest are assumptions I made to keep moving.</p>
+      <ol class="qs">
+        <li><strong>Menu scope.</strong> I took the <em>active</em> pb_sidebar items. Inactive children (Insurance Policies,
+          Tax Tables under Statutory) are folded into the Statutory lesson. Please confirm.</li>
+        <li><strong>Setup’s position.</strong> The sidebar data places Setup between Pay Run and People (sequence 25); the
+          prototype mirrors that.</li>
+        <li><strong>Statutory values.</strong> 8/17.5, 1.5/3, 1/1, ₫11m and ₫4.4m deductions and the 5% first band are
+          <em>practice values</em> for the fictional company. Production content must read the live policy records — never hardcode.</li>
+        <li><strong>Delivery surface.</strong> I assumed the tutorial ships inside the existing OWL web client, not as a
+          separate site; the prototype’s shell is a stand-in only.</li>
+        <li class="open"><strong>Open —</strong> should mission progress and confidence be visible to managers (HR analytics),
+          or stay private to the learner? This changes the Phase 3 data model.</li>
+        <li class="open"><strong>Open —</strong> voice narration: PayAI already has voice. Is it worth it for factory-floor
+          users on mobile? Currently deferred to Phase 3.</li>
+        <li class="open"><strong>Open —</strong> does the guided-trial demo world adopt Phase 1 immediately? Recommended —
+          it is the safest audience and the highest sales value.</li>
+      </ol>
+    </section>
+
+    <!-- ============================================================ 8 -->
+    <section id="integration">
+      <h2><span class="h-ic"><svg class="ic lg"><use href="#i-list-checks"/></svg></span><span><span class="n">08</span><br/>Integrating into the real app</span></h2>
+      <p class="lede">What it concretely takes to turn the recommended concept into shipping code.</p>
+      <ol>
+        <li>New module <strong><code>pb_learn</code></strong> — models for content and progress; assets for the map surface
+          and lesson player. The player is an evolution of <code>pb_coach</code>’s overlay: keep one engine, not two.</li>
+        <li>Port the prototype content (<code>data.js</code>) into <code>pb_learn/data/*.xml</code> translatable records, with
+          Vietnamese reviewed by a native payroll speaker.</li>
+        <li>Extend the <code>pb_coach</code> overlay: autoplay bar, consequence and tip cards, trace and morph moments, quiz
+          modal, progress wiring. Add the missing <code>data-coach</code> anchors on statutory and payslip lines.</li>
+        <li>Extend <code>pb_payroll_ai_insights</code>: a <code>learning</code> intent; retrieval over pb_learn content; a
+          rich-answer block renderer in <code>ai_insight_chat.js</code> (steps, calc and warning blocks as OWL components);
+          a role-aware answer filter driven by <code>res.groups</code>.</li>
+        <li>Mission engine (Phase 3): an OWL service scoped to the demo company that intercepts compute, approve and
+          policy-write actions to inject consequence previews and validate steps; seeded anomalies added to the
+          <code>pb_demo</code> generator.</li>
+        <li>CI: an anchor-lint script comparing content anchors against template <code>data-coach</code> attributes.</li>
+      </ol>
+    </section>
+
+  </article>
+
+  <footer class="doc-foot">
+    <span><svg class="ic"><use href="#i-git-branch"/></svg> Payobook Learn · tutorial redesign analysis</span>
+    <span class="muted">Ground truth: pb_sidebar · pb_payruns · pb_theme · pb_coach · pb_demo · pb_payroll_ai_insights</span>
+    <a href="index.html">Open the prototype <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- RECRUIT P8: every company has every candidate email in three
+         languages (only where the product's English is untouched), the old
+         English-only candidate mail templates are archived, and every
+         company has its four starting automations. Idempotent; runs on
+         every upgrade. -->
+    <function model="pb.hiring" name="_seed_p8"/>
+</odoo>

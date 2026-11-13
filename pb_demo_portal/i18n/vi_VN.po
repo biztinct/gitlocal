@@ -1,0 +1,383 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 06:55+0000\n"
+"PO-Revision-Date: 2026-08-27 21:11+1000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid ""
+".\n"
+"                        Click it to set your password, then you'll be signed straight into your\n"
+"                        Payobook demo."
+msgstr ""
+".\n"
+"                        Hãy nhấp vào đó để đặt mật khẩu, sau đó bạn sẽ đăng nhập thẳng vào tài khoản của mình.\n"
+"                        Bản demo Payobook."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid ""
+".\n"
+"                        You can sign in or reset your password."
+msgstr ""
+".\n"
+"                        Bạn có thể đăng nhập hoặc đặt lại mật khẩu của mình."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "<option value=\"\">Select…</option>"
+msgstr "<option value=\"\">Chọn…</option>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "<span class=\"pbdemo-kicker\">Private demo</span>"
+msgstr "<span class=\"pbdemo-kicker\">Bản demo riêng tư</span>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid ""
+"<span class=\"pbdemo-logo\">P</span>\n"
+"                            <span>Payobook</span>"
+msgstr ""
+"<span class=\"pbdemo-logo\">P</span>\n"
+"                            <span>Payobook</span>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "<span class=\"pbdemo-tick\"/>4,500 employees across 6 divisions"
+msgstr "<span class=\"pbdemo-tick\"/>4.500 nhân viên trên 6 bộ phận"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "<span class=\"pbdemo-tick\"/>A guided tour built around <b>your</b> payroll"
+msgstr ""
+"Chuyến tham quan có hướng dẫn <span class=\"pbdemo-tick\"/>A được xây dựng dựa trên "
+"bảng lương <b>your</b>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "<span class=\"pbdemo-tick\"/>Formula-driven payroll history &amp; analytics"
+msgstr "<span class=\"pbdemo-tick\"/>Lịch sử bảng lương theo công thức &amp; phân tích"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "<span class=\"pbdemo-tick\"/>Migration, integrations &amp; pricing Q&amp;A"
+msgstr "<span class=\"pbdemo-tick\"/>Di chuyển, tích hợp Giá &amp; Q&amp;A"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "<span class=\"pbdemo-tick\"/>Multi-country statutory &amp; formula deep-dive"
+msgstr "<span class=\"pbdemo-tick\"/>Công thức &amp; theo luật định đa quốc gia"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "<span class=\"pbdemo-tick\"/>Multilingual payslips &amp; 25+ integrations"
+msgstr "<span class=\"pbdemo-tick\"/>Phiếu lương đa ngôn ngữ &amp; Tích hợp 25+"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "<span class=\"pbdemo-tick\"/>No obligation — just a real conversation"
+msgstr "<span class=\"pbdemo-tick\"/>Không có nghĩa vụ - chỉ là một cuộc trò chuyện thực sự"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "<span class=\"pbdemo-tick\"/>Run payroll end-to-end in minutes — guided by AI"
+msgstr ""
+"<span class=\"pbdemo-tick\"/>Chạy toàn bộ bảng lương trong vài phút — được hướng dẫn "
+"bởi AI"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Acme Corp"
+msgstr "Acme Corp"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Already have access?"
+msgstr "Bạn đã có quyền truy cập?"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid "An account already exists for"
+msgstr "Một tài khoản đã tồn tại cho"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Anything you'd like us to focus on?"
+msgstr "Bạn có muốn chúng tôi tập trung vào điều gì không?"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid ""
+"Book a one-on-one walkthrough with a Payobook\n"
+"                            specialist. We'll shape the session around your countries, headcount\n"
+"                            and pay rules — and answer anything on migration, compliance and cost."
+msgstr ""
+"Đặt hướng dẫn trực tiếp với Payobook\n"
+"                            chuyên gia. Chúng tôi sẽ định hình phiên họp xung quanh quốc gia của bạn, số lượng nhân viên\n"
+"                            và các quy định về thanh toán — cũng như giải đáp mọi vấn đề về di chuyển, tuân thủ và chi phí."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Business email"
+msgstr "Email doanh nghiệp"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Business email <span class=\"pbdemo-req\">*</span>"
+msgstr "Email doanh nghiệp <span class=\"pbdemo-req\">*</span>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid "Check your inbox"
+msgstr "Kiểm tra hộp thư đến của bạn"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Company <span class=\"pbdemo-req\">*</span>"
+msgstr "Công ty <span class=\"pbdemo-req\">*</span>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Company size"
+msgstr "Quy mô công ty"
+
+#. module: pb_demo_portal
+#: model:ir.model,name:pb_demo_portal.model_res_partner
+msgid "Contact"
+msgstr "Liên hệ"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_demo_portal
+#: model:ir.model.fields,field_description:pb_demo_portal.field_mail_mail__display_name
+#: model:ir.model.fields,field_description:pb_demo_portal.field_res_partner__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Experience enterprise payroll, live."
+msgstr "Kinh nghiệm tính lương doanh nghiệp, trực tiếp."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_done
+msgid "Explore the shared demo meanwhile"
+msgstr "Đồng thời khám phá bản demo được chia sẻ"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Full name"
+msgstr "Tên đầy đủ"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Full name <span class=\"pbdemo-req\">*</span>"
+msgstr "Tên đầy đủ <span class=\"pbdemo-req\">*</span>"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid ""
+"Get instant access to a fully-loaded Payobook\n"
+"                            environment — thousands of employees, real payroll history,\n"
+"                            multi-country schemes, analytics and integrations."
+msgstr ""
+"Truy cập ngay vào Payobook đã được tải đầy đủ\n"
+"                            môi trường — hàng nghìn nhân viên, lịch sử trả lương thực tế,\n"
+"                            các chương trình, phân tích và tích hợp đa quốc gia."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Get my demo access"
+msgstr "Nhận quyền truy cập demo của tôi"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid "Go to sign in"
+msgstr "Đi để đăng nhập"
+
+#. module: pb_demo_portal
+#: model:ir.model.fields,field_description:pb_demo_portal.field_mail_mail__id
+#: model:ir.model.fields,field_description:pb_demo_portal.field_res_partner__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Industry"
+msgstr "Ngành nghề"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Jane Tran"
+msgstr "Jane Trần"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Mobile number"
+msgstr "Số điện thoại di động"
+
+#. module: pb_demo_portal
+#: model:ir.model,name:pb_demo_portal.model_mail_mail
+msgid "Outgoing Mails"
+msgstr "Thư đi"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Payroll, tailored to your business."
+msgstr "Bảng lương, phù hợp với doanh nghiệp của bạn."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Phone <span class=\"pbdemo-req\">*</span>"
+msgstr "Điện thoại <span class=\"pbdemo-req\">*</span>"
+
+#. module: pb_demo_portal
+#. odoo-python
+#: code:addons/pb_demo_portal/controllers/main.py:0
+msgid "Please complete all fields."
+msgstr "Vui lòng hoàn thành tất cả các trường."
+
+#. module: pb_demo_portal
+#. odoo-python
+#: code:addons/pb_demo_portal/controllers/main.py:0
+msgid "Please complete all required fields."
+msgstr "Vui lòng hoàn thành tất cả các trường bắt buộc."
+
+#. module: pb_demo_portal
+#. odoo-python
+#: code:addons/pb_demo_portal/controllers/main.py:0
+msgid "Please enter a valid email address."
+msgstr "Vui lòng nhập địa chỉ email hợp lệ."
+
+#. module: pb_demo_portal
+#. odoo-python
+#: code:addons/pb_demo_portal/controllers/main.py:0
+msgid "Please enter your business email address."
+msgstr "Vui lòng nhập địa chỉ email doanh nghiệp của bạn."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Prefer the instant shared demo?"
+msgstr "Thích bản demo được chia sẻ ngay lập tức?"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Request my private demo"
+msgstr "Yêu cầu bản demo riêng tư của tôi"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_done
+msgid "Request received"
+msgstr "Đã nhận được yêu cầu"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Request your private demo"
+msgstr "Yêu cầu bản demo riêng tư của bạn"
+
+#. module: pb_demo_portal
+#: model:ir.model,website_form_label:pb_demo_portal.model_mail_mail
+msgid "Send an E-mail"
+msgstr "Gửi e-mail"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Sign in"
+msgstr "Đăng nhập"
+
+#. module: pb_demo_portal
+#. odoo-python
+#: code:addons/pb_demo_portal/controllers/main.py:0
+msgid "Something went wrong creating your demo account. Please try again."
+msgstr "Đã xảy ra lỗi khi tạo tài khoản demo của bạn. Vui lòng thử lại."
+
+#. module: pb_demo_portal
+#. odoo-python
+#: code:addons/pb_demo_portal/controllers/main.py:0
+msgid "Something went wrong sending your request. Please try again."
+msgstr "Đã xảy ra lỗi khi gửi yêu cầu của bạn. Vui lòng thử lại."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Start now"
+msgstr "Bắt đầu ngay bây giờ"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Start your demo"
+msgstr "Bắt đầu bản demo của bạn"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "Tell us a little about you and we'll be in touch to set up a time."
+msgstr ""
+"Hãy cho chúng tôi biết một chút về bạn và chúng tôi sẽ liên hệ để sắp xếp thời gian."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "Tell us a little about you. We'll email a secure link to set your password."
+msgstr ""
+"Hãy cho chúng tôi biết một chút về bạn. Chúng tôi sẽ gửi email một liên kết an toàn để"
+" đặt mật khẩu của bạn."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_done
+msgid "Thanks — we've sent a confirmation to"
+msgstr "Cảm ơn — chúng tôi đã gửi xác nhận tới"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid "We've sent a secure link to"
+msgstr "Chúng tôi đã gửi một liên kết an toàn tới"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_done
+msgid "You're already registered"
+msgstr "Bạn đã đăng ký rồi"
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_done
+msgid ""
+"and a\n"
+"                        Payobook specialist will reach out shortly to arrange your private demo."
+msgstr ""
+"và một\n"
+"                        Chuyên gia Payobook sẽ sớm liên hệ để sắp xếp bản demo riêng của bạn."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+msgid "e.g. We run payroll in Vietnam & Singapore and want to see the migration path."
+msgstr ""
+"ví dụ: Chúng tôi thực hiện tính lương ở Việt Nam & Singapore và muốn xem con đường di "
+"cư."
+
+#. module: pb_demo_portal
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.private_demo_page
+#: model_terms:ir.ui.view,arch_db:pb_demo_portal.register_page
+msgid "jane@acme.com"
+msgstr "jane@acme.com"

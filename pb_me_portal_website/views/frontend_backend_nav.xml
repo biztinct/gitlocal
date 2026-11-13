@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of Payobook. See LICENSE file for full copyright and licensing details.
+
+     TIERS T1 — website.layout's fixed backend shortcut (the nine-dot corner
+     button on every portal page) is not rendered for a portal-only person
+     (`res.users._pb_portal_only()`, pb_me_portal; ledger T-R1). Server-side,
+     because website's redirect.js would un-hide a CSS-hidden div.
+
+     biz_deroute_website patches the app links INSIDE this div (their href);
+     that patch and this `attributes` patch on the div itself both apply.
+     The method is exception-safe (ledger T-R2/T5): the page cannot 500 on it. -->
+<odoo>
+    <template id="frontend_to_backend_nav_portal_only"
+              inherit_id="website.layout"
+              name="Backend shortcut hidden for portal-only employees">
+        <xpath expr="//div[hasclass('o_frontend_to_backend_nav')]"
+               position="attributes">
+            <attribute name="t-if">not user_id._pb_portal_only()</attribute>
+        </xpath>
+    </template>
+</odoo>

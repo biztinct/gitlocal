@@ -1,0 +1,47 @@
+# Payobook — the catch-all server block. ERRORS E2-5, part 1.
+#
+# Deployed to /etc/nginx/sites-available/pb-default and symlinked from
+# sites-enabled. This is the file on disk for the live box; keep the two in step.
+#
+# WHY. Until this existed there was no `default_server` anywhere in
+# sites-enabled, so a request whose Host matched nothing — a scanner hitting the
+# IP, a stale DNS record, somebody's parked domain — fell to the FIRST block
+# (payobook.com) and was proxied into the application. The application then had
+# no database for that host and answered with the platform's own pre-database
+# page, which names the vendor and tells the reader about an "X-Odoo-Database"
+# header. Nothing inside the product can reach that page: it is rendered before
+# a database is chosen.
+#
+# So the unknown host never gets that far any more. It is sent to the front door.
+#
+# Only ONE default_server may exist per listen socket. There is no other.
+server {
+    listen 80 default_server;
+    server_name _;
+
+    # Certificate renewal is HTTP-01 through the nginx plugin and arrives with
+    # the real hostname in Host, so it matches its own block — but a renewal
+    # must never depend on that, so the challenge path is answered here too.
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+
+    location / {
+        return 301 https://payobook.com$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl default_server;
+    server_name _;
+
+    # An unknown host cannot be named by any certificate we hold, so the visitor
+    # sees a name-mismatch warning whatever we present. The apex certificate is
+    # used because nginx requires one to terminate TLS at all.
+    ssl_certificate /etc/letsencrypt/live/payobook.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/payobook.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    return 301 https://payobook.com$request_uri;
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         PHASE 6: one catalogue row per KIND OF RECORD.
+
+         Four rows that were folded into another one before, split out so a
+         business can answer them differently. A bank-account change is not an
+         address change; a pay review is a budget for many people while a pay
+         change is one person's rise; recognition is not a cash award; a
+         contract extension is not a resignation.
+
+         One model per row is the rule that makes the whole matrix readable:
+         a row that could be about two different records could never say which
+         route applies to which.
+         ================================================================== -->
+
+    <record id="process_payreview" model="biz.approval.process">
+        <field name="key">payreview</field>
+        <field name="name">Pay review</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.pay.review</field>
+        <field name="money" eval="True"/>
+        <field name="description">A round of rises for a whole team or company, and what it costs.</field>
+        <field name="sequence">152</field>
+    </record>
+
+    <record id="process_bankchange" model="biz.approval.process">
+        <field name="key">bankchange</field>
+        <field name="name">Bank account change</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.bank.change.request</field>
+        <field name="description">Where somebody's pay is sent.</field>
+        <field name="sequence">172</field>
+    </record>
+
+    <record id="process_recognition" model="biz.approval.process">
+        <field name="key">recognition</field>
+        <field name="name">Recognition</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.rnr.nomination</field>
+        <field name="description">Praise for somebody's work, and any prize that goes with it.</field>
+        <field name="sequence">205</field>
+    </record>
+
+    <record id="process_extension" model="biz.approval.process">
+        <field name="key">extension</field>
+        <field name="name">Contract extension</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.contract.extension</field>
+        <field name="description">Keeping somebody on when their contract is about to end.</field>
+        <field name="sequence">215</field>
+    </record>
+
+</odoo>

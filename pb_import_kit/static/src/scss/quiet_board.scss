@@ -1,0 +1,164 @@
+// =====================================================================
+//  THE QUIET BOARD — shared (2026-09-23, owner-approved on Hiring first)
+//
+//  Lifted from pb_hiring so every screen draws the same thing:
+//    .pbim-glance / .pbim-gl   numbers as one slim clickable line. Grey at
+//                              zero; a colour only when a person must act.
+//    .pbim-steps / .pbim-st    numbered step cards 01..N with a round arrow
+//                              badge in the gap. The count is a separate
+//                              pill that names its unit ("3 roles") so it
+//                              is never read as the step number.
+//    .pbim-showing             "Showing 3 of 9 · Show all" under the steps.
+//    .pbim-where / .pbim-next  on each card: "Step 2 of 4 · …" and the
+//                              "what happens next" box with its one button.
+//
+//  Top-level (not nested in .pbim) with token fallbacks, so screens that
+//  are not .pbim pages can use it too. Markup: pb_import_kit.QuietGlance
+//  and pb_import_kit.QuietSteps (static/src/xml/quiet_board.xml).
+//  Big tiles stay ONLY on analytics screens (Insights, Explorer, the
+//  "Numbers" tabs, Home pulse).
+// =====================================================================
+
+// -------------------------------------------------- quiet numbers
+.pbim-glance {
+    display: flex; align-items: center; flex-wrap: wrap;
+    padding: 4px 6px; margin-bottom: 16px; border-radius: 12px;
+    background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E4E7EF);
+}
+.pbim-gl {
+    position: relative; display: inline-flex; align-items: baseline; gap: 6px;
+    border: 0; background: transparent; padding: 7px 11px; border-radius: 9px;
+    font: inherit; font-size: 12px; color: var(--pbim-muted, #64748B); cursor: pointer;
+
+    & + .pbim-gl::before {
+        content: ""; position: absolute; left: 0; top: 10px; bottom: 10px;
+        width: 1px; background: var(--pbim-line, #E4E7EF);
+    }
+    &:hover:not(.flat) { background: var(--pbim-line-2, #F1F5F9); color: var(--pbim-text, #334155); }
+    &.flat { cursor: default; }
+    &:disabled { opacity: 1; }
+    &:focus-visible { outline: 3px solid var(--pbim-ring, rgba(79,70,229,.18)); outline-offset: 1px; }
+    &.on { background: var(--pbim-soft, #EEF0FF); color: var(--pbim-primary-strong, #3730A3); }
+    &.on .pbim-gl-n { color: var(--pbim-primary-strong, #3730A3); }
+}
+.pbim-gl-n {
+    font-size: 14px; font-weight: 800; color: var(--pbim-ink, #1B1733);
+    font-variant-numeric: tabular-nums;
+}
+.pbim-gl.zero .pbim-gl-n { color: var(--pbim-muted, #64748B); font-weight: 700; }
+.pbim-gl-dot { width: 7px; height: 7px; border-radius: 50%; align-self: center; }
+.pbim-gl.is-amber { color: var(--pbim-amber, #B45309); .pbim-gl-n { color: var(--pbim-amber, #B45309); } .pbim-gl-dot { background: var(--pbim-amber, #B45309); } }
+.pbim-gl.is-rose  { color: var(--pbim-rose, #BE123C);  .pbim-gl-n { color: var(--pbim-rose, #BE123C); }  .pbim-gl-dot { background: var(--pbim-rose, #BE123C); } }
+.pbim-gl.is-green { .pbim-gl-n { color: var(--pbim-green, #047857); } .pbim-gl-dot { background: var(--pbim-green, #047857); } }
+
+// -------------------------------------------------- numbered steps
+.pbim-steps {
+    --pbim-steps: 4;
+    display: grid; grid-template-columns: repeat(var(--pbim-steps), minmax(0, 1fr));
+    gap: 22px; margin: 4px 0 10px;
+}
+.pbim-st {
+    position: relative; display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; text-align: left; font: inherit; cursor: pointer;
+    background: var(--pbim-surface, #fff); color: var(--pbim-text, #334155);
+    border: 1px solid var(--pbim-line, #E4E7EF); border-radius: 14px;
+    box-shadow: var(--pbim-sh, 0 1px 3px rgba(16,24,40,.05));
+
+    &:hover { border-color: var(--pbim-primary, #4F46E5); }
+    &:focus-visible { outline: 3px solid var(--pbim-ring, rgba(79,70,229,.18)); outline-offset: 2px; }
+    &.on { border-color: var(--pbim-primary, #4F46E5); box-shadow: 0 0 0 3px var(--pbim-ring, rgba(79,70,229,.18)); }
+    &:last-child .pbim-st-arrow { display: none; }
+}
+.pbim-st-top { display: flex; align-items: center; gap: 10px; }
+.pbim-st-n {
+    flex: none; width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 11.5px; font-weight: 800;
+    background: var(--pbim-slate-soft, #F1F5F9); color: var(--pbim-muted, #64748B);
+    font-variant-numeric: tabular-nums;
+}
+.pbim-st-t { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+.pbim-st-c {
+    flex: none; padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+    font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+    background: var(--pbim-slate-soft, #F1F5F9); color: var(--pbim-muted, #64748B);
+}
+.pbim-st.has .pbim-st-c { background: var(--pbim-soft, #EEF0FF); color: var(--pbim-primary-strong, #3730A3); }
+.pbim-st.on .pbim-st-n, .pbim-st.on .pbim-st-c { background: var(--pbim-primary, #4F46E5); color: #fff; }
+.pbim-st.on .pbim-st-t { color: var(--pbim-primary-strong, #3730A3); }
+.pbim-st-s { font-size: 12px; color: var(--pbim-muted, #64748B); padding-left: 40px; }
+.pbim-st-flag {
+    display: inline-flex; align-items: center; gap: 5px; padding-left: 40px;
+    font-size: 11.5px; font-weight: 700; color: var(--pbim-amber, #B45309);
+    svg { width: 12px; height: 12px; flex: none; }
+}
+.pbim-st-flag.is-rose { color: var(--pbim-rose, #BE123C); }
+.pbim-st-heat {
+    position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
+    border-radius: 0 3px 3px 0;
+}
+.pbim-st.wait .pbim-st-heat { background: var(--pbim-amber, #B45309); }
+.pbim-st-arrow {
+    position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+    z-index: 1; width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; color: var(--pbim-muted, #64748B);
+    background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E4E7EF);
+    box-shadow: var(--pbim-sh, 0 1px 3px rgba(16,24,40,.05));
+    svg { width: 13px; height: 13px; }
+}
+.pbim-st.on .pbim-st-arrow { border-color: var(--pbim-primary, #4F46E5); color: var(--pbim-primary, #4F46E5); }
+// five or more steps: a little tighter so the row still fits a laptop
+.pbim-steps.is-many { gap: 18px; .pbim-st { padding: 12px 13px; } .pbim-st-s, .pbim-st-flag { padding-left: 0; } .pbim-st-arrow { right: -17px; } }
+// a narrow card (six steps on a laptop): the count pill drops under the
+// title instead of squeezing it to "Proce…" (found on Import, 2026-09-23)
+.pbim-st { container-type: inline-size; }
+@container (max-width: 230px) {
+    .pbim-st-top { flex-wrap: wrap; row-gap: 5px; }
+    .pbim-st-t { flex: 1 1 calc(100% - 40px); }
+}
+@media (max-width: 1000px) {
+    .pbim-steps { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .pbim-st:nth-child(2n) .pbim-st-arrow { display: none; }
+}
+@media (max-width: 560px) {
+    .pbim-steps { grid-template-columns: 1fr; }
+    .pbim-st-arrow { display: none; }
+}
+
+// -------------------------------------------------- what is showing
+.pbim-showing {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    min-height: 26px; margin-bottom: 14px; font-size: 13px;
+    color: var(--pbim-muted, #64748B);
+    b { color: var(--pbim-ink, #1B1733); }
+}
+.pbim-showall {
+    border: 0; background: transparent; font: inherit; font-weight: 700;
+    color: var(--pbim-primary-strong, #3730A3); padding: 2px 6px; border-radius: 6px;
+    cursor: pointer;
+    &:hover { background: var(--pbim-soft, #EEF0FF); }
+}
+
+// -------------------------------------------------- on each card
+.pbim-where {
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+    color: var(--pbim-muted, #64748B);
+    b { color: var(--pbim-text, #334155); font-weight: 700; }
+}
+.pbim-where-marks { display: inline-flex; gap: 3px; }
+.pbim-where-marks i {
+    width: 14px; height: 5px; border-radius: 3px; background: var(--pbim-line, #E4E7EF);
+    &.done { background: var(--pbim-primary, #4F46E5); }
+    &.here { background: var(--pbim-primary, #4F46E5); box-shadow: 0 0 0 2px var(--pbim-ring, rgba(79,70,229,.18)); }
+}
+.pbim-next {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 10px 12px; border-radius: 10px;
+    background: var(--pbim-line-2, #F1F5F9); font-size: 12.5px;
+    color: var(--pbim-text, #334155);
+    b { color: var(--pbim-ink, #1B1733); font-weight: 700; }
+    &.is-wait { background: var(--pbim-amber-soft, #FEF3C7); b { color: var(--pbim-amber, #B45309); } }
+    &.is-done { background: var(--pbim-green-soft, #D1FAE5); b { color: var(--pbim-green, #047857); } }
+    &.is-primary { background: var(--pbim-soft, #EEF0FF); }
+}
+.pbim-next-tx { min-width: 0; }
+.pbim-btn.pbim-next-btn { flex: none; padding: 6px 12px; font-size: 12px; border-radius: 8px; }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         NO NEW GROUP LADDER. This module deliberately ships none.
+
+         Two ladders already say everything that needs saying about who may
+         touch an arrival: the integration tier from `pb_hr_payroll_base`
+         (the person who wires up connected systems) and the lifecycle tier
+         from `pb_lifecycle` (the person who owns joiners and leavers). A
+         third tier of our own would only be a third place to forget to grant
+         somebody, and the platform contract is explicit that a module adds a
+         ladder when it owns a domain — this one owns a door, not a domain.
+         ================================================================== -->
+
+<data noupdate="1">
+
+    <!-- COMPANY SCOPE. The same domain every Payobook model uses: a record
+         with no company is shared, everything else is scoped to the companies
+         the reader actually works in. -->
+
+    <record id="rule_zoho_event_rule_company" model="ir.rule">
+        <field name="name">Arrival rule: company</field>
+        <field name="model_id" ref="model_pb_zoho_event_rule"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_zoho_inbox_company" model="ir.rule">
+        <field name="name">Arrival: company</field>
+        <field name="model_id" ref="model_pb_zoho_inbox"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+</data>
+</odoo>

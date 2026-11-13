@@ -1,0 +1,9 @@
+Owner-approved scope: replace the four nonoperational Rize payroll schemes with focused schemes. Retain calculations/constants, formula dependencies, payslip contributions, salary/allowances, time/leave, statutory inputs and payroll context. Retire unrelated HR fields from the schemes, generated monthly templates and their mapping journeys. Keep the actual employee/contract/bank/domain records.
+
+Records Desk defaults to an independent curated Master records catalogue. It supports its existing grid, Excel import/export, permissions, review, approval and audit/undo without any payroll configuration. Scheme views remain optional.
+
+Focused monthly templates expose only retained schema inputs. Mapped employee/contract inputs may be edited for the period. An explicit unchecked-by-default option submits corresponding master changes through Records Desk approval. Conflicting aliases, stale reviews and refused record edits stop confirmation. Bank maintenance remains outside payroll inputs. Tax/national identifiers are editable records, while employee matching keys remain protected.
+
+Migration: create new schemes, freeze original formula column addresses, preserve source bindings and native destinations, add native write mappings for direct application fields, remap payslip/config rule references, compare all saved sample outcomes in place, seal through the normal release gate, switch current assignments, archive the originals. Existing runs/uploads/payslips remain on the originals. Repeat execution is idempotent. Default migration mode rolls back; explicit apply is restricted to rize.
+
+Rehearsal uses metadata and invented sample inputs on p0clone. Production sample values stay on the server. No original employee, payroll or domain records are deleted. All four active databases receive the generic Records Desk/template code; only Rize receives replacement business configuration.

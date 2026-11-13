@@ -1,0 +1,187 @@
+// =====================================================================
+//  /my/growth — .pbpg-*
+//
+//  Everything structural comes from the portal kit (.pbme-card,
+//  .pbme-card-title, .pbme-btn, .pbme-muted, .pbme-eyebrow). This file only
+//  says what is specific to one page.
+//
+//  EVERY COLOUR CARRIES A LITERAL FALLBACK beside its token, on purpose.
+//  The portal surface has no dark mode at all — the website frontend is
+//  light-only by design (R39) — so "checked in both themes" here means
+//  "every colour resolves even where the token does not exist", which is
+//  what these fallbacks guarantee.
+//
+//  No `min()`/`max()` with mixed px/% units anywhere: Sass evaluates those
+//  and a mixed pair kills the ENTIRE asset bundle, not just this file.
+// =====================================================================
+
+.pbpg {
+    .pbpg-ic { flex: 0 0 auto; vertical-align: -3px; }
+
+    // ------------------------------------------------------------ notices
+    .pbpg-notice {
+        display: flex; align-items: center; gap: 9px;
+        padding: 11px 15px; border-radius: 11px; margin-bottom: 16px;
+        font-size: 13.5px; font-weight: 600;
+        background: var(--pbme-soft, #F1EFFC);
+        color: var(--pbme-ink, #1B1733);
+        border: 1px solid var(--pbme-primary, #6355C7);
+    }
+    .pbpg-notice.pbpg-notice--bad {
+        background: #FDECEC; border-color: #C4362F; color: #8A2019;
+    }
+
+    // -------------------------------------------------------------- hero
+    .pbpg-hero {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 20px; flex-wrap: wrap;
+        padding: 26px 28px; border-radius: 18px; margin-bottom: 20px;
+        background: var(--pbme-soft, #F1EFFC);
+        border: 1px solid var(--pbme-line, #E5E7EB);
+    }
+    .pbpg-hero-tx { flex: 1 1 320px; min-width: 0; }
+    .pbpg-hero-h1 {
+        font-size: 27px; font-weight: 800; margin: 4px 0 0;
+        color: var(--pbme-ink, #1B1733); line-height: 1.2;
+    }
+    .pbpg-hero-sub {
+        font-size: 14px; margin: 9px 0 0; line-height: 1.6;
+        color: var(--pbme-muted, #4A5568); max-width: 620px;
+    }
+
+    // The one number on the page, and it is deliberately about TIME rather
+    // than about progress: "62% of the way through" is a fact, and
+    // "62% complete" would be a judgement nobody has made yet.
+    .pbpg-hero-ring {
+        flex: 0 0 auto; width: 104px; height: 104px; border-radius: 50%;
+        display: grid; place-items: center; align-content: center;
+        background: #fff;
+        border: 3px solid var(--pbme-primary, #6355C7);
+        text-align: center;
+    }
+    .pbpg-ring-n {
+        font-size: 22px; font-weight: 800;
+        color: var(--pbme-primary, #6355C7);
+        font-variant-numeric: tabular-nums; line-height: 1.1;
+    }
+    .pbpg-ring-l {
+        font-size: 10.5px; font-weight: 700; letter-spacing: .04em;
+        text-transform: uppercase; color: var(--pbme-muted, #6B7280);
+        margin-top: 2px;
+    }
+
+    // -------------------------------------------------------- objectives
+    .pbpg-obj {
+        border-top: 1px solid var(--pbme-line, #E5E7EB);
+        padding: 14px 0 14px 14px;
+        border-left: 3px solid var(--pbme-line, #E5E7EB);
+        margin-top: 12px;
+        &:first-of-type { border-top: none; margin-top: 6px; }
+    }
+    .pbpg-obj--at_risk  { border-left-color: #C77E17; }
+    .pbpg-obj--met      { border-left-color: #1E7F4F; }
+    .pbpg-obj--not_met  { border-left-color: #C4362F; }
+    .pbpg-obj--on_track { border-left-color: var(--pbme-primary, #6355C7); }
+
+    .pbpg-obj-h {
+        display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+        b { font-size: 14.5px; flex: 1; min-width: 0;
+            color: var(--pbme-ink, #1B1733); }
+    }
+    .pbpg-obj-m {
+        font-size: 13.5px; margin: 6px 0 0; line-height: 1.55;
+        color: var(--pbme-muted, #4A5568);
+    }
+    .pbpg-obj-t {
+        font-size: 12.5px; margin: 4px 0 0; font-weight: 700;
+        color: var(--pbme-ink, #1B1733);
+    }
+
+    // A word, and the word is written for the person rather than for HR:
+    // "Not there yet" and never "Not met".
+    .pbpg-tag {
+        flex: 0 0 auto; border-radius: 999px; padding: 3px 11px;
+        font-size: 11.5px; font-weight: 700; letter-spacing: .01em;
+        background: #EEF0F4; color: #4A5568;
+    }
+    .pbpg-tag--at_risk  { background: #FDF3E2; color: #8A5A0B; }
+    .pbpg-tag--met      { background: #E7F6EE; color: #14603A; }
+    .pbpg-tag--not_met  { background: #FDECEC; color: #8A2019; }
+    .pbpg-tag--on_track { background: #F1EFFC; color: #4B3FA6; }
+
+    // ------------------------------------------------------------- dates
+    .pbpg-dates {
+        display: flex; flex-direction: column; gap: 2px; margin-top: 12px;
+    }
+    .pbpg-date {
+        display: flex; align-items: center; gap: 11px;
+        padding: 9px 0; font-size: 13.5px;
+        color: var(--pbme-muted, #4A5568);
+    }
+    .pbpg-date-dot {
+        width: 20px; height: 20px; border-radius: 50%; flex: 0 0 auto;
+        display: grid; place-items: center; color: #fff;
+        border: 2px solid var(--pbme-line, #E5E7EB); background: #fff;
+    }
+    .pbpg-date-d {
+        font-variant-numeric: tabular-nums; font-weight: 600;
+        color: var(--pbme-ink, #1B1733);
+    }
+    .pbpg-date--done {
+        .pbpg-date-dot { background: #1E7F4F; border-color: #1E7F4F; }
+        .pbpg-date-d { color: var(--pbme-muted, #6B7280); font-weight: 500; }
+    }
+    .pbpg-date--next {
+        .pbpg-date-dot {
+            border-color: var(--pbme-primary, #6355C7);
+            box-shadow: 0 0 0 4px rgba(99, 85, 199, .16);
+        }
+    }
+    .pbpg-date-n {
+        border-radius: 999px; padding: 2px 10px; font-size: 11px;
+        font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+        background: #F1EFFC; color: #4B3FA6;
+    }
+    .pbpg-date-m { font-size: 12px; color: #8A5A0B; }
+
+    // ----------------------------------------------------- empty + help
+    .pbpg-none, .pbpg-help {
+        display: flex; gap: 16px; align-items: flex-start;
+    }
+    .pbpg-none-ic {
+        width: 54px; height: 54px; border-radius: 50%; flex: 0 0 auto;
+        display: grid; place-items: center;
+        background: var(--pbme-soft, #F1EFFC);
+        color: var(--pbme-primary, #6355C7);
+    }
+    .pbpg-links {
+        display: flex; gap: 9px; flex-wrap: wrap; margin-top: 13px;
+    }
+    .pbpg-btn-quiet {
+        display: inline-flex; align-items: center; gap: 7px;
+        border: 1px solid var(--pbme-line, #E5E7EB); background: #fff;
+        color: var(--pbme-ink, #1B1733);
+    }
+
+    // ------------------------------------------------------------- the ack
+    .pbpg-ack {
+        border: 1px solid var(--pbme-primary, #6355C7);
+        background: var(--pbme-soft, #F1EFFC);
+    }
+    .pbpg-ack.pbpg-ack--done {
+        border-color: var(--pbme-line, #E5E7EB); background: #fff;
+        p { margin: 0; display: flex; align-items: center; gap: 8px;
+            flex-wrap: wrap; }
+    }
+    .pbpg-send {
+        display: inline-flex; align-items: center; gap: 8px; margin-top: 6px;
+    }
+
+    // ---------------------------------------------------------- narrow
+    @media (max-width: 640px) {
+        .pbpg-hero { padding: 20px; }
+        .pbpg-hero-h1 { font-size: 22px; }
+        .pbpg-hero-ring { width: 84px; height: 84px; }
+        .pbpg-none, .pbpg-help { flex-direction: column; }
+    }
+}
