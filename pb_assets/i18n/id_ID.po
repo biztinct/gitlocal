@@ -1,0 +1,71 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-14 12:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_assets
+#: model:mail.template,name:pb_assets.mail_template_asset_request_returned
+msgid "Equipment: request sent back (to the employee)"
+msgstr "Perangkat: permintaan dikembalikan (ke karyawan)"
+
+#. module: pb_assets
+#: model:mail.template,subject:pb_assets.mail_template_asset_request_returned
+msgid "Your equipment request was sent back"
+msgstr "Permintaan perangkat Anda dikembalikan"
+
+#. module: pb_assets
+#: model:mail.template,body_html:pb_assets.mail_template_asset_request_returned
+msgid ""
+"<div style=\"margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;\">\n"
+"          <div style=\"max-width:520px;margin:0 auto;\">\n"
+"            <p style=\"margin:0 0 6px;font-size:13px;color:#6b6f80;\" t-out=\"object.category_id.name or ''\">Laptop</p>\n"
+"            <h2 style=\"margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;\">Your request was sent back</h2>\n"
+"            <p style=\"margin:0 0 12px;\">Hello <t t-out=\"object.employee_id.name or ''\">Lan</t>,</p>\n"
+"            <p style=\"margin:0 0 12px;\">\n"
+"              Your request for <strong t-out=\"object.category_id.name or ''\">Laptop</strong>\n"
+"              was sent back to you.\n"
+"            </p>\n"
+"            <div style=\"margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;\">\n"
+"              <div style=\"font-size:12px;color:#6b6f80;margin-bottom:2px;\">The reason given</div>\n"
+"              <div t-out=\"object._pb_sent_back_note() or 'No reason was given.'\">A spare one is available, please ask for that.</div>\n"
+"            </div>\n"
+"            <p style=\"margin:0 0 12px;\">Change what is needed, then send it again.</p>\n"
+"            <p style=\"margin:20px 0 8px;\">\n"
+"              <a t-att-href=\"object._pb_sent_back_url()\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Open your requests</a>\n"
+"            </p>\n"
+"          </div>\n"
+"        </div>\n"
+"      "
+msgstr ""
+"<div style=\"margin:0;padding:24px 0;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.55;\">\n"
+"          <div style=\"max-width:520px;margin:0 auto;\">\n"
+"            <p style=\"margin:0 0 6px;font-size:13px;color:#6b6f80;\" t-out=\"object.category_id.name or ''\">Laptop</p>\n"
+"            <h2 style=\"margin:0 0 16px;font-size:20px;font-weight:600;color:#1f2430;\">Permintaan Anda dikembalikan</h2>\n"
+"            <p style=\"margin:0 0 12px;\">Halo <t t-out=\"object.employee_id.name or ''\">Lan</t>,</p>\n"
+"            <p style=\"margin:0 0 12px;\">\n"
+"              Permintaan Anda untuk <strong t-out=\"object.category_id.name or ''\">Laptop</strong>\n"
+"              telah dikembalikan kepada Anda.\n"
+"            </p>\n"
+"            <div style=\"margin:4px 0 16px;padding:12px 14px;border-left:3px solid #5A4BB0;background:#f4f2fb;border-radius:6px;\">\n"
+"              <div style=\"font-size:12px;color:#6b6f80;margin-bottom:2px;\">Alasan yang diberikan</div>\n"
+"              <div t-out=\"object._pb_sent_back_note() or 'Tidak ada alasan yang diberikan.'\">A spare one is available, please ask for that.</div>\n"
+"            </div>\n"
+"            <p style=\"margin:0 0 12px;\">Ubah yang diperlukan, lalu kirim lagi.</p>\n"
+"            <p style=\"margin:20px 0 8px;\">\n"
+"              <a t-att-href=\"object._pb_sent_back_url()\" style=\"display:inline-block;background:#5A4BB0;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Buka permintaan Anda</a>\n"
+"            </p>\n"
+"          </div>\n"
+"        </div>\n"
+"      "

@@ -21,7 +21,7 @@ without payroll or hr_expense): per-diem/trip-days → formula inputs
 (pb_trip_expense_bridge). Per-diem is paid via payroll XOR expense, never both.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -42,6 +42,7 @@ without payroll or hr_expense): per-diem/trip-days → formula inputs
         'data/ir_sequence_data.xml',
         'data/pb_trip_expense_category_data.xml',
         'data/pb_trip_policy_data.xml',
+        'data/mail_template_data.xml',
         'views/pb_business_trip_views.xml',
         'views/pb_trip_policy_views.xml',
         'views/pb_trips_action.xml',

@@ -8,3 +8,5 @@ from . import journey_case_ext
 from . import zoho_pipeline_ext
 from . import pb_assets_board
 from . import asset_request_approval
+# WF2 P6a (D28): an equipment request says when it was sent back.
+from . import asset_request_messages

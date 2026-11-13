@@ -47,7 +47,7 @@ Nothing here modifies `pb_people` or `pb_people_hub`: the lens arrives through
 their soft registry, which is what lets the dependency run one way only.
 """,
     'post_init_hook': 'post_init_hook',
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -71,6 +71,7 @@ their soft registry, which is what lets the dependency run one way only.
         'security/pb_assets_security.xml',
         'security/ir.model.access.csv',
         'data/asset_category_data.xml',
+        'data/mail_template_data.xml',
         'views/asset_views.xml',
         'views/asset_request_views.xml',
         'views/pb_assets_action.xml',
