@@ -1143,8 +1143,15 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                 cover_from = first_of_year(year)
                 if joined and joined.year == year:
                     cover_from = month_floor(joined)
+            # UPDATES P5d (D31) — joined this tax year and covered by
+            # Payobook payslips alone from the joining month: a figure with no
+            # figure before Payobook is paid in Payobook alone, a year total.
+            joined_in = Line._joined_in(emp, year) if len(mine) < len(figures) else None
+            all_window = window_for(None) if joined_in else None
+            joiner = joined_in if joined_in and Line._joiner_covered(
+                joined_in, all_window) else None
             start_missing = []
-            if not covers and counted_months and counted_months[0] > cover_from:
+            if not covers and counted_months and counted_months[0] > cover_from and not joiner:
                 start_missing = months_between(cover_from, counted_months[0] - timedelta(days=1))
             first_month = cover_from if covers else (counted_months[0] if counted_months else None)
             missing = [m for m in months_between(first_month, latest)
@@ -1169,6 +1176,23 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                         res['state'] = 'overlap'
                 else:
                     res = Line._figure_paid(ledger, window, codes.get(key) or [])
+                joined_note = ''
+                if not line and joiner:
+                    # D31: paid in Payobook alone, counted from 1 January (the
+                    # first payslip starts in or before the joining month).
+                    window = all_window
+                    if f['count']:
+                        jres = dict(res, state='complete' if window['counted'] else 'none',
+                                    paid=float(len(Line._months_paid(window))))
+                    else:
+                        jres = Line._figure_paid(ledger, window, codes.get(key) or [])
+                    if jres['state'] == 'complete':
+                        res = jres
+                        joined_note = self._ytd_memo(('joined', joiner),
+                                                     lambda: Line._joiner_label(joiner))
+                        own_covers = None
+                    else:
+                        window = window_for(own_covers)
                 paid = res['paid']
                 state = res['state']
                 counted = state != 'unknown'
@@ -1176,7 +1200,10 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                 year_total = state in ('complete', 'none') and not row_open
                 if state == 'none' and not line:
                     year_total = False
-                note = self._ytd_cell_note(f, res, own_covers, row_bits, cur) \
+                if joined_note:
+                    year_total = True
+                note = self._ytd_cell_note(f, res, own_covers, row_bits, cur,
+                                           joined=joined_note) \
                     if (line or window['counted']) else ''
                 cells[key] = {
                     'before': before, 'paid': paid, 'total': total, 'has_before': bool(line),
@@ -1197,6 +1224,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                     'advance_label': Line._value_label(key, res['advance'], cur)
                     if state == 'split' and res['advance'] else '',
                     'detail': state != 'unknown' and bool(window['rows']),
+                    # UPDATES P5d (D31)
+                    'joined_label': joined_note,
                 }
                 if detail and detail == (emp.id, key):
                     kept = {'window': window, 'res': res, 'figure': f, 'line': line,
@@ -1283,11 +1312,13 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                 self._ytd_month(m) for m in months[:3]))
 
     @api.model
-    def _ytd_cell_note(self, fig, res, covers, row_bits, currency):
+    def _ytd_cell_note(self, fig, res, covers, row_bits, currency, joined=''):
         """One plain sentence for the cell and the download's check column:
-        "Complete", or why the amount is not a year total."""
+        "Complete", or why the amount is not a year total. `joined` (P5d,
+        D31): "Joined <date> — Payobook payslips only" leads instead of
+        "Complete" for a person paid in Payobook alone."""
         Line = self.env['pb.updates.ytd.line']
-        bits = []
+        bits = [joined] if joined else []
         state = res['state']
         if state == 'unknown':
             bits.append(self._ytd_memo('unknown', lambda: _(
@@ -1304,7 +1335,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                           "month-end payslip (shown apart: %s)") % Line._value_label(
                               fig['key'], res['advance'], currency))
         start, gaps, both = row_bits
-        bits += [b for b in (start, gaps) if b]
+        if not joined:
+            bits += [b for b in (start, gaps) if b]
         if res['below_zero']:
             bits.append(self._ytd_below_note(res['below_zero']))
         if both and not fig['count']:
@@ -1436,6 +1468,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             'note': cell['note'], 'state': cell['state'],
             'items': [names.get(c) or c for c in kept['codes']], 'counted': counted, 'left': left,
             'covers_label': day_label(self.env, kept['covers']) if kept['covers'] else '',
+            # UPDATES P5d (D31) — "Joined <date> — Payobook payslips only".
+            'joined_label': cell.get('joined_label') or '',
         }
 
     @api.model
@@ -1564,13 +1598,25 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         rule_ids = {r.code: r for r in config.rule_ids if r.code}
         gaps = 0
         for emp in people:
-            plan = Line._plan_for_slip(emp, config, start, end) if emp.id in has_figures else {}
+            # UPDATES P5d (D31) — a person with no figures who joined this tax
+            # year may be paid in Payobook alone (`_joiner_plan`).
+            joined = Line._joined_in(emp, end.year) if emp.id not in has_figures else None
+            plan = Line._plan_for_slip(emp, config, start, end) \
+                if emp.id in has_figures or joined else {}
             row = [emp.barcode or emp.employee_id or '', emp.name or '']
             notes = []
-            if emp.id not in has_figures:
+            joined_items = [c for c in items if (plan.get(c) or {}).get('joined')]
+            if emp.id not in has_figures and not joined_items:
                 notes.append(_("No figures before Payobook for %s, so nothing is worked out. If "
                                "this person joined this year, load 0 for each figure so paid in "
                                "Payobook can be counted.") % end.year)
+            elif emp.id not in has_figures:
+                notes.append(Line._joiner_label(joined))
+                rest = [names.get(c) or c for c in items if c not in joined_items]
+                if rest:
+                    notes.append(_("%s: no figures before Payobook, and the finished payslips since "
+                                   "the joining date do not cover it in full, so nothing is "
+                                   "worked out") % ', '.join(rest))
             for code in items:
                 info = plan.get(code)
                 if not info:
@@ -1612,6 +1658,11 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                     adj.append([emp.id, config.id, rule.id, fields.Date.to_string(start),
                                 fields.Date.to_string(end), number_text(info['value']),
                                 'money' if kind == 'money' else 'number',
+                                _("Year-to-date figures from Updates: joined %(date)s, %(paid)s "
+                                  "paid in Payobook (Payobook payslips only).",
+                                  date=day_label(self.env, fields.Date.to_date(info['joined'])),
+                                  paid=number_text(info['paid']))
+                                if info.get('joined') else
                                 _("Year-to-date figures from Updates: %(before)s before Payobook "
                                   "(up to %(date)s) + %(paid)s paid in Payobook.",
                                   before=number_text(info['before']),
@@ -1619,7 +1670,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                                   paid=number_text(info['paid'])),
                                 _("Updates year-to-date figures"), emp.name or '',
                                 names.get(code) or code])
-            if any(Line._plan_blocked(i) for i in plan.values()) or emp.id not in has_figures:
+            if any(Line._plan_blocked(i) for i in plan.values()) or (
+                    emp.id not in has_figures and len(joined_items) < len(items)):
                 gaps += 1
             row.append(' · '.join(notes) or _("Ready"))
             ws.append(row)

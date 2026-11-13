@@ -9,3 +9,4 @@ from . import test_updates_p4
 from . import test_updates_p5
 from . import test_updates_p4b
 from . import test_updates_p5c
+from . import test_updates_p5d

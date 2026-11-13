@@ -748,14 +748,29 @@ class PbUpdatesYtdLine(models.Model):
         lines = self.sudo().search([
             ('employee_id', '=', employee.id), ('tax_year', '=', year), ('state', '=', 'set'),
             ('figure', 'in', list({m[1] for m in maps}))])
-        if not lines:
+        # UPDATES P5d (D31) — a person who joined this tax year (the employee
+        # record's joining date, never the contract start) and has no figure
+        # before Payobook may still receive "paid in Payobook" alone.
+        joined = self._joined_in(employee, year)
+        if joined and joined > date_to:
+            joined = None       # a pay period before the person joined: nothing
+        if not lines and not joined:
             return {}
         by_figure = {l.figure: l for l in lines}
         out = {}
         ledger = None
         for code, figure, basis, map_id in maps:
             line = by_figure.get(figure)
-            if not line or not line.covers_to or line.covers_to >= date_from:
+            if not line:
+                if joined:
+                    if ledger is None:
+                        ledger = self._plan_ledger(employee, maps, year, date_from)
+                    info = self._joiner_plan(employee, joined, ledger, code, figure, basis,
+                                             map_id, date_from)
+                    if info:
+                        out[code] = info
+                continue
+            if not line.covers_to or line.covers_to >= date_from:
                 continue
             info = {'code': code, 'figure': figure, 'basis': basis, 'map_id': map_id,
                     'line_id': line.id, 'covers_to': fields.Date.to_string(line.covers_to),
@@ -766,12 +781,7 @@ class PbUpdatesYtdLine(models.Model):
                 start = line.covers_to + timedelta(days=1)
                 end = date_from - timedelta(days=1)
                 if ledger is None:
-                    # One read for every mapped figure of this payslip.
-                    wanted = set()
-                    for _c, fig, bas, _m in maps:
-                        if bas != 'opening' and not self._is_count(fig):
-                            wanted |= set(self._figure_codes(employee.company_id, fig))
-                    ledger = self._ledger([employee.id], first_of_year(year), end, wanted)
+                    ledger = self._plan_ledger(employee, maps, year, date_from)
                 window = self._person_window(ledger, employee.id, line.covers_to, date_from)
                 info['gap'] = [fields.Date.to_string(m) for m in months_between(start, end)
                                if m not in window['months']]
@@ -807,6 +817,190 @@ class PbUpdatesYtdLine(models.Model):
             info['value'] = round(info['before'] + info['paid'], 2)
             out[code] = info
         return out
+
+    @api.model
+    def _plan_ledger(self, employee, maps, year, date_from):
+        """One ledger read for every mapped figure of one payslip: the
+        person's finished payslips from 1 January to the day before the pay
+        period, and the pay items of every mapped money figure."""
+        wanted = set()
+        for _c, fig, bas, _m in maps:
+            if bas != 'opening' and not self._is_count(fig):
+                wanted |= set(self._figure_codes(employee.company_id, fig))
+        return self._ledger([employee.id], first_of_year(year), date_from - timedelta(days=1),
+                            wanted)
+
+    # ------------------------------------------------------------ joined this year (P5d)
+    #
+    # Owner decision D31 (2026-11-13): a person with NO figure before Payobook
+    # who joined after the company started on Payobook is paid in Payobook
+    # alone. "Before Payobook" is then 0 and the sum is complete ONLY when
+    #   (a) the employee record's joining date is filled in and falls in the
+    #       tax year (never the contract start: a blank joining date stays
+    #       "not known", D27);
+    #   (b) finished payslips cover every month from the first one up to the
+    #       month needed, with no gap, and the figure itself is complete under
+    #       P5c's rules (every payslip that should carry it does, nothing
+    #       overlapping, no advance that cannot be matched);
+    #   (c) the first payslip counted starts on or before the joining month —
+    #       nothing can have been paid elsewhere in between.
+    # Anything else stays exactly as P5c ("Known so far", "Not covered", and
+    # nothing reaches a pay run).
+
+    @api.model
+    def _joined_in(self, employee, year):
+        """The joining date on the employee record when it falls in `year`,
+        else None. Never the contract start (D27)."""
+        if not employee or 'date_of_joining' not in employee._fields:
+            return None
+        joined = employee.date_of_joining
+        return joined if joined and year and joined.year == int(year) else None
+
+    @api.model
+    def _joiner_covered(self, joined, window, upto=None):
+        """True when finished payslips in Payobook alone cover a person who
+        joined on `joined`: rule (b) and (c) above for the months up to the
+        one before `upto` (a pay period's first day) or, without `upto`, up
+        to the latest month counted. `window` = `_person_window` with no
+        figures before Payobook."""
+        if not joined:
+            return False
+        counted = window['counted']
+        if not counted:
+            # Nothing finished yet: complete only for the pay period the
+            # person joined in (or before it) — there is nothing in between.
+            return bool(upto) and month_floor(upto) <= month_floor(joined)
+        first = counted[0]
+        if month_floor(first['date_from']) > month_floor(joined):
+            return False
+        end = month_floor(upto - timedelta(days=1)) if upto else max(window['months'])
+        return all(m in window['months'] for m in months_between(first['month'], end))
+
+    @api.model
+    def _joiner_label(self, joined):
+        """"Joined 1 May 2026 — Payobook payslips only"."""
+        return _("Joined %s — Payobook payslips only") % day_label(self.env, joined)
+
+    @api.model
+    def _joiner_plan(self, employee, joined, ledger, code, figure, basis, map_id, date_from):
+        """The value a mapped pay item receives for a person with no figure
+        before Payobook under rule D31, or None (then nothing is sent, as in
+        P5c)."""
+        window = self._person_window(ledger, employee.id, None, date_from)
+        if not self._joiner_covered(joined, window, date_from):
+            return None
+        info = {'code': code, 'figure': figure, 'basis': basis, 'map_id': map_id,
+                'line_id': 0, 'covers_to': '', 'joined': fields.Date.to_string(joined),
+                'before': 0.0, 'paid': 0.0, 'gap': [], 'unknown': False, 'incomplete': '',
+                'below_zero': [], 'slips': [], 'overlap': [], 'split': [],
+                'label': self._figure_label(figure, employee.company_id)}
+        if basis != 'opening':
+            info['twice'] = sorted({fields.Date.to_string(r['month']) for r in window['twice']})
+            if self._is_count(figure):
+                info['paid'] = float(len(self._months_paid(window)))
+                if basis == 'with_period':
+                    info['paid'] += 1.0
+            else:
+                codes = self._figure_codes(employee.company_id, figure)
+                res = self._figure_paid(ledger, window, codes)
+                if res['state'] not in ('complete', 'none'):
+                    return None
+                info['paid'] = res['paid']
+                info['have'], info['expected'] = res['have'], res['expected']
+                info['below_zero'] = [fields.Date.to_string(m) for m in res['below_zero']]
+                info['slips'] = [r['id'] for r in window['counted']]
+        info['value'] = round(info['before'] + info['paid'], 2)
+        return info
+
+    @api.model
+    def _tax_summary_counted(self, emp, qcontext):
+        """UPDATES P5d (owner decision D29) — the employee's own tax summary
+        (`/my/taxsheet`) counts the year the way "paid in Payobook" does
+        (P5c): a mid-month advance is never added on top of the month-end
+        payslip that carries the whole month; one that cannot be matched is
+        shown apart, not added; money taken off or paid on top counts as an
+        amount in the scheme's usual sign, so a refund month reduces.
+
+        The page's own rows and their amounts are untouched; only the year
+        totals change, and only for a person whose year on the page includes
+        a mid-month advance. Everyone else's page stays exactly as before.
+        Totals are shown in the page's own sign (a deduction line the scheme
+        writes as a negative number stays negative there)."""
+        year = qcontext.get('ytd_year')
+        codes = [c for c in (qcontext.get('codes') or []) if c and CODE_RE.fullmatch(c)]
+        rows = [r for r in (qcontext.get('rows') or []) if year and r.get('year') == year]
+        if not emp or not year or not codes or not rows:
+            return qcontext
+        page = {r['id']: r for r in rows}
+        ledger = self._ledger([emp.id], first_of_year(year), last_of_year(year), codes)
+        if not any(ledger['slips'].get(sid, {}).get('cycle') == ADVANCE_CYCLE for sid in page):
+            return qcontext
+        # Only what the page itself shows: its own payslips, and amounts read
+        # off payslip lines (never a stored result the page does not print).
+        ledger = dict(ledger, values={k: v for k, v in ledger['values'].items()
+                                      if v[1] is not None and k[0] in page})
+        window = self._person_window(ledger, emp.id)
+        state = {r['id']: r['state'] for r in window['rows'] if r['id'] in page}
+        counted = [r for r in window['counted'] if r['id'] in page]
+        split = [r for r in window['split'] if r['id'] in page]
+        ytd = dict(qcontext.get('ytd') or {})
+        apart = {}
+        for code in codes:
+            sign = self._summary_sign(ledger, counted, code)
+            total = 0.0
+            for row in counted:
+                amount, _neg = self._slip_amount(ledger, row, [code])
+                if amount is not None:
+                    total += amount * self._row_sign(ledger, row, code, sign)
+            ytd[code] = round(total, 2)
+            shown = [self._slip_amount(ledger, row, [code])[0] for row in split]
+            shown = [a * self._row_sign(ledger, row, code, sign)
+                     for a, row in zip(shown, split) if a is not None]
+            if shown:
+                apart[code] = round(sum(shown), 2)
+        words = {
+            'advance': _("Mid-month advance · not added"),
+            'advance_only': _("Mid-month advance · waits for month end"),
+            'split': _("Mid-month advance · shown apart"),
+        }
+        qcontext.update({
+            'ytd': ytd,
+            'ytd_not_added': {sid: words[s] for sid, s in state.items() if s in words},
+            'ytd_advance_apart': apart,
+            'ytd_advance_note': _("Each month is counted once in the year to date: a mid-month "
+                                  "advance is part of that month's month-end payslip, so it is "
+                                  "not added again. An advance whose month-end payslip is not "
+                                  "finished yet is counted with it."),
+            'ytd_advance_apart_title': _("Mid-month advances not matched to a month-end payslip "
+                                         "· shown apart, not added to the year"),
+        })
+        return qcontext
+
+    @api.model
+    def _summary_sign(self, ledger, counted, code):
+        """The sign the tax summary shows money taken off (or paid on top)
+        with: the scheme's usual sign for the pay item on the latest payslip
+        that has it, else the sign of the page's own sum."""
+        raw = 0.0
+        for row in reversed(counted):
+            entry = ledger['values'].get((row['id'], code))
+            if entry is None:
+                continue
+            conv = ledger['conv'].get((row['config'], code))
+            if conv:
+                return conv
+            raw += entry[0]
+        return -1 if raw < 0 else 1
+
+    @api.model
+    def _row_sign(self, ledger, row, code, sign):
+        """Back to the page's sign: an amount (deduction / employer cost) is
+        shown with `sign`; everything else is already signed."""
+        entry = ledger['values'].get((row['id'], code))
+        role = entry[1] if entry else None
+        if role is None:     # the same rule as `_slip_amount`
+            role = ledger['roles'].get((row['config'], code), '')
+        return sign if role in MAGNITUDE_ROLES else 1
 
     @api.model
     def _tax_summary_opening(self, emp, qcontext):

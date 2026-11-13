@@ -293,6 +293,9 @@
                     </button>
                     <span t-else="" t-att-class="c.counted ? 'is-paid' : 'is-none'"><t t-esc="c.counted ? (c.paid_label or '0') : '—'"/></span>
                   </span>
+                  <span t-if="c.joined_label" class="pbu-chip pbu-chip--pri pbu-ytd-chip pbu-ytd-joined" t-att-title="c.note" data-p5d="joined">
+                    <t t-out="icon('userPlus', 11)"/><t t-esc="c.joined_label"/>
+                  </span>
                   <span t-if="c.chip" class="pbu-chip pbu-chip--warn pbu-ytd-chip" t-att-title="c.note">
                     <t t-out="icon('alert', 11)"/><t t-esc="c.chip"/>
                   </span>
@@ -345,6 +348,7 @@
             <span><small>Paid in Payobook</small><b class="is-paid" t-esc="hd.paid_label or '—'"/></span>
             <span><small t-esc="hd.year_total ? ytdLegend.total : ytdKnownWord"/><b t-esc="hd.total_label or '—'"/></span>
           </div>
+          <p t-if="hd.joined_label" class="pbu-inline-note pbu-ytd-pop-joined" data-p5d="joined"><t t-out="icon('userPlus', 13)"/><span t-esc="hd.joined_label"/></p>
           <p t-if="hd.note and !hd.year_total" class="pbu-inline-note pbu-ytd-pop-note"><t t-out="icon('alert', 13)"/><span t-esc="hd.note"/></p>
           <details t-if="hd.left.length" class="pbu-ytd-pop-left">
             <summary><t t-out="icon('eyeOff', 12)"/><span t-esc="ytdHowLeftLine"/></summary>

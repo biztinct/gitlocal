@@ -9276,3 +9276,70 @@ msgid ""
 msgstr ""
 "%(item)s: hai phiếu lương hoàn tất cùng chương trình lương và cùng kỳ lương "
 "trong %(months)s, cả hai đều được tính — hãy kiểm tra không phải bản thử"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"%s: no figures before Payobook, and the finished payslips since the joining "
+"date do not cover it in full, so nothing is worked out"
+msgstr ""
+"%s: không có số liệu trước Payobook, và các phiếu lương hoàn tất từ ngày vào"
+" làm chưa bao phủ đầy đủ, nên không tính được"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Each month is counted once in the year to date: a mid-month advance is part "
+"of that month's month-end payslip, so it is not added again. An advance "
+"whose month-end payslip is not finished yet is counted with it."
+msgstr ""
+"Mỗi tháng chỉ được tính một lần trong số lũy kế từ đầu năm: khoản tạm ứng "
+"giữa tháng là một phần của phiếu lương cuối tháng đó, nên không cộng thêm "
+"lần nữa. Khoản tạm ứng có phiếu lương cuối tháng chưa hoàn tất sẽ được tính "
+"cùng phiếu đó."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Joined %s — Payobook payslips only"
+msgstr "Vào làm %s — chỉ phiếu lương Payobook"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · not added"
+msgstr "Tạm ứng giữa tháng · không cộng vào"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · shown apart"
+msgstr "Tạm ứng giữa tháng · hiển thị riêng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid "Mid-month advance · waits for month end"
+msgstr "Tạm ứng giữa tháng · chờ cuối tháng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd.py:0
+msgid ""
+"Mid-month advances not matched to a month-end payslip · shown apart, not "
+"added to the year"
+msgstr ""
+"Tạm ứng giữa tháng không khớp với phiếu lương cuối tháng · hiển thị riêng, "
+"không cộng vào cả năm"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_ytd_desk.py:0
+msgid ""
+"Year-to-date figures from Updates: joined %(date)s, %(paid)s paid in "
+"Payobook (Payobook payslips only)."
+msgstr ""
+"Số liệu lũy kế từ Cập nhật: vào làm ngày %(date)s, %(paid)s đã trả trên "
+"Payobook (chỉ phiếu lương Payobook)."
