@@ -34,7 +34,7 @@ WHAT THIS MODULE ADDS
 The hours then travel the road that already exists: the weekly timesheet, its
 approval, and the pay run.
 """,
-    'version': '19.0.1.4.2',
+    'version': '19.0.1.4.3',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',

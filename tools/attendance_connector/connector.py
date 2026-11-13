@@ -23,7 +23,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 COLUMNS = ('UserFullCode', 'UserEnrollNumber', 'TimeDate', 'TimeStr', 'TimeType', 'TimeSource', 'MachineNo', 'CardNo')
 BATCH_SIZE = 500
 

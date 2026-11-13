@@ -1,4 +1,4 @@
-PAYOBOOK ATTENDANCE CONNECTOR 1.0.0 — WINDOWS PILOT PACKAGE
+PAYOBOOK ATTENDANCE CONNECTOR 1.0.1 — WINDOWS PILOT PACKAGE
 
 What it does
 Reads CheckInOut from a local Mitaco MDB, queues new records and uploads them
@@ -77,3 +77,12 @@ Python embeddable runtime: https://www.python.org/ftp/python/3.13.12/
 Read-only Access parser: https://github.com/claroty/access_parser
 Construct / Tabulate: pinned PyPI packages, bundled with their licences.
 No customer database, employee data or installation token is in the ZIP.
+
+Updating an existing installation
+Wait for any sync to finish and close setup. Download and extract the new ZIP,
+then run Install.cmd under the SAME Windows account. Pairing, preferences and
+queued records in the data folder are preserved. Do not generate another code
+or pair again. The updated setup shows Connector 1.0.1 and animated activity
+with elapsed time. Results are summaries; Show diagnostics displays technical
+details. Check connection on the website reads server status; it does not
+remotely start a Windows sync.

@@ -25,7 +25,11 @@ def main():
             with zipfile.ZipFile(a.inputs/name) as z:z.extractall(dest)
         (runtime/'python313._pth').write_text('python313.zip\n.\nLib/site-packages\n..\nimport site\n')
         for name in ['connector.py','Setup.ps1','Install.cmd','README.txt','build-inputs.json']:
-            (stage/name).write_bytes((ROOT/name).read_bytes())
+            # Windows PowerShell 5.1 otherwise interprets UTF-8 as the ANSI codepage.
+            if name == 'Setup.ps1':
+                (stage/name).write_text((ROOT/name).read_text(encoding='utf-8-sig'), encoding='utf-8-sig')
+            else:
+                (stage/name).write_bytes((ROOT/name).read_bytes())
         a.output.parent.mkdir(parents=True,exist_ok=True)
         with zipfile.ZipFile(a.output,'w',zipfile.ZIP_DEFLATED) as z:
             for path in sorted(stage.rglob('*')):
