@@ -2,7 +2,7 @@
 <odoo>
  <template id="connector_setup" name="Attendance connector guided setup">
   <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Connect your office PC · Payobook</title><link rel="stylesheet" href="/pb_clock/static/setup/setup.css"/><script src="/pb_clock/static/setup/setup.js" defer="defer"></script></head>
-  <body t-att-data-manager="manager_id" t-att-data-csrf="csrf_token">
+  <body t-att-data-manager="manager_id" t-att-data-csrf="csrf_token" t-att-data-back-url="back_url">
    <header class="topbar"><a class="brand" href="/clock-bridge/setup" aria-label="Payobook connector setup"><span class="brandmark">p</span>payobook<span class="brand-divider"></span><span class="product">Attendance connect</span></a><span class="secure"><span class="dot"></span>Secure setup</span></header>
    <main>
     <div id="loading" class="loading" role="status">Opening your secure setup…</div>

@@ -240,7 +240,10 @@ class TestConnectorHttp(HttpCase):
         page = self.url_open('/clock-bridge/manage/%s' % self.connector.id)
         self.assertEqual(page.status_code, 200, page.text[:500])
         from lxml import html
-        csrf = html.fromstring(page.content).xpath('//body/@data-csrf')[0]
+        dom = html.fromstring(page.content)
+        self.assertEqual(dom.xpath('//body/@data-back-url')[0],
+            '/bizapp/action-%s/%s' % (self.env.ref('pb_clock.action_clock_connectors').id, self.connector.id))
+        csrf = dom.xpath('//body/@data-csrf')[0]
         headers = {'X-Forwarded-Proto': 'https', 'X-Forwarded-Host': self.base_url().split('://', 1)[1]}
         r = self.url_open('/clock-bridge/manage/%s/invite' % self.connector.id,
                          data={'csrf_token': csrf}, headers=headers, method='POST')

@@ -88,7 +88,7 @@
     if (manager) {
         show('manager-nav'); show('invite-panel');
         $('access-label').textContent = 'Signed-in administrator';
-        $('back-link').href = `/bizapp/pb_clock.action_clock_connectors/${manager}`;
+        $('back-link').href = document.body.dataset.backUrl;
     }
     show('platform-note', !/Windows/i.test(navigator.userAgent));
     $('download').addEventListener('click', () => action('download', async () => {
