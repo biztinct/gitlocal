@@ -59,6 +59,17 @@ GROUP_CARDS = 5
 LINE_BATCH = 25
 
 
+def _line_value_words(value):
+    """A line detail as plain words for the activity history."""
+    if value in (None, '', False):
+        return '—'
+    if value is True:
+        return _('yes')
+    if isinstance(value, float):
+        return ('%d' % value) if value == int(value) else ('%.2f' % value)
+    return str(value)
+
+
 class WorkflowRunLines(models.Model):
     _inherit = 'pb.workflow.run'
 
@@ -113,7 +124,14 @@ class WorkflowRunLines(models.Model):
     # ------------------------------------------------------------ advance
     def _advance(self):
         before = self.sudo().state
-        result = super()._advance()
+        srun = self.sudo()
+        # WF2 P6a: a line's details are read again whenever one of its steps
+        # may open (a step not started yet), so a receipt edited after the
+        # repeat started shows its current details; a line that is gone is
+        # closed instead of walked.
+        gone = bool(srun.parent_id) and before in ('running', 'waiting', 'failed') \
+            and not self.env.context.get('_pb_wf_line_fresh') and self._repeat_refresh_line() is False
+        result = None if gone else super()._advance()
         srun = self.sudo()
         if srun.state in ('done', 'cancelled', 'rejected') and srun.line_ids:
             # The run is over (finished, stopped, turned down): its lines too.
@@ -124,6 +142,78 @@ class WorkflowRunLines(models.Model):
             if parent.state in ('running', 'waiting', 'failed'):
                 parent._advance()
         return result
+
+    # ------------------------------------------------- line read again (P6a)
+    def _repeat_refresh_line(self):
+        """Read this line again through the area's door before a step of it
+        opens. Returns False when the line is gone (closed here), True
+        otherwise. Never fails: when the record or the door cannot be read,
+        the details captured at the start stay."""
+        self.ensure_one()
+        srun = self.sudo()
+        if not any(s.state == 'pending' for s in srun.step_ids):
+            return True
+        d = srun.version_id.definition or {}
+        node = next((x for x in d.get('nodes', []) if x.get('id') == srun.parent_step_key), {})
+        src = node.get('source') if isinstance(node.get('source'), dict) else {}
+        if src.get('kind') != 'area' or not srun.source_model:
+            return True
+        service = self._service()
+        try:
+            source = srun._source()
+            row = service._repeat_line_now(source, src.get('key'), srun.line_key)
+        except Exception:  # noqa: BLE001 — keep the details from the start
+            _logger.info('Workflow line %s: details could not be read again; kept as at the start', srun.id)
+            return True
+        if row is False:
+            return True
+        parent_step = srun.parent_id.step_ids.filtered(lambda s: s.key == srun.parent_step_key)[:1]
+        if row is None:
+            srun._repeat_line_gone(parent_step, service._repeat_words(srun.source_model, node, d))
+            return False
+        start = next((dict(x.get('values') or {}) for x in (parent_step.answers or {}).get('_lines') or []
+                      if str(x.get('key')) == str(srun.line_key)), dict(srun.line_values or {}))
+        values = dict(row.get('values') or {})
+        label = str(row.get('name') or '')
+        if values == dict(srun.line_values or {}) and label == (srun.line_label or ''):
+            return True
+        names = {f['key']: f.get('label') or f['key'] for f in service._line_fields(srun.source_model, node, d)}
+        said = []
+        for key in [k for k in names if values.get(k) != (srun.line_values or {}).get(k)]:
+            said.append(_('%(what)s is now %(now)s (was %(then)s at the start).', what=names[key],
+                          now=_line_value_words(values.get(key)), then=_line_value_words(start.get(key))))
+        facts = dict(srun.facts or {})
+        facts.update({'line.%s' % k: v for k, v in values.items()})
+        facts['line.label'] = label
+        internal(srun).write({'line_values': values, 'line_label': label, 'facts': facts})
+        if said:
+            self._log(_('Line details read again: %s', ' '.join(said)))
+        return True
+
+    def _repeat_line_gone(self, parent_step, words):
+        """The line is no longer on the record: its open steps close with a
+        plain note, the line ends, and the repeat counts one line fewer."""
+        srun = self.sudo()
+        note = _('This %(one)s is no longer on the record, so its steps were closed.', one=words['singular'])
+        for s in srun.step_ids.filtered(lambda x: x.state not in ('done', 'skipped')):
+            s._cancel_activity()
+            internal(s).write({'state': 'skipped', 'error': note})
+        internal(srun).write({'state': 'cancelled', 'ended_at': fields.Datetime.now()})
+        self._log(_('%(line)s is no longer on the record, so this line was closed.', line=srun.line_label or words['singular']))
+        if not parent_step:
+            return
+        found = [x for x in (parent_step.answers or {}).get('_lines') or [] if str(x.get('key')) != str(srun.line_key)]
+        state = json.loads(parent_step.choice) if str(parent_step.choice or '').startswith('{') else {}
+        state['count'] = len(found)
+        internal(parent_step).write({'answers': dict(parent_step.answers or {}, _lines=found), 'choice': json.dumps(state)})
+        siblings = srun.parent_id._repeat_lines_of(parent_step).filtered(
+            lambda r: r.line_round == srun.line_round and r.id != srun.id and r.line_key in {str(x['key']) for x in found})
+        for sib in siblings:
+            internal(sib).write({'line_count': len(found),
+                                 'line_number': sib.line_number - 1 if sib.line_number > srun.line_number else sib.line_number})
+        srun.parent_id._log(_('%(line)s is no longer on the record: %(count)s %(lines)s left in this repeat.',
+                              line=srun.line_label or words['singular'], count=len(found),
+                              lines=words['plural'] if len(found) != 1 else words['singular']), parent_step)
 
     def _repeat_close_lines(self, lines, reason):
         for line in lines:
@@ -172,7 +262,9 @@ class WorkflowRunLines(models.Model):
         state = json.loads(s.choice) if str(s.choice or '').startswith('{') else {}
         round_ = state.get('round') or max(lines.mapped('line_round') or [0])
         found = (s.answers or {}).get('_lines') or []
-        mine = lines.filtered(lambda r: r.line_round == round_)
+        # WF2 P6a: a line that is gone from the record is out of `found`.
+        keys = {str(x['key']) for x in found}
+        mine = lines.filtered(lambda r: r.line_round == round_ and r.line_key in keys)
         if len(mine) < len(found):
             started = set(mine.mapped('line_key'))
             todo = [(i, line) for i, line in enumerate(found) if str(line['key']) not in started]
@@ -183,7 +275,7 @@ class WorkflowRunLines(models.Model):
             for i, line in todo:
                 srun._repeat_start_line(s, line, i + 1, len(found), round_)
             if todo:
-                mine = srun._repeat_lines_of(s).filtered(lambda r: r.line_round == round_)
+                mine = srun._repeat_lines_of(s).filtered(lambda r: r.line_round == round_ and r.line_key in keys)
         done = mine.filtered(lambda r: r.state == 'done')
         failed = mine.filtered(lambda r: r.state == 'failed')
         over = mine.filtered(lambda r: r.state in ('done', 'cancelled', 'rejected'))
@@ -227,7 +319,8 @@ class WorkflowRunLines(models.Model):
             'line_key': str(line['key']), 'line_label': line.get('label') or '', 'line_values': values,
             'line_number': number, 'line_count': count, 'line_round': round_, 'line_start_key': key})
         child._initialize()
-        child.with_context(_pb_wf_from_parent=True)._advance()
+        # Its details were read a moment ago: no second read (WF2 P6a).
+        child.with_context(_pb_wf_from_parent=True, _pb_wf_line_fresh=True)._advance()
         return child
 
     def _repeat_finish(self, s, n, found, mine, words):
@@ -294,6 +387,16 @@ class WorkflowRepeat(models.AbstractModel):
             return {'singular': _('answer'), 'plural': _('answers'),
                     'each': _('For each answer to “%s”', found['label']) if found else _('For each answer')}
         return {'singular': _('line'), 'plural': _('lines'), 'each': _('For each line')}
+
+    def _repeat_line_now(self, source, key, line_key):
+        """One line of the record as the area gives it now (WF2 P6a):
+        the row, None when the line is no longer there, or False when the
+        area offers no way to read it (the start snapshot then stays)."""
+        if hasattr(source, '_workflow_line'):
+            return source._workflow_line(key, line_key)
+        if hasattr(source, '_workflow_lines'):
+            return next((r for r in source._workflow_lines(key) or [] if str(r.get('id')) == str(line_key)), None)
+        return False
 
     def _repeat_lines(self, run, n):
         """The lines of a repeat for this run: [{key, label, values}], read

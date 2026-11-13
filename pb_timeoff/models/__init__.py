@@ -22,3 +22,6 @@ from . import workflow_contract
 
 # WF2 P5a (D28): time off says when a request was sent back.
 from . import leave_messages
+
+# WF2 P6a: a request's days, for "Repeat for each…".
+from . import workflow_lines

@@ -4153,3 +4153,127 @@ class TestWorkflowStudio(TransactionCase):
         address = 'p5b-%s@example.com' % uuid.uuid4().hex
         self.env['res.partner'].create({'name': 'P5b no login', 'email': address, 'lang': 'id_ID'})
         self.assertEqual(system._link_lang(self.company, address), 'id_ID')
+
+    # ============================================================ WF2 P6a
+    def test_wf2p6a_l1_pay_runs_are_not_a_workflow_record_type(self):
+        """Pay run → payslips was not built: a pay run carries no company, so
+        Studio does not offer pay runs as a record type at all and a repeat
+        over payslips could never be reached (reported, WF2 P6a §1)."""
+        if 'hr.payslip.run' not in self.env:
+            self.skipTest('pay runs are not installed here')
+        self.assertNotIn('company_id', self.env['hr.payslip.run']._fields)
+        self.assertNotIn('hr.payslip.run', {r['key'] for r in self.service._models()})
+        self.assertNotIn('lines', self.env['hr.payslip.run']._workflow_capabilities())
+
+    def test_wf2p6a_l2_repeat_for_each_day_of_time_off(self):
+        """Time off → each working day of the request, counted the way the
+        request's own length is counted."""
+        self.need('hr.leave')
+        self.admin.write({'group_ids': [(4, self.env.ref('hr_holidays.group_hr_holidays_manager').id)]})
+        caps = self.env['hr.leave']._workflow_capabilities()
+        self.assertEqual([l['key'] for l in caps['lines']], ['days'])
+        employee = self.employee('WF2 P6a leave', self.staff)
+        kind = self.env['hr.leave.type'].create({'name': 'P6a kind', 'requires_allocation': False,
+                                                 'leave_validation_type': 'no_validation',
+                                                 'company_id': self.company.id})
+        anchor = fields.Date.today() + timedelta(days=28)
+        monday = anchor - timedelta(days=anchor.weekday())
+        leave = self.env['hr.leave'].sudo().create({
+            'holiday_status_id': kind.id, 'employee_id': employee.id, 'name': 'P6a days',
+            'request_date_from': monday, 'request_date_to': monday + timedelta(days=6)})
+        rows = leave._workflow_lines('days')
+        working = int(round(leave.number_of_days))
+        self.assertEqual(len(rows), working, rows)
+        self.assertEqual(rows[0]['id'], fields.Date.to_string(monday))
+        self.assertTrue(all(fields.Date.from_string(r['id']).weekday() < 5 for r in rows)
+                        if working == 5 else True)
+        self.assertEqual(leave._workflow_line('days', rows[-1]['id']), rows[-1])
+        self.assertIsNone(leave._workflow_line('days', '1999-01-01'))
+        self.assertEqual(leave._workflow_lines('other'), [])
+        # through the repeat: one line per day, labelled with the day
+        w, _d = self.repeat_flow([self.check()], rep_kw={'source': {'kind': 'area', 'key': 'days', 'fields': ['date', 'hours']}},
+                                 before=[], model='hr.leave')
+        run = self.start(w, leave)
+        self.assertEqual(self.lines_of(run).mapped('line_label'), [r['name'] for r in rows])
+        self.assertEqual(self.service._line_words(self.lines_of(run)[0]), 'day 1 of %s' % working)
+
+    def test_wf2p6a_l3_an_area_without_lines_is_skipped_cleanly(self):
+        """Equipment requests and joining checklists declare no lines: the
+        repeat says so in plain words and nothing is offered."""
+        for model in ('pb.asset.request', 'pb.journey.case'):
+            if model not in self.env or model not in {r['key'] for r in self.service._models()}:
+                continue
+            self.assertEqual(self.service.metadata(model)['line_sources']['area'], [])
+            w, d = self.workflow([], model=model)
+            rep = self.rep(source={'kind': 'area', 'key': 'items'}, steps=['check'])
+            d['nodes'] += [rep, self.check()]
+            d['order'].append('rep')
+            issues = [i for i in self.service._validate(w.sudo(), d) if i['code'] == 'repeat_source']
+            self.assertTrue(issues, model)
+            self.assertIn('has no lines a workflow can repeat for', issues[0]['text'])
+            self.assertNotRegex(issues[0]['text'], self.BANNED)
+
+    def test_wf2p6a_t1_line_details_are_read_again_when_a_line_step_opens(self):
+        """A receipt edited after the repeat started shows its current amount
+        when the next line step opens; the start value stays in the history;
+        a receipt that is gone closes its line with a plain note, the count
+        updates and nothing fails."""
+        second = self.todo('again', owner={'kind': 'user', 'id': self.staff.id}, title='Look again')
+        w, d, claim = self.claim_repeat([self.check(), second], receipts=3)
+        self.assertEqual(next(n for n in d['nodes'] if n['id'] == 'rep')['steps'], ['check', 'again'])
+        run = self.start(w, claim)
+        lines = self.lines_of(run)
+        self.assertEqual(len(lines), 3)
+        receipts = claim.expense_ids.sorted(lambda e: (e.date, e.id))
+        # 1: edited after the start → current amount when "Look again" opens
+        receipts[0].total_amount_currency = 99.0
+        self.answer_line(lines[0])
+        lines.invalidate_recordset()
+        self.assertEqual(lines[0].line_values['amount'], 99.0)
+        self.assertEqual(lines[0].facts['line.amount'], 99.0)
+        logs = self.env['pb.workflow.log'].sudo().search([('run_id', '=', lines[0].id)]).mapped('message')
+        said = [m for m in logs if m.startswith('Line details read again')]
+        self.assertEqual(len(said), 1, logs)
+        self.assertIn('Amount is now 99 (was 10 at the start).', said[0])
+        self.assertEqual(self.step(lines[0], 'again').state, 'waiting')
+        # 2: unchanged → read, nothing written to the history
+        self.answer_line(lines[1])
+        logs = self.env['pb.workflow.log'].sudo().search([('run_id', '=', lines[1].id)]).mapped('message')
+        self.assertFalse([m for m in logs if m.startswith('Line details read again')])
+        # 3: gone → its open steps close with a plain note, one line fewer
+        receipts[2].unlink()
+        self.answer_line(lines[2])
+        lines.invalidate_recordset()
+        self.assertEqual(lines[2].state, 'cancelled')
+        gone = self.step(lines[2], 'again')
+        self.assertEqual(gone.state, 'skipped')
+        self.assertIn('no longer on the record', gone.error)
+        self.assertNotRegex(gone.error, self.BANNED)
+        parent = self.step(run, 'rep')
+        self.assertEqual(json.loads(parent.choice)['count'], 2)
+        self.assertEqual(len(parent.answers['_lines']), 2)
+        self.assertEqual(lines[:2].mapped('line_count'), [2, 2])
+        # the two lines left finish → the repeat finishes with the new count
+        self.as_staff().answer(self.step(lines[0], 'again').id, {})
+        self.as_staff().answer(self.step(lines[1], 'again').id, {})
+        run.invalidate_recordset()
+        self.assertEqual(self.step(run, 'rep').state, 'done')
+        self.assertEqual((run._values()['step.rep.count'], run._values()['step.rep.done']), (2, 2))
+        self.assertEqual(run.state, 'done')
+
+    def test_wf2p6a_x1_the_run_as_person_is_gone(self):
+        for model in ('pb.workflow', 'pb.workflow.version', 'pb.workflow.event', 'pb.workflow.run'):
+            self.assertNotIn('execution_user_id', self.env[model]._fields, model)
+            self.env.cr.execute("SELECT 1 FROM information_schema.columns WHERE table_name = %s "
+                                "AND column_name = 'execution_user_id'", (self.env[model]._table,))
+            self.assertFalse(self.env.cr.fetchall(), model)
+        rules = self.env['ir.rule'].sudo().search([('model_id.model', 'like', 'pb.workflow%')])
+        self.assertFalse([r.name for r in rules if 'execution_user_id' in (r.domain_force or '')])
+        # an older screen that still sends the retired keyword is answered
+        w, d = self.workflow([self.todo('a')])
+        self.assertTrue(self.service.save_draft(w.id, w.revision, d, execution_user_id=self.admin.id))
+        # a participant still reads their own run and its history
+        w2, d2 = self.workflow([self.todo('mine', owner={'kind': 'user', 'id': self.staff.id})])
+        self.publish(w2, d2)
+        run = self.start(w2)
+        self.assertTrue(self.env['pb.workflow.run'].with_user(self.staff).search([('id', '=', run.id)]))

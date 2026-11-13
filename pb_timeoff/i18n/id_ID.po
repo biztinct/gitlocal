@@ -199,3 +199,30 @@ msgid ""
 "Once a month, as the carry-forward date comes round, people holding too many days and their managers get a warning email. Only when the warning is switched on."
 msgstr ""
 "Sebulan sekali, menjelang tanggal pemindahan sisa cuti, orang yang menyimpan terlalu banyak hari beserta atasannya menerima email peringatan. Hanya jika peringatan aktif."
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_lines.py:0
+msgid "Days"
+msgstr "Hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_lines.py:0
+msgid "day"
+msgstr "hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_lines.py:0
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/workflow_lines.py:0
+msgid "Hours"
+msgstr "Jam"

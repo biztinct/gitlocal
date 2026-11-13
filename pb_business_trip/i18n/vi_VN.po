@@ -353,6 +353,8 @@ msgstr "Phòng ban"
 
 #. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip_line__description
+#. odoo-python
+#: code:addons/pb_business_trip/models/workflow_lines.py:0
 msgid "Description"
 msgstr "Mô tả"
 
@@ -1482,3 +1484,24 @@ msgstr "mục"
 #: code:addons/pb_business_trip/static/src/xml/pb_trips.xml:0
 msgid "of"
 msgstr "trên"
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/workflow_lines.py:0
+msgid "Costs"
+msgstr "Chi phí"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/workflow_lines.py:0
+msgid "cost"
+msgstr "chi phí"
+
+#. module: pb_business_trip
+#. odoo-python
+#: code:addons/pb_business_trip/models/workflow_lines.py:0
+msgid "Has a receipt"
+msgstr "Có biên lai"

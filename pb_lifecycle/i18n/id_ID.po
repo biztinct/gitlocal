@@ -4985,3 +4985,42 @@ msgstr "Saya konfirmasi"
 #: code:addons/pb_lifecycle/models/workflow_people.py:0
 msgid "Done"
 msgstr "Selesai"
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "yes"
+msgstr "ya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(what)s is now %(now)s (was %(then)s at the start)."
+msgstr "%(what)s sekarang %(now)s (di awal %(then)s)."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "Line details read again: %s"
+msgstr "Rincian baris dibaca ulang: %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "This %(one)s is no longer on the record, so its steps were closed."
+msgstr "Baris ini (%(one)s) tidak ada lagi di catatan, jadi langkah-langkahnya ditutup."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(line)s is no longer on the record, so this line was closed."
+msgstr "%(line)s tidak ada lagi di catatan, jadi baris ini ditutup."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_repeat.py:0
+msgid "%(line)s is no longer on the record: %(count)s %(lines)s left in this repeat."
+msgstr "%(line)s tidak ada lagi di catatan: tersisa %(count)s %(lines)s dalam pengulangan ini."
