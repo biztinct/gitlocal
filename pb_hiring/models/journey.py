@@ -125,6 +125,46 @@ VI_MEANINGS = {
     'on_hold': 'Tạm dừng, có ngày để xem lại.',
     'offer_drop_out': 'Từ chối lời mời, hoặc đã nhận lời nhưng không đến làm.',
 }
+#: Indonesian for the seeded names and meanings (WF2 P6a), written with the
+#: rows exactly as the Vietnamese is.
+ID_NAMES = {
+    'screening': 'Lamaran masuk',
+    'shortlist': 'Daftar pendek',
+    'panel_review': 'Tinjauan manajer perekrutan',
+    'phone': 'Tinjauan perekrut',
+    'assignment': 'Tugas kandidat',
+    'discussion_1': 'Diskusi 1',
+    'discussion_2': 'Diskusi 2',
+    'discussion_3': 'Diskusi 3',
+    'reference': 'Pemeriksaan referensi',
+    'offer': 'Penawaran',
+    'post_offer': 'Setelah penawaran',
+    'joined': 'Bergabung',
+    'cv_reject': 'CV ditolak',
+    'interview_reject': 'Ditolak setelah wawancara',
+    'drop_out': 'Mengundurkan diri',
+    'on_hold': 'Ditunda',
+    'offer_drop_out': 'Penawaran batal',
+}
+ID_MEANINGS = {
+    'screening': 'Semua pelamar yang belum ditinjau pertama kali.',
+    'shortlist': 'Layak diajak bicara. Dari sini kandidat lanjut ke tinjauan perekrut atau langsung ke tinjauan manajer perekrutan.',
+    'panel_review': 'Atasan perekrut meninjau CV sebelum wawancara dijadwalkan. Dipakai untuk posisi senior atau posisi baru.',
+    'phone': 'Percakapan 30 menit dengan perekrut. Memindahkan kandidat ke sini akan mengirim tautan Calendly.',
+    'assignment': 'Tugas yang dikerjakan di rumah, untuk posisi yang memerlukannya.',
+    'discussion_1': 'Wawancara putaran pertama, beserta pendapat panel.',
+    'discussion_2': 'Wawancara putaran kedua, beserta pendapat panel.',
+    'discussion_3': 'Wawancara putaran ketiga, untuk posisi yang memerlukannya.',
+    'reference': 'Memeriksa referensi sebelum penawaran. Disembunyikan kecuali posisi memerlukannya.',
+    'offer': 'Orang yang kita inginkan. Mengirim penawaran memerlukan permintaan yang sudah disetujui.',
+    'post_offer': 'Penawaran diterima dan tanggal bergabung sudah diketahui. Tetap kandidat sampai mulai bekerja.',
+    'joined': 'Mulai bekerja pada tanggal yang dikonfirmasi. Kini menjadi karyawan.',
+    'cv_reject': 'Tidak dilanjutkan setelah tinjauan pertama.',
+    'interview_reject': 'Tidak dilanjutkan setelah percakapan atau wawancara.',
+    'drop_out': 'Kandidat mengundurkan diri sebelum penawaran.',
+    'on_hold': 'Dijeda dengan tanggal untuk ditinjau kembali.',
+    'offer_drop_out': 'Menolak penawaran, atau sudah menerima tetapi tidak bergabung.',
+}
 #: The six stock stages and where their candidates go (RC5).
 STOCK_STAGE_MAP = [
     ('hr_recruitment.stage_job0', 'screening'),
@@ -196,6 +236,35 @@ class HiringStage(models.Model):
         return self.sudo().search([('pb_key', '=', key)], order='id', limit=1)
 
     @api.model
+    def _pb_lang_on(self, code):
+        return bool(self.env['res.lang'].sudo().search_count(
+            [('code', '=', code), ('active', '=', True)]))
+
+    @api.model
+    def _pb_stage_translations(self):
+        """WF2 P6a: write the product's own Vietnamese and Indonesian on the
+        17 product stages, only where a row still carries the product's
+        English and no words of its own in that language (a client's words,
+        in any language, are theirs). Returns how many values were written."""
+        Stage = self.sudo().with_context(active_test=False, lang='en_US')
+        written = 0
+        for code, names, meanings in (('vi_VN', VI_NAMES, VI_MEANINGS), ('id_ID', ID_NAMES, ID_MEANINGS)):
+            if not self._pb_lang_on(code):
+                continue
+            for key, name, _seq, _family in STAGE_ROWS:
+                row = Stage.search([('pb_key', '=', key)], order='id', limit=1)
+                if not row:
+                    continue
+                there = row.with_context(lang=code)
+                if row.name == name and there.name == name and names.get(key):
+                    row.update_field_translations('name', {code: names[key]})
+                    written += 1
+                if row.pb_meaning == MEANINGS[key] and there.pb_meaning == MEANINGS[key] and meanings.get(key):
+                    row.update_field_translations('pb_meaning', {code: meanings[key]})
+                    written += 1
+        return written
+
+    @api.model
     def _pb_vi(self):
         return bool(self.env['res.lang'].sudo().search_count(
             [('code', '=', 'vi_VN'), ('active', '=', True)]))
@@ -246,6 +315,8 @@ class HiringStage(models.Model):
                     row.update_field_translations('name', {'vi_VN': VI_NAMES[key]})
                 if row.pb_meaning == MEANINGS[key] and vi_row.pb_meaning == MEANINGS[key]:
                     row.update_field_translations('pb_meaning', {'vi_VN': VI_MEANINGS[key]})
+        # WF2 P6a: Indonesian too (and Vietnamese where it was missed).
+        self._pb_stage_translations()
         self._retire_stock_stages()
         if reorder:
             ICP.set_param(P_STAGE_SET, STAGE_SET_VERSION)

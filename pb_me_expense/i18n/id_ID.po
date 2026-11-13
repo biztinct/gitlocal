@@ -356,3 +356,617 @@ msgstr "Disetujui"
 #: model:ir.model.fields.selection,name:pb_me_expense.selection__pb_expense_claim__state__refused
 msgid "Refused"
 msgstr "Ditolak"
+
+# ===================================================================
+#  WORKFLOW-2 P6a — the rest of the employee claim pages in Indonesian
+# ===================================================================
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "%s expense claims came back refused."
+msgstr "%s klaim pengeluaran dikembalikan karena ditolak."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "%s expense claims refused — fix and resend"
+msgstr "%s klaim pengeluaran ditolak — perbaiki dan kirim ulang"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "1 expense claim refused — fix and resend"
+msgstr "1 klaim pengeluaran ditolak — perbaiki dan kirim ulang"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid ""
+"<b class=\"pbex-drop-t\">Snap or choose a receipt</b>\n"
+"            <span class=\"pbex-drop-s\">A photo or a PDF, up to 10 MB. You can drop it here.</span>"
+msgstr ""
+"<b class=\"pbex-drop-t\">Foto atau pilih struk</b>\n"
+"            <span class=\"pbex-drop-s\">Foto atau PDF, maksimal 10 MB. Anda bisa menaruhnya di sini.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<b>It was not sent.</b>"
+msgstr "<b>Klaim ini belum terkirim.</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<b>Refused. Here is why:</b>"
+msgstr "<b>Ditolak. Ini alasannya:</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<b>What to fix, from the last time:</b>"
+msgstr "<b>Yang perlu diperbaiki, dari sebelumnya:</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<option value=\"\">Not for a trip</option>"
+msgstr "<option value=\"\">Bukan untuk perjalanan dinas</option>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-kbd\">Ctrl + Enter sends</span>"
+msgstr "<span class=\"pbex-kbd\">Ctrl + Enter untuk mengirim</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "<span class=\"pbex-label\">How much</span>"
+msgstr "<span class=\"pbex-label\">Berapa</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "<span class=\"pbex-label\">When</span>"
+msgstr "<span class=\"pbex-label\">Kapan</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-next-n\">1</span><span><b>It goes to the people who approve expenses</b><span>Usually your manager first, then finance.</span></span>"
+msgstr "<span class=\"pbex-next-n\">1</span><span><b>Klaim dikirim ke pemberi persetujuan pengeluaran</b><span>Biasanya atasan Anda dulu, lalu bagian keuangan.</span></span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-next-n\">2</span><span><b>You see every step here</b><span>If something needs fixing, you can change it and send it again.</span></span>"
+msgstr "<span class=\"pbex-next-n\">2</span><span><b>Anda melihat setiap langkahnya di sini</b><span>Jika ada yang perlu diperbaiki, Anda bisa mengubahnya dan mengirimnya lagi.</span></span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "<span class=\"pbex-next-n\">3</span><span><b>Finance pays you back</b><span>The claim shows Paid once the money is on its way.</span></span>"
+msgstr "<span class=\"pbex-next-n\">3</span><span><b>Bagian keuangan mengganti uang Anda</b><span>Klaim akan berstatus Dibayar setelah uangnya dikirim.</span></span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "<span class=\"visually-hidden\">Remove this receipt</span>"
+msgstr "<span class=\"visually-hidden\">Hapus struk ini</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_send
+msgid ""
+"<span data-pbex-say=\"ok\">Send for approval</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"file\">Add a receipt first</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"amount\">Type the amount first</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"cat\">Pick what it was first</span>"
+msgstr ""
+"<span data-pbex-say=\"ok\">Kirim untuk persetujuan</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"file\">Tambahkan struk dulu</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"amount\">Ketik jumlahnya dulu</span>\n"
+"      <span class=\"d-none\" data-pbex-say=\"cat\">Pilih jenis pengeluarannya dulu</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Change what is needed and send it again. Nothing is lost.</span>"
+msgstr "<span>Ubah yang perlu diubah lalu kirim lagi. Tidak ada yang hilang.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Finance pays it back with the next expense payments. It shows Paid once the money is on its way.</span>"
+msgstr "<span>Bagian keuangan menggantinya bersama pembayaran pengeluaran berikutnya. Statusnya menjadi Dibayar setelah uangnya dikirim.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Need to change something?</span>"
+msgstr "<span>Perlu mengubah sesuatu?</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Nothing more to do.</span>"
+msgstr "<span>Tidak ada lagi yang perlu dilakukan.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "<span>Take a photo</span>"
+msgstr "<span>Ambil foto</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid ""
+"<span>Total</span>\n"
+"            <b data-pbex-total=\"\">0</b>"
+msgstr ""
+"<span>Total</span>\n"
+"            <b data-pbex-total=\"\">0</b>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>You see each step here as it happens. Need to change something? Take it back first.</span>"
+msgstr "<span>Anda melihat setiap langkahnya di sini saat terjadi. Perlu mengubah sesuatu? Tarik kembali dulu.</span>"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "<span>Your claim is safe and waiting. As soon as HR sets up who approves it, it moves on by itself.</span>"
+msgstr "<span>Klaim Anda aman dan sedang menunggu. Begitu HR menentukan siapa yang menyetujuinya, klaim akan berlanjut dengan sendirinya.</span>"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "A claim can carry up to %s receipts. Send this one and start a new claim for the rest."
+msgstr "Satu klaim bisa memuat maksimal %s struk. Kirim klaim ini dan buat klaim baru untuk sisanya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "A receipt can be a photo (JPG, PNG or WEBP) or a PDF. Choose another file."
+msgstr "Struk bisa berupa foto (JPG, PNG, atau WEBP) atau PDF. Pilih file lain."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Add a note"
+msgstr "Tambahkan catatan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Add a photo or PDF of the receipt first."
+msgstr "Tambahkan foto atau PDF struk terlebih dahulu."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Add a receipt"
+msgstr "Tambahkan struk"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Add another receipt"
+msgstr "Tambahkan struk lain"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Add this receipt"
+msgstr "Tambahkan struk ini"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "All"
+msgstr "Semua"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "All my claims"
+msgstr "Semua klaim saya"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "An expense claim came back refused."
+msgstr "Sebuah klaim pengeluaran dikembalikan karena ditolak."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Anything that helps, for example: dinner with the Hanoi client"
+msgstr "Apa saja yang membantu, misalnya: makan malam dengan klien di Hanoi"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Ask HR"
+msgstr "Tanya HR"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_missing
+msgid "Back to Expenses"
+msgstr "Kembali ke Pengeluaran"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Choose another"
+msgstr "Pilih yang lain"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Claim back what you paid"
+msgstr "Klaim kembali uang yang Anda bayarkan"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_home_expenses
+msgid "Claim back what you paid for"
+msgstr "Klaim kembali biaya yang Anda bayarkan"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Claim back what you paid for. Snap the receipt and send it in under a minute."
+msgstr "Klaim kembali biaya yang Anda bayarkan. Foto struknya dan kirim dalam waktu kurang dari semenit."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Company card"
+msgstr "Kartu perusahaan"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "Expense claim · %(amount)s · %(n)s receipts"
+msgstr "Klaim pengeluaran · %(amount)s · %(n)s struk"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "Expense claim · %s · 1 receipt"
+msgstr "Klaim pengeluaran · %s · 1 struk"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Fix and resend"
+msgstr "Perbaiki dan kirim ulang"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "It is a draft again. Fix what is needed, then send it."
+msgstr "Klaim kembali menjadi draf. Perbaiki yang perlu, lalu kirim."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_missing
+msgid "It may have been removed, or the link belongs to somebody else."
+msgstr "Mungkin klaim ini sudah dihapus, atau tautannya milik orang lain."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_breadcrumbs_expenses model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "New claim"
+msgstr "Klaim baru"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "No claims yet."
+msgstr "Belum ada klaim."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "No reason was given. Ask your manager what to change."
+msgstr "Tidak ada alasan yang diberikan. Tanyakan kepada atasan Anda apa yang perlu diubah."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "No receipts on this claim yet. Add one below."
+msgstr "Belum ada struk di klaim ini. Tambahkan di bawah."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Nobody is set up to approve this yet. HR can fix the route."
+msgstr "Belum ada yang ditetapkan untuk menyetujui ini. HR bisa memperbaiki alurnya."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Nobody set up yet"
+msgstr "Belum ada yang ditetapkan"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Nothing can be claimed yet. HR sets up what expenses can be claimed for."
+msgstr "Belum ada yang bisa diklaim. HR yang menentukan jenis pengeluaran apa saja yang bisa diklaim."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Nothing finished yet"
+msgstr "Belum ada yang selesai"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Nothing is waiting on you"
+msgstr "Tidak ada yang menunggu Anda"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Nothing is with anyone right now"
+msgstr "Saat ini tidak ada yang sedang diproses siapa pun"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Nothing to do. That was already done."
+msgstr "Tidak ada yang perlu dilakukan. Itu sudah selesai."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Only a refused claim can be fixed and sent again."
+msgstr "Hanya klaim yang ditolak yang bisa diperbaiki dan dikirim ulang."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Open the receipt"
+msgstr "Buka struk"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Paid with a company card"
+msgstr "Dibayar dengan kartu perusahaan"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Pick one of your own approved trips, or leave it empty."
+msgstr "Pilih salah satu perjalanan dinas Anda yang sudah disetujui, atau biarkan kosong."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Pick what the receipt was for."
+msgstr "Pilih untuk apa struk ini."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_alert model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Receipt"
+msgstr "Struk"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Receipt added."
+msgstr "Struk ditambahkan."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Receipt removed."
+msgstr "Struk dihapus."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Refused here"
+msgstr "Ditolak di sini"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Refused — see why"
+msgstr "Ditolak — lihat alasannya"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_receipt_card
+msgid "Remove this receipt"
+msgstr "Hapus struk ini"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Saved as a draft. Add the next receipt below."
+msgstr "Disimpan sebagai draf. Tambahkan struk berikutnya di bawah."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/pb_me_home.py:0
+msgid "See why, change what is needed, and send it again"
+msgstr "Lihat alasannya, ubah yang perlu, lalu kirim lagi"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Sent"
+msgstr "Terkirim"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Sent for approval."
+msgstr "Terkirim untuk persetujuan."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Sent to"
+msgstr "Dikirim ke"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Show all claims"
+msgstr "Tampilkan semua klaim"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Snap a receipt"
+msgstr "Foto struk"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Snap a receipt and we take it from there."
+msgstr "Foto struknya, sisanya kami yang urus."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Snap the receipt, type the amount, pick what it was. We take it from there."
+msgstr "Foto struknya, ketik jumlahnya, pilih jenisnya. Sisanya kami yang urus."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Take back"
+msgstr "Tarik kembali"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Taken back by %s"
+msgstr "Ditarik kembali oleh %s"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Taken back. It is a draft again, so you can change it."
+msgstr "Sudah ditarik kembali. Klaim kembali menjadi draf, jadi Anda bisa mengubahnya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "That date could not be read. Pick the day on the receipt."
+msgstr "Tanggal itu tidak terbaca. Pilih tanggal yang tertera di struk."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "That file is over 10 MB. Try a smaller photo, or a PDF of the page."
+msgstr "File itu lebih dari 10 MB. Coba foto yang lebih kecil, atau PDF halamannya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "That is not your employee record."
+msgstr "Itu bukan catatan karyawan Anda."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "That receipt is not on this claim."
+msgstr "Struk itu tidak ada di klaim ini."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "The receipt date cannot be in the future."
+msgstr "Tanggal struk tidak boleh di masa depan."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim is already approved, so it cannot be taken back. If something is wrong, ask HR."
+msgstr "Klaim ini sudah disetujui, jadi tidak bisa ditarik kembali. Jika ada yang salah, tanyakan kepada HR."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim is already sent. Take it back first to change it."
+msgstr "Klaim ini sudah terkirim. Tarik kembali dulu untuk mengubahnya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim is already sent. You can see where it is below."
+msgstr "Klaim ini sudah terkirim. Anda bisa melihat posisinya di bawah."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "This claim was refused. Use Fix and resend to change it."
+msgstr "Klaim ini ditolak. Gunakan Perbaiki dan kirim ulang untuk mengubahnya."
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "Type how much you paid. It has to be more than zero."
+msgstr "Ketik berapa yang Anda bayarkan. Jumlahnya harus lebih dari nol."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Waiting on you"
+msgstr "Menunggu Anda"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_missing
+msgid "We could not find that claim"
+msgstr "Kami tidak dapat menemukan klaim itu"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "We could not find that claim."
+msgstr "Kami tidak dapat menemukan klaim itu."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "What happens next"
+msgstr "Apa yang terjadi selanjutnya"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "What it was"
+msgstr "Jenis pengeluaran"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Where it is"
+msgstr "Posisi klaim"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_new
+msgid "Which trip was this for?"
+msgstr "Untuk perjalanan dinas yang mana?"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "With"
+msgstr "Ada di"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "With someone"
+msgstr "Sedang diproses"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "Your other claims are under All."
+msgstr "Klaim Anda yang lain ada di Semua."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.pbex_block
+msgid "Your receipt"
+msgstr "Struk Anda"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "Your receipts are kept as a draft."
+msgstr "Struk Anda disimpan sebagai draf."
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "need you"
+msgstr "perlu tindakan Anda"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "nothing paid yet this year"
+msgstr "belum ada yang dibayar tahun ini"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim
+msgid "on"
+msgstr "pada"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "paid this year"
+msgstr "dibayar tahun ini"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/expense_claim.py:0 model_terms:ir.ui.view,arch_db:pb_me_expense.portal_expense_claim model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "receipts"
+msgstr "struk"
+
+#. module: pb_me_expense
+#: model_terms:ir.ui.view,arch_db:pb_me_expense.portal_my_expenses
+msgid "waiting"
+msgstr "menunggu"
+
+#. module: pb_me_expense
+#. odoo-python
+#: code:addons/pb_me_expense/models/me_expense.py:0
+msgid "your HR team"
+msgstr "tim HR Anda"

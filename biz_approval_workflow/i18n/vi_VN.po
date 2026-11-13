@@ -100,6 +100,7 @@ msgstr "Đã duyệt"
 #. odoo-python
 #: code:addons/biz_approval_workflow/models/event.py:0
 #: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__returned
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__returned
 msgid "Sent back"
 msgstr "Đã trả lại"
 
@@ -107,6 +108,7 @@ msgstr "Đã trả lại"
 #. odoo-python
 #: code:addons/biz_approval_workflow/models/event.py:0
 #: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__rejected
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__rejected
 msgid "Turned down"
 msgstr "Bị từ chối"
 
@@ -1228,6 +1230,7 @@ msgstr "Hoàn tất"
 
 #. module: biz_approval_workflow
 #: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_request__state__cancelled
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__cancelled
 msgid "Withdrawn"
 msgstr "Đã thu hồi"
 
@@ -1295,3 +1298,21 @@ msgstr "Người phê duyệt từ chối"
 #: code:addons/biz_approval_workflow/models/workflow_contract.py:0
 msgid "The person who asked takes it back"
 msgstr "Người yêu cầu rút lại"
+
+# ===================================================================
+#  WORKFLOW-2 P6a — "Other request" status words
+# ===================================================================
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__pending
+msgid "Waiting for approval"
+msgstr "Đang chờ phê duyệt"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__done
+msgid "Approved and done"
+msgstr "Đã duyệt và hoàn tất"

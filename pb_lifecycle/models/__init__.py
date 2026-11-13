@@ -37,3 +37,6 @@ from . import workflow_schedule_run
 # WORKFLOW-2 P5c: the areas' date timetables (D31) and Repeat for each line.
 from . import workflow_timetable
 from . import workflow_repeat
+
+# WORKFLOW-2 P6a: Approvals' route words in Studio, translated and plain.
+from . import workflow_route_words

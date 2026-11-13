@@ -149,6 +149,7 @@ msgstr "Nội dung thư"
 #. module: pb_lifecycle
 #. odoo-python
 #: code:addons/pb_lifecycle/models/workflow_stage.py:0
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
 msgid "Their manager"
 msgstr "Quản lý của họ"
 
@@ -5928,3 +5929,192 @@ msgstr "%(line)s không còn trên hồ sơ nên dòng này đã được đóng
 #: code:addons/pb_lifecycle/models/workflow_repeat.py:0
 msgid "%(line)s is no longer on the record: %(count)s %(lines)s left in this repeat."
 msgstr "%(line)s không còn trên hồ sơ: còn %(count)s %(lines)s trong lần lặp này."
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s for this area"
+msgstr "%s cho khu vực này"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s · whole company"
+msgstr "%s · toàn công ty"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "Their manager's manager"
+msgstr "Quản lý cấp trên của quản lý"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s · everyone"
+msgstr "%s · tất cả"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s · any one"
+msgstr "%s · bất kỳ ai"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "Any one of %s"
+msgstr "Bất kỳ ai trong %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "the team"
+msgstr "nhóm"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "The person who sent it in"
+msgstr "Người đã gửi"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "No approval needed"
+msgstr "Không cần phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(who)s (%(amount)s+)"
+msgstr "%(who)s (%(amount)s+)"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s is yes"
+msgstr "%s là có"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s is no"
+msgstr "%s là không"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is %(value)s"
+msgstr "%(fact)s là %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is not %(value)s"
+msgstr "%(fact)s không phải là %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is more than %(value)s"
+msgstr "%(fact)s lớn hơn %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is at least %(value)s"
+msgstr "%(fact)s ít nhất là %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is less than %(value)s"
+msgstr "%(fact)s nhỏ hơn %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is at most %(value)s"
+msgstr "%(fact)s nhiều nhất là %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is one of %(value)s"
+msgstr "%(fact)s là một trong: %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is not one of %(value)s"
+msgstr "%(fact)s không thuộc: %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "Nothing is checked yet. Add a step."
+msgstr "Chưa có bước kiểm tra nào. Hãy thêm một bước."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "it is applied immediately and logged"
+msgstr "được áp dụng ngay và ghi lại"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s must all approve"
+msgstr "%s phải cùng phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s reviews it"
+msgstr "%s xem xét"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s gives final approval"
+msgstr "%s phê duyệt cuối cùng"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s approves"
+msgstr "%s phê duyệt"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(step)s when the amount is %(amount)s or more"
+msgstr "%(step)s khi số tiền từ %(amount)s trở lên"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(step)s, only when %(rule)s"
+msgstr "%(step)s, chỉ khi %(rule)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "After it is sent in, %s."
+msgstr "Sau khi được gửi, %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid " Then %s."
+msgstr " Sau đó %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid " Other people are told along the way."
+msgstr " Những người khác được báo trong quá trình."

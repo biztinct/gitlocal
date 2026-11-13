@@ -2614,6 +2614,7 @@ msgstr "Seseorang di catatan ini"
 #. module: pb_lifecycle
 #. odoo-python
 #: code:addons/pb_lifecycle/models/workflow_stage.py:0
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
 msgid "Their manager"
 msgstr "Atasan mereka"
 
@@ -5024,3 +5025,192 @@ msgstr "%(line)s tidak ada lagi di catatan, jadi baris ini ditutup."
 #: code:addons/pb_lifecycle/models/workflow_repeat.py:0
 msgid "%(line)s is no longer on the record: %(count)s %(lines)s left in this repeat."
 msgstr "%(line)s tidak ada lagi di catatan: tersisa %(count)s %(lines)s dalam pengulangan ini."
+
+# ===================================================================
+#  WORKFLOW-2 P6a
+# ===================================================================
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s for this area"
+msgstr "%s untuk area ini"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s · whole company"
+msgstr "%s · seluruh perusahaan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "Their manager's manager"
+msgstr "Atasan dari atasan mereka"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s · everyone"
+msgstr "%s · semua orang"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s · any one"
+msgstr "%s · salah satu"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "Any one of %s"
+msgstr "Salah satu dari %s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "the team"
+msgstr "tim"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "The person who sent it in"
+msgstr "Orang yang mengirimkannya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "No approval needed"
+msgstr "Tidak perlu persetujuan"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(who)s (%(amount)s+)"
+msgstr "%(who)s (%(amount)s+)"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s is yes"
+msgstr "%s adalah ya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s is no"
+msgstr "%s adalah tidak"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is %(value)s"
+msgstr "%(fact)s adalah %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is not %(value)s"
+msgstr "%(fact)s bukan %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is more than %(value)s"
+msgstr "%(fact)s lebih dari %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is at least %(value)s"
+msgstr "%(fact)s minimal %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is less than %(value)s"
+msgstr "%(fact)s kurang dari %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is at most %(value)s"
+msgstr "%(fact)s maksimal %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is one of %(value)s"
+msgstr "%(fact)s salah satu dari: %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(fact)s is not one of %(value)s"
+msgstr "%(fact)s bukan salah satu dari: %(value)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "Nothing is checked yet. Add a step."
+msgstr "Belum ada yang diperiksa. Tambahkan langkah."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "it is applied immediately and logged"
+msgstr "langsung diterapkan dan dicatat"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s must all approve"
+msgstr "%s harus semuanya menyetujui"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s reviews it"
+msgstr "%s meninjaunya"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s gives final approval"
+msgstr "%s memberi persetujuan akhir"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%s approves"
+msgstr "%s menyetujui"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(step)s when the amount is %(amount)s or more"
+msgstr "%(step)s jika jumlahnya %(amount)s atau lebih"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "%(step)s, only when %(rule)s"
+msgstr "%(step)s, hanya jika %(rule)s"
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid "After it is sent in, %s."
+msgstr "Setelah dikirim, %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid " Then %s."
+msgstr " Lalu %s."
+
+#. module: pb_lifecycle
+#. odoo-python
+#: code:addons/pb_lifecycle/models/workflow_route_words.py:0
+msgid " Other people are told along the way."
+msgstr " Orang lain diberi tahu selama prosesnya."

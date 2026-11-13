@@ -4307,3 +4307,55 @@ class TestWorkflowStudio(TransactionCase):
         rows = [r for r in self.service._existing(model, self.company) if r['kind'] == 'reminder']
         self.assertTrue(any('switched off here' in r['text'] for r in rows))
         self.assertEqual(self.env['ir.cron'].sudo().search([('active', '=', True)]).ids, crons)
+
+    def test_wf2p6a_r1_route_words_translated_and_plain(self):
+        """Approvals' route chips and sentence in Studio: English identical to
+        Approvals' own helpers for a route without a condition; a condition
+        names the area's words, never the technical fact."""
+        from odoo.addons.biz_approval_workflow.models import definition as AD
+        from odoo.addons.pb_lifecycle.models import workflow_route_words as RW
+        engine = self.env['biz.approval.engine'].sudo()
+        plain = [
+            {'steps': [{'key': 's1', 'kind': 'approve', 'who': {'mode': 'manager'}}]},
+            {'steps': [{'key': 's1', 'kind': 'approve', 'who': {'mode': 'skip'}},
+                       {'key': 's2', 'kind': 'review', 'who': {'mode': 'team', 'label': 'HR'}},
+                       {'key': 's3', 'kind': 'notify', 'who': {'mode': 'preparer'}},
+                       {'key': 's4', 'kind': 'approve', 'who': {'mode': 'people', 'user_ids': [self.admin.id, self.staff.id], 'all': True}}]},
+            {'steps': [{'key': 's1', 'kind': 'fast', 'who': {}}]},
+            {'steps': []},
+        ]
+        roles, names = engine._naming(plain[1])
+        for definition in plain:
+            self.assertEqual(RW.route_words(self.env, definition, roles, names), AD.route_labels(definition, roles, names))
+            self.assertEqual(RW.sentence_words(self.env, definition, roles, names), AD.sentence(definition, roles, names))
+            ctx = engine.with_context(_pb_wf_route_model='hr.leave')
+            self.assertEqual(ctx.route_labels(definition), engine.route_labels(definition))
+        cond = {'steps': [{'key': 's1', 'kind': 'approve', 'who': {'mode': 'manager'},
+                           'condition': {'fact': 'validation_type', 'op': 'in', 'value': ['manager', 'both']}}]}
+        self.assertIn('validation_type', engine.summary(cond), 'Approvals itself is unchanged')
+        if 'hr.leave' in self.env:
+            words = engine.with_context(_pb_wf_route_model='hr.leave').summary(cond)
+            self.assertNotIn('validation_type', words)
+            self.assertIn('only when What this kind of time off asks for is one of Approved by the manager, '
+                          'Approved by both', words)
+        Lang = self.env['res.lang']
+        for code in ('vi_VN', 'id_ID'):
+            if Lang._lang_get(code):
+                self.assertNotEqual(RW.route_words(self.env(context=dict(self.env.context, lang=code)), plain[0]),
+                                    ['Their manager'], code)
+
+    def test_wf2p6a_o1_translated_status_and_stage_words(self):
+        """"Other request" statuses and Hiring's own stages read in
+        Vietnamese and Indonesian where those languages are installed."""
+        Lang = self.env['res.lang']
+        for code in ('vi_VN', 'id_ID'):
+            if not Lang._lang_get(code):
+                continue
+            labels = dict(self.env['biz.approval.generic.request'].with_context(lang=code)
+                          ._fields['state']._description_selection(self.env(context={'lang': code})))
+            self.assertNotEqual(labels['pending'], 'Waiting for approval', code)
+            self.assertNotEqual(labels['returned'], 'Sent back', code)
+            if 'hr.recruitment.stage' in self.env and 'pb_key' in self.env['hr.recruitment.stage']._fields:
+                stage = self.env['hr.recruitment.stage'].sudo().search([('pb_key', '=', 'shortlist')], limit=1)
+                if stage and stage.with_context(lang='en_US').name == 'Shortlist':
+                    self.assertNotEqual(stage.with_context(lang=code).name, 'Shortlist', code)

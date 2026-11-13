@@ -62,3 +62,36 @@ msgstr "Pemberi persetujuan menolak"
 #: code:addons/biz_approval_workflow/models/workflow_contract.py:0
 msgid "The person who asked takes it back"
 msgstr "Orang yang meminta menariknya kembali"
+
+# ===================================================================
+#  WORKFLOW-2 P6a — "Other request" status words
+# ===================================================================
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__draft
+msgid "Draft"
+msgstr "Draf"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__pending
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__done
+msgid "Approved and done"
+msgstr "Disetujui dan selesai"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__returned
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__rejected
+msgid "Turned down"
+msgstr "Ditolak"
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__cancelled
+msgid "Withdrawn"
+msgstr "Ditarik"
