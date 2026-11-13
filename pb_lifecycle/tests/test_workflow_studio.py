@@ -580,7 +580,7 @@ class TestWorkflowStudio(TransactionCase):
             d['nodes'].append(node); d['order'].append(node['id'])
         service.save_draft(w.id, w.revision, d); service.publish(w.id, w.revision); service.activate(w.id, True)
         run = self.start(w)
-        self.assertEqual(run.execution_user_id, owner)  # column still filled, never read
+        self.assertNotIn('execution_user_id', run._fields)  # dropped in WF2 P6a (R3)
         owner.write({'active': False})
         self.wake(run, 'pause')
         self.service._cron_workflows()
@@ -2035,7 +2035,7 @@ class TestWorkflowStudio(TransactionCase):
         w, d = self.workflow([move])
         self.assertIn('stage_move_target', self.codes(w, d))
         foreign = internal(self.env['pb.workflow']).create({
-            'name': 'WF2 P3b theirs', 'company_id': other.id, 'draft': D.fresh('x'), 'execution_user_id': self.admin.id})
+            'name': 'WF2 P3b theirs', 'company_id': other.id, 'draft': D.fresh('x')})
         self.assertIn('start_target', self.codes(*self.workflow([{'id': 'go', 'type': 'start', 'title': 'Go', 'stage': 0,
                                                                  'workflow_id': foreign.id}])))
         outsider = self.env['res.users'].with_context(no_reset_password=True).create({

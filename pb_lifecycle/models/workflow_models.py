@@ -93,7 +93,6 @@ class Workflow(models.Model):
     published_id = fields.Many2one('pb.workflow.version', ondelete='restrict')
     active = fields.Boolean(default=True)
     enabled = fields.Boolean(default=False, index=True)
-    execution_user_id = fields.Many2one('res.users', required=True)
     automation_id = fields.Many2one('base.automation', ondelete='set null')
     last_approval_event_id = fields.Integer(default=0)
     component = fields.Boolean(default=False)
@@ -169,7 +168,6 @@ class WorkflowVersion(models.Model):
     number = fields.Integer(required=True)
     definition = fields.Json(required=True)
     process_id = fields.Many2one('biz.approval.process', ondelete='restrict')
-    execution_user_id = fields.Many2one('res.users')
     starter_group_ids = fields.Many2many('res.groups', string='Who may start this version')
     published_by = fields.Many2one('res.users', required=True)
     published_at = fields.Datetime(default=fields.Datetime.now, required=True)
@@ -196,7 +194,6 @@ class WorkflowEvent(models.Model):
     source_model = fields.Char()
     source_id = fields.Integer()
     initiator_id = fields.Many2one('res.users', required=True)
-    execution_user_id = fields.Many2one('res.users', required=True)
     key = fields.Char(required=True, index=True)
     state = fields.Selection([('pending', 'Waiting'), ('done', 'Started'),
                               ('excluded', 'Filtered out'), ('failed', 'Needs attention')], default='pending', index=True)
@@ -230,8 +227,7 @@ class WorkflowEvent(models.Model):
                     'workflow_id': self.workflow_id.id, 'version_id': self.version_id.id,
                     'company_id': self.company_id.id, 'source_model': self.source_model,
                     'source_id': self.source_id, 'initiator_id': self.initiator_id.id,
-                    # Kept only to fill the stored column; nothing reads it.
-                    'execution_user_id': self.execution_user_id.id, 'facts': facts,
+                    'facts': facts,
                     'source_approval_id': self.approval_request_id.id,
                     'scheduled_at': self.scheduled_at or False})
                 internal(self).write({'state': 'done', 'run_id': run.id, 'error': False})
@@ -259,7 +255,6 @@ class WorkflowRun(models.Model):
     source_model = fields.Char()
     source_id = fields.Integer()
     initiator_id = fields.Many2one('res.users', required=True, index=True)
-    execution_user_id = fields.Many2one('res.users', required=True)
     state = fields.Selection([('running', 'Running'), ('waiting', 'Waiting'),
         ('held', 'On hold'), ('done', 'Finished'), ('failed', 'Needs attention'),
         ('cancelled', 'Cancelled'), ('rejected', 'Rejected')], default='running', index=True)

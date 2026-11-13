@@ -222,7 +222,7 @@ class WorkflowRunLines(models.Model):
             'name': srun.name, 'workflow_id': srun.workflow_id.id, 'version_id': srun.version_id.id,
             'company_id': srun.company_id.id, 'source_model': srun.source_model,
             'source_id': srun.source_id, 'initiator_id': srun.initiator_id.id,
-            'execution_user_id': srun.execution_user_id.id, 'facts': facts,
+            'facts': facts,
             'scheduled_at': False, 'parent_id': self.id, 'parent_step_key': s.key,
             'line_key': str(line['key']), 'line_label': line.get('label') or '', 'line_values': values,
             'line_number': number, 'line_count': count, 'line_round': round_, 'line_start_key': key})

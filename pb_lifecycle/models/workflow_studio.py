@@ -214,7 +214,7 @@ class WorkflowStudio(models.AbstractModel):
         w = internal(self.env['pb.workflow']).create({
             'name': name, 'company_id': self._company().id, 'source_model': source_model,
             'module_label': str(module_label or 'Other')[:80], 'draft': D.fresh(name),
-            'execution_user_id': self.env.uid, 'component': bool(component)})
+            'component': bool(component)})
         return self.get_workflow(w.id)
 
     @api.model
@@ -434,9 +434,10 @@ class WorkflowStudio(models.AbstractModel):
         return field.get('type') if field else None
 
     @api.model
-    def save_draft(self, workflow_id, revision, definition, process_id=None, execution_user_id=None, starter_group_ids=None):
-        # `execution_user_id` is still accepted from older screens and ignored:
-        # workflows run at system level (R3), never as a chosen person.
+    def save_draft(self, workflow_id, revision, definition, process_id=None, starter_group_ids=None, **_retired):
+        # A retired keyword from older screens (the per-workflow run-as person,
+        # dropped in WF2 P6a) is accepted and ignored: workflows run at system
+        # level (R3), never as a chosen person.
         w = self._workflow(workflow_id)
         w._lock()
         if type(revision) is not int or revision != w.revision:
@@ -558,7 +559,6 @@ class WorkflowStudio(models.AbstractModel):
         version = internal(self.env['pb.workflow.version']).create({
             'workflow_id': w.id, 'number': max(w.version_ids.mapped('number') or [0])+1,
             'definition': copy.deepcopy(w.draft), 'process_id': w.process_id.id,
-            'execution_user_id': w.execution_user_id.id,
             'starter_group_ids': [(6, 0, w.starter_group_ids.ids)],
             'published_by': self.env.uid, 'note': str(note)[:240]})
         # A newly published definition is reviewed before automatic activation.
@@ -676,7 +676,7 @@ class WorkflowStudio(models.AbstractModel):
         return Event.create({'workflow_id': w.id, 'version_id': w.published_id.id,
             'company_id': w.company_id.id, 'source_model': w.source_model,
             'source_id': source_id or 0, 'initiator_id': initiator,
-            'execution_user_id': (w.published_id.execution_user_id or w.execution_user_id).id, 'key': key,
+            'key': key,
             'initial_values': initial or {}, 'approval_request_id': request_id or False})
 
     @api.model
