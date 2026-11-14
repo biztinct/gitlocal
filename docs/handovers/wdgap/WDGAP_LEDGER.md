@@ -25,11 +25,12 @@ The programme works through the study's build order, one step at a time.
 
 | Phase | Scope | Status |
 |---|---|---|
-| QF1 | Approvals inbox: approve selected. Home: PayAI's daily alerts | built + tested on branch `wdgap-qf1` (not merged, not deployed); report `WDGAP_QF1_REPORT.md` |
-| QF2 | Explorer: named saved views + share, Excel download, send regularly by email | built + tested on branch `wdgap-qf2` (not merged, not deployed) — `WDGAP_QF2_REPORT.md` |
-| QF3 | Leave on My Payobook: half days/hours, withdraw / ask to change, attach certificate, balance after | built + tested on branch `wdgap-qf3` (not merged, not deployed) — `WDGAP_QF3_REPORT.md` |
-| QF4 | Goal scores into the pay review. Benefits: enrol joiners, end cover for leavers | built + tested on `wdgap-qf4` (report `WDGAP_QF4_REPORT.md`); B5 board line and B6 lens not built (owner questions) |
-| QF5 | Compulsory two-step sign-in by role, idle sign-out | built + tested on branch `wdgap-qf5` (not merged, not deployed); report `WDGAP_QF5_REPORT.md` |
+| QF1 | Approvals inbox: approve selected. Home: PayAI's daily alerts | built + merged into `19.1` (branch `wdgap-qf-merge`): biz_approval_workflow 19.0.1.8.0, pb_approval_config 19.0.1.9.0, pb_payroll_ai_insights 19.0.3.13.0, pb_dashboard 19.0.2.3.0; report `WDGAP_QF1_REPORT.md` |
+| QF2 | Explorer: named saved views + share, Excel download, send regularly by email | built + merged: pb_explorer 19.0.2.7.0; report `WDGAP_QF2_REPORT.md` |
+| QF3 | Leave on My Payobook: half days/hours, withdraw / ask to change, attach certificate, balance after | built + merged: pb_ess_workforce 19.0.1.4.0, pb_timeoff 19.0.1.11.0, pb_me_team 19.0.1.2.0, pb_attendance_flow 19.0.1.4.0, pb_today 19.0.1.6.0, pb_schedule 19.0.1.10.0; report `WDGAP_QF3_REPORT.md` |
+| QF4 | Goal scores into the pay review. Benefits: enrol joiners, end cover for leavers | built + merged: pb_goals 19.0.1.5.0, pb_pay 19.0.3.8.0, pb_comp_ben 19.0.1.8.0, pb_hiring 19.0.2.23.8, pb_probation 19.0.1.6.0, pb_offboarding 19.0.1.6.0; B5 board line and B6 lens not built (owner questions); report `WDGAP_QF4_REPORT.md` |
+| QF5 | Compulsory two-step sign-in by role, idle sign-out | built + merged: biz_access 19.0.1.13.0 (both settings ship OFF); report `WDGAP_QF5_REPORT.md` |
+| QF-deploy | Merge QF1–QF5, prove the combination, live on all five databases (risky tier) | handover `WDGAP_QF_DEPLOY_HANDOVER.md`; report `WDGAP_QF_DEPLOY_REPORT.md` |
 
 ## Binding conventions (every phase)
 
@@ -86,6 +87,10 @@ browser walk on payobook.com with the QA login (memory `payobook-qa-login`), con
 clean.
 
 ## Gotchas hit in this programme
+
+Row ids carry their phase (`QF1-W1`, `QF4-W1`, `QF5-W1` …): the five phases were built in
+parallel and each numbered its own rows from W1, so the merge prefixed them. A phase report
+that says "W3" means that phase's row.
 
 | # | Phase | Gotcha |
 |---|---|---|
