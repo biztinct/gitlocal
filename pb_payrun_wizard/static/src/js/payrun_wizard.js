@@ -642,11 +642,11 @@ export class PayrunWizard extends Component {
         const before = this.runKind;
         const next = kind === "topup" || (kind === "extra" && this.hasExtraRun) ? kind : "regular";
         if (next === before) { return; }
-        // The name follows the kind while it is still the one this screen
-        // suggested; a name the person typed is never touched.
-        const suggested = this._suggestedName(before);
+        // The name follows the kind while it is still one this screen filled
+        // in itself; a name the person typed is never touched.
+        const automatic = this._isAutomaticName(this.state.form.name, before);
         this.state.form.run_kind = next;
-        if (!this.state.form.name || this.state.form.name === suggested) {
+        if (automatic) {
             this.state.form.name = this._suggestedName(next);
         }
         this.invalidateApplicationScope();
@@ -656,6 +656,14 @@ export class PayrunWizard extends Component {
         } else if (before === "extra") {
             this.refreshWho();
         }
+    }
+    /** Was this name filled in by the screen (start-up, scheme pick, kind)? */
+    _isAutomaticName(name, kind) {
+        if (!name) { return true; }
+        const auto = [this._suggestedName(kind), this.state.defaults?.name];
+        if (this.state.defaults?.is_demo) { auto.push(this._demoName()); }
+        if (this.chosenScheme) { auto.push(`${this.chosenScheme.name} · ${this._periodLabel()}`); }
+        return auto.includes(name);
     }
     /** The name this screen offers for a kind of run. */
     _suggestedName(kind) {
