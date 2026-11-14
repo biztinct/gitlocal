@@ -291,6 +291,21 @@
     .ce-chip.col .ce-chip-nm { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ce-chip.op { font-size: 15px; font-weight: 800; color: var(--i); min-width: 34px; justify-content: center; }
     .ce-chip.fn { font-family: "JetBrains Mono", ui-monospace, monospace; color: var(--i-deep); }
+    /* WDGAP PR-A — the whole function list, from the engine's one table */
+    .ce-chip.ce-fn-more { color: var(--i); font-weight: 700; background: transparent; border-style: dashed; }
+    .ce-chip.ce-fn-more svg { transition: transform .15s; }
+    .ce-fn-all { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px 16px; padding-top: 4px; border-top: 1px solid var(--line); }
+    .ce-fn-grp { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .ce-fn-grp-lbl { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 8px 4px; }
+    .ce-fn-row { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left; border: 0; background: transparent; border-radius: 8px; padding: 6px 8px; cursor: pointer; font-family: inherit; min-width: 0; }
+    .ce-fn-row:hover { background: var(--i-soft); }
+    .ce-fn-sig { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; font-weight: 700; color: var(--i-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .ce-fn-help { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+    .ce-fn-now { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; font-size: 12px; color: var(--ink); background: #fff; border: 1px solid var(--i-border); border-radius: 10px; padding: 8px 12px; }
+    .ce-fn-now svg { color: var(--i); align-self: center; flex-shrink: 0; }
+    .ce-fn-now .ce-fn-help { font-size: 12px; }
+    code.ce-fn-eg { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11.5px; color: var(--i-deep); background: var(--i-soft); padding: 1px 6px; border-radius: 5px; }
+    @media (max-width: 620px) { .ce-fn-all { grid-template-columns: 1fr; } }
 
     .ce-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
     .ce-field { display: flex; flex-direction: column; gap: 6px; }

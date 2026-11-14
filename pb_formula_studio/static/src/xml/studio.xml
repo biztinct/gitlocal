@@ -1271,7 +1271,34 @@
                       </div>
                       <div class="ce-pal-grp">
                         <span class="ce-pal-lbl">Functions</span>
-                        <button t-foreach="paletteFns" t-as="fn" t-key="fn" class="ce-chip fn" t-on-click="() => this.insertToken(fn + '(')" t-esc="fn"/>
+                        <button t-foreach="paletteFns" t-as="fn" t-key="fn.name" class="ce-chip fn"
+                                t-att-title="fnTitle(fn)"
+                                t-on-click="() => this.insertToken(fn.name + '(')" t-esc="fn.name"/>
+                        <button t-if="state.fnList.length" type="button" class="ce-chip ce-fn-more"
+                                t-att-aria-expanded="state.fnAllOpen ? 'true' : 'false'"
+                                t-on-click="toggleFnAll">
+                          <t t-if="state.fnAllOpen">Fewer functions</t>
+                          <t t-else="">All functions</t>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                               t-att-style="state.fnAllOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                      </div>
+                      <div t-if="state.fnAllOpen" class="ce-fn-all">
+                        <div t-foreach="paletteFnGroups" t-as="grp" t-key="grp.key" class="ce-fn-grp">
+                          <div class="ce-fn-grp-lbl" t-esc="grp.label"/>
+                          <button t-foreach="grp.fns" t-as="fn" t-key="fn.name" type="button" class="ce-fn-row"
+                                  t-att-title="fn.example"
+                                  t-on-click="() => this.insertToken(fn.name + '(')">
+                            <span class="ce-fn-sig" t-esc="fn.signature"/>
+                            <span class="ce-fn-help" t-esc="fn.help"/>
+                          </button>
+                        </div>
+                      </div>
+                      <div t-if="draftFnHelp" class="ce-fn-now">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        <span class="ce-fn-sig" t-esc="draftFnHelp.signature"/>
+                        <span class="ce-fn-help" t-esc="draftFnHelp.help"/>
+                        <code class="ce-fn-eg" t-esc="draftFnHelp.example"/>
                       </div>
                     </div>
                     <div class="ce-label" style="margin-top:18px">Preview</div>

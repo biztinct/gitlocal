@@ -7,6 +7,7 @@ import re
 import logging
 
 from ..formula_engine import excel_semantics
+from ..formula_engine import functions as formula_functions
 from . import component_code
 from . import formula_operand_context
 from . import pay_period
@@ -1355,6 +1356,14 @@ class HrFormulaRule(models.Model):
 
             code = match.group(1)
             if code in column_map.values():
+                # WDGAP PR-A: a component may already be coded DAY, DAYS or
+                # DATE. Directly followed by "(" such a name is the FUNCTION
+                # (C5 code refs are never called). Only the names added by
+                # PR-A get this — older names keep their old treatment, so no
+                # stored formula converts differently (R1 golden rail).
+                if (code in formula_functions.NEW_IN_PRA
+                        and result[match.end():match.end() + 1] == '('):
+                    return match.group(0)
                 return f"values.get('{code}', 0)"
             return match.group(0)
 
@@ -1363,40 +1372,13 @@ class HrFormulaRule(models.Model):
         # e.g., values.get('BASESALARY', 0) - BASESALARY is inside quotes, should NOT be matched again
         result = re.sub(r"(?<!')([A-Z][A-Z0-9]{1,})(?!')", replace_code_ref, result)
 
-        # Replace Excel functions with Python equivalents
-        function_map = {
-            r'\bSUM\(': 'sum([',
-            r'\bAVERAGE\(': 'self._avg([',
-            r'\bMIN\(': 'min([',
-            r'\bMAX\(': 'max([',
-            r'\bABS\(': 'abs(',
-            # Excel ROUND is half-away-from-zero; Python round() is banker's
-            # rounding (2.5 -> 2) which drifts money on .5 boundaries.
-            r'\bROUND\(': 'self._round(',
-            r'\bIF\(': 'self._if(',
-            r'\bIFERROR\(': 'self._iferror(',
-            r'\bISBLANK\(': 'self._isblank(',
-            r'\bAND\(': 'all([',
-            r'\bOR\(': 'any([',
-            # NOT must stay a CALL: Python's `not` operator binds looser than
-            # *, so not(x)*5 parses as not(x*5).
-            r'\bNOT\(': 'self._not(',
-            r'\bCOUNTA\(': 'self._counta([',
-            r'\bPOWER\(': 'pow(',
-            r'\bSQRT\(': 'math.sqrt(',
-            # Excel CEILING/FLOOR take a significance argument (round to a
-            # multiple); math.ceil/math.floor are 1-arg and TypeError'd here.
-            r'\bCEILING\(': 'self._ceiling(',
-            r'\bFLOOR\(': 'self._floor(',
-            r'\bSUMIF\(': 'self._sumif(',
-            r'\bSUMIFS\(': 'self._sumifs(',
-            r'\bROW\(': 'self._row(',
-            r'\bSUBTOTAL\(': 'self._subtotal(',
-            r'\bMOD\(': 'self._mod(',
-            r'\bSIGN\(': 'self._sign(',
-            r'\bROUNDUP\(': 'self._roundup(',
-            r'\bROUNDDOWN\(': 'self._rounddown(',
-        }
+        # Replace Excel functions with Python equivalents. The map is DERIVED
+        # from the one function table (formula_engine/functions.py, WDGAP PR-A)
+        # — its first 25 rows are the old hand-written map in the same order.
+        # Notes kept from that map: ROUND is Excel half-away-from-zero (Python
+        # round() is banker's); NOT stays a CALL (`not x*5` parses as
+        # not(x*5)); CEILING/FLOOR take a significance argument.
+        function_map = formula_functions.converter_function_map()
 
         for excel_func, python_func in function_map.items():
             result = re.sub(excel_func, python_func, result, flags=re.IGNORECASE)
@@ -1536,9 +1518,57 @@ class HrFormulaRule(models.Model):
             result
         )
 
+        # WDGAP PR-A — inside the arguments of a date function a component
+        # that holds a DATE is read as that date. A date cell travels as an ISO
+        # text that coerces to 0 in `values` and survives only in `raw_values`
+        # (the same reason ISBLANK reads raw_values above). Outside date
+        # functions nothing changes: a date component still reads 0 there.
+        if 'self._' in result:
+            result = self._read_dates_in_date_arguments(result)
+
         _logger.debug(f"Converted to Python: {result}")
 
         return result
+
+    @staticmethod
+    def _read_dates_in_date_arguments(python_code):
+        """Wrap every ``values.get('X', 0)`` that sits inside the argument list
+        of a date helper (``self._year(`` …, see
+        ``functions.DATE_ARGUMENT_HELPERS``) as
+        ``self._dateval(values.get('X', 0), raw_values.get('X'))``.
+
+        One pass over the union of the argument spans, so a reference inside
+        nested date functions is wrapped once. A formula with no date helper
+        is returned unchanged (byte-identical — R1 golden rail)."""
+        spans = []
+        for token in formula_functions.DATE_ARGUMENT_HELPERS:
+            start = python_code.find(token)
+            while start != -1:
+                open_pos = start + len(token) - 1
+                depth = 0
+                for i in range(open_pos, len(python_code)):
+                    ch = python_code[i]
+                    if ch == '(':
+                        depth += 1
+                    elif ch == ')':
+                        depth -= 1
+                        if depth == 0:
+                            spans.append((open_pos, i))
+                            break
+                start = python_code.find(token, start + 1)
+        if not spans:
+            return python_code
+
+        def _inside(pos):
+            return any(lo < pos < hi for lo, hi in spans)
+
+        def _wrap(match):
+            if not _inside(match.start()):
+                return match.group(0)
+            key = match.group(1)
+            return f"self._dateval(values.get('{key}', 0), raw_values.get('{key}'))"
+
+        return re.sub(r"(?<![\w.])values\.get\('([^']+)',\s*0\)", _wrap, python_code)
 
     @staticmethod
     def _split_top_level_args(argstr):
@@ -1742,6 +1772,7 @@ class HrFormulaRule(models.Model):
         Excel import sets sequence + column_letter explicitly, so both branches
         below no-op for it. Batch-safe: in-batch counters keep siblings created
         in one call from colliding on a sequence or a letter."""
+        self._pb_refuse_function_codes(vals_list)
         seq_next = {}   # config_id -> next auto sequence within this batch
         let_next = {}   # config_id -> highest letter number assigned within this batch
 
@@ -1813,6 +1844,15 @@ class HrFormulaRule(models.Model):
         # answer must survive the next re-classification pass.
         if vals and 'value_kind' in vals and 'value_kind_source' not in vals:
             vals = dict(vals, value_kind_source='user')
+
+        # WDGAP PR-A — renaming a component TO a function name is refused; a
+        # write that keeps the code it already has (a data file, an import
+        # re-run) is not a rename and passes.
+        if vals and vals.get('code'):
+            new_code = (vals['code'] or '').strip().upper()
+            if (new_code in formula_functions.RESERVED_CODE_NAMES
+                    and any((rule.code or '') != vals['code'] for rule in self)):
+                raise ValidationError(self._pb_function_code_message(new_code))
 
         tracked = VERSIONED_FIELDS & set(vals or {})
         if (tracked
@@ -1911,6 +1951,50 @@ class HrFormulaRule(models.Model):
         }
 
     # ==========================================
+    # WDGAP PR-A — the one function list
+    # ==========================================
+    @api.model
+    def pb_formula_functions(self):
+        """Every function a formula can use, with its one help line and an
+        example, in the reader's language — what the formula bar and the
+        Studio's function list show. Derived from the one table
+        (``formula_engine/functions.py``); there is no second copy."""
+        return formula_functions.function_list(translate=self.env._)
+
+    @api.model
+    def _pb_formula_refusal(self, formula):
+        """The plain sentence(s) refusing a formula a person is SAVING ('' when
+        it may be saved): an unknown function (named, nearest offered),
+        TODAY()/NOW(), or a function given the wrong number of values.
+        Stored formulas are never re-checked by this."""
+        return ' '.join(self.env._(p) for p in formula_functions.problems(formula or ''))
+
+    def _pb_function_code_message(self, code):
+        suggestion = component_code.dedupe_code_c5(
+            code, formula_functions.RESERVED_CODE_NAMES, max_len=component_code.MAX_LEN)
+        return self.env._(
+            "%(code)s is the name of a formula function, so a component can't use it "
+            "as its code. Choose another code, for example %(suggestion)s.",
+            code=code, suggestion=suggestion)
+
+    @api.model
+    def _pb_refuse_function_codes(self, vals_list):
+        """A NEW component may not be coded like a function (DATE, DAY, YEAR …).
+
+        A code that an existing component already carries is not new — a copy
+        of an existing scheme, or a scheme built before PR-A — and keeps
+        working: the converter treats NAME( as the function and NAME alone as
+        the component."""
+        for vals in vals_list:
+            code = (vals.get('code') or '').strip().upper()
+            if code not in formula_functions.RESERVED_CODE_NAMES:
+                continue
+            exists = self.sudo().with_context(active_test=False).search_count(
+                [('code', '=', vals.get('code'))], limit=1)
+            if not exists:
+                raise ValidationError(self._pb_function_code_message(code))
+
+    # ==========================================
     # VALIDATION
     # ==========================================
     def validate_formula(self):
@@ -1939,10 +2023,15 @@ class HrFormulaRule(models.Model):
         # Find references with row numbers (A1, AA1, etc.)
         refs_with_row = re.findall(r'\$?([A-Z]+)\$?\d+', formula_no_strings)
 
-        # Find standalone column letters - remove function names first
+        # WDGAP PR-A — functions are judged by the ONE function table: unknown
+        # names, TODAY()/NOW() and wrong argument counts are named in plain
+        # words. Every called name (known or not) is then removed before
+        # references are read, so a function is never reported as an
+        # "invalid column reference" (YEAR, ROUNDUP and FOO all used to be).
+        errors.extend(self.env._(p) for p in formula_functions.problems(formula_no_strings))
         formula_cleaned = re.sub(
-            r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR|ISBLANK)\s*\(',
-            '',
+            r'(?<![A-Za-z0-9_.$])[A-Za-z_][A-Za-z0-9_.]*\s*\(',
+            '(',
             formula_no_strings
         )
         refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
@@ -2737,3 +2826,36 @@ class HrFormulaRule(models.Model):
     def _rounddown(self, number, decimals=0):
         """Excel ROUNDDOWN — toward zero."""
         return excel_semantics.excel_rounddown(number, decimals)
+
+    # ---- WDGAP PR-A: INT and the date functions (C12: semantics live in
+    # excel_semantics; these are one-line delegates, mirrored on
+    # FormulaEvaluator so the two evaluation paths cannot drift) ----------
+    def _int(self, number):
+        return excel_semantics.excel_int(number)
+
+    def _dateval(self, value, raw=None):
+        return excel_semantics.date_operand(value, raw)
+
+    def _date(self, year, month, day):
+        return excel_semantics.excel_date(year, month, day)
+
+    def _year(self, date_value):
+        return excel_semantics.excel_year(date_value)
+
+    def _month(self, date_value):
+        return excel_semantics.excel_month(date_value)
+
+    def _day(self, date_value):
+        return excel_semantics.excel_day(date_value)
+
+    def _days(self, end_date, start_date):
+        return excel_semantics.excel_days(end_date, start_date)
+
+    def _datedif(self, start_date, end_date, unit):
+        return excel_semantics.excel_datedif(start_date, end_date, unit)
+
+    def _edate(self, start_date, months):
+        return excel_semantics.excel_edate(start_date, months)
+
+    def _eomonth(self, start_date, months):
+        return excel_semantics.excel_eomonth(start_date, months)

@@ -15640,3 +15640,291 @@ msgid ""
 msgstr ""
 "Hồ sơ nhân viên chưa có ngày vào làm, nên chưa biết đã trả bao nhiêu trước "
 "đó trong năm nay. Hãy thêm ngày vào làm vào hồ sơ nhân viên."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "TODAY() can't be used in a formula. A payslip must give the same answer whenever it is worked out. Use the pay period instead, for example DATE(PAYYEAR, PAYMONTH, ENDDAY)."
+msgstr "Không thể dùng TODAY() trong công thức. Phiếu lương phải cho cùng một kết quả mỗi khi được tính. Hãy dùng kỳ lương thay thế, ví dụ DATE(PAYYEAR, PAYMONTH, ENDDAY)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "NOW() can't be used in a formula. A payslip must give the same answer whenever it is worked out. Use the pay period instead, for example DATE(PAYYEAR, PAYMONTH, ENDDAY)."
+msgstr "Không thể dùng NOW() trong công thức. Phiếu lương phải cho cùng một kết quả mỗi khi được tính. Hãy dùng kỳ lương thay thế, ví dụ DATE(PAYYEAR, PAYMONTH, ENDDAY)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Numbers"
+msgstr "Số"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Conditions"
+msgstr "Điều kiện"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Dates"
+msgstr "Ngày tháng"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Look up"
+msgstr "Tra cứu"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Adds the values up."
+msgstr "Cộng các giá trị lại."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The average of the values (a zero counts)."
+msgstr "Giá trị trung bình (số 0 cũng được tính)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The smallest of the values."
+msgstr "Giá trị nhỏ nhất."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The largest of the values."
+msgstr "Giá trị lớn nhất."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Drops the minus sign."
+msgstr "Bỏ dấu trừ."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Rounds to the given number of decimal places; a half rounds away from zero."
+msgstr "Làm tròn đến số chữ số thập phân đã cho; phần nửa được làm tròn ra xa số 0."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Gives one value when the test is true and another when it is not."
+msgstr "Cho một giá trị khi điều kiện đúng và một giá trị khác khi điều kiện sai."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The value, or the fallback when it cannot be worked out (for example a division by zero)."
+msgstr "Giá trị đó, hoặc giá trị thay thế khi không tính được (ví dụ chia cho 0)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "True when the value is empty."
+msgstr "Đúng khi giá trị trống."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "True only when every test is true."
+msgstr "Chỉ đúng khi mọi điều kiện đều đúng."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "True when any test is true."
+msgstr "Đúng khi có ít nhất một điều kiện đúng."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The opposite of the test."
+msgstr "Ngược lại với điều kiện."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "How many of the values are filled in."
+msgstr "Số giá trị đã được điền."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "x raised to the power n."
+msgstr "x lũy thừa n."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The square root."
+msgstr "Căn bậc hai."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Rounds up to a multiple of the step."
+msgstr "Làm tròn lên bội số của bước."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Rounds down to a multiple of the step."
+msgstr "Làm tròn xuống bội số của bước."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The amount when the value matches, otherwise 0 (one person at a time)."
+msgstr "Số tiền khi giá trị khớp, nếu không thì 0 (tính cho từng người)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The amount when every value matches, otherwise 0 (one person at a time)."
+msgstr "Số tiền khi mọi giá trị đều khớp, nếu không thì 0 (tính cho từng người)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The row number; in a scheme this is always 1."
+msgstr "Số thứ tự dòng; trong một bảng lương luôn là 1."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "A total of the values: kind 9 adds them up, 1 averages, 4 the largest, 5 the smallest."
+msgstr "Tổng hợp các giá trị: loại 9 là cộng, 1 là trung bình, 4 là lớn nhất, 5 là nhỏ nhất."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "What is left over after dividing."
+msgstr "Phần dư sau khi chia."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "1 when positive, -1 when negative, 0 when zero."
+msgstr "1 khi dương, -1 khi âm, 0 khi bằng 0."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Rounds away from zero."
+msgstr "Làm tròn ra xa số 0."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Rounds toward zero."
+msgstr "Làm tròn về phía số 0."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Rounds down to a whole number (INT(-1.5) is -2)."
+msgstr "Làm tròn xuống số nguyên (INT(-1.5) là -2)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Makes a date. The last day of the pay period is DATE(PAYYEAR, PAYMONTH, ENDDAY)."
+msgstr "Tạo một ngày. Ngày cuối của kỳ lương là DATE(PAYYEAR, PAYMONTH, ENDDAY)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The year of a date; 0 when the date is empty."
+msgstr "Năm của một ngày; 0 khi ngày trống."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The month of a date (1 to 12); 0 when the date is empty."
+msgstr "Tháng của một ngày (1 đến 12); 0 khi ngày trống."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The day of the month of a date; 0 when the date is empty."
+msgstr "Ngày trong tháng của một ngày; 0 khi ngày trống."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The number of days from the start date to the end date."
+msgstr "Số ngày từ ngày bắt đầu đến ngày kết thúc."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Whole years (\"Y\"), months (\"M\") or days (\"D\") between two dates; \"YM\", \"MD\" and \"YD\" leave out the years or months."
+msgstr "Số năm (\"Y\"), tháng (\"M\") hoặc ngày (\"D\") trọn vẹn giữa hai ngày; \"YM\", \"MD\" và \"YD\" bỏ qua phần năm hoặc tháng."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The same day a number of months later (or earlier, with a minus)."
+msgstr "Cùng ngày đó sau một số tháng (hoặc trước đó, nếu có dấu trừ)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "The last day of the month, a number of months later (0 = the same month)."
+msgstr "Ngày cuối tháng, sau một số tháng (0 = cùng tháng)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Reads another column of this scheme for the same person."
+msgstr "Đọc một cột khác của bảng lương này cho cùng một người."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Works out an amount from one of this scheme's band tables (for example income tax bands)."
+msgstr "Tính một số tiền từ một bảng bậc của bảng lương này (ví dụ các bậc thuế thu nhập)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "Yes (counts as 1)."
+msgstr "Có (tính là 1)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "No (counts as 0)."
+msgstr "Không (tính là 0)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "%(name)s has the wrong number of values. Write it like this: %(example)s"
+msgstr "%(name)s có số giá trị không đúng. Hãy viết như sau: %(example)s"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "%(name)s is not a function formulas can use. Did you mean %(suggestion)s?"
+msgstr "%(name)s không phải là hàm mà công thức có thể dùng. Có phải bạn muốn dùng %(suggestion)s?"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/formula_engine/functions.py:0
+msgid "%(name)s is not a function formulas can use. The function list shows the ones that work."
+msgstr "%(name)s không phải là hàm mà công thức có thể dùng. Danh sách hàm cho biết các hàm dùng được."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "%(code)s is the name of a formula function, so a component can't use it as its code. Choose another code, for example %(suggestion)s."
+msgstr "%(code)s là tên của một hàm công thức, nên thành phần không thể dùng làm mã. Hãy chọn mã khác, ví dụ %(suggestion)s."

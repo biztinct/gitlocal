@@ -73,3 +73,6 @@ from . import test_mapping_experience
 
 # LEARNREV P0 T4 — every lane the server emits has a label on the board.
 from . import test_lane_labels
+
+# WDGAP PR-A — unusable functions refused on save; the one function list.
+from . import test_wdgap_pra_studio

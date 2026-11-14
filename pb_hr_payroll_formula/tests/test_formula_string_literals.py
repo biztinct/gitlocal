@@ -123,6 +123,7 @@ class TestStringLiteralsAreNotSyntax(unittest.TestCase):
     def test_06_a_function_name_in_a_title_is_not_an_unsupported_function(self):
         message = self.v.validate_formula('=IF(C2="PAYROLL(Senior)",1,0)', COLUMNS)[1]
         self.assertNotIn('Unsupported function', message)
+        self.assertNotIn('is not a function', message)   # WDGAP PR-A wording
 
     def test_07_a_cell_reference_in_a_title_is_not_an_unknown_column(self):
         """'ZZ99 Warehouse' looks exactly like a cell reference."""
@@ -163,7 +164,10 @@ class TestStringLiteralsAreNotSyntax(unittest.TestCase):
         self.assertIn('parenthesis', self._bad('=ROUND((800000/L2)*M2,0'))
 
     def test_15_an_unsupported_function_outside_quotes_is_still_refused(self):
-        self.assertIn('Unsupported function', self._bad('=XLOOKUP(C2,L2,M2)'))
+        # WDGAP PR-A: the refusal names the function in plain words and
+        # offers the nearest supported one (was "Unsupported function: X").
+        self.assertIn('XLOOKUP is not a function formulas can use',
+                      self._bad('=XLOOKUP(C2,L2,M2)'))
 
     def test_16_an_unknown_column_outside_quotes_is_still_refused(self):
         self.assertIn('Unknown column', self._bad('=ZZ2+L2'))

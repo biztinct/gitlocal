@@ -2486,10 +2486,19 @@ class PbFormulaStudio(models.AbstractModel):
         saved = 0
         config = False
         changed_codes = []
+        refused = []
         for it in (items or []):
             rule = Rule.browse(int(it.get('rule_id')))
             if not rule.exists() or rule.column_type != 'formula':
                 continue
+            # WDGAP PR-A — a changed formula with an unusable function is not
+            # written (the editors check the same thing live before sending).
+            new_text = it.get('formula') or ''
+            if new_text != (rule.excel_formula or ''):
+                why = rule._pb_formula_refusal(new_text)
+                if why:
+                    refused.append({'rule_id': rule.id, 'msg': why})
+                    continue
             config = rule.config_id
             column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
             # F7: N formulas → N version rows, one reason, one shared seen-set (C4)
@@ -2509,7 +2518,7 @@ class PbFormulaStudio(models.AbstractModel):
                 _logger.debug("bulk_save_formulas skip %s: %s", rule.id, e)
         # W82: one test run for the whole batch (C4 one-batch rule), not per item.
         tests = self._run_tests_after_save(config, changed_codes)
-        return {'ok': True, 'saved': saved, 'tests': tests}
+        return {'ok': True, 'saved': saved, 'tests': tests, 'refused': refused}
 
     # ------------------------------------------------------------------
     # W17 smart paste — the ONE server ladder (D-L5): normalize + validate
@@ -2572,6 +2581,13 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': 'Component not found'}
         config = rule.config_id
         column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
+        # WDGAP PR-A — an unknown function, TODAY()/NOW() or a function given
+        # the wrong number of values is refused HERE, in plain words, instead
+        # of being saved and reading 0 on the payslip.
+        if rule.column_type == 'formula' and (excel_formula or '') != (rule.excel_formula or ''):
+            refusal = rule._pb_formula_refusal(excel_formula)
+            if refusal:
+                return {'ok': False, 'msg': refusal}
         try:
             rule.excel_formula = excel_formula
             if rule.column_type == 'formula':
@@ -2686,6 +2702,14 @@ class PbFormulaStudio(models.AbstractModel):
                                % (write_vals['code'], dup[0].column_letter or '?')}
         # excel_formula handled separately so we can convert + validate
         new_formula = vals.get('excel_formula')
+        # WDGAP PR-A — refuse an unusable function before anything is written.
+        # Only a CHANGED formula is checked: the editor sends the whole draft,
+        # and a stored formula is never re-validated by renaming its component.
+        if (new_formula is not None and (new_formula or '') != (rule.excel_formula or '')
+                and write_vals.get('column_type', rule.column_type) == 'formula'):
+            refusal = rule._pb_formula_refusal(new_formula)
+            if refusal:
+                return {'ok': False, 'msg': refusal}
         # F7: this method may write metadata AND the formula in two steps — a
         # shared 'seen' set collapses both into ONE version row for the rule.
         rule = rule.with_context(formula_version_reason='edit',
@@ -13342,7 +13366,8 @@ class PbFormulaStudio(models.AbstractModel):
             # F11 — expand BRACKET(code, value) first so the validator sees the
             # compiled nested-IF (BRACKET is not one of its known functions).
             expanded = self.env['hr.formula.rate.table'].expand_brackets(formula or '', config)
-            return FormulaValidator().validate_formula(expanded, cols)
+            # WDGAP PR-A: the function check speaks the reader's language.
+            return FormulaValidator().validate_formula(expanded, cols, translate=self.env._)
         except Exception as e:  # pragma: no cover
             return False, str(e)
 
