@@ -21,6 +21,10 @@ import { _t } from "@web/core/l10n/translation";
 
 const LAST_KEY = "pb_idle_last";
 const ALIVE_KEY = "pb_idle_alive";
+const OUT_KEY = "pb_idle_out";        // "<time>:<tab>" — one tab signs out
+const OUT_CLAIM = 2 * 60 * 1000;      // a hidden tab's timer can lag a minute
+const OUT_SETTLE = 400;               // two tabs at the same second: last write wins
+const FOLLOW_AFTER = 2000;
 const RECORD_EVERY = 15 * 1000;
 const ALIVE_EVERY = 60 * 1000;
 const WARN_FOR = 60 * 1000;
@@ -41,6 +45,14 @@ function writeMs(key, value) {
         window.localStorage.setItem(key, String(value));
     } catch {
         // private window or blocked storage: this tab still counts on its own
+    }
+}
+
+function readText(key) {
+    try {
+        return window.localStorage.getItem(key) || "";
+    } catch {
+        return "";
     }
 }
 
@@ -116,8 +128,35 @@ export const idleWatchService = {
                 return;
             }
             leaving = true;
+            // ONE tab signs the browser out. Signing out twice renews the
+            // session twice, and a sign-in page another tab already opened
+            // would then refuse its own form. The others reopen their page a
+            // moment later, which lands them on the sign-in page by itself.
             const here = window.location.pathname + window.location.search + window.location.hash;
-            window.location.assign("/web/session/logout?redirect=" + encodeURIComponent(here));
+            const out = () => window.location.assign(
+                "/web/session/logout?redirect=" + encodeURIComponent(here));
+            const follow = () => window.setTimeout(() => window.location.reload(), FOLLOW_AFTER);
+            const now = Date.now();
+            const probe = `probe:${now}`;
+            writeMs(OUT_KEY + "_probe", probe);
+            if (readText(OUT_KEY + "_probe") !== probe) {
+                out();                  // no shared storage: this tab is on its own
+                return;
+            }
+            const claimed = Number(readText(OUT_KEY).split(":")[0]) || 0;
+            if (now - claimed < OUT_CLAIM) {
+                follow();
+                return;
+            }
+            const mine = `${now}:${Math.random().toString(36).slice(2)}`;
+            writeMs(OUT_KEY, mine);
+            window.setTimeout(() => {
+                if (readText(OUT_KEY) === mine) {
+                    out();
+                } else {
+                    follow();
+                }
+            }, OUT_SETTLE);
         };
 
         const onActivity = () => {
