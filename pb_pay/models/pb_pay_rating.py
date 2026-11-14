@@ -34,6 +34,8 @@ SOURCES = [
     ('pasted', 'Pasted from a spreadsheet'),
     ('synced', 'Read from the connected system'),
     ('legacy', 'Carried over'),
+    # WDGAP QF4: read from the goals year (pb_goals, probed — no dependency).
+    ('goals', 'Read from Goals'),
 ]
 
 #: A paste bigger than this is a mistake, not a review.
@@ -226,6 +228,134 @@ class PbPayRating(models.Model):
         return {'read': len(rows),
                 'sentence': _("%(count)s scores read in.", count=len(rows))
                 if rows else _("Nobody in this review has a score on record.")}
+
+    # ------------------------------------------------------ WDGAP QF4: Goals
+    @api.model
+    def _goal_years(self, review):
+        """The goals years this review may read, newest first, and the default.
+
+        Only years of the review's own companies, and never one still being
+        set up (it has no scores). The default is the most recent CLOSED year
+        that ended on or before the review's "new pay starts on" date, its main
+        company's first; failing that the latest closed year; failing that
+        the latest open one.
+        """
+        Cycle = self.env['pb.goal.cycle'].sudo()
+        companies = (review.company_ids | review.company_id).ids
+        cycles = Cycle.search([('company_id', 'in', companies),
+                               ('state', 'in', ('open', 'closed'))],
+                              order='date_end desc, id desc', limit=40)
+        when = review.effective_date
+        closed = cycles.filtered(lambda c: c.state == 'closed')
+        before = closed.filtered(
+            lambda c: c.date_end and when and c.date_end <= when)
+        mine = before.filtered(
+            lambda c: c.company_id.id == review.company_id.id)
+        default = (mine[:1] or before[:1] or closed[:1] or cycles[:1])
+        years = [{
+            'id': cycle.id,
+            'name': cycle.name or '',
+            'closed': cycle.state == 'closed',
+            'label': (cycle.name or '') if cycle.state == 'closed'
+            else _("%(name)s · not closed yet", name=cycle.name or ''),
+        } for cycle in cycles]
+        return cycles, default, years
+
+    @api.model
+    def read_from_goals(self, review_id, cycle_id=None, dry_run=True):
+        """Scores from a goals year, turned into this review's scale.
+
+        Same answer shape as `paste` (`good`, `bad`, `rows`, `sentence`), plus
+        what the drawer draws: the years to choose from, the year chosen, the
+        three counts and the mapping table. Never writes on a dry run.
+
+        The CALLER has already checked the reader may change this review
+        (`pb.pay.reviews.goal_scores`). Goals are read as the system AFTER that
+        check, and only for the people on this review's own worksheet — a pay
+        reviewer gets these scores and no other window into Goals.
+        """
+        review = self.env['pb.pay.review'].browse(int(review_id or 0)).exists()
+        if not review:
+            raise UserError(_("That review is not there any more."))
+        if 'pb.goal.set' not in self.env:
+            return {'available': False, 'good': 0, 'bad': 0, 'rows': [],
+                    'read': 0, 'changed': 0, 'missing': 0, 'years': [],
+                    'mapping': [], 'cycle_id': 0, 'cycle_closed': False,
+                    'sentence': _("Goals is not switched on here, so there "
+                                  "are no goal scores to read.")}
+        levels = int(review.rating_scale or '4')
+        Set = self.env['pb.goal.set'].sudo()
+        cycles, default, years = self._goal_years(review)
+        cycle = default
+        if cycle_id:
+            cycle = cycles.filtered(lambda c: c.id == int(cycle_id))
+            if not cycle:
+                raise UserError(_(
+                    "That goals year is not one this review can read."))
+        answer = {
+            'available': True, 'years': years, 'levels': levels,
+            'mapping': Set._pay_mapping(levels),
+            'cycle_id': cycle.id if cycle else 0,
+            'cycle_name': (cycle.name or '') if cycle else '',
+            'cycle_closed': bool(cycle and cycle.state == 'closed'),
+            'good': 0, 'bad': 0, 'rows': [], 'read': 0, 'changed': 0,
+            'missing': 0,
+        }
+        if not cycle:
+            answer['sentence'] = _(
+                "No goals year has been opened for this company yet, so "
+                "there are no goal scores to read.")
+            return answer
+        lines = review.line_ids
+        employees = lines.mapped('employee_id')
+        sheets = {sheet.employee_id.id: sheet for sheet in Set.search([
+            ('cycle_id', '=', cycle.id),
+            ('employee_id', 'in', employees.ids)])}
+        current = review._ratings_by_employee()
+        good, missing = [], []
+        changed = 0
+        for line in lines:
+            employee = line.employee_id
+            sheet = sheets.get(employee.id)
+            rating = Set._pay_rating_for(sheet._pay_score(), levels) \
+                if sheet else None
+            if rating is None:
+                missing.append(employee)
+                continue
+            if current.get(employee.id, 0) != rating:
+                changed += 1
+            good.append({'employee_id': employee.id, 'rating': rating})
+        answer.update({
+            'good': len(good), 'bad': len(missing),
+            'read': len(good), 'changed': changed, 'missing': len(missing),
+            'rows': [{'row': index, 'text': employee.sudo().name or '',
+                      'why': _("No goals score for this year.")}
+                     for index, employee in enumerate(missing[:60], 1)],
+            'sentence': self._goals_sentence(len(good), changed,
+                                             len(missing)),
+        })
+        if dry_run or not good:
+            return answer
+        self._write_many(review, good, 'goals')
+        review.apply_guidance_to()
+        answer['written'] = len(good)
+        answer['sentence'] = _(
+            "%(count)s scores read from Goals.", count=len(good))
+        return answer
+
+    @api.model
+    def _goals_sentence(self, good, changed, missing):
+        if not good:
+            return _("Nobody on this review has a goals score for that "
+                     "year.")
+        if good == 1:
+            return _(
+                "1 person has a goals score (%(changed)s will change) and "
+                "%(missing)s have none.", changed=changed, missing=missing)
+        return _(
+            "%(good)s people have a goals score, %(changed)s of them will "
+            "change and %(missing)s have none.", good=good, changed=changed,
+            missing=missing)
 
     # --------------------------------------------------------- the migration
     @api.model

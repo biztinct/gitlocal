@@ -75,3 +75,30 @@ msgstr ""
 "                Tim HR\n"
 "            </div>\n"
 "        "
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/pay_score.py:0
+msgid "%(low)s to %(high)s"
+msgstr "%(low)s sampai %(high)s"
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/close.py:0
+msgid ""
+"Each score also becomes the person's latest performance score, which the "
+"next pay review starts from. Reopening the year does not take that back."
+msgstr ""
+"Setiap nilai juga menjadi nilai kinerja terbaru orang tersebut, yang menjadi"
+" titik awal tinjauan gaji berikutnya. Membuka kembali tahun ini tidak "
+"membatalkannya."
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/pay_score.py:0
+msgid ""
+"Their latest performance score is now %(value)s out of 5, from the goals "
+"year %(year)s."
+msgstr ""
+"Nilai kinerja terbaru mereka sekarang %(value)s dari 5, dari tahun sasaran "
+"%(year)s."
