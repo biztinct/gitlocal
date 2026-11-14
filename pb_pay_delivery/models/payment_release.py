@@ -8,9 +8,13 @@ agreed to send it. And afterwards nothing in the app knew a run had been paid:
 approved — which is not when the money left.
 
 A RELEASE names the approved file it releases, the amount, and the reference
-the bank gave back. When it is approved, every confirmed payslip in that run is
-stamped `pb_paid_on` / `pb_paid_ref`, the awards queued into the run are marked
-paid, and the run's own card can finally say Paid.
+the bank gave back. When it is approved, every payslip that is a row of the
+released file is stamped `pb_paid_on` / `pb_paid_ref` (WDGAP PR-C: only those —
+not the people the file left out, nor anybody on hold), the awards queued into
+the run are marked paid, and once everybody is paid the run's own card can say
+Paid. A file for a run can be followed by a follow-up file for the people the
+first one did not pay (a hold released, bank details fixed); each file has its
+own approval and its own release.
 
 TWO SIGNATURES BY DEFAULT. The engine's "any one of a pool" closes on the first
 person to answer, so a pool cannot express "two of the five". The default route
@@ -107,6 +111,7 @@ class PbPaymentRelease(models.Model):
                 existing._waiting_for() or _('its approver')))
         if existing:
             raise UserError(_("This file has already been released."))
+        self._pb_refuse_held(bank_file)
         company = bank_file.company_id or self.env.company
         return self.create({
             'bank_file_id': bank_file.id,
@@ -116,6 +121,24 @@ class PbPaymentRelease(models.Model):
             'beneficiaries': bank_file.row_count,
             'bank_reference': (bank_reference or '')[:64] or False,
         })
+
+    @api.model
+    def _pb_refuse_held(self, bank_file):
+        """WDGAP PR-C rail R1: a file carrying a payslip that was put on hold
+        after the file was prepared can never be released. Asked when the
+        release is prepared AND again at the moment it is carried out."""
+        held = bank_file._pb_held_in_file()
+        if not held:
+            return True
+        names = ', '.join(held.mapped('employee_id.name')[:5])
+        if len(held) > 5:
+            names = _("%(names)s and %(more)s more", names=names,
+                      more=len(held) - 5)
+        raise UserError(_(
+            "This bank file still pays someone whose pay has been put on hold "
+            "since it was prepared (%s). Prepare the bank file again — it "
+            "will leave them out — and have it approved before releasing the "
+            "money.", names))
 
     # ==================================================================
     # Adapter
@@ -260,6 +283,14 @@ class PbPaymentRelease(models.Model):
         self.sudo().write({'state': 'rejected'})
         return True
 
+    def _approval_withdraw(self, request, reason):
+        """Withdrawn — today only when a newer bank file replaced this one's
+        (WDGAP PR-C). Nobody decided: the release simply stops waiting."""
+        self.ensure_one()
+        if self.state == 'pending':
+            self.sudo().write({'state': 'draft'})
+        return True
+
     def _approval_apply(self, request):
         """The money is gone. Stamp everything that has to know.
 
@@ -285,10 +316,16 @@ class PbPaymentRelease(models.Model):
                 "The bank file has changed since it was approved, so this "
                 "release no longer covers it. Prepare the file again and have "
                 "it approved before releasing the money."))
+        self._pb_refuse_held(self.bank_file_id)
         stamp = fields.Datetime.now()
         reference = (self.bank_reference or '')[:64]
-        slips = self.run_id.sudo().slip_ids.filtered(
-            lambda s: s.state == 'done' and not s.pb_paid_on)
+        # WDGAP PR-C: ONLY the payslips that are rows of the released file are
+        # paid. It used to be every finished payslip of the run — including
+        # people the file left out (no bank details), who were marked paid
+        # with a bank reference although the bank was never asked to pay them.
+        slips = self.bank_file_id._pb_file_slips().filtered(
+            lambda s: s.state == 'done' and not s.pb_paid_on
+            and not s.pb_pay_hold)
         if slips:
             slips.write({'pb_paid_on': stamp, 'pb_paid_ref': reference or False})
         # The awards queued into this run are paid when the money is paid, and

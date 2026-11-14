@@ -66,6 +66,8 @@ class PbPayslipDeliveryBatch(models.Model):
     sent_count = fields.Integer(compute='_compute_counts', store=True)
     failed_count = fields.Integer(compute='_compute_counts', store=True)
     skipped_count = fields.Integer(compute='_compute_counts', store=True)
+    #: WDGAP PR-C: payslips not sent because the person's pay is on hold.
+    held_count = fields.Integer(compute='_compute_counts', store=True)
     #: A seat is also a read (ledger AM60).
     seat_user_ids = fields.Many2many(
         'res.users', 'pb_delivery_batch_seat_rel', 'batch_id', 'user_id',
@@ -78,6 +80,7 @@ class PbPayslipDeliveryBatch(models.Model):
             b.failed_count = len(b.line_ids.filtered(lambda l: l.state == 'failed'))
             b.skipped_count = len(
                 b.line_ids.filtered(lambda l: l.state == 'skipped_no_email'))
+            b.held_count = len(b.line_ids.filtered(lambda l: l.state == 'held'))
 
     # ------------------------------------------------------------- access
     def _check_pay_access(self):
@@ -210,6 +213,20 @@ class PbPayslipDeliveryBatch(models.Model):
                 continue  # idempotent: never double-send
 
             emp = slip.employee_id
+            # WDGAP PR-C: a held payslip is never sent — not even by "send to
+            # everybody again". It is counted ("not sent: pay on hold") and
+            # goes out on a later send once the hold is released.
+            if slip.pb_pay_hold:
+                if not line:
+                    Line.create({
+                        'batch_id': self.id, 'slip_id': slip.id,
+                        'employee_id': emp.id, 'email': emp.work_email or '',
+                        'state': 'held', 'error': _('Pay on hold')})
+                elif line.state != 'sent':
+                    line.write({'state': 'held', 'error': _('Pay on hold'),
+                                'mail_id': False})
+                continue
+
             email = emp.work_email
             if not line:
                 line = Line.create({
@@ -267,9 +284,14 @@ class PbPayslipDeliveryBatch(models.Model):
     # ==================================================================
     def _approval_validate(self):
         self.ensure_one()
-        if not self.run_id.slip_ids.filtered(lambda s: s.state == 'done'):
+        done = self.run_id.slip_ids.filtered(lambda s: s.state == 'done')
+        if not done:
             raise UserError(_(
                 "No confirmed payslips in this pay run to deliver."))
+        if not done.filtered(lambda s: not s.pb_pay_hold):
+            raise UserError(_(
+                "Everybody's pay in this pay run is on hold, so there are no "
+                "payslips to send yet."))
         return True
 
     def _approval_context(self):
@@ -277,7 +299,9 @@ class PbPayslipDeliveryBatch(models.Model):
         run = self.run_id
         company = self.company_id or self.env.company
         scope_keys, scope_label = self.scope_of_run(run)
-        slips = run.sudo().slip_ids.filtered(lambda s: s.state == 'done')
+        # WDGAP PR-C: a held payslip is not part of what is being sent.
+        slips = run.sudo().slip_ids.filtered(
+            lambda s: s.state == 'done' and not s.pb_pay_hold)
         paid = bool(slips) and all(
             getattr(slip, 'pb_paid_on', False) for slip in slips)
         return {
@@ -329,7 +353,8 @@ class PbPayslipDeliveryBatch(models.Model):
 
     def _approval_card_count(self, request):
         self.ensure_one()
-        count = len(self.run_id.slip_ids.filtered(lambda s: s.state == 'done'))
+        count = len(self.run_id.slip_ids.filtered(
+            lambda s: s.state == 'done' and not s.pb_pay_hold))
         if count == 1:
             return _("1 payslip")
         return _("%s payslips", count)
@@ -355,7 +380,9 @@ class PbPayslipDeliveryBatch(models.Model):
         self._do_send(force_all=bool(self.force_all))
         self.audit(self, 'state', _('Payslips sent'), '',
                    _("%(sent)s sent, %(failed)s failed",
-                     sent=self.sent_count, failed=self.failed_count))
+                     sent=self.sent_count, failed=self.failed_count)
+                   + (_(", %s not sent: pay on hold", self.held_count)
+                      if self.held_count else ''))
         return True
 
 
@@ -372,7 +399,8 @@ class PbPayslipDelivery(models.Model):
     email = fields.Char(string='Email')
     state = fields.Selection(
         [('sent', 'Sent'), ('failed', 'Failed'),
-         ('skipped_no_email', 'Skipped (no email)')],
+         ('skipped_no_email', 'Skipped (no email)'),
+         ('held', 'Not sent: pay on hold')],
         required=True, default='failed')
     error = fields.Char(string='Error')
     # NOTE: the resolved PDF password is NEVER stored here (safety rail 4).

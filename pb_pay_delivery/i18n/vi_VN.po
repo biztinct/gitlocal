@@ -1259,14 +1259,18 @@ msgid "Payment released"
 msgstr "Đã chuyển tiền"
 
 #. module: pb_pay_delivery
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "1 person"
 msgstr "1 người"
 
 #. module: pb_pay_delivery
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_pay_delivery/models/bank_file.py:0 code:addons/pb_pay_delivery/models/payment_release.py:0 code:addons/pb_pay_delivery/models/approval_common.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
 msgid "%s people"
 msgstr "%s người"
 
@@ -1739,3 +1743,409 @@ msgstr "bị bỏ ra"
 #: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
 msgid "See who is left out and why"
 msgstr "Xem ai bị bỏ ra và lý do"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%(name)s has already been paid (%(date)s), so this pay can no longer be held."
+msgstr "%(name)s đã được trả lương (%(date)s), nên không thể giữ lại khoản lương này nữa."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%s is in a bank file whose money has already been released, so this pay can no longer be held."
+msgstr "%s nằm trong một tệp ngân hàng đã được giải ngân, nên không thể giữ lại khoản lương này nữa."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people's pay is on hold"
+msgstr "%s người đang bị giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person's pay is on hold"
+msgstr "1 người đang bị giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%s's pay is already on hold."
+msgstr "Lương của %s đã đang được giữ lại."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%s's pay is not on hold."
+msgstr "Lương của %s không bị giữ lại."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%s's payslip belongs to a company you do not work in."
+msgstr "Phiếu lương của %s thuộc một công ty mà bạn không làm việc."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%s's payslip has not been calculated yet. Calculate the pay run first."
+msgstr "Phiếu lương của %s chưa được tính. Hãy tính kỳ lương trước."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "%s's payslip was rejected, so there is no pay to hold."
+msgstr "Phiếu lương của %s đã bị từ chối, nên không có khoản lương nào để giữ lại."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "Held by %s"
+msgstr "Giữ lại bởi %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "Hold released by %(who)s. Their pay can now go in a payment file and their payslip can be sent."
+msgstr "%(who)s đã bỏ giữ lương. Lương của người này giờ có thể đưa vào tệp thanh toán và phiếu lương có thể được gửi."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "Only the pay team can hold or release a person's pay. This needs the Payroll Manager or a Finance role."
+msgstr "Chỉ nhóm phụ trách lương mới có thể giữ lại hoặc bỏ giữ lương của một người. Việc này cần vai trò Quản lý lương hoặc Tài chính."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid "Pay on hold"
+msgstr "Lương đang bị giữ lại"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "Pay put on hold by %(who)s. Reason: %(reason)s. This person is left out of the bank file and their payslip is not sent until the hold is released."
+msgstr "%(who)s đã giữ lại lương. Lý do: %(reason)s. Người này không có trong tệp ngân hàng và phiếu lương không được gửi cho đến khi bỏ giữ lương."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "Their payslips are approved with the run as usual. Their money and their payslip are held back until someone in the pay team releases the hold."
+msgstr "Phiếu lương của họ vẫn được duyệt cùng kỳ lương như bình thường. Tiền lương và phiếu lương của họ được giữ lại cho đến khi một người trong nhóm phụ trách lương bỏ giữ."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "This person"
+msgstr "Người này"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "Write why the pay is on hold (at least %s characters)."
+msgstr "Hãy ghi lý do giữ lại lương (ít nhất %s ký tự)."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "Yes · %s"
+msgstr "Có · %s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pay_hold.py:0
+msgid "You cannot hold or release your own pay. Ask someone else in the pay team."
+msgstr "Bạn không thể giữ lại hoặc bỏ giữ lương của chính mình. Hãy nhờ một người khác trong nhóm phụ trách lương."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "Everybody in this pay run has been paid already, so there is nobody to put in a new bank file."
+msgstr "Mọi người trong kỳ lương này đã được trả, nên không còn ai để đưa vào tệp ngân hàng mới."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+msgid "Everybody left to pay in this pay run is on hold, so there is nobody to put in a bank file yet."
+msgstr "Tất cả những người còn chờ trả lương trong kỳ này đều đang bị giữ lương, nên chưa có ai để đưa vào tệp ngân hàng."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_export_wizard.py:0
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "On hold"
+msgstr "Đang giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "A newer bank file replaced the one this release was for."
+msgstr "Một tệp ngân hàng mới hơn đã thay thế tệp mà yêu cầu giải ngân này dành cho."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "Bank file %(file)s = run %(run)s"
+msgstr "Tệp ngân hàng %(file)s = kỳ lương %(run)s"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "Follow-up: people not paid yet"
+msgstr "Bổ sung: những người chưa được trả"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "Kind of file"
+msgstr "Loại tệp"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "People on hold are paid by a later file, once their hold is released."
+msgstr "Những người đang bị giữ lương sẽ được trả bằng một tệp sau, khi họ được bỏ giữ."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "− %(amount)s left out for other reasons"
+msgstr "− %(amount)s bị loại vì lý do khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "− %(amount)s on hold (%(people)s)"
+msgstr "− %(amount)s đang giữ lại (%(people)s)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/bank_file.py:0
+msgid "− %(amount)s paid by an earlier file (%(people)s)"
+msgstr "− %(amount)s đã trả bằng tệp trước (%(people)s)"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_release.py:0
+msgid "%(names)s and %(more)s more"
+msgstr "%(names)s và %(more)s người khác"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payment_release.py:0
+msgid "This bank file still pays someone whose pay has been put on hold since it was prepared (%s). Prepare the bank file again — it will leave them out — and have it approved before releasing the money."
+msgstr "Tệp ngân hàng này vẫn trả cho người đã bị giữ lương sau khi tệp được lập (%s). Hãy lập lại tệp ngân hàng — tệp mới sẽ loại họ ra — và cho duyệt trước khi giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid ", %s not sent: pay on hold"
+msgstr ", %s chưa gửi: đang giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/payslip_delivery.py:0
+msgid "Everybody's pay in this pay run is on hold, so there are no payslips to send yet."
+msgstr "Lương của mọi người trong kỳ này đều đang bị giữ, nên chưa có phiếu lương nào để gửi."
+
+#. module: pb_pay_delivery
+#. odoo-python
+#: code:addons/pb_pay_delivery/models/pb_pay_delivery.py:0
+msgid "That payslip is not in this pay run."
+msgstr "Phiếu lương đó không thuộc kỳ lương này."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%(n)s people in this file have been put on hold since it was prepared (%(names)s). Prepare it again before the money is released."
+msgstr "%(n)s người trong tệp này đã bị giữ lương sau khi tệp được lập (%(names)s). Hãy lập lại tệp trước khi giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s has been put on hold since this file was prepared. Prepare it again before the money is released."
+msgstr "%s đã bị giữ lương sau khi tệp này được lập. Hãy lập lại tệp trước khi giải ngân."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s not sent: pay on hold."
+msgstr "%s chưa gửi: đang giữ lương."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people have not been paid yet"
+msgstr "%s người chưa được trả lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s people released from hold can be paid now"
+msgstr "%s người vừa được bỏ giữ lương có thể được trả ngay"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person has not been paid yet"
+msgstr "1 người chưa được trả lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "1 person released from hold can be paid now"
+msgstr "1 người vừa được bỏ giữ lương có thể được trả ngay"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "%s's hold is released. Their pay can go in a payment file now."
+msgstr "Đã bỏ giữ lương của %s. Lương của người này giờ có thể đưa vào tệp thanh toán."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare a payment file for the %s people not paid yet"
+msgstr "Lập tệp thanh toán cho %s người chưa được trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare a payment file for the %s people released from hold"
+msgstr "Lập tệp thanh toán cho %s người vừa được bỏ giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare a payment file for the 1 person not paid yet"
+msgstr "Lập tệp thanh toán cho 1 người chưa được trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Prepare a payment file for the 1 person released from hold"
+msgstr "Lập tệp thanh toán cho 1 người vừa được bỏ giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Send the %s that were held"
+msgstr "Gửi %s phiếu lương đã bị giữ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/js/pb_pay_delivery.js:0
+msgid "Send the 1 that was held"
+msgstr "Gửi 1 phiếu lương đã bị giữ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "A follow-up file pays only them, with its own approval and release. The file already released stays as it is."
+msgstr "Tệp bổ sung chỉ trả cho họ, với bước duyệt và giải ngân riêng. Tệp đã giải ngân được giữ nguyên."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Everybody left to pay is on hold"
+msgstr "Tất cả những người còn chờ trả đều đang bị giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Everybody who can be paid has been paid"
+msgstr "Mọi người có thể trả đều đã được trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Follow-up file"
+msgstr "Tệp bổ sung"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Held by"
+msgstr "Giữ lại bởi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Left out of the bank file and the payslip send-out until released"
+msgstr "Không có trong tệp ngân hàng và không được gửi phiếu lương cho đến khi bỏ giữ"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Open the employee record"
+msgstr "Mở hồ sơ nhân viên"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Release a hold above to pay that person with a follow-up file."
+msgstr "Bỏ giữ lương ở trên để trả cho người đó bằng một tệp bổ sung."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Release a hold above, then prepare the file."
+msgstr "Bỏ giữ lương ở trên, rồi lập tệp."
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "Release hold"
+msgstr "Bỏ giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "also in this run"
+msgstr "cũng trong kỳ lương này"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "not sent: pay on hold"
+msgstr "chưa gửi: đang giữ lương"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "on hold"
+msgstr "đang giữ lại"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "on hold, not sent"
+msgstr "đang giữ lương, chưa gửi"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "paid"
+msgstr "đã trả"
+
+#. module: pb_pay_delivery
+#. odoo-javascript
+#: code:addons/pb_pay_delivery/static/src/xml/pb_pay_delivery.xml:0
+msgid "still to pay"
+msgstr "còn phải trả"

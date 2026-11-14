@@ -39,6 +39,8 @@ export class PayslipReview extends Component {
             loaded: false, runId: null, run: null, runs: [], totals: {},
             slips: [], total: 0, steps: {}, listLoaded: false, loadingMore: false,
             selId: null, detail: null,
+            // WDGAP PR-C: the in-page "why is this pay on hold" box
+            holdOpen: false, holdReason: "", holdBusy: false,
         });
         // FILTER wave 5: the shared filter panel. The run picker stays the
         // screen's one scope control above it and rides on every kit call as
@@ -151,13 +153,74 @@ export class PayslipReview extends Component {
     get glance() {
         const t = this.state.totals || {};
         const flag = { review: ["flag"] };
-        return [
+        const rows = [
             { key: "count", n: t.count || 0, label: _t("Payslips"), tone: "", run: null },
             { key: "flag", n: t.flagged || 0, label: _t("Need review"), tone: t.flagged ? "amber" : "",
               run: () => this.kit.toggleFilters(flag), on: this.kit.loaded && this.kit.isExactly(flag) },
+        ];
+        // WDGAP PR-C: "On hold" — grey at zero, amber when someone's pay is held
+        if (t.held !== null && t.held !== undefined) {
+            const held = { hold: ["yes"] };
+            rows.push({ key: "held", n: t.held || 0, label: _t("On hold"), tone: t.held ? "amber" : "",
+                        run: () => this.kit.toggleFilters(held), on: this.kit.loaded && this.kit.isExactly(held) });
+        }
+        rows.push(
             { key: "gross", n: t.gross ? this.vnd(t.gross) : 0, label: _t("Gross total"), tone: "", run: null },
             { key: "net", n: t.net ? this.vnd(t.net) : 0, label: _t("Net total"), tone: "", run: null },
-        ];
+        );
+        return rows;
+    }
+
+    // ================================================ WDGAP PR-C: hold pay
+    get hold() { return (this.state.detail && this.state.detail.hold) || null; }
+    get holdReasonOk() { return (this.state.holdReason || "").trim().length >= 6; }
+    get holdPlaceholder() { return _t("For example: final settlement not signed yet"); }
+    openHold() {
+        this.state.holdOpen = true;
+        this.state.holdReason = "";
+        // the box appears on the next render; put the cursor in it
+        setTimeout(() => document.getElementById("psr-hold-reason")?.focus(), 30);
+    }
+    cancelHold() { this.state.holdOpen = false; this.state.holdReason = ""; }
+    onHoldKey(ev) {
+        if (ev.key === "Escape") { this.cancelHold(); }
+        if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) { this.confirmHold(); }
+    }
+    holdDate(value) {
+        if (!value) { return ""; }
+        const d = new Date(value.replace(" ", "T") + "Z");
+        return isNaN(d) ? value : d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    }
+    async confirmHold() {
+        if (!this.holdReasonOk || this.state.holdBusy || !this.state.detail) { return; }
+        await this._holdCall("hold_slip", [this.state.detail.id, this.state.holdReason.trim()],
+            _t("%s's pay is on hold. They are left out of the bank file and their payslip is not sent.", this.state.detail.emp));
+    }
+    async releaseHold() {
+        if (this.state.holdBusy || !this.state.detail) { return; }
+        await this._holdCall("release_slip_hold", [this.state.detail.id],
+            _t("%s's hold is released. Their pay can go in a payment file now.", this.state.detail.emp));
+    }
+    async _holdCall(method, args, okText) {
+        this.state.holdBusy = true;
+        try {
+            const res = await this.orm.call("pb.payslip.review", method, args);
+            if (!res.ok) {
+                this.notif.add(res.msg || _t("Action blocked"), { type: "warning" });
+                return;
+            }
+            this.state.detail = res.detail;
+            this.state.holdOpen = false;
+            this.state.holdReason = "";
+            this.notif.add(okText, { type: "success" });
+            await this.loadHead(this.state.runId);
+            await this.kit.refresh();
+        } catch (e) {
+            this.notif.add((e && e.data && e.data.message) || (e && e.message) || _t("Action blocked"),
+                           { type: "danger" });
+        } finally {
+            this.state.holdBusy = false;
+        }
     }
 
     get emptyHint() {
@@ -172,6 +235,7 @@ export class PayslipReview extends Component {
 
     async select(id) {
         this.state.selId = id;
+        if (this.state.detail && this.state.detail.id !== id) { this.cancelHold(); }
         this.state.detail = await this.orm.call("pb.payslip.review", "get_slip_detail", [id]);
     }
 

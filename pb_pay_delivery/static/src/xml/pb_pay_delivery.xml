@@ -92,6 +92,26 @@
               <a href="#" t-on-click.prevent="toggleExcl"
                  title="See who is left out and why"><t t-esc="state.data.validation.excluded_count"/> <span>left out</span></a>
             </div>
+            <!-- WDGAP PR-C: the run's take-home, taken apart, one currency
+                 at a time (never added across currencies). Said only once
+                 something is on hold or paid. -->
+            <div t-foreach="moneySplit" t-as="m" t-key="m.currency" class="pbpd-split">
+              <span t-if="moneyRows.length &gt; 1" class="cur" t-esc="m.currency"/>
+              <span t-if="m.held" class="pt hold">
+                <t t-out="ic('pause',12)"/> <b t-esc="money(m.held, m.symbol)"/> <span>on hold</span>
+              </span>
+              <span t-if="m.paid" class="pt paid">
+                <t t-out="ic('checkCircle',12)"/> <b t-esc="money(m.paid, m.symbol)"/> <span>paid</span>
+              </span>
+              <span t-attf-class="pt {{ m.to_pay ? 'due' : 'zero' }}">
+                <t t-out="ic('clock',12)"/> <b t-esc="money(m.to_pay, m.symbol)"/> <span>still to pay</span>
+              </span>
+            </div>
+            <div t-foreach="otherCurrencies" t-as="m" t-key="m.currency" class="pbpd-split other">
+              <span class="cur" t-esc="m.currency"/>
+              <span class="pt"><b t-esc="money(m.total, m.symbol)"/> <span>also in this run</span></span>
+              <span class="pt" t-esc="peopleLabel(m.count)"/>
+            </div>
           </div>
         </div>
 
@@ -138,7 +158,40 @@
               </div>
 
               <!-- exclusion drawer -->
-              <div t-if="state.showExcl and state.data.validation.excluded_count" class="pbpd-excl">
+              <!-- WDGAP PR-C: the people on hold, apart from the people the bank
+                   details leave out — who, why, by whom, how much, and the
+                   one action that lets them be paid. Shown whenever anyone is
+                   on hold (the drawer below stays behind its counter). -->
+              <div t-if="holds.count" class="pbpd-holds">
+                <div class="gh">
+                  <span class="ico" t-out="ic('pause',15)"/>
+                  <span class="t" t-esc="holdsTitle"/>
+                  <span class="s">Left out of the bank file and the payslip send-out until released</span>
+                </div>
+                <div t-foreach="holds.people" t-as="p" t-key="p.slip_id" class="hrow">
+                  <div class="who">
+                    <button class="emp link" t-on-click="() => this.openEmployeeBank(p.employee_id)"
+                            title="Open the employee record">
+                      <t t-esc="p.employee"/>
+                    </button>
+                    <span class="pbpd-chip hold">On hold</span>
+                  </div>
+                  <div class="why" t-esc="p.reason"/>
+                  <div class="meta">
+                    <span t-if="p.by">Held by <t t-esc="p.by"/></span>
+                    <span t-if="p.on_date" class="dot">•</span>
+                    <span t-if="p.on_date" t-esc="shortDate(p.on_date)"/>
+                  </div>
+                  <div class="amt" t-esc="money(p.amount, p.symbol)"/>
+                  <button t-if="p.can_release" class="pbpd-btn ghost sm"
+                          t-att-disabled="state.busy"
+                          t-on-click="() => this.releaseHold(p)">
+                    <span t-out="ic('play',13)"/><span>Release hold</span>
+                  </button>
+                </div>
+              </div>
+
+              <div t-if="state.showExcl and state.data.validation.excluded.length" class="pbpd-excl">
                 <div t-foreach="state.data.validation.excluded" t-as="x" t-key="x.employee_id"
                      class="row">
                   <button class="emp link" t-on-click="() => this.openEmployeeBank(x.employee_id)"
@@ -172,6 +225,11 @@
                   <div t-if="bankFile.excluded_count" class="warn">
                     <t t-esc="bankFile.excluded_count"/> person(s) not in this file
                   </div>
+                  <div t-if="bankFile.total_sentence" class="sum" t-esc="bankFile.total_sentence"/>
+                  <div t-if="bankFile.follow_up or bankFile.released" class="tags">
+                    <span t-if="bankFile.follow_up" class="pbpd-chip muted">Follow-up file</span>
+                    <span t-if="bankFile.released" class="pbpd-chip ok">Money released</span>
+                  </div>
                 </div>
                 <button t-if="bankFile.downloadable" class="pbpd-btn primary"
                         t-att-disabled="state.busy" t-on-click="downloadFile">
@@ -195,19 +253,43 @@
                        t-on-input="onCompanyAccount" placeholder="e.g. 0011000123456"/>
               </label>
 
-              <div t-if="!state.data.validation.eligible" class="pbpd-empty small">
+              <!-- WDGAP PR-C: a file prepared before somebody in it was held -->
+              <div t-if="bankFile.held_since and bankFile.held_since.length" class="pbpd-block">
+                <span t-out="ic('alert',14)"/> <span t-esc="heldSinceText"/>
+              </div>
+
+              <!-- WDGAP PR-C: after money went out, the people still to pay -->
+              <div t-if="followUp.offer and bankFile.released" class="pbpd-followup">
+                <span class="ico" t-out="ic('repeat',16)"/>
+                <div>
+                  <div class="t" t-esc="followUpTitle"/>
+                  <div class="s">A follow-up file pays only them, with its own approval and release. The file already released stays as it is.</div>
+                </div>
+              </div>
+
+              <div t-if="paidUp" class="pbpd-empty small done">
+                <span class="i" t-out="ic('checkCircle',22)"/>
+                <div class="t">Everybody who can be paid has been paid</div>
+                <div t-if="holds.count" class="s">Release a hold above to pay that person with a follow-up file.</div>
+              </div>
+              <div t-elif="allHeld" class="pbpd-empty small">
+                <span class="i" t-out="ic('pause',22)"/>
+                <div class="t">Everybody left to pay is on hold</div>
+                <div class="s">Release a hold above, then prepare the file.</div>
+              </div>
+              <div t-elif="!state.data.validation.eligible" class="pbpd-empty small">
                 <span class="i" t-out="ic('alert',22)"/>
                 <div class="t">No payable rows</div>
                 <div class="s">Every payslip failed validation — fix the bank accounts left out above, then prepare the file.</div>
               </div>
-              <button t-else="" t-attf-class="pbpd-btn {{ bankFile.downloadable ? 'ghost' : 'primary' }}"
+              <button t-else="" t-attf-class="pbpd-btn {{ bankFile.downloadable and !followUp.offer ? 'ghost' : 'primary' }}"
                       t-att-disabled="state.busy or !state.data.run.approved
                                       or bankFile.state === 'pending'"
                       t-on-click="prepareBankFile">
                 <span t-out="ic('upload',18)"/>
                 <span t-esc="prepareLabel"/>
               </button>
-              <div t-if="bankFile.state === 'approved'" class="pbpd-note">
+              <div t-if="bankFile.state === 'approved' and !bankFile.released" class="pbpd-note">
                 Preparing it again replaces this file and asks for approval afresh.
               </div>
             </div>
@@ -217,6 +299,29 @@
               <div class="card-h">
                 <span class="ico" t-out="ic('banknote',18)"/>
                 <div class="ttl">Payment release</div>
+              </div>
+
+              <!-- WDGAP PR-C: money that already went out for this run, by
+                   file — the first file and any follow-up stay on record. -->
+              <div t-foreach="releasedBefore" t-as="h" t-key="h.id" class="pbpd-released">
+                <span class="ico" t-out="ic('checkCircle',16)"/>
+                <div class="meta">
+                  <div class="nm">
+                    Money released
+                    <span t-if="h.follow_up" class="pbpd-chip muted">Follow-up file</span>
+                  </div>
+                  <div class="sub">
+                    <t t-esc="money(h.amount, h.symbol)"/>
+                    <span class="dot">•</span>
+                    <t t-esc="peopleLabel(h.beneficiaries)"/>
+                    <t t-if="h.bank_reference">
+                      <span class="dot">•</span>
+                      <t t-esc="h.bank_reference"/>
+                    </t>
+                    <span class="dot">•</span>
+                    <t t-esc="shortDate(h.released_on)"/>
+                  </div>
+                </div>
               </div>
 
               <div t-if="!bankFile.downloadable and release.state !== 'released'"
@@ -287,6 +392,9 @@
                 <span t-if="state.data.recipients.no_email_count" class="warn">
                   · <t t-esc="state.data.recipients.no_email_count"/> without email
                 </span>
+                <span t-if="state.data.recipients.held_count" class="hold">
+                  · <t t-esc="state.data.recipients.held_count"/> on hold, not sent
+                </span>
               </div>
             </div>
 
@@ -319,6 +427,11 @@
                 <span t-out="ic('upload',18)"/>
                 <span t-esc="sendLabel"/>
               </button>
+              <button t-if="delivery.held_ready"
+                      class="pbpd-btn ghost" t-att-disabled="state.busy"
+                      t-on-click="() => this.send(false)">
+                <span t-out="ic('send',16)"/><span t-esc="sendHeldLabel"/>
+              </button>
               <button t-if="delivery.failed"
                       class="pbpd-btn ghost" t-att-disabled="state.busy"
                       t-on-click="() => this.send(false)">
@@ -337,6 +450,7 @@
                 <div class="s ok"><b t-esc="delivery.sent"/><span>sent</span></div>
                 <div class="s bad"><b t-esc="delivery.failed"/><span>failed</span></div>
                 <div class="s warn"><b t-esc="delivery.skipped"/><span>skipped</span></div>
+                <div t-if="delivery.held" class="s hold"><b t-esc="delivery.held"/><span>not sent: pay on hold</span></div>
               </div>
               <div class="pills">
                 <div t-foreach="delivery.lines" t-as="l" t-key="l_index"

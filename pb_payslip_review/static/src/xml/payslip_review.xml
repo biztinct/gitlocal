@@ -83,6 +83,7 @@
                             <div class="psr-card-r">
                                 <div class="psr-card-net" t-esc="vnd(s.net)"/>
                                 <span t-attf-class="psr-badge #{cls(s.state)}" t-esc="label(s.state)"/>
+                                <span t-if="s.hold" class="psr-hold-chip" title="This person's pay is on hold"><t t-out="ic('pause', 10)"/> On hold</span>
                             </div>
                             <span t-if="s.flag" class="psr-flagdot" t-att-title="s.why">!</span>
                         </div>
@@ -139,6 +140,59 @@
                             </div>
                         </t>
                         <t t-if="!state.detail.lines.length"><div class="psr-empty">No computed lines yet.</div></t>
+                    </div>
+
+                    <!-- WDGAP PR-C: hold this person's pay. The payslip is
+                         still calculated and approved with the run; the hold
+                         stops the money and the payslip email. -->
+                    <div t-if="hold and hold.on" class="psr-hold on" data-coach="ps-hold">
+                        <div class="psr-hold-h">
+                            <span class="ic"><t t-out="ic('pause', 16)"/></span>
+                            <div class="psr-hold-t">
+                                <b>Pay on hold</b>
+                                <span>Left out of the bank file and the payslip send-out until released.</span>
+                            </div>
+                        </div>
+                        <div class="psr-hold-why" t-esc="hold.reason"/>
+                        <div class="psr-hold-meta">
+                            <t t-if="hold.by">Held by <t t-esc="hold.by"/></t>
+                            <t t-if="hold.on_date"> · <t t-esc="holdDate(hold.on_date)"/></t>
+                        </div>
+                        <div class="psr-hold-act" t-if="hold.can_release">
+                            <button type="button" class="psr-btn" t-att-disabled="state.holdBusy" t-on-click="releaseHold">
+                                <t t-out="ic('play', 14)"/> Release hold
+                            </button>
+                        </div>
+                        <div class="psr-hold-note" t-elif="hold.own">Someone else in the pay team has to release a hold on your own pay.</div>
+                        <div class="psr-hold-note" t-elif="!hold.may_act">Only the pay team can release a hold.</div>
+                    </div>
+                    <div t-elif="hold and state.holdOpen" class="psr-hold ask" data-coach="ps-hold">
+                        <label class="psr-hold-l" for="psr-hold-reason">Why is this pay on hold?</label>
+                        <textarea id="psr-hold-reason" class="psr-hold-in" rows="2" maxlength="256"
+                                  t-model="state.holdReason" t-att-placeholder="holdPlaceholder"
+                                  t-on-keydown="onHoldKey"/>
+                        <div class="psr-hold-hint">
+                            The payslip stays in the run. Their money and their payslip email wait until someone releases the hold.
+                        </div>
+                        <div class="psr-hold-act">
+                            <button type="button" class="psr-btn primary" t-att-disabled="!holdReasonOk or state.holdBusy" t-on-click="confirmHold">
+                                <t t-out="ic('pause', 14)"/> Hold pay
+                            </button>
+                            <button type="button" class="psr-btn" t-on-click="cancelHold">Cancel</button>
+                            <span class="psr-hold-count" t-if="!holdReasonOk">At least 6 characters</span>
+                        </div>
+                    </div>
+                    <div t-elif="hold and (hold.can_hold or (hold.blocker and hold.may_act) or hold.released_on)" class="psr-hold off" data-coach="ps-hold">
+                        <t t-if="hold.can_hold">
+                            <button type="button" class="psr-btn ghost" t-on-click="openHold">
+                                <t t-out="ic('pause', 14)"/> Hold pay
+                            </button>
+                            <span class="psr-hold-note">Keeps this person's money and payslip back; the run goes ahead for everyone else.</span>
+                        </t>
+                        <span class="psr-hold-note" t-elif="hold.blocker and hold.may_act" t-esc="hold.blocker"/>
+                        <t t-if="hold.released_on and !hold.on">
+                            <span class="psr-hold-note">Hold released by <t t-esc="hold.released_by"/> · <t t-esc="holdDate(hold.released_on)"/></span>
+                        </t>
                     </div>
 
                     <div class="psr-actions">
