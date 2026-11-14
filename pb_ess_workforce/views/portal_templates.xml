@@ -33,6 +33,11 @@
       <t t-elif="icon == 'log-out'"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></t>
       <t t-elif="icon == 'map-pin'"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></t>
       <t t-elif="icon == 'history'"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></t>
+      <t t-elif="icon == 'paperclip'"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></t>
+      <t t-elif="icon == 'undo'"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></t>
+      <t t-elif="icon == 'x'"><path d="M18 6 6 18M6 6l12 12"/></t>
+      <t t-elif="icon == 'file-up'"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6M15 15l-3-3-3 3"/></t>
+      <t t-elif="icon == 'camera'"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></t>
       <t t-else=""><circle cx="12" cy="12" r="10"/></t>
     </svg>
   </template>
@@ -358,6 +363,11 @@
               <div class="pbme-tile-l"><t t-esc="b['name']"/></div>
               <div t-attf-class="pbme-tile-v #{b['low'] and 'pbew-low' or ''}" t-esc="b['balance_label']"/>
               <div class="pbme-tile-y" t-esc="b['used_label']"/>
+              <!-- WDGAP QF3: what is asked for but not yet approved, quietly -->
+              <div t-if="b.get('pending')" class="pbew-tile-wait">
+                <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="13"/></t>
+                <span t-esc="b['pending_label']"/>
+              </div>
             </div>
           </t>
         </div>
@@ -369,36 +379,130 @@
               <t t-if="not lv['requests']">
                 <p class="pbme-muted">You have not requested any leave yet.</p>
               </t>
-              <table t-else="" class="pbew-wk">
-                <thead><tr><th>Type</th><th>From</th><th>To</th><th class="pbme-num">Days</th><th>Status</th></tr></thead>
-                <tbody>
-                  <t t-foreach="lv['requests']" t-as="r">
-                    <tr>
-                      <td><b t-esc="r['type']"/></td>
-                      <td><t t-esc="r['date_from']"/></td>
-                      <td><t t-esc="r['date_to']"/></td>
-                      <td class="pbme-num"><t t-esc="r['days']"/></td>
-                      <td><span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state_label']"/></span></td>
-                    </tr>
-                  </t>
-                </tbody>
-              </table>
+              <t t-else="">
+                <p class="pbew-lv-help">To change a request, withdraw or cancel it and ask again.</p>
+                <ul class="pbew-lvlist">
+                  <li t-foreach="lv['requests']" t-as="r" class="pbew-lv" t-att-data-pbew-leave="r['id']">
+                    <div class="pbew-lv-main">
+                      <div class="pbew-lv-top">
+                        <b class="pbew-lv-type" t-esc="r['type']"/>
+                        <span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state_label']"/></span>
+                      </div>
+                      <div class="pbew-lv-when">
+                        <span t-esc="r['date_from']"/><t t-if="r['date_to'] and r['date_to'] != r['date_from']"> to <span t-esc="r['date_to']"/></t>
+                        <span class="pbew-lv-dot">·</span><span t-esc="r['length_label']"/>
+                        <t t-if="r['period_label']"><span class="pbew-lv-dot">·</span><span class="pbew-lv-part" t-esc="r['period_label']"/></t>
+                      </div>
+                      <div t-if="r['files']" class="pbew-lv-files">
+                        <a t-foreach="r['files']" t-as="f" class="pbew-doc" t-att-href="f['url']" target="_blank" rel="noopener">
+                          <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="13"/></t>
+                          <span class="pbew-doc-n" t-esc="f['name']"/>
+                        </a>
+                      </div>
+                    </div>
+                    <div t-if="r['can_withdraw'] or r['can_cancel'] or r['can_add_document']" class="pbew-lv-acts">
+                      <form t-if="r['can_withdraw']" t-attf-action="/my/work/leave/#{r['id']}/withdraw" method="post" class="pbew-lv-form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button type="submit" class="pbme-btn pbme-btn--ghost pbew-btn-sm">
+                          <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'undo'"/><t t-set="isz" t-value="14"/></t>
+                          <span>Withdraw</span>
+                        </button>
+                      </form>
+                      <details t-if="r['can_cancel']" class="pbew-lvx">
+                        <summary class="pbme-btn pbme-btn--ghost pbew-btn-sm">
+                          <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'x'"/><t t-set="isz" t-value="14"/></t>
+                          <span>Cancel</span>
+                        </summary>
+                        <form t-attf-action="/my/work/leave/#{r['id']}/cancel" method="post" class="pbew-lvx-body">
+                          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                          <label class="pbme-flabel">Why are you cancelling it? Your manager will see this.
+                            <input type="text" name="reason" required="required" maxlength="500"/>
+                          </label>
+                          <button type="submit" class="pbme-btn pbme-btn--primary pbew-btn-sm">Cancel this leave</button>
+                        </form>
+                      </details>
+                      <details t-if="r['can_add_document']" class="pbew-lvx">
+                        <summary class="pbme-btn pbme-btn--ghost pbew-btn-sm">
+                          <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="14"/></t>
+                          <span>Add a document</span>
+                        </summary>
+                        <form t-attf-action="/my/work/leave/#{r['id']}/document" method="post" enctype="multipart/form-data" class="pbew-lvx-body" data-pbew-docform="">
+                          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                          <t t-call="pb_ess_workforce.leave_doc_inputs"/>
+                          <button type="submit" class="pbme-btn pbme-btn--primary pbew-btn-sm">Add it</button>
+                        </form>
+                      </details>
+                    </div>
+                  </li>
+                </ul>
+              </t>
             </div>
           </div>
 
           <div class="pbme-detail-side">
             <div class="pbme-card">
               <h3 class="pbme-card-title">Request time off</h3>
-              <form action="/my/work/leave/apply" method="post">
+              <form action="/my/work/leave/apply" method="post" enctype="multipart/form-data" class="pbew-lvform" data-pbew-leave-form="">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <label class="pbme-flabel">Type
-                  <select name="type_id" required="required">
-                    <t t-foreach="lv['types']" t-as="t"><option t-att-value="t['id']"><t t-esc="t['name']"/></option></t>
+                  <select name="type_id" required="required" data-pbew-type="">
+                    <t t-foreach="lv['types']" t-as="t"><option t-att-value="t['id']" t-att-data-unit="t['unit']" t-att-data-doc="'1' if t['needs_document'] else '0'"><t t-esc="t['name']"/></option></t>
                   </select>
                 </label>
-                <label class="pbme-flabel">First day<input type="date" name="date_from" required="required"/></label>
-                <label class="pbme-flabel">Last day<input type="date" name="date_to" required="required"/></label>
+                <div class="pbew-lvform-dates">
+                  <label class="pbme-flabel">First day<input type="date" name="date_from" required="required" data-pbew-from=""/></label>
+                  <label class="pbme-flabel">Last day<input type="date" name="date_to" required="required" data-pbew-to=""/></label>
+                </div>
+                <!-- Half days: only for a kind counted in half days. Without
+                     scripts both blocks show and the server ignores the one
+                     that does not apply ("Full day" / empty times). -->
+                <div t-if="lv.get('has_half_day')" class="pbew-part" data-pbew-part="half_day">
+                  <p class="pbew-part-h">For leave taken in half days</p>
+                  <div class="pbew-lvform-dates">
+                    <label class="pbme-flabel"><span data-pbew-one="">The day</span><span class="d-none" data-pbew-many="">First day</span>
+                      <select name="period_from" data-pbew-pfrom="">
+                        <option value="full">Full day</option>
+                        <option value="am" data-pbew-oneonly="">Morning</option>
+                        <option value="pm">Afternoon</option>
+                      </select>
+                    </label>
+                    <label class="pbme-flabel" data-pbew-many="">Last day
+                      <select name="period_to" data-pbew-pto="">
+                        <option value="full">Full day</option>
+                        <option value="am">Morning only</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+                <div t-if="lv.get('has_hours')" class="pbew-part" data-pbew-part="hour">
+                  <p class="pbew-part-h">For leave counted in hours (one day)</p>
+                  <div class="pbew-lvform-dates">
+                    <label class="pbme-flabel">From<input type="time" name="hour_from" data-pbew-hfrom=""/></label>
+                    <label class="pbme-flabel">To<input type="time" name="hour_to" data-pbew-hto=""/></label>
+                  </div>
+                </div>
                 <label class="pbme-flabel">Reason (optional)<input type="text" name="note"/></label>
+
+                <div class="pbew-lvdocs" data-pbew-docs="">
+                  <p class="pbew-part-h">
+                    <span data-pbew-docopt="">Add a document (optional)</span>
+                    <span class="d-none pbew-docneed" data-pbew-docneed="">
+                      <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'paperclip'"/><t t-set="isz" t-value="14"/></t>
+                      A document is needed for this kind of leave
+                    </span>
+                  </p>
+                  <p t-if="lv.get('doc_types')" class="pbew-lv-help" data-pbew-docstatic="">A document is needed for: <t t-esc="', '.join(lv['doc_types'])"/>. You can also add it later.</p>
+                  <t t-call="pb_ess_workforce.leave_doc_inputs"/>
+                </div>
+
+                <!-- the live "after this request" line (scripts only) -->
+                <div class="pbew-prev d-none" data-pbew-preview="" aria-live="polite">
+                  <p class="pbew-prev-amount" data-pbew-amount=""/>
+                  <p class="pbew-prev-after" data-pbew-after=""/>
+                  <p class="pbew-prev-warn d-none" data-pbew-warn=""/>
+                  <p class="pbew-prev-err d-none" data-pbew-err=""/>
+                </div>
+
                 <button type="submit" class="pbme-btn pbme-btn--primary pbme-btn--block">Send for approval</button>
               </form>
             </div>
@@ -406,6 +510,28 @@
         </div>
       </div>
     </t>
+  </template>
+
+  <!-- WDGAP QF3: the two document inputs (choose a file / take a photo),
+       cloned from the expense receipt. Up to 5 per request, 10 MB each,
+       photos or PDF — the server decides from the file itself. -->
+  <template id="leave_doc_inputs" name="My Leave document inputs">
+    <div class="pbew-docin">
+      <label class="pbew-docbtn">
+        <input type="file" name="doc" multiple="multiple" accept="image/*,.pdf,application/pdf" class="pbew-docfile" data-pbew-file=""/>
+        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'file-up'"/><t t-set="isz" t-value="16"/></t>
+        <span>Choose a file</span>
+      </label>
+      <label class="pbew-docbtn">
+        <input type="file" name="doc_cam" accept="image/*" capture="environment" class="pbew-docfile" data-pbew-file=""/>
+        <t t-call="pb_ess_workforce.work_icon"><t t-set="icon" t-value="'camera'"/><t t-set="isz" t-value="16"/></t>
+        <span>Take a photo</span>
+      </label>
+    </div>
+    <p class="pbew-docnames d-none" data-pbew-docnames=""/>
+    <p class="pbew-lv-hint">A photo or a PDF, up to 10 MB each, up to 5 per request.</p>
+    <p class="pbew-prev-warn d-none" data-pbew-docwarn="size">That file is over 10 MB. Try a smaller photo, or a PDF of the page.</p>
+    <p class="pbew-prev-warn d-none" data-pbew-docwarn="type">A document can be a photo (JPG, PNG or WEBP) or a PDF. Choose another file.</p>
   </template>
 
   <!-- ============================================================= -->

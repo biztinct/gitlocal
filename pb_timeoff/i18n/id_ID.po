@@ -226,3 +226,99 @@ msgstr "Tanggal"
 #: code:addons/pb_timeoff/models/workflow_lines.py:0
 msgid "Hours"
 msgstr "Jam"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s sampai %(end)s"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s days"
+msgstr "%s hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s documents attached"
+msgstr "%s dokumen terlampir"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s hours"
+msgstr "%s jam"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 day"
+msgstr "1 hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 document attached"
+msgstr "1 dokumen terlampir"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 hour"
+msgstr "1 jam"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Documents"
+msgstr "Dokumen"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Ends in the morning"
+msgstr "Berakhir pagi hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half a day"
+msgstr "Setengah hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half day, afternoon"
+msgstr "Setengah hari, siang"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half day, morning"
+msgstr "Setengah hari, pagi"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Part of the day"
+msgstr "Bagian hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Starts in the afternoon"
+msgstr "Mulai siang hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Starts in the afternoon, ends in the morning"
+msgstr "Mulai siang hari, berakhir pagi hari"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Withdrawn"
+msgstr "Ditarik kembali"

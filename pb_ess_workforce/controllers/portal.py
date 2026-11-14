@@ -22,6 +22,8 @@ from odoo.http import request
 from odoo.tools.misc import format_date
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
+from ..models.ess_workforce import LEAVE_DOC_MAX, LEAVE_DOC_MAX_BYTES
+
 _ERRORS = (AccessError, UserError, ValidationError, ValueError)
 
 
@@ -47,6 +49,10 @@ class PbEssWorkforcePortal(CustomerPortal):
             'fix_sent': _("Your fix request was sent to your manager."),
             'fix_draft': _("Saved. Your manager will add the times and review it."),
             'leave_sent': _("Leave request sent for approval."),
+            # WDGAP QF3
+            'leave_withdrawn': _("Request withdrawn. It stays in your list as cancelled."),
+            'leave_cancelled': _("Leave cancelled. Your manager has been told."),
+            'doc_added': _("Document added. Your approver can see it."),
             'pulse': _("Thanks — your rating was recorded anonymously."),
         }.get(key, '')
 
@@ -135,16 +141,81 @@ class PbEssWorkforcePortal(CustomerPortal):
             'flash': self._flash(kw),
         })
 
+    @staticmethod
+    def _leave_files(names=('doc', 'doc_cam')):
+        """``[(filename, bytes, declared type)]`` from the two document
+        inputs (choose a file / take a photo), each read with a bound so a
+        huge upload is never held whole (R4). The facade decides the kind
+        from the bytes; one over the bound is refused there."""
+        out = []
+        files = request.httprequest.files
+        for name in names:
+            for upload in files.getlist(name):
+                if upload and upload.filename:
+                    out.append((upload.filename,
+                                upload.read(LEAVE_DOC_MAX_BYTES + 1),
+                                upload.mimetype or ''))
+                if len(out) > LEAVE_DOC_MAX:
+                    return out
+        return out
+
     @http.route(['/my/work/leave/apply'], type='http', auth='user',
                 website=True, methods=['POST'])
     def portal_my_work_leave_apply(self, **post):
         try:
             self._ess().apply_leave(
                 post.get('type_id'), post.get('date_from'),
-                post.get('date_to'), post.get('note'))
+                post.get('date_to'), post.get('note'),
+                period_from=post.get('period_from'),
+                period_to=post.get('period_to'),
+                hour_from=post.get('hour_from'),
+                hour_to=post.get('hour_to'),
+                files=self._leave_files())
         except _ERRORS as e:
             return self._error_page('work_leave', e, '/my/work/leave')
         return request.redirect('/my/work/leave?done=leave_sent')
+
+    # WDGAP QF3 — the live "after this request" line. Read-only: the facade
+    # builds the request with new() and writes nothing.
+    @http.route(['/my/work/leave/preview'], type='jsonrpc', auth='user',
+                methods=['POST'])
+    def portal_my_work_leave_preview(self, type_id=None, date_from=None,
+                                     date_to=None, period_from=None,
+                                     period_to=None, hour_from=None,
+                                     hour_to=None, **kw):
+        try:
+            return self._ess().preview_leave(
+                type_id, date_from, date_to, period_from=period_from,
+                period_to=period_to, hour_from=hour_from, hour_to=hour_to)
+        except _ERRORS as e:
+            return {'ok': False, 'error': (e.args and e.args[0]) or str(e)}
+
+    @http.route(['/my/work/leave/<int:leave_id>/withdraw'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_my_work_leave_withdraw(self, leave_id, **post):
+        try:
+            self._ess().withdraw_leave(leave_id)
+        except _ERRORS as e:
+            return self._error_page('work_leave', e, '/my/work/leave')
+        return request.redirect('/my/work/leave?done=leave_withdrawn')
+
+    @http.route(['/my/work/leave/<int:leave_id>/cancel'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_my_work_leave_cancel(self, leave_id, **post):
+        try:
+            self._ess().cancel_leave(leave_id, post.get('reason'))
+        except _ERRORS as e:
+            return self._error_page('work_leave', e, '/my/work/leave')
+        return request.redirect('/my/work/leave?done=leave_cancelled')
+
+    @http.route(['/my/work/leave/<int:leave_id>/document'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def portal_my_work_leave_document(self, leave_id, **post):
+        try:
+            self._ess().add_leave_document(leave_id, self._leave_files())
+        except _ERRORS as e:
+            return self._error_page('work_leave', e, '/my/work/leave')
+        return request.redirect('/my/work/leave?done=doc_added')
 
     # ===================================================== My Overtime
     @http.route(['/my/work/overtime'], type='http', auth='user', website=True)

@@ -232,6 +232,17 @@
         dd { margin: 2px 0 0; font-size: 14.5px; font-weight: 700; color: var(--pbim-ink); overflow-wrap: anywhere; }
         dd.is-low { color: var(--pbim-rose); }
     }
+    // WDGAP QF3: the part of the day and the attached documents
+    .pbmt-part { color: var(--pbim-primary-strong); font-weight: 700; }
+    .pbmt-docs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pbmt-doc {
+        display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
+        padding: 4px 10px; border-radius: 999px; border: 1px solid var(--pbim-line);
+        background: var(--pbim-surface); color: var(--pbim-primary-strong);
+        font-size: 12.5px; font-weight: 600; text-decoration: none;
+        span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 24ch; }
+        &:hover { background: var(--pbim-bg); text-decoration: none; }
+    }
     .pbmt-ok, .pbmt-note, .pbmt-warn, .pbmt-problem {
         display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; font-size: 13.5px;
         .pbme-ic { flex: none; margin-top: 2px; }

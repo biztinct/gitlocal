@@ -1036,3 +1036,15 @@ msgstr ""
 #: code:addons/pb_schedule/static/src/xml/pb_schedule.xml:0
 msgid "· overnight"
 msgstr "· qua đêm"
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "%s · half day"
+msgstr "%s · nửa ngày"
+
+#. module: pb_schedule
+#. odoo-python
+#: code:addons/pb_schedule/models/schedule_grid.py:0
+msgid "%s · some hours"
+msgstr "%s · vài giờ"

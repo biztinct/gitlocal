@@ -259,10 +259,82 @@ class HrLeaveApproval(models.Model):
 
     def _approval_card_count(self, request):
         self.ensure_one()
+        if self.request_unit_hours:
+            hours = round(float(self.number_of_hours or 0.0), 2)
+            if hours == 1:
+                return _("1 hour")
+            return _("%s hours", '{:g}'.format(hours))
         days = self._leave_days()
         if days == 1:
             return _("1 day")
+        if days == 0.5:
+            return _("Half a day")
         return _("%s days", '{:g}'.format(days))
+
+    # ------------------------------------------------ WDGAP QF3: part days
+    @staticmethod
+    def _pb_hhmm(value):
+        """9.5 -> '09:30' (an hour field as a person reads it)."""
+        value = float(value or 0.0)
+        hours = int(value)
+        minutes = int(round((value - hours) * 60))
+        if minutes == 60:
+            hours, minutes = hours + 1, 0
+        return '%02d:%02d' % (hours, minutes)
+
+    def _pb_day_part(self):
+        """Which part of the day(s) this leave covers, as a short key.
+
+        ``''`` whole days; ``'am'`` / ``'pm'`` one half day; ``'hours'`` a
+        from/to time; ``'start_pm'`` / ``'end_am'`` / ``'start_pm_end_am'``
+        several days that start in the afternoon and/or end in the morning.
+        """
+        self.ensure_one()
+        if self.request_unit_hours:
+            return 'hours'
+        if not self.request_unit_half:
+            return ''
+        start, end = self.request_date_from_period, self.request_date_to_period
+        if self.request_date_from and self.request_date_from == self.request_date_to:
+            return start if start == end else ''
+        key = []
+        if start == 'pm':
+            key.append('start_pm')
+        if end == 'am':
+            key.append('end_am')
+        return '_'.join(key)
+
+    def _pb_day_part_label(self):
+        """The part of the day in words ('' for whole days)."""
+        self.ensure_one()
+        part = self._pb_day_part()
+        if part == 'hours':
+            return _("%(start)s to %(end)s",
+                     start=self._pb_hhmm(self.request_hour_from),
+                     end=self._pb_hhmm(self.request_hour_to))
+        return {
+            'am': _("Half day, morning"),
+            'pm': _("Half day, afternoon"),
+            'start_pm': _("Starts in the afternoon"),
+            'end_am': _("Ends in the morning"),
+            'start_pm_end_am': _("Starts in the afternoon, ends in the morning"),
+        }.get(part, '')
+
+    def _pb_documents(self):
+        """The files attached to this leave (sudo; the caller has already
+        decided the reader may see the leave)."""
+        self.ensure_one()
+        return self.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'hr.leave'), ('res_id', '=', self.id)],
+            order='id')
+
+    def _pb_documents_label(self):
+        count = len(self._pb_documents())
+        if not count:
+            return ''
+        if count == 1:
+            return _("1 document attached")
+        return _("%s documents attached", count)
 
     def _approval_detail(self, request):
         self.ensure_one()
@@ -271,11 +343,52 @@ class HrLeaveApproval(models.Model):
             {'label': _('To'), 'value': str(self.request_date_to or '')},
             {'label': _('Days'), 'value': '{:g}'.format(self._leave_days())},
         ]
+        # WDGAP QF3: the part of the day and the papers, as text facts
+        part = self._pb_day_part_label()
+        if part:
+            chips.append({'label': _('Part of the day'), 'value': part})
+        papers = self._pb_documents_label()
+        if papers:
+            chips.append({'label': _('Documents'), 'value': papers})
         if self._leave_over_cutoff():
             chips.append({'label': _('Pay for that month'),
                           'value': _('Already being worked out')})
         return {'title': _('The time off'), 'columns': [], 'rows': [],
                 'chips': chips, 'note': (self.name or '')[:240]}
+
+    def _approval_withdraw(self, request, reason):
+        """Withdrawn by whoever sent it in (WDGAP QF3).
+
+        Before this the engine closed the request and the leave stayed
+        "Waiting for approval" with nobody left to decide it — on the
+        approvals screen ("cancel my request") as much as anywhere. A leave
+        that is still waiting is now cancelled with it: history kept, the
+        approver's to-do gone, the calendar entry removed. An approved leave
+        is not touched here (its request is no longer open); that is the
+        person's Cancel, with a reason.
+        """
+        for leave in self:
+            if leave.state not in ('confirm', 'validate1'):
+                continue
+            # A savepoint of our own: the engine logs and swallows a failure
+            # here, which is only safe when the failure cannot leave the
+            # transaction aborted underneath it.
+            with self.env.cr.savepoint():
+                leave._pb_cancel_pending(reason)
+        return True
+
+    def _pb_cancel_pending(self, reason=None):
+        """Take a leave that is still waiting out of the flow: state
+        ``cancel`` through hr_holidays' own `_force_cancel` (which also runs
+        `_post_leave_cancel`). The caller has already decided this person may
+        do it; no request is decided by this."""
+        leaves = self.filtered(lambda l: l.state in ('confirm', 'validate1'))
+        if not leaves:
+            return False
+        leaves.sudo().with_context(**{ENGINE_APPLY: True})._force_cancel(
+            reason or _("Withdrawn"), 'mail.mt_note',
+            notify_responsibles=False)
+        return True
 
     def _approval_validate(self):
         """The last moment before a request exists."""

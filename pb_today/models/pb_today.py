@@ -217,6 +217,9 @@ class PbToday(models.AbstractModel):
                             leave_by_emp.get(emp.id),
                             grace_in(emp.company_id), now, is_today,
                             field_by_emp.get(emp.id))
+            if row['leave_type']:
+                row['leave_type'] = self._leave_label(
+                    leave_by_emp.get(emp.id), d, emp, row['leave_type'])
             rows.append(row)
             tiles['total'] += 1
             tiles[row['state']] += 1
@@ -294,6 +297,27 @@ class PbToday(models.AbstractModel):
                 'selfie_url': ('/web/content/%s' % selfie.id) if officer else '',
             }
         return out
+
+    @api.model
+    def _leave_label(self, leave, day, emp, label):
+        """WDGAP QF3: "Annual leave · half day" when the leave covers only
+        part of ``day`` (a half day, or a few hours), so a board that says
+        "on leave" does not read as a whole day away."""
+        if not leave:
+            return label
+        Engine = self.env['pb.attendance.exception.engine']
+        partial = Engine._leave_partial_days(leave) or set()
+        if day.isoformat() not in partial:
+            return label
+        if getattr(leave, 'request_unit_hours', False):
+            tzinfo = self._tzinfo(emp)
+            return _("%(type)s · %(start)s to %(end)s", type=label,
+                     start=self._hhmm(leave.date_from, tzinfo),
+                     end=self._hhmm(leave.date_to, tzinfo))
+        if day == leave.request_date_from \
+                and leave.request_date_from_period == 'pm':
+            return _("%s · half day, afternoon", label)
+        return _("%s · half day, morning", label)
 
     @api.model
     def _row(self, emp, day_shifts, day_atts, leave, grace_minutes, now,
