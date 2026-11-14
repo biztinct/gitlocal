@@ -94,8 +94,11 @@ class HrPayslipRunLoanFlags(models.Model):
                 continue
             if row.get('flag') and row.get('kind') == 'zero' and any(
                     'take-home' in r for r in reasons):
-                # the loan IS the reason take-home is below zero: say so
-                row['reason'] = ''
+                # the loan IS the reason take-home is below zero: say so —
+                # but keep what other modules appended after the zero reason
+                # (WDGAP PR merge: PR-C's "Pay on hold" rides as " · …")
+                base = row.get('reason') or ''
+                row['reason'] = base.split(' · ', 1)[1] if ' · ' in base else ''
             joined = ' · '.join(r for r in [row.get('reason') or ''] + reasons if r)
             row.update(flag=True, reason=joined,
                        kind=row.get('kind') if row.get('flag') and row.get('kind') else 'loan')
