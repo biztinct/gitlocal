@@ -16,7 +16,7 @@ Not merged, not deployed. No other module's file was edited (no seam line needed
 | Loans board | `models/pb_loans_board.py`, `static/src/{js,xml,scss}/loans_board.*` | Payroll hub lens "Loans" (`PAY_LENSES`, sequence 40) + ⌘K row (4400) + client action `pb_loans_board`. Quiet numbers line, five steps, shared filter panel, table with paid-back bar, side drawer (balance hero, plan, upcoming months, repayments, what happened) with Send for approval, Approve / Do not approve (when it is your seat), Record a repayment, Settle now, Pause, Resume, Cancel, Delete (draft) — each with a reason. "New loan" with the **live plan** (hero): instalments month by month as you type. Set up dialog per scheme. Banners: schemes with loans but no pay item; unfinished pay runs that did not take an instalment. Esc closes. |
 | My Payobook | `models/pb_me_home.py`, `controllers/portal.py`, `views/portal_templates.xml`, `static/src/scss/loans_portal.scss` | `/my/loans` (read-only): left to repay, next pay, per loan the bar (native `<progress>`, no inline styles — G95), plan, history. A home card only while something is owed. Sudo after ownership guard (`my_loans` refuses anybody but the caller's own employee); no portal right on `pb.loan`. |
 | Rights | `security/*` | Payroll officers / managers: all loans of their companies (read, write, create; delete drafts only); repayments read-only. Any internal user: only loans a route asked them to decide (`seat_user_ids`). Company rules on both models. |
-| Words | `i18n/vi_VN.po`, `i18n/id_ID.po` | 306 of 337 entries in each (the 31 left are stock mail/technical field labels). PO parse gate passes. |
+| Words | `i18n/vi_VN.po`, `i18n/id_ID.po` | 308 of 339 entries in each (the 31 left are stock mail/technical field labels). PO parse gate passes. |
 
 ## 2. Tests
 
@@ -39,13 +39,32 @@ Not merged, not deployed. No other module's file was edited (no seam line needed
 | T13 | plain employee cannot read a loan or the board; portal method returns only own; home card; other company hidden; repayment line not writable | pass |
 | T14 | manual repayment, over-payment refused (incl. part already in a pay run), Settle now, cancel refused while in an unfinished run, agreed terms frozen | pass |
 | B1 | board head, page, steps, drawer, moves, create + send, people search, filter layout, no "Odoo" | pass |
-| T15 | existing suites — see below | SUITES_RESULT |
-| T16 | browser walk | WALK_RESULT |
+| T15 | existing suites — see below | failure set = baseline |
+| T16 | browser walk (local copy, server on 127.0.0.1:8869, no jobs) | pass after 2 fixes (see below) |
 | T17 | static gates: py_compile, XML parse, pyflakes, PO parse gate, "Odoo" grep | pass |
 
 **pb_loans: 17 of 17 pass.**
 
-SUITES_TABLE
+**T15 — existing suites** (one run, pb_loans installed, `-u pb_loans,pb_hr_payroll_formula,pb_updates,pb_payruns,pb_payslip_review`):
+
+| Suite | Tests started | Failed |
+|---|---|---|
+| pb_hr_payroll_formula `TestPayrollPeriodInput` + `TestApplicationPayrollSource` | 52 | 0 |
+| pb_updates (all) | 227 | 0 |
+| pb_payruns (all) | 129 | 5 |
+| pb_payslip_review (all) | 9 | 0 |
+| pb_loans | 17 | 0 |
+| **Total (runner count incl. sub-tests)** | **466** | **5** |
+
+The 5 are all `pb_payruns` `TestRunScreen` (`test_t1_…`, `test_t3_…`, `test_t17_…`, `test_board_advice_…`, `test_notes_are_named_…`): the run-screen checklist carries two extra `close_week` items from `pb_close` (date-dependent — today is inside a close week). **Baseline:** the same class on a fresh copy WITHOUT pb_loans fails the same 5 tests (5 of 40). Failure set = baseline.
+
+**T16 — browser walk** (Claude in Chrome, local copy, company "PRB Walk Co", payroll manager Head of pay "payhead.walk", employee login "linh.walk"):
+1. Loans board (standalone and as the Payroll hub's "Loans" lens via More): empty state, New loan dialog — the live plan showed "4 instalments of 2,250,000 ₫, from December 2026 to March 2027" with four month tiles as the numbers were typed; Send for approval → drawer "Waiting for approval — with Hoa Nguyen (Head of pay)". Lens scrolls inside the hub (lens `scrollTop` 500 of 1,186).
+2. Approvals inbox as the Head of pay: "Loan for Linh Tran", its tick box disabled (money), facts chips, Approve → "Recorded".
+3. December pay run computed through the real seams (shell): Linh "Loan instalment 2,250,000 ₫ taken · 6,750,000 ₫ left"; Mai (20,000,000 ₫ instalment, 15,000,000 ₫ pay) flagged "Loan instalment is more than this month's take-home" — the run's review step said 1 flagged. Run finished: Mai's loan closed itself, Linh's balance 6,750,000 ₫, next 2,250,000 ₫ in January 2027.
+4. My Payobook as Linh: home card "6,750,000 ₫ left to repay · 2,250,000 ₫ comes off your January 2027 pay"; `/my/loans` at the narrowest window (511 px) — no sideways scroll, console clean.
+5. Fixed on the way (commit `ce14316ec`): `/my/loans` returned an error page (a `%s%%` inside a QWeb attribute); the home card's styles were scoped to `.pbme` but the home root is `.pbme-home`; the inbox cut the long plan sentence (now "4 × 2,250,000 ₫").
+Console errors seen during the walk were all the Pay runs board refusing the local admin (no scheme rights on that copy) — not this module. Not walked: Vietnamese / Indonesian screens (PO parse gate only, ledger UPDATES G92), a true 390 px width (window minimum 511 px).
 
 ## 3. Self-review against the rails
 
@@ -104,4 +123,4 @@ The final settlement screen does not read loan balances. Its "Loan / advance" fi
 
 ## 10. New gotchas → ledger
 
-PRB-W1 … PRB-W4 added to `WDGAP_LEDGER.md`.
+PRB-W1 … PRB-W6 added to `WDGAP_LEDGER.md`.
