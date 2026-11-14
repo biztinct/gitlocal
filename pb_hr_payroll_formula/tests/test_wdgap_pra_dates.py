@@ -199,7 +199,7 @@ class TestWdgapPraDates(TransactionCase):
 
     def test_05_the_function_table_is_the_single_source(self):
         names = functions.FUNCTION_NAMES
-        converter = {k[3:-2] for k in functions.converter_function_map()} \
+        converter = {k[len(r'\b'):-len(r'\(')] for k in functions.converter_function_map()} \
             | functions.converter_special_names()
         self.assertEqual(converter, names)
         self.assertEqual(set(FormulaValidator.SUPPORTED_FUNCTIONS), names)
@@ -230,7 +230,8 @@ class TestWdgapPraDates(TransactionCase):
                 if row['kind'] == 'call':
                     python = rule._convert_excel_to_python(formula[1:], cmap)
                     self.assertNotIn('%s(' % row['name'], python)
-                    self.assertIn(row['emit'], python)
+                    if row['name'] != 'IF':     # IF becomes a lazy ternary
+                        self.assertIn(row['emit'], python)
                     # R4: the emitted helper passes the eval guard
                     excel_semantics.assert_safe_expression(python)
         excel_semantics.assert_safe_expression(
