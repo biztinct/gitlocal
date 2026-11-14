@@ -164,6 +164,13 @@ export class PbInbox extends Component {
             ask: { name: "", description: "", amount: 0, area_key: "" },
             askOptions: null,
             busy: false,
+            // WDGAP QF1 — "Approve selected". The ticked cards (id -> true),
+            // only ever among the cards loaded; the in-page confirm; the
+            // honest list of what could not be approved.
+            sel: {},
+            confirming: false,
+            bulkBusy: false,
+            bulkFailed: [],
         });
 
         this.navigationRoot = useRef("navigationRoot");
@@ -282,7 +289,15 @@ export class PbInbox extends Component {
     onEscape(ev) {
         if (ev.key !== "Escape") { return; }
         if (this.state.openId) { this.state.openId = 0; return; }
-        if (this.state.asking) { this.state.asking = false; }
+        if (this.state.asking) { this.state.asking = false; return; }
+        // WDGAP QF1 — the confirm closes first, then the selection clears;
+        // only while the tray is showing and no drawer is open
+        if (this.state.confirming && !this.state.bulkBusy) {
+            this.state.confirming = false;
+            return;
+        }
+        if (this.state.bulkFailed.length) { this.state.bulkFailed = []; return; }
+        if (this.selCount && !this.state.bulkBusy) { this.clearSel(); }
     }
 
     // ============================================================== reading
@@ -319,6 +334,7 @@ export class PbInbox extends Component {
             if (!this.kit.isCurrent(q.seq)) { return; }
             this.state.cards = more ? [...this.state.cards, ...d.cards] : d.cards;
             this.state.total = d.total;
+            if (!more) { this._pruneSel(); }
             this.state.money = more ? this._mergeMoney(this.state.money, d.money) : (d.money || []);
             this.state.listLoaded = true;
         } catch (error) {
@@ -401,6 +417,164 @@ export class PbInbox extends Component {
         return (this.state.money || [])
             .map((row) => money(row.amount, row.currency)).join(" · ");
     }
+
+    // ============================================== WDGAP QF1 — selection
+    // Cloned from Ask HR's lens: the selection lives over the LOADED cards
+    // only, and a card the new filters hide is no longer selected. Which
+    // cards may be ticked is the server's answer (`can_bulk`), and
+    // `decide_many` asks it again on the press.
+
+    /** Keep only ticks on cards still shown and still approvable together. */
+    _pruneSel() {
+        const here = new Set(this.state.cards.filter((c) => c.can_bulk).map((c) => c.id));
+        const sel = {};
+        for (const id of Object.keys(this.state.sel)) {
+            if (here.has(Number(id))) { sel[id] = true; }
+        }
+        this.state.sel = sel;
+        if (!this.selCount) { this.state.confirming = false; }
+    }
+
+    /** Draw the tick-box column at all: some card here is my turn. */
+    get showPick() { return this.state.cards.some((c) => c.mine); }
+    get pickable() { return this.state.cards.filter((c) => c.can_bulk); }
+    get selIds() { return Object.keys(this.state.sel).map(Number); }
+    get selCount() { return this.selIds.length; }
+    get selCards() { return this.state.cards.filter((c) => this.state.sel[c.id]); }
+    isSel(card) { return Boolean(this.state.sel[card.id]); }
+
+    toggleSel(card) {
+        if (!card.can_bulk || this.state.bulkBusy) { return; }
+        const sel = { ...this.state.sel };
+        if (sel[card.id]) { delete sel[card.id]; } else { sel[card.id] = true; }
+        this.state.sel = sel;
+        this.state.bulkFailed = [];
+        if (!this.selCount) { this.state.confirming = false; }
+    }
+
+    get allSel() {
+        const rows = this.pickable;
+        return rows.length > 0 && rows.every((c) => this.state.sel[c.id]);
+    }
+
+    /** Every card on the loaded pages that I can approve together. */
+    toggleAll() {
+        if (this.state.bulkBusy) { return; }
+        if (this.allSel) { this.clearSel(); return; }
+        const sel = {};
+        for (const c of this.pickable) { sel[c.id] = true; }
+        this.state.sel = sel;
+        this.state.bulkFailed = [];
+    }
+
+    clearSel() {
+        this.state.sel = {};
+        this.state.confirming = false;
+    }
+
+    get pickTip() { return _t("Tick to approve it with others"); }
+
+    get pickAllWords() {
+        return _t("Select all on this page that I can approve (%s)", this.pickable.length);
+    }
+
+    get selWords() {
+        return _t("%(n)s of %(total)s selected",
+                  { n: this.selCount, total: this.pickable.length });
+    }
+
+    /** "6 Leave · 3 Overtime" — what the press is about to approve. */
+    get selKinds() {
+        const counts = {};
+        for (const c of this.selCards) {
+            const name = c.process || _t("Other");
+            counts[name] = (counts[name] || 0) + 1;
+        }
+        return Object.entries(counts)
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .map(([name, n]) => _t("%(n)s %(kind)s", { n, kind: name }))
+            .join(" · ");
+    }
+
+    get confirmTitle() {
+        return this.selCount === 1 ? _t("Approve 1 request?")
+            : _t("Approve %s requests?", this.selCount);
+    }
+
+    get confirmButton() {
+        return this.selCount === 1 ? _t("Approve 1")
+            : _t("Approve %s", this.selCount);
+    }
+
+    get failedTitle() {
+        const n = this.state.bulkFailed.length;
+        return n === 1 ? _t("1 request could not be approved")
+            : _t("%s requests could not be approved", n);
+    }
+
+    /** Space ticks the focused card, Enter opens it. */
+    onCardKey(ev, card) {
+        if (ev.target !== ev.currentTarget) { return; }
+        if (ev.key === " " || ev.key === "Spacebar") {
+            if (card.can_bulk) {
+                ev.preventDefault();
+                this.toggleSel(card);
+            }
+        } else if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.open(card);
+        }
+    }
+
+    askApproveSelected() {
+        if (!this.selCount || this.state.bulkBusy) { return; }
+        this.state.bulkFailed = [];
+        this.state.confirming = true;
+    }
+
+    cancelApproveSelected() { this.state.confirming = false; }
+
+    async approveSelected() {
+        const cards = this.selCards;
+        if (!cards.length || this.state.bulkBusy) { return; }
+        this.state.bulkBusy = true;
+        const revisions = {};
+        for (const c of cards) { revisions[c.id] = c.lock_revision; }
+        let answer = null;
+        try {
+            answer = await this.orm.call("pb.approval.inbox", "decide_many",
+                [cards.map((c) => c.id)], { revisions });
+        } catch (error) {
+            this.notif.add((error.data && error.data.message)
+                || _t("Nothing was approved. Try again in a moment."),
+                { type: "danger" });
+            return;
+        } finally {
+            this.state.bulkBusy = false;
+            this.state.confirming = false;
+        }
+        const results = (answer && answer.results) || [];
+        const sel = {};
+        const failed = [];
+        for (const row of results) {
+            if (!row.ok) {
+                sel[row.id] = true;
+                failed.push({ id: row.id, title: row.title || _t("A request"),
+                              error: row.error || _t("This one could not be approved.") });
+            }
+        }
+        // failed ones stay ticked; approved ones leave the list on refresh
+        this.state.sel = sel;
+        this.state.bulkFailed = failed;
+        const done = (answer && answer.done) || 0;
+        if (done) {
+            this.notif.add(done === 1 ? _t("1 approved.") : _t("%s approved.", done),
+                           { type: "success" });
+        }
+        await this.refresh();
+    }
+
+    closeFailed() { this.state.bulkFailed = []; }
 
     // =============================================================== acting
     async setScope(key) {

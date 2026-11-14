@@ -363,3 +363,102 @@
         background: var(--pbim-line-2); color: var(--pbim-text);
     }
 }
+
+// =====================================================================
+//  WDGAP QF1 — approve selected (its own root: the cards, not the drawer)
+// =====================================================================
+.pbim.pbam-inbox {
+    // ======================================= WDGAP QF1 — approve selected
+    //  A tick box in front of every card that is my turn. A box that cannot
+    //  be ticked is drawn (greyed, with its reason as a tooltip) so the
+    //  reader learns WHY a card is decided on its own; a card that is not my
+    //  turn has no box at all. Clicking the box never opens the drawer.
+    .pbam-reqs--pick .pbam-req {
+        grid-template-columns: 22px 40px minmax(0, 1fr) auto;
+    }
+    .pbam-req {
+        &:focus-visible {
+            outline: 2px solid var(--pbim-primary); outline-offset: 2px;
+        }
+        &.pbam-req--sel {
+            border-color: var(--pbim-primary);
+            background: var(--pbim-soft);
+        }
+    }
+    .pbam-pick {
+        display: flex; align-items: center; justify-content: center;
+        height: 40px; cursor: default;
+    }
+    .pbam-pick-in {
+        width: 17px; height: 17px; margin: 0; cursor: pointer;
+        accent-color: var(--pbim-primary);
+        &:disabled { cursor: not-allowed; opacity: .45; }
+    }
+    .pbam-pickbar {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        margin-bottom: 10px; padding: 0 2px;
+        font-size: 12.5px; color: var(--pbim-muted);
+    }
+    .pbam-pickall {
+        display: inline-flex; align-items: center; gap: 8px; margin: 0;
+        font-weight: 700; color: var(--pbim-ink); cursor: pointer;
+    }
+    .pbam-pickbar-note { font-weight: 600; }
+
+    //  The tray sits at the bottom of the scrolling lens, over the cards,
+    //  so it is always under the reader's thumb on a phone.
+    .pbam-tray {
+        position: sticky; bottom: 12px; z-index: 5; margin-top: 14px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-primary);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh-lg);
+    }
+    .pbam-tray-bar {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 10px 14px;
+    }
+    .pbam-tray-cnt {
+        font-size: 13.5px; font-weight: 800; color: var(--pbim-ink);
+        font-variant-numeric: tabular-nums;
+    }
+    .pbam-tray-confirm { padding: 14px 16px; }
+    .pbam-tray-q {
+        display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+        b { font-size: 15px; font-weight: 800; color: var(--pbim-ink); }
+        span { font-size: 13px; font-weight: 600; color: var(--pbim-muted); }
+    }
+    .pbam-tray-note {
+        margin: 6px 0 12px; font-size: 12.5px; color: var(--pbim-text);
+    }
+    .pbam-tray-btns {
+        display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap;
+    }
+
+    //  What could not be approved: calm, not red. Each line names the
+    //  request and says why in the engine's own words.
+    .pbam-bulkfail {
+        margin-top: 14px; padding: 12px 14px; border-radius: var(--pbim-r);
+        background: var(--pbim-line-2); border: 1px solid var(--pbim-line);
+    }
+    .pbam-bulkfail-h {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 13.5px; color: var(--pbim-ink);
+        svg { color: var(--pbim-muted); flex: 0 0 auto; }
+    }
+    .pbam-bulkfail-list {
+        margin: 8px 0 0; padding-left: 24px; font-size: 12.5px;
+        color: var(--pbim-text);
+        li + li { margin-top: 4px; }
+        b { color: var(--pbim-ink); margin-right: 4px; }
+    }
+
+    //  Phone: the card is one column with the icon put away (the 760px
+    //  block above); the tick box keeps a narrow column of its own in front.
+    @media (max-width: 760px) {
+        .pbam-reqs--pick .pbam-req {
+            grid-template-columns: 22px minmax(0, 1fr);
+        }
+        .pbam-reqs--pick .pbam-reqright { grid-column: 2; }
+        .pbam-tray { bottom: 8px; }
+        .pbam-tray-btns .pbim-btn { flex: 1 1 auto; justify-content: center; }
+    }
+}

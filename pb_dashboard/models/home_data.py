@@ -64,6 +64,22 @@ STEP_KEYS = ('setup', 'prepare', 'approve', 'pay', 'deliver')
 #: used only when the hub is absent and the steps still need a stage.
 _STAGE_OF_STATE = {'draft': 2, 'approval_pending': 3, 'done': 4}
 
+#: WDGAP QF1 — "PayAI noticed": the alert kinds Home can put into words (the
+#: browser's PAYAI table, both directions pinned by a test), and the screen
+#: each one's "Look closer" opens. A door is offered only when every action
+#: it needs exists on this database: (door key, xmlids that must exist).
+PAYAI_KINDS = ('cost', 'overtime', 'headcount', 'leave')
+PAYAI_DOORS = {
+    'cost': ('explorer', ('pb_insights_hub.action_pb_insights_hub',
+                          'pb_explorer.action_pb_explorer')),
+    'overtime': ('workforce', ('pb_people_hub.action_pb_people_hub',
+                               'pb_workforce_insights.action_pb_workforce_insights')),
+    'headcount': ('people', ('pb_people_hub.action_pb_people_hub',)),
+    'leave': ('timeoff', ('pb_mission.action_pb_workforce',
+                          'pb_timeoff.action_pb_timeoff')),
+}
+PAYAI_MAX = 3
+
 #: The lunar new year, as public holidays are named on a Vietnamese calendar.
 _TET = re.compile(r'\bt[eêế]t\b|lunar new year', re.IGNORECASE)
 
@@ -131,7 +147,8 @@ class PbDashboardHome(models.AbstractModel):
         env = self.env
         safe, optional = _guards(env)
         timing = {key: 0 for key in ('period', 'needs_you', 'months', 'runs',
-                                     'people', 'hiring', 'learn', 'schemes')}
+                                     'people', 'hiring', 'learn', 'schemes',
+                                     'payai')}
 
         def section(key, fn, default):
             t0 = time.perf_counter()
@@ -175,6 +192,8 @@ class PbDashboardHome(models.AbstractModel):
                         None)
         schemes = section('schemes',
                           lambda: self._home_schemes(st, safe, optional), None)
+        payai = section('payai', lambda: self._home_payai(st, safe, optional),
+                        None)
         # Steps and the calendar are the period's own story: timed with it.
         steps = section('period', lambda: self._home_steps(st, people), [])
         upcoming = section('period',
@@ -215,6 +234,7 @@ class PbDashboardHome(models.AbstractModel):
             'hiring': hiring,
             'learn': learn,
             'schemes': schemes,
+            'payai_noticed': payai,
             'activation': activation,
             'timing_ms': timing,
         }
@@ -686,6 +706,35 @@ class PbDashboardHome(models.AbstractModel):
              GROUP BY 1
         """, tuple(run_ids), tuple(cos), has_bank))
         return dict(self.env.cr.fetchall())
+
+    # ======================================================= PayAI noticed
+    @api.model
+    def _home_payai(self, st, safe, optional):
+        """WDGAP QF1 — up to three of PayAI's daily alerts, or None.
+
+        None (no card) when PayAI is not on this database, when the reader
+        may not open payslips or PayAI's alerts, or when nothing is open. The
+        alerts are the pulse model's own `home_alerts` — the reader's
+        companies only, most severe first, facts and never names — and each
+        carries the key of the screen "Look closer" opens, or None when that
+        screen is not on this database.
+        """
+        env = self.env
+        if not env['hr.payslip'].has_access('read'):
+            return None
+        rows = optional('payroll.ai.pulse',
+                        lambda: env['payroll.ai.pulse'].home_alerts(PAYAI_MAX),
+                        None)
+        rows = [r for r in (rows or []) if r.get('category') in PAYAI_KINDS]
+        if not rows:
+            return None
+        doors = {}
+        for kind, (door, xmlids) in PAYAI_DOORS.items():
+            ok = all(env.ref(x, raise_if_not_found=False) for x in xmlids)
+            doors[kind] = door if ok else None
+        for row in rows:
+            row['door'] = doors.get(row['category'])
+        return {'alerts': rows[:PAYAI_MAX]}
 
     # ============================================================= needs you
     @api.model

@@ -28,7 +28,8 @@ CORE_MODELS = {'hr.employee', 'hr.contract', 'hr.payslip', 'hr.payslip.run'}
 
 TOP_KEYS = ('user', 'company', 'currency', 'today', 'period', 'needs_you',
             'approvals_total', 'months', 'runs', 'steps', 'upcoming', 'people',
-            'hiring', 'learn', 'schemes', 'activation', 'timing_ms')
+            'hiring', 'learn', 'schemes', 'payai_noticed', 'activation',
+            'timing_ms')
 PERIOD_KEYS = ('key', 'date_start', 'date_end', 'stage', 'total', 'run_count',
                'delivered_count', 'cutoff', 'payday', 'prepared', 'expected',
                'net_so_far', 'awaiting_me', 'awaiting_run', 'now_run')
@@ -36,7 +37,7 @@ MONTH_KEYS = ('key', 'year_mark', 'people', 'net', 'gross', 'ded', 'er',
               'total', 'avg', 'runs', 'balance_ok', 'done', 'latest',
               'inprogress', 'approved', 'delivered', 'note', 'foreign_runs')
 TIMING_KEYS = ('period', 'needs_you', 'months', 'runs', 'people', 'hiring',
-               'learn', 'schemes', 'total')
+               'learn', 'schemes', 'payai', 'total')
 NEEDS_ORDER = ('runs_to_approve', 'leave_to_approve', 'other_to_approve',
                'settlements_to_check', 'renewals_to_start', 'writeups_overdue',
                'clock_alerts')

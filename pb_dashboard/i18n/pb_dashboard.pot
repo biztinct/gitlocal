@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 09:20+0000\n"
-"PO-Revision-Date: 2026-10-12 09:20+0000\n"
+"POT-Creation-Date: 2026-11-14 02:07+0000\n"
+"PO-Revision-Date: 2026-11-14 02:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -156,6 +156,12 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s leave requests approved in 7 days"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "%(n)s more than %(month)s"
 msgstr ""
 
@@ -253,6 +259,18 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people joined this week"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s people left this week"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "%(n)s people with an active contract"
 msgstr ""
 
@@ -302,6 +320,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "%(n)s things need you"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "%(n)s things worth a look"
 msgstr ""
 
 #. module: pb_dashboard
@@ -393,6 +417,12 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 leave request approved in 7 days"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "1 minute"
 msgstr ""
 
@@ -454,6 +484,18 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person joined this week"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 person left this week"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "1 person with an active contract"
 msgstr ""
 
@@ -503,6 +545,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "1 thing needs you"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "1 thing worth a look"
 msgstr ""
 
 #. module: pb_dashboard
@@ -753,8 +801,20 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "First noticed %(when)s"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Fix in Contracts"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "For your information"
 msgstr ""
 
 #. module: pb_dashboard
@@ -779,6 +839,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Good morning"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Got it"
 msgstr ""
 
 #. module: pb_dashboard
@@ -898,6 +964,12 @@ msgstr ""
 
 #. module: pb_dashboard
 #. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "Look closer"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "M"
 msgstr ""
@@ -911,6 +983,12 @@ msgstr ""
 #. module: pb_dashboard
 #: model:ir.model,name:pb_dashboard.model_ir_ui_menu
 msgid "Menu"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Needs a look now"
 msgstr ""
 
 #. module: pb_dashboard
@@ -1085,7 +1163,31 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Overtime in %(dept)s is up %(pct)s%"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Overtime is up %(pct)s%"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Pay"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay cost is down %(pct)s% on the last three months"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Pay cost is up %(pct)s% on the last three months"
 msgstr ""
 
 #. module: pb_dashboard
@@ -1098,6 +1200,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "Pay schemes"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
+msgid "PayAI noticed"
 msgstr ""
 
 #. module: pb_dashboard
@@ -1252,6 +1360,12 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "That could not be saved. Try again in a moment."
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "That screen is not installed on this database."
 msgstr ""
 
@@ -1342,6 +1456,12 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "Worth a look"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "Your next lesson"
 msgstr ""
 
@@ -1367,12 +1487,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "back to the latest"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "balances"
 msgstr ""
 
 #. module: pb_dashboard
@@ -1570,6 +1684,18 @@ msgstr ""
 #. module: pb_dashboard
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "time-clock alert"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
+msgid "time-clock alerts"
+msgstr ""
+
+#. module: pb_dashboard
+#. odoo-javascript
+#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
 msgid "today"
 msgstr ""
 
@@ -1589,16 +1715,4 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_dashboard/static/src/xml/pb_dashboard.xml:0
 msgid "walk the months"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "time-clock alert"
-msgstr ""
-
-#. module: pb_dashboard
-#. odoo-javascript
-#: code:addons/pb_dashboard/static/src/js/pb_dashboard.js:0
-msgid "time-clock alerts"
 msgstr ""
