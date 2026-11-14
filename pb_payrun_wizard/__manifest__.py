@@ -9,7 +9,10 @@
     # same way: its guard and Clean and Run see Regular runs only.
     # 1.42.0: PDR P1 — Review pay data opens fast; calculation previews
     # stream in afterwards, and a final tax month reminder shows calmly.
-    'version': '19.0.1.43.0',
+    # 1.44.0: WDGAP PR-D — Extra run: only the people picked (always asked
+    # for, refused by name when the scheme does not pay them), needs a name,
+    # meets / clears / adopts nothing, any number of times a month.
+    'version': '19.0.1.44.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

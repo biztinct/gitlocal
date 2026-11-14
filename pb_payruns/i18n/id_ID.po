@@ -118,3 +118,36 @@ msgstr "Selesai"
 #: code:addons/pb_payruns/models/workflow_contract.py:0
 msgid "Rejected"
 msgstr "Ditolak"
+
+#. module: pb_payruns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+#: model:ir.model.fields.selection,name:pb_payruns.selection__hr_payslip_run__pb_run_kind__extra
+#: model_terms:ir.ui.view,arch_db:pb_payruns.view_hr_payslip_run_kanban_pb
+msgid "Extra run"
+msgstr "Penggajian tambahan"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "Only the people picked for it. It never changes another run and is not compared with any."
+msgstr "Hanya orang-orang yang dipilih untuknya. Penggajian ini tidak pernah mengubah penggajian lain dan tidak dibandingkan dengan penggajian mana pun."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/pb_payruns.py:0
+msgid "An extra run has nothing to compare with."
+msgstr "Penggajian tambahan tidak punya pembanding."
+
+#. module: pb_payruns
+#. odoo-javascript
+#: code:addons/pb_payruns/static/src/xml/payruns.xml:0
+msgid "Kind of run: Extra run — only the people picked for it"
+msgstr "Jenis penggajian: Penggajian tambahan — hanya orang-orang yang dipilih untuknya"
+
+#. module: pb_payruns
+#: model:ir.model.fields,help:pb_payruns.field_hr_payslip_run__pb_run_kind
+msgid "Top-up: an extra run that pays a few people something on top of their normal month — a bonus, a correction, an award. Top-ups are only compared with other top-ups. Extra run: only the people picked for it — a bonus, a correction or one extra payslip. It never changes another run and is not compared with any."
+msgstr "Top-up: penggajian tambahan yang membayar beberapa orang di luar gaji bulanan biasa — bonus, koreksi, penghargaan. Top-up hanya dibandingkan dengan top-up lain. Penggajian tambahan: hanya orang-orang yang dipilih untuknya — bonus, koreksi, atau satu slip gaji tambahan. Penggajian ini tidak pernah mengubah penggajian lain dan tidak dibandingkan dengan penggajian mana pun."

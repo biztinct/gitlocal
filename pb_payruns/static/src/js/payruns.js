@@ -523,7 +523,11 @@ export class PbPayruns extends Component {
         const cur = rs[0] && rs[0].currency;
         const oneMoney = rs.length && rs.every(b => b.currency === cur);
         const net = rs.reduce((s, b) => s + (b.net || 0), 0);
-        const people = rs.reduce((s, b) => s + (b.employees || 0), 0);
+        // WDGAP PR-D — the people of an Extra run or a top-up are, nearly
+        // always, people the month's regular run already pays: they are
+        // not added again. Only a month with no regular run counts them.
+        const regular = rs.filter(b => b.kind !== "extra" && b.kind !== "topup");
+        const people = (regular.length ? regular : rs).reduce((s, b) => s + (b.employees || 0), 0);
         return {
             deadline: this.deadline(p, rs),
             label: p.label, range: p.range, stage, total: p.total || 5,
