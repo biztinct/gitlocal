@@ -104,6 +104,10 @@ export class PbPayDelivery extends Component {
             }
             if (d.release && d.release.bank_reference) {
                 this.state.bankReference = d.release.bank_reference;
+            } else if (d.release && !d.release.exists) {
+                // a new file (a follow-up) has no release yet: never carry
+                // the previous transfer's reference over to it (WDGAP PR-C)
+                this.state.bankReference = "";
             }
             this.state.loaded = true;
         } catch (e) {
@@ -138,8 +142,88 @@ export class PbPayDelivery extends Component {
     get release() { return (this.state.data && this.state.data.release) || {}; }
     get delivery() { return (this.state.data && this.state.data.delivery) || {}; }
 
+    // --------------------------------------------------- WDGAP PR-C: holds
+    get holds() { return (this.state.data && this.state.data.holds) || { count: 0, people: [] }; }
+    get followUp() { return (this.state.data && this.state.data.follow_up) || {}; }
+    get moneyRows() { return (this.state.data && this.state.data.money) || []; }
+    /** Everybody who can be paid has been: a released file, nobody ready. */
+    get paidUp() {
+        const v = (this.state.data && this.state.data.validation) || {};
+        return !!(this.followUp.released_files && !v.eligible);
+    }
+    /** Nobody is ready because everybody left to pay is on hold. */
+    get allHeld() {
+        const v = (this.state.data && this.state.data.validation) || {};
+        return !v.eligible && !(v.excluded || []).length && (v.held_count || 0) > 0;
+    }
+    /** Of a currency's total: on hold, paid, still to pay — said only when
+     *  any of it is not simply "still to pay". */
+    get moneySplit() {
+        return this.moneyRows.filter((m) => m.held || m.paid);
+    }
+    get otherCurrencies() { return this.moneyRows.slice(1); }
+    /** Releases already gone out for this run, other than the current one. */
+    get releasedBefore() {
+        const current = this.release.id;
+        return (this.release.history || []).filter((h) => h.id !== current);
+    }
+    peopleLabel(n) { return n === 1 ? _t("1 person") : _t("%s people", n); }
+    get holdsTitle() {
+        const n = this.holds.count || 0;
+        return n === 1 ? _t("1 person's pay is on hold") : _t("%s people's pay is on hold", n);
+    }
+    get followUpTitle() {
+        const f = this.followUp;
+        if (f.from_hold) {
+            return f.count === 1
+                ? _t("1 person released from hold can be paid now")
+                : _t("%s people released from hold can be paid now", f.count);
+        }
+        return f.count === 1
+            ? _t("1 person has not been paid yet")
+            : _t("%s people have not been paid yet", f.count);
+    }
+    get sendHeldLabel() {
+        const n = this.delivery.held_ready || 0;
+        return n === 1 ? _t("Send the 1 that was held") : _t("Send the %s that were held", n);
+    }
+    get heldSinceText() {
+        const names = this.bankFile.held_since || [];
+        return names.length === 1
+            ? _t("%s has been put on hold since this file was prepared. Prepare it again before the money is released.", names[0])
+            : _t("%(n)s people in this file have been put on hold since it was prepared (%(names)s). Prepare it again before the money is released.",
+                 { n: names.length, names: names.join(", ") });
+    }
+
+    async releaseHold(person) {
+        if (this.state.busy || !person) { return; }
+        this.state.busy = true;
+        try {
+            this.state.data = await this.orm.call(MODEL, "release_hold",
+                [this.state.runId, person.slip_id]);
+            this.notif.add(
+                _t("%s's hold is released. Their pay can go in a payment file now.", person.employee),
+                { type: "success" });
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
     /** What the bank-file button says, so a press never surprises anybody. */
     get prepareLabel() {
+        const f = this.followUp;
+        if (f.offer && this.bankFile.released) {
+            if (f.from_hold) {
+                return f.count === 1
+                    ? _t("Prepare a payment file for the 1 person released from hold")
+                    : _t("Prepare a payment file for the %s people released from hold", f.count);
+            }
+            return f.count === 1
+                ? _t("Prepare a payment file for the 1 person not paid yet")
+                : _t("Prepare a payment file for the %s people not paid yet", f.count);
+        }
         const again = this.bankFile.exists;
         if (this.bankFile.fast_lane) {
             return again ? _t("Prepare again — approved on the spot")
@@ -230,9 +314,11 @@ export class PbPayDelivery extends Component {
                     _t("The payslips are with %s for approval.",
                        d.with_whom || _t("their approver")), { type: "success" });
             } else {
+                const held = d.held
+                    ? " " + _t("%s not sent: pay on hold.", d.held) : "";
                 this.notif.add(
                     _t("Delivery complete — %s sent, %s failed, %s skipped.",
-                       d.sent, d.failed, d.skipped),
+                       d.sent, d.failed, d.skipped) + held,
                     { type: d.failed ? "warning" : "success" });
             }
         } catch (e) {
@@ -262,9 +348,9 @@ export class PbPayDelivery extends Component {
         const b = this.state.data && this.state.data.banks.find(x => x.key === this.state.bank);
         return b ? b.name : "";
     }
-    money(n) {
+    money(n, symbol) {
         if (n === null || n === undefined) { return "—"; }
-        const cur = (this.state.data && this.state.data.currency) || "₫";
+        const cur = symbol || (this.state.data && this.state.data.currency) || "₫";
         return cur + " " + Math.round(n).toLocaleString("en-US");
     }
     fileSize(bytes) {
@@ -286,11 +372,19 @@ export class PbPayDelivery extends Component {
                  returned: "warn", skipped: "muted" }[status] || "";
     }
     pillClass(state) {
-        return { sent: "ok", failed: "bad", skipped_no_email: "warn" }[state] || "";
+        return { sent: "ok", failed: "bad", skipped_no_email: "warn",
+                 held: "hold" }[state] || "";
     }
     pillLabel(state) {
         return { sent: _t("Sent"), failed: _t("Failed"),
-                 skipped_no_email: _t("No email") }[state] || state;
+                 skipped_no_email: _t("No email"), held: _t("On hold") }[state] || state;
+    }
+    /** A date-time from the server ("2026-11-14 05:01:02") as a short date. */
+    shortDate(value) {
+        if (!value) { return ""; }
+        const d = new Date(value.replace(" ", "T") + "Z");
+        if (isNaN(d)) { return value; }
+        return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
     }
     reasonList(reasons) { return (reasons || []).join(" · "); }
     // deep-link an excluded row to the employee's record so the reviewer can go

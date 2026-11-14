@@ -55,23 +55,102 @@ class PbPayDelivery(models.AbstractModel):
             'payslip_run_id': run.id})
 
     def _validation_preview(self, run):
-        """Format-independent row validation (account/holder/bank/net)."""
+        """Format-independent row validation (account/holder/bank/net).
+
+        WDGAP PR-C: the preview is of the NEXT file — the people already paid
+        by a released file are not in it, and the people on hold are left
+        out with the reason "On hold" (they are listed apart, in `held`).
+        ``total_pay`` is still what the whole run pays.
+        """
         wiz = self._wizard(run)
         registry = self.env['pb.bank.registry']
         eligible, excluded, total_net, total_pay = 0, [], 0.0, 0.0
         for slip in self._done_slips(run).sorted(key=lambda s: s.employee_id.name or ''):
             sources, reasons, net = wiz._row_sources(slip, eligible + 1, registry)
             total_pay += max(net, 0.0)
+            if slip.pb_paid_on:
+                continue    # paid by a released file: not in the next one
             if reasons:
-                excluded.append({
+                row = {
                     'employee': slip.employee_id.name or '',
                     'employee_id': slip.employee_id.id,
                     'reasons': reasons,
-                })
+                }
+                if slip.pb_pay_hold:
+                    row.update(on_hold=True, slip_id=slip.id)
+                excluded.append(row)
             else:
                 eligible += 1
                 total_net += net
         return eligible, excluded, total_net, total_pay
+
+    # --------------------------------------------------- WDGAP PR-C: money
+    def _primary_currency(self, run):
+        """The money the hero speaks in: the run's scheme's, else the
+        company's (SCHEMECTX precedent)."""
+        cur = False
+        if hasattr(run, '_pb_scheme_currency'):
+            try:
+                cur = run._pb_scheme_currency()
+            except Exception:   # noqa: BLE001 — a hero never fails on this
+                cur = False
+        return cur or self.env.company.currency_id
+
+    def _money_totals(self, run):
+        """Per currency — never added across currencies: what the run pays,
+        of which on hold, of which paid, of which still to pay."""
+        rows = {}
+        for slip in self._done_slips(run):
+            cur = slip._pb_slip_currency()
+            net = max(slip._pb_net_amount(), 0.0)
+            row = rows.setdefault(cur.id, {
+                'currency': cur.name or '', 'symbol': cur.symbol or '',
+                'total': 0.0, 'held': 0.0, 'paid': 0.0, 'to_pay': 0.0,
+                'count': 0, 'held_count': 0, 'paid_count': 0,
+                'to_pay_count': 0})
+            row['total'] += net
+            row['count'] += 1
+            if slip.pb_paid_on:
+                row['paid'] += net
+                row['paid_count'] += 1
+            elif slip.pb_pay_hold:
+                row['held'] += net
+                row['held_count'] += 1
+            else:
+                row['to_pay'] += net
+                row['to_pay_count'] += 1
+        primary = self._primary_currency(run)
+        out = sorted(rows.values(),
+                     key=lambda r: (r['currency'] != (primary.name or ''),
+                                    r['currency']))
+        return out
+
+    def _holds_payload(self, run):
+        summary = run.pb_hold_summary()
+        may_act = self.env['hr.payslip']._pb_hold_may_act()
+        own_uid = self.env.uid
+        for person in summary['people']:
+            slip = self.env['hr.payslip'].sudo().browse(person['slip_id'])
+            person['can_release'] = bool(
+                may_act and slip.employee_id.user_id.id != own_uid)
+        return summary
+
+    def _follow_up_payload(self, run, eligible):
+        """After money was released: who can still go in a payment file."""
+        released = self.env['pb.bank.file']._pb_released_files(run)
+        if not released:
+            return {'offer': False, 'count': 0, 'from_hold': False,
+                    'released_files': 0}
+        # the people the next file would actually carry (valid bank rows)
+        wiz = self._wizard(run)
+        registry = self.env['pb.bank.registry']
+        ready = self._done_slips(run).filtered(
+            lambda s: not s.pb_paid_on and not s.pb_pay_hold
+            and not wiz._row_sources(s, 1, registry)[1])
+        from_hold = bool(ready) and all(
+            s.sudo().pb_hold_released_on for s in ready)
+        return {'offer': bool(eligible), 'count': eligible,
+                'from_hold': from_hold, 'released_files': len(released)}
 
     def _batch(self, run, create=False):
         batch = self.env['pb.payslip.delivery.batch'].search(
@@ -141,11 +220,15 @@ class PbPayDelivery(models.AbstractModel):
                  if s['kind'] not in ('notify',)]
         return (not steps) or any(s['kind'] == 'fast' for s in steps)
 
-    def _bank_file_payload(self, run):
-        latest = self.env['pb.bank.file'].search(
+    def _latest_file(self, run):
+        return self.env['pb.bank.file'].search(
             [('run_id', '=', run.id), ('state', '!=', 'superseded')],
             order='id desc', limit=1)
+
+    def _bank_file_payload(self, run):
+        latest = self._latest_file(run)
         payload = self._route_payload(latest)
+        held_now = latest._pb_held_in_file() if latest else []
         payload.update({
             'filename': latest.filename or '' if latest else '',
             'row_count': latest.row_count if latest else 0,
@@ -155,13 +238,27 @@ class PbPayDelivery(models.AbstractModel):
             'bank_format': latest.bank_format or '' if latest else '',
             'downloadable': bool(latest and latest.state == 'approved'),
             'fast_lane': self._fast_lane('pb.bank.file', run),
+            # WDGAP PR-C
+            'released': bool(latest and latest._pb_is_released()),
+            'follow_up': bool(latest and latest.follow_up),
+            'held_count': latest.held_count if latest else 0,
+            'total_sentence': latest._pb_total_sentence() if latest else '',
+            # held AFTER this file was prepared: it must be prepared again
+            'held_since': [s.employee_id.name or '' for s in held_now],
         })
         return payload
 
     def _release_payload(self, run):
+        # WDGAP PR-C: the release of the CURRENT file (a follow-up file has
+        # its own), plus every release that has already gone out.
+        latest_file = self._latest_file(run)
         latest = self.env['pb.payment.release'].search(
-            [('run_id', '=', run.id)], order='id desc', limit=1)
+            [('bank_file_id', '=', latest_file.id)], order='id desc', limit=1) \
+            if latest_file else self.env['pb.payment.release']
         payload = self._route_payload(latest)
+        released = self.env['pb.payment.release'].search(
+            [('run_id', '=', run.id), ('state', '=', 'released')],
+            order='released_on asc, id asc')
         payload.update({
             'amount': latest.amount if latest else 0.0,
             'beneficiaries': latest.beneficiaries if latest else 0,
@@ -169,12 +266,23 @@ class PbPayDelivery(models.AbstractModel):
             'released_on': fields.Datetime.to_string(latest.released_on) or ''
             if latest else '',
             'fast_lane': self._fast_lane('pb.payment.release', run),
+            'history': [{
+                'id': r.id,
+                'amount': r.amount,
+                'symbol': (r.currency_id.symbol or ''),
+                'beneficiaries': r.beneficiaries,
+                'bank_reference': r.bank_reference or '',
+                'released_on': fields.Datetime.to_string(r.released_on) or '',
+                'filename': r.bank_file_id.filename or '',
+                'follow_up': bool(r.bank_file_id.follow_up),
+            } for r in released],
         })
         return payload
 
     def _delivery_payload(self, batch, run=None):
         base = {'exists': False, 'state': 'draft', 'sent': 0, 'failed': 0,
-                'skipped': 0, 'lines': [], 'request_id': 0, 'with_whom': '',
+                'skipped': 0, 'held': 0, 'held_ready': 0,
+                'lines': [], 'request_id': 0, 'with_whom': '',
                 'state_label': '', 'route': [],
                 'fast_lane': self._fast_lane('pb.payslip.delivery.batch', run)
                 if run else True}
@@ -187,10 +295,17 @@ class PbPayDelivery(models.AbstractModel):
             'error': l.error or '',
         } for l in batch.line_ids]
         base.update(self._route_payload(batch))
+        # WDGAP PR-C: payslips held back, and how many of those people have
+        # had their hold released since (their payslip can go now).
+        held_lines = batch.line_ids.filtered(lambda l: l.state == 'held')
         base.update({
             'exists': True, 'state': batch.state,
             'sent': batch.sent_count, 'failed': batch.failed_count,
             'skipped': batch.skipped_count, 'lines': lines,
+            'held': batch.held_count,
+            'held_ready': len(held_lines.filtered(
+                lambda l: not l.slip_id.pb_pay_hold
+                and l.slip_id.state == 'done')),
         })
         return base
 
@@ -227,10 +342,22 @@ class PbPayDelivery(models.AbstractModel):
         done = self._done_slips(run)
 
         eligible, excluded, total_net, total_pay = self._validation_preview(run)
+        # WDGAP PR-C: the people on hold are listed apart from the people the
+        # bank details leave out; "left out" still counts them both.
+        held_rows = [x for x in excluded if x.get('on_hold')]
+        other_rows = [x for x in excluded if not x.get('on_hold')]
+        money = self._money_totals(run)
+        primary = money[0] if money else None
+        if primary and len(money) > 1:
+            # the hero speaks in ONE currency; the others are said beside it
+            total_pay = primary['total']
 
-        # Recipient preview (payslips-out lane).
-        recips, no_email = [], []
+        # Recipient preview (payslips-out lane). A held payslip is not sent.
+        recips, no_email, held_people = [], [], 0
         for slip in done.sorted(key=lambda s: s.employee_id.name or ''):
+            if slip.pb_pay_hold:
+                held_people += 1
+                continue
             emp = slip.employee_id
             entry = {'employee': emp.name or '',
                      'avatar_url': '/web/image/hr.employee/%s/avatar_128' % emp.id,
@@ -241,7 +368,8 @@ class PbPayDelivery(models.AbstractModel):
                  for l in self.env['pb.bank.file.layout'].search(
                      [], order='name')]
 
-        currency = (self.env.company.currency_id.symbol or '₫')
+        currency = ((primary or {}).get('symbol')
+                    or self.env.company.currency_id.symbol or '₫')
         pattern = self.env['ir.config_parameter'].sudo().get_param(
             'pb_pay_delivery.pdf_password_pattern') or '{account_last4}{birth_year}'
 
@@ -264,20 +392,38 @@ class PbPayDelivery(models.AbstractModel):
             'validation': {
                 'eligible': eligible,
                 'excluded_count': len(excluded),
-                'excluded': excluded,
+                'excluded': other_rows,
+                'held_count': len(held_rows),
             },
             'recipients': {
                 'count': len(recips),
                 'no_email_count': len(no_email),
                 'avatars': [r['avatar_url'] for r in recips[:14]],
                 'no_email': no_email,
+                'held_count': held_people,
             },
             'password_pattern': pattern,
             'bank_file': self._bank_file_payload(run),
             'release': self._release_payload(run),
             'delivery': self._delivery_payload(self._batch(run), run=run),
             'is_manager': True,
+            # WDGAP PR-C
+            'money': money,
+            'holds': self._holds_payload(run),
+            'follow_up': self._follow_up_payload(run, eligible),
         }
+
+    # ------------------------------------------------------------- holds
+    @api.model
+    def release_hold(self, run_id, slip_id):
+        """Lift one person's hold from the left-out list (WDGAP PR-C)."""
+        self._require_access()
+        run = self._run(run_id)
+        slip = self.env['hr.payslip'].browse(int(slip_id))
+        if not slip.exists() or slip.sudo().payslip_run_id != run:
+            raise AccessError(_("That payslip is not in this pay run."))
+        slip.action_pb_release_hold()
+        return self.get_delivery_data(run.id)
 
     # ------------------------------------------------------------- money out
     @api.model

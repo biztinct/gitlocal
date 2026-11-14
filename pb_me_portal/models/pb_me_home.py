@@ -478,7 +478,8 @@ class PbMeHome(models.AbstractModel):
     @api.model
     def _pbme_pay(self, Slip, emp, today):
         Slip = Slip.sudo()
-        domain = [('employee_id', '=', emp.id), ('state', '=', 'done')]
+        domain = [('employee_id', '=', emp.id), ('state', '=', 'done')] \
+            + Slip._ess_visible_domain()     # held pay stays hidden (WDGAP PR-C)
         next_pay = self._pbme_next_pay_date(emp, today)
         common = {
             'next_pay_date': next_pay,

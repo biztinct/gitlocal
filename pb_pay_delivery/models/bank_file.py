@@ -85,6 +85,21 @@ class PbBankFile(models.Model):
     excluded_json = fields.Text(string='Left out (JSON)', readonly=True)
     excluded_count = fields.Integer(readonly=True)
 
+    # WDGAP PR-C — exactly who this file pays, and what it leaves on hold.
+    #: The payslips that are rows of this file. The payment release stamps
+    #: these, and only these, as paid. Empty on a file made before PR-C; see
+    #: `_pb_file_slips` for how such a file is read.
+    slip_ids = fields.Many2many(
+        'hr.payslip', 'pb_bank_file_slip_rel', 'file_id', 'slip_id',
+        string='Payslips in the file', readonly=True, copy=False)
+    held_count = fields.Integer(string='People on hold', readonly=True)
+    held_total = fields.Monetary(string='On hold', readonly=True,
+                                 currency_field='currency_id')
+    follow_up = fields.Boolean(
+        string='Follow-up file', readonly=True,
+        help="Prepared after an earlier file for the same pay run had its "
+             "money released: it pays only the people not paid yet.")
+
     generated_by = fields.Many2one('res.users', string='Prepared by',
                                    readonly=True,
                                    default=lambda s: s.env.user)
@@ -142,7 +157,11 @@ class PbBankFile(models.Model):
         wizard = self.env['vietnam.bank.export.wizard'].create({
             'payslip_run_id': run.id, 'bank_format': bank_format,
             'company_account_number': company_account or False,
+            # never pay anybody twice: the people already paid by a released
+            # file are not in a new one (WDGAP PR-C)
+            'pb_unpaid_only': True,
         })
+        follow_up = bool(self._pb_released_files(run))
         result = wizard._generate()
         data = base64.b64decode(result['file_b64'])
 
@@ -171,6 +190,10 @@ class PbBankFile(models.Model):
             'row_count': result['valid'],
             'excluded_json': json.dumps(result['excluded']),
             'excluded_count': len(result['excluded']),
+            'slip_ids': [(6, 0, result.get('slip_ids') or [])],
+            'held_count': result.get('held_count') or 0,
+            'held_total': result.get('held_total') or 0.0,
+            'follow_up': follow_up,
             'generated_by': self.env.uid,
             'generated_at': fields.Datetime.now(),
         })
@@ -184,13 +207,33 @@ class PbBankFile(models.Model):
         Its open request is withdrawn in the same breath: leaving it in
         somebody's queue would be asking them to sign off a file that has been
         replaced.
+
+        A file whose money has been RELEASED is never replaced (WDGAP PR-C):
+        it is a record of money that left, and a follow-up file for the people
+        it did not pay sits beside it. A release still waiting on a replaced
+        file is withdrawn too — nobody should be asked to release money from a
+        file that is no longer the one to pay from.
         """
         self.ensure_one()
+        released = self._pb_released_files(self.run_id)
         earlier = self.sudo().search([
             ('run_id', '=', self.run_id.id), ('id', '!=', self.id),
             ('state', 'not in', ('superseded', 'rejected')),
+            ('id', 'not in', released.ids),
         ])
         engine = self.env['biz.approval.engine']
+        waiting = self.env['pb.payment.release'].sudo().search([
+            ('bank_file_id', 'in', earlier.ids), ('state', '=', 'pending')])
+        for release in waiting:
+            request = release.approval_request_id
+            if request and request.state in ('pending', 'blocked'):
+                try:
+                    engine.sudo().cancel(
+                        request, _("A newer bank file replaced the one this "
+                                   "release was for."))
+                except Exception:   # noqa: BLE001 — never stop the new file
+                    _logger.warning('pb_pay_delivery: could not withdraw the '
+                                    'release request %s', release.id)
         for old in earlier:
             request = old.approval_request_id
             if request and request.state in ('pending', 'blocked'):
@@ -231,14 +274,105 @@ class PbBankFile(models.Model):
         return sha256_of(attachment.raw or b'') if attachment else ''
 
     def _control_total_matches_run(self):
-        """Does the file add up to what the run pays?"""
+        """Does the file add up to what the run pays?
+
+        WDGAP PR-C: what the run pays THROUGH THIS FILE — the run's total
+        minus the people on hold and minus the people an earlier released
+        file already paid. With nobody on hold and nobody paid it is the
+        run's whole total, exactly as before.
+        """
         self.ensure_one()
-        slips = self.run_id.sudo().slip_ids.filtered(
-            lambda s: s.state == 'done')
-        Wizard = self.env['vietnam.bank.export.wizard']
-        total = sum(Wizard._slip_net(slip) for slip in slips)
+        total = self._pb_total_parts()['expected']
         difference = abs(float(total) - float(self.control_total or 0.0))
         return difference < 0.01, total
+
+    # ------------------------------------------------------- WDGAP PR-C reads
+    @api.model
+    def _pb_released_files(self, run):
+        """The files of `run` whose money has been released."""
+        if not run:
+            return self.browse()
+        releases = self.env['pb.payment.release'].sudo().search([
+            ('run_id', '=', run.id), ('state', '=', 'released')])
+        return releases.mapped('bank_file_id')
+
+    def _pb_is_released(self):
+        self.ensure_one()
+        return bool(self.env['pb.payment.release'].sudo().search_count([
+            ('bank_file_id', '=', self.id), ('state', '=', 'released')]))
+
+    def _pb_file_slips(self):
+        """The payslips this file pays.
+
+        A file made since PR-C records them (`slip_ids`). A file made before
+        it does not: it carried every finished payslip of the run except the
+        people it left out, by employee — read back the same way.
+        """
+        self.ensure_one()
+        record = self.sudo()
+        if record.slip_ids:
+            return record.slip_ids
+        left_out = {row.get('employee_id') for row in record.excluded()
+                    if isinstance(row, dict)}
+        return record.run_id.slip_ids.filtered(
+            lambda s: s.state == 'done' and s.employee_id.id not in left_out)
+
+    def _pb_held_in_file(self):
+        """Payslips in this file that have been put on hold since."""
+        self.ensure_one()
+        return self._pb_file_slips().filtered(lambda s: s.pb_pay_hold)
+
+    def _pb_total_parts(self):
+        """The run's total, taken apart: what this file pays and why the
+        rest is not in it."""
+        self.ensure_one()
+        Wizard = self.env['vietnam.bank.export.wizard']
+        in_file = self._pb_file_slips()
+        done = self.run_id.sudo().slip_ids.filtered(lambda s: s.state == 'done')
+        run_total = held = paid = expected = 0.0
+        held_n = paid_n = 0
+        for slip in done:
+            net = Wizard._slip_net(slip)
+            run_total += net
+            if slip.pb_pay_hold:
+                held += net
+                held_n += 1
+            elif slip.pb_paid_on and slip not in in_file:
+                paid += net
+                paid_n += 1
+            else:
+                expected += net
+        file_total = float(self.control_total or 0.0)
+        return {'run_total': run_total, 'held': held, 'held_count': held_n,
+                'paid': paid, 'paid_count': paid_n, 'expected': expected,
+                'file_total': file_total, 'other': expected - file_total}
+
+    @api.model
+    def _pb_people(self, n):
+        return _("1 person") if n == 1 else _("%s people", n)
+
+    def _pb_total_sentence(self):
+        """'Bank file 412,000,000 = run 418,500,000 − 6,500,000 on hold
+        (2 people)'; '' when the file simply is the run."""
+        self.ensure_one()
+        p = self._pb_total_parts()
+        if not p['held_count'] and not p['paid_count']:
+            return ''
+        fmt = '{:,.0f}'.format
+        bits = [_("Bank file %(file)s = run %(run)s",
+                  file=fmt(p['file_total']), run=fmt(p['run_total']))]
+        if p['held_count']:
+            bits.append(_("− %(amount)s on hold (%(people)s)",
+                          amount=fmt(p['held']),
+                          people=self._pb_people(p['held_count'])))
+        if p['paid_count']:
+            bits.append(_("− %(amount)s paid by an earlier file (%(people)s)",
+                          amount=fmt(p['paid']),
+                          people=self._pb_people(p['paid_count'])))
+        if abs(p['other']) >= 0.01:
+            bits.append(_("− %(amount)s left out for other reasons",
+                          amount=fmt(p['other'])))
+        return ' '.join(bits)
 
     def _approval_context(self):
         self.ensure_one()
@@ -280,10 +414,12 @@ class PbBankFile(models.Model):
                 {'key': 'control_total_matches_run',
                  'name': _('The total matches the pay run'),
                  'ok': matches,
-                 'note': ('' if matches else _(
+                 # WDGAP PR-C: with people on hold (or paid by an earlier
+                 # file) the note says how the file and the run add up.
+                 'note': (self._pb_total_sentence() or ('' if matches else _(
                      "The pay run pays %(run)s and the file carries %(file)s.",
                      run='{:,.0f}'.format(run_total),
-                     file='{:,.0f}'.format(self.control_total or 0.0)))},
+                     file='{:,.0f}'.format(self.control_total or 0.0))))},
             ],
         }
 
@@ -345,9 +481,22 @@ class PbBankFile(models.Model):
         """Who is NOT in this file, and why — the question an approver asks."""
         self.ensure_one()
         rows = []
-        for row in self.excluded()[:40]:
-            if not isinstance(row, dict):
-                continue
+        excluded = [r for r in self.excluded() if isinstance(r, dict)]
+        # WDGAP PR-C: the people on hold first, with why and by whom.
+        held = [r for r in excluded if r.get('on_hold')]
+        others = [r for r in excluded if not r.get('on_hold')]
+        for row in held[:40]:
+            why = [_('On hold')]
+            if row.get('hold_reason'):
+                why.append(str(row['hold_reason']))
+            rows.append({
+                'head': str(row.get('employee') or '')[:40],
+                'sub': (_('Held by %s', row['hold_by'])
+                        if row.get('hold_by') else ''),
+                'cells': [' · '.join(why)[:80]],
+                'tone': 'off',
+            })
+        for row in others[:max(0, 40 - len(rows))]:
             rows.append({
                 'head': str(row.get('employee') or '')[:40],
                 'sub': '',
@@ -358,17 +507,33 @@ class PbBankFile(models.Model):
             {'label': _('Bank'), 'value': (self.bank_format or '').title()},
             {'label': _('File'), 'value': self.filename or ''},
         ]
+        if held:
+            chips.append({'label': _('On hold'),
+                          'value': self._pb_people(len(held))})
+        if self.follow_up:
+            chips.append({'label': _('Kind of file'),
+                          'value': _('Follow-up: people not paid yet')})
         if not rows:
             return {
                 'title': _('Everybody in this pay run is in the file'),
                 'columns': [], 'rows': [], 'chips': chips, 'note': ''}
+        notes = []
+        if held:
+            sentence = self._pb_total_sentence()
+            if sentence:
+                notes.append(sentence + '.')
+            notes.append(_("People on hold are paid by a later file, once "
+                           "their hold is released."))
+        if others:
+            notes.append(_("These people are not paid by this file. Fix their "
+                           "bank details and prepare it again if they should "
+                           "be."))
         return {
             'title': _('Left out of the file'),
             'columns': [_('Why')],
             'rows': rows,
             'chips': chips,
-            'note': _("These people are not paid by this file. Fix their bank "
-                      "details and prepare it again if they should be."),
+            'note': ' '.join(notes),
         }
 
     # ------------------------------------------------------- the transitions

@@ -374,6 +374,95 @@
         }
     }
 
+    // ================================================================
+    // WDGAP PR-C — hold one person's pay. Amber means "someone has to act"
+    // (release the hold); everything else stays quiet.
+    // ================================================================
+    .pbpd-chip.hold { background: #FFF4E0; color: #A96A00; }
+
+    .pbpd-split {
+        display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 4px 12px;
+        margin-top: 6px; font-size: 12px; color: var(--pbim-muted, #64748B);
+        font-variant-numeric: tabular-nums;
+        .cur { font-weight: 800; letter-spacing: .5px; color: var(--pbim-text); }
+        .pt { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+              b { font-weight: 700; color: var(--pbim-ink, #0F172A); } }
+        .pt.hold { color: #A96A00; b { color: #7A4B00; } }
+        .pt.paid { color: var(--pbim-green, #2E7D4F); }
+        .pt.zero { opacity: .6; }
+        &.other { opacity: .85; }
+    }
+
+    .pbpd-holds {
+        border: 1px solid #F5D9A8; border-radius: var(--pbim-r, 14px);
+        background: #FFFBF3; overflow: hidden;
+        animation: pbpd-rise .3s ease;
+        .gh { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px;
+              padding: 10px 14px; border-bottom: 1px solid #F5E6CC;
+              .ico { color: #A96A00; display: inline-flex; }
+              .t { font-weight: 800; font-size: 13px; color: #7A4B00; }
+              .s { flex-basis: 100%; font-size: 11.5px; color: var(--pbim-muted, #64748B); } }
+        .hrow {
+            display: grid; grid-template-columns: 1fr auto auto; align-items: center;
+            gap: 2px 12px; padding: 10px 14px;
+            border-bottom: 1px solid #F8EDDA;
+            &:last-child { border-bottom: 0; }
+            .who { display: flex; align-items: center; gap: 8px; grid-column: 1; }
+            .why { grid-column: 1; font-size: 12.5px; color: var(--pbim-text);
+                   overflow-wrap: anywhere; }
+            .meta { grid-column: 1; font-size: 11.5px; color: var(--pbim-muted, #64748B);
+                    .dot { margin: 0 5px; opacity: .5; } }
+            .amt { grid-column: 2; grid-row: 1 / span 3; font-weight: 700;
+                   font-variant-numeric: tabular-nums; color: var(--pbim-ink, #0F172A); }
+            .pbpd-btn { grid-column: 3; grid-row: 1 / span 3; }
+        }
+        .emp.link {
+            display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+            background: none; border: 0; padding: 0; color: var(--pbim-primary, #5A4BB0);
+            font-family: inherit; font-weight: 700; font-size: 13px;
+            &:hover { text-decoration: underline; }
+        }
+    }
+    @media (max-width: 560px) {
+        .pbpd-holds .hrow { grid-template-columns: 1fr auto;
+            .pbpd-btn { grid-column: 1 / span 2; grid-row: auto; justify-self: start; } }
+    }
+
+    .pbpd-btn.sm { padding: 6px 11px; font-size: 12px; border-radius: 9px; gap: 5px; }
+
+    .pbpd-followup {
+        display: flex; align-items: flex-start; gap: 10px;
+        padding: 11px 13px; border-radius: 12px;
+        border: 1px solid var(--pbim-primary-light, #CBC2EE);
+        background: var(--pbim-soft, #EDEAF8);
+        animation: pbpd-rise .3s ease;
+        .ico { color: var(--pbim-primary, #5A4BB0); display: inline-flex; margin-top: 1px; }
+        .t { font-weight: 800; font-size: 13px; color: var(--pbim-primary-dark, #241F52); }
+        .s { font-size: 12px; color: var(--pbim-muted, #64748B); margin-top: 2px; }
+    }
+
+    .pbpd-released {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 14px; border-radius: 12px;
+        border: 1px solid var(--pbim-line, #E2E8F0); background: var(--pbim-bg, #F5F6FA);
+        .ico { color: var(--pbim-green, #2E7D4F); display: inline-flex; }
+        .meta { min-width: 0; }
+        .nm { font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .sub { font-size: 12px; color: var(--pbim-muted, #64748B);
+               .dot { margin: 0 6px; opacity: .5; } }
+    }
+
+    .pbpd-file {
+        .sum { font-size: 12px; color: var(--pbim-text); margin-top: 4px;
+               font-variant-numeric: tabular-nums; }
+        .tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+    }
+    .pbpd-recips .txt .hold { color: #A96A00; }
+    .pbpd-result .summary .s.hold { background: #FFF4E0; border-color: transparent;
+                                    b { color: #A96A00; } }
+    .pbpd-result .pill.hold .st { background: #FFF4E0; color: #A96A00; }
+    .pbpd-empty.done .i { color: var(--pbim-green, #2E7D4F); }
+
     .pbpd-warn {
         display: flex; align-items: flex-start; gap: 11px;
         margin: 0 34px 16px;

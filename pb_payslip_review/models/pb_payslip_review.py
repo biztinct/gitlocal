@@ -153,6 +153,18 @@ class PbPayslipReview(models.AbstractModel):
                     {'value': 'no', 'label': _('Not paid yet'), 'tone': 'slate',
                      'domain': [('pb_paid', '=', False)]},
                 ]})
+        # WDGAP PR-C: "On hold" — the pay team held this person's money and
+        # payslip (pb_pay_delivery); absent without that module.
+        if 'pb_pay_hold' in Slip._fields:
+            spec.insert(-1, {
+                'key': 'hold', 'label': _('On hold'), 'icon': 'lock', 'group': 'pay',
+                'type': 'choice', 'requires': ['pb_pay_hold'],
+                'options': [
+                    {'value': 'yes', 'label': _('Pay on hold'), 'tone': 'amber',
+                     'domain': [('pb_pay_hold', '=', True)]},
+                    {'value': 'no', 'label': _('Not on hold'), 'tone': 'slate',
+                     'domain': [('pb_pay_hold', '=', False)]},
+                ]})
         return spec
 
     def _pbf_builtin_views(self):
@@ -256,8 +268,46 @@ class PbPayslipReview(models.AbstractModel):
                        'net': t_net if n_net else None,
                        'gross': t_gross if n_gross else None,
                        'done': len(slips.filtered(lambda x: x.state == 'done')),
-                       'flagged': len([1 for fl in flags.values() if (fl or {}).get('flag')])},
+                       'flagged': len([1 for fl in flags.values() if (fl or {}).get('flag')]),
+                       # WDGAP PR-C; None = this build cannot hold pay
+                       'held': (len(self._held_ids(slips.ids))
+                                if self._can_hold_here() else None)},
         }
+
+    # ---- WDGAP PR-C: hold one person's pay (pb_pay_delivery owns the hold;
+    # this screen only offers it, so every call is guarded on the field).
+    @api.model
+    def _can_hold_here(self):
+        return 'pb_pay_hold' in self.env['hr.payslip']._fields
+
+    @api.model
+    def _held_ids(self, slip_ids):
+        if not slip_ids or not self._can_hold_here():
+            return set()
+        return set(self.env['hr.payslip'].sudo().search(
+            [('id', 'in', list(slip_ids)), ('pb_pay_hold', '=', True)]).ids)
+
+    @api.model
+    def hold_slip(self, slip_id, reason):
+        """Hold this person's pay; answers the fresh detail."""
+        if not self._can_hold_here():
+            return {'ok': False, 'msg': _("Holding pay is not available here.")}
+        slip = self.env['hr.payslip'].browse(int(slip_id)).exists()
+        if not slip:
+            return {'ok': False, 'msg': _("That payslip no longer exists.")}
+        slip.action_pb_hold(reason)
+        return {'ok': True, 'detail': self.get_slip_detail(slip.id)}
+
+    @api.model
+    def release_slip_hold(self, slip_id):
+        """Release the hold on this person's pay; answers the fresh detail."""
+        if not self._can_hold_here():
+            return {'ok': False, 'msg': _("Holding pay is not available here.")}
+        slip = self.env['hr.payslip'].browse(int(slip_id)).exists()
+        if not slip:
+            return {'ok': False, 'msg': _("That payslip no longer exists.")}
+        slip.action_pb_release_hold()
+        return {'ok': True, 'detail': self.get_slip_detail(slip.id)}
 
     @api.model
     def get_slip_page(self, filters=None, search=None, sort=None, offset=0, limit=PAGE_SIZE):
@@ -276,6 +326,7 @@ class PbPayslipReview(models.AbstractModel):
                            offset=offset, limit=limit)
         flags = self._pbf_run_flags()
         totals = self._slip_totals(recs.ids)
+        held = self._held_ids(recs.ids)
         rows = []
         for i, s in enumerate(recs):
             try:
@@ -287,6 +338,7 @@ class PbPayslipReview(models.AbstractModel):
                     'net': fl.get('net'), 'gross': totals.get(s.id, {}).get('gross'),
                     'state': s.state,
                     'flag': bool(fl.get('flag')), 'why': fl.get('reason') or '',
+                    'hold': s.id in held,
                     'color': PALETTE[(offset + i) % len(PALETTE)],
                 })
             except Exception as ex:  # noqa: BLE001 — one bad row never blanks the list
@@ -440,6 +492,9 @@ class PbPayslipReview(models.AbstractModel):
             'net': self._net(s), 'gross': self._gross(s),
             'lines': lines,
             'color': PALETTE[(slip_id or 0) % len(PALETTE)],
+            # WDGAP PR-C: who holds this person's pay, why, and whether the
+            # reader may hold or release it (False on a build without holds)
+            'hold': s._pb_hold_payload() if self._can_hold_here() else False,
         }
 
     @api.model

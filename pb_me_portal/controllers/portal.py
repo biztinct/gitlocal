@@ -456,7 +456,8 @@ class PbMePortal(CustomerPortal):
         # done only — a CANCELLED slip's figures must never inflate the
         # employee's stated GROSS/PIT (review I-M2)
         slips = Slip.search([('employee_id', '=', emp.id),
-                             ('state', '=', 'done')],
+                             ('state', '=', 'done')]
+                            + Slip._ess_visible_domain(),
                             order='date_to desc', limit=48)
         codes = Slip._ess_tax_codes()
         # column labels: first label seen per code across the slips
@@ -538,7 +539,10 @@ class PbMePortal(CustomerPortal):
         emp = self._ess_employee()
         if not emp:
             return list(Domain.FALSE)
-        return [('employee_id', '=', emp.id), ('state', 'in', _PAYSLIP_STATES)]
+        # a payslip whose pay is on hold stays out of sight until the hold is
+        # released (WDGAP PR-C; `_ess_visible_domain`)
+        return [('employee_id', '=', emp.id), ('state', 'in', _PAYSLIP_STATES)] \
+            + request.env['hr.payslip']._ess_visible_domain()
 
     def _prepare_my_payslips_values(self, page, date_begin, date_end, sortby,
                                     filterby, domain=None, url='/my/payslips'):
@@ -581,6 +585,9 @@ class PbMePortal(CustomerPortal):
         if model_name == 'hr.payslip':
             slip = request.env['hr.payslip'].sudo().browse(int(document_id)).exists()
             if slip and slip.employee_id in self._ess_own_employees():
+                if not slip._ess_visible():
+                    # on hold (WDGAP PR-C): not theirs to open yet
+                    raise MissingError(_("This payslip is not available yet."))
                 return slip
         return super()._document_check_access(model_name, document_id,
                                               access_token=access_token)

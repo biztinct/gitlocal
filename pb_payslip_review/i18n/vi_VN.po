@@ -589,3 +589,135 @@ msgstr "trên"
 #: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
 msgid "payslips"
 msgstr "phiếu lương"
+
+#. module: pb_payslip_review
+#. odoo-python
+#: code:addons/pb_payslip_review/models/pb_payslip_review.py:0
+msgid "Holding pay is not available here."
+msgstr "Không thể giữ lương ở đây."
+
+#. module: pb_payslip_review
+#. odoo-python
+#: code:addons/pb_payslip_review/models/pb_payslip_review.py:0
+msgid "Not on hold"
+msgstr "Không bị giữ"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payslip_review/models/pb_payslip_review.py:0
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "On hold"
+msgstr "Đang giữ lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_payslip_review/models/pb_payslip_review.py:0
+#: code:addons/pb_payslip_review/models/review_flags.py:0
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Pay on hold"
+msgstr "Lương đang bị giữ lại"
+
+#. module: pb_payslip_review
+#. odoo-python
+#: code:addons/pb_payslip_review/models/pb_payslip_review.py:0
+msgid "That payslip no longer exists."
+msgstr "Phiếu lương đó không còn tồn tại."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "%s's hold is released. Their pay can go in a payment file now."
+msgstr "Đã bỏ giữ lương của %s. Lương của người này giờ có thể đưa vào tệp thanh toán."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "%s's pay is on hold. They are left out of the bank file and their payslip is not sent."
+msgstr "Lương của %s đang được giữ lại. Người này không có trong tệp ngân hàng và phiếu lương không được gửi."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/js/payslip_review.js:0
+msgid "For example: final settlement not signed yet"
+msgstr "Ví dụ: chưa ký quyết toán thôi việc"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "At least 6 characters"
+msgstr "Ít nhất 6 ký tự"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Held by"
+msgstr "Giữ lại bởi"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Hold pay"
+msgstr "Giữ lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Hold released by"
+msgstr "Bỏ giữ lương bởi"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Keeps this person's money and payslip back; the run goes ahead for everyone else."
+msgstr "Giữ lại tiền lương và phiếu lương của người này; kỳ lương vẫn tiếp tục với mọi người khác."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Left out of the bank file and the payslip send-out until released."
+msgstr "Không có trong tệp ngân hàng và không được gửi phiếu lương cho đến khi bỏ giữ."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Only the pay team can release a hold."
+msgstr "Chỉ nhóm phụ trách lương mới có thể bỏ giữ lương."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Release hold"
+msgstr "Bỏ giữ lương"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Someone else in the pay team has to release a hold on your own pay."
+msgstr "Một người khác trong nhóm phụ trách lương phải bỏ giữ lương của chính bạn."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "The payslip stays in the run. Their money and their payslip email wait until someone releases the hold."
+msgstr "Phiếu lương vẫn nằm trong kỳ lương. Tiền lương và email phiếu lương của họ sẽ chờ cho đến khi có người bỏ giữ."
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "This person's pay is on hold"
+msgstr "Lương của người này đang bị giữ lại"
+
+#. module: pb_payslip_review
+#. odoo-javascript
+#: code:addons/pb_payslip_review/static/src/xml/payslip_review.xml:0
+msgid "Why is this pay on hold?"
+msgstr "Vì sao giữ lại khoản lương này?"

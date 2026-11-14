@@ -49,6 +49,10 @@ class VietnamBankExportWizard(models.TransientModel):
     export_file = fields.Binary(string='Generated File', readonly=True)
     export_filename = fields.Char(string='Generated Filename', readonly=True)
     excluded_note = fields.Text(string='Excluded Rows', readonly=True)
+    #: WDGAP PR-C: `pb.bank.file.prepare` sets this so a payment file never
+    #: carries anybody whose money has already been released (a follow-up
+    #: file after a hold is lifted pays only the people not yet paid).
+    pb_unpaid_only = fields.Boolean(string='Only people not paid yet')
 
     # ------------------------------------------------------------- access
     def _check_pay_access(self):
@@ -84,7 +88,10 @@ class VietnamBankExportWizard(models.TransientModel):
         slips = self.payslip_ids
         if not slips and self.payslip_run_id:
             slips = self.payslip_run_id.slip_ids
-        return slips.filtered(lambda s: s.state == 'done')
+        slips = slips.filtered(lambda s: s.state == 'done')
+        if self.pb_unpaid_only:
+            slips = slips.filtered(lambda s: not s.pb_paid_on)
+        return slips
 
     def _period_label(self):
         run = self.payslip_run_id
@@ -106,6 +113,10 @@ class VietnamBankExportWizard(models.TransientModel):
         matched = registry.match(bank_raw)
 
         reasons = []
+        # WDGAP PR-C: a held payslip never reaches a bank file. Said first, so
+        # the left-out list reads "On hold" before any bank-detail reason.
+        if slip.pb_pay_hold:
+            reasons.append(_('On hold'))
         if not vnd.account_ok(account):
             reasons.append(_('invalid account'))
         if not holder:
@@ -233,6 +244,11 @@ class VietnamBankExportWizard(models.TransientModel):
 
         slips = self._resolve_slips()
         if not slips:
+            if self.pb_unpaid_only and self.payslip_run_id.slip_ids.filtered(
+                    lambda s: s.state == 'done'):
+                raise UserError(_(
+                    "Everybody in this pay run has been paid already, so "
+                    "there is nobody to put in a new bank file."))
             raise UserError(_(
                 "There are no confirmed (Done) payslips to export for this "
                 "selection."))
@@ -243,19 +259,37 @@ class VietnamBankExportWizard(models.TransientModel):
                         if c.number_format and c.number_format != 'none'}
 
         rows, excluded, valid_count, total_amount = [], [], 0, 0.0
+        included, held_count, held_total = [], 0, 0.0
         for idx, slip in enumerate(slips.sorted(key=lambda s: s.employee_id.name or ''), start=1):
             sources, reasons, net = self._row_sources(slip, valid_count + 1, registry)
             if reasons:
-                excluded.append({
+                row = {
                     'employee': slip.employee_id.name or '',
                     'employee_id': slip.employee_id.id,
                     'reasons': reasons,
-                })
+                }
+                if slip.pb_pay_hold:
+                    # WDGAP PR-C: who, why, by whom and how much, so the
+                    # approver of the file sees the held people by name.
+                    held_count += 1
+                    held_total += net
+                    row.update({
+                        'on_hold': True, 'slip_id': slip.id, 'amount': net,
+                        # payroll-only details, read for the file's approver
+                        'hold_reason': slip.sudo().pb_hold_reason or '',
+                        'hold_by': slip.sudo().pb_hold_by.name or '',
+                    })
+                excluded.append(row)
                 continue
             valid_count += 1
             total_amount += net
+            included.append(slip.id)
             rows.append([self._render_cell(c, sources) for c in cols])
 
+        if not rows and excluded and held_count == len(excluded):
+            raise UserError(_(
+                "Everybody left to pay in this pay run is on hold, so there "
+                "is nobody to put in a bank file yet."))
         if not rows:
             raise UserError(_(
                 "No valid rows to export — every payslip failed validation "
@@ -286,6 +320,11 @@ class VietnamBankExportWizard(models.TransientModel):
             # the file rather than to anything written about it afterwards.
             # `pb.bank.file` re-takes it from the attachment on every check.
             'file_hash': hashlib.sha256(data).hexdigest(),
+            # WDGAP PR-C: exactly which payslips this file pays — the payment
+            # release stamps these and nobody else.
+            'slip_ids': included,
+            'held_count': held_count,
+            'held_total': held_total,
         }
 
     def _soft_log_export(self, result):
