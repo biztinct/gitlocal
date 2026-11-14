@@ -5,10 +5,10 @@
 // portal pages (UPDATES G95) — the bar is a native <progress>.
 // =====================================================================
 
-.pbme .pbl-ic { flex: 0 0 auto; vertical-align: -2px; }
+.pbl-ic { flex: 0 0 auto; vertical-align: -2px; }
 
 // ------------------------------------------------------------ home card
-.pbme .pbl-card {
+.pbme-b.pbl-card {
     .pbme-lab .pbl-ic { margin-right: 6px; color: var(--pbim-primary, #5A4BB0); }
     .pbl-card-body { margin: 6px 0 14px; }
     .pbl-card-big {
@@ -104,6 +104,8 @@
         td { padding: 7px 6px; border-top: 1px solid var(--pbim-line-2, #F1F5F9); }
         .num { text-align: right; }
     }
+    // the theme right-aligns figures in portal tables; these are not tables
+    .pbl-sum-v, .pbl-loan-amt, .pbl-facts dd { text-align: left; display: block; }
     .pbl-help { color: var(--pbim-muted, #64748B); font-size: 12.5px; margin: 6px 2px 0; }
 
     @media (max-width: 560px) {

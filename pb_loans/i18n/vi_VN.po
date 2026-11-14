@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 08:00+0000\n"
-"PO-Revision-Date: 2026-11-14 08:00+0000\n"
+"POT-Creation-Date: 2026-11-14 08:36+0000\n"
+"PO-Revision-Date: 2026-11-14 08:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: vi_VN\n"
@@ -98,6 +98,18 @@ msgstr "%(n)s kỳ trả, mỗi kỳ %(each)s, từ %(start)s đến %(end)s."
 #: code:addons/pb_loans/models/loan.py:0
 msgid "%(n)s instalments of %(each)s, from the %(month)s pay run."
 msgstr "%(n)s kỳ trả, mỗi kỳ %(each)s, từ kỳ lương %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(n)s × %(each)s"
+msgstr "%(n)s × %(each)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(n)s × %(each)s, last %(last)s"
+msgstr "%(n)s × %(each)s, kỳ cuối %(last)s"
 
 #. module: pb_loans
 #. odoo-python
@@ -647,6 +659,7 @@ msgstr "Tìm người, mã tham chiếu hoặc lý do…"
 #. module: pb_loans
 #. odoo-javascript
 #. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
 #: code:addons/pb_loans/models/pb_loans_board.py:0
 #: code:addons/pb_loans/static/src/xml/loans_board.xml:0
 #: model:ir.model.fields,field_description:pb_loans.field_pb_loan__first_month

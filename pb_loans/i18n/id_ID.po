@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 08:00+0000\n"
-"PO-Revision-Date: 2026-11-14 08:00+0000\n"
+"POT-Creation-Date: 2026-11-14 08:36+0000\n"
+"PO-Revision-Date: 2026-11-14 08:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: id_ID\n"
@@ -99,6 +99,18 @@ msgstr "%(n)s cicilan sebesar %(each)s, dari %(start)s sampai %(end)s."
 #: code:addons/pb_loans/models/loan.py:0
 msgid "%(n)s instalments of %(each)s, from the %(month)s pay run."
 msgstr "%(n)s cicilan sebesar %(each)s, mulai penggajian %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(n)s × %(each)s"
+msgstr "%(n)s × %(each)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(n)s × %(each)s, last %(last)s"
+msgstr "%(n)s × %(each)s, terakhir %(last)s"
 
 #. module: pb_loans
 #. odoo-python
@@ -650,6 +662,7 @@ msgstr "Cari orang, referensi, atau alasan…"
 #. module: pb_loans
 #. odoo-javascript
 #. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
 #: code:addons/pb_loans/models/pb_loans_board.py:0
 #: code:addons/pb_loans/static/src/xml/loans_board.xml:0
 #: model:ir.model.fields,field_description:pb_loans.field_pb_loan__first_month

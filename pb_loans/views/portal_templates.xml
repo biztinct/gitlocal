@@ -57,7 +57,7 @@
   <!-- ============================================================= -->
   <!--  The page                                                      -->
   <!-- ============================================================= -->
-  <template id="portal_my_loans" name="My loans (ESS)">
+  <template id="portal_my_loans" name="My loans">
     <t t-call="portal.portal_layout">
       <div class="pbme pbl">
         <t t-call="pb_me_portal.ess_hero">
@@ -103,7 +103,7 @@
             </header>
 
             <div class="pbl-bar-row">
-              <progress class="pbl-bar" max="100" t-att-value="ln['pct']" t-att-aria-label="'%s%% paid back' % ln['pct']"/>
+              <progress class="pbl-bar" max="100" t-att-value="ln['pct']" t-att-aria-label="str(ln['pct']) + '% paid back'"/>
               <span class="pbl-bar-pct"><t t-out="ln['pct']"/>%</span>
             </div>
             <dl class="pbl-facts">

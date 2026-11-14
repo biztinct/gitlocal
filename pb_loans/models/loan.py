@@ -411,6 +411,18 @@ class PbLoan(models.Model):
                  "last one is %(last)s.", n=months, each=self._money(each),
                  month=start, last=self._money(last))
 
+    def _plan_short(self):
+        """"4 × ₫2,250,000" — for a chip (the inbox cuts long ones)."""
+        self.ensure_one()
+        each, months, last = self._plan_numbers(
+            self.amount, self.plan_mode, self.plan_amount, self.plan_months,
+            self.currency_id)
+        if months > 1 and float_compare(last, each,
+                                        precision_rounding=self.currency_id.rounding):
+            return _("%(n)s × %(each)s, last %(last)s", n=months - 1,
+                     each=self._money(each), last=self._money(last))
+        return _("%(n)s × %(each)s", n=months, each=self._money(each))
+
     def _post(self, body):
         """A chatter line that never sends an email."""
         for loan in self:
@@ -635,7 +647,8 @@ class PbLoan(models.Model):
         self.ensure_one()
         chips = [
             {'label': _('Amount'), 'value': self._money(self.amount)},
-            {'label': _('Paid back'), 'value': self._plan_sentence()},
+            {'label': _('Paid back'), 'value': self._plan_short()},
+            {'label': _('First pay month'), 'value': self._month_label(self.first_month)},
             {'label': _('If the person leaves'),
              'value': dict(self._fields['on_leaving']._description_selection(
                  self.env)).get(self.on_leaving, '')},
