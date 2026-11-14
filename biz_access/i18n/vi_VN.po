@@ -3123,8 +3123,10 @@ msgid "%s has no email address. Set a new password for them instead."
 msgstr "%s không có địa chỉ email. Hãy đặt mật khẩu mới cho họ."
 
 #. module: biz_access
+#. odoo-javascript
 #. odoo-python
 #: code:addons/biz_access/models/account_desk.py:0
+#: code:addons/biz_access/static/src/js/access_board.js:0
 msgid "Nothing changed."
 msgstr "Không có gì thay đổi."
 
@@ -3565,6 +3567,7 @@ msgstr "Lưu và tiếp tục"
 
 #. module: biz_access
 #: model_terms:ir.ui.view,arch_db:biz_access.first_password_page
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
 msgid "Sign out"
 msgstr "Đăng xuất"
 
@@ -3577,5 +3580,385 @@ msgstr "Xin chào %s. Mật khẩu bạn vừa dùng là do người khác đặ
 #. module: biz_access
 #. odoo-python
 #: code:addons/biz_access/controllers/first_password.py:0
+#: code:addons/biz_access/controllers/two_step.py:0
 msgid "You sign in with %s."
 msgstr "Bạn đăng nhập bằng %s."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/two_step_rule.py:0
+msgid "Choose who two-step sign-in is required for."
+msgstr "Chọn đối tượng bắt buộc dùng đăng nhập hai bước."
+
+#. module: biz_access
+#. odoo-python
+#. odoo-javascript
+#: code:addons/biz_access/models/two_step_rule.py:0
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Tick at least one role, or choose Nobody."
+msgstr "Hãy chọn ít nhất một vai trò, hoặc chọn Không ai."
+
+#. module: biz_access
+#. odoo-python
+#. odoo-javascript
+#: code:addons/biz_access/models/two_step_rule.py:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Two-step sign-in is not available on this system."
+msgstr "Hệ thống này không có đăng nhập hai bước."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/two_step_rule.py:0
+msgid "Two-step sign-in is no longer required. People who set it up keep using it."
+msgstr "Đăng nhập hai bước không còn bắt buộc. Những người đã cài đặt vẫn tiếp tục dùng."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/two_step_rule.py:0
+msgid "Saved. 1 person was signed out. They set it up the next time they sign in."
+msgstr "Đã lưu. 1 người đã bị đăng xuất. Họ sẽ cài đặt ở lần đăng nhập tới."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/two_step_rule.py:0
+msgid "Saved. %s people were signed out. They set it up the next time they sign in."
+msgstr "Đã lưu. %s người đã bị đăng xuất. Họ sẽ cài đặt ở lần đăng nhập tới."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/two_step_rule.py:0
+msgid "Saved. Everyone this covers is asked to set it up on their next page."
+msgstr "Đã lưu. Mọi người thuộc quy định này sẽ được yêu cầu cài đặt ở trang tiếp theo họ mở."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/two_step_rule.py:0
+msgid "Two-step sign-in rule changed"
+msgstr "Đã đổi quy định đăng nhập hai bước"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/idle_rule.py:0
+msgid "Choose how many minutes."
+msgstr "Hãy chọn số phút."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/idle_rule.py:0
+msgid "Choose at least %s minutes, or Off."
+msgstr "Hãy chọn ít nhất %s phút, hoặc Tắt."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/idle_rule.py:0
+msgid "Saved. People are signed out after %s minutes without activity."
+msgstr "Đã lưu. Mọi người sẽ bị đăng xuất sau %s phút không thao tác."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/idle_rule.py:0
+msgid "Saved. Nobody is signed out for being away from the screen."
+msgstr "Đã lưu. Không ai bị đăng xuất vì rời khỏi màn hình."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/idle_rule.py:0
+msgid "Sign-out when idle changed"
+msgstr "Đã đổi cài đặt đăng xuất khi không thao tác"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "Two-step sign-in set up"
+msgstr "Đã cài đặt đăng nhập hai bước"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "%s set up two-step sign-in, as the company rule requires."
+msgstr "%s đã cài đặt đăng nhập hai bước theo quy định của công ty."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "Too many tries. Wait a minute, then try again."
+msgstr "Bạn đã thử quá nhiều lần. Hãy đợi một phút rồi thử lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "This page was open too long. Scan the new picture and try again."
+msgstr "Trang này đã mở quá lâu. Hãy quét lại hình mới và thử lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "That password is not right. Type the password you signed in with."
+msgstr "Mật khẩu chưa đúng. Hãy nhập mật khẩu bạn vừa dùng để đăng nhập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "Type the 6-digit code from the app."
+msgstr "Hãy nhập mã 6 chữ số trong ứng dụng."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/controllers/two_step.py:0
+msgid "That code did not match. Type the newest 6-digit code the app shows."
+msgstr "Mã không khớp. Hãy nhập mã 6 chữ số mới nhất mà ứng dụng hiển thị."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_desk.py:0
+msgid "Two-step sign-in is off for %s. They will be asked to set it up again the next time they sign in."
+msgstr "Đã tắt đăng nhập hai bước cho %s. Họ sẽ được yêu cầu cài đặt lại ở lần đăng nhập tới."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "They will be asked to set it up again the next time they sign in."
+msgstr "Họ sẽ được yêu cầu cài đặt lại ở lần đăng nhập tới."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Not available on this system"
+msgstr "Hệ thống này không có"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Not required"
+msgstr "Không bắt buộc"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Every staff login"
+msgstr "Mọi tài khoản nội bộ"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%(who)s · %(ready)s of %(covered)s set up"
+msgstr "%(who)s · %(ready)s/%(covered)s người đã cài đặt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "After %s minutes without activity"
+msgstr "Sau %s phút không thao tác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Off"
+msgstr "Tắt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "This covers nobody yet."
+msgstr "Quy định này chưa áp dụng cho ai."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "This covers %s people."
+msgstr "Quy định này áp dụng cho %s người."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "This covers 1 person."
+msgstr "Quy định này áp dụng cho 1 người."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "1 has set it up."
+msgstr "1 người đã cài đặt."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s have set it up."
+msgstr "%s người đã cài đặt."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "%s to set up"
+msgstr "%s người cần cài đặt"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Not set up yet: %(names)s and %(more)s more"
+msgstr "Chưa cài đặt: %(names)s và %(more)s người khác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Not set up yet: %s"
+msgstr "Chưa cài đặt: %s"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Saving signs out 1 person who has not set it up yet. They set it up when they sign in again."
+msgstr "Khi lưu, 1 người chưa cài đặt sẽ bị đăng xuất. Họ sẽ cài đặt khi đăng nhập lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Saving signs out %s people who have not set it up yet. They set it up when they sign in again."
+msgstr "Khi lưu, %s người chưa cài đặt sẽ bị đăng xuất. Họ sẽ cài đặt khi đăng nhập lại."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/idle_watch.js:0
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Stay signed in"
+msgstr "Tiếp tục đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/idle_watch.js:0
+msgid "You will be signed out in 1 second."
+msgstr "Bạn sẽ bị đăng xuất sau 1 giây."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/idle_watch.js:0
+msgid "You will be signed out in %s seconds."
+msgstr "Bạn sẽ bị đăng xuất sau %s giây."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Sign-in rules"
+msgstr "Quy định đăng nhập"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Two-step sign-in is required for"
+msgstr "Bắt buộc đăng nhập hai bước cho"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Sign people out when idle"
+msgstr "Đăng xuất khi không thao tác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "For everyone at this company who signs in. Nothing changes for anybody until you save."
+msgstr "Áp dụng cho mọi người đăng nhập vào công ty này. Chưa có gì thay đổi cho đến khi bạn lưu."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody"
+msgstr "Không ai"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "These roles…"
+msgstr "Các vai trò sau…"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "There are no roles yet."
+msgstr "Chưa có vai trò nào."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "They are asked to set up an authenticator app on their next page. My Payobook logins are not included yet."
+msgstr "Họ sẽ được yêu cầu cài đặt ứng dụng xác thực ở trang tiếp theo họ mở. Tài khoản My Payobook chưa nằm trong quy định này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Sign people out after … minutes without activity"
+msgstr "Đăng xuất sau … phút không thao tác"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "minutes"
+msgstr "phút"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Counts only what people do: moving the mouse, typing, touching the screen. A minute before, they see a warning with \"Stay signed in\"."
+msgstr "Chỉ tính những gì người dùng làm: di chuột, gõ phím, chạm màn hình. Trước một phút, họ thấy cảnh báo có nút \"Tiếp tục đăng nhập\"."
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Set up two-step sign-in"
+msgstr "Cài đặt đăng nhập hai bước"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Your company asks you to use two-step sign-in. After your password, you type a 6-digit code from an authenticator app on your phone. It takes about a minute, once."
+msgstr "Công ty yêu cầu bạn dùng đăng nhập hai bước. Sau mật khẩu, bạn nhập mã 6 chữ số từ ứng dụng xác thực trên điện thoại. Chỉ mất khoảng một phút, một lần duy nhất."
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Install an authenticator app on your phone, for example Google Authenticator or Microsoft Authenticator."
+msgstr "Cài một ứng dụng xác thực trên điện thoại, ví dụ Google Authenticator hoặc Microsoft Authenticator."
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "In the app, add an account and scan this picture."
+msgstr "Trong ứng dụng, thêm tài khoản và quét hình này."
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Picture to scan with the authenticator app"
+msgstr "Hình để quét bằng ứng dụng xác thực"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Cannot scan it? Type this setup key in the app instead:"
+msgstr "Không quét được? Hãy nhập khóa cài đặt này vào ứng dụng:"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Cannot scan it? Open this page again to see the setup key."
+msgstr "Không quét được? Mở lại trang này để xem khóa cài đặt."
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Show the setup key"
+msgstr "Xem khóa cài đặt"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "The 6-digit code the app shows"
+msgstr "Mã 6 chữ số ứng dụng hiển thị"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Your password"
+msgstr "Mật khẩu của bạn"
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "The one you just signed in with, to check it is you."
+msgstr "Mật khẩu bạn vừa dùng để đăng nhập, để xác nhận đúng là bạn."
+
+#. module: biz_access
+#: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
+msgid "Turn it on and continue"
+msgstr "Bật và tiếp tục"

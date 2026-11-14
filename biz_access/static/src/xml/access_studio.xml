@@ -206,6 +206,7 @@
           <small>The day after the last day on their employee record. Opened again if that date is cleared.</small>
         </span>
       </label>
+      <t t-if="!studioLocal" t-call="biz_access.SignInRulesCard"/>
     </aside>
   </t>
   <t t-name="biz_access.StudioPersonAssignments">
