@@ -85,6 +85,18 @@
 
     </data>
 
+    <!-- WDGAP QF1 — a PayAI alert belongs to one company and is read only by
+         people of that company. Global (every reader). Old alerts written
+         before alerts carried a company stay readable where they were; Home
+         never shows them (`payroll.ai.pulse.home_alerts`). -->
+    <data>
+        <record id="rule_payai_pulse_company" model="ir.rule">
+            <field name="name">PayAI alerts: own companies only</field>
+            <field name="model_id" ref="model_payroll_ai_pulse"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+
     <!-- Updatable: PayAI is a global copilot — every internal user (incl. demo/
          trial users) can chat with it. Kept out of the noupdate block above so
          the implication is (re)applied on upgrade. -->

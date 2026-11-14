@@ -13,3 +13,5 @@ from . import test_onechat_conversation
 from . import test_onechat_prompt
 # ONECHAT OC3 — voice: recognition language, formats, the hint, the log.
 from . import test_onechat_voice
+# WDGAP QF1 — alerts per company, one per thing, Home reader.
+from . import test_wdgap_qf1_pulse

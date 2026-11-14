@@ -8,3 +8,5 @@ from . import test_home_data
 from . import test_home_front
 # HOME P3 — the cards, the clean-up and Vietnamese.
 from . import test_home_cards
+# WDGAP QF1 — PayAI noticed on Home.
+from . import test_wdgap_qf1_home
