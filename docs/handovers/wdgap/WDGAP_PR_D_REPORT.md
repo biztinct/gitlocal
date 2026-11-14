@@ -42,12 +42,12 @@ New: `pb_payrun_wizard/tests/test_wdgap_prd_extra_run.py`, `pb_demo/tests/test_w
 |---|---|---|---|
 | Baseline (origin/19.1, before any edit) | 387 | 8 | 5 |
 | After (first full run) | 418 | 9 | 5 |
-| After the fixes | see §2a | | |
+| After the walk fixes (pb_payruns, pb_me_portal, workforce bridge only) | 267 | 8 | 2 |
 
 The baseline failures are all pre-existing and unchanged after: `TestRunScreen` ×5 (pb_payruns), pb_me_portal ×6 (`test_05_grid`, `test_06_font`, `test_12_vi_po…`, `test_t1_7…`, `test_01_profile…`), and the 3 old trip-bridge tests (trip approval chain on a bare copy: "No step is waiting for a decision"). The one extra failure in the first run was my own new provenance assertion (fixed — PRD-5).
 
 ### 2a. Re-run after the walk fixes
-FILLED BELOW.
+The walk fixes touched files that `pb_payruns` and `pb_me_portal` tests read from disk, plus the corrected bridge test, so those three suites were re-run (fresh copy, dropped after): **267 tests, 8 failed, 2 errors — exactly the baseline set for those modules** (`TestRunScreen` ×5; pb_me_portal `test_05_grid`, `test_06_font`, `test_12_vi_po…`, `test_t1_7…`, `test_01_profile…`). Workforce bridge 17/17 green. The other suites (wizard, demo, trip bridge) had no file change after the first full run except the wizard's JS/SCSS, which no Python test reads; a later trip-bridge-only run on the walk copy showed only the 3 baseline errors.
 
 ## 3. Self-review against the rails
 
