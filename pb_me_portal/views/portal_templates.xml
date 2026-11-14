@@ -608,6 +608,7 @@
                 <span t-attf-class="pbme-badge pbme-badge--#{c['state']}"><t t-esc="c['state']"/></span>
               </div>
               <div class="pbme-pay-range"><t t-esc="c['range']"/></div>
+              <div t-if="c.get('run')" class="pbme-pay-run"><t t-esc="c['run']"/></div>
               <div class="pbme-pay-net" t-if="c['net'] is not None">
                 <span class="pbme-pay-net-l">Net pay</span>
                 <span class="pbme-pay-net-v" t-out="c['net']" t-options='{"widget": "monetary", "display_currency": currency}'/>
@@ -636,6 +637,7 @@
         <t t-call="pb_me_portal.ess_hero">
           <t t-set="hero_eyebrow">Payslip</t>
           <t t-set="hero_title" t-value="period"/>
+          <t t-set="hero_sub" t-value="run or None"/>
         </t>
 
         <div class="pbme-detail">

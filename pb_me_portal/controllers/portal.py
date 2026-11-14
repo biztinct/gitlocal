@@ -511,6 +511,10 @@ class PbMePortal(CustomerPortal):
             cards.append({
                 'id': slip.id,
                 'name': slip.name,
+                # WDGAP PR-D — the run's name under the month, for a payslip
+                # that is not the month's regular one (an Extra run, a top-up),
+                # so two payslips for one month can be told apart.
+                'run': self._ess_run_label(slip),
                 'period': slip.date_to.strftime('%B %Y') if slip.date_to else slip.name,
                 'range': '%s → %s' % (
                     slip.date_from.strftime('%d %b') if slip.date_from else '',
@@ -605,12 +609,29 @@ class PbMePortal(CustomerPortal):
         values = {
             'page_name': 'payslip',
             'payslip': payslip_sudo,
+            'run': self._ess_run_label(payslip_sudo),       # WDGAP PR-D
             'net': net,
             'lines': lines,
             'period': payslip_sudo.date_to.strftime('%B %Y') if payslip_sudo.date_to else payslip_sudo.name,
             'pdf_url': payslip_sudo.get_portal_url(report_type='pdf', download=True),
         }
         return request.render('pb_me_portal.portal_payslip_page', values)
+
+    @staticmethod
+    def _ess_run_label(slip):
+        """The pay run's name when it is not the month's regular run, else ''.
+
+        A month can hold more than one payslip for a person since WDGAP PR-D
+        (an Extra run beside the regular one), and both cards read the same
+        month. The regular payslip looks exactly as before; the other one
+        names its run. `pb_run_kind` belongs to pb_payruns, which this module
+        does not depend on — without it nothing is shown.
+        """
+        run = slip.payslip_run_id
+        kind = getattr(run, 'pb_run_kind', False) if run else False
+        if kind and kind != 'regular':
+            return run.name or ''
+        return ''
 
     def _ess_payslip_report_ref(self):
         """Prefer the themed report when the Formula-Engine build is deployed,
