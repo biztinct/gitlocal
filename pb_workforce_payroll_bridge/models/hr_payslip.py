@@ -25,6 +25,16 @@ BONUS_INPUT_CODE = 'BONHRS'
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
+    def _pb_ot_bridge_feeds(self):
+        """True when this payslip takes the month's approved overtime: one in
+        a Regular run, or in no run at all — exactly the payslips that took it
+        before WDGAP PR-D. A payslip in a Top-up or an Extra run does not
+        (`pb_run_kind` comes from pb_payruns, which this module does not
+        depend on; without it every run is regular)."""
+        run = self.payslip_run_id
+        kind = getattr(run, 'pb_run_kind', False) if run else False
+        return (kind or 'regular') == 'regular'
+
     def _get_formula_input_values(self, config, provenance=None):
         """Inject approved overtime hours as formula inputs.
 
@@ -48,6 +58,11 @@ class HrPayslip(models.Model):
         wanted = input_codes & set(OT_INPUT_MAP)
         want_bonus = BONUS_INPUT_CODE in input_codes
         if not wanted and not want_bonus:
+            return values
+        # WDGAP PR-D — approved overtime is paid ONCE a month, in the month's
+        # regular run. A Top-up or an Extra run for the same month used to be
+        # fed it again (no double-pay guard); it now is not.
+        if not self._pb_ot_bridge_feeds():
             return values
 
         # sudo: payslip access already gates the caller, and the officer

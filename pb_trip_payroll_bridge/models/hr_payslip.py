@@ -12,6 +12,16 @@ TRIP_INPUT_CODES = {'TRIPDAYS', 'PERDIEM'}
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
+    def _pb_trip_bridge_feeds(self):
+        """True when this payslip takes the month's approved trips: one in a
+        Regular run, or in no run at all — exactly the payslips that took
+        them before WDGAP PR-D. A payslip in a Top-up or an Extra run does
+        not (`pb_run_kind` comes from pb_payruns, which this module does not
+        depend on; without it every run is regular)."""
+        run = self.payslip_run_id
+        kind = getattr(run, 'pb_run_kind', False) if run else False
+        return (kind or 'regular') == 'regular'
+
     def _get_formula_input_values(self, config, provenance=None):
         """Inject approved business-trip data as formula inputs.
 
@@ -31,6 +41,11 @@ class HrPayslip(models.Model):
         wanted = {r.code for r in config.rule_ids
                   if r.column_type == 'input'} & TRIP_INPUT_CODES
         if not wanted:
+            return values
+        # WDGAP PR-D — trip days and per-diem are paid ONCE a month, in the
+        # month's regular run. A Top-up or an Extra run for the same month
+        # used to be fed them again (no double-pay guard); it now is not.
+        if not self._pb_trip_bridge_feeds():
             return values
 
         # sudo: payslip access already gates the caller, and the trip record
