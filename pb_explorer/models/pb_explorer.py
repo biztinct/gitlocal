@@ -24,6 +24,7 @@ Doctrine
 """
 
 import calendar
+import contextvars
 import logging
 import time
 from datetime import date
@@ -208,7 +209,24 @@ _FILTERS = {
 # the ordering left to the registries above. Pre-existing since this board
 # shipped; closed in LOOK P4 because its own hero depends on it.
 
+#
+# WDGAP QF2 — a scheduled email is built in a job, with no web request to
+# read a language from, so these module-level `_()` calls fell back to English
+# and logged "no translation language detected" once per word. The sender
+# sets `WORDS_LANG` to the recipient's language around the build; the
+# platform's translator reads a local called `context` from the calling frame
+# first (`odoo/tools/translate.py` `_get_lang`), so each helper names one.
+# Unset (every screen), `context` is None and nothing changes.
+WORDS_LANG = contextvars.ContextVar('pb_explorer_words_lang', default=None)
+
+
+def _words_context():
+    lang = WORDS_LANG.get()
+    return {'lang': lang} if lang else None
+
+
 def _measure_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {
         'net': _("Net pay"), 'gross': _("Gross pay"),
         'basic': _("Basic salary"), 'allowances': _("Allowances"),
@@ -223,6 +241,7 @@ def _measure_words():
 
 
 def _dimension_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {
         'department_id': _("Department"), 'division_id': _("Division"),
         'division': _("Division"), 'category_type': _("Component type"),
@@ -234,11 +253,13 @@ def _dimension_words():
 
 
 def _grain_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {'month': _("Month"), 'quarter': _("Quarter"), 'year': _("Year"),
             'run': _("Pay run"), 'none': _("No split")}
 
 
 def _kind_words():
+    context = _words_context()  # noqa: F841 — read by `_()` from this frame
     return {'regular': _("Regular"), 'mid_cycle': _("Mid-month advance"),
             'end_cycle': _("End of month"), 'full_final': _("Final settlement"),
             '': _("Not from a scheme")}
@@ -1882,6 +1903,8 @@ class PbExplorer(models.AbstractModel):
             'trail': self._trail(self._clean_spec({})),
             'lenses': self._lenses(),
             'classic': self._classic(),
+            # WDGAP QF2 — the reader's saved views ride on the first paint.
+            'views': self.my_views(),
         }
 
     def _money_schema(self, currency_ids):
@@ -2094,6 +2117,66 @@ class PbExplorer(models.AbstractModel):
 
     # ------------------------------------------------------------- export
     @api.model
+    def _export_rows(self, spec=None):
+        """The rows every download is made of, ONCE, so the CSV and the Excel
+        file cannot drift apart (WDGAP QF2 B).
+
+        One block per currency PART, each with its own heading and its own
+        total — never a total across two currencies (R3) — then the amounts
+        that could not be converted. The row cap is counted here and reported.
+        """
+        payload = self.query(spec)
+        period = payload.get('period') or {}
+        head_rows = [[_('Period'), period.get('label') or _('Everything')]]
+        if period.get('date_from') or period.get('date_to'):
+            head_rows.append([_('From'), period.get('date_from') or '',
+                              _('To'), period.get('date_to') or ''])
+        parts = payload.get('parts') or [payload]
+        blocks = []
+        written = 0
+        for part in parts:
+            currency = part.get('currency') or {}
+            rows = []
+            for s in part['series']:
+                if written >= _EXPORT_CAP:
+                    break
+                rows.append([s['label']] + list(s['values']) + [s['total']])
+                written += 1
+            blocks.append({
+                'currency': currency,
+                'currency_name': currency.get('name') or '',
+                'head': ([payload['dimension_label']]
+                         + [c['label'] for c in part['categories']]
+                         + [_('Total')]),
+                'rows': rows,
+                'grand_total': part.get('grand_total') or 0.0,
+            })
+        money = payload.get('money') or {}
+        unconverted = [[(row.get('currency') or {}).get('name') or '',
+                        row.get('period') or '', row.get('amount') or 0.0,
+                        row.get('note') or '']
+                       for row in (money.get('unconverted') or [])]
+        return {
+            'payload': payload,
+            'period': period,
+            'head_rows': head_rows,
+            'blocks': blocks,
+            'unconverted': unconverted,
+            'written': written,
+            'truncated': max(0, sum(len(p['series']) for p in parts) - written)
+                         + payload.get('truncated', 0),
+        }
+
+    def _export_name(self, payload, ext):
+        """`payobook_net_by_department_id_2026-04-01..2026-04-30.csv` — the
+        tenant's own product name, never a hard-coded brand."""
+        return '%s_%s_by_%s_%s.%s' % (
+            product_label(self.env).lower(),
+            payload['spec']['measure'], payload['spec']['dimension'],
+            (payload.get('period') or {}).get('key')
+            or date.today().isoformat(), ext)
+
+    @api.model
     def export_csv(self, spec=None):
         """The current lens as CSV. Follows the house pattern (OT desk,
         pb_hr_workforce/models/ot_desk.py:393): a base64 payload the cockpit
@@ -2108,57 +2191,239 @@ class PbExplorer(models.AbstractModel):
         import csv
         import io
 
-        payload = self.query(spec)
+        ex = self._export_rows(spec)
+        payload = ex['payload']
         buf = io.StringIO()
         w = csv.writer(buf)
-        written = 0
         # THE PERIOD IS IN THE CONTENT, not only in the file name. A sheet that
         # names its months only in a name somebody can rename is a sheet whose
         # numbers stop being checkable the first time it is forwarded.
-        period = payload.get('period') or {}
-        w.writerow([_('Period'), period.get('label') or _('Everything')])
-        if period.get('date_from') or period.get('date_to'):
-            w.writerow([_('From'), period.get('date_from') or '',
-                        _('To'), period.get('date_to') or ''])
+        for row in ex['head_rows']:
+            w.writerow(row)
         w.writerow([])
-        parts = payload.get('parts') or [payload]
-        for part in parts:
-            currency = (part.get('currency') or {}).get('name') or ''
-            if currency:
+        for block in ex['blocks']:
+            if block['currency_name']:
                 # The money is named on the sheet, once per block. A column of
                 # numbers with no currency is the export equivalent of the bug
                 # this whole phase is about.
-                w.writerow([_('Amounts in %s', currency)])
-            head = [payload['dimension_label']] + [c['label'] for c in
-                                                   part['categories']]
-            w.writerow(head + [_('Total')])
-            for s in part['series']:
-                if written >= _EXPORT_CAP:
-                    break
-                w.writerow([s['label']] + list(s['values']) + [s['total']])
-                written += 1
+                w.writerow([_('Amounts in %s', block['currency_name'])])
+            w.writerow(block['head'])
+            for row in block['rows']:
+                w.writerow(row)
             w.writerow([])
-        money = payload.get('money') or {}
-        if money.get('unconverted'):
+        if ex['unconverted']:
             w.writerow([_('Not converted — no exchange rate on file')])
             w.writerow([_('Currency'), _('Period'), _('Amount'), _('Why')])
-            for row in money['unconverted']:
-                w.writerow([(row.get('currency') or {}).get('name') or '',
-                            row.get('period') or '', row.get('amount') or 0.0,
-                            row.get('note') or ''])
+            for row in ex['unconverted']:
+                w.writerow(row)
         data = buf.getvalue().encode('utf-8-sig')   # BOM: Excel reads UTF-8
         return {
             'ok': True,
             'csv_b64': base64.b64encode(data).decode('ascii'),
-            'filename': '%s_%s_by_%s_%s.csv' % (
-                product_label(self.env).lower(),
-                payload['spec']['measure'], payload['spec']['dimension'],
-                (payload.get('period') or {}).get('key')
-                or date.today().isoformat()),
-            'rows': written,
-            'truncated': max(0, sum(len(p['series']) for p in parts) - written)
-                         + payload.get('truncated', 0),
+            'filename': self._export_name(payload, 'csv'),
+            'rows': ex['written'],
+            'truncated': ex['truncated'],
             'cap': _EXPORT_CAP,
+        }
+
+    @api.model
+    def export_xlsx(self, spec=None, view_id=None):
+        """The current answer as an Excel workbook (WDGAP QF2 B1).
+
+        Cloned from `pb_payrun_results.export_grid`: openpyxl inside a try,
+        the same `{ok, file_b64, mimetype, filename}` return, downloaded by the
+        browser — nothing is stored, so this facade stays a reader.
+        """
+        self._require()
+        import base64
+        try:
+            import openpyxl  # noqa: F401
+        except Exception:                                   # noqa: BLE001
+            return {'ok': False,
+                    'msg': _("Excel files cannot be made on this server yet.")}
+        title, note = '', ''
+        if view_id:
+            try:
+                view = self.env['pb.explorer.view'].browse(int(view_id)).exists()
+                if view:
+                    view.check_access('read')
+                    title, note = view.name, view._pbx_period_label()
+            except (AccessError, TypeError, ValueError):
+                title, note = '', ''
+        data, ex = self._xlsx_bytes(spec, title=title, period_note=note)
+        return {
+            'ok': True,
+            'file_b64': base64.b64encode(data).decode('ascii'),
+            'mimetype': 'application/vnd.openxmlformats-officedocument'
+                        '.spreadsheetml.sheet',
+            'filename': self._export_name(ex['payload'], 'xlsx'),
+            'rows': ex['written'],
+            'truncated': ex['truncated'],
+        }
+
+    def _xlsx_number_format(self, currency, kind):
+        """A real number cell in the money's own number of decimals."""
+        if kind != 'money':
+            return '#,##0.##'
+        places = 2
+        if currency and currency.get('id'):
+            rec = self.env['res.currency'].sudo().with_context(
+                active_test=False).browse(currency['id']).exists()
+            if rec:
+                places = rec.decimal_places
+        return '#,##0' if not places else '#,##0.' + '0' * places
+
+    def _xlsx_filter_words(self, spec):
+        """"Department: Retail, Bread · Payroll scheme: Main" — the WHERE
+        clause in words, read through the same labels the chart uses."""
+        out = []
+        for key, vals in (spec.get('filters') or {}).items():
+            if key in _DIMENSIONS:
+                try:
+                    labels = self._dim_labels(key, vals)
+                except Exception:                           # noqa: BLE001
+                    labels = {}
+                shown = [str(labels.get(v) or v) for v in vals]
+                name = _dimension_word(key)
+            else:
+                shown = [str(v) for v in vals]
+                name = key
+            out.append('%s: %s' % (name, ', '.join(shown)))
+        return ' · '.join(out)
+
+    def _xlsx_bytes(self, spec=None, title='', period_note=''):
+        """(workbook bytes, export rows). Also used by the regular email, as
+        the recipient, so the attachment carries the recipient's own numbers."""
+        import io
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font, PatternFill
+        from openpyxl.utils import get_column_letter
+
+        ex = self._export_rows(spec)
+        payload = ex['payload']
+        kind = payload.get('measure_kind', 'money')
+        wb = Workbook()
+        ws = wb.active
+        sheet = ''.join(c for c in (title or _('Explorer'))
+                        if c not in '[]:*?/\\')[:31].strip()
+        ws.title = sheet or 'Sheet1'
+        bold = Font(bold=True)
+        muted = Font(color='64748B')
+        head_fill = PatternFill('solid', fgColor='EDEAF8')
+        head_font = Font(bold=True, color='241F52')
+
+        r = 1
+        ws.cell(r, 1, title or _('%(measure)s by %(dimension)s',
+                                 measure=payload.get('measure_label') or '',
+                                 dimension=payload.get('dimension_label') or '')
+                ).font = Font(bold=True, size=14, color='241F52')
+        r += 1
+        period = ex['period']
+        clean = payload.get('spec') or {}
+        info = [
+            (_('Measure'), payload.get('measure_label') or ''),
+            (_('Split by'), payload.get('dimension_label') or ''),
+            (_('Over'), payload.get('grain_label') or ''),
+            (_('Period'), period_note or period.get('label') or _('Everything')),
+        ]
+        if period.get('date_from') or period.get('date_to'):
+            info.append((_('Dates'), _('%(start)s to %(end)s',
+                                       start=period.get('date_from') or '…',
+                                       end=period.get('date_to') or '…')))
+        info.append((_('Filters'), self._xlsx_filter_words(clean) or _('None')))
+        info.append((_('Made on'), fields.Datetime.context_timestamp(
+            self, fields.Datetime.now()).strftime('%Y-%m-%d %H:%M')))
+        for label, value in info:
+            ws.cell(r, 1, label).font = muted
+            ws.cell(r, 2, value)
+            r += 1
+        if ex['truncated']:
+            ws.cell(r, 1, _('Only the largest %(shown)s are shown; %(more)s '
+                            'more were left out.', shown=_MAX_SERIES,
+                            more=ex['truncated'])).font = Font(
+                                italic=True, color='92400E')
+            r += 1
+        r += 1
+
+        widest = 12
+        freeze = None
+        last_col = 2
+        for block in ex['blocks']:
+            fmt = self._xlsx_number_format(block['currency'], kind)
+            if block['currency_name']:
+                ws.cell(r, 1, _('Amounts in %s', block['currency_name'])
+                        ).font = bold
+                r += 1
+            for j, label in enumerate(block['head'], start=1):
+                cell = ws.cell(r, j, label)
+                cell.font = head_font
+                cell.fill = head_fill
+                cell.alignment = Alignment(
+                    horizontal='left' if j == 1 else 'right')
+            last_col = max(last_col, len(block['head']))
+            if freeze is None:
+                freeze = 'B%d' % (r + 1)
+            r += 1
+            width = len(block['head']) - 1        # value columns incl. Total
+            sums = [0.0] * width
+            for row in block['rows']:
+                ws.cell(r, 1, row[0])
+                widest = max(widest, len(str(row[0] or '')))
+                for j, value in enumerate(row[1:], start=2):
+                    num = float(value or 0.0)
+                    cell = ws.cell(r, j, num)
+                    cell.number_format = fmt
+                    if j - 2 < width:
+                        sums[j - 2] += num
+                r += 1
+            # This block's OWN total, in this block's own money (R3).
+            ws.cell(r, 1, _('Total')).font = bold
+            for j, num in enumerate(sums, start=2):
+                cell = ws.cell(r, j, round(num, 6))
+                cell.number_format = fmt
+                cell.font = bold
+            r += 2
+
+        if ex['unconverted']:
+            ws.cell(r, 1, _('Not converted — no exchange rate on file')
+                    ).font = bold
+            r += 1
+            for j, label in enumerate((_('Currency'), _('Period'),
+                                       _('Amount'), _('Why')), start=1):
+                cell = ws.cell(r, j, label)
+                cell.font = head_font
+                cell.fill = head_fill
+            r += 1
+            for name, when, amount, note in ex['unconverted']:
+                ws.cell(r, 1, name)
+                ws.cell(r, 2, when)
+                cell = ws.cell(r, 3, float(amount or 0.0))
+                cell.number_format = '#,##0.00'
+                ws.cell(r, 4, note)
+                r += 1
+
+        if freeze:
+            ws.freeze_panes = freeze
+        ws.column_dimensions['A'].width = min(max(widest + 2, 18), 44)
+        for j in range(2, last_col + 1):
+            ws.column_dimensions[get_column_letter(j)].width = 16
+        out = io.BytesIO()
+        wb.save(out)
+        return out.getvalue(), ex
+
+    # ------------------------------------------------------- saved views
+    @api.model
+    def my_views(self):
+        """The reader's own saved views and the ones shared with them. The
+        record rules decide what `search` may return (R1)."""
+        self._require()
+        uid = self.env.uid
+        views = self.env['pb.explorer.view'].search(
+            ['|', ('user_id', '=', uid), ('shared', '=', True)],
+            order='sequence, name, id', limit=200)
+        return {
+            'mine': [v._pbx_payload() for v in views if v.user_id.id == uid],
+            'shared': [v._pbx_payload() for v in views if v.user_id.id != uid],
         }
 
     # ==================================================================

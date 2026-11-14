@@ -144,7 +144,33 @@ export class PbExplorer extends Component {
             // at all, so four months is ONE read and not four.
             stripFocus: "",
             preview: [],
+            // WDGAP QF2 — saved views and sending them regularly.
+            views: { mine: [], shared: [] },
+            activeView: null,   // the saved view on screen, if any
+            viewsNote: "",      // "part of this view no longer exists"
+            saver: null,        // the Save view card
+            viewEdit: null,     // { id, name } while renaming
+            viewDelete: 0,      // the view waiting for "Delete" to be pressed
+            sched: null,        // the Send regularly drawer
         });
+        // Icons for the QF2 additions are made ONCE and reused: `t-out` of a
+        // NEW markup() re-inserts the node on every redraw (ledger gotcha).
+        this._icons = {};
+        this.icx = (name, size = 14) => {
+            const key = `${name}|${size}`;
+            if (!this._icons[key]) { this._icons[key] = ic(name, size); }
+            return this._icons[key];
+        };
+        this.weekdays = [
+            { key: "0", label: _t("Monday"), short: _t("Mon") },
+            { key: "1", label: _t("Tuesday"), short: _t("Tue") },
+            { key: "2", label: _t("Wednesday"), short: _t("Wed") },
+            { key: "3", label: _t("Thursday"), short: _t("Thu") },
+            { key: "4", label: _t("Friday"), short: _t("Fri") },
+            { key: "5", label: _t("Saturday"), short: _t("Sat") },
+            { key: "6", label: _t("Sunday"), short: _t("Sun") },
+        ];
+        this.monthdays = Array.from({ length: 28 }, (_v, i) => i + 1);
 
         // The anchor a Shift-press or a sweep extends from. On the instance
         // rather than in `useState`: nothing renders it, and a value the
@@ -171,7 +197,11 @@ export class PbExplorer extends Component {
             // schemes", not just "open the Explorer".
             const lens = ctx.pbex_lens || (ctx.pb_focus === "compare"
                 ? "compare" : "");
-            if (ctx.pbex_spec || lens) {
+            // WDGAP QF2 — the link in a regular email opens a SAVED VIEW.
+            const savedId = this.readViewHash();
+            if (savedId && !ctx.pbex_spec && !lens) {
+                await this.openView({ id: savedId }, false);
+            } else if (ctx.pbex_spec || lens) {
                 try {
                     const resolved = await this.orm.call(MODEL, "resolve_spec",
                         [lens || false, ctx.pbex_spec || false]);
@@ -240,6 +270,7 @@ export class PbExplorer extends Component {
     async loadSchema() {
         try {
             this.state.schema = await this.orm.call(MODEL, "get_schema", []);
+            this.state.views = this.state.schema?.views || { mine: [], shared: [] };
         } catch (e) {
             this.state.error = this._msg(e);
         }
@@ -584,6 +615,17 @@ export class PbExplorer extends Component {
             }
         } catch {
             // A URL is a convenience. It never gets in the way of a chart.
+        }
+    }
+
+    /** `#pbxv=<id>` — the saved view a regular email links to. Same
+     *  `key=value` shape as the `#pbex=` link, so the router leaves it be. */
+    readViewHash() {
+        try {
+            const m = /^#?pbxv=(\d+)$/.exec(window.location.hash || "");
+            return m ? Number(m[1]) : 0;
+        } catch {
+            return 0;
         }
     }
 
@@ -941,6 +983,20 @@ export class PbExplorer extends Component {
          * turn.
          */
         if (ev.key === "Escape") {
+            // The drawer and the small cards of QF2 are the last thing opened
+            // whenever they are open: they sit over (or above) everything.
+            if (this.state.sched) {
+                ev.stopPropagation();
+                this.closeSchedule();
+                return;
+            }
+            if (this.state.saver || this.state.viewEdit || this.state.viewDelete) {
+                ev.stopPropagation();
+                this.state.saver = null;
+                this.state.viewEdit = null;
+                this.state.viewDelete = 0;
+                return;
+            }
             if (this.drag) {
                 this.drag = null;
                 this.state.preview = [];
@@ -1454,6 +1510,460 @@ export class PbExplorer extends Component {
         }
     }
 
+    /** WDGAP QF2 B — the same answer as a real Excel workbook. Cloned from
+     *  `payrun_results.js` exportXlsx: base64 → Blob → object URL → anchor. */
+    async exportXlsx() {
+        if (this.state.busy) { return; }
+        this.state.busy = true;
+        try {
+            const spec = JSON.parse(JSON.stringify(this.state.spec));
+            const res = await this.orm.call(MODEL, "export_xlsx",
+                [spec, this.state.activeView?.id || false]);
+            if (!res || !res.ok) {
+                this.notif.add((res && res.msg) || _t("The Excel file could not be made."),
+                               { type: "warning" });
+                return;
+            }
+            const bin = atob(res.file_b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+            const url = URL.createObjectURL(new Blob([bytes], { type: res.mimetype }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = res.filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            if (res.truncated) {
+                this.notif.add(
+                    _t("Downloaded. Only the largest 24 rows are in the file; %s more were left out.",
+                       res.truncated),
+                    { type: "warning" });
+            }
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+
+    // ========================================================== saved views
+    /* WDGAP QF2 A. A saved view is a QUESTION: opening one runs it again for
+     * whoever opens it, with their own companies and divisions, and a period
+     * saved as "Last month" is always last month. */
+
+    get myViews() { return this.state.views?.mine || []; }
+    get sharedViews() { return this.state.views?.shared || []; }
+    get hasViews() { return this.myViews.length + this.sharedViews.length > 0; }
+
+    async reloadViews() {
+        try {
+            this.state.views = await this.orm.silent.call(MODEL, "my_views", []);
+        } catch {
+            // The list is a convenience; the board keeps working without it.
+        }
+        const open = this.state.activeView;
+        if (open) {
+            const fresh = [...this.myViews, ...this.sharedViews]
+                .find((v) => v.id === open.id);
+            this.state.activeView = fresh || null;
+        }
+    }
+
+    viewSub(view) {
+        if (!view.mine) {
+            return _t("%(period)s · from %(owner)s",
+                      { period: view.period_label, owner: view.owner });
+        }
+        if (view.schedules_on) {
+            return view.shared
+                ? _t("%(period)s · shared · sent regularly", { period: view.period_label })
+                : _t("%(period)s · sent regularly", { period: view.period_label });
+        }
+        return view.shared
+            ? _t("%(period)s · shared", { period: view.period_label })
+            : view.period_label;
+    }
+
+    shareTitle(view) {
+        return view.shared
+            ? _t("Make it only mine")
+            : _t("Share with everyone who can open the Explorer");
+    }
+
+    async openView(view, runNow = true) {
+        try {
+            const res = await this.orm.call(MODEL, "open_view", [view.id]);
+            if (!res.ok) {
+                this.notif.add(res.msg, { type: "warning" });
+                return;
+            }
+            this.state.spec = { ...this.state.spec, ...res.spec };
+            this.state.activeView = res.view;
+            this.state.viewsNote = res.note || "";
+            this.state.lensId = "";
+            this.state.askWhy = null;
+            this.state.lensesOpen = false;
+            this.state.saver = null;
+            this.state.viewEdit = null;
+            this.state.viewDelete = 0;
+            if (runNow) {
+                this.destroyChart();
+                await this.run();
+            }
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    /** A name somebody would say: "Net pay by department". */
+    get suggestedName() {
+        const d = this.state.data;
+        if (!d) { return ""; }
+        return _t("%(measure)s by %(dimension)s",
+                  { measure: d.measure_label || "", dimension: (d.dimension_label || "").toLowerCase() });
+    }
+
+    openSaver() {
+        const open = this.state.activeView;
+        this.state.viewEdit = null;
+        this.state.viewDelete = 0;
+        if (open && open.mine) {
+            this.state.saver = { mode: "choose", name: open.name, shared: open.shared, busy: false };
+            return;
+        }
+        this.state.saver = {
+            mode: "new",
+            name: open ? open.name : this.suggestedName,
+            shared: false,
+            busy: false,
+        };
+    }
+
+    saverAsNew() {
+        const s = this.state.saver;
+        if (!s) { return; }
+        s.mode = "new";
+        s.name = _t("%s (copy)", s.name);
+        s.shared = false;
+    }
+
+    onSaverKey(ev) {
+        if (ev.key === "Enter") { this.saveView(); }
+    }
+
+    async saveView() {
+        const s = this.state.saver;
+        if (!s || s.busy) { return; }
+        const name = (s.name || "").trim();
+        if (!name) {
+            this.notif.add(_t("Give the view a name."), { type: "warning" });
+            return;
+        }
+        s.busy = true;
+        try {
+            const spec = JSON.parse(JSON.stringify(this.state.spec));
+            const res = await this.orm.call("pb.explorer.view", "pbx_save",
+                [name, spec, !!s.shared]);
+            this.state.saver = null;
+            this.state.activeView = res;
+            this.state.viewsNote = "";
+            await this.reloadViews();
+            this.notif.add(_t("Saved as “%s”.", res.name), { type: "success" });
+        } catch (e) {
+            s.busy = false;
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    async updateView() {
+        const open = this.state.activeView;
+        if (!open || !this.state.saver) { return; }
+        this.state.saver.busy = true;
+        try {
+            const spec = JSON.parse(JSON.stringify(this.state.spec));
+            const res = await this.orm.call("pb.explorer.view", "pbx_update",
+                [[open.id], { spec }]);
+            this.state.saver = null;
+            this.state.activeView = res;
+            this.state.viewsNote = "";
+            await this.reloadViews();
+            this.notif.add(_t("“%s” now shows what is on screen.", res.name),
+                           { type: "success" });
+        } catch (e) {
+            if (this.state.saver) { this.state.saver.busy = false; }
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    /** "Save as my own" on a view somebody shared: open it, then save. */
+    async copyView(view) {
+        await this.openView(view);
+        this.state.saver = { mode: "new", name: view.name, shared: false, busy: false };
+    }
+
+    startRename(view) {
+        this.state.viewDelete = 0;
+        this.state.viewEdit = { id: view.id, name: view.name };
+    }
+
+    onRenameKey(ev) {
+        if (ev.key === "Enter") { this.saveRename(); }
+    }
+
+    async saveRename() {
+        const edit = this.state.viewEdit;
+        if (!edit) { return; }
+        try {
+            await this.orm.call("pb.explorer.view", "pbx_update",
+                [[edit.id], { name: edit.name }]);
+            this.state.viewEdit = null;
+            await this.reloadViews();
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    async toggleShare(view) {
+        try {
+            await this.orm.call("pb.explorer.view", "pbx_update",
+                [[view.id], { shared: !view.shared }]);
+            await this.reloadViews();
+            this.notif.add(view.shared
+                ? _t("“%s” is now only yours.", view.name)
+                : _t("Everyone who can open the Explorer can now open “%s”.", view.name),
+                { type: "success" });
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    askDelete(view) {
+        this.state.viewEdit = null;
+        this.state.viewDelete = view.id;
+    }
+
+    async deleteView(view) {
+        try {
+            await this.orm.call("pb.explorer.view", "pbx_delete", [[view.id]]);
+            this.state.viewDelete = 0;
+            if (this.state.activeView?.id === view.id) {
+                this.state.activeView = null;
+                this.state.viewsNote = "";
+            }
+            await this.reloadViews();
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    // ===================================================== send regularly
+    /* WDGAP QF2 C. A drawer over the board. Every person gets their OWN
+     * numbers; with no email on this database the drawer says so first. */
+
+    async openSchedule() {
+        const view = this.state.activeView;
+        if (!view || !view.mine) { return; }
+        this.state.saver = null;
+        try {
+            const res = await this.orm.call(MODEL, "schedule_drawer", [view.id]);
+            this.state.sched = {
+                ...res,
+                form: res.schedules.length ? null : this._blankForm(res.me),
+                search: "",
+                hist: {},
+                confirm: 0,
+                busy: false,
+            };
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    closeSchedule() {
+        this.state.sched = null;
+        this.reloadViews();
+    }
+
+    _blankForm(me) {
+        return { id: 0, cadence: "weekly", weekday: "0", monthday: 1,
+                 recipient_ids: me ? [me] : [] };
+    }
+
+    newScheduleForm() {
+        const d = this.state.sched;
+        if (!d) { return; }
+        d.form = this._blankForm(d.me);
+    }
+
+    editSchedule(sc) {
+        const d = this.state.sched;
+        if (!d) { return; }
+        d.form = { id: sc.id, cadence: sc.cadence, weekday: sc.weekday,
+                   monthday: sc.monthday, recipient_ids: sc.recipients.map((r) => r.id) };
+    }
+
+    cancelForm() {
+        const d = this.state.sched;
+        if (d) { d.form = null; }
+    }
+
+    setCadence(c) { if (this.state.sched?.form) { this.state.sched.form.cadence = c; } }
+    setWeekday(k) { if (this.state.sched?.form) { this.state.sched.form.weekday = k; } }
+    onMonthday(ev) {
+        if (this.state.sched?.form) { this.state.sched.form.monthday = Number(ev.target.value) || 1; }
+    }
+
+    isPicked(person) {
+        return !!this.state.sched?.form?.recipient_ids.includes(person.id);
+    }
+
+    togglePerson(person) {
+        const f = this.state.sched?.form;
+        if (!f) { return; }
+        const at = f.recipient_ids.indexOf(person.id);
+        if (at >= 0) {
+            f.recipient_ids.splice(at, 1);
+        } else if (f.recipient_ids.length < this.state.sched.caps.recipients) {
+            f.recipient_ids.push(person.id);
+        } else {
+            this.notif.add(_t("A view can go to at most %s people.", this.state.sched.caps.recipients),
+                           { type: "warning" });
+        }
+    }
+
+    get schedPeople() {
+        const d = this.state.sched;
+        if (!d) { return []; }
+        const q = (d.search || "").trim().toLowerCase();
+        const people = d.people || [];
+        if (!q) { return people; }
+        return people.filter((p) => (p.name || "").toLowerCase().includes(q)
+            || (p.email || "").toLowerCase().includes(q));
+    }
+
+    get pickedPeople() {
+        const d = this.state.sched;
+        if (!d?.form) { return []; }
+        const byId = Object.fromEntries((d.people || []).map((p) => [p.id, p]));
+        return d.form.recipient_ids.map((id) => byId[id]).filter(Boolean);
+    }
+
+    /** "Every Monday morning, to 3 people, as an Excel file with a link" —
+     *  live, as the form changes. The server says the same sentence back. */
+    get schedPreview() {
+        const d = this.state.sched;
+        const f = d?.form;
+        if (!f) { return ""; }
+        const n = f.recipient_ids.length;
+        let who;
+        if (!n) {
+            who = _t("nobody yet");
+        } else if (n === 1 && f.recipient_ids[0] === d.me) {
+            who = _t("you");
+        } else if (n === 1) {
+            who = _t("1 person");
+        } else {
+            who = _t("%s people", n);
+        }
+        if (f.cadence === "weekly") {
+            const day = this.weekdays.find((w) => w.key === f.weekday);
+            return _t("Every %(day)s morning, to %(who)s, as an Excel file with a link",
+                      { day: day ? day.label : "", who });
+        }
+        if (f.cadence === "monthly") {
+            return _t("On day %(day)s of every month, in the morning, to %(who)s, as an Excel file with a link",
+                      { day: f.monthday, who });
+        }
+        return _t("After each pay run is finished, to %(who)s, as an Excel file with a link",
+                  { who });
+    }
+
+    _replaceSchedule(payload) {
+        const d = this.state.sched;
+        if (!d) { return; }
+        const at = d.schedules.findIndex((s) => s.id === payload.id);
+        if (at >= 0) { d.schedules[at] = payload; } else { d.schedules.push(payload); }
+    }
+
+    async saveSchedule() {
+        const d = this.state.sched;
+        if (!d?.form || d.busy) { return; }
+        d.busy = true;
+        try {
+            const f = d.form;
+            const payload = await this.orm.call(MODEL, "schedule_save", [
+                d.view.id,
+                { cadence: f.cadence, weekday: f.weekday, monthday: f.monthday,
+                  recipient_ids: [...f.recipient_ids] },
+                f.id || false]);
+            this._replaceSchedule(payload);
+            d.form = null;
+            this.notif.add(d.mail_on
+                ? _t("Saved. %s.", payload.sentence)
+                : _t("Saved. Nothing will be sent until email is switched on for this company."),
+                { type: "success" });
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        } finally {
+            d.busy = false;
+        }
+    }
+
+    async pauseSchedule(sc) {
+        try {
+            this._replaceSchedule(await this.orm.call(MODEL, "schedule_pause", [sc.id, !sc.active]));
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    askDeleteSchedule(sc) { if (this.state.sched) { this.state.sched.confirm = sc.id; } }
+    keepSchedule() { if (this.state.sched) { this.state.sched.confirm = 0; } }
+
+    async deleteSchedule(sc) {
+        const d = this.state.sched;
+        try {
+            await this.orm.call(MODEL, "schedule_delete", [sc.id]);
+            d.schedules = d.schedules.filter((x) => x.id !== sc.id);
+            d.confirm = 0;
+            if (d.form?.id === sc.id) { d.form = null; }
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        }
+    }
+
+    async sendNow(sc) {
+        const d = this.state.sched;
+        if (!d || d.busy) { return; }
+        d.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, "schedule_send_now", [sc.id]);
+            this._replaceSchedule(res.schedule);
+            d.hist[sc.id] = true;
+            this.notif.add(res.msg, { type: res.summary.email_off ? "info" : "success" });
+        } catch (e) {
+            this.notif.add(this._msg(e), { type: "danger" });
+        } finally {
+            d.busy = false;
+        }
+    }
+
+    /** ONE string, so a translator can put the date where it belongs. */
+    nextLine(sc) {
+        return _t("Next send: %s (company time)", sc.next_due);
+    }
+
+    toggleHistory(sc) {
+        const d = this.state.sched;
+        if (d) { d.hist[sc.id] = !d.hist[sc.id]; }
+    }
+
+    historyTone(line) {
+        return line.state === "queued" ? "ok" : (line.state === "email_off" ? "quiet" : "warn");
+    }
+
     // --------------------------------------------------------------- lenses
     get lenses() { return this.state.schema?.lenses || []; }
 
@@ -1485,6 +1995,9 @@ export class PbExplorer extends Component {
         this.state.lensId = lens.id;
         this.state.askWhy = null;
         this.state.lensesOpen = false;
+        // A starting point is a new question, not the saved one.
+        this.state.activeView = null;
+        this.state.viewsNote = "";
         this.destroyChart();
         this.run();
     }

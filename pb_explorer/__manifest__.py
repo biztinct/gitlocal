@@ -29,7 +29,8 @@ Chart.js comes from the platform's own lazy ``web.chartjs_lib`` bundle, never a 
 """,
     # C2/C18.86: bump on EVERY asset change — the bundle URL hash is keyed on
     # module versions, so without this browsers keep serving the stale CSS/JS.
-    'version': '19.0.2.6.0',
+    # WDGAP QF2 (2.7.0): saved views + share, Excel download, regular email.
+    'version': '19.0.2.7.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -38,11 +39,14 @@ Chart.js comes from the platform's own lazy ``web.chartjs_lib`` bundle, never a 
     # pb_insights supplies the cockpit precedent this one is a sibling of.
     # pb_group supplies `pb.fx` (the ONE conversion service) and `pb.division`
     # (the group-level division a fact row is stamped with) — GROUP P3.
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_payruns',
-                'pb_import_kit', 'pb_insights', 'pb_group'],
+    # `mail` for the regular sends (WDGAP QF2); already loaded through hr.
+    'depends': ['web', 'mail', 'om_hr_payroll', 'pb_hr_payroll_base',
+                'pb_payruns', 'pb_import_kit', 'pb_insights', 'pb_group'],
     'data': [
         'security/ir.model.access.csv',
+        'security/pb_explorer_rules.xml',
         'views/pb_explorer_action.xml',
+        'data/pb_explorer_schedule_data.xml',
     ],
     'assets': {
         'web.assets_backend': [
