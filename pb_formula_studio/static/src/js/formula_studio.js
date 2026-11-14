@@ -11,6 +11,7 @@ import { GridStudio } from "./grid/grid_studio";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
+import { parseFormula as parseFlowFormula, evalFlowNode } from "./formula_flow_eval";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
 import { detectDocumentCells } from './payslip_document_tools';
 import { PayslipDocumentDesigner } from './payslip_document_designer';
@@ -481,6 +482,10 @@ export class PbFormulaStudio extends Component {
             draft: {},
             editBusy: false,
             liveValid: null,
+            // WDGAP PR-A — the one function list (server table), and whether
+            // the editor shows all of it or only the everyday ones.
+            fnList: [],
+            fnAllOpen: false,
             editError: "",
             labelsMsg: "",
             advOpen: false,
@@ -771,6 +776,15 @@ export class PbFormulaStudio extends Component {
             this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
         } catch (e) {
             this.state.snippets = [];
+        }
+        // WDGAP PR-A — every function a formula can use, from the engine's one
+        // table (never a second hand-kept list). Once per session; non-fatal.
+        if (!this.state.fnList.length) {
+            try {
+                this.state.fnList = await this.orm.call("hr.formula.rule", "pb_formula_functions", []);
+            } catch (e) {
+                this.state.fnList = [];
+            }
         }
         this.state.loaded = true;
     }
@@ -2914,7 +2928,37 @@ export class PbFormulaStudio extends Component {
     // formula builder
     get paletteColumns() { return this.state.components.filter(c => c.id !== this.state.editId); }
     get paletteOps() { return [{ t: "+", g: "+" }, { t: "-", g: "−" }, { t: "*", g: "×" }, { t: "/", g: "÷" }, { t: "(", g: "(" }, { t: ")", g: ")" }]; }
-    get paletteFns() { return ["IF", "SUM", "ROUND", "MIN", "MAX", "AND", "OR"]; }
+    // WDGAP PR-A — the everyday functions stay one click away; "All functions"
+    // opens the whole list, grouped, each with its help line. All of it comes
+    // from the server's one table, so everything offered here really works.
+    get paletteFns() {
+        const everyday = ["IF", "SUM", "ROUND", "MIN", "MAX", "AND", "OR"];
+        const list = this.state.fnList || [];
+        if (!list.length) return everyday.map(name => ({ name, signature: name + "(…)", help: "" }));
+        return everyday.map(name => list.find(f => f.name === name)).filter(Boolean);
+    }
+    get paletteFnGroups() {
+        const groups = [];
+        for (const fn of this.state.fnList || []) {
+            let g = groups.find(x => x.key === fn.category);
+            if (!g) { g = { key: fn.category, label: fn.category_label, fns: [] }; groups.push(g); }
+            g.fns.push(fn);
+        }
+        return groups;
+    }
+    toggleFnAll() { this.state.fnAllOpen = !this.state.fnAllOpen; }
+    fnTitle(fn) { return fn.help ? `${fn.signature} — ${fn.help}` : fn.signature; }
+    // The function the person is typing (the last NAME( in the draft), with
+    // its help line and an example — shown under the palette.
+    get draftFnHelp() {
+        const f = (this.state.draft.excel_formula || "").replace(/"[^"]*"/g, '""');
+        const names = [...f.matchAll(/([A-Za-z_][A-Za-z0-9_]*)\s*\(/g)].map(m => m[1].toUpperCase());
+        for (let i = names.length - 1; i >= 0; i--) {
+            const hit = (this.state.fnList || []).find(fn => fn.name === names[i]);
+            if (hit) return hit;
+        }
+        return null;
+    }
     get draftChips() { return this.chips(this.state.draft.excel_formula || ""); }
 
     insertToken(text) {
@@ -3010,65 +3054,12 @@ export class PbFormulaStudio extends Component {
     }
 
     // ---- tiny Excel-ish parser (client-side; no backend change) ----
-    parseFormula(formula) {
-        const toks = [];
-        const re = /\s*("[^"]*"|[A-Za-z_]+(?=\()|[A-Za-z]+\d+|\d+\.?\d*|<=|>=|<>|[-+*/^&(),:<>=])/g;
-        let m; const f = (formula || "").replace(/^=/, "");
-        while ((m = re.exec(f))) toks.push(m[1]);
-        let p = 0;
-        const peek = () => toks[p];
-        const next = () => toks[p++];
-        const parseExpr = () => parseCmp();
-        const parseCmp = () => { let l = parseAdd(); while (["<", ">", "<=", ">=", "<>", "="].includes(peek())) { const op = next(); l = { t: "cmp", op, l, r: parseAdd() }; } return l; };
-        const parseAdd = () => { let l = parseMul(); while (["+", "-"].includes(peek())) { const op = next(); l = { t: "op", op, l, r: parseMul() }; } return l; };
-        const parseMul = () => { let l = parseUnary(); while (["*", "/"].includes(peek())) { const op = next(); l = { t: "op", op, l, r: parseUnary() }; } return l; };
-        const parseUnary = () => { if (peek() === "-") { next(); return { t: "op", op: "-", l: { t: "num", v: 0 }, r: parseUnary() }; } return parsePrimary(); };
-        const parsePrimary = () => {
-            const tk = peek();
-            // never consume a delimiter as a value (keeps IF arg lists intact)
-            if (tk === undefined || tk === "," || tk === ")") return { t: "num", v: 0 };
-            if (tk === "(") { next(); const e = parseExpr(); if (peek() === ")") next(); return e; }
-            if (tk[0] === '"') { next(); return { t: "str", v: tk.slice(1, -1) }; }
-            if (/^[A-Za-z]+\d+$/.test(tk)) {
-                next(); const col = tk.replace(/\d+$/, "").toUpperCase();
-                if (peek() === ":" && /^[A-Za-z]+\d+$/.test(toks[p + 1] || "")) {
-                    next(); const end = next().replace(/\d+$/, "").toUpperCase();
-                    return { t: "range", start: col, end };
-                }
-                return { t: "ref", col };
-            }
-            if (/^\d/.test(tk)) { next(); return { t: "num", v: parseFloat(tk) }; }
-            if (/^[A-Za-z_]+$/.test(tk)) {
-                const name = next().toUpperCase(); const args = [];
-                if (peek() === "(") { next(); if (peek() !== ")") { args.push(parseExpr()); while (peek() === ",") { next(); args.push(parseExpr()); } } if (peek() === ")") next(); }
-                return { t: "fn", name, args };
-            }
-            next(); return { t: "num", v: 0 };
-        };
-        try { return parseExpr(); } catch (e) { return null; }
-    }
+    // WDGAP PR-A — the parser and evaluator live in formula_flow_eval.js
+    // (moved unchanged, plus the date functions) so the date cases can run
+    // against them outside the browser.
+    parseFormula(formula) { return parseFlowFormula(formula); }
     evalNode(a) {
-        try {
-            if (!a) return 0;
-            if (a.t === "num") return a.v;
-            if (a.t === "str") return 0;
-            if (a.t === "ref") return this.state.preview.values[a.col] || 0;
-            if (a.t === "op") { const l = this.evalNode(a.l), r = this.evalNode(a.r); return a.op === "+" ? l + r : a.op === "-" ? l - r : a.op === "*" ? l * r : a.op === "/" ? (r ? l / r : 0) : a.op === "^" ? Math.pow(l, r) : 0; }
-            if (a.t === "cmp") { const l = this.evalNode(a.l), r = this.evalNode(a.r), o = a.op; return (o === ">" ? l > r : o === "<" ? l < r : o === ">=" ? l >= r : o === "<=" ? l <= r : o === "<>" ? l !== r : l === r) ? 1 : 0; }
-            if (a.t === "range") return this.expandRange(a.start, a.end).reduce((s, col) => s + (this.state.preview.values[col] || 0), 0);
-            if (a.t === "fn") {
-                const g = (a.args || []).flatMap(x => x.t === "range" ? this.expandRange(x.start, x.end).map(col => ({ t: "ref", col })) : [x]);
-                const n = a.name;
-                if (n === "IF") return this.evalNode(g[0]) ? this.evalNode(g[1]) : this.evalNode(g[2] || { t: "num", v: 0 });
-                if (n === "SUM") return g.reduce((s, x) => s + this.evalNode(x), 0);
-                if (n === "MAX") return Math.max(...g.map(x => this.evalNode(x)));
-                if (n === "MIN") return Math.min(...g.map(x => this.evalNode(x)));
-                if (n === "ROUND") { const v = this.evalNode(g[0]), d = g[1] ? this.evalNode(g[1]) : 0, f = Math.pow(10, d); return Math.round(v * f) / f; }
-                if (n === "IFERROR") { const v = this.evalNode(g[0]); return isFinite(v) ? v : this.evalNode(g[1] || { t: "num", v: 0 }); }
-                return this.evalNode(g[0] || { t: "num", v: 0 });
-            }
-            return 0;
-        } catch (e) { return 0; }
+        return evalFlowNode(a, { values: this.state.preview.values, expandRange: (s, e) => this.expandRange(s, e) });
     }
     fmtNum(v) { return (Number.isInteger(v) ? v.toString() : String(v)); }
 

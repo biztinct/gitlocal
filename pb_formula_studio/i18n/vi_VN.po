@@ -16589,3 +16589,15 @@ msgstr "Từ cho từng giá trị"
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Optional. How each number reads on screens, e.g. 0=No;1=Yes. Pay data files and formulas keep using the numbers."
 msgstr "Không bắt buộc. Cách mỗi con số hiển thị trên màn hình, ví dụ 0=Không;1=Có. Tệp dữ liệu lương và công thức vẫn dùng các con số."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "All functions"
+msgstr "Tất cả hàm"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Fewer functions"
+msgstr "Ít hàm hơn"
