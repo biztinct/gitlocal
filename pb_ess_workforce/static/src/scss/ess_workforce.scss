@@ -129,13 +129,20 @@
     .pbew-lv-hint { margin: 6px 0 0; }
     .pbew-lvlist { list-style: none; margin: 0; padding: 0; }
     .pbew-lv {
-        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px;
         padding: 12px 2px; border-top: 1px solid var(--pbim-line-2);
         &:first-child { border-top: none; }
     }
-    .pbew-lv-main { min-width: 0; flex: 1 1 auto; }
+    .pbew-lv-main { min-width: 0; flex: 1 1 240px; }
+    // an open fold-out (cancel / add a document) takes the row's full width
+    // under the request, never squeezing the request's own text
+    .pbew-lv-acts:has(.pbew-lvx[open]) { flex: 1 1 100%; justify-content: flex-start; }
     .pbew-lv-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .pbew-lv-type { font-size: 14px; color: var(--pbim-ink); }
+    // the leave statuses had no badge colour of their own (they read as bare text)
+    .pbew-lv .pbme-badge--confirm, .pbew-lv .pbme-badge--validate1 { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbew-lv .pbme-badge--validate { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbew-lv .pbme-badge--refuse { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
     .pbew-lv-when { margin-top: 3px; font-size: 13px; color: var(--pbim-text); font-variant-numeric: tabular-nums; }
     .pbew-lv-dot { margin: 0 6px; color: var(--pbim-muted); }
     .pbew-lv-part { font-weight: 700; color: var(--pbim-primary-strong); }
@@ -200,7 +207,8 @@
     }
     @media (max-width: 520px) {
         .pbew-days { grid-template-columns: 1fr; }
-        .pbew-lv { flex-direction: column; gap: 8px; }
+        .pbew-lv { flex-direction: column; flex-wrap: nowrap; gap: 8px; }
+        .pbew-lv-main, .pbew-lv-acts { flex: 0 0 auto; width: 100%; }
         .pbew-lv-acts { justify-content: flex-start; }
         .pbew-nav { gap: 5px; }
         .pbew-nav__i { padding: 7px 11px; font-size: 12px; }

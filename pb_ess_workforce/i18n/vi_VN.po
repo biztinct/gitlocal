@@ -1517,3 +1517,9 @@ msgstr ""
 "                        <option value=\"am\" data-pbew-oneonly=\"\">Buổi sáng</option>\n"
 "                        <option value=\"pm\">Buổi chiều</option>\n"
 "                      </select>"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "After this request: %s more than you have"
+msgstr "Sau đơn này: vượt %s so với số bạn có"

@@ -958,7 +958,9 @@ class PbEssWorkforce(models.AbstractModel):
         out['left_before'] = left
         out['after'] = after
         out['after_label'] = _('After this request: %s left',
-                               self._leave_length_label(after, unit))
+                               self._leave_length_label(after, unit)) \
+            if after >= 0 else _('After this request: %s more than you have',
+                                 self._leave_length_label(-after, unit))
         if after < 0:
             out['over'] = True
             allowed = bool(row.get('allows_negative')) and \
