@@ -3882,8 +3882,8 @@ msgstr "Chưa có vai trò nào."
 #. module: biz_access
 #. odoo-javascript
 #: code:addons/biz_access/static/src/xml/access_board.xml:0
-msgid "They are asked to set up an authenticator app on their next page. My Payobook logins are not included yet."
-msgstr "Họ sẽ được yêu cầu cài đặt ứng dụng xác thực ở trang tiếp theo họ mở. Tài khoản My Payobook chưa nằm trong quy định này."
+msgid "They are asked to set up an authenticator app on their next page. Employee self-service logins are not included yet."
+msgstr "Họ sẽ được yêu cầu cài đặt ứng dụng xác thực ở trang tiếp theo họ mở. Tài khoản tự phục vụ của nhân viên chưa nằm trong quy định này."
 
 #. module: biz_access
 #. odoo-javascript

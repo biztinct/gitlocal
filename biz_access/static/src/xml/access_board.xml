@@ -2070,7 +2070,7 @@
               <p><t t-out="ic('users',13)"/> <t t-esc="coverLine(re.preview)"/></p>
               <p t-if="re.preview.missing_count" class="pbva-hint"
                  t-esc="missingLine(re.preview)"/>
-              <p class="pbva-hint">They are asked to set up an authenticator app on their next page. My Payobook logins are not included yet.</p>
+              <p class="pbva-hint">They are asked to set up an authenticator app on their next page. Employee self-service logins are not included yet.</p>
             </div>
           </fieldset>
 
