@@ -27,7 +27,10 @@
     # Run settings row, header chip, board tag + quick look line; "Compared
     # with" pairs runs of the same kind only. New stored column (default
     # Regular, no backfill).
-    'version': '19.0.3.5.0',
+    # 3.6.0: WDGAP PR-D — a third kind of run, "Extra run" (new selection
+    # value only; keys regular/topup unchanged): board tag, quick look line,
+    # header chip; an Extra run is compared with nothing.
+    'version': '19.0.3.6.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',

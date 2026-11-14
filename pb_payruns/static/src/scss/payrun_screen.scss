@@ -134,6 +134,9 @@ body.pb-prs-classic .pb-payrun-form .pb-prs-legacy { margin-top: 14px; }
         /* PRS P3 (R8): the soft violet "Top-up" chip */
         &.kind-topup { background: var(--prs-p-soft); border-color: var(--prs-p-soft); color: var(--prs-p600); font-weight: 700;
             .ic { color: var(--prs-p); } }
+        /* WDGAP PR-D: an Extra run wears the same quiet violet */
+        &.kind-extra { background: var(--prs-p-soft); border-color: var(--prs-p-soft); color: var(--prs-p600); font-weight: 700;
+            .ic { color: var(--prs-p); } }
     }
     .pill {
         display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px;

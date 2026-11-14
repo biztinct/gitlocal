@@ -801,11 +801,8 @@ class PbPayruns(models.AbstractModel):
                 'decimals': currency.decimal_places,
                 'status': self._screen_status(state, sent_back),
                 # R8 (PRS P3): a chip for a top-up; nothing for Regular.
-                'kind': ({'key': 'topup', 'label': _("Top-up"),
-                          'hint': _("An extra run on top of the normal "
-                                    "month. It is only compared with other "
-                                    "top-ups.")}
-                         if run.pb_run_kind == 'topup' else None),
+                # WDGAP PR-D: and one for an Extra run.
+                'kind': self._screen_kind_chip(run),
             },
             'date_mismatch': self._safe(
                 lambda: self._screen_date_mismatch(run), default=None),
@@ -1020,6 +1017,21 @@ class PbPayruns(models.AbstractModel):
         return first, first + relativedelta(day=31)
 
     @api.model
+    def _screen_kind_chip(self, run):
+        """The header chip for a run's kind: None for a Regular run."""
+        _ = self.env._
+        if run.pb_run_kind == 'topup':
+            return {'key': 'topup', 'label': _("Top-up"),
+                    'hint': _("An extra run on top of the normal month. It is "
+                              "only compared with other top-ups.")}
+        if run.pb_run_kind == 'extra':
+            return {'key': 'extra', 'label': _("Extra run"),
+                    'hint': _("Only the people picked for it. It never "
+                              "changes another run and is not compared with "
+                              "any.")}
+        return None
+
+    @api.model
     def _screen_previous_run(self, run, currency):
         """The run "Compared with" reads (R5, 2026-11-04, narrowing R3).
 
@@ -1036,6 +1048,10 @@ class PbPayruns(models.AbstractModel):
         full month, nor a full month with a top-up.
         """
         Run = self.env['hr.payslip.run']
+        # WDGAP PR-D: an Extra run pays the people picked for it, so no
+        # earlier run is "last month" for it — it is compared with nothing.
+        if run.pb_run_kind == 'extra':
+            return Run.browse()
         window = self._screen_month_before(run)
         if not window:
             return Run.browse()
@@ -1067,6 +1083,8 @@ class PbPayruns(models.AbstractModel):
     def _screen_compare_none(self, run):
         """Why there is no "Compared with" (R5), as one sentence."""
         _ = self.env._
+        if run.pb_run_kind == 'extra':
+            return _("An extra run has nothing to compare with.")
         window = self._screen_month_before(run)
         if not window:
             return _("There is nothing to compare this run with yet.")

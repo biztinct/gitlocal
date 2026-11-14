@@ -42,6 +42,7 @@
                             <span t-if="record.pb_division_label.raw_value" class="pbk-divtag"><field name="pb_division_label"/></span>
                             <!-- PRS P3 (R8): a top-up carries the same tag; Regular shows nothing. -->
                             <span t-if="record.pb_run_kind.raw_value === 'topup'" class="pbk-divtag">Top-up</span>
+                            <span t-if="record.pb_run_kind.raw_value === 'extra'" class="pbk-divtag">Extra run</span>
                             <div class="pbk-stats">
                                 <div class="pbk-st-tile">
                                     <span class="k">Employees</span>

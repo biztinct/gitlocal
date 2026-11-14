@@ -274,6 +274,8 @@ export class PayrunWizard extends Component {
                 // PRS P3 (R8) — Regular (the default) or Top-up. Sent with
                 // the run as `run_kind`; a top-up's period guard and clean
                 // see top-ups only, and it adopts no loose payslips.
+                // WDGAP PR-D — or "extra": only the people picked; it meets,
+                // clears and adopts nothing.
                 run_kind: "regular",
             },
             // What picking a scheme showed: how many people it covers and who
@@ -292,6 +294,7 @@ export class PayrunWizard extends Component {
                 statuses: null,     // Set-like object {status: true}
                 search: "",
                 picked: [],         // explicit shortlist, empty = "everyone above"
+                pickedNames: {},    // WDGAP PR-D: {id: name} of the people picked
                 preview: null,      // { total, employees, … }
                 loading: false,
                 open: false,        // the "just a few people" panel
@@ -456,8 +459,8 @@ export class PayrunWizard extends Component {
                 zero_keys: [...this.state.application.zeroKeys] },
             application_certification_reason: this.state.application.reason,
             preparation_id: this.state.application.preparationId || false };
-        if (this.hasStatusFilter) { payload.statuses = this.chosenStatuses; }
-        if (this.state.who.picked.length) { payload.employee_ids = [...this.state.who.picked]; }
+        if (this.hasStatusFilter && !this.isExtraRun) { payload.statuses = this.chosenStatuses; }
+        if (this.state.who.picked.length || this.isExtraRun) { payload.employee_ids = [...this.state.who.picked]; }
         return payload;
     }
     invalidateApplicationScope() {
@@ -623,11 +626,67 @@ export class PayrunWizard extends Component {
     back() { if (this.state.step > 1) { this.state.step -= 1; } }
 
     // PRS P3 (R8) — the "Kind of run" choice on the first step.
+    // WDGAP PR-D — and the third kind, the Extra run: only the people picked.
     get runKind() {
-        return this.state.form.run_kind === "topup" ? "topup" : "regular";
+        const kind = this.state.form.run_kind;
+        if (kind === "topup") { return "topup"; }
+        if (kind === "extra" && this.hasExtraRun) { return "extra"; }
+        return "regular";
+    }
+    get isExtraRun() { return this.runKind === "extra"; }
+    /** Offered only where the run's own field knows the value. */
+    get hasExtraRun() {
+        return (this.state.defaults?.run_kind_options || []).includes("extra");
     }
     setRunKind(kind) {
-        this.state.form.run_kind = kind === "topup" ? "topup" : "regular";
+        const before = this.runKind;
+        const next = kind === "topup" || (kind === "extra" && this.hasExtraRun) ? kind : "regular";
+        if (next === before) { return; }
+        // The name follows the kind while it is still the one this screen
+        // suggested; a name the person typed is never touched.
+        const suggested = this._suggestedName(before);
+        this.state.form.run_kind = next;
+        if (!this.state.form.name || this.state.form.name === suggested) {
+            this.state.form.name = this._suggestedName(next);
+        }
+        this.invalidateApplicationScope();
+        if (next === "extra") {
+            this.state.who.search = "";
+            this.refreshWho();
+        } else if (before === "extra") {
+            this.refreshWho();
+        }
+    }
+    /** The name this screen offers for a kind of run. */
+    _suggestedName(kind) {
+        if (kind === "extra") {
+            const scheme = this.chosenScheme;
+            const today = new Date().toLocaleDateString("en-GB",
+                { day: "numeric", month: "short", year: "numeric" });
+            return scheme
+                ? _t("Extra run — %(scheme)s — %(date)s", { scheme: scheme.name, date: today })
+                : _t("Extra run — %(date)s", { date: today });
+        }
+        if (this.state.defaults && this.state.defaults.is_demo) { return this._demoName(); }
+        if (this.chosenScheme) { return `${this.chosenScheme.name} · ${this._periodLabel()}`; }
+        return (this.state.defaults && this.state.defaults.name) || "";
+    }
+    /** The people an Extra run is for, by name, kept as they were picked. */
+    get pickedPeople() {
+        const names = this.state.who.pickedNames || {};
+        return this.state.who.picked.map((id) => ({ id, name: names[id] || "" }));
+    }
+    unpick(id) { this.togglePicked(id); }
+    /** What stands in the way of running an Extra run, in words, or "". */
+    get extraRunProblem() {
+        if (!this.isExtraRun) { return ""; }
+        if (!(this.state.form.name || "").trim()) {
+            return _t("Give the extra run a name, so everybody can tell it from the month’s regular run.");
+        }
+        if (!this.state.who.picked.length) {
+            return _t("An extra run is only for the people you pick. Pick at least one person, then run it.");
+        }
+        return "";
     }
 
     onField(f, ev) {
@@ -718,7 +777,13 @@ export class PayrunWizard extends Component {
         // pointing the demo path at the same place instead of two controls
         // disagreeing about one run.
         if (card.division) { this.state.form.division = card.division; }
-        if (this.state.defaults && this.state.defaults.is_demo) {
+        if (this.isExtraRun) {
+            // WDGAP PR-D — an Extra run is named for itself, never as the
+            // month's payroll. The people picked under another scheme may not
+            // be this one's, so the list starts again.
+            this.state.form.name = this._suggestedName("extra");
+            this.state.who.picked = [];
+        } else if (this.state.defaults && this.state.defaults.is_demo) {
             this.state.form.name = this._demoName();
         } else {
             // "<Scheme> · <Month>" — the scheme already says it is payroll, so
@@ -861,11 +926,16 @@ export class PayrunWizard extends Component {
         this._whoTimer = setTimeout(() => this.refreshWho(), 260);
     }
 
-    togglePicked(id) {
+    togglePicked(id, name) {
         this.invalidateApplicationScope();
         const picked = this.state.who.picked;
         const at = picked.indexOf(id);
         if (at >= 0) { picked.splice(at, 1); } else { picked.push(id); }
+        // WDGAP PR-D — the names of the people picked stay on screen while
+        // the search below them changes.
+        if (name) {
+            this.state.who.pickedNames = { ...(this.state.who.pickedNames || {}), [id]: name };
+        }
     }
 
     clearPicked() { this.state.who.picked = []; this.invalidateApplicationScope(); }
@@ -873,7 +943,11 @@ export class PayrunWizard extends Component {
     /** Live count, so nobody presses Run Payroll and then discovers the scope. */
     async refreshWho() {
         const request = this._whoPreviewRequest = (this._whoPreviewRequest || 0) + 1;
-        if (!this.hasStatusFilter) {
+        // WDGAP PR-D — an Extra run always shows its people picker, whether
+        // or not the scheme offers employment-status ticks, and its list is
+        // everybody the scheme pays (the ticks are for whole-month runs).
+        const extra = this.isExtraRun;
+        if (!this.hasStatusFilter && !extra) {
             if (this.state.form.formula_config_id) { await this.refreshScheme(); }
             return;
         }
@@ -881,7 +955,7 @@ export class PayrunWizard extends Component {
         try {
             const preview = await this.orm.call(
                 "pb.payrun.wizard", "eligible_preview",
-                [{ statuses: this.chosenStatuses, search: this.state.who.search,
+                [{ statuses: extra ? null : this.chosenStatuses, search: this.state.who.search,
                    formula_config_id: this.state.form.formula_config_id,
                    date_start: this.state.form.date_start, date_end: this.state.form.date_end }]
             );
@@ -896,7 +970,17 @@ export class PayrunWizard extends Component {
         if (this.state.form.formula_config_id) { this.refreshScheme(); }
     }
 
+    /** How many people the chosen scheme pays — the scheme field's count. */
+    get schemeCoveredCount() {
+        if (this.isExtraRun) {
+            return (this.state.scheme.preview && this.state.scheme.preview.covered) || 0;
+        }
+        return this.eligibleCount;
+    }
+
     get eligibleCount() {
+        // WDGAP PR-D — an Extra run covers the people picked, nobody else.
+        if (this.isExtraRun) { return this.state.who.picked.length; }
         // GROUP P2 — once a scheme is chosen, the honest count is the one the
         // MAP gives, because that is who the run will actually cover.
         if (this.state.scheme.preview) {
@@ -1063,6 +1147,11 @@ export class PayrunWizard extends Component {
                 { type: "warning" });
             return;
         }
+        // WDGAP PR-D — the same refusal the server makes, before the step.
+        if (this.extraRunProblem) {
+            this.notif.add(this.extraRunProblem, { type: "warning" });
+            return;
+        }
         if (this.wantsPayData) { return this.gotoKey("data"); }
         return this.toCompute();
     }
@@ -1098,7 +1187,12 @@ export class PayrunWizard extends Component {
         // VALUEKIND P4 — who the person chose. Absent when the scheme names no
         // employment-status component, in which case the server takes no view
         // and the run covers exactly who it always did.
-        if (this.hasStatusFilter) {
+        if (this.isExtraRun) {
+            // WDGAP PR-D — the people picked, always; the status ticks are
+            // for whole-month runs and are not sent.
+            delete payload.statuses;
+            payload.employee_ids = [...this.state.who.picked];
+        } else if (this.hasStatusFilter) {
             payload.statuses = this.chosenStatuses;
             if (this.state.who.picked.length) {
                 payload.employee_ids = [...this.state.who.picked];

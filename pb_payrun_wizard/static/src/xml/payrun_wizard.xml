@@ -74,7 +74,7 @@
                                             <span class="pw-schemefield__meta">
                                                 <span t-esc="chosenScheme.cycle_label"/>
                                                 <span class="pw-schemefield__sep">·</span>
-                                                <span t-esc="num(eligibleCount)"/>
+                                                <span t-esc="num(schemeCoveredCount)"/>
                                                 <span>people covered</span>
                                                 <span t-if="chosenScheme.mine" class="pw-mine">Your division</span>
                                             </span>
@@ -126,24 +126,52 @@
                                  where the run has the field (pb_payruns). -->
                             <t t-if="state.defaults and state.defaults.run_kinds">
                                 <label id="pw-kind-l">Kind of run</label>
-                                <div class="pw-kind" role="radiogroup" aria-labelledby="pw-kind-l">
+                                <!-- WDGAP PR-D — three kinds, each saying in one
+                                     line who it pays. Where the build has no
+                                     Extra run the choice reads as it always did. -->
+                                <div t-attf-class="pw-kind {{ hasExtraRun ? 'pw-kind--3' : '' }}" role="radiogroup" aria-labelledby="pw-kind-l">
                                     <button type="button" role="radio"
                                             t-att-aria-checked="runKind === 'regular' ? 'true' : 'false'"
                                             t-attf-class="pw-kind__opt {{ runKind === 'regular' ? 'on' : '' }}"
                                             t-on-click="() => this.setRunKind('regular')">
-                                        <span class="pw-kind__dot"/>Regular
+                                        <span class="pw-kind__dot"/>
+                                        <span class="pw-kind__txt">
+                                            <span class="pw-kind__t">Regular</span>
+                                            <span t-if="hasExtraRun" class="pw-kind__d">Everybody this scheme pays, once a month</span>
+                                        </span>
                                     </button>
                                     <button type="button" role="radio"
                                             t-att-aria-checked="runKind === 'topup' ? 'true' : 'false'"
                                             t-attf-class="pw-kind__opt {{ runKind === 'topup' ? 'on' : '' }}"
                                             t-on-click="() => this.setRunKind('topup')">
-                                        <span class="pw-kind__dot"/>Top-up
+                                        <span class="pw-kind__dot"/>
+                                        <span class="pw-kind__txt">
+                                            <span class="pw-kind__t">Top-up</span>
+                                            <span t-if="hasExtraRun" class="pw-kind__d">Something on top of the normal month</span>
+                                        </span>
+                                    </button>
+                                    <button t-if="hasExtraRun" type="button" role="radio"
+                                            t-att-aria-checked="runKind === 'extra' ? 'true' : 'false'"
+                                            t-attf-class="pw-kind__opt {{ runKind === 'extra' ? 'on' : '' }}"
+                                            data-coach="pw-kind-extra"
+                                            t-on-click="() => this.setRunKind('extra')">
+                                        <span class="pw-kind__dot"/>
+                                        <span class="pw-kind__txt">
+                                            <span class="pw-kind__t">Extra run</span>
+                                            <span class="pw-kind__d">Only the people you pick</span>
+                                        </span>
                                     </button>
                                 </div>
-                                <p class="pw-kind__help">Top-up: an extra run that pays a few people something on top of their normal month — a bonus, a correction, an award. Top-ups are only compared with other top-ups.</p>
+                                <p t-if="runKind === 'extra'" class="pw-kind__help">Extra run — only the people you pick. Use it for a bonus, a correction or one extra payslip. It never changes another run.</p>
+                                <p t-elif="runKind === 'regular' and hasExtraRun" class="pw-kind__help">Regular — everybody this scheme pays, once a month.</p>
+                                <p t-else="" class="pw-kind__help">Top-up: an extra run that pays a few people something on top of their normal month — a bonus, a correction, an award. Top-ups are only compared with other top-ups.</p>
                                 <p t-if="runKind === 'topup'" class="pw-kind__note">
                                     <span class="pw-kind__ic" t-out="ic('info',14)"/>
                                     <span>A top-up still makes a payslip for everyone this scheme covers. Remove anyone it is not for on the pay run before sending it.</span>
+                                </p>
+                                <p t-if="runKind === 'extra'" class="pw-kind__note">
+                                    <span class="pw-kind__ic" t-out="ic('info',14)"/>
+                                    <span>An extra run works out everything this scheme contains for the people you pick. To pay only a bonus, pick a scheme that only contains the bonus.</span>
                                 </p>
                             </t>
                         </div>
@@ -152,13 +180,52 @@
                             <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
                             <div class="pw-kv"><span>Currency</span><b t-esc="moneyLabel"/></div>
                             <div class="pw-kv" t-if="state.defaults.run_kinds and runKind === 'topup'"><span>Kind of run</span><b>Top-up</b></div>
+                            <div class="pw-kv" t-if="state.defaults.run_kinds and runKind === 'extra'"><span>Kind of run</span><b>Extra run</b></div>
                             <div class="pw-kv" t-if="chosenScheme"><span>Payroll scheme</span><b t-esc="chosenScheme.name"/></div>
                             <div class="pw-kv" t-elif="divInfo and !hasSchemePicker"><span>Configuration</span><b t-esc="divInfo.config"/></div>
                             <!-- VALUEKIND P4 — who this run covers. Shown only
                                  when a scheme names a component carrying
                                  employment status; otherwise the wizard looks
                                  and behaves exactly as it always has. -->
-                            <t t-if="hasStatusFilter">
+                            <!-- WDGAP PR-D — an Extra run is for the people
+                                 picked here, always; the list is everybody
+                                 this scheme pays for the period. -->
+                            <div t-if="isExtraRun" class="pw-who pw-xpick" data-coach="pw-extra-people">
+                              <label id="pw-xpick-l">Who is this extra run for?</label>
+                              <div class="pw-xpick__chips" t-if="pickedPeople.length" aria-live="polite">
+                                <span t-foreach="pickedPeople" t-as="p" t-key="p.id" class="pw-xpick__chip">
+                                  <span t-esc="p.name"/>
+                                  <button type="button" class="pw-xpick__x" aria-label="Remove" title="Remove"
+                                          t-on-click="() => this.unpick(p.id)"><span t-out="ic('x', 12)"/></button>
+                                </span>
+                              </div>
+                              <p t-else="" class="pw-xpick__empty">Nobody picked yet. Find the people this run pays below.</p>
+                              <div class="pw-picker">
+                                <input class="pw-in" type="search" placeholder="Find an employee…"
+                                       aria-labelledby="pw-xpick-l"
+                                       t-att-value="state.who.search" t-on-input="onWhoSearch"/>
+                                <div class="pw-picked" t-if="state.who.picked.length">
+                                  <b t-esc="state.who.picked.length"/><span> picked — only they will be paid.</span>
+                                  <button class="pw-linkb" t-on-click="clearPicked">Clear</button>
+                                </div>
+                                <div class="pw-plist">
+                                  <label t-foreach="state.who.preview ? state.who.preview.employees : []"
+                                         t-as="emp" t-key="emp.id" class="pw-prow">
+                                    <input type="checkbox"
+                                           t-att-checked="state.who.picked.includes(emp.id)"
+                                           t-on-change="() => this.togglePicked(emp.id, emp.name)"/>
+                                    <span class="pw-pname" t-esc="emp.name"/>
+                                    <span class="pw-pmeta" t-esc="emp.department"/>
+                                  </label>
+                                  <p t-if="state.who.preview and !state.who.preview.employees.length" class="pw-xpick__empty">Nobody this scheme pays matches that search.</p>
+                                </div>
+                                <div class="pw-note" t-if="state.who.preview and state.who.preview.total > state.who.preview.shown">
+                                  Showing <t t-esc="state.who.preview.shown"/> of
+                                  <t t-esc="state.who.preview.total"/> — search to narrow.
+                                </div>
+                              </div>
+                            </div>
+                            <t t-if="hasStatusFilter and !isExtraRun">
                               <div class="pw-who">
                                 <label>Include</label>
                                 <div class="pw-chips">
@@ -211,7 +278,8 @@
 
                             <!-- GROUP P2 — the run is scoped by the SCHEME now,
                                  not by a division, so the sentence says so. -->
-                            <div t-if="chosenScheme" class="pw-note">A draft run will be created and computed — fully reversible. Only the people this scheme pays are affected.</div>
+                            <div t-if="isExtraRun" class="pw-note">A draft extra run will be created and computed — fully reversible. Only the people you picked are paid; no other run changes.</div>
+                            <div t-elif="chosenScheme" class="pw-note">A draft run will be created and computed — fully reversible. Only the people this scheme pays are affected.</div>
                             <div t-else="" class="pw-note">A draft run will be created and computed — fully reversible. Only the selected division is affected.</div>
                         </div>
                     </div>
@@ -521,7 +589,7 @@
                 <button class="pw-btn ghost" t-if="stepKey === 'period' and !props.embedded" t-on-click="cancel">Cancel</button>
                 <div class="pw-spacer"></div>
                 <button class="pw-btn primary" data-coach="pw-compute" t-if="stepKey === 'period'" t-on-click="advanceFromPeriod">
-                    <t t-if="wantsPayData">Review pay data</t><t t-else="">Compute payslips</t>
+                    <t t-if="wantsPayData">Review pay data</t><t t-elif="isExtraRun">Compute the extra payslips</t><t t-else="">Compute payslips</t>
                     <t t-out="ic('arrow',14)"/>
                 </button>
                 <!-- Skipping is a CHOICE made in front of the list, never a default. -->

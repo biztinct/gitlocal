@@ -200,6 +200,8 @@
     .pbr-k { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--rose); background: var(--rose-soft); border-radius: 5px; padding: 1px 6px; }
     /* PRS P3 (R8): a top-up run's tag, in the division chips' violet */
     .pbr-k.topup { color: var(--i600); background: var(--i-soft); }
+    /* WDGAP PR-D: an Extra run's tag, the same quiet violet */
+    .pbr-k.extra { color: var(--i600); background: var(--i-soft); }
     .pbr-ck { position: absolute; top: 10px; right: 10px; width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--line2); background: #fff; display: grid; place-items: center; color: #fff; opacity: 0; transition: opacity .14s, background .14s, border-color .14s; z-index: 1; cursor: pointer; padding: 0; }
     .pbr-card:hover .pbr-ck, .pbr-card.sel .pbr-ck, .pbr-board.selecting .pbr-ck { opacity: 1; }
     .pbr-card.sel .pbr-ck { background: var(--i); border-color: var(--i); }

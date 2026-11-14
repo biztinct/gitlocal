@@ -641,7 +641,21 @@ class PbPayrunWizard(models.AbstractModel):
             # PRS P3 (R8) — the "Kind of run" choice on the first step, shown
             # only where pb_payruns gives the run that field.
             'run_kinds': 'pb_run_kind' in self.env['hr.payslip.run']._fields,
+            # WDGAP PR-D — which kinds this build offers. The screen shows the
+            # Extra run choice only where the run's field knows the value, so
+            # a wizard newer than pb_payruns can never send one it refuses.
+            'run_kind_options': self._run_kind_options(),
         }
+
+    @api.model
+    def _run_kind_options(self):
+        field = self.env['hr.payslip.run']._fields.get('pb_run_kind')
+        if field is None:
+            return []
+        selection = field.selection
+        if callable(selection):
+            selection = selection(self.env['hr.payslip.run'])
+        return [key for key, _label in (selection or [])]
 
     def _eligible_employees(self, statuses=None, employee_ids=None,
                             formula_config_id=None, date_start=None,
@@ -835,22 +849,27 @@ class PbPayrunWizard(models.AbstractModel):
         self._check_period(ds, de)
         config = self._require_scheme(vals)
         config_id = config.id if config else 0
-        emp_ids = self._eligible_employees(
-            statuses=vals.get('statuses'),
-            employee_ids=vals.get('employee_ids'),
-            formula_config_id=config_id or None,
-            date_start=ds, date_end=de)
+        kind = self._run_kind_from_vals(vals)
+        if kind == 'extra':
+            # WDGAP PR-D — the people picked, or the refusal that names why.
+            self._extra_run_name(vals)
+            emp_ids = self._extra_run_people(vals, config, ds, de)
+        else:
+            emp_ids = self._eligible_employees(
+                statuses=vals.get('statuses'),
+                employee_ids=vals.get('employee_ids'),
+                formula_config_id=config_id or None,
+                date_start=ds, date_end=de)
         covered, not_covered = len(emp_ids), 0
-        if config_id:
+        if config_id and kind != 'extra':
             preview = self.scheme_preview(dict(vals, formula_config_id=config_id))
             covered = preview.get('covered', covered)
             not_covered = preview.get('not_covered', 0)
-        kind = self._run_kind_from_vals(vals)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         blockers = self._clean_blockers(existing) if existing else []
-        # A top-up adopts nothing (see `_adopt_loose_slips`).
+        # A top-up and an Extra run adopt nothing (see `_adopt_loose_slips`).
         adopt = self._loose_slips(ds, de, config=config) \
-            if not existing and kind != 'topup' else self.env['hr.payslip']
+            if not existing and kind == 'regular' else self.env['hr.payslip']
         return {
             'formula_config_id': config_id,
             'covered': covered,
@@ -865,13 +884,95 @@ class PbPayrunWizard(models.AbstractModel):
     # ---------------- Kind of run (PRS P3, owner ruling R8) ----------------
     @api.model
     def _run_kind_from_vals(self, vals):
-        """'topup' when the person picked Top-up, else 'regular'.
+        """'topup' or 'extra' when the person picked one, else 'regular'.
 
-        Anything that is not exactly 'topup' — no key at all (PayAI, the
-        older door, every caller before R8), or a value nobody offers — is a
-        Regular run, which is what every run was before the choice existed.
+        Anything that is not exactly 'topup' or 'extra' — no key at all
+        (PayAI, the older door, every caller before R8), or a value nobody
+        offers — is a Regular run, which is what every run was before the
+        choice existed. 'extra' counts only where the run's field knows it
+        (WDGAP PR-D), so an older pb_payruns never receives it.
         """
-        return 'topup' if (vals or {}).get('run_kind') == 'topup' else 'regular'
+        kind = (vals or {}).get('run_kind')
+        if kind == 'topup':
+            return 'topup'
+        if kind == 'extra' and 'extra' in self._run_kind_options():
+            return 'extra'
+        return 'regular'
+
+    # ---------------- WDGAP PR-D: the Extra run ----------------
+    # An Extra run is for the people somebody picks — a bonus, a correction,
+    # one extra payslip. It may be run any number of times in a month, so it
+    # never meets another run (`_period_runs`), never clears one
+    # (`_clean_period`) and never adopts the month's loose payslips
+    # (`_adopt_loose_slips`). What makes that safe is asked here, BEFORE any
+    # run exists: a name a person can tell from the month's regular run, at
+    # least one person, and nobody the scheme does not pay for the period.
+    @api.model
+    def _extra_run_name(self, vals):
+        name = ((vals or {}).get('name') or '').strip()
+        if not name:
+            raise UserError(_(
+                "Give the extra run a name, so everybody can tell it from the "
+                "month’s regular run — for example “Extra run — bonus — "
+                "%(month)s”.", month=self._month_words(
+                    (vals or {}).get('date_start'))))
+        return name
+
+    @api.model
+    def _month_words(self, day):
+        try:
+            day = fields.Date.to_date(day) if day else date.today()
+        except Exception:       # noqa: BLE001
+            day = date.today()
+        return day.strftime('%B %Y')
+
+    @api.model
+    def _extra_run_people(self, vals, config, ds, de, payable=None):
+        """The people an Extra run pays, in the order they were picked.
+
+        Picked one by one, so the employment-status ticks meant for the
+        whole-month run are not applied: they would quietly drop somebody
+        the person chose on purpose. Everybody picked must be somebody this
+        run's scheme pays for the period (a running contract in this company,
+        and the scheme map's answer) — the same population every wizard door
+        uses; anybody else is refused by name rather than left out.
+
+        `payable` — a door with its own population (the demo's division run)
+        passes the ids it would pay instead, and gets the same refusals.
+        """
+        picked = []
+        for value in (vals or {}).get('employee_ids') or []:
+            try:
+                employee_id = int(value)
+            except (TypeError, ValueError):
+                continue
+            if employee_id and employee_id not in picked:
+                picked.append(employee_id)
+        if not picked:
+            raise UserError(_(
+                "An extra run is only for the people you pick. Pick at least "
+                "one person, then run it."))
+        if payable is None:
+            payable = self._eligible_employees(
+                employee_ids=picked,
+                formula_config_id=config.id if config else None,
+                date_start=ds, date_end=de)
+        payable = set(payable)
+        missing = [e for e in picked if e not in payable]
+        if missing:
+            names = self.env['hr.employee'].sudo().browse(missing).exists()
+            label = ', '.join(names.mapped('name')[:10]) or _("Somebody you picked")
+            if config:
+                raise UserError(_(
+                    "%(names)s cannot be in this extra run: the payroll scheme "
+                    "“%(scheme)s” does not pay them for this period. Take them "
+                    "off the list, or pick the scheme that pays them.",
+                    names=label, scheme=config.name))
+            raise UserError(_(
+                "%(names)s cannot be in this extra run: they have no contract "
+                "running in this company for this period. Take them off the "
+                "list and try again.", names=label))
+        return [e for e in picked if e in payable]
 
     @api.model
     def _run_kind_vals(self, kind):
@@ -887,6 +988,16 @@ class PbPayrunWizard(models.AbstractModel):
     @api.model
     def _run_kind_of(self, run):
         return getattr(run, 'pb_run_kind', False) or 'regular'
+
+    @api.model
+    def _slip_name(self, run, employee, suggested, run_name):
+        """A payslip's name. Unchanged for Regular and Top-up runs; on an
+        Extra run it carries the run's own name (WDGAP PR-D), so the extra
+        payslip — its PDF file name, the lists that show it — can be told
+        from the same month's regular one."""
+        if run and self._run_kind_of(run) == 'extra':
+            return '%s - %s' % (employee.name, run.name or run_name or '')
+        return suggested or ('%s - %s' % (employee.name, run_name))
 
     # ---------------- Existing-payroll detection + cleanup ----------------
     @api.model
@@ -927,7 +1038,15 @@ class PbPayrunWizard(models.AbstractModel):
         preview can never reach the other kind's payslips. Every wizard door
         passes the kind (no `run_kind` in the request = Regular). `kind=None`
         is the old kind-blind answer, kept for direct callers.
+
+        WDGAP PR-D — **an Extra run meets nothing.** It is for the people
+        somebody picked and may be run any number of times in a month, so
+        nothing is its duplicate, and there is nothing for *Clean and Run* to
+        be offered. Regular and Top-up never see an Extra run either, by the
+        same kind filter as before.
         """
+        if kind == 'extra':
+            return self.env['hr.payslip.run'].browse()
         runs = self.env['hr.payslip.run'].search([
             ('date_start', '<=', de), ('date_end', '>=', ds),
             ('company_id', 'in', self.env.companies.ids)
@@ -1018,7 +1137,8 @@ class PbPayrunWizard(models.AbstractModel):
         """
         # PRS P3 (R8): a top-up never claims the period's loose payslips —
         # they are the month's regular pay, not an extra on top of it.
-        if self._run_kind_of(run) == 'topup':
+        # WDGAP PR-D: nor does an Extra run, for the same reason.
+        if self._run_kind_of(run) in ('topup', 'extra'):
             return self.env['hr.payslip']
         config = (run.pb_formula_config_id
                   if 'pb_formula_config_id' in run._fields else None) or None
@@ -1050,7 +1170,12 @@ class PbPayrunWizard(models.AbstractModel):
         PRS P3 (R9): with `kind`, only runs of that kind are ever cleared — a
         second rail behind `_period_runs`, so a Regular run can never clear a
         top-up nor a top-up a Regular run, whatever recordset arrives here.
+
+        WDGAP PR-D: an Extra run clears nothing at all — not another Extra
+        run, not the month's regular run, not a top-up.
         """
+        if kind == 'extra':
+            return 0
         if kind in ('regular', 'topup'):
             runs = runs.filtered(lambda r: self._run_kind_of(r) == kind)
         if not runs:
@@ -1108,6 +1233,11 @@ class PbPayrunWizard(models.AbstractModel):
         self._check_period(ds, de)
         # PRS P3 (R8, R9): the guard and the clean see this kind of run only.
         kind = self._run_kind_from_vals(vals)
+        extra_people = None
+        if kind == 'extra':
+            # WDGAP PR-D — asked before anything is created.
+            name = self._extra_run_name(vals)
+            extra_people = self._extra_run_people(vals, config, ds, de)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
             blockers = self._clean_blockers(existing)      # PAYAI P0
@@ -1138,11 +1268,14 @@ class PbPayrunWizard(models.AbstractModel):
         run = Run.create(run_vals)
 
         adopted = self._adopt_loose_slips(run, ds, de)      # see prepare_run
-        emp_ids = [e for e in self._eligible_employees(
-                       statuses=vals.get('statuses'), employee_ids=vals.get('employee_ids'),
-                       formula_config_id=config.id if config else None,
-                       date_start=ds, date_end=de)
-                   if e not in set(adopted.mapped('employee_id').ids)]
+        if extra_people is not None:
+            emp_ids = extra_people
+        else:
+            emp_ids = [e for e in self._eligible_employees(
+                           statuses=vals.get('statuses'), employee_ids=vals.get('employee_ids'),
+                           formula_config_id=config.id if config else None,
+                           date_start=ds, date_end=de)
+                       if e not in set(adopted.mapped('employee_id').ids)]
         exceptions = []
         created = Slip
         for emp in self.env['hr.employee'].browse(emp_ids):
@@ -1156,7 +1289,7 @@ class PbPayrunWizard(models.AbstractModel):
                     continue
                 slip = Slip.create({
                     'employee_id': emp.id,
-                    'name': v.get('name') or ('%s - %s' % (emp.name, name)),
+                    'name': self._slip_name(run, emp, v.get('name'), name),
                     'struct_id': v.get('struct_id'),
                     'contract_id': v.get('contract_id'),
                     'payslip_run_id': run.id,
@@ -1245,6 +1378,12 @@ class PbPayrunWizard(models.AbstractModel):
         # of run — a top-up never clears the month's regular run, nor a
         # regular run a top-up.
         kind = self._run_kind_from_vals(vals)
+        extra_people = None
+        if kind == 'extra':
+            # WDGAP PR-D — a name, at least one person, nobody the scheme
+            # does not pay: refused here, before any run exists (R3).
+            name = self._extra_run_name(vals)
+            extra_people = self._extra_run_people(vals, config, ds, de)
         existing = self._period_runs(ds, de, config=config, kind=kind)
         if existing:
             # PAYAI P0 — approved, paid or pending payroll is never offered
@@ -1295,12 +1434,15 @@ class PbPayrunWizard(models.AbstractModel):
         # payslips on one person for one month, which is the pay-run shape of the
         # duplicate this system already refuses everywhere else.
         adopted = self._adopt_loose_slips(run, ds, de)
-        emp_ids = [e for e in self._eligible_employees(
-                       statuses=vals.get('statuses'),
-                       employee_ids=vals.get('employee_ids'),
-                       formula_config_id=config.id if config else None,
-                       date_start=ds, date_end=de)
-                   if e not in set(adopted.mapped('employee_id').ids)]
+        if extra_people is not None:
+            emp_ids = extra_people          # WDGAP PR-D: exactly the picks
+        else:
+            emp_ids = [e for e in self._eligible_employees(
+                           statuses=vals.get('statuses'),
+                           employee_ids=vals.get('employee_ids'),
+                           formula_config_id=config.id if config else None,
+                           date_start=ds, date_end=de)
+                       if e not in set(adopted.mapped('employee_id').ids)]
         payload = {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de,
@@ -1346,6 +1488,7 @@ class PbPayrunWizard(models.AbstractModel):
         already = set(Slip.search([
             ('payslip_run_id', '=', run_id), ('employee_id', 'in', emp_ids),
         ]).mapped('employee_id').ids)
+        run = self.env['hr.payslip.run'].sudo().browse(run_id)
         for emp in self.env['hr.employee'].sudo().browse(emp_ids):
             if emp.id in already:
                 continue
@@ -1359,7 +1502,7 @@ class PbPayrunWizard(models.AbstractModel):
                     continue
                 slip_vals = {
                     'employee_id': emp.id,
-                    'name': v.get('name') or ('%s - %s' % (emp.name, name)),
+                    'name': self._slip_name(run, emp, v.get('name'), name),
                     'struct_id': v.get('struct_id'),
                     'contract_id': v.get('contract_id'),
                     'payslip_run_id': run_id,

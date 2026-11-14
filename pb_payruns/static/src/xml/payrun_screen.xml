@@ -49,7 +49,8 @@
         <div class="pb-prs-chips">
           <span t-attf-class="pill {{pillTone}}"><i/><t t-esc="header.status.label"/></span>
           <!-- PRS P3 (R8): a top-up says so; a regular run shows nothing. -->
-          <span t-if="header.kind" class="chip kind-topup" t-att-title="header.kind.hint"><span class="ic" t-out="icon('plus', 14)"/><t t-esc="header.kind.label"/></span>
+          <!-- WDGAP PR-D: …and an Extra run, with its own icon. -->
+          <span t-if="header.kind" t-attf-class="chip kind-{{ header.kind.key }}" t-att-title="header.kind.hint"><span class="ic" t-out="icon(header.kind.key === 'extra' ? 'userPlus' : 'plus', 14)"/><t t-esc="header.kind.label"/></span>
           <span class="chip"><span class="ic" t-out="icon('calendar', 14)"/><t t-esc="workDatesChip"/></span>
           <span t-if="header.scheme" class="chip" t-att-title="header.scheme"><span class="ic" t-out="icon('layers', 14)"/><span class="chip-t" t-esc="header.scheme"/></span>
           <span class="chip"><span class="ic" t-out="icon('users', 14)"/><t t-esc="peopleChip"/></span>

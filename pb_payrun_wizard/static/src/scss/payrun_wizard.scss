@@ -449,6 +449,48 @@ $pw-lock-bd: #A7E3D5;
 }
 .pw-root .pw-kind__ic { display: inline-flex; color: var(--pw-brand); flex: none; margin-top: 1px; }
 
+/* WDGAP PR-D — three kinds of run, each with its one-line promise under its
+   name. The two-kind segmented control above is untouched where a build has
+   no Extra run (`.pw-kind--3` is not set there). */
+.pw-root .pw-kind__txt { display: inline-flex; flex-direction: column; align-items: flex-start; min-width: 0; text-align: left; }
+.pw-root .pw-kind__t { line-height: 1.2; }
+.pw-root .pw-kind__d {
+    font-size: 11px; font-weight: 500; line-height: 1.3; color: var(--pw-muted);
+    white-space: normal;
+}
+.pw-root .pw-kind--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pw-root .pw-kind--3 .pw-kind__opt {
+    height: auto; min-height: 52px; padding: 8px 10px; justify-content: flex-start; align-items: flex-start;
+}
+.pw-root .pw-kind--3 .pw-kind__dot { margin-top: 2px; }
+.pw-root .pw-kind--3 .pw-kind__opt.on .pw-kind__d { color: var(--pw-ink); }
+@media (max-width: 640px) {
+    .pw-root .pw-kind--3 { grid-template-columns: 1fr; }
+}
+
+/* WDGAP PR-D — "Who is this extra run for?": the people picked stay on
+   screen as chips while the search below them changes. */
+.pw-root .pw-xpick > label { margin-bottom: 6px; }
+.pw-root .pw-xpick__chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 4px; }
+.pw-root .pw-xpick__chip {
+    display: inline-flex; align-items: center; gap: 4px; max-width: 100%;
+    padding: 3px 4px 3px 10px; border-radius: 999px;
+    background: var(--pw-soft); border: 1px solid var(--pw-soft2);
+    color: var(--pw-brand); font-size: 12px; font-weight: 600;
+    animation: pw-xpick-in .16s ease-out;
+    > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+.pw-root .pw-xpick__x {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border: 0; border-radius: 50%; padding: 0;
+    background: transparent; color: var(--pw-brand); cursor: pointer;
+    &:hover { background: #fff; }
+    &:focus-visible { outline: 2px solid var(--pw-brand); outline-offset: 1px; }
+}
+.pw-root .pw-xpick__empty { margin: 4px 0; font-size: 12px; color: var(--pw-muted); }
+@keyframes pw-xpick-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pw-root .pw-xpick__chip { animation: none; } }
+
 /* =====================================================================
    GROUP P5 — people paid in two places.
 
