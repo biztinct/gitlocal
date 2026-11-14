@@ -92,7 +92,7 @@ opinion whatsoever about what an application's roles should be.
 pbim tokens only, `.pbva-*` class names, Lucide icons through the shared `ic()`
 registry, flat fills, one accent. No emoji.
 """,
-    'version': '19.0.1.12.1',
+    'version': '19.0.1.13.0',
     'category': 'Administration',
     'license': 'LGPL-3',
     'author': 'Biztinct',
@@ -118,6 +118,7 @@ registry, flat fills, one accent. No emoji.
         'data/mail_template_data.xml',
         'views/access_views.xml',
         'views/first_password_templates.xml',
+        'views/two_step_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -132,6 +133,13 @@ registry, flat fills, one accent. No emoji.
             'biz_access/static/src/xml/mini_rail.xml',
             'biz_access/static/src/xml/access_board.xml',
             'biz_access/static/src/xml/access_studio.xml',
+            # WDGAP QF5: the idle warning (one file for both bundles)
+            'biz_access/static/src/scss/sign_in_rules.scss',
+            'biz_access/static/src/js/idle_watch.js',
+        ],
+        'web.assets_frontend': [
+            'biz_access/static/src/scss/sign_in_rules.scss',
+            'biz_access/static/src/js/idle_watch.js',
         ],
     },
     # The re-homing of what this module was extracted from. It runs BEFORE the

@@ -188,6 +188,10 @@ export class PbAccessBoard extends Component {
             workers: null,
             workersBusy: false,
             leavers: null,             // { on }
+            // WDGAP QF5: two-step required for…, sign out when idle
+            signInRules: null,         // { two_step, idle }
+            rulesEdit: null,           // the dialog's working copy
+            rulesBusy: false,
 
             // the screens lens
             screens: null,             // the menu with its gates, or null
@@ -224,6 +228,7 @@ export class PbAccessBoard extends Component {
 
         onWillStart(async () => {
             await this.load();
+            this.loadSignInRules();     // WDGAP QF5: the card, on any lens
             // A deep link lands ON a lens, so the lens's own read has to happen
             // before the first paint too — otherwise the card that promised the
             // menu opens on an empty pane and fills itself in afterwards.
@@ -452,6 +457,7 @@ export class PbAccessBoard extends Component {
                     .then((r) => { this.state.leavers = r; })
                     .catch(() => {});
             }
+            this.loadSignInRules();
             // LAND ON SOMEBODY, ONCE. An empty right-hand pane beside a list of
             // names is a screen asking a question it could have answered
             // itself. But only on the FIRST read: a search that swapped the
@@ -503,6 +509,7 @@ export class PbAccessBoard extends Component {
                     .then((r) => { this.state.leavers = r; })
                     .catch(() => {});
             }
+            this.loadSignInRules();
             this.state.passportFailed = "";
         } catch (e) {
             if (seq !== this.passportSeq) { return; }
@@ -799,7 +806,10 @@ export class PbAccessBoard extends Component {
             two_step: {
                 icon: "shield", press: _t("Turn it off"),
                 title: _t("Turn off two-step sign-in for %s?", who),
-                line: _t("For a lost or replaced phone. They sign in with their password only, and can set two-step up again from their profile."),
+                line: head.desk && head.desk.two_step_required
+                    ? _t("For a lost or replaced phone. They sign in with their password only, and can set two-step up again from their profile.")
+                      + " " + _t("They will be asked to set it up again the next time they sign in.")
+                    : _t("For a lost or replaced phone. They sign in with their password only, and can set two-step up again from their profile."),
             },
             sign_out: {
                 icon: "logOut", press: _t("Sign out everywhere"),
@@ -894,6 +904,145 @@ export class PbAccessBoard extends Component {
         } catch (e) {
             ev.target.checked = !on;
             this.notif.add(this._msg(e, _t("The setting could not be saved.")), { type: "danger" });
+        }
+    }
+
+    // ------------------------------------- sign-in rules (WDGAP QF5)
+    async loadSignInRules(force = false) {
+        if (!this.canManage || this.rulesLoading
+                || (this.state.signInRules && !force)) { return; }
+        this.rulesLoading = true;
+        try {
+            const [twoStep, idle] = await Promise.all([
+                this.orm.call("pb.access", "two_step_setting", []),
+                this.orm.call("pb.access", "idle_setting", []),
+            ]);
+            this.state.signInRules = { two_step: twoStep, idle };
+        } catch {
+            // the card stays hidden; the rest of the board is unaffected
+        } finally {
+            this.rulesLoading = false;
+        }
+    }
+
+    twoStepLine(ts) {
+        if (!ts.available) { return _t("Not available on this system"); }
+        if (ts.mode === "nobody") { return _t("Not required"); }
+        const who = ts.mode === "all" ? _t("Every staff login")
+            : ts.role_ids.length === 1 ? _t("1 role") : _t("%s roles", ts.role_ids.length);
+        return _t("%(who)s · %(ready)s of %(covered)s set up",
+                  { who, ready: ts.ready, covered: ts.covered });
+    }
+
+    idleLine(idle) {
+        return idle.minutes
+            ? _t("After %s minutes without activity", idle.minutes)
+            : _t("Off");
+    }
+
+    coverLine(p) {
+        if (!p.covered) { return _t("This covers nobody yet."); }
+        const who = p.covered === 1 ? _t("This covers 1 person.")
+            : _t("This covers %s people.", p.covered);
+        const ready = p.ready === 1 ? _t("1 has set it up.")
+            : _t("%s have set it up.", p.ready);
+        return who + " " + ready;
+    }
+
+    toSetUpLine(n) { return _t("%s to set up", n); }
+
+    missingLine(p) {
+        const names = p.missing.map((m) => m.name).join(", ");
+        const more = p.missing_count - p.missing.length;
+        return more > 0
+            ? _t("Not set up yet: %(names)s and %(more)s more", { names, more })
+            : _t("Not set up yet: %s", names);
+    }
+
+    signOutLine(p) {
+        if (!p || !p.signed_out) { return ""; }
+        return p.signed_out === 1
+            ? _t("Saving signs out 1 person who has not set it up yet. They set it up when they sign in again.")
+            : _t("Saving signs out %s people who have not set it up yet. They set it up when they sign in again.", p.signed_out);
+    }
+
+    openSignInRules() {
+        const r = this.state.signInRules;
+        if (!r) { return; }
+        this.state.rulesEdit = {
+            mode: r.two_step.mode, role_ids: [...r.two_step.role_ids],
+            minutes: r.idle.minutes, preview: null,
+        };
+        this.previewSignInRules();
+    }
+
+    closeSignInRules() {
+        if (!this.state.rulesBusy) { this.state.rulesEdit = null; }
+    }
+
+    setRulesMode(mode) {
+        if (!this.state.rulesEdit) { return; }
+        this.state.rulesEdit.mode = mode;
+        this.previewSignInRules();
+    }
+
+    toggleRulesRole(id) {
+        const ids = this.state.rulesEdit && this.state.rulesEdit.role_ids;
+        if (!ids) { return; }
+        const at = ids.indexOf(id);
+        if (at >= 0) { ids.splice(at, 1); } else { ids.push(id); }
+        this.previewSignInRules();
+    }
+
+    setRulesMinutes(ev) {
+        if (this.state.rulesEdit) {
+            this.state.rulesEdit.minutes = Number(ev.target.value) || 0;
+        }
+    }
+
+    async previewSignInRules() {
+        const re = this.state.rulesEdit;
+        if (!re) { return; }
+        const seq = this.rulesSeq = (this.rulesSeq || 0) + 1;
+        try {
+            const preview = await this.orm.call(
+                "pb.access", "two_step_preview", [re.mode, re.role_ids]);
+            if (seq === this.rulesSeq && this.state.rulesEdit) {
+                this.state.rulesEdit.preview = preview;
+            }
+        } catch {
+            // the dialog still saves; the count is a help, not a gate
+        }
+    }
+
+    async saveSignInRules() {
+        const re = this.state.rulesEdit;
+        const r = this.state.signInRules;
+        if (!re || !r || this.state.rulesBusy) { return; }
+        if (re.mode === "roles" && !re.role_ids.length) {
+            this.notif.add(_t("Tick at least one role, or choose Nobody."), { type: "warning" });
+            return;
+        }
+        const sameRoles = [...re.role_ids].sort().join() === [...r.two_step.role_ids].sort().join();
+        this.state.rulesBusy = true;
+        try {
+            const said = [];
+            if (re.mode !== r.two_step.mode || (re.mode === "roles" && !sameRoles)) {
+                const res = await this.orm.call(
+                    "pb.access", "set_two_step_setting", [re.mode, re.role_ids]);
+                said.push(res.message);
+            }
+            if (re.minutes !== r.idle.minutes) {
+                const res = await this.orm.call("pb.access", "set_idle_setting", [re.minutes]);
+                said.push(res.message);
+            }
+            this.state.rulesEdit = null;
+            await this.loadSignInRules(true);
+            this.notif.add(said.join(" ") || _t("Nothing changed."), { type: "success" });
+        } catch (e) {
+            this.notif.add(this._msg(e, _t("The setting could not be saved.")), { type: "danger" });
+        } finally {
+            this.state.rulesBusy = false;
         }
     }
 

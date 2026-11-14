@@ -500,6 +500,7 @@
                 <small>The day after the last day on their employee record. Opened again if that date is cleared.</small>
               </span>
             </label>
+            <t t-call="biz_access.SignInRulesCard"/>
           </aside>
 
           <!-- ========================== the passport ========================== -->
@@ -1323,6 +1324,9 @@
         </div>
       </div>
 
+      <!-- =================== sign-in rules (WDGAP QF5) =================== -->
+      <t t-call="biz_access.SignInRulesDialog"/>
+
       <!-- ======================= logins for workers =======================
            People with no email sign in with their employee code. The first
            passwords are shown once, on slips to print and hand out. -->
@@ -1982,6 +1986,122 @@
       </div>
       </div>
 
+    </div>
+  </t>
+
+
+  <!-- ====================================================================
+       WDGAP QF5 — the sign-in rules card, beside "Close leavers' logins".
+       Quiet: grey while nothing is required, a count only when somebody has
+       something to do.
+       ==================================================================== -->
+  <t t-name="biz_access.SignInRulesCard">
+    <section t-if="canManage and state.signInRules" class="pbva-rules"
+             aria-label="Sign-in rules">
+      <t t-set="sr" t-value="state.signInRules"/>
+      <p class="pbva-rules-h"><t t-out="ic('shieldCheck',14)"/> Sign-in rules</p>
+      <button type="button" class="pbva-rules-row" t-on-click="openSignInRules">
+        <span class="pbva-rules-tx">
+          <b>Two-step sign-in is required for</b>
+          <small t-esc="twoStepLine(sr.two_step)"/>
+        </span>
+        <span t-if="sr.two_step.mode !== 'nobody' and sr.two_step.missing_count"
+              class="pbva-badge pbva-badge--lent"
+              t-esc="toSetUpLine(sr.two_step.missing_count)"/>
+      </button>
+      <button type="button" class="pbva-rules-row" t-on-click="openSignInRules">
+        <span class="pbva-rules-tx">
+          <b>Sign people out when idle</b>
+          <small t-esc="idleLine(sr.idle)"/>
+        </span>
+      </button>
+    </section>
+  </t>
+
+  <t t-name="biz_access.SignInRulesDialog">
+    <div t-if="state.rulesEdit and state.signInRules" class="pbim-modal-scrim"
+         t-on-click="closeSignInRules">
+      <t t-set="re" t-value="state.rulesEdit"/>
+      <t t-set="ts" t-value="state.signInRules.two_step"/>
+      <div class="pbim-modal pbva-modal pbva-modal--wide" t-on-click.stop=""
+           role="dialog" aria-modal="true" aria-label="Sign-in rules">
+        <div class="pbva-modal-h">
+          <div class="pbva-modal-ic"><t t-out="ic('shieldCheck',17)"/></div>
+          <div class="pbva-modal-t">
+            <h3>Sign-in rules</h3>
+            <p>For everyone at this company who signs in. Nothing changes for anybody until you save.</p>
+          </div>
+          <button class="pbim-btn ghost" t-on-click="closeSignInRules"
+                  t-att-disabled="state.rulesBusy" title="Close">
+            <t t-out="ic('x',16)"/>
+          </button>
+        </div>
+        <div class="pbva-modal-b pbva-rules-b">
+          <fieldset class="pbva-rules-set" t-att-disabled="!ts.available">
+            <legend class="pbva-lbl">Two-step sign-in is required for</legend>
+            <p t-if="!ts.available" class="pbva-hint">Two-step sign-in is not available on this system.</p>
+            <label class="pbva-check">
+              <input type="radio" name="pbva-two-step" value="nobody"
+                     t-att-checked="re.mode === 'nobody'"
+                     t-on-change="() => this.setRulesMode('nobody')"/>
+              <span>Nobody</span>
+            </label>
+            <label class="pbva-check">
+              <input type="radio" name="pbva-two-step" value="roles"
+                     t-att-checked="re.mode === 'roles'"
+                     t-on-change="() => this.setRulesMode('roles')"/>
+              <span>These roles…</span>
+            </label>
+            <div t-if="re.mode === 'roles'" class="pbva-rules-roles">
+              <label t-foreach="ts.roles" t-as="role" t-key="role.id" class="pbva-check">
+                <input type="checkbox" t-att-checked="re.role_ids.includes(role.id)"
+                       t-on-change="() => this.toggleRulesRole(role.id)"/>
+                <span t-esc="role.name"/>
+              </label>
+              <p t-if="!ts.roles.length" class="pbva-hint">There are no roles yet.</p>
+            </div>
+            <label class="pbva-check">
+              <input type="radio" name="pbva-two-step" value="all"
+                     t-att-checked="re.mode === 'all'"
+                     t-on-change="() => this.setRulesMode('all')"/>
+              <span>Every staff login</span>
+            </label>
+            <div t-if="re.mode !== 'nobody' and re.preview" class="pbva-rules-preview">
+              <p><t t-out="ic('users',13)"/> <t t-esc="coverLine(re.preview)"/></p>
+              <p t-if="re.preview.missing_count" class="pbva-hint"
+                 t-esc="missingLine(re.preview)"/>
+              <p class="pbva-hint">They are asked to set up an authenticator app on their next page. My Payobook logins are not included yet.</p>
+            </div>
+          </fieldset>
+
+          <label class="pbva-lbl" for="pbva-idle-minutes">Sign people out after … minutes without activity</label>
+          <select id="pbva-idle-minutes" class="pbva-in" t-on-change="setRulesMinutes">
+            <t t-foreach="state.signInRules.idle.choices" t-as="m" t-key="m">
+              <option t-att-value="m" t-att-selected="m === re.minutes">
+                <t t-if="m"><t t-esc="m"/> minutes</t>
+                <t t-else="">Off</t>
+              </option>
+            </t>
+            <option t-if="re.minutes and !state.signInRules.idle.choices.includes(re.minutes)"
+                    t-att-value="re.minutes" selected="selected">
+              <t t-esc="re.minutes"/> minutes
+            </option>
+          </select>
+          <p class="pbva-hint">Counts only what people do: moving the mouse, typing, touching the screen. A minute before, they see a warning with "Stay signed in".</p>
+
+          <p t-if="re.mode !== 'nobody' and signOutLine(re.preview)" class="pbva-rules-warn">
+            <t t-out="ic('logOut',14)"/> <t t-esc="signOutLine(re.preview)"/>
+          </p>
+        </div>
+        <div class="pbva-modal-f">
+          <button class="pbim-btn ghost" t-on-click="closeSignInRules"
+                  t-att-disabled="state.rulesBusy">Cancel</button>
+          <button class="pbim-btn primary" t-on-click="saveSignInRules"
+                  t-att-disabled="state.rulesBusy">
+            <t t-out="ic('check',15)"/> Save
+          </button>
+        </div>
+      </div>
     </div>
   </t>
 
