@@ -48,7 +48,7 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
      double-submit guard is a salted daily hash, and the Today tile refuses to
      render an aggregate below the anonymity floor SERVER-side.
 """,
-    'version': '19.0.1.3.2',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -89,6 +89,9 @@ THE SECURITY MODEL (this module's whole point — read this before editing it)
             # TIERS T3b: the live timer, the ring and the location ask on the
             # Clock page and the home's clock button
             'pb_ess_workforce/static/src/interactions/clock.js',
+            # WDGAP QF3: My Leave — the controls the kind uses + the live
+            # "after this request" preview (the form works without it)
+            'pb_ess_workforce/static/src/interactions/leave_form.js',
         ],
     },
     'installable': True,

@@ -41,13 +41,15 @@ an explicit action tied to the displayed attendance session. The row it creates
 is tagged ``pb_entry_source='portal'``.
 """
 
+import base64
 import logging
+import re
 from datetime import datetime, time, timedelta
 
 import pytz
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 # How far the schedule page looks: the current week and the next one. Past
 # shifts inside the current week stay visible (read-only) — an employee needs to
@@ -70,7 +72,31 @@ CLOCK_PARAM = 'pb_ess_workforce.portal_clock.%s'
 #: The strip under the button: today and the six days before it.
 CLOCK_WEEK_DAYS = 7
 
+# WDGAP QF3 — documents on a leave request (cloned from pb_me_expense, R4).
+#: How big one document may be.
+LEAVE_DOC_MAX_BYTES = 10 * 1024 * 1024
+#: The kinds of file a document may be, decided from its own first bytes.
+LEAVE_DOC_MIME = ('image/jpeg', 'image/png', 'image/webp', 'application/pdf')
+#: How many documents one leave request may carry.
+LEAVE_DOC_MAX = 5
+
 _logger = logging.getLogger(__name__)
+
+
+def sniff_mimetype(data):
+    """The kind of file from its first bytes; '' when it is none we take.
+    A copy of `pb_me_expense.models.me_expense.sniff_mimetype` (this module
+    does not depend on expenses)."""
+    head = bytes(data[:16]) if data else b''
+    if head.startswith(b'\xff\xd8\xff'):
+        return 'image/jpeg'
+    if head.startswith(b'\x89PNG\r\n\x1a\n'):
+        return 'image/png'
+    if head[:4] == b'RIFF' and head[8:12] == b'WEBP':
+        return 'image/webp'
+    if head.startswith(b'%PDF'):
+        return 'application/pdf'
+    return ''
 
 
 class PbEssWorkforce(models.AbstractModel):
@@ -402,6 +428,19 @@ class PbEssWorkforce(models.AbstractModel):
         return local.astimezone(pytz.UTC).replace(tzinfo=None)
 
     # ================================================================== leave
+    # WDGAP QF3 — half days and hours, withdraw, cancel, documents and the
+    # "after this request" preview. THE SAFETY RAILS (handover §3):
+    #   R1 every method resolves the employee from the session and refuses a
+    #      leave that is not theirs BEFORE any sudo write (`_own_leave`);
+    #   R2 sudo skips pb_timeoff's past-date rule and hr_holidays' state
+    #      checks, so `_leave_refusal` re-states them for the employee path —
+    #      ONE helper behind apply / withdraw / cancel / add a document, and
+    #      the same helper answers the page's can_* flags;
+    #   R3 a withdraw closes the open approval through the engine (which now
+    #      cancels the leave through `hr.leave._approval_withdraw`);
+    #   R4 uploads: first bytes decide the kind, 10 MB, 5 per leave, bound to
+    #      the leave, tokened links.
+
     @api.model
     def get_my_leave(self):
         """Own balances (allocation-based types), own requests, appliable types.
@@ -412,7 +451,8 @@ class PbEssWorkforce(models.AbstractModel):
         of it would mean either widening that gate or paging 4 500 people to
         find one. Same two read_groups, same "validated allocations minus
         validated taken" definition — the number an employee sees is the number
-        the officer sees.
+        the officer sees. QF3 adds what is still waiting for approval, as its
+        own quiet line (it is not taken until it is approved).
         """
         emp = self._require_own_employee()
         Leave = self.env['hr.leave'].sudo()
@@ -428,13 +468,21 @@ class PbEssWorkforce(models.AbstractModel):
                 [('employee_id', '=', emp.id), ('state', '=', 'validate'),
                  ('holiday_status_id', 'in', types.ids)],
                 ['number_of_days:sum'], ['holiday_status_id'], lazy=False)
+            waiting = Leave.read_group(
+                [('employee_id', '=', emp.id),
+                 ('state', 'in', _OPEN_LEAVE_STATES),
+                 ('holiday_status_id', 'in', types.ids)],
+                ['number_of_days:sum'], ['holiday_status_id'], lazy=False)
             a_by = {g['holiday_status_id'][0]: g.get('number_of_days') or 0.0
                     for g in alloc if g.get('holiday_status_id')}
             t_by = {g['holiday_status_id'][0]: g.get('number_of_days') or 0.0
                     for g in taken if g.get('holiday_status_id')}
+            w_by = {g['holiday_status_id'][0]: g.get('number_of_days') or 0.0
+                    for g in waiting if g.get('holiday_status_id')}
             for t in types:
                 a = a_by.get(t.id, 0.0)
                 k = t_by.get(t.id, 0.0)
+                w = round(w_by.get(t.id, 0.0), 2)
                 # A tile per configured leave type is CONFIGURATION, not data
                 # (W64). This database carries 32 allocation-based types and the
                 # live page rendered 32 tiles all reading "0.0 days left" — a
@@ -452,23 +500,37 @@ class PbEssWorkforce(models.AbstractModel):
                     'used_label': _('%(taken)s of %(allocated)s days used',
                                     taken=round(k, 2), allocated=round(a, 2)),
                     'low': (a - k) <= 2.0 and a > 0,
+                    'pending': w,
+                    'pending_label': (
+                        '' if not w else
+                        _('1 day waiting for approval') if w == 1 else
+                        _('%s days waiting for approval', '{:g}'.format(w))),
                 })
 
         leaves = Leave.search([('employee_id', '=', emp.id)],
                               order='date_from desc', limit=_LIST_CAP)
+        files_by = self._leave_files_by(leaves)
         rows = []
         for lv in leaves:
             df = lv.request_date_from or (lv.date_from.date() if lv.date_from else None)
             dt = lv.request_date_to or (lv.date_to.date() if lv.date_to else df)
+            amount, unit = self._leave_amount(lv)
             rows.append({
                 'id': lv.id,
                 'type': lv.holiday_status_id.name or _('Leave'),
                 'date_from': df.isoformat() if df else '',
                 'date_to': dt.isoformat() if dt else '',
                 'days': round(lv.number_of_days or 0.0, 2),
+                'length_label': self._leave_length_label(amount, unit),
+                'period_label': lv._pb_day_part_label(),
                 'state': lv.state,
                 'state_label': self._leave_state_label(lv.state),
                 'note': lv.name or '',
+                'can_withdraw': not self._leave_refusal('withdraw', emp, lv),
+                'can_cancel': not self._leave_refusal('cancel', emp, lv,
+                                                      reason='-'),
+                'can_add_document': not self._leave_refusal('document', emp, lv),
+                'files': files_by.get(lv.id, []),
             })
 
         appliable = self._my_appliable_types(emp)
@@ -476,7 +538,16 @@ class PbEssWorkforce(models.AbstractModel):
             'employee': {'id': emp.id, 'name': emp.name or ''},
             'balances': balances,
             'requests': rows,
-            'types': [{'id': t.id, 'name': t.name} for t in appliable],
+            'types': [{
+                'id': t.id, 'name': t.name,
+                # the unit is the KIND's, never a per-request choice (FACTS §2)
+                'unit': t.request_unit or 'day',
+                'needs_document': bool(t.support_document),
+            } for t in appliable],
+            'has_half_day': any(t.request_unit == 'half_day' for t in appliable),
+            'has_hours': any(t.request_unit == 'hour' for t in appliable),
+            'doc_types': [t.name for t in appliable if t.support_document],
+            'doc_max': LEAVE_DOC_MAX,
             'pending': sum(1 for r in rows if r['state'] in _OPEN_LEAVE_STATES),
         }
 
@@ -507,20 +578,45 @@ class PbEssWorkforce(models.AbstractModel):
             'cancel': _('Cancelled'),
         }.get(state, state or '')
 
+    # ------------------------------------------------------ small helpers
     @api.model
-    def apply_leave(self, type_id, date_from, date_to, note=False):
-        """Create MY OWN leave, in the normal chain.
+    def _leave_amount(self, leave):
+        """(amount, 'hour'|'day') — hours for a kind counted in hours, the
+        unit hr_holidays' own balance is kept in for that kind."""
+        if (leave.holiday_status_id.request_unit or 'day') == 'hour':
+            return round(float(leave.number_of_hours or 0.0), 2), 'hour'
+        return round(float(leave.number_of_days or 0.0), 2), 'day'
 
-        The create runs under ``sudo()`` AFTER ``_require_own_employee``
-        (TIERS T2b, ledger T-R11): an employee login (a portal account) holds no
-        ACL on ``hr.leave``. ``sudo()`` keeps ``env.uid``, so ``create_uid`` is
-        the employee and the chain's own gates see the truthful filer. Core
-        ``hr.leave``'s own validation (overlap, balance, working calendar) still
-        runs. Because sudo no longer scopes the leave type by company, the type
-        is checked against the ones ``get_my_leave`` offers this person.
-        The employee is forced the same way the correction's is.
-        """
-        emp = self._require_own_employee()
+    @api.model
+    def _leave_length_label(self, amount, unit):
+        shown = '{:g}'.format(amount or 0.0)
+        if unit == 'hour':
+            return _('1 hour') if amount == 1 else _('%s hours', shown)
+        if amount == 0.5:
+            return _('Half a day')
+        return _('1 day') if amount == 1 else _('%s days', shown)
+
+    @api.model
+    def _parse_hour(self, raw):
+        """'09:30' -> 9.5; None when empty; UserError when unreadable."""
+        raw = (raw or '').strip()
+        if not raw:
+            return None
+        try:
+            hh, mm = [int(x) for x in raw.split(':')[:2]]
+        except (TypeError, ValueError):
+            raise UserError(_("Enter a time as HH:MM, for example 08:30."))
+        if not (0 <= hh <= 23 and 0 <= mm <= 59):
+            raise UserError(_("Enter a time as HH:MM, for example 08:30."))
+        return hh + mm / 60.0
+
+    @api.model
+    def _leave_vals(self, emp, type_id, date_from, date_to, note=False,
+                    period_from=None, period_to=None, hour_from=None,
+                    hour_to=None):
+        """Every check a request must pass, then the values to create it
+        with. Shared by apply and the preview, so the preview counts exactly
+        what the request will count. The employee is FORCED (I-H3)."""
         if not type_id:
             raise UserError(_("Choose a leave type."))
         offered = self._my_appliable_types(emp)
@@ -532,22 +628,423 @@ class PbEssWorkforce(models.AbstractModel):
             raise UserError(_("Choose a leave type."))
         if not (date_from and date_to):
             raise UserError(_("Pick the first and the last day."))
-        df = fields.Date.to_date(date_from)
-        dt = fields.Date.to_date(date_to)
+        try:
+            df = fields.Date.to_date(date_from)
+            dt = fields.Date.to_date(date_to)
+        except (TypeError, ValueError):
+            df = dt = None
         if not (df and dt):
             raise UserError(_("Those dates could not be read."))
         if dt < df:
             raise UserError(_("The last day cannot be before the first."))
-        leave = self.env['hr.leave'].sudo().create({
+        leave_type = offered.filtered(lambda t: t.id == type_id)
+        unit = leave_type.request_unit or 'day'
+        pf = (period_from or '').strip().lower()
+        pt = (period_to or '').strip().lower()
+        hf, ht = (hour_from or '').strip(), (hour_to or '').strip()
+        vals = {
             'employee_id': emp.id,           # FORCED (I-H3)
             'holiday_status_id': type_id,
             'request_date_from': df,
             'request_date_to': dt,
             'name': (note or '').strip() or _('Requested from My Work'),
-        })
-        if hasattr(leave, 'action_confirm'):
-            leave.action_confirm()
+        }
+        if unit == 'half_day':
+            if df == dt:
+                part = pf if pf in ('am', 'pm') else 'full'
+                vals['request_date_from_period'] = 'pm' if part == 'pm' else 'am'
+                vals['request_date_to_period'] = 'am' if part == 'am' else 'pm'
+            else:
+                if pf == 'am':
+                    raise UserError(_(
+                        "When you ask for several days, the first day can be "
+                        "a full day or start in the afternoon."))
+                if pt == 'pm':
+                    raise UserError(_(
+                        "When you ask for several days, the last day can be a "
+                        "full day or end in the morning."))
+                vals['request_date_from_period'] = 'pm' if pf == 'pm' else 'am'
+                vals['request_date_to_period'] = 'am' if pt == 'am' else 'pm'
+        elif unit == 'hour':
+            if df != dt:
+                raise UserError(_(
+                    "This kind of leave is counted in hours, so it is asked "
+                    "for one day at a time. Pick the same first and last "
+                    "day."))
+            start, end = self._parse_hour(hf), self._parse_hour(ht)
+            if start is None or end is None:
+                raise UserError(_(
+                    "This kind of leave is counted in hours. Enter the time "
+                    "you leave and the time you are back."))
+            if start >= end:
+                raise UserError(_("The end time must be after the start time."))
+            vals['request_hour_from'] = start
+            vals['request_hour_to'] = end
+        else:
+            if pf in ('am', 'pm') or pt in ('am', 'pm') or hf or ht:
+                raise UserError(_(
+                    "This kind of leave is taken in whole days. Choose Full "
+                    "day and leave the times empty, or pick a kind of leave "
+                    "that can be taken in half days or hours."))
+        return vals, leave_type
+
+    @api.model
+    def _own_leave(self, emp, leave_id):
+        """The caller's own leave (sudo), or a refusal (R1). The id is never
+        trusted: it is looked up inside the caller's own requests."""
+        try:
+            leave_id = int(leave_id or 0)
+        except (TypeError, ValueError):
+            leave_id = 0
+        leave = self.env['hr.leave'].sudo().browse(leave_id).exists() \
+            if leave_id else self.env['hr.leave'].sudo()
+        if not leave or leave.employee_id.id != emp.id:
+            raise UserError(_("We could not find that request."))
+        return leave
+
+    @api.model
+    def _leave_first_day(self, leave):
+        return leave.request_date_from or (
+            leave.date_from.date() if leave.date_from else None)
+
+    @api.model
+    def _leave_can_cancel_as(self, leave, user):
+        """hr_holidays' own `can_cancel`, asked AS the person (R2). An
+        employee login (portal tier) cannot read hr.leave at all, so for it
+        the same rule is restated: approved and not started.
+
+        The same restatement answers when core's own compute cannot run as
+        the person: it reads ``employee_id.leave_manager_id``, and a plain
+        internal login without HR rights is refused the employee's private
+        fields there (AccessError "not available for employee public
+        profiles", found in this phase's tests) — the rule for one's OWN
+        leave does not depend on that field."""
+        restated = leave.state in ('validate', 'validate1') \
+            and bool(leave.date_from) \
+            and leave.date_from > fields.Datetime.now()
+        if not user or user.share:
+            return restated
+        try:
+            with self.env.cr.savepoint(flush=False):
+                return bool(leave.with_user(user).can_cancel)
+        except AccessError:
+            return restated
+        except UserError:
+            return False
+
+    @api.model
+    def _leave_refusal(self, action, emp, leave=None, vals=None, reason=None):
+        """THE employee-path rule (R2): '' when ``action`` is allowed, else
+        the sentence that says why not. ``apply`` asks pb_timeoff's own
+        past-date rule as a non-officer (sudo would skip it) and honours the
+        `pb_timeoff.lock_past` switch."""
+        Leave = self.env['hr.leave'].sudo()
+        today = fields.Date.today()        # the SERVER's today, as pb_timeoff
+        if action == 'apply':
+            if not Leave._pb_lock_past_on():
+                return ''
+            try:
+                Leave._pb_backdate_verdict(vals or {}, as_officer=False)
+            except UserError as exc:
+                return (exc.args and exc.args[0]) or str(exc)
+            return ''
+        if not leave or leave.employee_id.id != emp.id:
+            return _("We could not find that request.")
+        first = self._leave_first_day(leave)
+        if action == 'withdraw':
+            if leave.state == 'validate':
+                return _("This leave is already approved. Use Cancel to call "
+                         "it off.")
+            if leave.state not in _OPEN_LEAVE_STATES:
+                return _("This request is already finished.")
+            if not first or first < today:
+                return _("This time off has already started, so it cannot "
+                         "be changed here. Ask HR.")
+            return ''
+        if action == 'cancel':
+            if leave.state in _OPEN_LEAVE_STATES:
+                return _("This request is still waiting for approval. Use "
+                         "Withdraw instead.")
+            if leave.state != 'validate':
+                return _("This request is already finished.")
+            if not first or first <= today:
+                return _("This time off has already started, so it cannot "
+                         "be cancelled here. Ask HR.")
+            if not self._leave_can_cancel_as(leave, self.env.user):
+                return _("This time off cannot be cancelled here. Ask HR.")
+            if not (reason or '').strip():
+                return _("Say why you are cancelling it. Your manager will "
+                         "see the reason.")
+            return ''
+        if action == 'document':
+            if leave.state not in ('confirm', 'validate1', 'validate'):
+                return _("Documents can be added while a request is waiting "
+                         "or approved.")
+            return ''
+        return _("That cannot be done here.")
+
+    @api.model
+    def _leave_guard(self, action, emp, leave=None, vals=None, reason=None):
+        refusal = self._leave_refusal(action, emp, leave, vals=vals,
+                                      reason=reason)
+        if refusal:
+            raise UserError(refusal)
+        return True
+
+    # ------------------------------------------------------------ documents
+    @api.model
+    def _leave_files_by(self, leaves):
+        """{leave id: [{id, name, url, is_image}]} — tokened links (TIERS
+        T14/T20): the one link shape that opens for every kind of login."""
+        out = {}
+        if not leaves:
+            return out
+        atts = self.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'hr.leave'), ('res_id', 'in', leaves.ids)],
+            order='id')
+        for att in atts:
+            out.setdefault(att.res_id, []).append(self._leave_file_row(att))
+        return out
+
+    @api.model
+    def _leave_file_row(self, att):
+        return {
+            'id': att.id,
+            'name': att.name or _('Document'),
+            'url': '/web/content/%s?access_token=%s' % (
+                att.id, att.sudo().generate_access_token()[0]),
+            'is_image': (att.mimetype or '').startswith('image/'),
+        }
+
+    @api.model
+    def _check_leave_files(self, files, already=0):
+        """Every check a document must pass, before anything is created —
+        cloned from the expense receipts (R4). ``files`` is a list of
+        ``(filename, bytes, declared type)``; the declared type and the
+        filename's path are never trusted."""
+        clean = []
+        for item in files or []:
+            if not item:
+                continue
+            filename, data = (tuple(item) + (None, None))[:2]
+            if not data:
+                continue
+            if len(data) > LEAVE_DOC_MAX_BYTES:
+                raise UserError(_(
+                    "That file is over 10 MB. Try a smaller photo, or a PDF "
+                    "of the page."))
+            mimetype = sniff_mimetype(data)
+            if mimetype not in LEAVE_DOC_MIME:
+                raise UserError(_(
+                    "A document can be a photo (JPG, PNG or WEBP) or a PDF. "
+                    "Choose another file."))
+            name = re.split(r'[\\/]', filename or '')[-1]
+            name = re.sub(r'[\x00-\x1f]', '', name).strip()[-120:] or (
+                'document.pdf' if mimetype == 'application/pdf'
+                else 'document.jpg')
+            clean.append({'name': name, 'data': data, 'mimetype': mimetype})
+        if already + len(clean) > LEAVE_DOC_MAX:
+            raise UserError(_(
+                "A request can carry up to %s documents.", LEAVE_DOC_MAX))
+        return clean
+
+    @api.model
+    def _attach_leave_files(self, leave, clean):
+        Att = self.env['ir.attachment'].sudo()
+        created = Att
+        for row in clean:
+            created |= Att.create({
+                'name': row['name'],
+                'datas': base64.b64encode(row['data']),
+                'mimetype': row['mimetype'],
+                'res_model': 'hr.leave',
+                'res_id': leave.id,
+            })
+        return created
+
+    # ---------------------------------------------------------------- apply
+    @api.model
+    def apply_leave(self, type_id, date_from, date_to, note=False,
+                    period_from=None, period_to=None, hour_from=None,
+                    hour_to=None, files=None):
+        """Create MY OWN leave, in the normal chain.
+
+        The create runs under ``sudo()`` AFTER ``_require_own_employee``
+        (TIERS T2b, ledger T-R11): an employee login (a portal account) holds no
+        ACL on ``hr.leave``. ``sudo()`` keeps ``env.uid``, so ``create_uid`` is
+        the employee and the chain's own gates see the truthful filer. Core
+        ``hr.leave``'s own validation (overlap, balance, working calendar) still
+        runs. Because sudo no longer scopes the leave type by company, the type
+        is checked against the ones ``get_my_leave`` offers this person.
+        The employee is forced the same way the correction's is.
+
+        QF3: the part of the day (half-day kinds) or the times (hour kinds),
+        the documents, and the past-date rule sudo would otherwise skip (R2).
+        Nothing is created when any check fails (one savepoint).
+        """
+        emp = self._require_own_employee()
+        vals, leave_type = self._leave_vals(
+            emp, type_id, date_from, date_to, note=note,
+            period_from=period_from, period_to=period_to,
+            hour_from=hour_from, hour_to=hour_to)
+        self._leave_guard('apply', emp, vals=vals)
+        Leave = self.env['hr.leave'].sudo()
+        verdict = Leave._pb_backdate_verdict(
+            vals, as_officer=False, refuse=False)
+        clean = self._check_leave_files(files)
+        with self.env.cr.savepoint():
+            leave = Leave.create(vals)
+            if hasattr(leave, 'action_confirm'):
+                leave.action_confirm()
+            if clean:
+                self._attach_leave_files(leave, clean)
+        if verdict == 'late':
+            # sudo made the create look like HR's own entry, so pb_timeoff
+            # did not tell HR (it only tells HR about a PERSON's late entry)
+            try:
+                with self.env.cr.savepoint():
+                    leave._pb_alert_hr()
+            except Exception:                               # noqa: BLE001
+                _logger.warning('pb_ess_workforce: leave %s is backdated and '
+                                'HR was not told', leave.id, exc_info=True)
         return {'ok': True, 'id': leave.id, 'state': leave.state}
+
+    @api.model
+    def preview_leave(self, type_id, date_from, date_to, period_from=None,
+                      period_to=None, hour_from=None, hour_to=None):
+        """What a request WOULD count, and what would be left after it.
+
+        Writes nothing: the request is built with ``new()`` and counted by
+        hr_holidays' own duration compute (the same one ``create`` runs), and
+        the balance is ``virtual_remaining_leaves`` — which already takes off
+        the other requests still waiting — minus this one.
+        """
+        emp = self._require_own_employee()
+        try:
+            vals, leave_type = self._leave_vals(
+                emp, type_id, date_from, date_to, period_from=period_from,
+                period_to=period_to, hour_from=hour_from, hour_to=hour_to)
+        except UserError as exc:
+            return {'ok': False, 'error': (exc.args and exc.args[0]) or ''}
+        refusal = self._leave_refusal('apply', emp, vals=vals)
+        draft = self.env['hr.leave'].sudo().new(vals)
+        amount, unit = self._leave_amount(draft)
+        out = {
+            'ok': True,
+            'error': refusal,
+            'amount': amount,
+            'unit': unit,
+            'amount_label': _('This request: %s',
+                              self._leave_length_label(amount, unit)),
+            'counted': bool(leave_type.requires_allocation),
+            'left_before': None,
+            'after': None,
+            'after_label': '',
+            'over': False,
+            'blocked': False,
+            'warning': '',
+            'needs_document': bool(leave_type.support_document),
+        }
+        if not leave_type.requires_allocation:
+            return out
+        row = self._allocation_row(leave_type, emp, vals['request_date_from'])
+        if not row or not row.get('max_leaves'):
+            out.update(blocked=True, after_label='', warning=_(
+                "You have no days of this kind yet, so it cannot be sent. "
+                "Ask HR about your balance."))
+            return out
+        left = round(float(row.get('virtual_remaining_leaves') or 0.0), 2)
+        after = round(left - amount, 2)
+        out['left_before'] = left
+        out['after'] = after
+        out['after_label'] = _('After this request: %s left',
+                               self._leave_length_label(after, unit))
+        if after < 0:
+            out['over'] = True
+            allowed = bool(row.get('allows_negative')) and \
+                after >= -float(row.get('max_allowed_negative') or 0.0)
+            out['blocked'] = not allowed
+            out['warning'] = _(
+                "This is more than you have left. You can still send it; "
+                "your approver will see that.") if allowed else _(
+                "This is more than you have left, so it cannot be sent. Ask "
+                "HR about your balance.")
+        return out
+
+    @api.model
+    def _allocation_row(self, leave_type, emp, day):
+        data = leave_type.sudo().get_allocation_data(emp, day)
+        for row in data.get(emp) or []:
+            if len(row) >= 4 and row[3] == leave_type.id:
+                return row[1]
+        return None
+
+    # ----------------------------------------------- withdraw / cancel / add
+    @api.model
+    def withdraw_leave(self, leave_id):
+        """Take back MY OWN request that is still waiting (R3).
+
+        The open approval is withdrawn through the engine (which cancels the
+        leave through `hr.leave._approval_withdraw`), inside a savepoint; a
+        company with no leave route cancels the leave directly. The leave is
+        kept, as "Cancelled" — history, not a deletion.
+        """
+        emp = self._require_own_employee()
+        leave = self._own_leave(emp, leave_id)
+        self._leave_guard('withdraw', emp, leave)
+        reason = _("Withdrawn by %s", emp.name or '')
+        request = leave._leave_open_request() \
+            if hasattr(leave, '_leave_open_request') else None
+        with self.env.cr.savepoint():
+            if request:
+                self.env['biz.approval.engine'].sudo().cancel(
+                    request.sudo(), reason)
+                leave.invalidate_recordset()
+            if leave.state != 'cancel':
+                leave._pb_cancel_pending(reason)
+        leave.invalidate_recordset()
+        return {'ok': True, 'id': leave.id, 'state': leave.state}
+
+    @api.model
+    def cancel_leave(self, leave_id, reason):
+        """Call off MY OWN approved leave that has not started, with a reason
+        — hr_holidays' own user cancel (`_action_user_cancel`), which tells
+        the manager through the leave's normal message. No new approval."""
+        emp = self._require_own_employee()
+        leave = self._own_leave(emp, leave_id)
+        reason = (reason or '').strip()[:500]
+        self._leave_guard('cancel', emp, leave, reason=reason)
+        with self.env.cr.savepoint():
+            request = leave._leave_open_request() \
+                if hasattr(leave, '_leave_open_request') else None
+            if request:
+                # nothing may be left waiting in an approver's inbox
+                self.env['biz.approval.engine'].sudo().cancel(
+                    request.sudo(), reason)
+            leave._action_user_cancel(reason)
+        leave.invalidate_recordset()
+        return {'ok': True, 'id': leave.id, 'state': leave.state}
+
+    @api.model
+    def add_leave_document(self, leave_id, files):
+        """One or more documents on MY OWN request that is waiting or
+        approved. Bound to the leave, so every screen that shows the leave's
+        papers shows it."""
+        emp = self._require_own_employee()
+        leave = self._own_leave(emp, leave_id)
+        self._leave_guard('document', emp, leave)
+        already = self.env['ir.attachment'].sudo().search_count([
+            ('res_model', '=', 'hr.leave'), ('res_id', '=', leave.id)])
+        clean = self._check_leave_files(files, already=already)
+        if not clean:
+            raise UserError(_("Choose a photo or a PDF first."))
+        with self.env.cr.savepoint():
+            created = self._attach_leave_files(leave, clean)
+            leave.message_post(
+                body=_("Added a document: %s",
+                       ', '.join(created.mapped('name'))),
+                subtype_xmlid='mail.mt_note')
+        return {'ok': True, 'id': leave.id, 'count': len(created)}
 
     # =============================================================== overtime
     @api.model

@@ -1016,3 +1016,99 @@ msgstr "Ngày"
 #: code:addons/pb_timeoff/models/workflow_lines.py:0
 msgid "Hours"
 msgstr "Giờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s đến %(end)s"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s documents attached"
+msgstr "Đã đính kèm %s giấy tờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "%s hours"
+msgstr "%s giờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 document attached"
+msgstr "Đã đính kèm 1 giấy tờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "1 hour"
+msgstr "1 giờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Documents"
+msgstr "Giấy tờ"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Ends in the morning"
+msgstr "Kết thúc vào buổi sáng"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half a day"
+msgstr "Nửa ngày"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half day, afternoon"
+msgstr "Nửa ngày, buổi chiều"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Half day, morning"
+msgstr "Nửa ngày, buổi sáng"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Part of the day"
+msgstr "Phần trong ngày"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Starts in the afternoon"
+msgstr "Bắt đầu từ buổi chiều"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Starts in the afternoon, ends in the morning"
+msgstr "Bắt đầu từ buổi chiều, kết thúc vào buổi sáng"
+
+#. module: pb_timeoff
+#. odoo-python
+#: code:addons/pb_timeoff/models/hr_leave_approval.py:0
+msgid "Withdrawn"
+msgstr "Đã rút lại"

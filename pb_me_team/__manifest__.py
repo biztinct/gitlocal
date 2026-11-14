@@ -25,7 +25,7 @@ who has a decision waiting on them:
 Approvals are the approvals inbox's (`pb.approval.inbox`), read and decided
 as the signed-in person: nothing here grants a right.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Hidden/Tools',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

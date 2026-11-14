@@ -1133,3 +1133,387 @@ msgstr "Xem toàn bộ bảng chấm công"
 msgid "Looking for the hours you spent on each project? That is Project time."
 msgstr "Bạn tìm số giờ đã làm cho từng dự án? Đó là trang Giờ theo dự án."
 
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%s days waiting for approval"
+msgstr "%s ngày đang chờ duyệt"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "%s hours"
+msgstr "%s giờ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid ". You can also add it later."
+msgstr ". Bạn cũng có thể thêm sau."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "1 day waiting for approval"
+msgstr "1 ngày đang chờ duyệt"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "1 hour"
+msgstr "1 giờ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span data-pbew-docopt=\"\">Add a document (optional)</span>"
+msgstr "<span data-pbew-docopt=\"\">Thêm giấy tờ (không bắt buộc)</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span>Add a document</span>"
+msgstr "<span>Thêm giấy tờ</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span>Cancel</span>"
+msgstr "<span>Hủy nghỉ</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.leave_doc_inputs
+msgid "<span>Choose a file</span>"
+msgstr "<span>Chọn tệp</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.leave_doc_inputs
+msgid "<span>Take a photo</span>"
+msgstr "<span>Chụp ảnh</span>"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "<span>Withdraw</span>"
+msgstr "<span>Rút lại</span>"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.leave_doc_inputs
+msgid ""
+"A document can be a photo (JPG, PNG or WEBP) or a PDF. Choose another file."
+msgstr ""
+"Giấy tờ có thể là ảnh (JPG, PNG hoặc WEBP) hoặc PDF. Hãy chọn tệp khác."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "A document is needed for this kind of leave"
+msgstr "Loại nghỉ này cần có giấy tờ"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "A document is needed for:"
+msgstr "Cần có giấy tờ cho:"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.leave_doc_inputs
+msgid "A photo or a PDF, up to 10 MB each, up to 5 per request."
+msgstr "Ảnh hoặc PDF, tối đa 10 MB mỗi tệp, tối đa 5 tệp cho mỗi đơn."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "A request can carry up to %s documents."
+msgstr "Mỗi đơn có thể kèm tối đa %s giấy tờ."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Add it"
+msgstr "Thêm"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Added a document: %s"
+msgstr "Đã thêm giấy tờ: %s"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "After this request: %s left"
+msgstr "Sau đơn này: còn %s"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Cancel this leave"
+msgstr "Hủy kỳ nghỉ này"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Choose a photo or a PDF first."
+msgstr "Hãy chọn ảnh hoặc PDF trước."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Document"
+msgstr "Giấy tờ"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Document added. Your approver can see it."
+msgstr "Đã thêm giấy tờ. Người duyệt của bạn có thể xem."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Documents can be added while a request is waiting or approved."
+msgstr "Chỉ thêm được giấy tờ khi đơn đang chờ duyệt hoặc đã được duyệt."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "For leave counted in hours (one day)"
+msgstr "Cho loại nghỉ tính theo giờ (một ngày)"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "For leave taken in half days"
+msgstr "Cho loại nghỉ tính theo nửa ngày"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Half a day"
+msgstr "Nửa ngày"
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid ""
+"Last day\n"
+"                      <select name=\"period_to\" data-pbew-pto=\"\">\n"
+"                        <option value=\"full\">Full day</option>\n"
+"                        <option value=\"am\">Morning only</option>\n"
+"                      </select>"
+msgstr ""
+"Ngày cuối\n"
+"                      <select name=\"period_to\" data-pbew-pto=\"\">\n"
+"                        <option value=\"full\">Cả ngày</option>\n"
+"                        <option value=\"am\">Chỉ buổi sáng</option>\n"
+"                      </select>"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Leave cancelled. Your manager has been told."
+msgstr "Đã hủy kỳ nghỉ. Quản lý của bạn đã được báo."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/controllers/portal.py:0
+msgid "Request withdrawn. It stays in your list as cancelled."
+msgstr "Đã rút đơn. Đơn vẫn nằm trong danh sách với trạng thái đã hủy."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Say why you are cancelling it. Your manager will see the reason."
+msgstr "Hãy ghi lý do hủy. Quản lý của bạn sẽ thấy lý do này."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "That cannot be done here."
+msgstr "Không thể làm việc này ở đây."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.leave_doc_inputs
+msgid "That file is over 10 MB. Try a smaller photo, or a PDF of the page."
+msgstr "Tệp lớn hơn 10 MB. Hãy thử ảnh nhỏ hơn, hoặc PDF của trang đó."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "The end time must be after the start time."
+msgstr "Giờ kết thúc phải sau giờ bắt đầu."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This is more than you have left, so it cannot be sent. Ask HR about your "
+"balance."
+msgstr ""
+"Số này nhiều hơn số ngày bạn còn, nên không gửi được. Hãy hỏi phòng nhân sự "
+"về số ngày của bạn."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This is more than you have left. You can still send it; your approver will "
+"see that."
+msgstr ""
+"Số này nhiều hơn số ngày bạn còn. Bạn vẫn có thể gửi; người duyệt sẽ thấy "
+"điều đó."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This request: %s"
+msgstr "Đơn này: %s"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This time off cannot be cancelled here. Ask HR."
+msgstr "Không thể hủy kỳ nghỉ này ở đây. Hãy hỏi phòng nhân sự."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This time off has already started, so it cannot be cancelled here. Ask HR."
+msgstr ""
+"Kỳ nghỉ này đã bắt đầu nên không thể hủy ở đây. Hãy hỏi phòng nhân sự."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This time off has already started, so it cannot be changed here. Ask HR."
+msgstr ""
+"Kỳ nghỉ này đã bắt đầu nên không thể thay đổi ở đây. Hãy hỏi phòng nhân sự."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This leave is already approved. Use Cancel to call it off."
+msgstr "Kỳ nghỉ này đã được duyệt. Hãy dùng Hủy nghỉ để hủy."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This request is already finished."
+msgstr "Đơn này đã kết thúc."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "This request is still waiting for approval. Use Withdraw instead."
+msgstr "Đơn này vẫn đang chờ duyệt. Hãy dùng Rút lại."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "To change a request, withdraw or cancel it and ask again."
+msgstr "Muốn đổi một đơn, hãy rút lại hoặc hủy rồi gửi đơn mới."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "We could not find that request."
+msgstr "Không tìm thấy đơn đó."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"When you ask for several days, the first day can be a full day or start in "
+"the afternoon."
+msgstr ""
+"Khi xin nghỉ nhiều ngày, ngày đầu có thể là cả ngày hoặc bắt đầu từ buổi "
+"chiều."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"When you ask for several days, the last day can be a full day or end in the "
+"morning."
+msgstr ""
+"Khi xin nghỉ nhiều ngày, ngày cuối có thể là cả ngày hoặc kết thúc vào buổi "
+"sáng."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "Why are you cancelling it? Your manager will see this."
+msgstr "Vì sao bạn hủy? Quản lý của bạn sẽ thấy lý do này."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid "Withdrawn by %s"
+msgstr "%s đã rút lại"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"You have no days of this kind yet, so it cannot be sent. Ask HR about your "
+"balance."
+msgstr ""
+"Bạn chưa có ngày nghỉ loại này nên không gửi được. Hãy hỏi phòng nhân sự về "
+"số ngày của bạn."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid "to"
+msgstr "đến"
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This kind of leave is counted in hours, so it is asked for one day at a "
+"time. Pick the same first and last day."
+msgstr ""
+"Loại nghỉ này tính theo giờ nên chỉ xin cho từng ngày một. Hãy chọn ngày đầu"
+" và ngày cuối giống nhau."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This kind of leave is counted in hours. Enter the time you leave and the "
+"time you are back."
+msgstr ""
+"Loại nghỉ này tính theo giờ. Hãy nhập giờ bạn nghỉ và giờ bạn quay lại."
+
+#. module: pb_ess_workforce
+#. odoo-python
+#: code:addons/pb_ess_workforce/models/ess_workforce.py:0
+msgid ""
+"This kind of leave is taken in whole days. Choose Full day and leave the "
+"times empty, or pick a kind of leave that can be taken in half days or "
+"hours."
+msgstr ""
+"Loại nghỉ này chỉ tính cả ngày. Hãy chọn Cả ngày và để trống giờ, hoặc chọn "
+"loại nghỉ tính theo nửa ngày hoặc theo giờ."
+
+#. module: pb_ess_workforce
+#: model_terms:ir.ui.view,arch_db:pb_ess_workforce.portal_my_work_leave
+msgid ""
+"<span data-pbew-one=\"\">The day</span><span class=\"d-none\" data-pbew-many=\"\">First day</span>\n"
+"                      <select name=\"period_from\" data-pbew-pfrom=\"\">\n"
+"                        <option value=\"full\">Full day</option>\n"
+"                        <option value=\"am\" data-pbew-oneonly=\"\">Morning</option>\n"
+"                        <option value=\"pm\">Afternoon</option>\n"
+"                      </select>"
+msgstr ""
+"<span data-pbew-one=\"\">Ngày nghỉ</span><span class=\"d-none\" data-pbew-many=\"\">Ngày đầu</span>\n"
+"                      <select name=\"period_from\" data-pbew-pfrom=\"\">\n"
+"                        <option value=\"full\">Cả ngày</option>\n"
+"                        <option value=\"am\" data-pbew-oneonly=\"\">Buổi sáng</option>\n"
+"                        <option value=\"pm\">Buổi chiều</option>\n"
+"                      </select>"

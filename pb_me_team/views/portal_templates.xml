@@ -516,8 +516,10 @@
             <h2 class="pbmt-sub-h" id="pbmt-lv-h">The leave</h2>
             <dl class="pbmt-facts">
               <div><dt>Type</dt><dd t-out="lv['type']"/></div>
-              <div><dt>Dates</dt><dd><t t-out="lv['date_from']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/><t t-if="lv['date_to'] != lv['date_from']"> to <t t-out="lv['date_to']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/></t></dd></div>
-              <div><dt>Length</dt><dd><t t-out="'{:g}'.format(lv['days'] or 0)"/> <t t-if="lv['days'] == 1">day</t><t t-else="">days</t></dd></div>
+              <div><dt>Dates</dt><dd><t t-out="lv['date_from']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/><t t-if="lv['date_to'] != lv['date_from']"> to <t t-out="lv['date_to']" t-options="{'widget': 'date', 'format': 'EEE d MMM'}"/></t><t t-if="lv.get('period_label')"> · <b class="pbmt-part" t-out="lv['period_label']"/></t></dd></div>
+              <div t-if="lv.get('hours') is not None"><dt>Length</dt><dd><t t-out="'{:g}'.format(lv['hours'] or 0)"/> <t t-if="lv['hours'] == 1">hour</t><t t-else="">hours</t></dd></div>
+              <div t-else=""><dt>Length</dt><dd><t t-if="lv['days'] == 0.5">Half a day</t><t t-else=""><t t-out="'{:g}'.format(lv['days'] or 0)"/> <t t-if="lv['days'] == 1">day</t><t t-else="">days</t></t></dd></div>
+              <div t-if="lv.get('files')"><dt>Documents</dt><dd class="pbmt-docs"><a t-foreach="lv['files']" t-as="f" class="pbmt-doc" t-att-href="f['url']" target="_blank" rel="noopener"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="14"/></t><span t-out="f['name']"/></a></dd></div>
               <div t-if="lv['balance_after'] is not None"><dt>Left after this</dt><dd t-att-class="'is-low' if lv['balance_after'] &lt; 0 else None"><t t-out="'{:g}'.format(lv['balance_after'])"/> <t t-if="lv['balance_after'] == 1">day</t><t t-else="">days</t></dd></div>
             </dl>
             <t t-if="lv.get('team_size')">
