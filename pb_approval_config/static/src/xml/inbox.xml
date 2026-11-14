@@ -116,11 +116,32 @@
               <button t-if="!tab" class="pbim-btn ghost" t-on-click="() => this.showMine()">Back to My turn</button>
             </div>
 
-            <div t-else="" class="pbam-reqs">
+            <t t-else="">
+            <!-- ==== WDGAP QF1: tick every card on these pages that I can
+                 approve together. Only drawn when there is one. ==== -->
+            <div t-if="pickable.length" class="pbam-pickbar">
+              <label class="pbam-pickall">
+                <input type="checkbox" class="pbam-pick-in"
+                       t-att-checked="allSel" t-att-disabled="state.bulkBusy"
+                       t-on-change="() => this.toggleAll()"/>
+                <span t-esc="pickAllWords"/>
+              </label>
+              <span class="pbam-pickbar-note">Send back and turn down stay one at a time: each needs its own reason.</span>
+            </div>
+            <div class="pbam-reqs" t-att-class="{ 'pbam-reqs--pick': showPick }">
               <div data-coach="ai-card" t-foreach="cards" t-as="cd" t-key="cd.id"
-                   class="pbam-req"
-                   t-att-class="{ 'is-mine': cd.mine, 'is-dim': cd.state === 'applied' or cd.state === 'approved' }"
-                   t-on-click="() => this.open(cd)">
+                   class="pbam-req" tabindex="0"
+                   t-att-class="{ 'is-mine': cd.mine, 'is-dim': cd.state === 'applied' or cd.state === 'approved', 'pbam-req--sel': isSel(cd) }"
+                   t-on-click="() => this.open(cd)"
+                   t-on-keydown="(ev) => this.onCardKey(ev, cd)">
+                <span t-if="showPick" class="pbam-pick" t-on-click.stop="() => {}">
+                  <input t-if="cd.mine" type="checkbox" class="pbam-pick-in"
+                         t-att-checked="isSel(cd)"
+                         t-att-disabled="!cd.can_bulk or state.bulkBusy"
+                         t-att-title="cd.can_bulk ? pickTip : cd.bulk_why"
+                         t-att-aria-label="cd.can_bulk ? pickTip : cd.bulk_why"
+                         t-on-change="() => this.toggleSel(cd)"/>
+                </span>
                 <span class="pbam-icsq"
                       t-att-class="{ 'pbam-icsq-rose': cd.blocked, 'pbam-icsq-amber': cd.state === 'returned' }">
                   <t t-out="ic(cd.icon,17)"/>
@@ -180,6 +201,7 @@
                 </div>
               </div>
             </div>
+            </t>
 
             <div t-if="cards.length" class="pbam-foot">
               Showing <b t-esc="cards.length"/> of <b t-esc="state.total"/>
@@ -188,6 +210,51 @@
                 <t t-if="state.loadingMore">Loading…</t>
                 <t t-else="">Show <t t-esc="nextPage"/> more</t>
               </button>
+            </div>
+
+            <!-- ==== WDGAP QF1: what could not be approved, each with its
+                 own plain reason. Those stay ticked. ==== -->
+            <div t-if="state.bulkFailed.length" class="pbam-bulkfail" role="status">
+              <div class="pbam-bulkfail-h">
+                <t t-out="ic('info',16)"/>
+                <b t-esc="failedTitle"/>
+                <span class="pbam-sp"/>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.closeFailed()">Close</button>
+              </div>
+              <ul class="pbam-bulkfail-list">
+                <li t-foreach="state.bulkFailed" t-as="fl" t-key="fl.id">
+                  <b t-esc="fl.title"/> <span t-esc="fl.error"/>
+                </li>
+              </ul>
+            </div>
+
+            <!-- ==== WDGAP QF1: the tray, and the in-page confirm above it ==== -->
+            <div t-if="selCount" class="pbam-tray" role="region" aria-label="Selected requests">
+              <div t-if="state.confirming" class="pbam-tray-confirm">
+                <div class="pbam-tray-q">
+                  <b t-esc="confirmTitle"/>
+                  <span t-esc="selKinds"/>
+                </div>
+                <p class="pbam-tray-note">Each one is approved in your name, exactly as if you pressed Approve on it. Anything that cannot be approved is listed afterwards and stays selected.</p>
+                <div class="pbam-tray-btns">
+                  <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.bulkBusy"
+                          t-on-click="() => this.cancelApproveSelected()">Cancel</button>
+                  <button class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.bulkBusy"
+                          t-on-click="() => this.approveSelected()">
+                    <t t-out="ic('check',14)"/>
+                    <span t-if="state.bulkBusy">Approving…</span>
+                    <span t-else="" t-esc="confirmButton"/>
+                  </button>
+                </div>
+              </div>
+              <div t-else="" class="pbam-tray-bar">
+                <span class="pbam-tray-cnt" t-esc="selWords"/>
+                <span class="pbam-sp"/>
+                <button class="pbim-btn primary pbim-btn-sm" t-on-click="() => this.askApproveSelected()">
+                  <t t-out="ic('check',14)"/> <span>Approve selected</span>
+                </button>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.clearSel()">Clear</button>
+              </div>
             </div>
           </PbFilterLayout>
         </t>

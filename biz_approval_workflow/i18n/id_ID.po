@@ -95,3 +95,28 @@ msgstr "Ditolak"
 #: model:ir.model.fields.selection,name:biz_approval_workflow.selection__biz_approval_generic_request__state__cancelled
 msgid "Withdrawn"
 msgstr "Ditarik"
+
+#. module: biz_approval_workflow
+#. odoo-python
+#: code:addons/biz_approval_workflow/models/process.py:0
+msgid ""
+"\"%s\" moves money out of the company, so each one is approved on its own. "
+"It cannot be approved several at once."
+msgstr ""
+"\"%s\" mengeluarkan uang dari perusahaan, jadi setiap permintaan disetujui "
+"sendiri-sendiri. Tidak dapat disetujui beberapa sekaligus."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,help:biz_approval_workflow.field_biz_approval_process__bulk_ok
+msgid ""
+"A manager may tick several of these in the Approvals inbox and approve them "
+"together. Never allowed where money leaves the company."
+msgstr ""
+"Manajer dapat mencentang beberapa permintaan jenis ini di kotak Persetujuan "
+"dan menyetujuinya sekaligus. Tidak pernah diizinkan jika uang keluar dari "
+"perusahaan."
+
+#. module: biz_approval_workflow
+#: model:ir.model.fields,field_description:biz_approval_workflow.field_biz_approval_process__bulk_ok
+msgid "Can be approved several at once"
+msgstr "Dapat disetujui beberapa sekaligus"
