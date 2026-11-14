@@ -187,3 +187,6 @@ from . import test_fillin_p1
 # IMPORT-GENDER — a Gender / Marital Status cell never fails the row.
 from . import test_import_gender_marital
 from . import test_pdr_p2_words
+
+# WDGAP PR-A — date functions and the one function list.
+from . import test_wdgap_pra_dates

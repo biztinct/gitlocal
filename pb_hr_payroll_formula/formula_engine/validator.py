@@ -10,6 +10,17 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+try:
+    from . import functions as _functions
+except ImportError:  # loaded as a bare file by the pure-python tests/batteries
+    import importlib.util as _ilu
+    import os as _os
+    _spec = _ilu.spec_from_file_location(
+        'pb_formula_functions',
+        _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'functions.py'))
+    _functions = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_functions)
+
 #: A double-quoted Excel string literal, doubled quotes ("" = one ") included.
 _STRING_LITERAL_RE = re.compile(r'"(?:[^"]|"")*"')
 
@@ -43,17 +54,11 @@ class FormulaValidator:
     - Supported functions
     """
 
-    # Supported Excel functions
-    SUPPORTED_FUNCTIONS = {
-        'SUM', 'AVERAGE', 'MIN', 'MAX', 'ABS', 'ROUND', 'ROUNDUP', 'ROUNDDOWN',
-        'CEILING', 'FLOOR', 'POWER', 'SQRT', 'MOD', 'INT', 'SIGN',
-        'IF', 'AND', 'OR', 'NOT', 'TRUE', 'FALSE', 'IFERROR', 'IFS',
-        'ISBLANK',
-        'CONCATENATE', 'LEFT', 'RIGHT', 'MID', 'LEN', 'UPPER', 'LOWER', 'TRIM',
-        'VLOOKUP', 'HLOOKUP', 'INDEX', 'MATCH', 'CHOOSE',
-        'COUNT', 'COUNTA', 'COUNTIF', 'SUMIF', 'AVERAGEIF',
-        'DATE', 'TODAY', 'NOW', 'YEAR', 'MONTH', 'DAY',
-    }
+    # Supported functions — DERIVED from the one function table
+    # (formula_engine/functions.py, WDGAP PR-A). This set used to accept
+    # TODAY, NOW, LEFT, IFS, COUNT … which the converter never mapped, so a
+    # formula using one passed the check and then read 0 on the payslip.
+    SUPPORTED_FUNCTIONS = _functions.FUNCTION_NAMES
 
     def __init__(self):
         pass
@@ -61,7 +66,8 @@ class FormulaValidator:
     def validate_formula(
         self,
         formula: str,
-        available_columns: Optional[Dict[str, str]] = None
+        available_columns: Optional[Dict[str, str]] = None,
+        translate=str,
     ) -> Tuple[bool, str]:
         """
         Validate a single formula.
@@ -69,10 +75,13 @@ class FormulaValidator:
         Args:
             formula: Excel formula string
             available_columns: Dict mapping column letters to codes
+            translate: turns the function check's lazy texts into the
+                reader's language (pass ``env._`` from Odoo code)
 
         Returns:
             Tuple of (is_valid, error_message)
         """
+        self._translate = translate
         if not formula:
             return True, ""
 
@@ -171,18 +180,12 @@ class FormulaValidator:
         return errors
 
     def _check_functions(self, formula: str) -> List[str]:
-        """Check that all functions are supported"""
-        errors = []
-
-        # Find function calls (word followed by open paren)
-        pattern = r'\b([A-Z_][A-Z0-9_]*)\s*\('
-        matches = re.findall(pattern, formula.upper())
-
-        for func_name in matches:
-            if func_name not in self.SUPPORTED_FUNCTIONS:
-                errors.append(f"Unsupported function: {func_name}")
-
-        return errors
+        """Every function must be in the one table, TODAY()/NOW() are refused,
+        and a known function needs the right number of values — in plain
+        words that name the function and offer the nearest one
+        (``functions.problems``)."""
+        translate = getattr(self, '_translate', str)
+        return [translate(p) for p in _functions.problems(formula)]
 
     def _check_common_errors(self, formula: str) -> List[str]:
         """Check for common formula errors"""
@@ -196,11 +199,14 @@ class FormulaValidator:
         if re.search(r'[\+\-\*\/\^]\s*$', formula):
             errors.append("Formula ends with an operator")
 
-        # Check for empty parentheses (except for some functions like NOW())
+        # Check for empty parentheses. A KNOWN function is judged by the
+        # function check (its arity, or its own refusal for TODAY()/NOW()), so
+        # it is not reported twice here.
         empty_parens = re.findall(r'(\w*)\(\s*\)', formula)
         for func in empty_parens:
-            if func.upper() not in ('NOW', 'TODAY', 'TRUE', 'FALSE'):
-                errors.append(f"Empty parentheses after '{func or 'expression'}'")
+            if func and re.match(r'^[A-Za-z_]', func):
+                continue   # a named call: the function check judges it
+            errors.append(f"Empty parentheses after '{func or 'expression'}'")
 
         return errors
 

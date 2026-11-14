@@ -31,6 +31,10 @@ __all__ = [
     'excel_isblank', 'is_blank_value',
     'sum_list', 'min_list', 'max_list', 'avg_list', 'counta_list',
     'assert_safe_expression', 'UnsafeFormulaError',
+    # WDGAP PR-A — dates as Excel serial numbers, and INT
+    'excel_int', 'to_serial', 'date_operand', 'serial_to_ymd', 'ymd_to_serial',
+    'excel_date', 'excel_year', 'excel_month', 'excel_day', 'excel_days',
+    'excel_datedif', 'excel_edate', 'excel_eomonth',
 ]
 
 
@@ -269,6 +273,253 @@ def avg_list(values_list):
 
 def counta_list(values_list):
     return len([v for v in _as_list(values_list) if v not in (None, '')])
+
+
+# ---------------------------------------------------------------------------
+# INT and dates (WDGAP PR-A)
+# ---------------------------------------------------------------------------
+#
+# A date inside a formula is an EXCEL SERIAL NUMBER in the 1900 date system —
+# the same number Excel shows when a date cell is formatted as a number — so a
+# workbook formula gives the same answer here. Serial 1 is 1 Jan 1900 and, as
+# in Excel, serial 60 is the 29 Feb 1900 that never existed (Excel kept Lotus
+# 1-2-3's leap-year bug); from 1 Mar 1900 (serial 61) on, serials count real
+# days.
+#
+# Blank, unreadable or out-of-range dates make a date function answer 0 (Excel
+# would say 1900 or #VALUE!/#NUM!): ``IF(YEAR(x)=0, …)`` is the documented test
+# for "no date", and none of these functions ever raises.
+
+import datetime as _dt
+
+_SERIAL_BASE_EARLY = _dt.date(1899, 12, 31)   # serials 1..59
+_SERIAL_BASE = _dt.date(1899, 12, 30)         # serials 61..
+_SERIAL_MAX = 2958465                         # 31 Dec 9999
+_ISO_DATE_RE = re.compile(r'^\s*(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ][0-9:.]+)?\s*$')
+
+
+def excel_int(number):
+    """Excel INT — rounds DOWN toward minus infinity: INT(-1.5) = -2."""
+    n = coerce_number(number)
+    if n is None or math.isnan(n) or math.isinf(n):
+        return 0
+    return math.floor(n)
+
+
+def ymd_to_serial(year, month, day):
+    """Excel DATE's arithmetic: month and day may overflow either way
+    (DATE(2024, 13, 1) is 1 Jan 2025, DATE(2024, 3, 0) is 29 Feb 2024).
+    Returns None when the result is outside 1900-01-00 … 9999-12-31."""
+    year, month, day = int(year), int(month), int(day)
+    if 0 <= year < 1900:
+        year += 1900                       # Excel: DATE(24, 1, 1) is 1924
+    years, month0 = divmod(month - 1, 12)
+    year += years
+    if year < 1900 or year > 9999:
+        return None
+    first = _dt.date(year, month0 + 1, 1)
+    if first < _dt.date(1900, 3, 1):
+        first_serial = (first - _SERIAL_BASE_EARLY).days
+    else:
+        first_serial = (first - _SERIAL_BASE).days
+    serial = first_serial + day - 1
+    if serial < 0 or serial > _SERIAL_MAX:
+        return None
+    return serial
+
+
+def serial_to_ymd(serial):
+    """(year, month, day) of a serial ≥ 1, Excel's phantom 29 Feb 1900 included."""
+    serial = int(serial)
+    if serial == 60:
+        return 1900, 2, 29
+    if serial < 60:
+        d = _SERIAL_BASE_EARLY + _dt.timedelta(days=serial)
+    else:
+        d = _SERIAL_BASE + _dt.timedelta(days=serial)
+    return d.year, d.month, d.day
+
+
+def _date_to_serial(d):
+    if isinstance(d, _dt.datetime):
+        d = d.date()
+    return ymd_to_serial(d.year, d.month, d.day)
+
+
+def to_serial(value):
+    """A date function's argument as a whole serial number, or None for blank,
+    unreadable or out of range. Accepts a serial (the time of day is dropped),
+    a date / datetime, an ISO text (2024-01-15, 2024-01-15 08:00:00) or a
+    number written as text."""
+    try:
+        if value is None or value is False or value == '':
+            return None
+        if isinstance(value, (_dt.date, _dt.datetime)):
+            serial = _date_to_serial(value)
+        elif isinstance(value, str):
+            match = _ISO_DATE_RE.match(value)
+            if match:
+                y, m, d = (int(g) for g in match.groups())
+                serial = _date_to_serial(_dt.date(y, m, d))   # invalid day -> ValueError
+            else:
+                number = coerce_number(value)
+                if number is None:
+                    return None
+                serial = math.floor(number)
+        else:
+            number = coerce_number(value)
+            if number is None or math.isnan(number) or math.isinf(number):
+                return None
+            serial = math.floor(number)
+    except (ValueError, TypeError, OverflowError):
+        return None
+    if serial is None or serial < 1 or serial > _SERIAL_MAX:
+        return None
+    return serial
+
+
+def date_operand(value, raw=None):
+    """A component reference INSIDE a date function's arguments.
+
+    ``value`` is what ordinary arithmetic sees (``values``: a date text there
+    is 0); ``raw`` is the value as it arrived (``raw_values``). When the raw
+    value is a date — an ISO text or a date object — its serial is used;
+    otherwise the ordinary value is, unchanged. Outside date functions the
+    converter never emits this, so a date component still reads 0 there.
+    """
+    if isinstance(raw, (_dt.date, _dt.datetime)) or (
+            isinstance(raw, str) and _ISO_DATE_RE.match(raw)):
+        serial = to_serial(raw)
+        return serial if serial is not None else 0
+    return value
+
+
+def _guard(fn):
+    """Date functions answer 0 rather than raise (blank or unreadable input)."""
+    def wrapper(*args):
+        try:
+            result = fn(*args)
+        except Exception:   # noqa: BLE001 — the documented contract is "0, never raises"
+            return 0
+        return 0 if result is None else result
+    wrapper.__name__ = fn.__name__
+    wrapper.__doc__ = fn.__doc__
+    return wrapper
+
+
+def _whole(value):
+    """Excel truncates the number arguments of DATE/EDATE/EOMONTH toward zero."""
+    number = coerce_number(value)
+    if number is None:
+        number = 0.0
+    return int(number)
+
+
+@_guard
+def excel_date(year, month, day):
+    """Excel DATE(year, month, day) -> serial."""
+    return ymd_to_serial(_whole(year), _whole(month), _whole(day))
+
+
+@_guard
+def excel_year(date_value):
+    serial = to_serial(date_value)
+    return serial_to_ymd(serial)[0] if serial else 0
+
+
+@_guard
+def excel_month(date_value):
+    serial = to_serial(date_value)
+    return serial_to_ymd(serial)[1] if serial else 0
+
+
+@_guard
+def excel_day(date_value):
+    serial = to_serial(date_value)
+    return serial_to_ymd(serial)[2] if serial else 0
+
+
+@_guard
+def excel_days(end_date, start_date):
+    """Excel DAYS(end, start) = end − start in days (negative when the end
+    is earlier). 0 when either date is blank."""
+    end, start = to_serial(end_date), to_serial(start_date)
+    if end is None or start is None:
+        return 0
+    return end - start
+
+
+def _months_between(sy, sm, sd, ey, em, ed):
+    months = (ey - sy) * 12 + (em - sm)
+    if ed < sd:
+        months -= 1
+    return months
+
+
+@_guard
+def excel_datedif(start_date, end_date, unit):
+    """Excel DATEDIF(start, end, unit) with units Y, M, D, YM, MD, YD.
+
+    0 when either date is blank, when the start is after the end (Excel:
+    #NUM!) or for an unknown unit. "MD" follows Excel's own documented
+    arithmetic (it can give odd answers when the start day is past the end of
+    the month before the end date — Microsoft warns about it too)."""
+    start, end = to_serial(start_date), to_serial(end_date)
+    if start is None or end is None or start > end:
+        return 0
+    unit = str(unit or '').strip().upper()
+    sy, sm, sd = serial_to_ymd(start)
+    ey, em, ed = serial_to_ymd(end)
+    if unit == 'D':
+        return end - start
+    if unit == 'M':
+        return _months_between(sy, sm, sd, ey, em, ed)
+    if unit == 'Y':
+        return _months_between(sy, sm, sd, ey, em, ed) // 12
+    if unit == 'YM':
+        return _months_between(sy, sm, sd, ey, em, ed) % 12
+    if unit == 'MD':
+        if ed >= sd:
+            return ed - sd
+        return end - ymd_to_serial(ey, em - 1, sd)
+    if unit == 'YD':
+        anniversary = ymd_to_serial(ey, sm, sd)
+        if anniversary > end:
+            anniversary = ymd_to_serial(ey - 1, sm, sd)
+        return end - anniversary
+    return 0
+
+
+def _add_months(serial, months, end_of_month):
+    y, m, d = serial_to_ymd(serial)
+    years, month0 = divmod(m - 1 + months, 12)
+    y, m = y + years, month0 + 1
+    if y < 1900 or y > 9999:
+        return None
+    last = ymd_to_serial(y, m + 1, 0)       # day 0 of next month = last day
+    if end_of_month:
+        return last
+    first = ymd_to_serial(y, m, 1)
+    return min(first + d - 1, last)
+
+
+@_guard
+def excel_edate(start_date, months):
+    """Excel EDATE — same day n months on; clipped to the month's last day
+    (EDATE(31 Jan 2024, 1) = 29 Feb 2024)."""
+    serial = to_serial(start_date)
+    if serial is None:
+        return 0
+    return _add_months(serial, _whole(months), end_of_month=False)
+
+
+@_guard
+def excel_eomonth(start_date, months):
+    """Excel EOMONTH — last day of the month n months on."""
+    serial = to_serial(start_date)
+    if serial is None:
+        return 0
+    return _add_months(serial, _whole(months), end_of_month=True)
 
 
 # ---------------------------------------------------------------------------

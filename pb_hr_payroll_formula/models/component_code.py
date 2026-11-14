@@ -231,6 +231,18 @@ def _candidate(label, keep_noise):
     return _finalize(_pad(code, tokens))
 
 
+def _function_names():
+    """The names of formula functions (WDGAP PR-A): a NEW code never takes one,
+    so DATE( / DAY( / INT( in a formula always mean the function. Read from the
+    one function table; empty when this file is loaded on its own by a bare
+    battery (no package to import from)."""
+    try:
+        from ..formula_engine.functions import RESERVED_CODE_NAMES
+        return RESERVED_CODE_NAMES
+    except ImportError:
+        return frozenset()
+
+
 def _collision_tests(existing_codes, reserved):
     """Build the (is_exact, is_substring) pair used everywhere a code is checked.
 
@@ -303,6 +315,10 @@ def normalize_code(code, label=None, existing_codes=(), reserved=()):
     components for no gain.
     """
     candidate = re.sub(r'\s+', '', (code or '')).upper()
+    # A code copied in from elsewhere becomes a NEW component here, so it may
+    # not be a function name either (WDGAP PR-A); conforming codes that are not
+    # function names still pass through EXACTLY as they are.
+    reserved = set(reserved or ()) | _function_names()
     is_exact, _is_substring = _collision_tests(existing_codes, reserved)
     if is_valid_code(candidate) and len(candidate) <= MAX_LEN:
         if not is_exact(candidate):
@@ -319,7 +335,10 @@ def build_component_code(label, existing_codes=(), reserved=()):
     may never equal or the converter's letter pass hijacks it.
 
     Deterministic: same label + same seeds -> same code, every time.
+
+    Never a formula function's name (DATE, DAY, YEAR, INT …, WDGAP PR-A).
     """
+    reserved = set(reserved or ()) | _function_names()
     is_exact, is_substring = _collision_tests(existing_codes, reserved)
 
     def clashes(cand):

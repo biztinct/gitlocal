@@ -257,18 +257,49 @@ def main(argv):
     fresh = convert_all([{k: s[k] for k in ('source', 'column_map', 'formulas')}
                          for s in golden])
     diffs = 0
+    expected = 0
     total = 0
+    new_names = _new_function_names()
     for old, new in zip(golden, fresh):
         for formula, before in old['converted'].items():
             total += 1
             after = new['converted'][formula]
-            if before != after:
-                diffs += 1
-                print('DIFF %s\n  formula: %s\n  before : %s\n  after  : %s' % (
+            if before == after:
+                continue
+            if _uses_new_function(formula, new_names):
+                # A formula that calls a function PR-A added could not compute
+                # before (the name reached eval -> NameError -> 0). It is
+                # SUPPOSED to convert differently now; reported, not failed.
+                expected += 1
+                print('NEW-FUNCTION %s\n  formula: %s\n  before : %s\n  after  : %s' % (
                     old['source'], formula, before, after))
-    print('R1 golden conversion: %d formulas from %d sources, %d differ -> %s' % (
-        total, len(golden), diffs, 'IDENTICAL' if not diffs else 'CHANGED'))
+                continue
+            diffs += 1
+            print('DIFF %s\n  formula: %s\n  before : %s\n  after  : %s' % (
+                old['source'], formula, before, after))
+    print('R1 golden conversion: %d formulas from %d sources: %d identical, '
+          '%d use a new function (expected to change), %d other differences -> %s' % (
+              total, len(golden), total - diffs - expected, expected, diffs,
+              'IDENTICAL' if not diffs else 'CHANGED'))
     return 1 if diffs else 0
+
+
+def _new_function_names():
+    """The names WDGAP PR-A added, read from the function table itself when it
+    exists (it does not on the pre-PR-A code the fixture was taken from)."""
+    try:
+        sys.path.insert(0, os.path.join(REPO_ROOT, 'pb_hr_payroll_formula', 'formula_engine'))
+        import functions  # noqa: PLC0415
+        return set(functions.NEW_IN_PRA)
+    except ImportError:
+        return set()
+    finally:
+        sys.path.pop(0)
+
+
+def _uses_new_function(formula, names):
+    body = _STRING_RE.sub('""', formula or '').upper()
+    return any(re.search(r'(?<![A-Z0-9_])%s\s*\(' % n, body) for n in names)
 
 
 if __name__ == '__main__':

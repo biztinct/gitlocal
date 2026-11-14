@@ -133,17 +133,27 @@ class FakeConfig:
         self.rule_ids = cols
 
 
+import json  # noqa: E402
+
+# WDGAP PR-A — the date-function cases are shared with the Odoo test (three
+# evaluation paths) and the Studio's JS mirror: one file, one set of answers.
+DATE_CASES_FILE = os.path.join(MODULE_DIR, 'tools', 'date_function_cases.json')
+with open(DATE_CASES_FILE, encoding='utf-8') as _fh:
+    DATE_SPEC = json.load(_fh)
+
 COLS = [
     FakeCol('A', 'BASE'), FakeCol('B', 'DAYS'), FakeCol('C', 'OT'),
     FakeCol('D', 'GRADE'), FakeCol('E', 'ALW'), FakeCol('F', 'REGION'),
     FakeCol('G', 'BONUS'), FakeCol('H', 'RATE'),
-]
+] + [FakeCol(letter, code) for letter, code in sorted(DATE_SPEC['columns'].items())]
 CONFIG = FakeConfig(COLS)
 COLUMN_MAP = {c.column_letter: c.code for c in COLS}
 BASE_VALUES = {
     'BASE': 100, 'DAYS': 2, 'OT': 3, 'GRADE': 'HN',
     'ALW': 50, 'REGION': 1, 'BONUS': 0, 'RATE': 1.5,
 }
+BASE_VALUES.update({DATE_SPEC['columns'][letter]: value
+                    for letter, value in DATE_SPEC['defaults'].items()})
 REMOVE = object()
 
 
@@ -248,6 +258,19 @@ CASES = [
     ("live-advrate", "=ROUND(A1*IF(A1+E1>=120,H1/10,H1/15))", None, 15, "demo ADVPAY shape"),
 ]
 
+
+def _date_case_overrides(case):
+    return {DATE_SPEC['columns'][letter]: value
+            for letter, value in (case.get('values') or {}).items()}
+
+
+# WDGAP PR-A (C12: a case for every new function) — run on BOTH paths.
+DATE_CASES = [
+    ('dt-' + c['id'], c['formula'], _date_case_overrides(c), c['expected'], c.get('note', ''))
+    for c in DATE_SPEC['cases']
+]
+CASES += DATE_CASES
+
 SEC_CASES = [
     ("ev-arith", "=A1*B1+C1", None, 203, ""),
     ("ev-average-zero", "=AVERAGE(A1:C1)", {'OT': 0}, 34, "shared avg includes zeros"),
@@ -257,7 +280,10 @@ SEC_CASES = [
     ("ev-iferror", "=IFERROR(A1/B1,7)", {'DAYS': 0}, 7, "lambda IFERROR"),
     ("ev-round", "=ROUND(2.5,0)", None, 3, "shared excel_round"),
     ("ev-live", '=ROUND(IF(D1="x",(A1+E1)*H1,0),0)', {'GRADE': 'x'}, 225, "live shape"),
-]
+] + [('ev-' + cid, f, over, exp, note) for cid, f, over, exp, note in DATE_CASES
+     # evaluate_single RAISES on a formula that cannot run (its caller,
+     # evaluate_all, records the 0); TODAY() is such a formula by design.
+     if 'TODAY(' not in f]
 
 
 def close(a, b):

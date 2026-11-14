@@ -169,6 +169,37 @@ class FormulaEvaluator:
     def _subtotal(self, function_num, *args):
         return self._excel_subtotal(function_num, *args)
 
+    # WDGAP PR-A — INT and the date functions, same delegates as hr.formula.rule
+    def _int(self, number):
+        return excel_semantics.excel_int(number)
+
+    def _dateval(self, value, raw=None):
+        return excel_semantics.date_operand(value, raw)
+
+    def _date(self, year, month, day):
+        return excel_semantics.excel_date(year, month, day)
+
+    def _year(self, date_value):
+        return excel_semantics.excel_year(date_value)
+
+    def _month(self, date_value):
+        return excel_semantics.excel_month(date_value)
+
+    def _day(self, date_value):
+        return excel_semantics.excel_day(date_value)
+
+    def _days(self, end_date, start_date):
+        return excel_semantics.excel_days(end_date, start_date)
+
+    def _datedif(self, start_date, end_date, unit):
+        return excel_semantics.excel_datedif(start_date, end_date, unit)
+
+    def _edate(self, start_date, months):
+        return excel_semantics.excel_edate(start_date, months)
+
+    def _eomonth(self, start_date, months):
+        return excel_semantics.excel_eomonth(start_date, months)
+
     def evaluate_all(
         self,
         rules: List[Any],

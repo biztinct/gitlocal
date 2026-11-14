@@ -1,7 +1,8 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onMounted } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillStart } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
 
 /**
  * FormulaBar - Enhanced formula input with autocomplete and syntax highlighting
@@ -32,7 +33,9 @@ export class FormulaBar extends Component {
         });
 
         // Supported Excel functions with descriptions
+        this.orm = useService("orm");
         this.functions = this.getSupportedFunctions();
+        onWillStart(() => this.loadFunctions());
 
         onMounted(() => {
             if (this.inputRef.el) {
@@ -41,62 +44,23 @@ export class FormulaBar extends Component {
         });
     }
 
+    // WDGAP PR-A — the list comes from the engine's ONE function table
+    // (hr.formula.rule.pb_formula_functions). It used to be a hand-kept copy
+    // that offered TODAY, NOW, LEFT, IFS … which computed nothing.
     getSupportedFunctions() {
-        return [
-            // Math functions
-            { name: "SUM", category: _t("Math"), description: _t("Adds all numbers in a range"), syntax: "SUM(number1, [number2], ...)" },
-            { name: "AVERAGE", category: _t("Math"), description: _t("Returns the average of arguments"), syntax: "AVERAGE(number1, [number2], ...)" },
-            { name: "MIN", category: _t("Math"), description: _t("Returns the minimum value"), syntax: "MIN(number1, [number2], ...)" },
-            { name: "MAX", category: _t("Math"), description: _t("Returns the maximum value"), syntax: "MAX(number1, [number2], ...)" },
-            { name: "ABS", category: _t("Math"), description: _t("Returns absolute value"), syntax: "ABS(number)" },
-            { name: "ROUND", category: _t("Math"), description: _t("Rounds to specified digits"), syntax: "ROUND(number, num_digits)" },
-            { name: "ROUNDUP", category: _t("Math"), description: _t("Rounds up to specified digits"), syntax: "ROUNDUP(number, num_digits)" },
-            { name: "ROUNDDOWN", category: _t("Math"), description: _t("Rounds down to specified digits"), syntax: "ROUNDDOWN(number, num_digits)" },
-            { name: "CEILING", category: _t("Math"), description: _t("Rounds up to nearest multiple"), syntax: "CEILING(number, significance)" },
-            { name: "FLOOR", category: _t("Math"), description: _t("Rounds down to nearest multiple"), syntax: "FLOOR(number, significance)" },
-            { name: "POWER", category: _t("Math"), description: _t("Returns number raised to power"), syntax: "POWER(number, power)" },
-            { name: "SQRT", category: _t("Math"), description: _t("Returns square root"), syntax: "SQRT(number)" },
-            { name: "MOD", category: _t("Math"), description: _t("Returns remainder after division"), syntax: "MOD(number, divisor)" },
-            { name: "INT", category: _t("Math"), description: _t("Rounds down to nearest integer"), syntax: "INT(number)" },
+        return [];
+    }
 
-            // Logical functions
-            { name: "IF", category: _t("Logical"), description: _t("Conditional evaluation"), syntax: "IF(condition, value_if_true, [value_if_false])" },
-            { name: "AND", category: _t("Logical"), description: _t("Returns TRUE if all conditions are true"), syntax: "AND(logical1, [logical2], ...)" },
-            { name: "OR", category: _t("Logical"), description: _t("Returns TRUE if any condition is true"), syntax: "OR(logical1, [logical2], ...)" },
-            { name: "NOT", category: _t("Logical"), description: _t("Reverses the logic"), syntax: "NOT(logical)" },
-            { name: "IFERROR", category: _t("Logical"), description: _t("Returns value if no error"), syntax: "IFERROR(value, value_if_error)" },
-            { name: "IFS", category: _t("Logical"), description: _t("Multiple conditions"), syntax: "IFS(condition1, value1, [condition2, value2], ...)" },
-
-            // Text functions
-            { name: "CONCATENATE", category: _t("Text"), description: _t("Joins text strings"), syntax: "CONCATENATE(text1, [text2], ...)" },
-            { name: "LEFT", category: _t("Text"), description: _t("Returns leftmost characters"), syntax: "LEFT(text, [num_chars])" },
-            { name: "RIGHT", category: _t("Text"), description: _t("Returns rightmost characters"), syntax: "RIGHT(text, [num_chars])" },
-            { name: "MID", category: _t("Text"), description: _t("Returns characters from middle"), syntax: "MID(text, start_num, num_chars)" },
-            { name: "LEN", category: _t("Text"), description: _t("Returns length of text"), syntax: "LEN(text)" },
-            { name: "UPPER", category: _t("Text"), description: _t("Converts to uppercase"), syntax: "UPPER(text)" },
-            { name: "LOWER", category: _t("Text"), description: _t("Converts to lowercase"), syntax: "LOWER(text)" },
-            { name: "TRIM", category: _t("Text"), description: _t("Removes extra spaces"), syntax: "TRIM(text)" },
-
-            // Lookup functions
-            { name: "VLOOKUP", category: _t("Lookup"), description: _t("Vertical lookup"), syntax: "VLOOKUP(lookup_value, table, col_index, [range_lookup])" },
-            { name: "HLOOKUP", category: _t("Lookup"), description: _t("Horizontal lookup"), syntax: "HLOOKUP(lookup_value, table, row_index, [range_lookup])" },
-            { name: "INDEX", category: _t("Lookup"), description: _t("Returns value at position"), syntax: "INDEX(array, row_num, [col_num])" },
-            { name: "MATCH", category: _t("Lookup"), description: _t("Returns position of value"), syntax: "MATCH(lookup_value, lookup_array, [match_type])" },
-
-            // Statistical functions
-            { name: "COUNT", category: _t("Statistical"), description: _t("Counts numbers"), syntax: "COUNT(value1, [value2], ...)" },
-            { name: "COUNTA", category: _t("Statistical"), description: _t("Counts non-empty cells"), syntax: "COUNTA(value1, [value2], ...)" },
-            { name: "COUNTIF", category: _t("Statistical"), description: _t("Counts cells matching criteria"), syntax: "COUNTIF(range, criteria)" },
-            { name: "SUMIF", category: _t("Statistical"), description: _t("Sums cells matching criteria"), syntax: "SUMIF(range, criteria, [sum_range])" },
-            { name: "AVERAGEIF", category: _t("Statistical"), description: _t("Averages cells matching criteria"), syntax: "AVERAGEIF(range, criteria, [average_range])" },
-
-            // Date functions
-            { name: "TODAY", category: _t("Date"), description: _t("Returns current date"), syntax: "TODAY()" },
-            { name: "NOW", category: _t("Date"), description: _t("Returns current date and time"), syntax: "NOW()" },
-            { name: "YEAR", category: _t("Date"), description: _t("Returns year from date"), syntax: "YEAR(date)" },
-            { name: "MONTH", category: _t("Date"), description: _t("Returns month from date"), syntax: "MONTH(date)" },
-            { name: "DAY", category: _t("Date"), description: _t("Returns day from date"), syntax: "DAY(date)" },
-        ];
+    async loadFunctions() {
+        try {
+            const list = await this.orm.call("hr.formula.rule", "pb_formula_functions", []);
+            this.functions = list.map((f) => ({
+                name: f.name, category: f.category_label, description: f.help,
+                syntax: f.signature, example: f.example,
+            }));
+        } catch {
+            this.functions = [];
+        }
     }
 
     onInput(ev) {

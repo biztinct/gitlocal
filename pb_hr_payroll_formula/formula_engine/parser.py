@@ -9,6 +9,17 @@ from dataclasses import dataclass
 from enum import Enum
 import logging
 
+try:
+    from . import functions as _functions
+except ImportError:  # loaded as a bare file
+    import importlib.util as _ilu
+    import os as _os
+    _spec = _ilu.spec_from_file_location(
+        'pb_formula_functions',
+        _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'functions.py'))
+    _functions = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_functions)
+
 _logger = logging.getLogger(__name__)
 
 
@@ -68,27 +79,9 @@ class FormulaParser:
     - Booleans (TRUE, FALSE)
     """
 
-    # Supported Excel functions
-    SUPPORTED_FUNCTIONS = {
-        # Math functions
-        'SUM', 'AVERAGE', 'MIN', 'MAX', 'ABS', 'ROUND', 'ROUNDUP', 'ROUNDDOWN',
-        'CEILING', 'FLOOR', 'POWER', 'SQRT', 'MOD', 'INT', 'SIGN',
-
-        # Logical functions
-        'IF', 'AND', 'OR', 'NOT', 'TRUE', 'FALSE', 'IFERROR', 'IFS',
-
-        # Text functions
-        'CONCATENATE', 'LEFT', 'RIGHT', 'MID', 'LEN', 'UPPER', 'LOWER', 'TRIM',
-
-        # Lookup functions
-        'VLOOKUP', 'HLOOKUP', 'INDEX', 'MATCH', 'CHOOSE',
-
-        # Statistical functions
-        'COUNT', 'COUNTA', 'COUNTIF', 'SUMIF', 'AVERAGEIF',
-
-        # Date functions
-        'DATE', 'TODAY', 'NOW', 'YEAR', 'MONTH', 'DAY',
-    }
+    # Supported functions — DERIVED from the one function table
+    # (formula_engine/functions.py, WDGAP PR-A); never a hand-kept copy.
+    SUPPORTED_FUNCTIONS = _functions.FUNCTION_NAMES
 
     # Operator precedence (higher = binds tighter)
     OPERATOR_PRECEDENCE = {
