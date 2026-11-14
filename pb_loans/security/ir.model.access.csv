@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_loan_seat,pb.loan asked to decide (seat rule),model_pb_loan,base.group_user,1,1,0,0
+access_pb_loan_officer,pb.loan payroll officer,model_pb_loan,pb_hr_payroll_base.group_payroll_base_officer,1,1,1,1
+access_pb_loan_repayment_officer,pb.loan.repayment payroll officer,model_pb_loan_repayment,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0

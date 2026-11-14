@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Loans lens.
+
+       Comments ruled with `=`, never a doubled hyphen. No `t-as` variable is
+       named lt / gt / lte / gte / and / or / not / in: the loan loop is `ln`,
+       the history loop `hx`, the schedule loop `sx`, the people loop `pp`,
+       the scheme loop `sc`, the option loop `op`, the note loop `nt`.
+       ==================================================================== -->
+  <t t-name="pb_loans.PbLoansBoard">
+    <div class="pbim pbim-page pbln" t-att-class="{ 'pbln--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the loans…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbln-locked">
+          <div class="pbln-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for the pay team</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbln-head">
+            <div class="pbln-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Loans and salary advances</h1>
+              <p class="pbim-sub">Money lent to people, paid back from their pay — one
+                 instalment a month, never twice, never more than is owed.</p>
+            </div>
+            <div class="pbln-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again" aria-label="Read the board again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <button class="pbim-btn ghost pbln-setup-btn" t-on-click="openSetup">
+                <t t-out="icon('settings', 15)"/> Set up
+                <span t-if="state.setup.missing" class="pbln-dot" aria-label="Needs attention"/>
+              </button>
+              <button class="pbim-btn" t-on-click="openCreate">
+                <t t-out="icon('plus', 15)"/> New loan
+              </button>
+            </div>
+          </div>
+
+          <!-- ============ what a pay run could not take (nothing silent) ============ -->
+          <div t-if="state.setup.missing" class="pbln-alert" role="status">
+            <span class="pbln-alert-ic"><t t-out="icon('triangleAlert', 18)"/></span>
+            <div class="pbln-alert-tx">
+              <b t-if="state.setup.missing === 1">A pay scheme has people with loans but no pay item for loan repayments.</b>
+              <b t-else=""><t t-esc="state.setup.missing"/> pay schemes have people with loans but no pay item for loan repayments.</b>
+              <span>Nothing is taken from their pay until one is chosen.</span>
+            </div>
+            <button class="pbim-btn-sm" t-on-click="openSetup">Choose the pay item</button>
+          </div>
+          <div t-foreach="state.notes" t-as="nt" t-key="nt.id" class="pbln-alert is-run">
+            <span class="pbln-alert-ic"><t t-out="icon('info', 18)"/></span>
+            <div class="pbln-alert-tx">
+              <b>Pay run <t t-esc="nt.name"/></b>
+              <span t-foreach="nt.sentences" t-as="sn" t-key="sn_index" t-esc="sn"/>
+            </div>
+          </div>
+
+          <!-- ======================= the numbers ======================= -->
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+
+          <!-- ======================= the steps ======================= -->
+          <t t-call="pb_import_kit.QuietSteps">
+            <t t-set="qSteps" t-value="steps"/>
+            <t t-set="qStepsLabel" t-value="stepsLabel"/>
+            <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+          </t>
+
+          <!-- ================ the shared filter panel ================ -->
+          <PbFilterLayout kit="kit" coach="'loans-filters'" searchPlaceholder="searchLabel">
+
+          <div t-if="state.listError" class="pbim-empty pbln-empty">
+            <div class="pbln-empty-ic"><t t-out="icon('alert', 30)"/></div>
+            <h3>The loans could not load</h3>
+            <p>The connection may have dropped. Your filters are kept.</p>
+            <button class="pbim-btn" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+          </div>
+
+          <div t-elif="state.rows.length" class="pbim-tablewrap pbln-tablewrap">
+            <table class="pbim-table pbln-table">
+              <thead>
+                <tr>
+                  <th>Who</th>
+                  <th>Kind</th>
+                  <th class="num">Amount</th>
+                  <th class="pbln-col-bar">Paid back</th>
+                  <th class="num">Left to repay</th>
+                  <th>Next instalment</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="state.rows" t-as="ln" t-key="ln.id" class="pbln-row"
+                    t-att-class="{ 'is-open': state.loan and state.loan.id === ln.id }"
+                    tabindex="0" t-on-click="() => this.openLoan(ln)"
+                    t-on-keydown="(ev) => ev.key === 'Enter' and this.openLoan(ln)">
+                  <td>
+                    <span class="pbln-who">
+                      <span class="pbln-av" t-esc="ln.initials"/>
+                      <span class="pbln-who-tx">
+                        <b t-esc="ln.employee"/>
+                        <small t-esc="ln.department or ln.name"/>
+                      </span>
+                    </span>
+                  </td>
+                  <td><span class="pbim-chip" t-esc="ln.kind_label"/></td>
+                  <td class="num" t-esc="ln.amount_label"/>
+                  <td class="pbln-col-bar">
+                    <span class="pbln-bar" t-att-title="ln.repaid_label">
+                      <i t-att-style="barStyle(ln.pct)"/>
+                    </span>
+                    <small class="pbln-bar-pct"><t t-esc="ln.pct"/>%</small>
+                  </td>
+                  <td class="num"><b t-esc="ln.balance_label"/></td>
+                  <td>
+                    <span t-if="ln.next_label" t-esc="ln.next_label"/>
+                    <span t-elif="ln.state === 'paused'" class="pbln-muted" t-esc="ln.pause_reason"/>
+                    <span t-else="" class="pbln-dash">—</span>
+                  </td>
+                  <td>
+                    <span class="pbim-badge pbln-badge" t-att-class="'is-' + ln.state" t-esc="ln.state_label"/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div t-elif="!state.listLoaded" class="pbln-skeleton" aria-label="Loading loans">
+            <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="pbln-skel-row"/>
+          </div>
+
+          <div t-elif="!state.total" class="pbim-empty pbln-empty">
+            <div class="pbln-empty-ic"><t t-out="icon('wallet', 30)"/></div>
+            <h3>No loans or salary advances yet</h3>
+            <p>Lend somebody money, get it approved, and every regular pay run takes one
+               instalment until it is paid back — with the balance always in view.</p>
+            <button class="pbim-btn" t-on-click="openCreate"><t t-out="icon('plus', 14)"/> New loan</button>
+          </div>
+
+          <div t-else="" class="pbim-empty pbln-empty">
+            <div class="pbln-empty-ic"><t t-out="icon('search', 30)"/></div>
+            <h3>No loans match these filters</h3>
+            <p t-if="!kit.search">Remove a filter above, or start again from every loan.</p>
+            <p t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the spelling, or search by a person or a reason.</p>
+            <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show all loans</button>
+          </div>
+
+          <div t-if="state.rows.length and !state.listError" class="pbln-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+            <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
+
+          <!-- ======================== the drawer ======================== -->
+          <div t-if="state.loan" class="pbln-scrim" t-on-click="closeLoan"/>
+          <aside t-if="state.loan" class="pbln-drawer" role="dialog" aria-modal="true"
+                 aria-label="Loan" t-att-class="{ 'is-busy': state.loanBusy }">
+            <t t-set="L" t-value="state.loan"/>
+            <header class="pbln-dr-head">
+              <div class="pbln-dr-id">
+                <span class="pbln-av lg" t-esc="L.initials"/>
+                <div>
+                  <h2 t-esc="L.employee"/>
+                  <p><t t-esc="L.kind_label"/> · <t t-esc="L.name"/></p>
+                </div>
+              </div>
+              <div class="pbln-dr-tools">
+                <span class="pbim-badge pbln-badge" t-att-class="'is-' + L.state" t-esc="L.state_label"/>
+                <button class="pbim-btn-sm ghost" t-on-click="closeLoan" aria-label="Close"><t t-out="icon('x', 15)"/></button>
+              </div>
+            </header>
+
+            <div t-if="L.loading" class="pbim-busy"><div class="pbim-spin"/></div>
+            <div t-else="" class="pbln-dr-body">
+              <!-- the balance, in one look -->
+              <section class="pbln-dr-hero">
+                <span class="pbln-k">Left to repay</span>
+                <b class="pbln-dr-big" t-esc="L.balance_label"/>
+                <span class="pbln-bar lg"><i t-att-style="barStyle(L.pct)"/></span>
+                <span class="pbln-dr-sub"><t t-esc="L.repaid_label"/> of <t t-esc="L.amount_label"/> paid back · <t t-esc="L.pct"/>%</span>
+                <p t-if="L.next_label" class="pbln-dr-next"><t t-out="icon('calendar', 14)"/> Next: <t t-esc="L.next_label"/></p>
+                <p t-if="L.in_payrun_label" class="pbln-dr-next is-soft"><t t-out="icon('clock', 14)"/> <t t-esc="L.in_payrun_label"/> is in a pay run that is not finished yet.</p>
+                <p t-if="L.state === 'paused'" class="pbln-dr-next is-amber"><t t-out="icon('pause', 14)"/> Paused: <t t-esc="L.pause_reason"/></p>
+                <p t-if="L.state === 'waiting'" class="pbln-dr-next is-amber"><t t-out="icon('clock', 14)"/>
+                  Waiting for approval<t t-if="L.waiting_on"> — with <t t-esc="L.waiting_on"/></t>.</p>
+                <p t-if="L.state === 'closed'" class="pbln-dr-next is-green"><t t-out="icon('checkCircle', 14)"/> Repaid in full<t t-if="L.closed_on"> in <t t-esc="L.closed_on"/></t>.</p>
+              </section>
+
+              <!-- the moves -->
+              <div class="pbln-dr-acts" t-if="!state.act">
+                <button t-if="L.can.submit" class="pbim-btn" t-att-disabled="state.loanBusy" t-on-click="() => this.move('submit')"><t t-out="icon('send', 14)"/> Send for approval</button>
+                <button t-if="L.can.approve" class="pbim-btn" t-att-disabled="state.loanBusy" t-on-click="() => this.move('approve')"><t t-out="icon('check', 14)"/> Approve</button>
+                <button t-if="L.can.approve" class="pbim-btn ghost" t-att-disabled="state.loanBusy" t-on-click="() => this.startAct('refuse')">Do not approve</button>
+                <button t-if="L.can.record" class="pbim-btn ghost" t-att-disabled="state.loanBusy" t-on-click="() => this.startAct('record')"><t t-out="icon('banknote', 14)"/> Record a repayment</button>
+                <button t-if="L.can.settle" class="pbim-btn ghost" t-att-disabled="state.loanBusy" t-on-click="() => this.startAct('settle')"><t t-out="icon('checkCheck', 14)"/> Settle now</button>
+                <button t-if="L.can.pause" class="pbim-btn ghost" t-att-disabled="state.loanBusy" t-on-click="() => this.startAct('pause')"><t t-out="icon('pause', 14)"/> Pause</button>
+                <button t-if="L.can.resume" class="pbim-btn ghost" t-att-disabled="state.loanBusy" t-on-click="() => this.startAct('resume')"><t t-out="icon('play', 14)"/> Resume</button>
+                <button t-if="L.can.cancel" class="pbim-btn ghost danger" t-att-disabled="state.loanBusy" t-on-click="() => this.startAct('cancel')">Cancel</button>
+                <button t-if="L.can.delete" class="pbim-btn ghost danger" t-att-disabled="state.loanBusy" t-on-click="() => this.move('delete')"><t t-out="icon('trash', 14)"/> Delete</button>
+              </div>
+              <form t-else="" class="pbln-act" t-on-submit.prevent="doAct">
+                <h3 t-esc="actTitle"/>
+                <p class="pbln-muted" t-esc="actHelp"/>
+                <label t-if="state.act.verb === 'record'">
+                  <span>Amount paid back</span>
+                  <input type="number" min="0" step="any" class="pbln-in" t-att-value="state.act.amount"
+                         t-on-input="(ev) => this.onAct('amount', ev)" placeholder="0"/>
+                  <small class="pbln-muted">At most <t t-esc="L.available_label"/>.</small>
+                </label>
+                <label>
+                  <span t-if="state.act.verb === 'resume'">Note (optional)</span>
+                  <span t-else="">Why</span>
+                  <textarea class="pbln-in" rows="2" t-att-value="state.act.reason"
+                            t-on-input="(ev) => this.onAct('reason', ev)"
+                            placeholder="A few words the next person will understand."/>
+                </label>
+                <label t-if="state.act.verb === 'record' or state.act.verb === 'settle'">
+                  <span>Reference (optional)</span>
+                  <input type="text" class="pbln-in" t-att-value="state.act.reference"
+                         t-on-input="(ev) => this.onAct('reference', ev)"
+                         placeholder="A receipt or bank transfer number"/>
+                </label>
+                <div class="pbln-act-foot">
+                  <button type="button" class="pbim-btn ghost" t-on-click="cancelAct">Back</button>
+                  <button type="submit" class="pbim-btn" t-att-class="{ 'danger-solid': state.act.verb === 'cancel' or state.act.verb === 'refuse' }"
+                          t-att-disabled="state.loanBusy" t-esc="actButton"/>
+                </div>
+              </form>
+
+              <!-- the plan -->
+              <section class="pbln-dr-sec">
+                <h3>The plan</h3>
+                <p class="pbln-plan" t-esc="L.plan"/>
+                <dl class="pbln-facts">
+                  <div><dt>Amount</dt><dd t-esc="L.amount_label"/></div>
+                  <div><dt>First pay month</dt><dd t-esc="L.first_month"/></div>
+                  <div><dt>If the person leaves</dt><dd t-esc="L.leaving_label"/></div>
+                  <div t-if="L.months_left"><dt>Months left</dt><dd t-esc="L.months_left"/></div>
+                </dl>
+                <p t-if="L.reason" class="pbln-why"><t t-out="icon('messageSquare', 13)"/> <t t-esc="L.reason"/></p>
+                <ol t-if="L.schedule.length" class="pbln-sched">
+                  <li t-foreach="L.schedule" t-as="sx" t-key="sx_index" t-att-style="'--i:' + sx_index">
+                    <span t-esc="sx.month"/><b t-esc="sx.amount"/>
+                  </li>
+                </ol>
+              </section>
+
+              <!-- the history -->
+              <section class="pbln-dr-sec">
+                <h3>Repayments</h3>
+                <p t-if="!L.history.length" class="pbln-muted">Nothing has been paid back yet.</p>
+                <table t-else="" class="pbln-hist">
+                  <tbody>
+                    <tr t-foreach="L.history" t-as="hx" t-key="hx.id" t-att-class="'is-' + hx.state">
+                      <td><b t-esc="hx.month"/><small t-esc="hx.how"/></td>
+                      <td class="num"><span t-esc="hx.amount"/><small t-if="hx.reference" t-esc="hx.reference"/></td>
+                      <td><span class="pbim-badge pbln-badge" t-att-class="'is-' + hx.state" t-esc="hx.state_label"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section t-if="L.trail.length" class="pbln-dr-sec">
+                <h3>What happened</h3>
+                <ul class="pbln-trail">
+                  <li t-foreach="L.trail" t-as="tr" t-key="tr_index">
+                    <span class="pbln-trail-dot"/>
+                    <div><p t-esc="tr.body"/><small><t t-esc="tr.who"/> · <t t-esc="tr.when"/></small></div>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </aside>
+
+          <!-- ===================== the new loan dialog ===================== -->
+          <div t-if="state.creating" class="pbim-modal-scrim" t-on-click="closeCreate">
+            <div class="pbim-modal pbln-modal" t-on-click.stop="() => {}" role="dialog" aria-label="New loan">
+              <div class="pbln-modal-head">
+                <h3>New loan or salary advance</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeCreate" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+              </div>
+              <div class="pbln-modal-grid">
+                <div class="pbln-modal-form">
+                  <label class="pbln-person">
+                    <span>Who it is for</span>
+                    <input type="text" class="pbln-in" placeholder="Start typing a name or code"
+                           t-att-value="state.draft.employee" t-on-input="onPersonSearch"/>
+                    <div t-if="state.people.length" class="pbln-people">
+                      <button t-foreach="state.people" t-as="pp" t-key="pp.id" type="button"
+                              class="pbln-person-row" t-on-click="() => this.pickPerson(pp)">
+                        <span t-esc="pp.name"/>
+                        <small><t t-esc="pp.code"/><t t-if="pp.department"> · <t t-esc="pp.department"/></t></small>
+                      </button>
+                    </div>
+                    <small t-if="state.draft.leaving" class="pbln-warn">This person has a leaving date.</small>
+                  </label>
+                  <div class="pbln-field">
+                    <span>Kind</span>
+                    <div class="pbim-seg">
+                      <button t-foreach="state.kinds" t-as="kd" t-key="kd.key" type="button"
+                              class="pbim-segbtn" t-att-class="{ 'on': state.draft.kind === kd.key }"
+                              t-on-click="() => this.setDraft('kind', kd.key)" t-esc="kd.label"/>
+                    </div>
+                  </div>
+                  <div class="pbln-two">
+                    <label>
+                      <span>Amount<t t-if="state.draft.currency"> (<t t-esc="state.draft.currency"/>)</t></span>
+                      <input type="number" min="0" step="any" class="pbln-in" t-att-value="state.draft.amount"
+                             t-on-input="(ev) => this.onDraft('amount', ev)" placeholder="0"/>
+                    </label>
+                    <label>
+                      <span>First pay month</span>
+                      <input type="month" class="pbln-in" t-att-value="draftMonth"
+                             t-on-input="(ev) => this.onDraft('first_month', ev)"/>
+                    </label>
+                  </div>
+                  <div class="pbln-field">
+                    <span>Paid back as</span>
+                    <div class="pbim-seg">
+                      <button type="button" class="pbim-segbtn" t-att-class="{ 'on': state.draft.plan_mode === 'amount' }"
+                              t-on-click="() => this.setDraft('plan_mode', 'amount')">An amount each month</button>
+                      <button type="button" class="pbim-segbtn" t-att-class="{ 'on': state.draft.plan_mode === 'months' }"
+                              t-on-click="() => this.setDraft('plan_mode', 'months')">A number of months</button>
+                    </div>
+                  </div>
+                  <label t-if="state.draft.plan_mode === 'amount'">
+                    <span>Each month</span>
+                    <input type="number" min="0" step="any" class="pbln-in" t-att-value="state.draft.plan_amount"
+                           t-on-input="(ev) => this.onDraft('plan_amount', ev)" placeholder="0"/>
+                  </label>
+                  <label t-else="">
+                    <span>Over how many months</span>
+                    <input type="number" min="1" step="1" class="pbln-in" t-att-value="state.draft.plan_months"
+                           t-on-input="(ev) => this.onDraft('plan_months', ev)" placeholder="6"/>
+                  </label>
+                  <div class="pbln-field">
+                    <span>If the person leaves</span>
+                    <div class="pbim-seg">
+                      <button t-foreach="state.leaving" t-as="op" t-key="op.key" type="button"
+                              class="pbim-segbtn" t-att-class="{ 'on': state.draft.on_leaving === op.key }"
+                              t-on-click="() => this.setDraft('on_leaving', op.key)" t-esc="op.label"/>
+                    </div>
+                  </div>
+                  <label>
+                    <span>What it is for</span>
+                    <textarea class="pbln-in" rows="2" t-att-value="state.draft.reason"
+                              t-on-input="(ev) => this.onDraft('reason', ev)"
+                              placeholder="In the words the person and the approver will read."/>
+                  </label>
+                </div>
+
+                <!-- the hero: the plan, month by month, as it is typed -->
+                <div class="pbln-preview" aria-live="polite">
+                  <span class="pbln-k">How it is paid back</span>
+                  <t t-if="state.preview and state.preview.ok">
+                    <p class="pbln-preview-sum" t-esc="state.preview.sentence"/>
+                    <ol class="pbln-preview-list">
+                      <li t-foreach="state.preview.rows" t-as="sx" t-key="sx_index"
+                          t-att-class="{ 'is-last': sx.last }" t-att-style="'--i:' + sx_index">
+                        <span t-esc="sx.month"/><b t-esc="sx.amount"/>
+                      </li>
+                    </ol>
+                    <p t-if="state.preview.more" class="pbln-muted">and <t t-esc="state.preview.more"/> more months.</p>
+                  </t>
+                  <div t-else="" class="pbln-preview-empty">
+                    <t t-out="icon('calendarClock', 26)"/>
+                    <p t-if="state.preview" t-esc="state.preview.sentence"/>
+                    <p t-else="">Type the amount and how it is paid back — the instalments appear here, month by month.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="pbln-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeCreate">Cancel</button>
+                <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.confirmCreate(false)">Save as draft</button>
+                <button class="pbim-btn" t-att-disabled="state.busy" t-on-click="() => this.confirmCreate(true)"><t t-out="icon('send', 14)"/> Send for approval</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ======================== set up ======================== -->
+          <div t-if="state.setupOpen" class="pbim-modal-scrim" t-on-click="closeSetup">
+            <div class="pbim-modal pbln-modal pbln-modal--setup" t-on-click.stop="() => {}" role="dialog" aria-label="Set up">
+              <div class="pbln-modal-head">
+                <h3>Where loan repayments go</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeSetup" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+              </div>
+              <p class="pbln-muted pbln-setup-help">For each pay scheme, pick the input pay item that receives the month's
+                 instalment. It arrives as a positive amount; the scheme's own formula takes it off pay
+                 (for example <code>Repayment = −Loan instalment</code>). A scheme with no pay item takes nothing,
+                 and its pay runs say so.</p>
+              <p t-if="!state.setup.schemes.length" class="pbln-muted">There is no active pay scheme yet.</p>
+              <div t-else="" class="pbln-setup-list">
+                <div t-foreach="state.setup.schemes" t-as="sc" t-key="sc.id" class="pbln-setup-row"
+                     t-att-class="{ 'is-missing': sc.needed and !sc.rule_id }">
+                  <div class="pbln-setup-id">
+                    <b t-esc="sc.name"/>
+                    <small><t t-esc="sc.currency"/><t t-if="sc.application"> · runs from application data</t></small>
+                  </div>
+                  <div class="pbln-setup-pick">
+                    <span t-if="sc.keyed" class="pbim-chip">Taken through its application source</span>
+                    <select t-elif="state.canSetUp" class="pbln-in" t-on-change="(ev) => this.pickItem(sc, ev)">
+                      <option value="0" t-att-selected="!sc.rule_id">No pay item — take nothing</option>
+                      <option t-foreach="sc.options" t-as="op" t-key="op.id" t-att-value="op.id"
+                              t-att-selected="op.id === sc.rule_id" t-esc="op.label"/>
+                    </select>
+                    <span t-else="" t-esc="sc.rule_label or 'No pay item'"/>
+                    <small t-if="sc.needed and !sc.rule_id" class="pbln-warn">People here have loans.</small>
+                  </div>
+                </div>
+              </div>
+              <p t-if="!state.canSetUp" class="pbln-muted">Only a payroll manager can change these.</p>
+              <div class="pbln-modal-foot">
+                <button class="pbim-btn" t-on-click="closeSetup">Done</button>
+              </div>
+            </div>
+          </div>
+
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>
