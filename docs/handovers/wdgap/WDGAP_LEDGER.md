@@ -27,7 +27,7 @@ The programme works through the study's build order, one step at a time.
 |---|---|---|
 | QF1 | Approvals inbox: approve selected. Home: PayAI's daily alerts | designing |
 | QF2 | Explorer: named saved views + share, Excel download, send regularly by email | designing |
-| QF3 | Leave on My Payobook: half days/hours, withdraw / ask to change, attach certificate, balance after | designing |
+| QF3 | Leave on My Payobook: half days/hours, withdraw / ask to change, attach certificate, balance after | built + tested on branch `wdgap-qf3` (not merged, not deployed) — `WDGAP_QF3_REPORT.md` |
 | QF4 | Goal scores into the pay review. Benefits: enrol joiners, end cover for leavers | designing |
 | QF5 | Compulsory two-step sign-in by role, idle sign-out | designing |
 
@@ -89,3 +89,10 @@ clean.
 
 | # | Phase | Gotcha |
 |---|---|---|
+| QF3-1 | QF3 | Parallel phase agents of one session SHARE the scratchpad folder: a generic `shell.sh` / `run_suite.sh` / `logs/` was overwritten by another phase mid-run. Keep every phase's scripts, configs and logs in a subfolder named after the phase (`scratchpad/qf3/`). |
+| QF3-2 | QF3 | The local disk is nearly full (≈200 databases). Copies of the 2.3 GB test templates (`upd_p5e_y9`, `upd_p5e_pay`) failed with "No space left on device"; two `createdb -T <same template>` at once failed with "buffer is pinned". Use the ~150 MB templates (`upd_p6_t_tpl`, `upd_p5_t_full2`; vi + id installed), one createdb at a time, and drop your own databases AND `~/odoo19/data/filestore/<db>` when done. |
+| QF3-3 | QF3 | `sudo()` on the employee pages made every request look like HR's own entry: `pb_timeoff`'s past-date refusal never fired AND a late sick-leave request never alerted HR. The rule is now one method (`hr.leave._pb_backdate_verdict(vals, as_officer=False)`) that the employee path asks explicitly before the sudo create. |
+| QF3-4 | QF3 | hr_holidays' `can_cancel`, computed `with_user(plain internal login)`, raises AccessError ("not available for employee public profiles"): `_check_approval_update` reads `employee_id.leave_manager_id`. Catch it and restate the own-leave rule (approved, starts in the future). |
+| QF3-5 | QF3 | hr_holidays refuses a request over the balance unless the kind "allows going below zero" (`_check_validity`), so a preview may only say "you can still send it" for those kinds. |
+| QF3-6 | QF3 | `biz.approval.engine.cancel` calls the record's `_approval_withdraw` inside a bare try/except (no savepoint). A hook that writes must hold its own savepoint, or a database error there leaves the withdrawal's transaction aborted. |
+| QF3-7 | QF3 | Locally, a running server kept serving the previous frontend CSS after `DELETE … /web/assets/%`; only a restart picked up the changed SCSS (same lesson as "asset purge alone does not refresh browsers"). |
