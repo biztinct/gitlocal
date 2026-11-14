@@ -2948,16 +2948,31 @@ export class PbFormulaStudio extends Component {
     }
     toggleFnAll() { this.state.fnAllOpen = !this.state.fnAllOpen; }
     fnTitle(fn) { return fn.help ? `${fn.signature} — ${fn.help}` : fn.signature; }
-    // The function the person is typing (the last NAME( in the draft), with
-    // its help line and an example — shown under the palette.
+    // The function the person is typing, with its help line and an example —
+    // shown under the palette: the innermost call still open at the end of
+    // the draft, or, once every bracket is closed, the outermost one.
     get draftFnHelp() {
         const f = (this.state.draft.excel_formula || "").replace(/"[^"]*"/g, '""');
-        const names = [...f.matchAll(/([A-Za-z_][A-Za-z0-9_]*)\s*\(/g)].map(m => m[1].toUpperCase());
-        for (let i = names.length - 1; i >= 0; i--) {
-            const hit = (this.state.fnList || []).find(fn => fn.name === names[i]);
-            if (hit) return hit;
+        const known = (name) => (this.state.fnList || []).find(fn => fn.name === name);
+        const stack = [];
+        let first = null;
+        const re = /([A-Za-z_][A-Za-z0-9_]*)\s*\(|\(|\)/g;
+        let m;
+        while ((m = re.exec(f))) {
+            if (m[1]) {
+                const name = m[1].toUpperCase();
+                stack.push(name);
+                if (!first && known(name)) first = name;
+            } else if (m[0] === "(") {
+                stack.push(null);
+            } else {
+                stack.pop();
+            }
         }
-        return null;
+        for (let i = stack.length - 1; i >= 0; i--) {
+            if (stack[i] && known(stack[i])) return known(stack[i]);
+        }
+        return first ? known(first) : null;
     }
     get draftChips() { return this.chips(this.state.draft.excel_formula || ""); }
 
