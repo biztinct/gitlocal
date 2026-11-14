@@ -1810,3 +1810,179 @@ msgstr "trên"
 #: code:addons/pb_comp_ben/static/src/xml/incentives_board.xml:0
 msgid "”. Check the spelling, or search by a person or a reason."
 msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo một người hoặc một lý do."
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,help:pb_comp_ben.field_pb_benefit_enrollment__end_reason
+msgid ""
+"\"Leaving\" means Payobook set the end date from the person's last working "
+"day, and moves it if that day changes."
+msgstr ""
+"\"Nghỉ việc\" nghĩa là Payobook đặt ngày kết thúc theo ngày làm việc cuối "
+"cùng của người đó, và dời theo nếu ngày đó thay đổi."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit_auto.py:0
+msgid "%(count)s people added to %(plan)s."
+msgstr "Đã thêm %(count)s người vào %(plan)s."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid "%(count)s people qualify and every one of them is already covered."
+msgstr "%(count)s người đủ điều kiện và tất cả đều đã được bảo hiểm."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid ""
+"%(people)s people qualify, %(covered)s are already covered, %(add)s will be "
+"added."
+msgstr ""
+"%(people)s người đủ điều kiện, %(covered)s người đã được bảo hiểm, %(add)s "
+"người sẽ được thêm."
+
+#. module: pb_comp_ben
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_benefit_cover_wizard_form
+msgid "Add them"
+msgstr "Thêm họ"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_enrollment__started_by__manual
+msgid "Added by HR"
+msgstr "Do HR thêm"
+
+#. module: pb_comp_ben
+#: model:ir.actions.server,name:pb_comp_ben.cron_benefit_end_due_ir_actions_server
+msgid "Benefits: end cover after the last day"
+msgstr "Phúc lợi: kết thúc bảo hiểm sau ngày cuối cùng"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+#: model:ir.model,name:pb_comp_ben.model_pb_benefit_cover_wizard
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_benefit_cover_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_benefit_plan_form
+msgid "Cover everyone who qualifies now"
+msgstr "Bảo hiểm cho mọi người đủ điều kiện ngay bây giờ"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_enrollment__end_note
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid "Ends %(day)s"
+msgstr "Kết thúc %(day)s"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid "Ends %(day)s · leaving"
+msgstr "Kết thúc %(day)s · nghỉ việc"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__auto_cover__join
+msgid "Everyone, from the day they join"
+msgstr "Mọi người, từ ngày vào làm"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__auto_cover__probation
+msgid "Everyone, once the trial period is passed"
+msgstr "Mọi người, sau khi qua thời gian thử việc"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_enrollment__started_by
+msgid "How it started"
+msgstr "Bắt đầu như thế nào"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_enrollment__end_reason__leaving
+msgid "Leaving"
+msgstr "Nghỉ việc"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_plan__auto_cover__none
+msgid "Nobody (HR adds people)"
+msgstr "Không ai (HR tự thêm người)"
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit_auto.py:0
+msgid "Nobody needed adding."
+msgstr "Không cần thêm ai."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid "Nobody qualifies for this plan right now."
+msgstr "Hiện không ai đủ điều kiện cho gói này."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid "Only the head of pay can put everybody on a plan at once."
+msgstr ""
+"Chỉ trưởng bộ phận lương mới có thể đưa mọi người vào một gói cùng lúc."
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,help:pb_comp_ben.field_pb_benefit_plan__auto_cover
+msgid ""
+"Payobook can put people on this plan by itself: everyone in the plan's "
+"company (and its country, if it has one) from the day they join, or once "
+"their trial period is passed. People who are here already are added with "
+"\"Cover everyone who qualifies now\"."
+msgstr ""
+"Payobook có thể tự đưa người vào gói này: mọi người trong công ty của gói "
+"(và quốc gia của gói, nếu có) từ ngày vào làm, hoặc sau khi qua thời gian "
+"thử việc. Những người đã làm việc ở đây được thêm bằng \"Bảo hiểm cho mọi "
+"người đủ điều kiện ngay bây giờ\"."
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_enrollment__end_reason__manual
+msgid "Set by HR"
+msgstr "Do HR đặt"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields.selection,name:pb_comp_ben.selection__pb_benefit_enrollment__started_by__auto
+msgid "Started automatically"
+msgstr "Tự động bắt đầu"
+
+#. module: pb_comp_ben
+#: model_terms:ir.ui.view,arch_db:pb_comp_ben.view_pb_benefit_cover_wizard_form
+msgid ""
+"The people added show \"Started automatically\" on the plan. Cover starts "
+"today, or on their first day if they have not started yet."
+msgstr ""
+"Những người được thêm sẽ hiện \"Tự động bắt đầu\" trên gói. Bảo hiểm bắt đầu"
+" từ hôm nay, hoặc từ ngày đầu tiên của họ nếu họ chưa bắt đầu làm."
+
+#. module: pb_comp_ben
+#. odoo-python
+#: code:addons/pb_comp_ben/models/benefit.py:0
+msgid "This plan covers nobody automatically. Choose who it covers first."
+msgstr ""
+"Gói này không tự động bảo hiểm cho ai. Hãy chọn đối tượng được bảo hiểm "
+"trước."
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_cover_wizard__sentence
+msgid "What will happen"
+msgstr "Điều sẽ xảy ra"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_plan__auto_cover
+msgid "Who is covered automatically"
+msgstr "Ai được bảo hiểm tự động"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_enrollment__end_reason
+msgid "Why it ends"
+msgstr "Lý do kết thúc"
+
+#. module: pb_comp_ben
+#: model:ir.model.fields,field_description:pb_comp_ben.field_pb_benefit_cover_wizard__to_add
+msgid "Will be added"
+msgstr "Sẽ được thêm"

@@ -18,4 +18,20 @@
         <field name="interval_type">days</field>
         <field name="active" eval="True"/>
     </record>
+
+    <!-- WDGAP QF4 (B4, R6): cover whose last day has passed shows as Ended.
+         Writes the enrollment's state and nothing else; sends no mail.
+         noupdate so a tenant that changes its time keeps it. -->
+    <data noupdate="1">
+        <record id="cron_benefit_end_due" model="ir.cron">
+            <field name="name">Benefits: end cover after the last day</field>
+            <field name="model_id" ref="model_pb_benefit_plan"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_end_due()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 17:30:00')"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
 </odoo>
