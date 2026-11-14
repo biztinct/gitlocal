@@ -1,0 +1,2234 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-14 08:00+0000\n"
+"PO-Revision-Date: 2026-11-14 08:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "%(amount)s comes off your %(month)s pay"
+msgstr "%(amount)s dipotong dari gaji %(month)s Anda"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "%(amount)s for %(month)s given back: %(why)s"
+msgstr "%(amount)s untuk %(month)s dikembalikan: %(why)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "%(amount)s in %(month)s"
+msgstr "%(amount)s pada %(month)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(amount)s is more than is left to repay (%(left)s)."
+msgstr "%(amount)s lebih dari sisa yang harus dibayar (%(left)s)."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(amount)s is more than is left to repay. %(left)s is left, and %(held)s of "
+"that is already in a pay run, so at most %(max)s can be recorded now."
+msgstr ""
+"%(amount)s lebih dari sisa yang harus dibayar. Sisanya %(left)s, dan "
+"%(held)s di antaranya sudah ada di proses penggajian, jadi paling banyak "
+"%(max)s yang bisa dicatat sekarang."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(amount)s paid back outside payroll: %(why)s%(ref)s. %(left)s left to "
+"repay."
+msgstr "%(amount)s dibayar di luar penggajian: %(why)s%(ref)s. Sisa %(left)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "%(amount)s taken in pay run %(run)s for %(month)s."
+msgstr "%(amount)s diambil di proses penggajian %(run)s untuk %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(kind)s for %(who)s"
+msgstr "%(kind)s untuk %(who)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"%(n)s instalments of %(each)s from %(start)s to %(end)s; the last one is "
+"%(last)s."
+msgstr ""
+"%(n)s cicilan sebesar %(each)s dari %(start)s sampai %(end)s; cicilan "
+"terakhir %(last)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(n)s instalments of %(each)s from the %(month)s pay run; the last one is "
+"%(last)s."
+msgstr ""
+"%(n)s cicilan sebesar %(each)s mulai penggajian %(month)s; cicilan terakhir "
+"%(last)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "%(n)s instalments of %(each)s, from %(start)s to %(end)s."
+msgstr "%(n)s cicilan sebesar %(each)s, dari %(start)s sampai %(end)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(n)s instalments of %(each)s, from the %(month)s pay run."
+msgstr "%(n)s cicilan sebesar %(each)s, mulai penggajian %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(ref)s has been sent in, so what was agreed cannot be changed. Cancel it "
+"and raise a new one instead."
+msgstr ""
+"%(ref)s sudah diajukan, jadi yang sudah disepakati tidak bisa diubah. "
+"Batalkan lalu buat yang baru."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%s has already been sent in."
+msgstr "%s sudah diajukan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%s is already closed."
+msgstr "%s sudah ditutup."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "%s loan instalments could not be applied."
+msgstr "%s cicilan pinjaman tidak dapat diterapkan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "%s loans"
+msgstr "%s pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"%s people have a loan in another currency than this pay scheme, so nothing "
+"was taken."
+msgstr ""
+"%s orang memiliki pinjaman dalam mata uang lain dari skema gaji ini, jadi "
+"tidak ada yang diambil."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"%s people have a loan instalment due but this pay scheme has no pay item for"
+" loan repayments."
+msgstr ""
+"%s orang memiliki cicilan pinjaman jatuh tempo tetapi skema gaji ini tidak "
+"punya komponen gaji untuk pembayaran pinjaman."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"%s people's pay data file has another amount for loan repayments, so the "
+"instalment was not taken."
+msgstr ""
+"File data gaji %s orang memuat jumlah lain untuk pembayaran pinjaman, jadi "
+"cicilan tidak diambil."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s menunggu persetujuan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"). A scheme with no pay item takes nothing,\n"
+"                 and its pay runs say so."
+msgstr ""
+"). Skema tanpa komponen gaji tidak mengambil apa pun,\n"
+"                 dan proses penggajiannya akan memberitahukannya."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "1 loan"
+msgstr "1 pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "1 loan instalment could not be applied."
+msgstr "1 cicilan pinjaman tidak dapat diterapkan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"1 person has a loan in another currency than this pay scheme, so nothing was"
+" taken."
+msgstr ""
+"1 orang memiliki pinjaman dalam mata uang lain dari skema gaji ini, jadi "
+"tidak ada yang diambil."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"1 person has a loan instalment due but this pay scheme has no pay item for "
+"loan repayments."
+msgstr ""
+"1 orang memiliki cicilan pinjaman jatuh tempo tetapi skema gaji ini tidak "
+"punya komponen gaji untuk pembayaran pinjaman."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"1 person's pay data file has another amount for loan repayments, so the "
+"instalment was not taken."
+msgstr ""
+"File data gaji 1 orang memuat jumlah lain untuk pembayaran pinjaman, jadi "
+"cicilan tidak diambil."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 menunggu persetujuan"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "<span class=\"pbl-sum-k\">Left to repay</span>"
+msgstr "<span class=\"pbl-sum-k\">Sisa yang harus dibayar</span>"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "<span class=\"pbl-sum-k\">Next pay</span>"
+msgstr "<span class=\"pbl-sum-k\">Gaji berikutnya</span>"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+msgid "<span>left to repay</span>"
+msgstr "<span>sisa yang harus dibayar</span>"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "A few words the next person will understand."
+msgstr "Beberapa kata yang dapat dipahami orang berikutnya."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.constraint,message:pb_loans.constraint_pb_loan_amount_positive
+msgid "A loan needs an amount above zero."
+msgstr "Pinjaman memerlukan jumlah di atas nol."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__plan_mode__months
+msgid "A number of months"
+msgstr "Sejumlah bulan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"A pay scheme has people with loans but no pay item for loan repayments."
+msgstr ""
+"Ada skema gaji dengan karyawan yang memiliki pinjaman tetapi tanpa komponen "
+"gaji untuk pembayaran pinjaman."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "A receipt or bank transfer number"
+msgstr "Nomor kuitansi atau transfer bank"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: model:ir.model.constraint,message:pb_loans.constraint_pb_loan_repayment_amount_positive
+msgid "A repayment needs an amount above zero."
+msgstr "Pembayaran memerlukan jumlah di atas nol."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "All loans"
+msgstr "Semua pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "All of it comes off the %(month)s pay run."
+msgstr "Seluruhnya dipotong di penggajian %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "All of it in the %(month)s pay run."
+msgstr "Seluruhnya di penggajian %(month)s."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__amount
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__amount
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Amount paid back"
+msgstr "Jumlah yang dibayar"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__plan_mode__amount
+msgid "An amount each month"
+msgstr "Jumlah tetap setiap bulan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"An instalment of %(amount)s is in pay run %(run)s, which is not finished. "
+"Finish that pay run, or calculate it again after pausing this loan, then "
+"cancel."
+msgstr ""
+"Cicilan sebesar %(amount)s ada di proses penggajian %(run)s yang belum "
+"selesai. Selesaikan penggajian itu, atau hitung ulang setelah menjeda "
+"pinjaman ini, lalu batalkan."
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__other_source
+msgid "Another amount for loan repayments"
+msgstr "Ada jumlah lain untuk pembayaran pinjaman"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__approval_request_id
+msgid "Approval"
+msgstr "Persetujuan"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__approval_state
+msgid "Approval status"
+msgstr "Status persetujuan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Approve"
+msgstr "Setujui"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Approved."
+msgstr "Disetujui."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Approved. Repayments start in the %(month)s pay run: %(plan)s"
+msgstr "Disetujui. Pembayaran dimulai di penggajian %(month)s: %(plan)s"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Ask HR to link it, then your loans and salary advances appear here."
+msgstr ""
+"Minta HR menautkannya, lalu pinjaman dan kasbon gaji Anda akan muncul di "
+"sini."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__seat_user_ids
+msgid "Asked to decide"
+msgstr "Diminta memutuskan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "At most"
+msgstr "Paling banyak"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Back"
+msgstr "Kembali"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Back to my home"
+msgstr "Kembali ke beranda"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "Being paid back"
+msgstr "Sedang dicicil"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__draft
+msgid "Being prepared"
+msgstr "Sedang disiapkan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Cancel"
+msgstr "Batalkan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Cancel the loan"
+msgstr "Batalkan pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Cancel this loan"
+msgstr "Batalkan pinjaman ini"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__cancelled
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Cancelled or not approved"
+msgstr "Dibatalkan atau tidak disetujui"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Cancelled."
+msgstr "Dibatalkan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Cancelled: %(why)s. %(left)s was left unpaid and will not be collected."
+msgstr "Dibatalkan: %(why)s. %(left)s yang belum dibayar tidak akan ditagih."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Cancelled: %s"
+msgstr "Dibatalkan: %s"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Cash or a bank transfer the person paid back. It reduces what is left to "
+"repay straight away."
+msgstr ""
+"Uang tunai atau transfer bank yang dibayarkan kembali. Sisa yang harus "
+"dibayar langsung berkurang."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Choose the pay item"
+msgstr "Pilih komponen gaji"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__closed
+msgid "Closed"
+msgstr "Ditutup"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__closed_on
+msgid "Closed on"
+msgstr "Ditutup pada"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__company_id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Confirm"
+msgstr "Konfirmasi"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__create_uid
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__create_date
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__currency_id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Delete"
+msgstr "Hapus"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Deleted."
+msgstr "Dihapus."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__department_id
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payroll_import_batch__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loans__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_payslip_review__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Do not approve"
+msgstr "Jangan setujui"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Done."
+msgstr "Selesai."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__plan_amount
+msgid "Each month"
+msgstr "Setiap bulan"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_me_home
+msgid "Employee home page facts"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__seat_user_ids
+msgid ""
+"Everyone a published approval route has asked to decide this. Being here is "
+"not a permission to change anything."
+msgstr ""
+"Semua orang yang diminta memutuskan ini oleh alur persetujuan. Berada di "
+"sini bukan izin untuk mengubah apa pun."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Everything left is already in a pay run. It is settled when that pay run is "
+"finished."
+msgstr ""
+"Semua sisa sudah ada di proses penggajian. Akan lunas saat penggajian itu "
+"selesai."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Find a person, a reference or a reason…"
+msgstr "Cari orang, referensi, atau alasan…"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__first_month
+msgid "First pay month"
+msgstr "Bulan gaji pertama"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "First pay month, newest first"
+msgstr "Bulan gaji pertama, terbaru dulu"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"For each pay scheme, pick the input pay item that receives the month's\n"
+"                 instalment. It arrives as a positive amount; the scheme's own formula takes it off pay\n"
+"                 (for example"
+msgstr ""
+"Untuk setiap skema gaji, pilih komponen input yang menerima cicilan bulan itu.\n"
+"                 Jumlahnya masuk sebagai angka positif; rumus skema sendiri yang memotongnya dari gaji\n"
+"                 (misalnya"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "From your pay"
+msgstr "Dari gaji Anda"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_approval.py:0
+msgid "Head of pay"
+msgstr "Kepala penggajian"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "History ("
+msgstr "Riwayat ("
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__kind
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "How"
+msgstr "Cara"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "How it is paid back"
+msgstr "Cara pembayaran"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payroll_import_batch__id
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__id
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loans__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_payslip_review__id
+#: model:ir.model.fields,field_description:pb_loans.field_res_company__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_has_error
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__on_leaving
+msgid "If the person leaves"
+msgstr "Jika karyawan keluar"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__state__reserved
+msgid "In a pay run"
+msgstr "Di proses penggajian"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__in_payrun
+msgid "In a pay run now"
+msgstr "Sedang di proses penggajian"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "In the words the person and the approver will read."
+msgstr "Dengan kata-kata yang akan dibaca karyawan dan penyetuju."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "In this month's pay run"
+msgstr "Di penggajian bulan ini"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__kind
+msgid "Kind"
+msgstr "Jenis"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Largest amount first"
+msgstr "Jumlah terbesar dulu"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__write_uid
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__write_date
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__on_leaving__leave_open
+msgid "Leave it open"
+msgstr "Biarkan terbuka"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__balance
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Left to repay"
+msgstr "Sisa yang harus dibayar"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"Lend somebody money, get it approved, and every regular pay run takes one\n"
+"               instalment until it is paid back — with the balance always in view."
+msgstr ""
+"Pinjamkan uang, dapatkan persetujuan, dan setiap penggajian reguler mengambil satu\n"
+"               cicilan sampai lunas — dengan sisa selalu terlihat."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Loading loans"
+msgstr "Memuat pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__loan_id
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__kind__loan
+msgid "Loan"
+msgstr "Pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Loan approved. The next regular pay run takes the first instalment."
+msgstr ""
+"Pinjaman disetujui. Penggajian reguler berikutnya mengambil cicilan pertama."
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__currency
+msgid "Loan in another currency"
+msgstr "Pinjaman dalam mata uang lain"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "Loan instalment %(taken)s taken · %(left)s left"
+msgstr "Cicilan pinjaman %(taken)s diambil · sisa %(left)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__error
+msgid "Loan instalment could not be applied"
+msgstr "Cicilan pinjaman tidak dapat diterapkan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"Loan instalment due, but the loan is in another currency than this pay "
+"scheme"
+msgstr ""
+"Cicilan pinjaman jatuh tempo, tetapi pinjamannya dalam mata uang lain dari "
+"skema gaji ini"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"Loan instalment due, but this pay scheme has no pay item for loan repayments"
+msgstr ""
+"Cicilan pinjaman jatuh tempo, tetapi skema gaji ini tidak punya komponen "
+"gaji untuk pembayaran pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "Loan instalment is more than this month's take-home"
+msgstr "Cicilan pinjaman lebih besar dari gaji bersih bulan ini"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__pb_loan_issue
+msgid "Loan instalment not taken"
+msgstr "Cicilan pinjaman tidak diambil"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"Loan instalment not taken: the pay data file has another amount for loan "
+"repayments"
+msgstr ""
+"Cicilan pinjaman tidak diambil: file data gaji memuat jumlah lain untuk "
+"pembayaran pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: model:ir.model,name:pb_loans.model_pb_loan
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Loan or salary advance"
+msgstr "Pinjaman atau kasbon gaji"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_loan_repayment
+msgid "Loan repayment"
+msgstr "Pembayaran pinjaman"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__pb_loan_line_ids
+msgid "Loan repayments"
+msgstr "Pembayaran pinjaman"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_formula_config__pb_loan_rule_id
+msgid "Loan repayments go into"
+msgstr "Pembayaran pinjaman masuk ke"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Loan repayments must go into a money pay item."
+msgstr "Pembayaran pinjaman harus masuk ke komponen gaji berupa uang."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Loan repayments must go into an input pay item of this pay scheme."
+msgstr "Pembayaran pinjaman harus masuk ke komponen input skema gaji ini."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Loan saved. Send it for approval when you are ready."
+msgstr "Pinjaman disimpan. Ajukan persetujuan saat Anda siap."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Loan sent for approval."
+msgstr "Pinjaman diajukan untuk persetujuan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_palette.js:0
+msgid "Loans"
+msgstr "Pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_palette.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:biz.approval.process,name:pb_loans.process_loan
+#: model:ir.actions.act_window,name:pb_loans.action_pb_loan
+#: model:ir.actions.client,name:pb_loans.action_pb_loans_board
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_list
+msgid "Loans and salary advances"
+msgstr "Pinjaman dan kasbon gaji"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Loans are looked after by the pay team."
+msgstr "Pinjaman dikelola oleh tim penggajian."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"Loans are looked after by the pay team. Ask your administrator to give you "
+"payroll officer rights to see this screen."
+msgstr ""
+"Pinjaman dikelola oleh tim penggajian. Minta administrator memberi Anda hak "
+"petugas penggajian untuk melihat layar ini."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_loans
+msgid "Loans board data"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Marked as not approved."
+msgstr "Ditandai tidak disetujui."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"Money lent to people, paid back from their pay — one\n"
+"                 instalment a month, never twice, never more than is owed."
+msgstr ""
+"Uang yang dipinjamkan, dibayar kembali dari gaji — satu\n"
+"                 cicilan per bulan, tidak pernah dua kali, tidak pernah lebih dari yang terutang."
+
+#. module: pb_loans
+#: model:biz.approval.process,description:pb_loans.process_loan
+msgid "Money lent to somebody, paid back from their pay."
+msgstr "Uang yang dipinjamkan kepada seseorang, dibayar kembali dari gajinya."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Month"
+msgstr "Bulan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__months_left
+msgid "Months left"
+msgstr "Sisa bulan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Most left to repay"
+msgstr "Sisa terbesar dulu"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_breadcrumbs_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "My loans"
+msgstr "Pinjaman saya"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Needs attention"
+msgstr "Perlu perhatian"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "New loan"
+msgstr "Pinjaman baru"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "New loan or salary advance"
+msgstr "Pinjaman atau kasbon gaji baru"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__next_amount
+msgid "Next instalment"
+msgstr "Cicilan berikutnya"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__next_month
+msgid "Next pay month"
+msgstr "Bulan gaji berikutnya"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Next:"
+msgstr "Berikutnya:"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "No department"
+msgstr "Tanpa departemen"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"No instalment is taken until it is resumed. The plan moves on by a month for"
+" each month missed."
+msgstr ""
+"Tidak ada cicilan yang diambil sampai dilanjutkan. Rencana mundur satu bulan"
+" untuk setiap bulan yang terlewat."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "No loans match these filters"
+msgstr "Tidak ada pinjaman yang cocok dengan filter ini"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "No loans or salary advances yet"
+msgstr "Belum ada pinjaman atau kasbon gaji"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__no_item
+msgid "No pay item for loan repayments"
+msgstr "Tidak ada komponen gaji untuk pembayaran pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "No pay item — take nothing"
+msgstr "Tanpa komponen gaji — tidak mengambil apa pun"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__refused
+msgid "Not approved"
+msgstr "Tidak disetujui"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__state__released
+msgid "Not taken"
+msgstr "Tidak diambil"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Note (optional)"
+msgstr "Catatan (opsional)"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Nothing comes off"
+msgstr "Tidak ada potongan"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+msgid "Nothing comes off your next pay."
+msgstr "Tidak ada potongan dari gaji berikutnya."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Nothing has been paid back yet."
+msgstr "Belum ada yang dibayar kembali."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Nothing is left to repay."
+msgstr "Tidak ada sisa yang harus dibayar."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Nothing is taken from their pay until one is chosen."
+msgstr "Tidak ada yang dipotong dari gaji mereka sampai satu dipilih."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Nothing matches “"
+msgstr "Tidak ada yang cocok dengan “"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Nothing more is taken from pay. What was already paid back stays recorded."
+msgstr ""
+"Tidak ada lagi yang dipotong dari gaji. Yang sudah dibayar tetap tercatat."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__plan_months
+msgid "Number of months"
+msgstr "Jumlah bulan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Only a loan that is still being prepared can be deleted. Cancel %s instead, "
+"with a reason."
+msgstr ""
+"Hanya pinjaman yang masih disiapkan yang dapat dihapus. Batalkan %s, dengan "
+"alasan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Only a paused loan can be resumed."
+msgstr "Hanya pinjaman yang dijeda yang dapat dilanjutkan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Only a payroll manager can change these."
+msgstr "Hanya manajer penggajian yang dapat mengubah ini."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Only a payroll manager can choose where loan repayments go."
+msgstr ""
+"Hanya manajer penggajian yang dapat memilih ke mana pembayaran pinjaman "
+"masuk."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Only a running loan can be paused."
+msgstr "Hanya pinjaman yang berjalan yang dapat dijeda."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Only a running or paused loan can be paid back."
+msgstr "Hanya pinjaman yang berjalan atau dijeda yang dapat dibayar kembali."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Open again: %s is left to repay because a payment was taken back."
+msgstr "Dibuka lagi: sisa %s karena sebuah pembayaran ditarik kembali."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Over how many months"
+msgstr "Dalam berapa bulan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__state__paid
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Paid back"
+msgstr "Sudah dibayar"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__plan_mode
+msgid "Paid back as"
+msgstr "Dibayar kembali dengan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "Paid back directly"
+msgstr "Dibayar langsung"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Paid back in full"
+msgstr "Lunas"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Paid back over at least one month."
+msgstr "Dibayar kembali dalam minimal satu bulan."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__paid_on
+msgid "Paid on"
+msgstr "Dibayar pada"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__kind__manual
+msgid "Paid outside payroll"
+msgstr "Dibayar di luar penggajian"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Pause"
+msgstr "Jeda"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Pause the repayments"
+msgstr "Jeda pembayaran"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__paused
+msgid "Paused"
+msgstr "Dijeda"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Paused for now — nothing comes off your pay until it starts again."
+msgstr ""
+"Dijeda untuk sementara — tidak ada potongan dari gaji Anda sampai dimulai "
+"lagi."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Paused. No instalment is taken until it is resumed."
+msgstr "Dijeda. Tidak ada cicilan yang diambil sampai dilanjutkan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Paused:"
+msgstr "Dijeda:"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Paused: %s. No instalment is taken until it is resumed; the plan moves on by"
+" a month for each month missed."
+msgstr ""
+"Dijeda: %s. Tidak ada cicilan yang diambil sampai dilanjutkan; rencana "
+"mundur satu bulan untuk setiap bulan yang terlewat."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_payslip
+msgid "Pay Slip"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__pay_month
+msgid "Pay month"
+msgstr "Bulan gaji"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__run_id
+msgid "Pay run"
+msgstr "Proses penggajian"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Pay run %s"
+msgstr "Proses penggajian %s"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_payslip_review
+msgid "Payobook Payslip Review cockpit data"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_palette.js:0
+msgid "Payroll"
+msgstr "Penggajian"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_payroll_import_batch
+msgid "Payroll Import Batch"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__payslip_id
+msgid "Payslip"
+msgstr "Slip gaji"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Payslip %s no longer takes it."
+msgstr "Slip gaji %s tidak lagi mengambilnya."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "People here have loans."
+msgstr "Ada karyawan di sini yang memiliki pinjaman."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Pick a pay item of this pay scheme."
+msgstr "Pilih komponen gaji dari skema gaji ini."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Pick the first pay month."
+msgstr "Pilih bulan gaji pertama."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Pick who the loan is for."
+msgstr "Pilih untuk siapa pinjaman ini."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__requested_by_user_id
+msgid "Raised by"
+msgstr "Dibuat oleh"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Raised most recently"
+msgstr "Dibuat paling baru"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Read the board again"
+msgstr "Muat ulang papan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Reading the loans…"
+msgstr "Membaca pinjaman…"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Record a repayment"
+msgstr "Catat pembayaran"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Record a repayment made outside payroll"
+msgstr "Catat pembayaran di luar penggajian"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Record it"
+msgstr "Catat"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__recorded_by
+msgid "Recorded by"
+msgstr "Dicatat oleh"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Records everything still owed (%s) as paid back outside payroll, and closes "
+"the loan."
+msgstr ""
+"Mencatat semua sisa utang (%s) sebagai dibayar di luar penggajian, lalu "
+"menutup pinjaman."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__reference
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Reference (optional)"
+msgstr "Referensi (opsional)"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Remove a filter above, or start again from every loan."
+msgstr "Hapus filter di atas, atau mulai lagi dari semua pinjaman."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Repaid in full"
+msgstr "Lunas"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Repaid in full: %s. Closed."
+msgstr "Lunas: %s. Ditutup."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__repaid
+msgid "Repaid so far"
+msgstr "Sudah dibayar"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Repayment = −Loan instalment"
+msgstr "Pembayaran = −Cicilan pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Repayment recorded."
+msgstr "Pembayaran dicatat."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__repayment_ids
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Repayments"
+msgstr "Pembayaran"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Repayments are recorded by the system."
+msgstr "Pembayaran dicatat oleh sistem."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Resume"
+msgstr "Lanjutkan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Resumed."
+msgstr "Dilanjutkan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Resumed. The next regular pay run takes an instalment."
+msgstr "Dilanjutkan. Penggajian reguler berikutnya mengambil satu cicilan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Resumed: %s"
+msgstr "Dilanjutkan: %s"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__running
+msgid "Running"
+msgstr "Berjalan"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__kind__advance
+msgid "Salary advance"
+msgstr "Kasbon gaji"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Save as draft"
+msgstr "Simpan sebagai draf"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Saved. Loan repayments go into that pay item from the next calculation."
+msgstr ""
+"Tersimpan. Pembayaran pinjaman masuk ke komponen itu mulai perhitungan "
+"berikutnya."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Saved. This scheme takes no loan repayments."
+msgstr "Tersimpan. Skema ini tidak mengambil pembayaran pinjaman."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Say how much comes off each month, or over how many months."
+msgstr "Sebutkan berapa yang dipotong setiap bulan, atau dalam berapa bulan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Say how much is paid back each month, or over how many months."
+msgstr "Sebutkan berapa yang dibayar setiap bulan, atau dalam berapa bulan."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Say what the loan is for, in a few words."
+msgstr "Sebutkan untuk apa pinjaman ini, dalam beberapa kata."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Say why, in a few words."
+msgstr "Sebutkan alasannya, dalam beberapa kata."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+msgid "See my loans"
+msgstr "Lihat pinjaman saya"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Send for approval"
+msgstr "Ajukan persetujuan"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Sent for approval."
+msgstr "Diajukan untuk persetujuan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Set up"
+msgstr "Pengaturan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Settle now"
+msgstr "Lunasi sekarang"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Settled."
+msgstr "Dilunasi."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Show all loans"
+msgstr "Tampilkan semua pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid ""
+"Something not right? Ask HR — they can see exactly what was taken and when."
+msgstr ""
+"Ada yang tidak sesuai? Tanyakan HR — mereka dapat melihat persis apa yang "
+"diambil dan kapan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Start the repayments again"
+msgstr "Mulai pembayaran lagi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Start typing a name or code"
+msgstr "Mulai ketik nama atau kode"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__state
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__state
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__on_leaving__take_rest
+msgid "Take the rest from the final pay"
+msgstr "Ambil sisanya dari gaji terakhir"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Taken by payslip %s."
+msgstr "Diambil oleh slip gaji %s."
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__kind__payroll
+msgid "Taken in a pay run"
+msgstr "Diambil di proses penggajian"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Taken through its application source"
+msgstr "Diambil melalui sumber data aplikasinya"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "That cannot be done here."
+msgstr "Itu tidak dapat dilakukan di sini."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "That could not be done."
+msgstr "Itu tidak dapat dilakukan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "That could not be saved."
+msgstr "Tidak dapat disimpan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid ""
+"The %(month)s instalment of %(ref)s is already in pay run %(run)s, so it is "
+"not taken again here."
+msgstr ""
+"Cicilan %(month)s dari %(ref)s sudah ada di proses penggajian %(run)s, jadi "
+"tidak diambil lagi di sini."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap tersimpan."
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__first_month
+msgid ""
+"The first pay month an instalment is taken in. Any day of the month will do "
+"— it is the month that matters."
+msgstr ""
+"Bulan gaji pertama cicilan diambil. Tanggal berapa pun boleh — yang penting "
+"bulannya."
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_hr_formula_config__pb_loan_rule_id
+msgid ""
+"The input pay item that receives each month's loan and salary advance "
+"instalment, as a positive amount. The scheme's own formula decides whether "
+"it is taken off pay. Leave it empty and no instalment is taken by this "
+"scheme — the pay run says so."
+msgstr ""
+"Komponen input yang menerima cicilan pinjaman dan kasbon gaji setiap bulan, "
+"sebagai angka positif. Rumus skema sendiri yang menentukan apakah dipotong "
+"dari gaji. Biarkan kosong dan skema ini tidak mengambil cicilan — proses "
+"penggajian akan memberitahukannya."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loan could not be saved."
+msgstr "Pinjaman tidak dapat disimpan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loan is turned down and nothing is taken from pay."
+msgstr "Pinjaman ditolak dan tidak ada yang dipotong dari gaji."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loans could not be read just now."
+msgstr "Pinjaman tidak dapat dibaca saat ini."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "The loans could not load"
+msgstr "Pinjaman tidak dapat dimuat"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loans could not load. Check your connection, then press Try again."
+msgstr ""
+"Pinjaman tidak dapat dimuat. Periksa koneksi Anda, lalu tekan Coba lagi."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The next regular pay run takes an instalment again."
+msgstr "Penggajian reguler berikutnya mengambil cicilan lagi."
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__currency_id
+#: model:ir.model.fields,help:pb_loans.field_pb_loan_repayment__currency_id
+msgid ""
+"The person's pay currency: instalments are taken only by a pay scheme that "
+"pays in this currency."
+msgstr ""
+"Mata uang gaji karyawan: cicilan hanya diambil oleh skema gaji yang membayar"
+" dalam mata uang ini."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "The plan"
+msgstr "Rencana"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"The steps above the table, plus loans that were cancelled or not approved."
+msgstr ""
+"Langkah-langkah di atas tabel, ditambah pinjaman yang dibatalkan atau tidak "
+"disetujui."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "There is no active pay scheme yet."
+msgstr "Belum ada skema gaji yang aktif."
+
+#. module: pb_loans
+#: model:ir.model.constraint,message:pb_loans.constraint_pb_loan_repayment_one_per_month
+msgid "This loan already has an instalment for that pay month."
+msgstr "Pinjaman ini sudah memiliki cicilan untuk bulan gaji tersebut."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "This loan could not be opened."
+msgstr "Pinjaman ini tidak dapat dibuka."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "This loan no longer exists."
+msgstr "Pinjaman ini sudah tidak ada."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "This one is for the pay team"
+msgstr "Layar ini untuk tim penggajian"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "This pay scheme cannot be found."
+msgstr "Skema gaji ini tidak ditemukan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "This person has a leaving date."
+msgstr "Karyawan ini memiliki tanggal keluar."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"Type the amount and how it is paid back — the instalments appear here, month"
+" by month."
+msgstr ""
+"Ketik jumlah dan cara pembayarannya — cicilan muncul di sini, bulan demi "
+"bulan."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Type the amount that was paid back."
+msgstr "Ketik jumlah yang dibayar kembali."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"Type the amount, then how much comes off each month or over how many months."
+msgstr ""
+"Ketik jumlahnya, lalu berapa yang dipotong setiap bulan atau dalam berapa "
+"bulan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Type the amounts as numbers."
+msgstr "Ketik jumlah sebagai angka."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__waiting
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Waiting for approval — nothing comes off your pay yet."
+msgstr "Menunggu persetujuan — belum ada potongan dari gaji Anda."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__plan_amount
+msgid ""
+"What each regular pay run takes. The last instalment takes whatever is left."
+msgstr ""
+"Yang diambil setiap penggajian reguler. Cicilan terakhir mengambil sisanya."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__note
+msgid "What happened"
+msgstr "Yang terjadi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "What it is for"
+msgstr "Untuk apa"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "What was agreed"
+msgstr "Yang disepakati"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "What you borrowed, what is left, and what comes off your pay next."
+msgstr ""
+"Apa yang Anda pinjam, sisanya, dan apa yang dipotong dari gaji berikutnya."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid ""
+"When the company lends you money, how it is paid back from your pay shows "
+"here."
+msgstr ""
+"Saat perusahaan meminjamkan uang kepada Anda, cara pembayarannya dari gaji "
+"ditampilkan di sini."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Where every loan is"
+msgstr "Posisi setiap pinjaman"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Where it is"
+msgstr "Posisinya"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Where loan repayments go"
+msgstr "Ke mana pembayaran pinjaman masuk"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Who"
+msgstr "Siapa"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__employee_id
+msgid "Who it is for"
+msgstr "Untuk siapa"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__reason
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__reason
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__pause_reason
+msgid "Why it is paused"
+msgstr "Alasan dijeda"
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_hr_payslip__pb_loan_issue
+msgid "Why this payslip did not take a loan instalment the person owes."
+msgstr "Mengapa slip gaji ini tidak mengambil cicilan pinjaman yang terutang."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "You have no loans or salary advances"
+msgstr "Anda tidak memiliki pinjaman atau kasbon gaji"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Your approval is recorded."
+msgstr "Persetujuan Anda dicatat."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Your login is not linked to an employee record"
+msgstr "Login Anda belum ditautkan ke data karyawan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "being repaid"
+msgstr "sedang dicicil"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "in"
+msgstr "pada"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "is in a pay run that is not finished yet."
+msgstr "ada di proses penggajian yang belum selesai."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "left to repay"
+msgstr "sisa yang harus dibayar"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "loans"
+msgstr "pinjaman"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "more months."
+msgstr "bulan lagi."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "paid back ·"
+msgstr "sudah dibayar ·"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "paused"
+msgstr "dijeda"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "pay run deleted."
+msgstr "proses penggajian dihapus."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"pay schemes have people with loans but no pay item for loan repayments."
+msgstr ""
+"skema gaji memiliki karyawan dengan pinjaman tetapi tanpa komponen gaji "
+"untuk pembayaran pinjaman."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "payslip cancelled."
+msgstr "slip gaji dibatalkan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "payslip deleted."
+msgstr "slip gaji dihapus."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "repaid in full this month"
+msgstr "lunas bulan ini"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "waiting for approval"
+msgstr "menunggu persetujuan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "· runs from application data"
+msgstr "· berjalan dari data aplikasi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "— with"
+msgstr "— dengan"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "”. Check the spelling, or search by a person or a reason."
+msgstr "”. Periksa ejaannya, atau cari berdasarkan orang atau alasan."

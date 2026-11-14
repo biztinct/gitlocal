@@ -1,0 +1,2210 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-14 08:00+0000\n"
+"PO-Revision-Date: 2026-11-14 08:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "%(amount)s comes off your %(month)s pay"
+msgstr "%(amount)s sẽ được trừ vào lương tháng %(month)s của bạn"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "%(amount)s for %(month)s given back: %(why)s"
+msgstr "%(amount)s của %(month)s được trả lại: %(why)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "%(amount)s in %(month)s"
+msgstr "%(amount)s vào %(month)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(amount)s is more than is left to repay (%(left)s)."
+msgstr "%(amount)s nhiều hơn số còn phải trả (%(left)s)."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(amount)s is more than is left to repay. %(left)s is left, and %(held)s of "
+"that is already in a pay run, so at most %(max)s can be recorded now."
+msgstr ""
+"%(amount)s nhiều hơn số còn phải trả. Còn lại %(left)s, trong đó %(held)s đã"
+" nằm trong một kỳ lương, nên hiện chỉ ghi nhận được tối đa %(max)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(amount)s paid back outside payroll: %(why)s%(ref)s. %(left)s left to "
+"repay."
+msgstr ""
+"%(amount)s đã trả ngoài bảng lương: %(why)s%(ref)s. Còn phải trả %(left)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "%(amount)s taken in pay run %(run)s for %(month)s."
+msgstr "Đã trừ %(amount)s trong kỳ lương %(run)s cho %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(kind)s for %(who)s"
+msgstr "%(kind)s cho %(who)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"%(n)s instalments of %(each)s from %(start)s to %(end)s; the last one is "
+"%(last)s."
+msgstr ""
+"%(n)s kỳ trả, mỗi kỳ %(each)s, từ %(start)s đến %(end)s; kỳ cuối là "
+"%(last)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(n)s instalments of %(each)s from the %(month)s pay run; the last one is "
+"%(last)s."
+msgstr ""
+"%(n)s kỳ trả, mỗi kỳ %(each)s, từ kỳ lương %(month)s; kỳ cuối là %(last)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "%(n)s instalments of %(each)s, from %(start)s to %(end)s."
+msgstr "%(n)s kỳ trả, mỗi kỳ %(each)s, từ %(start)s đến %(end)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%(n)s instalments of %(each)s, from the %(month)s pay run."
+msgstr "%(n)s kỳ trả, mỗi kỳ %(each)s, từ kỳ lương %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"%(ref)s has been sent in, so what was agreed cannot be changed. Cancel it "
+"and raise a new one instead."
+msgstr ""
+"%(ref)s đã được gửi duyệt nên không thể thay đổi nội dung đã thỏa thuận. Hãy"
+" hủy và tạo khoản mới."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%s has already been sent in."
+msgstr "%s đã được gửi duyệt."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "%s is already closed."
+msgstr "%s đã đóng."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "%s loan instalments could not be applied."
+msgstr "%s khoản trả vay không áp dụng được."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "%s loans"
+msgstr "%s khoản vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"%s people have a loan in another currency than this pay scheme, so nothing "
+"was taken."
+msgstr ""
+"%s người có khoản vay khác loại tiền với chương trình lương này nên không "
+"trừ gì."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"%s people have a loan instalment due but this pay scheme has no pay item for"
+" loan repayments."
+msgstr ""
+"%s người đến hạn trả vay nhưng chương trình lương này chưa có khoản mục cho "
+"tiền trả vay."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"%s people's pay data file has another amount for loan repayments, so the "
+"instalment was not taken."
+msgstr ""
+"Tệp dữ liệu lương của %s người có số tiền khác cho khoản trả vay nên không "
+"trừ kỳ trả."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "%s waiting for a sign-off"
+msgstr "%s đang chờ phê duyệt"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"). A scheme with no pay item takes nothing,\n"
+"                 and its pay runs say so."
+msgstr ""
+"). Chương trình không có khoản mục sẽ không trừ gì,\n"
+"                 và các kỳ lương của nó sẽ báo điều đó."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "1 loan"
+msgstr "1 khoản vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "1 loan instalment could not be applied."
+msgstr "1 khoản trả vay không áp dụng được."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"1 person has a loan in another currency than this pay scheme, so nothing was"
+" taken."
+msgstr ""
+"1 người có khoản vay khác loại tiền với chương trình lương này nên không trừ"
+" gì."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"1 person has a loan instalment due but this pay scheme has no pay item for "
+"loan repayments."
+msgstr ""
+"1 người đến hạn trả vay nhưng chương trình lương này chưa có khoản mục cho "
+"tiền trả vay."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"1 person's pay data file has another amount for loan repayments, so the "
+"instalment was not taken."
+msgstr ""
+"Tệp dữ liệu lương của 1 người có số tiền khác cho khoản trả vay nên không "
+"trừ kỳ trả."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "1 waiting for a sign-off"
+msgstr "1 đang chờ phê duyệt"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "<span class=\"pbl-sum-k\">Left to repay</span>"
+msgstr "<span class=\"pbl-sum-k\">Còn phải trả</span>"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "<span class=\"pbl-sum-k\">Next pay</span>"
+msgstr "<span class=\"pbl-sum-k\">Kỳ lương tới</span>"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+msgid "<span>left to repay</span>"
+msgstr "<span>còn phải trả</span>"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "A few words the next person will understand."
+msgstr "Vài chữ để người sau hiểu được."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.constraint,message:pb_loans.constraint_pb_loan_amount_positive
+msgid "A loan needs an amount above zero."
+msgstr "Khoản vay cần số tiền lớn hơn 0."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__plan_mode__months
+msgid "A number of months"
+msgstr "Theo số tháng"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"A pay scheme has people with loans but no pay item for loan repayments."
+msgstr ""
+"Một chương trình lương có người đang vay nhưng chưa có khoản mục cho tiền "
+"trả vay."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "A receipt or bank transfer number"
+msgstr "Số biên lai hoặc số chuyển khoản"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: model:ir.model.constraint,message:pb_loans.constraint_pb_loan_repayment_amount_positive
+msgid "A repayment needs an amount above zero."
+msgstr "Khoản trả cần số tiền lớn hơn 0."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "All loans"
+msgstr "Tất cả khoản vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "All of it comes off the %(month)s pay run."
+msgstr "Toàn bộ được trừ trong kỳ lương %(month)s."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "All of it in the %(month)s pay run."
+msgstr "Toàn bộ trong kỳ lương %(month)s."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__amount
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__amount
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Amount paid back"
+msgstr "Số tiền đã trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__plan_mode__amount
+msgid "An amount each month"
+msgstr "Một số tiền mỗi tháng"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"An instalment of %(amount)s is in pay run %(run)s, which is not finished. "
+"Finish that pay run, or calculate it again after pausing this loan, then "
+"cancel."
+msgstr ""
+"Một kỳ trả %(amount)s đang nằm trong kỳ lương %(run)s chưa hoàn tất. Hãy "
+"hoàn tất kỳ lương đó, hoặc tạm dừng khoản vay rồi tính lại, sau đó mới hủy."
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__other_source
+msgid "Another amount for loan repayments"
+msgstr "Có số tiền khác cho khoản trả vay"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__approval_request_id
+msgid "Approval"
+msgstr "Phê duyệt"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__approval_state
+msgid "Approval status"
+msgstr "Trạng thái phê duyệt"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Approve"
+msgstr "Duyệt"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Approved."
+msgstr "Đã duyệt."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Approved. Repayments start in the %(month)s pay run: %(plan)s"
+msgstr "Đã duyệt. Bắt đầu trừ từ kỳ lương %(month)s: %(plan)s"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Ask HR to link it, then your loans and salary advances appear here."
+msgstr ""
+"Hãy nhờ bộ phận nhân sự liên kết, sau đó các khoản vay và tạm ứng lương của "
+"bạn sẽ hiện ở đây."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được yêu cầu quyết định"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "At most"
+msgstr "Tối đa"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Back to my home"
+msgstr "Về trang chủ"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "Being paid back"
+msgstr "Đang trả dần"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__draft
+msgid "Being prepared"
+msgstr "Đang chuẩn bị"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Cancel the loan"
+msgstr "Hủy khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Cancel this loan"
+msgstr "Hủy khoản vay này"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__cancelled
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Cancelled or not approved"
+msgstr "Đã hủy hoặc không được duyệt"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Cancelled."
+msgstr "Đã hủy."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Cancelled: %(why)s. %(left)s was left unpaid and will not be collected."
+msgstr "Đã hủy: %(why)s. %(left)s chưa trả sẽ không được thu."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Cancelled: %s"
+msgstr "Đã hủy: %s"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Cash or a bank transfer the person paid back. It reduces what is left to "
+"repay straight away."
+msgstr ""
+"Tiền mặt hoặc chuyển khoản người đó đã trả lại. Số còn phải trả giảm ngay."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Choose the pay item"
+msgstr "Chọn khoản mục lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__closed
+msgid "Closed"
+msgstr "Đã đóng"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__closed_on
+msgid "Closed on"
+msgstr "Đóng vào"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__company_id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__create_uid
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__create_date
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__currency_id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__currency_id
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Deleted."
+msgstr "Đã xóa."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payroll_import_batch__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip_run__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loans__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_payslip_review__display_name
+#: model:ir.model.fields,field_description:pb_loans.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Do not approve"
+msgstr "Không duyệt"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Done."
+msgstr "Xong."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__plan_amount
+msgid "Each month"
+msgstr "Mỗi tháng"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_me_home
+msgid "Employee home page facts"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__seat_user_ids
+msgid ""
+"Everyone a published approval route has asked to decide this. Being here is "
+"not a permission to change anything."
+msgstr ""
+"Những người mà quy trình phê duyệt đã yêu cầu quyết định việc này. Có tên ở "
+"đây không có nghĩa là được quyền thay đổi gì."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Everything left is already in a pay run. It is settled when that pay run is "
+"finished."
+msgstr ""
+"Toàn bộ số còn lại đã nằm trong một kỳ lương. Sẽ tất toán khi kỳ lương đó "
+"hoàn tất."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Find a person, a reference or a reason…"
+msgstr "Tìm người, mã tham chiếu hoặc lý do…"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__first_month
+msgid "First pay month"
+msgstr "Tháng lương đầu tiên"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "First pay month, newest first"
+msgstr "Tháng lương đầu tiên, mới nhất trước"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"For each pay scheme, pick the input pay item that receives the month's\n"
+"                 instalment. It arrives as a positive amount; the scheme's own formula takes it off pay\n"
+"                 (for example"
+msgstr ""
+"Với mỗi chương trình lương, chọn khoản mục đầu vào nhận kỳ trả hằng tháng.\n"
+"                 Số tiền đến dưới dạng số dương; công thức của chương trình sẽ trừ vào lương\n"
+"                 (ví dụ"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "From your pay"
+msgstr "Trừ vào lương"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_approval.py:0
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "History ("
+msgstr "Lịch sử ("
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__kind
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "How"
+msgstr "Cách trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "How it is paid back"
+msgstr "Cách trả lại"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payroll_import_batch__id
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__id
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip_run__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loans__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_loans.field_pb_payslip_review__id
+#: model:ir.model.fields,field_description:pb_loans.field_res_company__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_has_error
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__on_leaving
+msgid "If the person leaves"
+msgstr "Nếu người đó nghỉ việc"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__state__reserved
+msgid "In a pay run"
+msgstr "Trong kỳ lương"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__in_payrun
+msgid "In a pay run now"
+msgstr "Đang nằm trong kỳ lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "In the words the person and the approver will read."
+msgstr "Bằng lời mà người vay và người duyệt sẽ đọc."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "In this month's pay run"
+msgstr "Trong kỳ lương tháng này"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Largest amount first"
+msgstr "Số tiền lớn nhất trước"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__write_uid
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__write_date
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__on_leaving__leave_open
+msgid "Leave it open"
+msgstr "Để mở"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__balance
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Left to repay"
+msgstr "Còn phải trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"Lend somebody money, get it approved, and every regular pay run takes one\n"
+"               instalment until it is paid back — with the balance always in view."
+msgstr ""
+"Cho ai đó vay tiền, được duyệt, và mỗi kỳ lương thường sẽ trừ một kỳ\n"
+"               cho đến khi trả xong — số dư luôn hiển thị."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Loading loans"
+msgstr "Đang tải khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__loan_id
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__kind__loan
+msgid "Loan"
+msgstr "Khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Loan approved. The next regular pay run takes the first instalment."
+msgstr ""
+"Khoản vay đã được duyệt. Kỳ lương thường tiếp theo sẽ trừ kỳ đầu tiên."
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__currency
+msgid "Loan in another currency"
+msgstr "Khoản vay khác loại tiền"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "Loan instalment %(taken)s taken · %(left)s left"
+msgstr "Đã trừ kỳ trả vay %(taken)s · còn %(left)s"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__error
+msgid "Loan instalment could not be applied"
+msgstr "Không áp dụng được kỳ trả vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"Loan instalment due, but the loan is in another currency than this pay "
+"scheme"
+msgstr ""
+"Đến hạn trả vay, nhưng khoản vay khác loại tiền với chương trình lương này"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"Loan instalment due, but this pay scheme has no pay item for loan repayments"
+msgstr ""
+"Đến hạn trả vay, nhưng chương trình lương này chưa có khoản mục cho tiền trả"
+" vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "Loan instalment is more than this month's take-home"
+msgstr "Kỳ trả vay lớn hơn lương thực nhận tháng này"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__pb_loan_issue
+msgid "Loan instalment not taken"
+msgstr "Không trừ kỳ trả vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid ""
+"Loan instalment not taken: the pay data file has another amount for loan "
+"repayments"
+msgstr ""
+"Không trừ kỳ trả vay: tệp dữ liệu lương có số tiền khác cho khoản trả vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: model:ir.model,name:pb_loans.model_pb_loan
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Loan or salary advance"
+msgstr "Khoản vay hoặc tạm ứng lương"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_loan_repayment
+msgid "Loan repayment"
+msgstr "Khoản trả vay"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__pb_loan_line_ids
+msgid "Loan repayments"
+msgstr "Các khoản trả vay"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_formula_config__pb_loan_rule_id
+msgid "Loan repayments go into"
+msgstr "Tiền trả vay đưa vào"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Loan repayments must go into a money pay item."
+msgstr "Tiền trả vay phải đưa vào một khoản mục tiền."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Loan repayments must go into an input pay item of this pay scheme."
+msgstr ""
+"Tiền trả vay phải đưa vào một khoản mục đầu vào của chương trình lương này."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Loan saved. Send it for approval when you are ready."
+msgstr "Đã lưu khoản vay. Hãy gửi duyệt khi sẵn sàng."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Loan sent for approval."
+msgstr "Đã gửi khoản vay đi duyệt."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_palette.js:0
+msgid "Loans"
+msgstr "Khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_palette.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:biz.approval.process,name:pb_loans.process_loan
+#: model:ir.actions.act_window,name:pb_loans.action_pb_loan
+#: model:ir.actions.client,name:pb_loans.action_pb_loans_board
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_list
+msgid "Loans and salary advances"
+msgstr "Khoản vay và tạm ứng lương"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Loans are looked after by the pay team."
+msgstr "Khoản vay do bộ phận lương quản lý."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"Loans are looked after by the pay team. Ask your administrator to give you "
+"payroll officer rights to see this screen."
+msgstr ""
+"Khoản vay do bộ phận lương quản lý. Hãy nhờ quản trị viên cấp quyền nhân "
+"viên tính lương để xem màn hình này."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_loans
+msgid "Loans board data"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Marked as not approved."
+msgstr "Đã đánh dấu là không duyệt."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"Money lent to people, paid back from their pay — one\n"
+"                 instalment a month, never twice, never more than is owed."
+msgstr ""
+"Tiền cho nhân viên vay, trả lại từ lương — mỗi tháng một\n"
+"                 kỳ, không bao giờ trừ hai lần, không bao giờ quá số còn nợ."
+
+#. module: pb_loans
+#: model:biz.approval.process,description:pb_loans.process_loan
+msgid "Money lent to somebody, paid back from their pay."
+msgstr "Tiền cho ai đó vay, trả lại từ lương của họ."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__months_left
+msgid "Months left"
+msgstr "Số tháng còn lại"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Most left to repay"
+msgstr "Còn nợ nhiều nhất trước"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_breadcrumbs_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "My loans"
+msgstr "Khoản vay của tôi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Needs attention"
+msgstr "Cần chú ý"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "New loan"
+msgstr "Khoản vay mới"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "New loan or salary advance"
+msgstr "Khoản vay hoặc tạm ứng lương mới"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__next_amount
+msgid "Next instalment"
+msgstr "Kỳ trả tiếp theo"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__next_month
+msgid "Next pay month"
+msgstr "Tháng lương tiếp theo"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Next:"
+msgstr "Tiếp theo:"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "No department"
+msgstr "Không có phòng ban"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"No instalment is taken until it is resumed. The plan moves on by a month for"
+" each month missed."
+msgstr ""
+"Không trừ kỳ nào cho đến khi tiếp tục. Kế hoạch lùi lại một tháng cho mỗi "
+"tháng bỏ qua."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "No loans match these filters"
+msgstr "Không có khoản vay nào khớp bộ lọc"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "No loans or salary advances yet"
+msgstr "Chưa có khoản vay hay tạm ứng lương nào"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__hr_payslip__pb_loan_issue__no_item
+msgid "No pay item for loan repayments"
+msgstr "Chưa có khoản mục cho tiền trả vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "No pay item — take nothing"
+msgstr "Không có khoản mục — không trừ gì"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__refused
+msgid "Not approved"
+msgstr "Không được duyệt"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__state__released
+msgid "Not taken"
+msgstr "Không trừ"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Note (optional)"
+msgstr "Ghi chú (không bắt buộc)"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Nothing comes off"
+msgstr "Không trừ gì"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+msgid "Nothing comes off your next pay."
+msgstr "Kỳ lương tới không trừ gì."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Nothing has been paid back yet."
+msgstr "Chưa trả lại khoản nào."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Nothing is left to repay."
+msgstr "Không còn gì phải trả."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Nothing is taken from their pay until one is chosen."
+msgstr "Sẽ không trừ vào lương của họ cho đến khi chọn một khoản mục."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Nothing matches “"
+msgstr "Không có kết quả cho “"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Nothing more is taken from pay. What was already paid back stays recorded."
+msgstr "Không trừ thêm vào lương nữa. Những gì đã trả vẫn được ghi nhận."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__plan_months
+msgid "Number of months"
+msgstr "Số tháng"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Only a loan that is still being prepared can be deleted. Cancel %s instead, "
+"with a reason."
+msgstr "Chỉ xóa được khoản vay đang chuẩn bị. Hãy hủy %s, kèm lý do."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Only a paused loan can be resumed."
+msgstr "Chỉ có thể tiếp tục khoản vay đang tạm dừng."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Only a payroll manager can change these."
+msgstr "Chỉ quản lý tính lương mới thay đổi được."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Only a payroll manager can choose where loan repayments go."
+msgstr "Chỉ quản lý tính lương mới chọn được nơi đưa tiền trả vay."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Only a running loan can be paused."
+msgstr "Chỉ có thể tạm dừng khoản vay đang chạy."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Only a running or paused loan can be paid back."
+msgstr "Chỉ khoản vay đang chạy hoặc tạm dừng mới trả lại được."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Open again: %s is left to repay because a payment was taken back."
+msgstr "Mở lại: còn phải trả %s vì một khoản đã được hoàn lại."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Over how many months"
+msgstr "Trong bao nhiêu tháng"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__state__paid
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Paid back"
+msgstr "Đã trả lại"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__plan_mode
+msgid "Paid back as"
+msgstr "Trả lại theo"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+msgid "Paid back directly"
+msgstr "Trả trực tiếp"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Paid back in full"
+msgstr "Đã trả hết"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Paid back over at least one month."
+msgstr "Trả lại trong ít nhất một tháng."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__paid_on
+msgid "Paid on"
+msgstr "Trả vào"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__kind__manual
+msgid "Paid outside payroll"
+msgstr "Trả ngoài bảng lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Pause"
+msgstr "Tạm dừng"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Pause the repayments"
+msgstr "Tạm dừng việc trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__paused
+msgid "Paused"
+msgstr "Tạm dừng"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Paused for now — nothing comes off your pay until it starts again."
+msgstr "Đang tạm dừng — không trừ vào lương cho đến khi bắt đầu lại."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Paused. No instalment is taken until it is resumed."
+msgstr "Đã tạm dừng. Không trừ kỳ nào cho đến khi tiếp tục."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Paused:"
+msgstr "Tạm dừng:"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid ""
+"Paused: %s. No instalment is taken until it is resumed; the plan moves on by"
+" a month for each month missed."
+msgstr ""
+"Tạm dừng: %s. Không trừ kỳ nào cho đến khi tiếp tục; kế hoạch lùi lại một "
+"tháng cho mỗi tháng bỏ qua."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_payslip
+msgid "Pay Slip"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__pay_month
+msgid "Pay month"
+msgstr "Tháng lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__run_id
+msgid "Pay run"
+msgstr "Kỳ lương"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Pay run %s"
+msgstr "Kỳ lương %s"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_pb_payslip_review
+msgid "Payobook Payslip Review cockpit data"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_palette.js:0
+msgid "Payroll"
+msgstr "Tính lương"
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_payroll_import_batch
+msgid "Payroll Import Batch"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__payslip_id
+msgid "Payslip"
+msgstr "Phiếu lương"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Payslip %s no longer takes it."
+msgstr "Phiếu lương %s không còn trừ khoản này."
+
+#. module: pb_loans
+#: model:ir.model,name:pb_loans.model_hr_payslip_run
+msgid "Payslip Batches"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "People here have loans."
+msgstr "Có người ở đây đang vay."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Pick a pay item of this pay scheme."
+msgstr "Chọn một khoản mục của chương trình lương này."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Pick the first pay month."
+msgstr "Chọn tháng lương đầu tiên."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Pick who the loan is for."
+msgstr "Chọn người vay."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__requested_by_user_id
+msgid "Raised by"
+msgstr "Người tạo"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Raised most recently"
+msgstr "Mới tạo gần nhất"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Read the board again"
+msgstr "Tải lại bảng"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Reading the loans…"
+msgstr "Đang đọc các khoản vay…"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Record a repayment"
+msgstr "Ghi nhận khoản trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Record a repayment made outside payroll"
+msgstr "Ghi nhận khoản trả ngoài bảng lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Record it"
+msgstr "Ghi nhận"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__recorded_by
+msgid "Recorded by"
+msgstr "Người ghi nhận"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Records everything still owed (%s) as paid back outside payroll, and closes "
+"the loan."
+msgstr ""
+"Ghi nhận toàn bộ số còn nợ (%s) là đã trả ngoài bảng lương và đóng khoản "
+"vay."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__name
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__reference
+msgid "Reference"
+msgstr "Mã tham chiếu"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Reference (optional)"
+msgstr "Mã tham chiếu (không bắt buộc)"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Remove a filter above, or start again from every loan."
+msgstr "Bỏ một bộ lọc ở trên, hoặc xem lại tất cả khoản vay."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Repaid in full"
+msgstr "Đã trả hết"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Repaid in full: %s. Closed."
+msgstr "Đã trả hết: %s. Đã đóng."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__repaid
+msgid "Repaid so far"
+msgstr "Đã trả đến nay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Repayment = −Loan instalment"
+msgstr "Trả vay = −Kỳ trả vay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Repayment recorded."
+msgstr "Đã ghi nhận khoản trả."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__repayment_ids
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Repayments"
+msgstr "Các khoản trả"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Repayments are recorded by the system."
+msgstr "Các khoản trả do hệ thống ghi nhận."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Resume"
+msgstr "Tiếp tục"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Resumed."
+msgstr "Đã tiếp tục."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Resumed. The next regular pay run takes an instalment."
+msgstr "Đã tiếp tục. Kỳ lương thường tiếp theo sẽ trừ một kỳ."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Resumed: %s"
+msgstr "Đã tiếp tục: %s"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__running
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__kind__advance
+msgid "Salary advance"
+msgstr "Tạm ứng lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Save as draft"
+msgstr "Lưu nháp"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid ""
+"Saved. Loan repayments go into that pay item from the next calculation."
+msgstr "Đã lưu. Tiền trả vay sẽ đưa vào khoản mục đó từ lần tính tiếp theo."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Saved. This scheme takes no loan repayments."
+msgstr "Đã lưu. Chương trình này không trừ tiền trả vay."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Say how much comes off each month, or over how many months."
+msgstr "Cho biết mỗi tháng trừ bao nhiêu, hoặc trong bao nhiêu tháng."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+msgid "Say how much is paid back each month, or over how many months."
+msgstr "Cho biết mỗi tháng trả bao nhiêu, hoặc trong bao nhiêu tháng."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Say what the loan is for, in a few words."
+msgstr "Cho biết khoản vay dùng vào việc gì, vài chữ thôi."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/loan.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Say why, in a few words."
+msgstr "Cho biết lý do, vài chữ thôi."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.pbme_card_loans
+msgid "See my loans"
+msgstr "Xem khoản vay của tôi"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Send for approval"
+msgstr "Gửi duyệt"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Sent for approval."
+msgstr "Đã gửi duyệt."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Set up"
+msgstr "Thiết lập"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Settle now"
+msgstr "Tất toán ngay"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Settled."
+msgstr "Đã tất toán."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Show"
+msgstr "Hiện thêm"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Show all loans"
+msgstr "Hiện tất cả khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Showing"
+msgstr "Đang hiện"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid ""
+"Something not right? Ask HR — they can see exactly what was taken and when."
+msgstr ""
+"Có gì chưa đúng? Hãy hỏi bộ phận nhân sự — họ xem được chính xác đã trừ gì "
+"và khi nào."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Start the repayments again"
+msgstr "Bắt đầu trả lại"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Start typing a name or code"
+msgstr "Nhập tên hoặc mã"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__state
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__state
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__on_leaving__take_rest
+msgid "Take the rest from the final pay"
+msgstr "Trừ phần còn lại vào kỳ lương cuối"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Taken by payslip %s."
+msgstr "Được trừ bởi phiếu lương %s."
+
+#. module: pb_loans
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan_repayment__kind__payroll
+msgid "Taken in a pay run"
+msgstr "Trừ trong kỳ lương"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Taken through its application source"
+msgstr "Lấy qua nguồn dữ liệu ứng dụng"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "That cannot be done here."
+msgstr "Không thể làm việc đó ở đây."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "That could not be done."
+msgstr "Không thể thực hiện việc đó."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "That could not be saved."
+msgstr "Không thể lưu."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid ""
+"The %(month)s instalment of %(ref)s is already in pay run %(run)s, so it is "
+"not taken again here."
+msgstr ""
+"Kỳ trả tháng %(month)s của %(ref)s đã nằm trong kỳ lương %(run)s nên không "
+"trừ lại ở đây."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối bị gián đoạn. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__first_month
+msgid ""
+"The first pay month an instalment is taken in. Any day of the month will do "
+"— it is the month that matters."
+msgstr ""
+"Tháng lương đầu tiên bắt đầu trừ. Ngày nào trong tháng cũng được — chỉ tháng"
+" là quan trọng."
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_hr_formula_config__pb_loan_rule_id
+msgid ""
+"The input pay item that receives each month's loan and salary advance "
+"instalment, as a positive amount. The scheme's own formula decides whether "
+"it is taken off pay. Leave it empty and no instalment is taken by this "
+"scheme — the pay run says so."
+msgstr ""
+"Khoản mục đầu vào nhận kỳ trả vay và tạm ứng lương hằng tháng, dưới dạng số "
+"dương. Công thức của chương trình quyết định có trừ vào lương hay không. Để "
+"trống thì chương trình này không trừ kỳ nào — kỳ lương sẽ báo điều đó."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loan could not be saved."
+msgstr "Không thể lưu khoản vay."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loan is turned down and nothing is taken from pay."
+msgstr "Khoản vay bị từ chối và không trừ gì vào lương."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loans could not be read just now."
+msgstr "Hiện không đọc được các khoản vay."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "The loans could not load"
+msgstr "Không tải được các khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The loans could not load. Check your connection, then press Try again."
+msgstr "Không tải được các khoản vay. Hãy kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "The next regular pay run takes an instalment again."
+msgstr "Kỳ lương thường tiếp theo sẽ trừ một kỳ trở lại."
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__currency_id
+#: model:ir.model.fields,help:pb_loans.field_pb_loan_repayment__currency_id
+msgid ""
+"The person's pay currency: instalments are taken only by a pay scheme that "
+"pays in this currency."
+msgstr ""
+"Loại tiền trả lương của người đó: chỉ chương trình lương trả bằng loại tiền "
+"này mới trừ kỳ trả."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "The plan"
+msgstr "Kế hoạch"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"The steps above the table, plus loans that were cancelled or not approved."
+msgstr ""
+"Các bước phía trên bảng, cùng các khoản vay đã hủy hoặc không được duyệt."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "There is no active pay scheme yet."
+msgstr "Chưa có chương trình lương nào đang hoạt động."
+
+#. module: pb_loans
+#: model:ir.model.constraint,message:pb_loans.constraint_pb_loan_repayment_one_per_month
+msgid "This loan already has an instalment for that pay month."
+msgstr "Khoản vay này đã có kỳ trả cho tháng lương đó."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "This loan could not be opened."
+msgstr "Không mở được khoản vay này."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "This loan no longer exists."
+msgstr "Khoản vay này không còn tồn tại."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "This one is for the pay team"
+msgstr "Màn hình này dành cho bộ phận lương"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "This pay scheme cannot be found."
+msgstr "Không tìm thấy chương trình lương này."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "This person has a leaving date."
+msgstr "Người này có ngày nghỉ việc."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"Type the amount and how it is paid back — the instalments appear here, month"
+" by month."
+msgstr "Nhập số tiền và cách trả — các kỳ trả sẽ hiện ở đây, theo từng tháng."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Type the amount that was paid back."
+msgstr "Nhập số tiền đã trả lại."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid ""
+"Type the amount, then how much comes off each month or over how many months."
+msgstr "Nhập số tiền, rồi mỗi tháng trừ bao nhiêu hoặc trong bao nhiêu tháng."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Type the amounts as numbers."
+msgstr "Nhập số tiền dưới dạng số."
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/models/pb_me_home.py:0
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields.selection,name:pb_loans.selection__pb_loan__state__waiting
+msgid "Waiting for approval"
+msgstr "Chờ phê duyệt"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Waiting for approval — nothing comes off your pay yet."
+msgstr "Đang chờ duyệt — chưa trừ gì vào lương của bạn."
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_pb_loan__plan_amount
+msgid ""
+"What each regular pay run takes. The last instalment takes whatever is left."
+msgstr "Số tiền mỗi kỳ lương thường trừ. Kỳ cuối trừ phần còn lại."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__note
+msgid "What happened"
+msgstr "Đã xảy ra gì"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "What it is for"
+msgstr "Dùng vào việc gì"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "What was agreed"
+msgstr "Nội dung đã thỏa thuận"
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "What you borrowed, what is left, and what comes off your pay next."
+msgstr "Bạn đã vay gì, còn lại bao nhiêu, và kỳ lương tới trừ bao nhiêu."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid ""
+"When the company lends you money, how it is paid back from your pay shows "
+"here."
+msgstr "Khi công ty cho bạn vay tiền, cách trả lại từ lương sẽ hiện ở đây."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "Where every loan is"
+msgstr "Mỗi khoản vay đang ở đâu"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Where it is"
+msgstr "Đang ở đâu"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Where loan repayments go"
+msgstr "Tiền trả vay đưa vào đâu"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "Who"
+msgstr "Người"
+
+#. module: pb_loans
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__employee_id
+msgid "Who it is for"
+msgstr "Người vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__reason
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan_repayment__reason
+#: model_terms:ir.ui.view,arch_db:pb_loans.view_pb_loan_form
+msgid "Why"
+msgstr "Lý do"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_pb_loan__pause_reason
+msgid "Why it is paused"
+msgstr "Lý do tạm dừng"
+
+#. module: pb_loans
+#: model:ir.model.fields,help:pb_loans.field_hr_payslip__pb_loan_issue
+msgid "Why this payslip did not take a loan instalment the person owes."
+msgstr "Lý do phiếu lương này không trừ kỳ trả vay mà người đó còn nợ."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "You have no loans or salary advances"
+msgstr "Bạn không có khoản vay hay tạm ứng lương nào"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/pb_loans_board.py:0
+msgid "Your approval is recorded."
+msgstr "Đã ghi nhận phê duyệt của bạn."
+
+#. module: pb_loans
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "Your login is not linked to an employee record"
+msgstr "Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "being repaid"
+msgstr "đang trả dần"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_loans.portal_my_loans
+msgid "in"
+msgstr "vào"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "is in a pay run that is not finished yet."
+msgstr "đang nằm trong một kỳ lương chưa hoàn tất."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "left to repay"
+msgstr "còn phải trả"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "loans"
+msgstr "khoản vay"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "more months."
+msgstr "tháng nữa."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "paid back ·"
+msgstr "đã trả ·"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "paused"
+msgstr "tạm dừng"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "pay run deleted."
+msgstr "đã xóa kỳ lương."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid ""
+"pay schemes have people with loans but no pay item for loan repayments."
+msgstr ""
+"chương trình lương có người đang vay nhưng chưa có khoản mục cho tiền trả "
+"vay."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "payslip cancelled."
+msgstr "đã hủy phiếu lương."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "payslip deleted."
+msgstr "đã xóa phiếu lương."
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "repaid in full this month"
+msgstr "đã trả hết trong tháng này"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/js/loans_board.js:0
+msgid "waiting for approval"
+msgstr "chờ phê duyệt"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "· runs from application data"
+msgstr "· chạy từ dữ liệu ứng dụng"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "— with"
+msgstr "— với"
+
+#. module: pb_loans
+#. odoo-javascript
+#: code:addons/pb_loans/static/src/xml/loans_board.xml:0
+msgid "”. Check the spelling, or search by a person or a reason."
+msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo người hoặc lý do."
