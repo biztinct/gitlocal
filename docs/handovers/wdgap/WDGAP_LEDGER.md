@@ -28,7 +28,7 @@ The programme works through the study's build order, one step at a time.
 | QF1 | Approvals inbox: approve selected. Home: PayAI's daily alerts | built + tested on branch `wdgap-qf1` (not merged, not deployed); report `WDGAP_QF1_REPORT.md` |
 | QF2 | Explorer: named saved views + share, Excel download, send regularly by email | built + tested on branch `wdgap-qf2` (not merged, not deployed) — `WDGAP_QF2_REPORT.md` |
 | QF3 | Leave on My Payobook: half days/hours, withdraw / ask to change, attach certificate, balance after | built + tested on branch `wdgap-qf3` (not merged, not deployed) — `WDGAP_QF3_REPORT.md` |
-| QF4 | Goal scores into the pay review. Benefits: enrol joiners, end cover for leavers | designing |
+| QF4 | Goal scores into the pay review. Benefits: enrol joiners, end cover for leavers | built + tested on `wdgap-qf4` (report `WDGAP_QF4_REPORT.md`); B5 board line and B6 lens not built (owner questions) |
 | QF5 | Compulsory two-step sign-in by role, idle sign-out | designing |
 
 ## Binding conventions (every phase)
@@ -108,3 +108,8 @@ clean.
 | QF3-5 | QF3 | hr_holidays refuses a request over the balance unless the kind "allows going below zero" (`_check_validity`), so a preview may only say "you can still send it" for those kinds. |
 | QF3-6 | QF3 | `biz.approval.engine.cancel` calls the record's `_approval_withdraw` inside a bare try/except (no savepoint). A hook that writes must hold its own savepoint, or a database error there leaves the withdrawal's transaction aborted. |
 | QF3-7 | QF3 | Locally, a running server kept serving the previous frontend CSS after `DELETE … /web/assets/%`; only a restart picked up the changed SCSS (same lesson as "asset purge alone does not refresh browsers"). |
+| QF4-W1 | QF4 | The local test template `upd_p3c_t_tpl` is behind HEAD: a `-u` run with the 19.1 tree logs "Model pb.updates.ytd.* has no table" as ERROR. Add `pb_updates` (and `pb_clock`, UPDATES G97) to the first `-u` of a new local base copy, then copy that base for test runs. The admin user on that template is archived — activate it on the LOCAL copy before a browser walk. |
+| QF4-W2 | QF4 | Odoo 19's `hr.employee.action_unarchive` writes `departure_date=False` right after un-archiving, and the departure wizard archives FIRST then writes the date. Anything hooked on `hr.employee.write` for exits sees two writes, in that order; make the second one "follow" rather than refuse. |
+| QF4-W3 | QF4 | `.pbim-badge` has `text-transform: capitalize` — a sentence put in it reads "3 Have A Score". Override `text-transform: none` locally for count/sentence badges. List `widget="badge"` chips are upper-cased by the theme: give the column a `width` or they truncate ("START…"). |
+| QF4-W5 | QF4 | The Mac's data volume sits at ~99% (5 GB free): a full six-module suite hit `psycopg2.errors.DiskFull` mid-run and one pb_hiring test errored for that reason only. Check `df -h /System/Volumes/Data` before a full run, drop your scratch copies (`dropdb --force`) as you go, and re-run any test that shows DiskFull before calling it a failure. |
+| QF4-W4 | QF4 | `pb_goals` cycle form button `action_close` is an xpath ANCHOR for `view_pb_goal_cycle_form_b2` (`goal_year_views.xml:446`). Removing it breaks the inherited view; hide it (`invisible="1"`) instead. |

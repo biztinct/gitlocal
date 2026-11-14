@@ -241,3 +241,29 @@ msgstr ""
 "                Phòng nhân sự\n"
 "            </div>\n"
 "        "
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/pay_score.py:0
+msgid "%(low)s to %(high)s"
+msgstr "%(low)s đến %(high)s"
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/close.py:0
+msgid ""
+"Each score also becomes the person's latest performance score, which the "
+"next pay review starts from. Reopening the year does not take that back."
+msgstr ""
+"Mỗi điểm cũng trở thành điểm hiệu suất mới nhất của người đó, là điểm khởi "
+"đầu cho đợt xét lương tiếp theo. Mở lại năm sẽ không lấy lại điểm đó."
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/pay_score.py:0
+msgid ""
+"Their latest performance score is now %(value)s out of 5, from the goals "
+"year %(year)s."
+msgstr ""
+"Điểm hiệu suất mới nhất của họ hiện là %(value)s trên 5, theo năm mục tiêu "
+"%(year)s."

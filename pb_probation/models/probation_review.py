@@ -866,10 +866,32 @@ class PbProbationReview(models.Model):
             "Trial period passed — confirmed on %s.",
             fields.Date.today()))
         self._write_performance_rating()
+        self._start_benefits_after_trial()
         letter = self._prepare_letter('pass')
         self._mail('pb_probation.mail_template_verdict_hr',
                    self._hr_addresses())
         return {'verdict': 'pass', 'letter_id': letter.id if letter else 0}
+
+    def _start_benefits_after_trial(self):
+        """WDGAP QF4 (B2): plans that start once the trial period is passed.
+
+        PROBED, never depended on — this module does not depend on the
+        benefits module, and a verdict must never fail to save because a
+        benefit could not start. Its own savepoint, logged, carries on.
+        """
+        self.ensure_one()
+        if 'pb.benefit.plan' not in self.env:
+            return False
+        try:
+            with self.env.cr.savepoint():
+                return self.env['pb.benefit.plan'].sudo()._enrol_who_qualifies(
+                    self.employee_id, 'probation',
+                    on_date=fields.Date.context_today(self))
+        except Exception:               # noqa: BLE001
+            _logger.exception('pb_probation: could not start the benefits '
+                              'that follow a passed trial for review %s',
+                              self.id)
+            return False
 
     def _verdict_extend(self):
         """Move the trial end IN PLACE (ruling D1's carve-out) and come back."""

@@ -9,6 +9,8 @@ from . import oneoff_feed
 from . import month_approval
 from . import payroll_calendar
 from . import benefit
+# WDGAP QF4: cover that starts and ends by itself (wizard + employee write)
+from . import benefit_auto
 from . import payslip_run_ext
 from . import pb_paycal
 from . import pb_incentives

@@ -323,6 +323,8 @@ class PbPayReviews(models.AbstractModel):
                         for key, label in POSITION_BANDS],
             'words': scale_words(review.rating_scale),
             'unrated': len(review.line_ids.filtered(lambda l: not l.rating)),
+            # WDGAP QF4: "Read scores from Goals" shows only where Goals is.
+            'has_goals': 'pb.goal.set' in self.env,
             'ms': int((time.time() - started) * 1000),
         }
 
@@ -665,6 +667,14 @@ class PbPayReviews(models.AbstractModel):
         self._require_write()
         self._editable(review_id)
         return self.env['pb.pay.rating'].sync_from_connected_system(review_id)
+
+    @api.model
+    def goal_scores(self, review_id, cycle_id=None, dry_run=True):
+        """WDGAP QF4: "Read scores from Goals" — preview, then use."""
+        self._require_write()
+        self._editable(review_id)
+        return self.env['pb.pay.rating'].read_from_goals(
+            review_id, cycle_id=cycle_id, dry_run=dry_run)
 
     # ========================================================== calibration
     @api.model

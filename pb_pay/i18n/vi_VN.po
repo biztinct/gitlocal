@@ -6288,3 +6288,161 @@ msgstr "Dòng đang ở đâu"
 #: code:addons/pb_pay/models/pb_pay_review_sheet.py:0
 msgid "Whose team"
 msgstr "Nhóm của ai"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "%(count)s scores read from Goals."
+msgstr "Đã đọc %(count)s điểm từ Mục tiêu."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"%(good)s people have a goals score, %(changed)s of them will change and "
+"%(missing)s have none."
+msgstr ""
+"%(good)s người có điểm mục tiêu, %(changed)s người trong số đó sẽ thay đổi "
+"và %(missing)s người không có."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "%(name)s · not closed yet"
+msgstr "%(name)s · chưa đóng"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"1 person has a goals score (%(changed)s will change) and %(missing)s have "
+"none."
+msgstr ""
+"1 người có điểm mục tiêu (%(changed)s sẽ thay đổi) và %(missing)s người "
+"không có."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid ""
+"Each person's score for a goals year, turned into this review's scale. "
+"Nothing is saved until you press “Use these scores”."
+msgstr ""
+"Điểm của từng người trong một năm mục tiêu, được quy đổi sang thang điểm của"
+" đợt xét này. Không có gì được lưu cho đến khi bạn bấm “Dùng các điểm này”."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Goals is not switched on here, so there are no goal scores to read."
+msgstr "Mục tiêu chưa được bật ở đây, nên không có điểm mục tiêu nào để đọc."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Goals score (out of 5)"
+msgstr "Điểm mục tiêu (trên 5)"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Goals year"
+msgstr "Năm mục tiêu"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "How a goals score becomes a review score"
+msgstr "Điểm mục tiêu được quy đổi thành điểm xét lương như thế nào"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "No goals score"
+msgstr "Không có điểm mục tiêu"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "No goals score for this year."
+msgstr "Không có điểm mục tiêu cho năm này."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid ""
+"No goals year has been opened for this company yet, so there are no goal "
+"scores to read."
+msgstr ""
+"Công ty này chưa mở năm mục tiêu nào, nên không có điểm mục tiêu nào để đọc."
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "Nobody on this review has a goals score for that year."
+msgstr "Không ai trong đợt xét này có điểm mục tiêu cho năm đó."
+
+#. module: pb_pay
+#: model:ir.model.fields.selection,name:pb_pay.selection__pb_pay_rating__source__goals
+msgid "Read from Goals"
+msgstr "Đọc từ Mục tiêu"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Read scores from Goals"
+msgstr "Đọc điểm từ Mục tiêu"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Reading the goals year…"
+msgstr "Đang đọc năm mục tiêu…"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Review score"
+msgstr "Điểm xét lương"
+
+#. module: pb_pay
+#. odoo-python
+#: code:addons/pb_pay/models/pb_pay_rating.py:0
+msgid "That goals year is not one this review can read."
+msgstr "Đợt xét này không thể đọc năm mục tiêu đó."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/js/pay_review.js:0
+msgid "The goal scores could not be read."
+msgstr "Không đọc được điểm mục tiêu."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "This goals year is not closed yet, so these scores can still move."
+msgstr "Năm mục tiêu này chưa đóng, nên các điểm này vẫn có thể thay đổi."
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "Use these scores"
+msgstr "Dùng các điểm này"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "have a score"
+msgstr "có điểm"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "have none"
+msgstr "không có"
+
+#. module: pb_pay
+#. odoo-javascript
+#: code:addons/pb_pay/static/src/xml/pay_review.xml:0
+msgid "will change"
+msgstr "sẽ thay đổi"
