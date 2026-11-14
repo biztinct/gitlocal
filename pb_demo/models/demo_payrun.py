@@ -173,14 +173,37 @@ class PbPayrunWizardDemo(models.AbstractModel):
         return cmap
 
     def _period_config_runs(self, ds, de, cfg):
-        """Runs overlapping [ds, de] whose payslips were computed with `cfg`."""
+        """Runs overlapping [ds, de] whose payslips were computed with `cfg`.
+
+        WDGAP PR-D — an Extra run is never part of a division's month: it is
+        not "already there" for the guard, never cleared by it, and its
+        payslips are never read as the month's mid-month advance."""
         Run = self.env['hr.payslip.run'].sudo()
         dom = [('date_start', '<=', de), ('date_end', '>=', ds)]
         if 'company_id' in Run._fields:
             dom.append(('company_id', 'in', self.env.companies.ids))
         runs = Run.search(dom)
         return runs.filtered(
-            lambda r: r.slip_ids and any(s.formula_config_id == cfg for s in r.slip_ids))
+            lambda r: r.slip_ids and self._run_kind_of(r) != 'extra'
+            and any(s.formula_config_id == cfg for s in r.slip_ids))
+
+    def _demo_people(self, vals, kind, cmap, end_cfg, ds, de):
+        """Who this division run computes, as ids.
+
+        WDGAP PR-D — the people picked on the Run payroll screen
+        (`employee_ids`) are honoured here as on the product path: an Extra
+        run pays exactly them (and refuses nobody picked, or anybody the
+        division does not pay, by name — the wizard's own refusals); a
+        Regular or Top-up run is narrowed to them when a list was sent, and
+        is the whole division, exactly as before, when none was.
+        """
+        if kind == 'extra':
+            return self._extra_run_people(vals, end_cfg, ds, de,
+                                          payable=list(cmap))
+        picked = {int(e) for e in (vals.get('employee_ids') or []) if e}
+        if picked:
+            return [e for e in cmap if e in picked]
+        return list(cmap)
 
     def _advance_map(self, mid_runs):
         """eid -> ADVPAY total from a division's Mid run slips."""
@@ -305,6 +328,13 @@ class PbPayrunWizardDemo(models.AbstractModel):
         name = vals.get('name') or ('Payroll %s' % cat.DIVISIONS[key]['name_en'])
         force_clean = vals.get('force_clean')
         m_end = fields.Date.to_date(de)
+        kind = self._run_kind_from_vals(vals)
+        # WDGAP PR-D — who is paid, decided (and an Extra run's refusals
+        # made) BEFORE anything is created.
+        if kind == 'extra':
+            name = self._extra_run_name(vals)
+        cmap = self._division_contracts(key, m_end)
+        emp_ids = self._demo_people(vals, kind, cmap, end_cfg, ds, de)
 
         # Same guard/clean as create_and_compute: only ever clears DEMO runs, and
         # preserves the Mid-Cycle Advance run.
@@ -312,10 +342,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
             lambda r: getattr(r, 'is_demo', False))
         # PRS P3 (R8, R9): a run only ever meets runs of its own kind — a
         # top-up never clears the division's regular run, nor a regular run
-        # a top-up.
-        kind = self._run_kind_from_vals(vals)
+        # a top-up. WDGAP PR-D: an Extra run meets none at all.
         division_runs = division_runs.filtered(
-            lambda r: self._run_kind_of(r) == kind)
+            lambda r: kind != 'extra' and self._run_kind_of(r) == kind)
         if division_runs and not force_clean:
             n = len(division_runs)
             return {
@@ -345,12 +374,11 @@ class PbPayrunWizardDemo(models.AbstractModel):
         run_vals.update(self._run_kind_vals(kind))          # PRS P3 (R8)
         run = Run.create(run_vals)
 
-        cmap = self._division_contracts(key, m_end)
         return {
             'run_id': run.id, 'name': name,
             'date_start': ds, 'date_end': de, 'division': key,
             'formula_config_id': end_cfg.id,
-            'emp_ids': list(cmap), 'total': len(cmap),
+            'emp_ids': emp_ids, 'total': len(emp_ids),
         }
 
     @api.model
@@ -433,8 +461,12 @@ class PbPayrunWizardDemo(models.AbstractModel):
                       else self.env.company.id)
 
         cmap = self._contracts_for(key, m_end, emp_ids)
-        adv = self._advance_for(mid_cfg, ds, de, emp_ids)
-        loanmap = self._loans_for(list(cmap))
+        # WDGAP PR-D — the loan instalment and the mid-month advance are
+        # settled once a month, by the regular run. An Extra run works out
+        # the scheme for the people picked without taking either again.
+        extra = self._run_kind_of(run) == 'extra'
+        adv = {} if extra else self._advance_for(mid_cfg, ds, de, emp_ids)
+        loanmap = {} if extra else self._loans_for(list(cmap))
         end_rules = end_cfg.rule_ids
         has_fiv = 'formula_input_values' in Slip._fields
         has_fcv = 'formula_computed_values' in Slip._fields
@@ -462,7 +494,10 @@ class PbPayrunWizardDemo(models.AbstractModel):
                 'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
                 'company_id': company_id, 'calculation_method': 'formula',
                 'formula_config_id': end_cfg.id,
-                'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else payload.get('name')),
+                # WDGAP PR-D: an Extra run's payslip carries the run's name
+                'name': self._slip_name(
+                    run, e, '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else payload.get('name')),
+                    payload.get('name')),
             })
             # UPDATES P3a — an approved one-off from Updates lands here too.
             iv, oneoff_token = self._pb_demo_oneoffs(slip, end_cfg, iv)
@@ -521,6 +556,15 @@ class PbPayrunWizardDemo(models.AbstractModel):
         m_start = fields.Date.to_date(ds)
         m_end = fields.Date.to_date(de)
         mi = m_start.month if m_start else date.today().month
+        kind = self._run_kind_from_vals(vals)
+        # WDGAP PR-D — who is paid, decided (and an Extra run's refusals made)
+        # before anything is created; see prepare_run.
+        if kind == 'extra':
+            name = self._extra_run_name(vals)
+        cmap = self._division_contracts(key, m_end)
+        wanted = set(self._demo_people(vals, kind, cmap, end_cfg, ds, de))
+        cmap = {e: c for e, c in cmap.items() if e in wanted}
+        extra = kind == 'extra'
 
         # DEMO reset: clear the division's END-cycle runs for the period, in ANY
         # status (draft / pending approval / done), including their payslips — but
@@ -533,10 +577,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
             lambda r: getattr(r, 'is_demo', False))
         # PRS P3 (R8, R9): a run only ever meets runs of its own kind — a
         # top-up never clears the division's regular run, nor a regular run
-        # a top-up.
-        kind = self._run_kind_from_vals(vals)
+        # a top-up. WDGAP PR-D: an Extra run meets none at all.
         division_runs = division_runs.filtered(
-            lambda r: self._run_kind_of(r) == kind)
+            lambda r: kind != 'extra' and self._run_kind_of(r) == kind)
         if division_runs and not force_clean:
             n = len(division_runs)
             return {
@@ -551,7 +594,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
             self._clean_period(division_runs, kind=kind)
 
         # Mid-cycle advance lookup from the PRESERVED Mid run → End pays remainder.
-        adv = self._advance_map(self._period_config_runs(ds, de, mid_cfg)) if mid_cfg else {}
+        # WDGAP PR-D: never on an Extra run (the regular run settles it).
+        adv = self._advance_map(self._period_config_runs(ds, de, mid_cfg)) \
+            if mid_cfg and not extra else {}
 
         Run = self.env['hr.payslip.run'].sudo()
         Slip = self.env['hr.payslip'].sudo()
@@ -570,9 +615,8 @@ class PbPayrunWizardDemo(models.AbstractModel):
         run_vals.update(self._run_kind_vals(kind))          # PRS P3 (R8)
         run = Run.create(run_vals)
 
-        cmap = self._division_contracts(key, m_end)
         loanmap = {}
-        if cmap:
+        if cmap and not extra:      # WDGAP PR-D: no instalment on an Extra run
             for ln in self.env['hr.loan'].sudo().search(
                     [('employee_id', 'in', list(cmap)), ('state', '=', 'running')]):
                 loanmap[ln.employee_id.id] = loanmap.get(ln.employee_id.id, 0.0) + (ln.installment_amount or 0.0)
@@ -599,7 +643,9 @@ class PbPayrunWizardDemo(models.AbstractModel):
                         'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
                         'company_id': company_id, 'calculation_method': 'formula',
                         'formula_config_id': end_cfg.id,
-                        'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else name),
+                        'name': self._slip_name(
+                            run, e, '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else name),
+                            name),
                     })
                     # UPDATES P3a — an approved one-off from Updates lands here too.
                     iv, oneoff_token = self._pb_demo_oneoffs(slip, end_cfg, iv)
