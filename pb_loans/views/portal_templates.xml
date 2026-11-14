@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP PR-B — My loans on My Payobook. Read-only. The page reuses
+       pb_me_portal's .pbme kit (tokens, hero, empty state); `.pbl-*` is this
+       module's layer (static/src/scss/loans_portal.scss). No inline style
+       attribute anywhere (UPDATES G95: the portal's content policy drops
+       them) — the balance bar is a native <progress>. -->
+
+  <!-- ============================================================= -->
+  <!--  Icons — Lucide paths                                          -->
+  <!-- ============================================================= -->
+  <template id="pbl_icon" name="My loans icon">
+    <t t-set="isz" t-value="isz or 16"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbl-ic" aria-hidden="true" focusable="false">
+      <t t-if="icon == 'arrow-right'"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></t>
+      <t t-elif="icon == 'pause'"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'calendar'"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></t>
+      <t t-else=""><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_loans" name="My loans breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="39">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_loans'" class="breadcrumb-item active">My loans</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The card on the employee home — only while something is owed  -->
+  <!-- ============================================================= -->
+  <template id="pbme_card_loans" name="Employee home: my loans card">
+    <t t-set="plc" t-value="card['data']"/>
+    <section class="pbme-b pbme-b-extra pbl-card" data-pbme-slot="loans" aria-labelledby="pbl-card-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbl-card-h"><t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'wallet'"/><t t-set="isz" t-value="15"/></t>My loans</h2>
+      </div>
+      <div class="pbl-card-body">
+        <p class="pbl-card-big"><b class="pbme-num" t-out="plc['left_label']"/> <span>left to repay</span></p>
+        <p t-if="plc['next_label']" class="pbl-card-next"><t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="14"/></t><t t-out="plc['next_label']"/></p>
+        <p t-else="" class="pbl-card-next">Nothing comes off your next pay.</p>
+      </div>
+      <div class="pbl-card-foot">
+        <a class="pbme-btn pbme-btn--pri" href="/my/loans">See my loans<t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></a>
+      </div>
+    </section>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The page                                                      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_loans" name="My loans (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbl">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My loans</t>
+          <t t-set="hero_sub">What you borrowed, what is left, and what comes off your pay next.</t>
+        </t>
+
+        <div t-if="not pbl_linked" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_loans.pbl_icon"><t t-set="isz" t-value="26"/></t></div>
+          <h3>Your login is not linked to an employee record</h3>
+          <p>Ask HR to link it, then your loans and salary advances appear here.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <div t-elif="not pbl['loans']" class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_loans.pbl_icon"><t t-set="isz" t-value="26"/></t></div>
+          <h3>You have no loans or salary advances</h3>
+          <p>When the company lends you money, how it is paid back from your pay shows here.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <t t-else="">
+          <div t-if="pbl['any_open']" class="pbl-sum">
+            <div class="pbl-sum-cell">
+              <span class="pbl-sum-k">Left to repay</span>
+              <b class="pbl-sum-v pbme-num" t-out="pbl['left_label']"/>
+            </div>
+            <div class="pbl-sum-cell">
+              <span class="pbl-sum-k">Next pay</span>
+              <b t-if="pbl['next_label']" class="pbl-sum-v pbl-sum-v--sm" t-out="pbl['next_label']"/>
+              <b t-else="" class="pbl-sum-v pbl-sum-v--sm">Nothing comes off</b>
+            </div>
+          </div>
+
+          <article t-foreach="pbl['loans']" t-as="ln" t-att-class="'pbl-loan is-%s' % ln['state']">
+            <header class="pbl-loan-head">
+              <div>
+                <span class="pbl-loan-kind" t-out="ln['kind_label']"/>
+                <h3 class="pbl-loan-amt pbme-num" t-out="ln['amount']"/>
+                <p t-if="ln['reason']" class="pbl-loan-why" t-out="ln['reason']"/>
+              </div>
+              <span t-att-class="'pbl-pill is-%s' % ln['state']" t-out="ln['state_label']"/>
+            </header>
+
+            <div class="pbl-bar-row">
+              <progress class="pbl-bar" max="100" t-att-value="ln['pct']" t-att-aria-label="'%s%% paid back' % ln['pct']"/>
+              <span class="pbl-bar-pct"><t t-out="ln['pct']"/>%</span>
+            </div>
+            <dl class="pbl-facts">
+              <div><dt>Paid back</dt><dd class="pbme-num" t-out="ln['repaid']"/></div>
+              <div><dt>Left to repay</dt><dd class="pbme-num" t-out="ln['balance']"/></div>
+              <div><dt>How it is paid back</dt><dd t-out="ln['plan']"/></div>
+            </dl>
+
+            <p t-if="ln['next_label']" class="pbl-next"><t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'calendar'"/><t t-set="isz" t-value="15"/></t><t t-out="ln['next_label']"/></p>
+            <p t-elif="ln['paused']" class="pbl-next is-paused"><t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'pause'"/><t t-set="isz" t-value="15"/></t>Paused for now — nothing comes off your pay until it starts again.</p>
+            <p t-elif="ln['state'] == 'waiting'" class="pbl-next"><t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="15"/></t>Waiting for approval — nothing comes off your pay yet.</p>
+            <p t-elif="ln['state'] == 'closed'" class="pbl-next is-done"><t t-call="pb_loans.pbl_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>Paid back in full<t t-if="ln['closed_on']"> in <t t-out="ln['closed_on']"/></t>.</p>
+
+            <details t-if="ln['history']" class="pbl-hist">
+              <summary>History (<t t-out="len(ln['history'])"/>)</summary>
+              <table class="pbl-hist-table">
+                <thead><tr><th>Month</th><th>How</th><th class="num">Amount</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="ln['history']" t-as="hx">
+                    <td t-out="hx['month']"/>
+                    <td t-out="hx['how']"/>
+                    <td class="num pbme-num" t-out="hx['amount']"/>
+                    <td><span t-att-class="'pbl-pill is-%s' % hx['state']" t-out="hx['state_label']"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </details>
+          </article>
+
+          <p class="pbl-help">Something not right? Ask HR — they can see exactly what was taken and when.</p>
+        </t>
+      </div>
+    </t>
+  </template>
+
+</odoo>

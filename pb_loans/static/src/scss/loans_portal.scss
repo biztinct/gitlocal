@@ -1,0 +1,124 @@
+// =====================================================================
+// pb_loans — My loans on My Payobook (the page and the home card).
+// pbim tokens (via .pbme's root vars) with literal fallbacks; one accent,
+// flat fills, no gradients, mobile first. No inline style attributes on
+// portal pages (UPDATES G95) — the bar is a native <progress>.
+// =====================================================================
+
+.pbme .pbl-ic { flex: 0 0 auto; vertical-align: -2px; }
+
+// ------------------------------------------------------------ home card
+.pbme .pbl-card {
+    .pbme-lab .pbl-ic { margin-right: 6px; color: var(--pbim-primary, #5A4BB0); }
+    .pbl-card-body { margin: 6px 0 14px; }
+    .pbl-card-big {
+        margin: 0; font-size: 15px; color: var(--pbim-muted, #64748B);
+        b { font-size: 24px; font-weight: 800; color: var(--pbim-ink, #1B1733); margin-right: 4px; }
+    }
+    .pbl-card-next {
+        display: flex; align-items: center; gap: 6px; margin: 6px 0 0;
+        font-size: 13.5px; color: var(--pbim-text, #1B1733);
+        .pbl-ic { color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbl-card-foot { display: flex; justify-content: flex-end; }
+}
+
+// ------------------------------------------------------------ the page
+.pbme.pbl {
+    .pbl-sum {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+        margin-bottom: 16px;
+    }
+    .pbl-sum-cell {
+        background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r, 14px); padding: 14px 16px;
+        display: flex; flex-direction: column; gap: 4px; min-width: 0;
+    }
+    .pbl-sum-k {
+        font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-muted, #64748B);
+    }
+    .pbl-sum-v { font-size: 22px; font-weight: 800; color: var(--pbim-ink, #1B1733); }
+    .pbl-sum-v--sm { font-size: 14.5px; font-weight: 700; line-height: 1.35; }
+
+    .pbl-loan {
+        background: var(--pbim-surface, #fff); border: 1px solid var(--pbim-line, #E2E8F0);
+        border-radius: var(--pbim-r-lg, 18px); box-shadow: var(--pbim-sh, 0 8px 24px rgba(16, 12, 40, .07));
+        padding: 18px 20px; margin-bottom: 14px;
+        animation: pbl-rise .28s ease-out both;
+        &.is-closed { box-shadow: none; }
+    }
+    .pbl-loan-head {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+    .pbl-loan-kind {
+        font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+        color: var(--pbim-primary-strong, #5A4BB0);
+    }
+    .pbl-loan-amt { font-size: 24px; font-weight: 800; margin: 2px 0 0; color: var(--pbim-ink, #1B1733); }
+    .pbl-loan-why { margin: 4px 0 0; color: var(--pbim-muted, #64748B); font-size: 13.5px; }
+
+    .pbl-pill {
+        display: inline-flex; align-items: center; white-space: nowrap;
+        padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800;
+        background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B);
+        &.is-running, &.is-reserved { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+        &.is-waiting, &.is-paused { background: var(--pbim-amber-soft, #FEF3C7); color: var(--pbim-amber, #D97706); }
+        &.is-closed, &.is-paid { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    }
+
+    .pbl-bar-row { display: flex; align-items: center; gap: 10px; margin: 16px 0 6px; }
+    .pbl-bar {
+        flex: 1 1 auto; height: 10px; border: 0; border-radius: 999px; overflow: hidden;
+        appearance: none; -webkit-appearance: none;
+        background: var(--pbim-line-2, #F1F5F9);
+        &::-webkit-progress-bar { background: var(--pbim-line-2, #F1F5F9); border-radius: 999px; }
+        &::-webkit-progress-value { background: var(--pbim-green, #2E7D4F); border-radius: 999px; transition: width .6s ease-out; }
+        &::-moz-progress-bar { background: var(--pbim-green, #2E7D4F); border-radius: 999px; }
+    }
+    .pbl-bar-pct { font-size: 12.5px; font-weight: 800; color: var(--pbim-green, #2E7D4F); min-width: 38px; text-align: right; }
+
+    .pbl-facts {
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 16px;
+        margin: 12px 0 0;
+        div { min-width: 0; }
+        dt { font-size: 11.5px; font-weight: 700; color: var(--pbim-muted, #64748B); margin: 0; }
+        dd { font-size: 14px; font-weight: 700; margin: 2px 0 0; color: var(--pbim-text, #1B1733); }
+    }
+    .pbl-next {
+        display: flex; align-items: center; gap: 8px; margin: 14px 0 0;
+        padding: 10px 12px; border-radius: var(--pbim-r-sm, 10px);
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-dark, #241F52);
+        font-size: 13.5px; font-weight: 600;
+        &.is-paused { background: var(--pbim-amber-soft, #FEF3C7); color: #7C4A03; }
+        &.is-done { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+    }
+    .pbl-hist {
+        margin-top: 14px; border-top: 1px solid var(--pbim-line, #E2E8F0); padding-top: 10px;
+        summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--pbim-primary, #5A4BB0); }
+    }
+    .pbl-hist-table {
+        width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 13px;
+        th { text-align: left; font-size: 11px; font-weight: 800; text-transform: uppercase;
+             letter-spacing: .06em; color: var(--pbim-muted, #64748B); padding: 6px 6px; }
+        td { padding: 7px 6px; border-top: 1px solid var(--pbim-line-2, #F1F5F9); }
+        .num { text-align: right; }
+    }
+    .pbl-help { color: var(--pbim-muted, #64748B); font-size: 12.5px; margin: 6px 2px 0; }
+
+    @media (max-width: 560px) {
+        .pbl-sum { grid-template-columns: minmax(0, 1fr); }
+        .pbl-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .pbl-loan { padding: 16px; }
+        .pbl-loan-amt { font-size: 21px; }
+        .pbl-hist-table th:nth-child(2), .pbl-hist-table td:nth-child(2) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pbl-loan { animation: none; }
+    }
+}
+
+@keyframes pbl-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}

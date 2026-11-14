@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Loans board (a lens of the Payroll hub, and its own page from
+         the ⌘K palette). -->
+    <record id="action_pb_loans_board" model="ir.actions.client">
+        <field name="name">Loans and salary advances</field>
+        <field name="tag">pb_loans_board</field>
+    </record>
+
+    <!-- ================================================================
+         Native views: an off-menu fallback for administrators, opened from
+         an approval request ("open the record"). The board is the screen.
+         ================================================================ -->
+    <record id="view_pb_loan_list" model="ir.ui.view">
+        <field name="name">pb.loan.list</field>
+        <field name="model">pb.loan</field>
+        <field name="arch" type="xml">
+            <list string="Loans and salary advances" create="0">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="amount"/>
+                <field name="balance"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="first_month"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state in ('waiting', 'paused')"
+                       decoration-success="state == 'closed'"
+                       decoration-info="state == 'running'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_loan_form" model="ir.ui.view">
+        <field name="name">pb.loan.form</field>
+        <field name="model">pb.loan</field>
+        <field name="arch" type="xml">
+            <form string="Loan or salary advance" create="0">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,waiting,running,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2><field name="employee_id" readonly="state != 'draft'"/></h2>
+                    </div>
+                    <group>
+                        <group string="What was agreed">
+                            <field name="kind" readonly="state != 'draft'"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="first_month" readonly="state != 'draft'"/>
+                            <field name="plan_mode" readonly="state != 'draft'"/>
+                            <field name="plan_amount" readonly="state != 'draft' or plan_mode == 'months'"/>
+                            <field name="plan_months" readonly="state != 'draft' or plan_mode == 'amount'"/>
+                            <field name="on_leaving" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Where it is">
+                            <field name="repaid"/>
+                            <field name="balance"/>
+                            <field name="in_payrun"/>
+                            <field name="next_amount"/>
+                            <field name="next_month"/>
+                            <field name="months_left"/>
+                            <field name="pause_reason" invisible="not pause_reason"/>
+                            <field name="closed_on" invisible="not closed_on"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Why">
+                        <field name="reason" nolabel="1" colspan="2" readonly="state != 'draft'"/>
+                    </group>
+                    <notebook>
+                        <page string="Repayments" name="repayments">
+                            <field name="repayment_ids" readonly="1">
+                                <list>
+                                    <field name="pay_month"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="kind"/>
+                                    <field name="state"/>
+                                    <field name="run_id"/>
+                                    <field name="reason"/>
+                                    <field name="reference"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_loan" model="ir.actions.act_window">
+        <field name="name">Loans and salary advances</field>
+        <field name="res_model">pb.loan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP PR-B: the catalogue row a loan is approved under. Money leaves
+         the company with it, so it is never one of an "approve selected"
+         batch in the Approvals inbox (biz_approval_workflow refuses
+         bulk_ok on a money process; pb_approval_config `_can_bulk`). -->
+    <record id="process_loan" model="biz.approval.process">
+        <field name="key">loan</field>
+        <field name="name">Loans and salary advances</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.loan</field>
+        <field name="money" eval="True"/>
+        <field name="description">Money lent to somebody, paid back from their pay.</field>
+        <field name="sequence">205</field>
+    </record>
+</odoo>

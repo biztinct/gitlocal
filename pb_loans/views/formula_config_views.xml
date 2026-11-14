@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The scheme's own setting, on the scheme form (the Loans board's
+         "Set up" panel writes the same field). -->
+    <record id="view_formula_config_form_loans" model="ir.ui.view">
+        <field name="name">hr.formula.config.form.loans</field>
+        <field name="model">hr.formula.config</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_config_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='cycle_type']" position="after">
+                <field name="pb_loan_rule_id" options="{'no_create': True}"
+                       invisible="cycle_type == 'mid_cycle'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
