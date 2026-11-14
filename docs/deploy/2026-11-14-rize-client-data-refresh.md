@@ -80,3 +80,30 @@ The directory retains the verified custom-format pre-change database dump,
 source archive and hashes, reviewed plan, executed maintenance program,
 before/after receipts, and final checks. The Rize backup never expires
 automatically.
+
+## Department follow-up and concise report
+
+The owner authorised resolving the six current starters' department assignments
+using the supplied names and existing manager/colleague teams. All six were saved
+in **rize** on **Payobook19v2**. No departments were created or merged. This was a
+data-only operation; no addon deployment, schema upgrade or other tenant data
+change was required.
+
+A new permanent pre-change database dump, rollback rehearsal, before/after audit
+and fresh-session verification are retained in the same archive under the
+`department-fix-*` names and `rize-before-departments-20261114.dump`.
+All six department assignments, identities, managers and paying schemes passed
+fresh-read verification. Contract dates, wages, October–December payroll
+eligibility and hashes of twelve protected tables were unchanged, including
+bank approval records and contract compensation components.
+
+Chrome showed the saved OpsX assignment for the Vietnam starter and Product &
+Technology for the India starter. The report was refreshed and visually checked
+in Chrome. No screenshot files were saved or retained.
+
+At the owner's request, the private HTML now contains concise tables of
+outstanding client answers and internal bank approval only. Completed department
+assignments, resolved contract-overlap corrections, the supplied Board reporting
+line and other records requiring no action are omitted. The previous report is
+retained privately as `client-report-before-concise.html`; the current report is
+`client-report.html` in the server archive and the same local client-report path.
