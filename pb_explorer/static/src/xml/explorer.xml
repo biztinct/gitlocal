@@ -37,7 +37,74 @@
                     t-att-disabled="state.busy || !state.data" title="Export CSV">
               <t t-out="ic('download', 15)"/><span class="lbl">Export</span>
             </button>
+            <!-- WDGAP QF2: the same answer as a real Excel workbook, a named
+                 view you can come back to, and sending it regularly. -->
+            <button class="pbex-btn ghost pbex-xlsx" t-on-click="() => this.exportXlsx()"
+                    t-att-disabled="state.busy || !state.data" title="Download Excel">
+              <t t-out="icx('fileSpreadsheet', 15)"/><span class="lbl">Download Excel</span>
+            </button>
+            <button t-if="state.activeView and state.activeView.mine"
+                    class="pbex-btn ghost pbex-sendbtn" t-on-click="() => this.openSchedule()"
+                    title="Send regularly…">
+              <t t-out="icx('calendarClock', 15)"/><span class="lbl">Send regularly…</span>
+            </button>
+            <button class="pbex-btn primary pbex-savebtn" t-on-click="() => this.openSaver()"
+                    t-att-disabled="!state.data" title="Save view">
+              <t t-out="icx('save', 15)"/><span class="lbl">Save view</span>
+            </button>
           </div>
+        </div>
+
+        <!-- ========================== save a view ========================
+             An in-page card, never a browser dialog. Saving again on a view
+             you own offers to update it or to save a new one. -->
+        <div t-if="state.saver" class="pbex-saver" role="group" aria-label="Save view">
+          <t t-if="state.saver.mode === 'choose'">
+            <div class="pbex-saver-row">
+              <span class="ico"><t t-out="icx('save', 16)"/></span>
+              <p class="pbex-saver-text">
+                <t t-esc="state.saver.name"/>
+              </p>
+              <div class="pbex-saver-acts">
+                <button class="pbex-btn primary" t-att-disabled="state.saver.busy"
+                        t-on-click="() => this.updateView()">Update this view</button>
+                <button class="pbex-btn ghost" t-att-disabled="state.saver.busy"
+                        t-on-click="() => this.saverAsNew()">Save as new</button>
+                <button class="pbex-btn ghost" t-on-click="() => { this.state.saver = null; }">Cancel</button>
+              </div>
+            </div>
+          </t>
+          <t t-else="">
+            <div class="pbex-saver-row">
+              <span class="ico"><t t-out="icx('save', 16)"/></span>
+              <label class="pbex-saver-name">
+                <span>Name</span>
+                <input type="text" maxlength="80" t-model="state.saver.name"
+                       t-on-keydown="(ev) => this.onSaverKey(ev)"
+                       placeholder="For example: Cost by department, last month"/>
+              </label>
+              <div class="pbex-seg pbex-saver-who" role="radiogroup" aria-label="Who can open it">
+                <button role="radio" t-att-aria-checked="!state.saver.shared ? 'true' : 'false'"
+                        t-att-class="{ on: !state.saver.shared }"
+                        t-on-click="() => { this.state.saver.shared = false; }">
+                  <t t-out="icx('lock', 13)"/> Only me
+                </button>
+                <button role="radio" t-att-aria-checked="state.saver.shared ? 'true' : 'false'"
+                        t-att-class="{ on: state.saver.shared }"
+                        t-on-click="() => { this.state.saver.shared = true; }">
+                  <t t-out="icx('users', 13)"/> Everyone who can open the Explorer
+                </button>
+              </div>
+              <div class="pbex-saver-acts">
+                <button class="pbex-btn primary" t-att-disabled="state.saver.busy"
+                        t-on-click="() => this.saveView()">Save</button>
+                <button class="pbex-btn ghost" t-on-click="() => { this.state.saver = null; }">Cancel</button>
+              </div>
+            </div>
+            <p class="pbex-saver-hint">
+              Each person who opens it sees only the companies and divisions they are allowed to see.
+            </p>
+          </t>
         </div>
 
         <!-- ========================== breadcrumb =========================
@@ -105,6 +172,37 @@
           <t t-out="ic('alert', 16)"/>
           <span t-esc="provisionalLine"/>
         </div>
+
+        <div t-if="state.viewsNote" class="pbex-alert info">
+          <t t-out="icx('info', 16)"/><span t-esc="state.viewsNote"/>
+        </div>
+
+        <!-- ========================== saved views ========================
+             WDGAP QF2 A. Above the starting points, same card style; quiet
+             (one grey line) when there are none. -->
+        <section class="pbex-views" aria-label="Saved views">
+          <div class="pbex-views-head">
+            <span class="pbex-views-title"><t t-out="icx('star', 14)"/> My views</span>
+            <span t-if="myViews.length" class="ct" t-esc="myViews.length"/>
+          </div>
+          <p t-if="!myViews.length" class="pbex-quiet">Save a view to find it here</p>
+          <div t-else="" class="pbex-lenses pbex-vgrid">
+            <t t-foreach="myViews" t-as="view" t-key="view.id">
+              <t t-call="pb_explorer.ViewCard"/>
+            </t>
+          </div>
+          <t t-if="sharedViews.length">
+            <div class="pbex-views-head shared">
+              <span class="pbex-views-title"><t t-out="icx('users', 14)"/> Shared with me</span>
+              <span class="ct" t-esc="sharedViews.length"/>
+            </div>
+            <div class="pbex-lenses pbex-vgrid">
+              <t t-foreach="sharedViews" t-as="view" t-key="view.id">
+                <t t-call="pb_explorer.ViewCard"/>
+              </t>
+            </div>
+          </t>
+        </section>
 
         <!-- ============================ lenses ===========================
              A WRAPPED GRID, never a horizontal scroller: a scrollbar hides
@@ -917,6 +1015,235 @@
         </div>
 
       </div>
+
+      <!-- ======================= send regularly (drawer) =================
+           WDGAP QF2 C. Over the board, on the right; Escape or the backdrop
+           closes it. Every person gets their OWN numbers. -->
+      <t t-if="state.sched">
+        <div class="pbex-sched-backdrop" t-on-click="() => this.closeSchedule()"/>
+        <aside class="pbex-sched" role="dialog" aria-modal="true" aria-label="Send regularly">
+          <div class="pbex-sched-head">
+            <div>
+              <div class="eyebrow"><t t-out="icx('calendarClock', 13)"/> Send regularly</div>
+              <h3 t-esc="state.sched.view.name"/>
+              <p class="sub" t-esc="state.sched.view.period_label"/>
+            </div>
+            <button class="pbex-x" title="Close" aria-label="Close"
+                    t-on-click="() => this.closeSchedule()">
+              <t t-out="icx('x', 16)"/>
+            </button>
+          </div>
+
+          <div class="pbex-sched-body">
+            <div t-if="!state.sched.mail_on" class="pbex-alert info">
+              <t t-out="icx('info', 16)"/>
+              <span>Email is not switched on for this company, so nothing will be sent yet. The schedule is saved.</span>
+            </div>
+            <p class="pbex-sched-own">
+              <t t-out="icx('shieldCheck', 14)"/>
+              <span>Each person gets their own numbers: only the companies and divisions they are allowed to see.</span>
+            </p>
+
+            <!-- the schedules already set up -->
+            <div t-foreach="state.sched.schedules" t-as="sc" t-key="sc.id"
+                 class="pbex-sched-card" t-att-class="{ paused: !sc.active }">
+              <div class="pbex-sched-line">
+                <span class="ico"><t t-out="icx(sc.cadence === 'payrun' ? 'workflow' : 'calendarClock', 16)"/></span>
+                <div class="txt">
+                  <b t-esc="sc.sentence"/>
+                  <i t-if="!sc.active">Paused — nothing is sent until you resume it.</i>
+                  <i t-elif="sc.next_due" t-esc="nextLine(sc)"/>
+                  <i t-elif="sc.cadence === 'payrun'">Goes out within the hour after a pay run is finished.</i>
+                </div>
+              </div>
+              <div class="pbex-sched-who">
+                <span t-foreach="sc.recipients" t-as="r" t-key="r.id" class="pbex-person" t-esc="r.name"/>
+              </div>
+              <div t-if="state.sched.confirm === sc.id" class="pbex-confirm">
+                <span>Stop sending this and delete it?</span>
+                <button class="pbex-btn danger sm" t-on-click="() => this.deleteSchedule(sc)">Delete</button>
+                <button class="pbex-btn ghost sm" t-on-click="() => this.keepSchedule()">Keep</button>
+              </div>
+              <div t-else="" class="pbex-sched-acts">
+                <button class="pbex-btn ghost sm" t-att-disabled="state.sched.busy"
+                        t-on-click="() => this.sendNow(sc)">
+                  <t t-out="icx('send', 13)"/> Send now
+                </button>
+                <button class="pbex-btn ghost sm" t-on-click="() => this.editSchedule(sc)">
+                  <t t-out="icx('pencil', 13)"/> Change
+                </button>
+                <button class="pbex-btn ghost sm" t-on-click="() => this.pauseSchedule(sc)">
+                  <t t-if="sc.active"><t t-out="icx('pause', 13)"/> Pause</t>
+                  <t t-else=""><t t-out="icx('play', 13)"/> Resume</t>
+                </button>
+                <button class="pbex-btn ghost sm" t-on-click="() => this.askDeleteSchedule(sc)">
+                  <t t-out="icx('trash', 13)"/> Delete
+                </button>
+              </div>
+              <button class="pbex-histtoggle" t-on-click="() => this.toggleHistory(sc)">
+                <t t-out="icx('history', 13)"/>
+                <span t-if="sc.history.length">Last sends</span>
+                <span t-else="">Not sent yet</span>
+                <span t-if="sc.history.length" class="cv" t-att-class="{ open: state.sched.hist[sc.id] }">
+                  <t t-out="icx('chevronDown', 13)"/>
+                </span>
+              </button>
+              <ol t-if="state.sched.hist[sc.id] and sc.history.length" class="pbex-hist">
+                <li t-foreach="sc.history" t-as="h" t-key="h.batch">
+                  <div class="pbex-hist-head">
+                    <b t-esc="h.when"/>
+                    <span class="muted" t-esc="h.trigger"/>
+                    <span class="pbex-tag" t-att-class="{ ok: h.sent }" t-esc="h.summary"/>
+                  </div>
+                  <ul>
+                    <li t-foreach="h.lines" t-as="ln" t-key="ln_index"
+                        t-att-class="historyTone(ln)">
+                      <span t-esc="ln.name"/> — <span t-esc="ln.label"/>
+                    </li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+
+            <!-- add or change one -->
+            <div t-if="state.sched.form" class="pbex-sched-form">
+              <h4 t-if="state.sched.form.id">Change this schedule</h4>
+              <h4 t-else="">New schedule</h4>
+
+              <div class="pbex-field">
+                <span class="pbex-label">How often</span>
+                <div class="pbex-seg wrap" role="radiogroup" aria-label="How often">
+                  <button role="radio" t-att-aria-checked="state.sched.form.cadence === 'weekly' ? 'true' : 'false'"
+                          t-att-class="{ on: state.sched.form.cadence === 'weekly' }"
+                          t-on-click="() => this.setCadence('weekly')">Every week</button>
+                  <button role="radio" t-att-aria-checked="state.sched.form.cadence === 'monthly' ? 'true' : 'false'"
+                          t-att-class="{ on: state.sched.form.cadence === 'monthly' }"
+                          t-on-click="() => this.setCadence('monthly')">Every month</button>
+                  <button role="radio" t-att-aria-checked="state.sched.form.cadence === 'payrun' ? 'true' : 'false'"
+                          t-att-class="{ on: state.sched.form.cadence === 'payrun' }"
+                          t-on-click="() => this.setCadence('payrun')">After each pay run is finished</button>
+                </div>
+              </div>
+
+              <div t-if="state.sched.form.cadence === 'weekly'" class="pbex-field">
+                <span class="pbex-label">On</span>
+                <div class="pbex-days" role="radiogroup" aria-label="Day of the week">
+                  <button t-foreach="weekdays" t-as="wd" t-key="wd.key" role="radio"
+                          t-att-aria-checked="state.sched.form.weekday === wd.key ? 'true' : 'false'"
+                          t-att-class="{ on: state.sched.form.weekday === wd.key }"
+                          t-att-title="wd.label"
+                          t-on-click="() => this.setWeekday(wd.key)" t-esc="wd.short"/>
+                </div>
+              </div>
+              <div t-if="state.sched.form.cadence === 'monthly'" class="pbex-field">
+                <label class="pbex-label" for="pbex-monthday">On day</label>
+                <select id="pbex-monthday" class="pbex-select" t-on-change="(ev) => this.onMonthday(ev)">
+                  <option t-foreach="monthdays" t-as="md" t-key="md" t-att-value="md"
+                          t-att-selected="state.sched.form.monthday === md" t-esc="md"/>
+                </select>
+                <span class="pbex-hint">Days 1 to 28, so every month has it.</span>
+              </div>
+
+              <div class="pbex-field">
+                <span class="pbex-label">Who receives it</span>
+                <div t-if="pickedPeople.length" class="pbex-picked">
+                  <button t-foreach="pickedPeople" t-as="p" t-key="p.id" class="pbex-person on"
+                          t-att-title="p.email" t-on-click="() => this.togglePerson(p)">
+                    <span t-esc="p.name"/> <t t-out="icx('x', 11)"/>
+                  </button>
+                </div>
+                <div class="pbex-search">
+                  <t t-out="icx('search', 14)"/>
+                  <input type="text" t-model="state.sched.search" placeholder="Find a person"
+                         aria-label="Find a person"/>
+                </div>
+                <div class="pbex-people">
+                  <button t-foreach="schedPeople" t-as="p" t-key="p.id" class="pbex-pick"
+                          t-att-class="{ on: isPicked(p) }" role="checkbox"
+                          t-att-aria-checked="isPicked(p) ? 'true' : 'false'"
+                          t-on-click="() => this.togglePerson(p)">
+                    <span class="box"><t t-if="isPicked(p)" t-out="icx('check', 12)"/></span>
+                    <span class="nm" t-esc="p.name"/>
+                    <span class="em" t-esc="p.email"/>
+                  </button>
+                  <p t-if="!schedPeople.length" class="pbex-quiet">Nobody by that name can open the Explorer.</p>
+                </div>
+                <span class="pbex-hint">Only people with an email address who can open the Explorer are listed.</span>
+              </div>
+
+              <p class="pbex-preview"><t t-out="icx('mail', 14)"/> <span t-esc="schedPreview"/></p>
+              <div class="pbex-sched-acts">
+                <button class="pbex-btn primary" t-att-disabled="state.sched.busy or !state.sched.form.recipient_ids.length"
+                        t-on-click="() => this.saveSchedule()">Save schedule</button>
+                <button class="pbex-btn ghost" t-on-click="() => this.cancelForm()">Cancel</button>
+              </div>
+            </div>
+            <button t-elif="state.sched.schedules.length &lt; state.sched.caps.schedules"
+                    class="pbex-btn ghost pbex-addsched" t-on-click="() => this.newScheduleForm()">
+              <t t-out="icx('plus', 14)"/> Add a schedule
+            </button>
+          </div>
+        </aside>
+      </t>
+    </div>
+  </t>
+
+  <!-- One saved view card. Called inside the loops above, so `view` is the
+       loop's own variable. A card holds buttons, so it is a div with a main
+       button inside, never a button inside a button. -->
+  <t t-name="pb_explorer.ViewCard">
+    <div class="pbex-lens pbex-vcard"
+         t-att-class="{ active: state.activeView and state.activeView.id === view.id }">
+      <t t-if="state.viewEdit and state.viewEdit.id === view.id">
+        <div class="pbex-vrename">
+          <input type="text" maxlength="80" t-model="state.viewEdit.name"
+                 t-on-keydown="(ev) => this.onRenameKey(ev)" aria-label="New name"/>
+          <button class="pbex-btn primary sm" t-on-click="() => this.saveRename()">Save</button>
+          <button class="pbex-btn ghost sm" t-on-click="() => { this.state.viewEdit = null; }">Cancel</button>
+        </div>
+      </t>
+      <t t-elif="state.viewDelete === view.id">
+        <div class="pbex-confirm">
+          <span>
+            <t t-if="view.schedules">Delete this view? Its regular emails stop too.</t>
+            <t t-else="">Delete this view?</t>
+          </span>
+          <button class="pbex-btn danger sm" t-on-click="() => this.deleteView(view)">Delete</button>
+          <button class="pbex-btn ghost sm" t-on-click="() => { this.state.viewDelete = 0; }">Keep</button>
+        </div>
+      </t>
+      <t t-else="">
+        <button class="pbex-vmain" t-on-click="() => this.openView(view)">
+          <span class="ico">
+            <t t-if="!view.mine" t-out="icx('users', 16)"/>
+            <t t-elif="view.shared" t-out="icx('globe', 16)"/>
+            <t t-else="" t-out="icx('lock', 16)"/>
+          </span>
+          <span class="txt">
+            <b t-esc="view.name"/>
+            <i t-esc="viewSub(view)"/>
+          </span>
+        </button>
+        <div class="pbex-vacts">
+          <t t-if="view.mine">
+            <button title="Rename" aria-label="Rename" t-on-click="() => this.startRename(view)">
+              <t t-out="icx('pencil', 13)"/>
+            </button>
+            <button t-att-title="shareTitle(view)" t-att-aria-label="shareTitle(view)"
+                    t-att-class="{ on: view.shared }" t-on-click="() => this.toggleShare(view)">
+              <t t-out="icx('users', 13)"/>
+            </button>
+            <button title="Delete" aria-label="Delete" t-on-click="() => this.askDelete(view)">
+              <t t-out="icx('trash', 13)"/>
+            </button>
+          </t>
+          <t t-else="">
+            <button class="wide" title="Save as my own" t-on-click="() => this.copyView(view)">
+              <t t-out="icx('copy', 13)"/> Save as my own
+            </button>
+          </t>
+        </div>
+      </t>
     </div>
   </t>
 

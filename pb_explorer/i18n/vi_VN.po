@@ -1711,3 +1711,1059 @@ msgstr "“%s” bắt đầu được thanh toán"
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "“%s” stopped being paid"
 msgstr "“%s” đã ngừng thanh toán"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(measure)s by %(dimension)s"
+msgstr "%(measure)s theo %(dimension)s"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "%(measure)s: %(amount)s"
+msgstr "%(measure)s: %(amount)s"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · from %(owner)s"
+msgstr "%(period)s · của %(owner)s"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · sent regularly"
+msgstr "%(period)s · gửi định kỳ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · shared"
+msgstr "%(period)s · đã chia sẻ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · shared · sent regularly"
+msgstr "%(period)s · đã chia sẻ · gửi định kỳ"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "%(period)s, moves with the calendar"
+msgstr "%(period)s, tự chuyển theo lịch"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s đến %(end)s"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "%(view)s — %(period)s"
+msgstr "%(view)s — %(period)s"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%s (copy)"
+msgstr "%s (bản sao)"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"%s cannot receive it: only people with an email address who can open the "
+"Explorer can."
+msgstr ""
+"%s không thể nhận: chỉ những người có địa chỉ email và mở được Khám phá dữ "
+"liệu mới nhận được."
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "A view can go to at most %s people."
+msgstr "Một chế độ xem chỉ gửi được tối đa cho %s người."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Add a schedule"
+msgstr "Thêm lịch gửi"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__trigger__payrun
+msgid "After a pay run"
+msgstr "Sau một kỳ trả lương"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__cadence__payrun
+msgid "After each pay run is finished"
+msgstr "Sau mỗi kỳ trả lương hoàn tất"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"After each pay run is finished, to %(who)s, as an Excel file with a link"
+msgstr ""
+"Sau mỗi kỳ trả lương hoàn tất, gửi cho %(who)s, dạng tệp Excel kèm liên kết"
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__no_access
+msgid "Can no longer open the Explorer"
+msgstr "Không còn mở được Khám phá dữ liệu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Change this schedule"
+msgstr "Thay đổi lịch gửi này"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Choose at least one person to send it to."
+msgstr "Hãy chọn ít nhất một người nhận."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Choose how often to send it."
+msgstr "Hãy chọn tần suất gửi."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__failed
+msgid "Could not be made"
+msgstr "Không tạo được"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Dates"
+msgstr "Ngày"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__monthday
+msgid "Day of the month"
+msgstr "Ngày trong tháng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__weekday
+msgid "Day of the week"
+msgstr "Thứ trong tuần"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Days 1 to 28, so every month has it."
+msgstr "Từ ngày 1 đến 28, để tháng nào cũng có."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Delete this view?"
+msgstr "Xóa chế độ xem này?"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Delete this view? Its regular emails stop too."
+msgstr "Xóa chế độ xem này? Các email định kỳ của nó cũng dừng theo."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Download Excel"
+msgstr "Tải Excel"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Downloaded. Only the largest 24 rows are in the file; %s more were left out."
+msgstr "Đã tải xuống. Tệp chỉ có 24 dòng lớn nhất; %s dòng khác bị lược bỏ."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Each person gets their own numbers: only the companies and divisions they "
+"are allowed to see."
+msgstr ""
+"Mỗi người nhận số liệu của riêng mình: chỉ các công ty và khối mà họ được "
+"phép xem."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Each person who opens it sees only the companies and divisions they are "
+"allowed to see."
+msgstr ""
+"Mỗi người mở chế độ xem chỉ thấy các công ty và khối mà họ được phép xem."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__mail_id
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Email is not switched on for this company, so nothing was sent. The schedule"
+" is saved."
+msgstr ""
+"Email chưa được bật cho công ty này nên chưa gửi gì. Lịch gửi đã được lưu."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Email is not switched on for this company, so nothing will be sent yet. The "
+"schedule is saved."
+msgstr ""
+"Email chưa được bật cho công ty này nên hiện chưa gửi gì. Lịch gửi đã được "
+"lưu."
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__email_off
+msgid "Email is switched off"
+msgstr "Email đang tắt"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Every %(day)s morning, to %(who)s, as an Excel file with a link"
+msgstr "Mỗi sáng %(day)s, gửi cho %(who)s, dạng tệp Excel kèm liên kết"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__cadence__monthly
+msgid "Every month"
+msgstr "Hằng tháng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__cadence__weekly
+msgid "Every week"
+msgstr "Hằng tuần"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__shared
+msgid "Everyone who can open the Explorer"
+msgstr "Mọi người mở được Khám phá dữ liệu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Everyone who can open the Explorer can now open “%s”."
+msgstr "Giờ đây mọi người mở được Khám phá dữ liệu đều mở được “%s”."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Excel files cannot be made on this server yet."
+msgstr "Máy chủ này chưa tạo được tệp Excel."
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer_schedule_log
+msgid "Explorer regular send, one line per person"
+msgstr "Lần gửi định kỳ của Khám phá dữ liệu, mỗi người một dòng"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
+msgstr "Chế độ xem Khám phá dữ liệu gửi định kỳ"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Filters"
+msgstr "Bộ lọc"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "Fixed dates: %(start)s to %(end)s"
+msgstr "Ngày cố định: %(start)s đến %(end)s"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "For example: Cost by department, last month"
+msgstr "Ví dụ: Chi phí theo phòng ban, tháng trước"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Fri"
+msgstr "T6"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__4
+msgid "Friday"
+msgstr "Thứ Sáu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Give the view a name."
+msgstr "Hãy đặt tên cho chế độ xem."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Goes out within the hour after a pay run is finished."
+msgstr "Được gửi trong vòng một giờ sau khi kỳ trả lương hoàn tất."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Here is “%(view)s” for %(period)s, with the figures you are allowed to see."
+msgstr "Đây là “%(view)s” cho %(period)s, với số liệu bạn được phép xem."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__log_ids
+msgid "History"
+msgstr "Lịch sử"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__trigger
+msgid "How it was sent"
+msgstr "Cách gửi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__cadence
+msgid "How often"
+msgstr "Tần suất"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Keep"
+msgstr "Giữ lại"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Largest: %(name)s"
+msgstr "Lớn nhất: %(name)s"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__last_run
+msgid "Last send"
+msgstr "Lần gửi gần nhất"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Last sends"
+msgstr "Các lần gửi gần đây"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Made on"
+msgstr "Tạo lúc"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Make it only mine"
+msgstr "Chỉ mình tôi xem"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Mon"
+msgstr "T2"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__0
+msgid "Monday"
+msgstr "Thứ Hai"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "My views"
+msgstr "Chế độ xem của tôi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "New name"
+msgstr "Tên mới"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "New schedule"
+msgstr "Lịch gửi mới"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__next_due
+msgid "Next send"
+msgstr "Lần gửi tiếp theo"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Next send: %s (company time)"
+msgstr "Lần gửi tiếp theo: %s (giờ công ty)"
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__no_email
+msgid "No email address"
+msgstr "Không có địa chỉ email"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Nobody by that name can open the Explorer."
+msgstr "Không ai có tên đó mở được Khám phá dữ liệu."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "None"
+msgstr "Không có"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Not sent yet"
+msgstr "Chưa gửi lần nào"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Not sent — email is switched off"
+msgstr "Chưa gửi — email đang tắt"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Not sent — the file could not be made"
+msgstr "Chưa gửi — không tạo được tệp"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Nothing sent"
+msgstr "Chưa gửi gì"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Nothing was paid in this period yet."
+msgstr "Kỳ này chưa có khoản chi trả nào."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "On"
+msgstr "Vào"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "On day"
+msgstr "Vào ngày"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"On day %(day)s of every month, in the morning, to %(who)s, as an Excel file "
+"with a link"
+msgstr ""
+"Sáng ngày %(day)s hằng tháng, gửi cho %(who)s, dạng tệp Excel kèm liên kết"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__trigger__schedule
+msgid "On schedule"
+msgstr "Theo lịch"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Only me"
+msgstr "Chỉ mình tôi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Only people with an email address who can open the Explorer are listed."
+msgstr "Chỉ liệt kê những người có địa chỉ email và mở được Khám phá dữ liệu."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Only the largest %(shown)s are shown; %(more)s more were left out."
+msgstr "Chỉ hiển thị %(shown)s mục lớn nhất; %(more)s mục khác bị lược bỏ."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "Only the person who saved this view can change it."
+msgstr "Chỉ người đã lưu chế độ xem này mới thay đổi được."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Only the person who saved this view can send it regularly. Save it as your "
+"own first."
+msgstr ""
+"Chỉ người đã lưu chế độ xem này mới gửi định kỳ được. Hãy lưu thành của bạn "
+"trước."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Open this view in the Explorer"
+msgstr "Mở chế độ xem này trong Khám phá dữ liệu"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid ""
+"Part of this saved view no longer exists here, so it opened with the closest"
+" match. Save it again to keep this version."
+msgstr ""
+"Một phần của chế độ xem đã lưu không còn tồn tại ở đây nên nó được mở với "
+"lựa chọn gần nhất. Hãy lưu lại để giữ phiên bản này."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Pause"
+msgstr "Tạm dừng"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Paused — nothing is sent until you resume it."
+msgstr "Đang tạm dừng — không gửi gì cho đến khi bạn tiếp tục."
+
+#. module: pb_explorer
+#: model:ir.actions.server,name:pb_explorer.cron_pb_explorer_schedule_send_ir_actions_server
+msgid "Payobook: send saved Explorer views"
+msgstr "Payobook: gửi các chế độ xem Khám phá dữ liệu đã lưu"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "People behind these figures: %s"
+msgstr "Số người trong các số liệu này: %s"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Pick a day from 1 to 28, so every month has it."
+msgstr "Hãy chọn một ngày từ 1 đến 28, để tháng nào cũng có."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__spec
+msgid "Question"
+msgstr "Câu hỏi"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__schedule_ids
+msgid "Regular sends"
+msgstr "Gửi định kỳ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Rename"
+msgstr "Đổi tên"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__state
+msgid "Result"
+msgstr "Kết quả"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Resume"
+msgstr "Tiếp tục"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Sat"
+msgstr "T7"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__5
+msgid "Saturday"
+msgstr "Thứ Bảy"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save a view to find it here"
+msgstr "Lưu một chế độ xem để tìm lại ở đây"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save as my own"
+msgstr "Lưu thành của tôi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save as new"
+msgstr "Lưu thành mới"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save schedule"
+msgstr "Lưu lịch gửi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save view"
+msgstr "Lưu chế độ xem"
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer_view
+msgid "Saved Explorer view"
+msgstr "Chế độ xem Khám phá dữ liệu đã lưu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Saved as “%s”."
+msgstr "Đã lưu thành “%s”."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__user_id
+msgid "Saved by"
+msgstr "Người lưu"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__view_id
+msgid "Saved view"
+msgstr "Chế độ xem đã lưu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Saved views"
+msgstr "Chế độ xem đã lưu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Saved. %s."
+msgstr "Đã lưu. %s."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Saved. Nothing will be sent until email is switched on for this company."
+msgstr "Đã lưu. Sẽ không gửi gì cho đến khi email được bật cho công ty này."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__schedule_id
+msgid "Schedule"
+msgstr "Lịch gửi"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__trigger__now
+msgid "Send now"
+msgstr "Gửi ngay"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__batch
+msgid "Send number"
+msgstr "Lần gửi số"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Send regularly"
+msgstr "Gửi định kỳ"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Send regularly…"
+msgstr "Gửi định kỳ…"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__send_count
+msgid "Sends so far"
+msgstr "Số lần đã gửi"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__queued
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent now"
+msgstr "Gửi ngay"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__recipient_ids
+msgid "Sent to"
+msgstr "Gửi cho"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent to %(sent)s of %(total)s"
+msgstr "Đã gửi cho %(sent)s trên %(total)s"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Sent to %(sent)s of %(total)s people. The others were skipped — the history "
+"says why."
+msgstr ""
+"Đã gửi cho %(sent)s trên %(total)s người. Những người còn lại bị bỏ qua — "
+"xem lý do trong lịch sử."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent to %s people."
+msgstr "Đã gửi cho %s người."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent to 1 person."
+msgstr "Đã gửi cho 1 người."
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__user_id
+msgid "Set up by"
+msgstr "Người thiết lập"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Share with everyone who can open the Explorer"
+msgstr "Chia sẻ với mọi người mở được Khám phá dữ liệu"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Shared with me"
+msgstr "Được chia sẻ với tôi"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Skipped — can no longer open the Explorer"
+msgstr "Bỏ qua — không còn mở được Khám phá dữ liệu"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Skipped — no email address"
+msgstr "Bỏ qua — không có địa chỉ email"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Someone"
+msgstr "Một người"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Split by"
+msgstr "Chia theo"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Stop sending this and delete it?"
+msgstr "Dừng gửi và xóa lịch này?"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Sun"
+msgstr "CN"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__6
+msgid "Sunday"
+msgstr "Chủ Nhật"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "That schedule is no longer here."
+msgstr "Lịch gửi đó không còn nữa."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "The Excel file could not be made."
+msgstr "Không tạo được tệp Excel."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "The full table is in the attached Excel file."
+msgstr "Bảng đầy đủ nằm trong tệp Excel đính kèm."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid ""
+"This saved view is no longer available. It may have been deleted or no "
+"longer shared."
+msgstr ""
+"Chế độ xem đã lưu này không còn. Có thể nó đã bị xóa hoặc không còn được "
+"chia sẻ."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Thu"
+msgstr "T5"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__3
+msgid "Thursday"
+msgstr "Thứ Năm"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Tue"
+msgstr "T3"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__1
+msgid "Tuesday"
+msgstr "Thứ Ba"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Update this view"
+msgstr "Cập nhật chế độ xem này"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Wed"
+msgstr "T4"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__2
+msgid "Wednesday"
+msgstr "Thứ Tư"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Who can open it"
+msgstr "Ai mở được"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Who receives it"
+msgstr "Ai nhận"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "You already have %s saved views. Delete one you no longer use first."
+msgstr "Bạn đã có %s chế độ xem đã lưu. Hãy xóa một cái không còn dùng trước."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"You already send %s views regularly. Delete one you no longer need first."
+msgstr ""
+"Bạn đang gửi định kỳ %s chế độ xem. Hãy xóa một cái không còn cần trước."
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"You get this because %(owner)s set it up: %(sentence)s. Ask them if you no "
+"longer need it."
+msgstr ""
+"Bạn nhận email này vì %(owner)s đã thiết lập: %(sentence)s. Hãy báo họ nếu "
+"bạn không còn cần."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "nobody yet"
+msgstr "chưa có ai"
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "someone"
+msgstr "một người"
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "you"
+msgstr "bạn"
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "“%s” is now only yours."
+msgstr "“%s” giờ chỉ mình bạn xem được."
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "“%s” now shows what is on screen."
+msgstr "“%s” giờ hiển thị đúng như trên màn hình."

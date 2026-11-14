@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 01:52+0000\n"
-"PO-Revision-Date: 2026-09-09 01:52+0000\n"
+"POT-Creation-Date: 2026-11-14 02:17+0000\n"
+"PO-Revision-Date: 2026-11-14 02:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -73,6 +73,20 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(measure)s by %(dimension)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "%(measure)s: %(amount)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "%(month)s — %(measure)s %(value)s"
 msgstr ""
@@ -80,7 +94,71 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · from %(owner)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · sent regularly"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · shared"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%(period)s · shared · sent regularly"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "%(period)s, moves with the calendar"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "%(start)s to %(end)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "%(view)s — %(period)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%s (copy)"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "%s by month"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"%s cannot receive it: only people with an email address who can open the "
+"Explorer can."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "%s people"
 msgstr ""
 
 #. module: pb_explorer
@@ -134,10 +212,37 @@ msgid ""
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "1 person"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__is_advance
 msgid ""
 "A mid-month advance. Excluded by default so a person is not counted, and "
 "their pay not added, twice in one month."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "A view can go to at most %s people."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Add a schedule"
 msgstr ""
 
 #. module: pb_explorer
@@ -163,6 +268,29 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Advances included"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__trigger__payrun
+msgid "After a pay run"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__cadence__payrun
+msgid "After each pay run is finished"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"After each pay run is finished, to %(who)s, as an Excel file with a link"
 msgstr ""
 
 #. module: pb_explorer
@@ -193,6 +321,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__amount
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__amount
 msgid "Amount"
@@ -201,6 +330,7 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "Amounts in %s"
 msgstr ""
 
@@ -288,6 +418,17 @@ msgid "By"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__no_access
+msgid "Can no longer open the Explorer"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__category_id
 msgid "Category"
 msgstr ""
@@ -296,6 +437,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__category_type
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__category_type
 msgid "Category Type"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Change"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Change this schedule"
 msgstr ""
 
 #. module: pb_explorer
@@ -313,9 +466,27 @@ msgid "Charged to other entities"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Choose at least one person to send it to."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Choose how often to send it."
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Clear all"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Close"
 msgstr ""
 
 #. module: pb_explorer
@@ -342,6 +513,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__company_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__company_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__company_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__company_id
@@ -409,6 +581,11 @@ msgid "Cost this entity paid that belongs to another company in the group."
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__failed
+msgid "Could not be made"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
@@ -417,6 +594,9 @@ msgid "Country"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__create_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__create_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__create_uid
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__create_uid
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__create_uid
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__create_uid
@@ -424,6 +604,9 @@ msgid "Created by"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__create_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__create_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__create_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__create_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__create_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__create_date
@@ -433,6 +616,7 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__currency_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__currency_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__currency_id
@@ -466,7 +650,49 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Dates"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__monthday
+msgid "Day of the month"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__weekday
+msgid "Day of the week"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Days 1 to 28, so every month has it."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Deductions"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Delete"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Delete this view?"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Delete this view? Its regular emails stop too."
 msgstr ""
 
 #. module: pb_explorer
@@ -488,6 +714,9 @@ msgstr ""
 #. module: pb_explorer
 #: model:ir.model.fields,field_description:pb_explorer.field_hr_payslip_run__display_name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__display_name
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__display_name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_builder__display_name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__display_name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__display_name
@@ -539,7 +768,62 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Download Excel"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Downloaded. Only the largest 24 rows are in the file; %s more were left out."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Each in its own money"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Each person gets their own numbers: only the companies and divisions they "
+"are allowed to see."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Each person who opens it sees only the companies and divisions they are "
+"allowed to see."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__mail_id
+msgid "Email"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Email is not switched on for this company, so nothing was sent. The schedule"
+" is saved."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Email is not switched on for this company, so nothing will be sent yet. The "
+"schedule is saved."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__email_off
+msgid "Email is switched off"
 msgstr ""
 
 #. module: pb_explorer
@@ -573,16 +857,60 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Every %(day)s morning, to %(who)s, as an Excel file with a link"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Every figure in the money it was paid in."
 msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__cadence__monthly
+msgid "Every month"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__cadence__weekly
+msgid "Every week"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__shared
+msgid "Everyone who can open the Explorer"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Everyone who can open the Explorer can now open “%s”."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "Everything"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Excel files cannot be made on this server yet."
 msgstr ""
 
 #. module: pb_explorer
@@ -599,8 +927,20 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Explorer"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer_schedule_log
+msgid "Explorer regular send, one line per person"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer_schedule
+msgid "Explorer view sent regularly"
 msgstr ""
 
 #. module: pb_explorer
@@ -635,7 +975,19 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Filters"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Final settlement"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Find a person"
 msgstr ""
 
 #. module: pb_explorer
@@ -644,13 +996,41 @@ msgid "First day of the run month"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "Fixed dates: %(start)s to %(end)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "For example: Cost by department, last month"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__cycle
 msgid "Formula config cycle_type: 'mid' / 'end' / ''"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Fri"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__4
+msgid "Friday"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "From"
 msgstr ""
 
@@ -669,6 +1049,20 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Full-time equivalents"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Give the view a name."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Goes out within the hour after a pay run is finished."
 msgstr ""
 
 #. module: pb_explorer
@@ -703,9 +1097,26 @@ msgid "Heatmap"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Here is “%(view)s” for %(period)s, with the figures you are allowed to see."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__log_ids
+msgid "History"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "How each period was converted"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__trigger
+msgid "How it was sent"
 msgstr ""
 
 #. module: pb_explorer
@@ -716,8 +1127,18 @@ msgid ""
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__cadence
+msgid "How often"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,field_description:pb_explorer.field_hr_payslip_run__id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__id
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_builder__id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__id
@@ -751,6 +1172,12 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Keep"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
@@ -763,6 +1190,15 @@ msgid "Label snapshot; fallback when rule_id is gone"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Largest: %(name)s"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__write_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__write_uid
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__write_uid
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__write_uid
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__write_uid
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__write_uid
@@ -770,6 +1206,9 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__write_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__write_date
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__write_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__write_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__write_date
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__write_date
@@ -786,6 +1225,17 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Last quarter"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__last_run
+msgid "Last send"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Last sends"
 msgstr ""
 
 #. module: pb_explorer
@@ -834,6 +1284,12 @@ msgid "Look inside %s"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Made on"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Main runs only"
@@ -841,6 +1297,14 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Make it only mine"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Measure"
 msgstr ""
@@ -849,6 +1313,21 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Mid-month advance"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Mon"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__0
+msgid "Monday"
 msgstr ""
 
 #. module: pb_explorer
@@ -867,6 +1346,15 @@ msgid "Movement analysis"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "My views"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__name
 msgid "Name"
 msgstr ""
@@ -885,7 +1373,30 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "New name"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "New schedule"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Next"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__next_due
+msgid "Next send"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Next send: %s (company time)"
 msgstr ""
 
 #. module: pb_explorer
@@ -898,6 +1409,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "No department"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__no_email
+msgid "No email address"
 msgstr ""
 
 #. module: pb_explorer
@@ -921,8 +1437,21 @@ msgid "No split"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Nobody by that name can open the Explorer."
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "None"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "Not converted — no exchange rate on file"
 msgstr ""
 
@@ -959,7 +1488,31 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Not sent yet"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Not sent — email is switched off"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Not sent — the file could not be made"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Nothing matched this combination."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Nothing sent"
 msgstr ""
 
 #. module: pb_explorer
@@ -979,6 +1532,41 @@ msgid ""
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Nothing was paid in this period yet."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "On"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "On day"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"On day %(day)s of every month, in the morning, to %(who)s, as an Excel file "
+"with a link"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__trigger__schedule
+msgid "On schedule"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid ""
@@ -989,6 +1577,47 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Only me"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid ""
+"Only people with an email address who can open the Explorer are listed."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Only the largest %(shown)s are shown; %(more)s more were left out."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "Only the person who saved this view can change it."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Only the person who saved this view can send it regularly. Save it as your "
+"own first."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Open this view in the Explorer"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Over"
 msgstr ""
 
@@ -997,6 +1626,26 @@ msgstr ""
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__is_split
 msgid "Paid in two places"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid ""
+"Part of this saved view no longer exists here, so it opened with the closest"
+" match. Save it again to keep this version."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Pause"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Paused — nothing is sent until you resume it."
 msgstr ""
 
 #. module: pb_explorer
@@ -1024,6 +1673,11 @@ msgstr ""
 #. module: pb_explorer
 #: model:ir.actions.server,name:pb_explorer.cron_pb_explorer_build_ir_actions_server
 msgid "Payobook: build analytics facts"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.actions.server,name:pb_explorer.cron_pb_explorer_schedule_send_ir_actions_server
+msgid "Payobook: send saved Explorer views"
 msgstr ""
 
 #. module: pb_explorer
@@ -1077,6 +1731,12 @@ msgid "People"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "People behind these figures: %s"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Per person"
@@ -1085,12 +1745,21 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__period_preset
 msgid "Period"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__user_id
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__person_id
 msgid "Person"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Pick a day from 1 to 28, so every month has it."
 msgstr ""
 
 #. module: pb_explorer
@@ -1142,6 +1811,11 @@ msgid "Quarter"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__spec
+msgid "Question"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Refresh"
@@ -1154,9 +1828,31 @@ msgid "Regular"
 msgstr ""
 
 #. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__schedule_ids
+msgid "Regular sends"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Remove"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Rename"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__state
+msgid "Result"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Resume"
 msgstr ""
 
 #. module: pb_explorer
@@ -1180,6 +1876,102 @@ msgid "Run"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Sat"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__5
+msgid "Saturday"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save a view to find it here"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save as my own"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save as new"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save schedule"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Save view"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model,name:pb_explorer.model_pb_explorer_view
+msgid "Saved Explorer view"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Saved as “%s”."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__user_id
+msgid "Saved by"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__view_id
+msgid "Saved view"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Saved views"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Saved. %s."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid ""
+"Saved. Nothing will be sent until email is switched on for this company."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__schedule_id
+msgid "Schedule"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_emp__config_name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__config_name
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__config_name
@@ -1194,8 +1986,91 @@ msgid "Scheme version"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__trigger__now
+msgid "Send now"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule_log__batch
+msgid "Send number"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Send regularly"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Send regularly…"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__send_count
+msgid "Sends so far"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule_log__state__queued
+msgid "Sent"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent now"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__recipient_ids
+msgid "Sent to"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent to %(sent)s of %(total)s"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"Sent to %(sent)s of %(total)s people. The others were skipped — the history "
+"says why."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent to %s people."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Sent to 1 person."
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_view__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__dirty
 msgid "Set by the hr.payslip.run write hook"
+msgstr ""
+
+#. module: pb_explorer
+#: model:ir.model.fields,field_description:pb_explorer.field_pb_explorer_schedule__user_id
+msgid "Set up by"
 msgstr ""
 
 #. module: pb_explorer
@@ -1213,6 +2088,18 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Share with everyone who can open the Explorer"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Shared with me"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Shown in %(currency)s, converted using %(policy)s."
 msgstr ""
 
@@ -1224,8 +2111,26 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Skipped — can no longer open the Explorer"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Skipped — no email address"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "Social security"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "Someone"
 msgstr ""
 
 #. module: pb_explorer
@@ -1247,6 +2152,12 @@ msgstr ""
 #. module: pb_explorer
 #: model:ir.model.fields,help:pb_explorer.field_pb_fact_run__token
 msgid "Source fingerprint; a mismatch forces a rebuild"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "Split by"
 msgstr ""
 
 #. module: pb_explorer
@@ -1274,6 +2185,27 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Stop sending this and delete it?"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Sun"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__6
+msgid "Sunday"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #: code:addons/pb_explorer/static/src/js/explorer.js:0
 msgid "Table"
 msgstr ""
@@ -1292,8 +2224,20 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "That schedule is no longer here."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "The Analytics Explorer is restricted to payroll analytics managers."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "The Excel file could not be made."
 msgstr ""
 
 #. module: pb_explorer
@@ -1315,6 +2259,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "The current period is still provisional."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "The full table is in the attached Excel file."
 msgstr ""
 
 #. module: pb_explorer
@@ -1363,13 +2313,37 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-python
-#: code:addons/pb_explorer/models/pb_explorer.py:0
-msgid "This year"
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid ""
+"This saved view is no longer available. It may have been deleted or no "
+"longer shared."
 msgstr ""
 
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+msgid "This year"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Thu"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__3
+msgid "Thursday"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "To"
 msgstr ""
 
@@ -1383,6 +2357,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "Total"
 msgstr ""
 
@@ -1411,6 +2386,21 @@ msgstr ""
 msgid ""
 "Try widening the filters, picking a period in the When clause above, or "
 "including mid-month advances."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Tue"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__1
+msgid "Tuesday"
 msgstr ""
 
 #. module: pb_explorer
@@ -1447,6 +2437,27 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Update this view"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "Wed"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+#: model:ir.model.fields.selection,name:pb_explorer.selection__pb_explorer_schedule__weekday__2
+msgid "Wednesday"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "What changed, and why"
 msgstr ""
 
@@ -1477,12 +2488,25 @@ msgstr ""
 #. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Who can open it"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "Who is in this number"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/xml/explorer.xml:0
+msgid "Who receives it"
 msgstr ""
 
 #. module: pb_explorer
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
+#: code:addons/pb_explorer/tests/test_wdgap_qf2.py:0
 msgid "Why"
 msgstr ""
 
@@ -1511,6 +2535,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_line__year
 #: model:ir.model.fields,field_description:pb_explorer.field_pb_fact_run__year
 msgid "Year"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_view.py:0
+msgid "You already have %s saved views. Delete one you no longer use first."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"You already send %s views regularly. Delete one you no longer need first."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid ""
+"You get this because %(owner)s set it up: %(sentence)s. Ask them if you no "
+"longer need it."
 msgstr ""
 
 #. module: pb_explorer
@@ -1656,6 +2701,12 @@ msgstr ""
 
 #. module: pb_explorer
 #. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "nobody yet"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "nothing specific matched — showing the default view"
 msgstr ""
@@ -1707,6 +2758,12 @@ msgid "showing top"
 msgstr ""
 
 #. module: pb_explorer
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+msgid "someone"
+msgstr ""
+
+#. module: pb_explorer
 #. odoo-javascript
 #: code:addons/pb_explorer/static/src/xml/explorer.xml:0
 msgid "total"
@@ -1724,6 +2781,14 @@ msgstr ""
 msgid ""
 "untyped\n"
 "              component categories are counted as allowances"
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_explorer/models/pb_explorer_schedule.py:0
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "you"
 msgstr ""
 
 #. module: pb_explorer
@@ -1747,6 +2812,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_explorer/models/pb_explorer.py:0
 msgid "“%s” is not a money total, so the movement below explains NET PAY."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "“%s” is now only yours."
+msgstr ""
+
+#. module: pb_explorer
+#. odoo-javascript
+#: code:addons/pb_explorer/static/src/js/explorer.js:0
+msgid "“%s” now shows what is on screen."
 msgstr ""
 
 #. module: pb_explorer
