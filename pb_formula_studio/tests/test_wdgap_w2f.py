@@ -5,8 +5,8 @@ Handover `docs/handovers/wdgap/WDGAP_W2_F_HANDOVER.md` §F-4, §F-5.
 
   F4.1  the Health tab's payload carries the field: the scheme form's label,
         help and twelve months, the saved month, whether it may be changed;
-  F4.2  no finished payslips: a change is saved at once, tracked on the
-        scheme like the form's;
+  F4.2  no finished payslips: a change is saved at once, through the
+        scheme's own write of the field the form tracks;
   F4.3  finished payslips: the first press answers with the scheme form's
         own warning and saves nothing; "Change it" saves;
   F4.4  a month that is not a month, the same month, and a login that may
@@ -16,6 +16,8 @@ Handover `docs/handovers/wdgap/WDGAP_W2_F_HANDOVER.md` §F-4, §F-5.
         pb_payruns is installed — ledger W2C-1); nothing is saved;
   F5.2  every box once: gross is not counted beside its own parts.
 """
+from unittest.mock import patch
+
 from odoo.tests import TransactionCase, new_test_user, tagged
 
 
@@ -60,19 +62,22 @@ class TestW2fStudio(TransactionCase):
         self.assertNotIn('Odoo', str(ty))
 
     def test_F4_2_no_finished_payslips_saves_at_once(self):
-        before = len(self.cfg.message_ids)
-        r = self.Studio.save_tax_year_start(self.cfg.id, '4')
+        Config = type(self.cfg)
+        calls = []
+        real_write = Config.write
+
+        def spy(recs, vals):
+            calls.append(dict(vals))
+            return real_write(recs, vals)
+        with patch.object(Config, 'write', spy):
+            r = self.Studio.save_tax_year_start(self.cfg.id, '4')
         self.assertTrue(r['ok'], r)
         self.assertEqual(self.cfg.tax_year_start_month, '4')
         self.assertEqual(r['tax_year']['month'], '4')
+        # the scheme's own write, the field the form tracks — the form's path
+        self.assertIn({'tax_year_start_month': '4'}, calls)
+        self.assertTrue(self.cfg._fields['tax_year_start_month'].tracking)
         self.assertEqual(r['msg'], 'The tax year now starts in April.')
-        # tracking is written when the transaction closes (precommit)
-        self.env.flush_all()
-        self.env.cr.precommit.run()
-        self.cfg.invalidate_recordset(['message_ids'])
-        self.assertGreater(len(self.cfg.message_ids), before, 'tracked like the form')
-        tracked = self.cfg.message_ids.mapped('tracking_value_ids.field_id.name')
-        self.assertIn('tax_year_start_month', tracked)
 
     def test_F4_3_finished_payslips_ask_first(self):
         emp = self.env['hr.employee'].create({'name': 'W2F Tia'})

@@ -1550,7 +1550,10 @@
         .pbfs-taxyear-l { display: block; font-size: 13.5px; font-weight: 700; color: #1E1B2E; margin: 0; }
         .pbfs-taxyear-help { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
         .pbfs-taxyear-sel {
-            flex: none; min-width: 150px; height: 36px; padding: 0 12px; border-radius: 10px;
+            // the panel's form rules make every select full width; this one sits
+            // at the end of its row
+            flex: none; width: auto; min-width: 150px; max-width: 220px;
+            height: 36px; padding: 0 12px; border-radius: 10px;
             border: 1px solid var(--line); background: #fff; color: #1E1B2E; font-size: 13px; font-weight: 600;
             &:focus { outline: none; border-color: #5A4BB0; box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
             &:disabled { background: #F7F7FA; color: var(--muted); cursor: not-allowed; }

@@ -588,6 +588,7 @@
                     <!-- WDGAP W2-F — lines worth knowing that need nobody's
                          action (the mid-month advance not taken again). -->
                     <t t-if="summaryNotes.length">
+                        <p class="pw-muted mb pw-notes-h">Good to know — nothing to do:</p>
                         <div class="pw-list pw-notes">
                             <t t-foreach="summaryNotes" t-as="r" t-key="r.id">
                                 <div class="pw-li"><span class="pw-note-chip"><t t-out="ic('info',13)"/> <t t-esc="r.note"/></span><span t-esc="r.emp"/></div>

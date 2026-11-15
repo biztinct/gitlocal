@@ -1208,3 +1208,9 @@ msgstr "1 phiếu lương trong kỳ lương bổ sung này trừ khoản tạm 
 #: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
 msgid "%s payslips in this extra run take the mid-month advance. The month's regular payslips are not all worked out yet, so it could not be told whether they take it too."
 msgstr "%s phiếu lương trong kỳ lương bổ sung này trừ khoản tạm ứng giữa tháng. Các phiếu lương thường kỳ của tháng chưa được tính hết, nên chưa biết các phiếu đó có trừ khoản này nữa không."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Good to know — nothing to do:"
+msgstr "Để bạn biết — không cần làm gì:"
