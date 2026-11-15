@@ -1,0 +1,1938 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%(balance)s days left"
+msgstr "Còn %(balance)s ngày"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%(days)s days earned so far this year"
+msgstr "Đã tích lũy %(days)s ngày trong năm nay"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%(taken)s of %(allocated)s days used"
+msgstr "Đã dùng %(taken)s/%(allocated)s ngày"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"%(year)s days a year, built up each month: %(month)s added after each month "
+"worked."
+msgstr ""
+"%(year)s ngày mỗi năm, tích lũy mỗi tháng: cộng %(month)s sau mỗi tháng làm "
+"việc."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s could not be added; the next run tries again."
+msgstr "%s mục chưa cộng được; lần chạy sau sẽ thử lại."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s days a year, added at the start of each year."
+msgstr "%s ngày mỗi năm, cộng vào đầu mỗi năm."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "%s days a year, all at once"
+msgstr "%s ngày mỗi năm, cấp một lần"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "%s days a year, built up each month"
+msgstr "%s ngày mỗi năm, tích lũy mỗi tháng"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "%s kinds"
+msgstr "%s loại"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s kinds added, switched off. Review each one, then switch it on."
+msgstr "Đã thêm %s loại, đang tắt. Hãy xem lại từng loại rồi bật lên."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s people have days of it"
+msgstr "%s người có ngày của loại này"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s people have no date of joining, so nothing was added for them."
+msgstr "%s người chưa có ngày vào làm nên chưa được cộng ngày nào."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "%s to review"
+msgstr "%s cần xem lại"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "+%(days)s for %(years)s years of service"
+msgstr "+%(days)s cho %(years)s năm thâm niên"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "0 means no limit."
+msgstr "0 nghĩa là không giới hạn."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "0 means they do not run out."
+msgstr "0 nghĩa là không hết hạn."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "1 kind"
+msgstr "1 loại"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 kind added, switched off. Review it, then switch it on."
+msgstr "Đã thêm 1 loại, đang tắt. Hãy xem lại rồi bật lên."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "1 kind that is switched on has no pay decision yet."
+msgstr "1 loại đang bật chưa quyết định cách trả lương."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 person has days of it"
+msgstr "1 người có ngày của loại này"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "1 person has no date of joining."
+msgstr "1 người chưa có ngày vào làm."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "1 ready-made kind is waiting for your review."
+msgstr "1 loại có sẵn đang chờ bạn xem lại."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "1 to review"
+msgstr "1 cần xem lại"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A document is needed"
+msgstr "Cần giấy tờ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A document is needed for this kind of leave"
+msgstr "Loại nghỉ này cần có giấy tờ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A kind taken in hours is given by HR."
+msgstr "Loại tính theo giờ do bộ phận nhân sự cấp."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"A kind taken in hours is given by HR. Choose whole or half days to let it "
+"build up."
+msgstr ""
+"Loại tính theo giờ do bộ phận nhân sự cấp. Chọn cả ngày hoặc nửa ngày để "
+"ngày phép tự tích lũy."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"A pay run that works from leave records stops at these until somebody says "
+"how they are paid."
+msgstr ""
+"Kỳ lương tính từ hồ sơ nghỉ phép sẽ dừng ở các loại này cho đến khi có người"
+" quyết định cách trả lương."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "A service step adds between 0 and 60 days a year."
+msgstr "Mỗi bậc thâm niên cộng từ 0 đến 60 ngày mỗi năm."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "A service step starts after 1 to 60 years."
+msgstr "Mỗi bậc thâm niên bắt đầu sau 1 đến 60 năm."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__hr_leave_type__pb_ls_earning__monthly
+msgid "A share each month"
+msgstr "Một phần mỗi tháng"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A starting point — please review each kind before switching it on."
+msgstr "Điểm khởi đầu — vui lòng xem lại từng loại trước khi bật."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Add %s kinds, switched off"
+msgstr "Thêm %s loại, đang tắt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Add 1 kind, switched off"
+msgstr "Thêm 1 loại, đang tắt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Add a kind"
+msgstr "Thêm loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Add a step"
+msgstr "Thêm bậc"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Add the finished months now"
+msgstr "Cộng các tháng đã qua ngay bây giờ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+msgid ""
+"Add, review and switch on kinds of leave, with ready-made kinds for each "
+"country."
+msgstr ""
+"Thêm, xem lại và bật các loại nghỉ, kèm các loại có sẵn cho từng quốc gia."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "After"
+msgstr "Sau"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "After %s years"
+msgstr "Sau %s năm"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "After 1 year"
+msgstr "Sau 1 năm"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_service_step__after_years
+msgid "After this many years"
+msgstr "Sau số năm này"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__hr_leave_type__pb_ls_earning__yearly
+msgid "All at once each year"
+msgstr "Cấp một lần mỗi năm"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__allocation_id
+msgid "Allocation"
+msgstr "Phân bổ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Allowance"
+msgstr "Số ngày được hưởng"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Already added"
+msgstr "Đã thêm"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Already switched on"
+msgstr "Đã bật"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "An outside fund"
+msgstr "Quỹ bên ngoài"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Before the year's cut-off, so the days get used rather than lost. 0 means no"
+" warning."
+msgstr ""
+"Trước ngày chốt cuối năm, để ngày phép được dùng thay vì bị mất. 0 nghĩa là "
+"không nhắc."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Both"
+msgstr "Cả hai"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_earn_from
+msgid "Build-up starts from"
+msgstr "Bắt đầu tích lũy từ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Can be asked for after it happened"
+msgstr "Có thể xin sau khi đã nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__capped
+msgid "Capped"
+msgstr "Đã chạm mức tối đa"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose how it is earned."
+msgstr "Chọn cách tích lũy."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose how it is paid."
+msgstr "Chọn cách trả lương."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose how this kind is paid before switching it on."
+msgstr "Hãy chọn cách trả lương cho loại này trước khi bật."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose who approves it."
+msgstr "Chọn người duyệt."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose who pays for it."
+msgstr "Chọn bên chi trả."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose whole days, half days or hours."
+msgstr "Chọn cả ngày, nửa ngày hoặc theo giờ."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Counted"
+msgstr "Có tính"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Counted against an allowance"
+msgstr "Trừ vào số ngày được hưởng"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__days
+msgid "Days"
+msgstr "Ngày"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_days_per_year
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__base_days
+msgid "Days a year"
+msgstr "Số ngày mỗi năm"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "Days a year must be between 0 and 366."
+msgstr "Số ngày mỗi năm phải từ 0 đến 366."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Days added recently"
+msgstr "Ngày được cộng gần đây"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Days added: %s."
+msgstr "Đã cộng ngày: %s."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "Days can run out between 0 and 60 months after the year ends."
+msgstr "Ngày phép có thể hết hạn từ 0 đến 60 tháng sau khi hết năm."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Days not taken do not run out."
+msgstr "Ngày chưa dùng không hết hạn."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Days not taken run out %s months after the year ends."
+msgstr "Ngày chưa dùng hết hạn %s tháng sau khi hết năm."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_expire_months
+msgid "Days run out this many months after the year ends"
+msgstr "Ngày phép hết hạn sau số tháng này kể từ cuối năm"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Decide this before switching it on: a pay run that works from leave records "
+"stops at a kind with no pay decision."
+msgstr ""
+"Hãy quyết định trước khi bật: kỳ lương tính từ hồ sơ nghỉ phép sẽ dừng ở "
+"loại chưa quyết định cách trả lương."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Each kind is added switched off."
+msgstr "Mỗi loại được thêm ở trạng thái tắt."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Each month"
+msgstr "Mỗi tháng"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Each step needs a number of years and a number of days."
+msgstr "Mỗi bậc cần có số năm và số ngày."
+
+#. module: pb_leave_setup
+#: model:ir.model.constraint,message:pb_leave_setup.constraint_hr_leave_allocation_pb_ls_year_once
+msgid "Earned days already have an allocation for this person, kind and year."
+msgstr "Ngày tích lũy đã có phân bổ cho người, loại và năm này."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned days are a permanent record and cannot be changed."
+msgstr "Ngày tích lũy là hồ sơ cố định, không thể sửa."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned days are a permanent record and cannot be deleted."
+msgstr "Ngày tích lũy là hồ sơ cố định, không thể xóa."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned days are added by the build-up job only."
+msgstr "Ngày tích lũy chỉ do tác vụ tích lũy tự động cộng."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_allocation__pb_ls_year
+msgid "Earned days for the year"
+msgstr "Ngày tích lũy của năm"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned leave %(year)s"
+msgstr "Phép tích lũy %(year)s"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_hr_only
+msgid ""
+"Employees do not see this kind on their own leave page; HR enters it for "
+"them."
+msgstr ""
+"Nhân viên không thấy loại này trên trang nghỉ phép của mình; bộ phận nhân sự"
+" nhập giúp."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Every company"
+msgstr "Mọi công ty"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Every country"
+msgstr "Mọi quốc gia"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Every kind"
+msgstr "Tất cả các loại"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+msgid ""
+"Every kind of leave people can take, how it is paid and how the days build "
+"up."
+msgstr ""
+"Mọi loại nghỉ mà nhân viên có thể dùng, cách trả lương và cách tích lũy "
+"ngày."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Every kind of leave your people can take, how it is paid, and how the days "
+"build up."
+msgstr ""
+"Mọi loại nghỉ nhân viên của bạn có thể dùng, cách trả lương và cách tích lũy"
+" ngày."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Example"
+msgstr "Ví dụ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__extra_days
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_service_step__extra_days
+msgid "Extra days a year"
+msgstr "Ngày thêm mỗi năm"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_step_ids
+msgid "Extra days for long service"
+msgstr "Ngày thêm theo thâm niên"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Extra days for long service count from the month the person reaches each "
+"step, measured from their date of joining."
+msgstr ""
+"Ngày thêm theo thâm niên được tính từ tháng người đó đạt mỗi bậc, tính từ "
+"ngày vào làm."
+
+#. module: pb_leave_setup
+#: model:ir.model,name:pb_leave_setup.model_pb_leave_service_step
+msgid "Extra days of leave for long service"
+msgstr "Ngày nghỉ thêm theo thâm niên"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Find a kind of leave…"
+msgstr "Tìm loại nghỉ…"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"For example a medical certificate. The page asks for it; sending is never "
+"blocked."
+msgstr ""
+"Ví dụ giấy chứng nhận y tế. Trang sẽ yêu cầu, nhưng không bao giờ chặn việc "
+"gửi đơn."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "For example: Annual leave"
+msgstr "Ví dụ: Nghỉ phép năm"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "For people working in"
+msgstr "Cho người làm việc tại"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"For sick leave and the like. Other kinds can only be entered for a past date"
+" by HR."
+msgstr ""
+"Dùng cho nghỉ ốm và tương tự. Các loại khác chỉ bộ phận nhân sự mới nhập "
+"được cho ngày đã qua."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "For the company"
+msgstr "Cho công ty"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Give the kind of leave a name."
+msgstr "Hãy đặt tên cho loại nghỉ."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__hr_leave_type__pb_ls_earning__none
+msgid "Given by HR"
+msgstr "Do nhân sự cấp"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_earning
+msgid ""
+"Given by HR: nothing is added automatically (as before). All at once each "
+"year: the year's days are added when the year starts (or when the person "
+"becomes entitled). A share each month: one twelfth of the year's days is "
+"added after each month worked."
+msgstr ""
+"Do nhân sự cấp: không tự cộng (như trước). Cấp một lần mỗi năm: cộng số ngày"
+" của năm khi năm bắt đầu (hoặc khi người đó đủ điều kiện). Một phần mỗi "
+"tháng: cộng một phần mười hai số ngày của năm sau mỗi tháng làm việc."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "HR gives the days by hand; nothing is added automatically."
+msgstr "Bộ phận nhân sự cấp ngày thủ công; không tự cộng."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Half days"
+msgstr "Nửa ngày"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Half days or whole days"
+msgstr "Nửa ngày hoặc cả ngày"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Hours"
+msgstr "Giờ"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_earning
+msgid "How it is earned"
+msgstr "Cách tích lũy"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "How people take it"
+msgstr "Cách xin nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "How the days are given"
+msgstr "Cách cấp ngày"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "How this kind is earned is set by your leave policy."
+msgstr "Cách tích lũy của loại này do chính sách nghỉ phép quy định."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "How this kind is paid is set by your leave policy."
+msgstr "Cách trả lương của loại này do chính sách nghỉ phép quy định."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "In the first year"
+msgstr "Trong năm đầu"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+msgid "Includes %(days)s days not earned yet"
+msgstr "Gồm %(days)s ngày chưa tích lũy"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Is it paid?"
+msgstr "Có được trả lương không?"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "It starts switched off until you switch it on."
+msgstr "Loại này ở trạng thái tắt cho đến khi bạn bật."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Kind of leave"
+msgstr "Loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.actions.client,name:pb_leave_setup.action_pb_leave_kinds
+msgid "Kinds of leave"
+msgstr "Các loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Kinds of leave are looked after by the HR team. Ask your administrator for "
+"Time Off rights to see this screen."
+msgstr ""
+"Các loại nghỉ do bộ phận nhân sự quản lý. Hãy xin quản trị viên quyền Nghỉ "
+"phép để xem màn hình này."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__leave_type_id
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_service_step__leave_type_id
+msgid "Leave Type"
+msgstr "Loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Leave type"
+msgstr "Loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Leave without saving your changes?"
+msgstr "Rời đi mà không lưu thay đổi?"
+
+#. module: pb_leave_setup
+#: model:ir.actions.server,name:pb_leave_setup.cron_leave_earning_ir_actions_server
+msgid "Leave: add the days people have earned"
+msgstr "Nghỉ phép: cộng ngày nhân viên đã tích lũy"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Loading"
+msgstr "Đang tải"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Loading…"
+msgstr "Đang tải…"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_review
+msgid "Made from a ready-made kind and not yet reviewed and switched on."
+msgstr "Tạo từ loại có sẵn, chưa được xem lại và bật."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Measured from the date of joining. The highest step reached counts; steps "
+"are not added together."
+msgstr ""
+"Tính từ ngày vào làm. Tính theo bậc cao nhất đã đạt; các bậc không cộng dồn."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__pb_leave_earning__period__month
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Months before it are never added, so days already given by hand are not "
+"given twice."
+msgstr ""
+"Các tháng trước đó không bao giờ được cộng, nên ngày đã cấp thủ công không "
+"bị cấp hai lần."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_max_balance
+msgid "Most days a person can hold"
+msgstr "Số ngày tối đa một người được giữ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Name A–Z"
+msgstr "Tên A–Z"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Name in Indonesian"
+msgstr "Tên tiếng Indonesia"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Name in Vietnamese"
+msgstr "Tên tiếng Việt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "New"
+msgstr "Mới"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "New kind of leave"
+msgstr "Loại nghỉ mới"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Next: %(days)s on %(date)s"
+msgstr "Tiếp theo: %(days)s vào %(date)s"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave match these filters"
+msgstr "Không có loại nghỉ nào khớp bộ lọc"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave yet"
+msgstr "Chưa có loại nghỉ nào"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nobody (approved at once)"
+msgstr "Không ai (duyệt ngay)"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nobody (unpaid)"
+msgstr "Không ai (không lương)"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Nobody holds more than %s days; nothing more is added until they take some."
+msgstr "Không ai giữ quá %s ngày; không cộng thêm cho đến khi họ dùng bớt."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Not counted"
+msgstr "Không tính"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "Not counted against an allowance"
+msgstr "Không trừ vào số ngày được hưởng"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Not counted against an allowance: people ask for it when they need it."
+msgstr "Không trừ vào số ngày được hưởng: nhân viên xin khi cần."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Not decided yet"
+msgstr "Chưa quyết định"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Not offered: only HR enters it"
+msgstr "Không hiển thị: chỉ nhân sự nhập"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nothing is added in the first %s months of service."
+msgstr "Không cộng ngày nào trong %s tháng làm việc đầu tiên."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nothing new to add: every finished month is already in."
+msgstr "Không có gì mới để cộng: mọi tháng đã qua đều đã được cộng."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nothing was added: these kinds are already there."
+msgstr "Không thêm gì: các loại này đã có."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Nothing yet. Days are added the night after each month ends."
+msgstr "Chưa có. Ngày được cộng vào đêm sau khi mỗi tháng kết thúc."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Off: only what is earned so far. On: the whole year's days from the start of"
+" the year."
+msgstr ""
+"Tắt: chỉ số ngày đã tích lũy. Bật: toàn bộ ngày của năm ngay từ đầu năm."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_take_ahead
+msgid ""
+"Off: people can take only what they have earned so far. On: the whole year's"
+" days can be taken from the start of the year; if somebody leaves early they"
+" may owe the days they took ahead."
+msgstr ""
+"Tắt: nhân viên chỉ dùng được số ngày đã tích lũy. Bật: có thể dùng toàn bộ "
+"ngày của năm từ đầu năm; ai nghỉ việc sớm có thể nợ số ngày đã dùng trước."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "On their leave page"
+msgstr "Trên trang nghỉ phép của họ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_hr_only
+msgid "Only HR can enter this"
+msgstr "Chỉ nhân sự được nhập"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Only HR enters it"
+msgstr "Chỉ nhân sự nhập"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Only a kind counted against an allowance can build up."
+msgstr "Chỉ loại trừ vào số ngày được hưởng mới tích lũy được."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Only an HR manager can change kinds of leave."
+msgstr "Chỉ quản lý nhân sự mới thay đổi được các loại nghỉ."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Paid"
+msgstr "Có lương"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Paid %s"
+msgstr "Có lương, %s chi trả"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Paid leave needs somebody to pay for it."
+msgstr "Nghỉ có lương cần có bên chi trả."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Partly paid"
+msgstr "Hưởng một phần lương"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Partly paid (%(pct)s%%) %(who)s"
+msgstr "Hưởng một phần lương (%(pct)s%%), %(who)s chi trả"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Pay"
+msgstr "Lương"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Pay and how the days build up are set by your leave policy."
+msgstr "Lương và cách tích lũy ngày do chính sách nghỉ phép quy định."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Pay to decide"
+msgstr "Chưa quyết định lương"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_take_ahead
+msgid "People can take days before they are earned"
+msgstr "Được dùng ngày trước khi tích lũy"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "People can take only what they have earned so far."
+msgstr "Nhân viên chỉ dùng được số ngày đã tích lũy."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"People can take the whole year's days from the start of the year. Somebody "
+"who leaves early may owe the days taken ahead."
+msgstr ""
+"Nhân viên có thể dùng toàn bộ ngày của năm từ đầu năm. Ai nghỉ việc sớm có "
+"thể nợ số ngày đã dùng trước."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "People do not see it on their own leave page."
+msgstr "Nhân viên không thấy loại này trên trang nghỉ phép của mình."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "People have a number of days of it, shown on their leave page."
+msgstr "Mỗi người có một số ngày của loại này, hiển thị trên trang nghỉ phép."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "People have already asked for it, so this cannot change."
+msgstr "Đã có người xin nghỉ loại này nên không thể đổi."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"People have already asked for this kind of leave, so how it is counted "
+"cannot change. Make a new kind instead."
+msgstr ""
+"Đã có người xin loại nghỉ này nên không thể đổi cách tính. Hãy tạo loại mới."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"People have already asked for this kind of leave, so whether it is counted "
+"against an allowance cannot change. Make a new kind instead."
+msgstr ""
+"Đã có người xin loại nghỉ này nên không thể đổi việc có trừ vào số ngày được"
+" hưởng hay không. Hãy tạo loại mới."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Pick one of your own companies."
+msgstr "Hãy chọn một trong các công ty của bạn."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Pick the first month."
+msgstr "Hãy chọn tháng đầu tiên."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Read the list again"
+msgstr "Tải lại danh sách"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Reading the kinds of leave…"
+msgstr "Đang đọc các loại nghỉ…"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Ready-made"
+msgstr "Có sẵn"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_starter_key
+msgid "Ready-made kind"
+msgstr "Loại có sẵn"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Ready-made kinds"
+msgstr "Loại có sẵn"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid ""
+"Ready-made kinds are offered for Vietnam, Indonesia, India, Singapore, "
+"Thailand, Cambodia and Malaysia."
+msgstr ""
+"Các loại có sẵn được cung cấp cho Việt Nam, Indonesia, Ấn Độ, Singapore, "
+"Thái Lan, Campuchia và Malaysia."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model,name:pb_leave_setup.model_pb_leave_starters
+msgid "Ready-made kinds of leave"
+msgstr "Các loại nghỉ có sẵn"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_starter_version
+msgid "Ready-made version"
+msgstr "Phiên bản có sẵn"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Remove a filter above, or start again from every kind."
+msgstr "Bỏ bớt bộ lọc ở trên, hoặc bắt đầu lại từ tất cả các loại."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Remove this step"
+msgstr "Xóa bậc này"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Save and switch on"
+msgstr "Lưu và bật"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Saved and switched on. People can ask for it now."
+msgstr "Đã lưu và bật. Nhân viên có thể xin nghỉ loại này."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Say how many days a year it gives."
+msgstr "Hãy cho biết mỗi năm được bao nhiêu ngày."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Service"
+msgstr "Thâm niên"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Set by your leave policy"
+msgstr "Theo chính sách nghỉ phép"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Set-up check"
+msgstr "Kiểm tra thiết lập"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Share of pay (%)"
+msgstr "Tỷ lệ lương (%)"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Show"
+msgstr "Hiện"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Show every kind"
+msgstr "Hiện tất cả các loại"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Show them"
+msgstr "Xem các loại này"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Showing"
+msgstr "Đang hiển thị"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Somebody who joins during the year gets a share for the rest of that year."
+msgstr "Người vào làm giữa năm được hưởng phần còn lại của năm đó."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Somebody who joins or leaves part-way through a month gets that part of the "
+"month's days."
+msgstr ""
+"Người vào làm hoặc nghỉ việc giữa tháng được hưởng phần ngày tương ứng của "
+"tháng đó."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Start from the ready-made kinds for your country, or add your own one by "
+"one."
+msgstr ""
+"Bắt đầu từ các loại có sẵn cho quốc gia của bạn, hoặc tự thêm từng loại."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_waiting_months
+msgid "Starts after this many months of service"
+msgstr "Bắt đầu sau số tháng làm việc này"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Switch off"
+msgstr "Tắt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Switch on"
+msgstr "Bật"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched off"
+msgstr "Đang tắt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched off. Nobody can ask for it; what was taken stays recorded."
+msgstr "Đã tắt. Không ai xin được loại này; những ngày đã nghỉ vẫn được lưu."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched on"
+msgstr "Đang bật"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Switched on or off"
+msgstr "Bật hoặc tắt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched on. People can ask for it now."
+msgstr "Đã bật. Nhân viên có thể xin nghỉ loại này."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Taken in"
+msgstr "Tính theo"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Tell HR when it is"
+msgstr "Báo cho nhân sự khi có"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "That could not be done."
+msgstr "Không thực hiện được."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "That could not be saved."
+msgstr "Không lưu được."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "The HR team"
+msgstr "Bộ phận nhân sự"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid ""
+"The allocation needs a second approval in Time Off, so the earned days were "
+"not added."
+msgstr ""
+"Phân bổ cần duyệt lần hai trong Nghỉ phép nên ngày tích lũy chưa được cộng."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "The company"
+msgstr "Công ty"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The company's share (%)"
+msgstr "Phần công ty trả (%)"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "The company's share cannot be more than the part that is paid."
+msgstr "Phần công ty trả không thể lớn hơn phần được trả lương."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể đã mất kết nối. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"The figures follow the law named under each one, as we read it. Check them "
+"against your own legal advice and your company's policy."
+msgstr ""
+"Các con số theo luật ghi dưới mỗi loại, theo cách chúng tôi hiểu. Hãy đối "
+"chiếu với tư vấn pháp lý và chính sách của công ty bạn."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"The figures follow the law named under each one, as we read it. Nothing "
+"reaches anyone until you check a kind and switch it on."
+msgstr ""
+"Các con số theo luật ghi dưới mỗi loại, theo cách chúng tôi hiểu. Không ai "
+"thấy gì cho đến khi bạn kiểm tra và bật từng loại."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_earn_from
+msgid ""
+"The first month the days build up. Months before it are never added, so days"
+" HR already gave by hand are not given twice."
+msgstr ""
+"Tháng đầu tiên bắt đầu tích lũy. Các tháng trước đó không bao giờ được cộng,"
+" nên ngày nhân sự đã cấp thủ công không bị cấp hai lần."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "The kinds could not be added."
+msgstr "Không thêm được các loại này."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "The kinds of leave could not be read just now."
+msgstr "Hiện không đọc được các loại nghỉ."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The kinds of leave could not load"
+msgstr "Không tải được các loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid ""
+"The kinds of leave could not load. Check your connection, then press Try "
+"again."
+msgstr "Không tải được các loại nghỉ. Kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "The most days a person can hold cannot be below zero."
+msgstr "Số ngày tối đa không thể nhỏ hơn 0."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "The ready-made kinds could not be read."
+msgstr "Không đọc được các loại có sẵn."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "The waiting period must be between 0 and 120 months."
+msgstr "Thời gian chờ phải từ 0 đến 120 tháng."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Their manager"
+msgstr "Quản lý trực tiếp"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Their manager, then HR"
+msgstr "Quản lý trực tiếp, sau đó nhân sự"
+
+#. module: pb_leave_setup
+#: model:ir.model.constraint,message:pb_leave_setup.constraint_pb_leave_earning_posting_once
+msgid "These days have already been added."
+msgstr "Những ngày này đã được cộng."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"They get no extra days for long service, and nothing from a kind with a "
+"waiting period. Add the date on their employee record."
+msgstr ""
+"Họ không được ngày thêm theo thâm niên và không được gì từ loại có thời gian"
+" chờ. Hãy thêm ngày vào làm trên hồ sơ nhân viên."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "They stay switched off until you check each one and switch it on."
+msgstr "Chúng vẫn tắt cho đến khi bạn kiểm tra và bật từng loại."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"This kind does not build up: switch it on and choose how it is earned first."
+msgstr "Loại này không tự tích lũy: hãy bật và chọn cách tích lũy trước."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "This kind of leave"
+msgstr "Loại nghỉ này"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "This kind of leave could not be found."
+msgstr "Không tìm thấy loại nghỉ này."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "This kind of leave could not be opened."
+msgstr "Không mở được loại nghỉ này."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "This one is for the HR team"
+msgstr "Màn hình này dành cho bộ phận nhân sự"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Tick at least one kind to add."
+msgstr "Hãy chọn ít nhất một loại để thêm."
+
+#. module: pb_leave_setup
+#: model:ir.model,name:pb_leave_setup.model_hr_leave_allocation
+msgid "Time Off Allocation"
+msgstr "Phân bổ nghỉ phép"
+
+#. module: pb_leave_setup
+#: model:ir.model,name:pb_leave_setup.model_hr_leave_type
+msgid "Time Off Type"
+msgstr "Loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Two steps start after the same number of years."
+msgstr "Có hai bậc bắt đầu sau cùng số năm."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Type a number of days."
+msgstr "Hãy nhập số ngày."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Type a number of months."
+msgstr "Hãy nhập số tháng."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Type a share between 0 and 100."
+msgstr "Hãy nhập tỷ lệ từ 0 đến 100."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Unpaid"
+msgstr "Không lương"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_review
+msgid "Waiting for review"
+msgstr "Chờ xem lại"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Warn people holding more than this many days"
+msgstr "Nhắc người đang giữ nhiều hơn số ngày này"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "What it is"
+msgstr "Đây là loại gì"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "What it means, and what people see"
+msgstr "Ý nghĩa và những gì nhân viên thấy"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Where every kind of leave is"
+msgstr "Trạng thái của từng loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_sources
+msgid "Where the figures come from"
+msgstr "Nguồn của các con số"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_starter_key
+msgid ""
+"Which ready-made kind this was made from (for example VN.annual). Applying "
+"the same country again never makes it twice."
+msgstr ""
+"Loại có sẵn mà loại này được tạo từ đó (ví dụ VN.annual). Áp dụng lại cùng "
+"quốc gia sẽ không tạo trùng."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Who approves it"
+msgstr "Người duyệt"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Who pays for it"
+msgstr "Bên chi trả"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Whole days"
+msgstr "Cả ngày"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__pb_leave_earning__period__year
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Years of service"
+msgstr "Số năm làm việc"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "You can look; only an HR manager can change kinds of leave."
+msgstr "Bạn có thể xem; chỉ quản lý nhân sự mới thay đổi được các loại nghỉ."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_max_balance
+msgid ""
+"Zero means no limit. Once somebody holds this many days, nothing more is "
+"added until they take some."
+msgstr ""
+"0 nghĩa là không giới hạn. Khi một người đã giữ số ngày này, không cộng thêm"
+" cho đến khi họ dùng bớt."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_expire_months
+msgid "Zero means the days do not run out."
+msgstr "0 nghĩa là ngày phép không hết hạn."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "after %s months of service"
+msgstr "sau %s tháng làm việc"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "build up by themselves"
+msgstr "tự tích lũy"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "by an outside fund"
+msgstr "quỹ bên ngoài"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "by the company"
+msgstr "công ty"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "by the company and a fund"
+msgstr "công ty và quỹ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "kinds of leave"
+msgstr "loại nghỉ"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "kinds that are switched on have no pay decision yet."
+msgstr "loại đang bật chưa quyết định cách trả lương."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "limited by the most a person can hold"
+msgstr "bị giới hạn bởi số ngày tối đa"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "more"
+msgstr "nữa"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "more days a year"
+msgstr "ngày thêm mỗi năm"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "more with long service"
+msgstr "thêm theo thâm niên"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "paid"
+msgstr "có lương"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "part of the period"
+msgstr "một phần kỳ"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "partly paid"
+msgstr "hưởng một phần lương"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "pay to decide"
+msgstr "chưa quyết định lương"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "people have no date of joining."
+msgstr "người chưa có ngày vào làm."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "people with no date of joining"
+msgstr "người chưa có ngày vào làm"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "ready-made kinds are waiting for your review."
+msgstr "loại có sẵn đang chờ bạn xem lại."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "switched on"
+msgstr "đang bật"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "unpaid"
+msgstr "không lương"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "waiting for review"
+msgstr "chờ xem lại"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "with pay to decide"
+msgstr "chưa quyết định lương"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "years:"
+msgstr "năm:"

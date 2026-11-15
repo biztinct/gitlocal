@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- My Leave: a kind that builds up says what was earned so far and when
+       the next days come. An xpath FROM this module (pb_ess_workforce is never
+       edited, collision list); anchored on the tile's own "used" line. The
+       keys are new and optional: a tile without them renders as before. -->
+  <template id="portal_my_work_leave_earning" inherit_id="pb_ess_workforce.portal_my_work_leave"
+            name="My Leave: earned so far">
+    <xpath expr="//div[hasclass('pbme-tile-y')]" position="after">
+      <div t-if="b.get('pb_earned_label') or b.get('pb_next_label') or b.get('pb_ahead_label')" class="pblk-earn">
+        <span t-if="b.get('pb_earned_label')" class="pblk-earn-l" t-esc="b['pb_earned_label']"/>
+        <span t-if="b.get('pb_next_label')" class="pblk-earn-n" t-esc="b['pb_next_label']"/>
+        <span t-if="b.get('pb_ahead_label')" class="pblk-earn-a" t-esc="b['pb_ahead_label']"/>
+      </div>
+    </xpath>
+  </template>
+</odoo>
