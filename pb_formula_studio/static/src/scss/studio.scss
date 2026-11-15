@@ -1538,8 +1538,44 @@
     .pbfs-health {
         .pbcfg-rail { margin-bottom: 14px; }
         .ed-errbox { margin-bottom: 14px; }
+        // WDGAP W2-F — "Tax year starts in", one quiet row
+        .pbfs-taxyear { margin-bottom: 14px; padding: 14px 18px; }
+        .pbfs-taxyear-row { display: flex; align-items: center; gap: 14px; }
+        .pbfs-taxyear-ic {
+            flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px;
+            border-radius: 10px; background: #F1EFFA; color: #5A4BB0;
+            svg { width: 17px; height: 17px; }
+        }
+        .pbfs-taxyear-txt { flex: 1; min-width: 0; }
+        .pbfs-taxyear-l { display: block; font-size: 13.5px; font-weight: 700; color: #1E1B2E; margin: 0; }
+        .pbfs-taxyear-help { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+        .pbfs-taxyear-sel {
+            // the panel's form rules make every select full width; this one sits
+            // at the end of its row
+            flex: none; width: auto; min-width: 150px; max-width: 220px;
+            height: 36px; padding: 0 12px; border-radius: 10px;
+            border: 1px solid var(--line); background: #fff; color: #1E1B2E; font-size: 13px; font-weight: 600;
+            &:focus { outline: none; border-color: #5A4BB0; box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
+            &:disabled { background: #F7F7FA; color: var(--muted); cursor: not-allowed; }
+        }
+        .pbfs-taxyear-warn {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+            padding: 10px 12px; border-radius: 10px; background: #FEF6E7; border: 1px solid #F3DDB0;
+            color: #7A4E07; font-size: 12.5px; line-height: 1.45;
+            animation: pbfsTyIn .2s ease-out both;
+            > svg { flex: none; width: 16px; height: 16px; color: #B7791F; }
+        }
+        .pbfs-taxyear-wt { flex: 1; min-width: 200px; }
+        .pbfs-taxyear-acts { display: inline-flex; gap: 8px; }
+        @media (max-width: 640px) {
+            .pbfs-taxyear-row { flex-wrap: wrap; }
+            .pbfs-taxyear-sel { width: 100%; }
+        }
     }
 }
+
+@keyframes pbfsTyIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pbfs .pbfs-health .pbfs-taxyear-warn { animation: none; } }
 
 /* SCHEMECTX P3 — where the settings panel used to be. Only ever seen on a
    database that has the studio without the guided setup, which is why it is

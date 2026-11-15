@@ -1150,6 +1150,11 @@ class HrPayslipFormula(models.Model):
                 payslip.formula_input_values = json.dumps(input_values)
                 payslip.formula_input_sources = json.dumps(input_sources)
                 payslip.pb_sourced_inputs = self.pb_count_sourced(input_sources)
+                # WDGAP W2-F (F-1): the same answer the inputs were built on;
+                # written only when it says something or changes.
+                kept_out = batch._pb_advance_kept_out(payslip.employee_id)
+                if kept_out != payslip.pb_advance_taken_in_id:
+                    payslip.pb_advance_taken_in_id = kept_out.id or False
                 payslip.line_ids.unlink()
                 batch._compute_and_create_payslip_lines(payslip, input_values)
             else:

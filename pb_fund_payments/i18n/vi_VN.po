@@ -2328,3 +2328,9 @@ msgstr "“%s” thuộc chương trình lương của công ty khác."
 #: code:addons/pb_fund_payments/static/src/xml/fund_board.xml:0
 msgid "”. Check the spelling, or search by a fund or a payment reference."
 msgstr "”. Hãy kiểm tra chính tả, hoặc tìm theo quỹ hoặc mã tham chiếu."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_approval.py:0
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương"

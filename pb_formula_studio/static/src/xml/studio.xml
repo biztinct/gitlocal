@@ -285,6 +285,35 @@
                class="ed-errbox" t-esc="state.settings.status.error_details"/>
 
           <div class="pbcfg-body">
+            <!-- WDGAP W2-F (F-4) — "Tax year starts in": the scheme form's own
+                 field, label and warning, as a row of its own (there is no
+                 cycle field here to sit beside). -->
+            <div t-if="state.settings and state.settings.tax_year" class="ce-sec pbfs-taxyear">
+              <div class="pbfs-taxyear-row">
+                <span class="pbfs-taxyear-ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                </span>
+                <div class="pbfs-taxyear-txt">
+                  <label class="pbfs-taxyear-l" for="pbfs-taxyear-sel" t-esc="state.settings.tax_year.label"/>
+                  <div class="pbfs-taxyear-help" t-esc="state.settings.tax_year.help"/>
+                </div>
+                <select id="pbfs-taxyear-sel" class="pbfs-taxyear-sel"
+                        t-att-disabled="!state.canEdit or !state.settings.tax_year.can_edit or state.taxYearBusy or state.taxYearPending"
+                        t-on-change="onTaxYearChange">
+                  <t t-foreach="state.settings.tax_year.options" t-as="o" t-key="o[0]">
+                    <option t-att-value="o[0]" t-att-selected="o[0] === state.settings.tax_year.month" t-esc="o[1]"/>
+                  </t>
+                </select>
+              </div>
+              <div t-if="state.taxYearPending" class="pbfs-taxyear-warn" role="alertdialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></svg>
+                <span class="pbfs-taxyear-wt" t-esc="state.taxYearPending.warning"/>
+                <span class="pbfs-taxyear-acts">
+                  <button class="pbfs-btn primary sm" t-att-disabled="state.taxYearBusy" t-on-click="confirmTaxYear">Change it</button>
+                  <button class="pbfs-btn ghost sm" t-att-disabled="state.taxYearBusy" t-on-click="cancelTaxYear">Keep it as it is</button>
+                </span>
+              </div>
+            </div>
             <div t-if="graphCycles.length" class="ce-sec pbfs-intel-cyc">
               <div class="ce-sec-h">Circular references</div>
               <div class="ce-sec-sub">These components depend on each other in a loop — the engine cannot work them out.</div>

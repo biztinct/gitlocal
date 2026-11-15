@@ -17003,3 +17003,39 @@ msgstr "Tìm mức lương cho ra một mức thực nhận, cho người này"
 #: code:addons/pb_formula_studio/models/take_home.py:0
 msgid "Take-home goes down when %(item)s goes up, so a take-home figure cannot be worked back from %(item)s. Pick a pay item that adds to take-home."
 msgstr "Lương thực nhận giảm khi %(item)s tăng, nên không thể tính ngược mức thực nhận từ %(item)s. Hãy chọn một khoản lương làm tăng lương thực nhận."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "This pay scheme no longer exists."
+msgstr "Chương trình lương này không còn tồn tại."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Pick a month."
+msgstr "Hãy chọn một tháng."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "The tax year now starts in %s."
+msgstr "Năm tính thuế giờ bắt đầu từ %s."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "The tax year could not be changed."
+msgstr "Không thể đổi năm tính thuế."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Change it"
+msgstr "Đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Keep it as it is"
+msgstr "Giữ nguyên"

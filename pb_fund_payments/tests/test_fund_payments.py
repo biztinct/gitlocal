@@ -230,7 +230,9 @@ class TestFundPayments(FundFixture):
         self.assertTrue(by_name['Health Insurance']['paired'])
         pit = by_name['Personal Income Tax']
         self.assertFalse(pit['paired'])
-        self.assertTrue(pit['note'], "a lone deduction says it may not be an outside office")
+        # WDGAP W2-F (F-3): the "untick it" note is gone — loan repayments and
+        # the advance are left out by the schemes' own settings instead
+        self.assertFalse(pit['note'])
         codes = {i['code'] for p in props for i in p['items']}
         for never in ('UNIONPART', 'INSBASE', 'HIDDEN', 'BASIC', 'NETPAY'):
             self.assertNotIn(never, codes, never)
@@ -345,13 +347,13 @@ class TestFundPayments(FundFixture):
                                                'currency_id': self.vnd.id})
         officer = new_test_user(self.env, login='w2b_off', company_id=comp.id,
                                 groups='base.group_user,' + g_mgr)
-        fin = new_test_user(self.env, login='w2b_fin', company_id=comp.id,
-                            groups='base.group_user,' + g_mgr)
-        # the second signature holds NO payroll role: the seat alone lets them read
+        # WDGAP W2-F (F-2): ONE signature, the Head of pay. The seat holder
+        # here holds NO payroll role on purpose: the seat alone lets them read
+        # (ledger W2B-2 — the engine applies as the last decider).
         director = new_test_user(self.env, login='w2b_dir', company_id=comp.id,
                                  groups='base.group_user')
         self.env.user.company_ids = [(4, comp.id)]
-        for key, user in (('finance', fin), ('director', director)):
+        for key, user in (('pay_head', director),):
             role = self.env['biz.approval.role'].sudo().search([('key', '=', key)], limit=1)
             held = self.env['biz.approval.responsibility'].sudo().with_context(
                 active_test=False).search([('company_id', '=', comp.id),
@@ -426,7 +428,10 @@ class TestFundPayments(FundFixture):
             self.env['biz.approval.engine'].with_user(seat.acting_user_id).with_context(
                 allowed_company_ids=[comp.id]).decide(request.id, step.key, 'approve', 'ok')
         rec.invalidate_recordset()
-        self.assertEqual(deciders, {fin.id, director.id}, "two different signatures")
+        self.assertEqual(deciders, {director.id}, "one signature, the Head of pay")
+        steps = request.step_ids
+        self.assertEqual(len(steps), 1)
+        self.assertEqual(steps.title, 'Head of pay')
         self.assertEqual(rec.sudo().state, 'approved')
         self.assertIn(director, rec.sudo().seat_user_ids)
         # the director reads the one payment they were asked to decide — no other

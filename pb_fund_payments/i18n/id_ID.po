@@ -2346,3 +2346,9 @@ msgstr "“%s” milik skema gaji perusahaan lain."
 msgid "”. Check the spelling, or search by a fund or a payment reference."
 msgstr ""
 "”. Periksa ejaannya, atau cari berdasarkan dana atau referensi pembayaran."
+
+#. module: pb_fund_payments
+#. odoo-python
+#: code:addons/pb_fund_payments/models/fund_approval.py:0
+msgid "Head of pay"
+msgstr "Kepala penggajian"

@@ -19,6 +19,13 @@ country table here (handover §1.1, binding non-goal): the suggestion pairs an
 employer cost with the deduction of the same name ("Social insurance (EE)" /
 "Social insurance (ER)") and proposes one payee per name. A person reviews,
 merges and unticks before anything is created.
+
+WHAT IS NEVER A FUND (WDGAP W2-F, F-3). A loan repayment and the mid-month
+advance are taken off pay too, but nobody outside is paid them. They are left
+out from the scheme's own settings — "Loan repayments go into" (pb_loans) and
+the carry-over setting that types the advance — together with every component
+that reads only those (`_pb_not_funds`). A scheme where neither is set says
+nothing about them, and Suggest cannot tell them from a fund there.
 """
 import logging
 import re
@@ -139,7 +146,7 @@ class PbFundPayee(models.Model):
         an outside office: printed on the payslip (so there is a line to add
         up), counted in money, taken off net pay or an employer cost, and not
         a part already counted inside another total."""
-        return self.env['hr.formula.rule'].sudo().search([
+        rules = self.env['hr.formula.rule'].sudo().search([
             ('config_id.state', '=', 'active'),
             ('config_id.company_id', 'in', companies.ids),
             ('net_role', 'in', list(ROLE_SHARE)),
@@ -147,6 +154,56 @@ class PbFundPayee(models.Model):
         ], order='config_id, sequence, id').filtered(
             lambda r: (r.value_kind or 'money') in MONEY_KINDS
             and not r.net_role_detail)
+        not_funds = self._pb_not_funds(rules.mapped('config_id'))
+        return rules - not_funds
+
+    # WDGAP W2-F (F-3) — what is never a fund, from the scheme's own settings.
+    @api.model
+    def _pb_not_funds(self, configs):
+        """Components Suggest never offers: a scheme's "Loan repayments go
+        into" item (pb_loans, read by probe — no dependency), the items its
+        carry-over setting types as the mid-month advance (W2-F F-1), and
+        every component whose formula reads nothing but those (and fixed
+        values) — the "Loan repayment" line an instalment input feeds."""
+        Rule = self.env['hr.formula.rule'].sudo()
+        out = Rule.browse()
+        for config in configs:
+            seeds = Rule.browse()
+            if 'pb_loan_rule_id' in config._fields and config.pb_loan_rule_id:
+                seeds |= config.pb_loan_rule_id
+            if hasattr(config, '_pb_advance_rules'):
+                seeds |= config._pb_advance_rules()
+            if seeds:
+                out |= self._pb_read_only_from(config, seeds)
+        return out
+
+    @api.model
+    def _pb_read_only_from(self, config, seeds):
+        """`seeds` plus, to a fixed point, every component of `config` whose
+        formula reads at least one of them and otherwise only fixed values."""
+        rules = config.rule_ids
+        by_ref = {}
+        for rule in rules:
+            for ref in (rule.code, rule.column_letter):
+                if ref:
+                    by_ref.setdefault(ref.upper(), rule)
+        fixed = rules.filtered(lambda r: r.column_type == 'constant')
+        out = seeds & rules
+        changed = True
+        while changed:
+            changed = False
+            for rule in rules - out:
+                if rule.column_type == 'input' or not rule.formula_dependencies:
+                    continue
+                reads = rule.browse()
+                for ref in rule.formula_dependencies.split(','):
+                    hit = by_ref.get(ref.strip().upper())
+                    if hit and hit != rule:
+                        reads |= hit
+                if reads & out and not (reads - out - fixed):
+                    out |= rule
+                    changed = True
+        return out | seeds
 
     @api.model
     def _pb_suggest(self, companies):
@@ -210,10 +267,9 @@ class PbFundPayee(models.Model):
                     'scheme': rule.config_id.name or '',
                     'currency': rule.config_id.currency_id.name or '',
                 })
-            note = '' if entry['paired'] else _(
-                "Taken off pay, with no employer share. Untick it if it is not "
-                "paid to an outside office — a loan repayment or a salary "
-                "advance, for example.")
+            # WDGAP W2-F (F-3): loan repayments and the mid-month advance are
+            # left out above, so the old "untick it" note is gone.
+            note = ''
             out.append({'key': key, 'name': entry['name'],
                         'company_id': entry['company'].id,
                         'items': items, 'paired': entry['paired'], 'note': note})

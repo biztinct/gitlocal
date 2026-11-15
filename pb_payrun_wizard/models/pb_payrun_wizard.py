@@ -1061,6 +1061,67 @@ class PbPayrunWizard(models.AbstractModel):
                     names)
         return sentence, warning
 
+    # ---------------- WDGAP W2-F (F-1): the mid-month advance, said plainly --
+    @api.model
+    def _extra_advance_kept_words(self, wheres, picked_count):
+        """"The mid-month advance was already taken in <run> for 3 of the
+        people picked. This extra run will not take it again." """
+        names = []
+        for where in wheres:
+            if where and where not in names:
+                names.append(where)
+        runs = ', '.join(names[:3]) or _("another payslip of this month")
+        if len(names) > 3:
+            runs = _("%(names)s and %(more)s other runs", names=runs, more=len(names) - 3)
+        count = len(wheres)
+        if picked_count == 1 and count == 1:
+            return _("The mid-month advance was already taken in %s for the "
+                     "person picked. This extra run will not take it again.", runs)
+        return _("The mid-month advance was already taken in %(runs)s for "
+                 "%(count)s of the people picked. This extra run will not take "
+                 "it again.", runs=runs, count=count)
+
+    @api.model
+    def _extra_advance_taken_words(self, run, took):
+        """What the result step says about extra payslips that DID take the
+        advance. Nothing else has taken it: PR-E's sentence, unchanged
+        (handover F-1: "behaviour is unchanged — the Extra run may be the one
+        that takes it"). The month's regular payslip not worked out yet: why
+        it could not be told."""
+        verdicts = run._pb_advance_verdicts_of(took) \
+            if hasattr(run, '_pb_advance_verdicts_of') else {}
+        kinds = [(verdicts.get(s.employee_id.id) or {}).get('verdict') for s in took]
+        n = len(took)
+        if 'undecided' in kinds and all(k in ('free', 'undecided') for k in kinds):
+            return (_("1 payslip in this extra run takes the mid-month advance. "
+                      "The month's regular payslip is not worked out yet, so it "
+                      "could not be told whether it takes it too.") if n == 1 else _(
+                "%s payslips in this extra run take the mid-month advance. The "
+                "month's regular payslips are not all worked out yet, so it "
+                "could not be told whether they take it too.", n))
+        return (_("1 payslip in this extra run also takes the mid-month "
+                  "advance off. Check it has not been taken already.") if n == 1 else _(
+            "%s payslips in this extra run also take the mid-month "
+            "advance off. Check it has not been taken already.", n))
+
+    @api.model
+    def _extra_advance_preflight(self, config, found, date_start, date_end, picked_count):
+        """Before computing: for how many of the people picked (and in the
+        file) the month's advance was already taken — {} when nobody, or when
+        the scheme types no advance."""
+        if not found or not date_start or not date_end \
+                or not hasattr(config, '_pb_advance_verdicts') \
+                or config.cycle_type != 'end_cycle':
+            return {}
+        verdicts = config._pb_advance_verdicts(
+            found, fields.Date.to_date(date_start), fields.Date.to_date(date_end))
+        kept = [v for v in verdicts.values() if v['verdict'] == 'taken']
+        if not kept:
+            return {}
+        return {'advance_kept': len(kept),
+                'advance_kept_sentence': self._extra_advance_kept_words(
+                    [v['where'] for v in kept], picked_count)}
+
     @api.model
     def _extra_keep_picked(self, batch, picked):
         """Take every row of `batch` that is not about somebody in `picked`
@@ -1090,7 +1151,8 @@ class PbPayrunWizard(models.AbstractModel):
         }
 
     @api.model
-    def _extra_people_in_file(self, config, content, filename, picked):
+    def _extra_people_in_file(self, config, content, filename, picked,
+                              date_start=None, date_end=None):
         """For the pay-data step, BEFORE anything is computed: which of the
         people picked are in this file. Reads the file the way the loader
         reads it and matches each row the way the loader matches it, on
@@ -1126,9 +1188,14 @@ class PbPayrunWizard(models.AbstractModel):
         absent = (picked - found).sorted('name')
         sentence, warning = self._extra_file_words(
             len(rows), len(found), absent.mapped('name'))
-        return {'rows': len(rows), 'kept': len(found), 'picked': len(picked),
-                'absent': absent.mapped('name'),
-                'sentence': sentence, 'warning': warning}
+        out = {'rows': len(rows), 'kept': len(found), 'picked': len(picked),
+               'absent': absent.mapped('name'),
+               'sentence': sentence, 'warning': warning}
+        # WDGAP W2-F (F-1): only the people the file feeds can take the
+        # advance from it; the others are worked out without the file.
+        out.update(self._extra_advance_preflight(
+            config, found, date_start, date_end, len(picked)))
+        return out
 
     # ---------------- Existing-payroll detection + cleanup ----------------
     @api.model
@@ -2238,12 +2305,14 @@ class PbPayrunWizard(models.AbstractModel):
     @api.model
     @runner_only
     def preflight_spreadsheet(self, config_id, file_b64, filename,
-                              employee_ids=None):
+                              employee_ids=None, date_start=None, date_end=None):
         """Read a file's headings and say what it feeds. Creates nothing.
 
         `employee_ids` (WDGAP PR-E): the people an Extra run is for. With
         them, the answer also says how many people the file has and which
-        of the picks it does not carry (`extra`).
+        of the picks it does not carry (`extra`). With the run's dates as
+        well (WDGAP W2-F), it says for how many of them the month's
+        mid-month advance was already taken (`extra.advance_kept_sentence`).
 
         `peek_source_columns` parses through an in-memory `new()` record: no
         batch row, no import line, no employee touched, no pay value written.
@@ -2311,7 +2380,8 @@ class PbPayrunWizard(models.AbstractModel):
             picked = self.env['hr.employee'].sudo().browse(picked_ids).exists()
             try:
                 extra = self._extra_people_in_file(
-                    config, content, filename, picked) if picked else None
+                    config, content, filename, picked,
+                    date_start=date_start, date_end=date_end) if picked else None
             except Exception:   # noqa: BLE001 — a hint never blocks the step
                 _logger.info("Payrun wizard: could not tell who is in %s",
                              filename, exc_info=True)
@@ -2490,17 +2560,20 @@ class PbPayrunWizard(models.AbstractModel):
         if extra_note is not None:
             # the mid-month advance: which of the extra payslips the file
             # also took it off (see extra_run_file.py)
-            took = batch.created_payslip_ids.filtered(
+            made = batch.created_payslip_ids
+            took = made.filtered(
                 lambda s: run._pb_took_advance(s)) \
                 if hasattr(run, '_pb_took_advance') else self.env['hr.payslip']
             extra_note['advance'] = len(took)
-            extra_note['advance_sentence'] = '' if not took else (
-                _("1 payslip in this extra run also takes the mid-month "
-                  "advance off. Check it has not been taken already.")
-                if len(took) == 1 else
-                _("%s payslips in this extra run also take the mid-month "
-                  "advance off. Check it has not been taken already.",
-                  len(took)))
+            extra_note['advance_sentence'] = \
+                self._extra_advance_taken_words(run, took) if took else ''
+            # WDGAP W2-F (F-1): the people the advance was kept out for
+            kept = made.filtered(lambda s: s.pb_advance_taken_in_id) \
+                if 'pb_advance_taken_in_id' in made._fields else made.browse()
+            extra_note['advance_kept'] = len(kept)
+            extra_note['advance_kept_sentence'] = self._extra_advance_kept_words(
+                [run._pb_advance_where(s.pb_advance_taken_in_id) for s in kept],
+                len(picked)) if kept else ''
             answer_extra = {'extra': extra_note}
 
         return {
@@ -2625,6 +2698,8 @@ class PbPayrunWizard(models.AbstractModel):
                 'employee_id': s.employee_id.id,
                 'net': net, 'flag': bool(fl.get('flag')),
                 'why': fl.get('reason') or '',
+                # WDGAP W2-F: a line worth knowing that is not a flag
+                'note': fl.get('note') or '',
                 'flag_kind': fl.get('kind') or '',
                 'split': bool(chip),
                 'split_why': (chip or {}).get('why', ''),

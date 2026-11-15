@@ -32,7 +32,7 @@ pension funds and the tax office. This module keeps the record of it:
 No bank file, no electronic filing, no accounting entry, no country tables,
 no demo data, no scheduled job.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

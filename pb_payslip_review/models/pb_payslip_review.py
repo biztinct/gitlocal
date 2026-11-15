@@ -338,6 +338,7 @@ class PbPayslipReview(models.AbstractModel):
                     'net': fl.get('net'), 'gross': totals.get(s.id, {}).get('gross'),
                     'state': s.state,
                     'flag': bool(fl.get('flag')), 'why': fl.get('reason') or '',
+                    'note': fl.get('note') or '',  # WDGAP W2-F: worth knowing, not a flag
                     'hold': s.id in held,
                     'color': PALETTE[(offset + i) % len(PALETTE)],
                 })
@@ -462,6 +463,7 @@ class PbPayslipReview(models.AbstractModel):
                 'title': s.contract_id.job_id.name if s.contract_id and s.contract_id.job_id else (s.struct_id.name or ''),
                 'net': net, 'gross': gross, 'state': s.state,
                 'flag': bool(fl.get('flag')), 'why': fl.get('reason') or '',
+                'note': fl.get('note') or '',  # WDGAP W2-F: worth knowing, not a flag
                 'color': PALETTE[i % len(PALETTE)],
             })
         return {
