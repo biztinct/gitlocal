@@ -120,6 +120,9 @@ from . import payroll_tax_table
 from . import treatment_classification
 
 from . import application_payroll_source
+# WDGAP W2-A — the scheme's tax year start and the ONE helper every
+# year-to-date reader asks (engine source, Updates desk, employee tax sheet).
+from . import tax_year
 from . import application_domain_sources
 from . import application_source_ui
 

@@ -191,6 +191,7 @@ class PayrollPreparation(models.Model):
         self.config_id._application_require_access()
         cert = {'channels': {k: True for k in ('leave', 'overtime', 'adjustments', 'timesheets')},
                 'employee_ids': sorted(self.employee_ids.ids), 'preview_only': True}
+        self.config_id._pb_history_prefetch(employees.ids)   # WDGAP W2-A: one batch read
         rows = [self.config_id._application_employee_inputs(e, self.date_from, self.date_to, cert)
                 for e in employees]
         blockers = [dict(b, employee_id=r['employee_id'], employee=r['name']) for r in rows for b in r['blockers']]
@@ -313,9 +314,14 @@ class PayrollPreparation(models.Model):
     # PDR D3 — final tax month reminder (never a blocker, never an issue)
     # ------------------------------------------------------------------
     def _final_tax_month(self, row):
-        """'december', 'leaving' or '' for one person in this period."""
-        if self.date_to.month == 12:
-            return 'december'
+        """'december', 'year_end', 'leaving' or '' for one person in this period.
+
+        WDGAP W2-A: the final tax month is the last month of the scheme's tax
+        year — December for a calendar tax year (as before, 'december'),
+        otherwise 'year_end' (the month before the tax year starts)."""
+        last = self.config_id._pb_tax_year_bounds(self.date_to)[1]
+        if self.date_to.month == last.month:
+            return 'december' if last.month == 12 else 'year_end'
         contract = self.env['hr.contract'].sudo().browse(row.get('contract_id') or []).exists()
         if contract.date_end and self.date_from <= contract.date_end <= self.date_to:
             return 'leaving'
@@ -338,7 +344,14 @@ class PayrollPreparation(models.Model):
         why = self._final_tax_month(row)
         if not why:
             return row
-        when = _('December') if why == 'december' else _('last month of work')
+        if why == 'december':
+            when = _('December')
+        elif why == 'year_end':
+            # WDGAP W2-A: the last month of a tax year that does not end in December.
+            when = self.config_id._pb_tax_year_month_name(
+                self.config_id._pb_tax_year_bounds(self.date_to)[1].month)
+        else:
+            when = _('last month of work')
         for code, rule in flagged.items():
             cell = row['cells'].get(code)
             if not cell or cell['issue'] or cell.get('value') not in (None, '', 0, 0.0):

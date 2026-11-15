@@ -141,6 +141,9 @@
                             <field name="code"/>
                             <field name="country_code"/>
                             <field name="cycle_type"/>
+                            <!-- WDGAP W2-A: next to the cycle; changing it on a
+                                 scheme with finished payslips warns (onchange). -->
+                            <field name="tax_year_start_month"/>
                             <field name="connector_id"/>
                             <field name="use_color_coded_excel_import"/>
                             <field name="payroll_journal_id"
