@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-C: the trip form gets the three moves of a cash advance and
+       a "Cash advance" tab; nothing shows on a trip without an advance. -->
+  <record id="view_pb_business_trip_form_advance" model="ir.ui.view">
+    <field name="name">pb.business.trip.form.advance</field>
+    <field name="model">pb.business.trip</field>
+    <field name="inherit_id" ref="pb_business_trip.view_pb_business_trip_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//header" position="inside">
+        <button name="action_pb_advance_given" type="object" string="Cash advance given"
+                invisible="state != 'approved' or not advance_amount or pb_advance_state"/>
+        <button name="action_pb_advance_settle" type="object" string="Settle the cash advance"
+                class="btn-primary" invisible="pb_advance_state != 'given'"/>
+        <button name="action_pb_advance_cash" type="object" string="Paid back directly"
+                invisible="pb_advance_state != 'settled'"/>
+      </xpath>
+      <xpath expr="//field[@name='advance_amount']" position="after">
+        <field name="pb_advance_state" invisible="not pb_advance_state"/>
+        <field name="pb_advance_left" invisible="pb_advance_state != 'settled'"/>
+      </xpath>
+      <xpath expr="//notebook" position="inside">
+        <page string="Cash advance" name="pb_cash_advance" invisible="not pb_advance_ids">
+          <field name="pb_advance_ids" readonly="1">
+            <form>
+              <group>
+                <group>
+                  <field name="amount"/>
+                  <field name="currency_id" invisible="1"/>
+                  <field name="given_on"/>
+                  <field name="given_ref"/>
+                  <field name="given_by"/>
+                </group>
+                <group>
+                  <field name="state"/>
+                  <field name="settled_on"/>
+                  <field name="claimed"/>
+                  <field name="unspent"/>
+                  <field name="extra_due"/>
+                  <field name="recover_how"/>
+                  <field name="recovered"/>
+                  <field name="left"/>
+                </group>
+              </group>
+              <field name="offset_ids">
+                <list>
+                  <field name="claim_id"/>
+                  <field name="amount"/>
+                  <field name="currency_id" column_invisible="True"/>
+                </list>
+              </field>
+              <field name="recovery_ids">
+                <list>
+                  <field name="kind"/>
+                  <field name="run_id"/>
+                  <field name="pay_month"/>
+                  <field name="amount"/>
+                  <field name="currency_id" column_invisible="True"/>
+                  <field name="state" widget="badge"/>
+                  <field name="note"/>
+                </list>
+              </field>
+            </form>
+            <list>
+              <field name="amount"/>
+              <field name="currency_id" column_invisible="True"/>
+              <field name="given_on"/>
+              <field name="state" widget="badge"/>
+              <field name="claimed"/>
+              <field name="unspent"/>
+              <field name="left"/>
+            </list>
+          </field>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+  <record id="pb_trip_advance_wizard_view_form" model="ir.ui.view">
+    <field name="name">pb.trip.advance.wizard.form</field>
+    <field name="model">pb.trip.advance.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Cash advance">
+        <sheet>
+          <field name="mode" invisible="1"/>
+          <field name="currency_id" invisible="1"/>
+          <group>
+            <field name="trip_id" readonly="1"/>
+          </group>
+          <p class="text-muted" style="white-space: pre-line;"><field name="preview" readonly="1" nolabel="1"/></p>
+          <group>
+            <field name="day" invisible="mode == 'settle'" string="Day"/>
+            <field name="reference" invisible="mode == 'settle'"/>
+            <field name="amount" invisible="mode != 'cash'"/>
+            <field name="recover_how" widget="radio" invisible="mode != 'settle'"/>
+          </group>
+          <div class="alert alert-info" role="status" invisible="mode != 'settle'">
+            Claims for this trip are set against the advance, oldest first. The person sees what is not spent on their own page straight away; a pay run only takes back what fits, so their take-home never goes below zero.
+          </div>
+        </sheet>
+        <footer>
+          <button name="action_confirm" type="object" string="Confirm" class="btn-primary"/>
+          <button string="Cancel" special="cancel" class="btn-secondary"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+</odoo>

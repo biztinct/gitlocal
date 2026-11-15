@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-C — trip cash advances on My Payobook (read-only). No inline
+       style attribute anywhere (UPDATES G95). Icons: pb_me_expense's own
+       `ex_icon` (plane, wallet), never a new branch in pb_me_portal. -->
+
+  <!-- the home card: only while an advance is out or being taken back -->
+  <template id="pbme_card_advance" name="Employee home: trip cash advance card">
+    <t t-set="adv" t-value="card['data']"/>
+    <section class="pbme-b pbme-b-extra pbta-card" data-pbme-slot="trip_advance" aria-labelledby="pbta-card-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbta-card-h"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'plane'"/><t t-set="isz" t-value="15"/></t>Trip cash advance</h2>
+      </div>
+      <ul class="pbta-list">
+        <li t-foreach="adv['rows'][:3]" t-as="r" class="pbta-row">
+          <span class="pbta-row-head"><b t-out="r['trip']"/><span t-if="r['where']" class="pbta-where" t-out="r['where']"/></span>
+          <span class="pbta-row-big" t-if="r['left']"><b class="pbme-num" t-out="r['left']"/> <span>to pay back</span></span>
+          <span class="pbta-row-big" t-else=""><b class="pbme-num" t-out="r['amount']"/> <span>given</span></span>
+          <span class="pbta-row-words" t-out="r['words']"/>
+        </li>
+      </ul>
+      <div class="pbta-card-foot">
+        <a class="pbme-btn pbme-btn--pri" href="/my/expenses">See my expenses<t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="15"/></t></a>
+      </div>
+    </section>
+  </template>
+
+  <!-- /my/expenses: the advances, above the claims -->
+  <template id="portal_my_expenses_advances" name="Expenses: trip cash advances (ESS)"
+            inherit_id="pb_me_expense.portal_my_expenses">
+    <xpath expr="//div[hasclass('pbex')]/t[@t-call='pb_me_portal.ess_hero']" position="after">
+      <section t-if="pb_advances" class="pbta-sect" aria-labelledby="pbta-sect-h">
+        <h2 class="pbex-h2" id="pbta-sect-h"><t t-call="pb_me_expense.ex_icon"><t t-set="icon" t-value="'wallet'"/><t t-set="isz" t-value="16"/></t>Trip cash advances</h2>
+        <ul class="pbta-list">
+          <li t-foreach="pb_advances" t-as="r" class="pbta-row">
+            <span class="pbta-row-head"><b t-out="r['trip']"/><span t-if="r['where']" class="pbta-where" t-out="r['where']"/></span>
+            <span class="pbta-facts">
+              <span>Given <b t-out="r['amount']"/></span>
+              <span t-if="r['claimed']">Claimed against it <b t-out="r['claimed']"/></span>
+              <span t-if="r['left']" class="is-act">To pay back <b t-out="r['left']"/></span>
+            </span>
+            <span class="pbta-row-words" t-out="r['words']"/>
+          </li>
+        </ul>
+      </section>
+    </xpath>
+  </template>
+
+</odoo>

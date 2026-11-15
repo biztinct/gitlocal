@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_trip_advance_expense,pb.trip.advance expense manager,model_pb_trip_advance,hr_expense.group_hr_expense_manager,1,0,0,0
+access_pb_trip_advance_payroll,pb.trip.advance payroll officer,model_pb_trip_advance,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_trip_advance_hr,pb.trip.advance hr manager,model_pb_trip_advance,hr.group_hr_manager,1,0,0,0
+access_pb_trip_advance_account,pb.trip.advance invoicing,model_pb_trip_advance,account.group_account_invoice,1,0,0,0
+access_pb_trip_advance_offset_expense,pb.trip.advance.offset expense manager,model_pb_trip_advance_offset,hr_expense.group_hr_expense_manager,1,0,0,0
+access_pb_trip_advance_offset_payroll,pb.trip.advance.offset payroll officer,model_pb_trip_advance_offset,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_trip_advance_offset_hr,pb.trip.advance.offset hr manager,model_pb_trip_advance_offset,hr.group_hr_manager,1,0,0,0
+access_pb_trip_advance_recovery_expense,pb.trip.advance.recovery expense manager,model_pb_trip_advance_recovery,hr_expense.group_hr_expense_manager,1,0,0,0
+access_pb_trip_advance_recovery_payroll,pb.trip.advance.recovery payroll officer,model_pb_trip_advance_recovery,pb_hr_payroll_base.group_payroll_base_officer,1,0,0,0
+access_pb_trip_advance_recovery_hr,pb.trip.advance.recovery hr manager,model_pb_trip_advance_recovery,hr.group_hr_manager,1,0,0,0
+access_pb_trip_advance_wizard_user,pb.trip.advance.wizard internal,model_pb_trip_advance_wizard,base.group_user,1,1,1,0
