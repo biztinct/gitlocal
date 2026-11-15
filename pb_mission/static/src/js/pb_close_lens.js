@@ -39,11 +39,27 @@
 import {
     Component, useState, onWillStart, onWillUpdateProps, onWillUnmount,
 } from "@odoo/owl";
+import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.close";
+
+/**
+ * WHERE A LATER MODULE ADDS A SECTION TO THE CLOSE (WDGAP S5-B).
+ *
+ *     registry.category(CLOSE_SECTIONS).add("time_pay", { Component });
+ *
+ * Each section is drawn under the flag table with three props: `data` (this
+ * board's whole payload, so a section reads the key its own server override
+ * added), `ctx` (the workspace's department, week and search) and
+ * `onChanged` (re-read the board after the section wrote something, from a
+ * click). A section owns its writes; the lens owns none of them. A registry
+ * rather than an import for the reason the Mission Control lenses use one:
+ * the guest depends on the host, never the other way round.
+ */
+export const CLOSE_SECTIONS = "pb_close_lens_section";
 /** The widest scheduled-vs-actual bar, in px — geometry, not chrome. */
 const BAR_MAX = 108;
 
@@ -204,6 +220,25 @@ export class PbCloseLens extends Component {
     }
 
     get kinds() { return this.d.kinds || []; }
+
+    /** The sections other modules registered (see CLOSE_SECTIONS). */
+    get sections() {
+        return registry.category(CLOSE_SECTIONS).getEntries()
+            .map(([key, s]) => ({ key, Component: s.Component }))
+            .filter((s) => s.Component);
+    }
+
+    /** The context a section acts on — the workspace's, never its own. */
+    get sectionCtx() {
+        return {
+            departmentId: this.wf.departmentId || false,
+            weekStart: this.wf.weekStart,
+            search: this.wf.search || "",
+        };
+    }
+
+    /** Handed to a section as `onChanged`: a pure re-read of the board. */
+    reloadBoard() { return this.load(); }
 
     /** "Showing 26–50 of 137" — the honest sentence W45 is about. Every number
      *  in it comes off the payload; none is `rows.length`. */
