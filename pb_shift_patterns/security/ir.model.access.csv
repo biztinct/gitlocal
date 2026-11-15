@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_shift_pattern_officer,pb.shift.pattern officer,model_pb_shift_pattern,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_shift_pattern_manager,pb.shift.pattern manager,model_pb_shift_pattern,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_pb_shift_pattern_slot_officer,pb.shift.pattern.slot officer,model_pb_shift_pattern_slot,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_shift_pattern_slot_manager,pb.shift.pattern.slot manager,model_pb_shift_pattern_slot,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_pb_shift_pattern_team_officer,pb.shift.pattern.team officer,model_pb_shift_pattern_team,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_shift_pattern_team_manager,pb.shift.pattern.team manager,model_pb_shift_pattern_team,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_pb_shift_pattern_member_officer,pb.shift.pattern.member officer,model_pb_shift_pattern_member,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_shift_pattern_member_manager,pb.shift.pattern.member manager,model_pb_shift_pattern_member,hr_attendance.group_hr_attendance_manager,1,1,1,1

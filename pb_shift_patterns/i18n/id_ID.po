@@ -1,0 +1,1447 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_shift_patterns
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 12:04+0000\n"
+"PO-Revision-Date: 2026-11-15 12:04+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s days"
+msgstr "%(n)s hari"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s draft shifts for %(p)s people"
+msgstr "%(n)s draf shift untuk %(p)s orang"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s draft shifts made"
+msgstr "%(n)s draf shift dibuat"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s draft shifts made from patterns are waiting to be published."
+msgstr "%(n)s draf shift dari pola menunggu diterbitkan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s drafts to publish"
+msgstr "%(n)s draf untuk diterbitkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s on this pattern"
+msgstr "%(n)s orang di pola ini"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s people"
+msgstr "%(n)s orang"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s teams"
+msgstr "%(n)s tim"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid ""
+"%(n)s unpublished drafts removed. Shifts changed by hand and published "
+"shifts are kept."
+msgstr ""
+"%(n)s draf yang belum diterbitkan dihapus. Shift yang diubah manual dan yang"
+" sudah diterbitkan tetap disimpan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s weeks"
+msgstr "%(n)s minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s working days in %(cycle)s"
+msgstr "%(n)s hari kerja dalam %(cycle)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(p)s patterns, %(n)s people on them. Nothing waiting to be published."
+msgstr ""
+"%(p)s pola, %(n)s orang di dalamnya. Tidak ada yang menunggu diterbitkan."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "%(team)s must start 0 to %(n)s days after Team A."
+msgstr "%(team)s harus mulai 0 sampai %(n)s hari setelah Tim A."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "%s is a public holiday."
+msgstr "%s adalah hari libur nasional."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid ""
+"%s is in this pattern twice for the same days. Give each team row its own "
+"dates."
+msgstr ""
+"%s ada dua kali di pola ini untuk hari yang sama. Beri setiap baris tim "
+"tanggalnya sendiri."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "%s is not a date."
+msgstr "%s bukan tanggal."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "%s: the end date is before the start date."
+msgstr "%s: tanggal akhir sebelum tanggal mulai."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern_slot__day_index
+msgid "0 is day 1 of the cycle."
+msgstr "0 adalah hari ke-1 siklus."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 pattern, %(n)s people on it. Nothing waiting to be published."
+msgstr "1 pola, %(n)s orang di dalamnya. Tidak ada yang menunggu diterbitkan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 person"
+msgstr "1 orang"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 team"
+msgstr "1 tim"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 week"
+msgstr "1 minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "4 on, 4 off"
+msgstr "4 masuk, 4 libur"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "A pattern has at most %s teams."
+msgstr "Satu pola paling banyak %s tim."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "A pattern needs at least one team."
+msgstr "Satu pola perlu setidaknya satu tim."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "A pattern repeats every 1 to %s days."
+msgstr "Satu pola berulang setiap 1 sampai %s hari."
+
+#. module: pb_shift_patterns
+#: model:ir.model.constraint,message:pb_shift_patterns.constraint_pb_shift_pattern_cycle_bounds
+msgid "A pattern repeats every 1 to 56 days."
+msgstr "Satu pola berulang setiap 1 sampai 56 hari."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "A person's team must belong to the same pattern."
+msgstr "Tim seseorang harus ada di pola yang sama."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "A shift in the cycle is not available in this company."
+msgstr "Satu shift di siklus tidak tersedia di perusahaan ini."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "A team must start 0 to %s days after Team A."
+msgstr "Satu tim harus mulai 0 sampai %s hari setelah Tim A."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Add a team"
+msgstr "Tambah tim"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Added"
+msgstr "Ditambahkan"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "All patterns"
+msgstr "Semua pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Already has a shift"
+msgstr "Sudah punya shift"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Also on %(names)s"
+msgstr "Juga di %(names)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Any department"
+msgstr "Semua departemen"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Archive"
+msgstr "Arsipkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Archived patterns"
+msgstr "Pola yang diarsipkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Attendance managers make patterns. You can look at them once they exist."
+msgstr ""
+"Manajer kehadiran yang membuat pola. Anda bisa melihatnya setelah pola ada."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Changed by hand, so it is left as it is."
+msgstr "Sudah diubah manual, jadi dibiarkan apa adanya."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Check first"
+msgstr "Periksa dulu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Checked like Copy week: leave, public holidays, shifts people already have "
+"and night work rules."
+msgstr ""
+"Diperiksa seperti Salin minggu: cuti, hari libur, shift yang sudah ada, dan "
+"aturan kerja malam."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Choose 1 to %s weeks."
+msgstr "Pilih 1 sampai %s minggu."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Choose at least one pattern."
+msgstr "Pilih setidaknya satu pola."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Choose day 1 of the cycle."
+msgstr "Pilih hari ke-1 siklus."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Choose the first week to fill."
+msgstr "Pilih minggu pertama yang akan diisi."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Clear"
+msgstr "Kosongkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__company_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__company_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__company_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__create_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__create_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__create_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__create_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__create_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__create_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "Day %(day)s is outside a %(n)s-day cycle."
+msgstr "Hari %(day)s di luar siklus %(n)s hari."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__start_date
+msgid "Day 1 of the cycle"
+msgstr "Hari ke-1 siklus"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_slot
+msgid "Day of a shift pattern cycle"
+msgstr "Hari dalam siklus pola shift"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__day_index
+msgid "Day of the cycle"
+msgstr "Hari dalam siklus"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days after Team A"
+msgstr "Hari setelah Tim A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days and nights"
+msgstr "Siang dan malam"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Days and nights, swap weekly"
+msgstr "Siang dan malam, tukar tiap minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days before today are never filled."
+msgstr "Hari sebelum hari ini tidak pernah diisi."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days in the cycle"
+msgstr "Jumlah hari dalam siklus"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__slot_ids
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Days of the cycle"
+msgstr "Hari-hari siklus"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__department_id
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Describe the cycle once: which shift on which day, and when each team starts"
+" it. Payobook then fills the next weeks with draft shifts for everybody on "
+"the pattern."
+msgstr ""
+"Jelaskan siklus sekali saja: shift apa di hari apa, dan kapan setiap tim "
+"memulainya. Payobook lalu mengisi minggu-minggu berikutnya dengan draf shift"
+" untuk semua orang di pola."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning_grid__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_engine__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_patterns__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__last_made_by
+msgid "Drafts last made by"
+msgstr "Draf terakhir dibuat oleh"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__last_made_on
+msgid "Drafts last made on"
+msgstr "Draf terakhir dibuat pada"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__last_made_to
+msgid "Drafts made up to"
+msgstr "Draf dibuat sampai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Drafts made up to %(d)s"
+msgstr "Draf dibuat sampai %(d)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Drafts only. Nobody sees them until you publish them in the Schedule."
+msgstr ""
+"Hanya draf. Tidak ada yang melihatnya sampai Anda menerbitkannya di Jadwal."
+
+#. module: pb_shift_patterns
+#: model:ir.model.constraint,message:pb_shift_patterns.constraint_pb_shift_pattern_slot_day_uniq
+msgid "Each day of the cycle has one shift at most."
+msgstr "Setiap hari siklus paling banyak satu shift."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Each team works the same cycle, starting some days after Team A."
+msgstr ""
+"Setiap tim menjalankan siklus yang sama, mulai beberapa hari setelah Tim A."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern_slot__template_id
+msgid "Empty means the day is off."
+msgstr "Kosong berarti hari libur."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Every day the patterns ask for is covered."
+msgstr "Setiap hari yang diminta pola sudah terisi."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Fill Monday to Friday"
+msgstr "Isi Senin sampai Jumat"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Filled least far ahead"
+msgstr "Paling sedikit terisi ke depan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Find a pattern, a department or a person…"
+msgstr "Cari pola, departemen, atau orang…"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Find a person to add"
+msgstr "Cari orang untuk ditambahkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "For"
+msgstr "Selama"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "For example: Packing, days and nights"
+msgstr "Contoh: Pengemasan, siang dan malam"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Four teams cover every day and night"
+msgstr "Empat tim menutup setiap siang dan malam"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__date_from
+msgid "From"
+msgstr "Dari"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Give the pattern a name."
+msgstr "Beri nama pola ini."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Has people"
+msgstr "Ada orang"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning_grid__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_engine__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_patterns__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "In use"
+msgstr "Dipakai"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__write_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__write_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__write_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__write_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__write_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__write_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Loading"
+msgstr "Memuat"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Made by"
+msgstr "Dibuat oleh"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__pb_pattern_id
+msgid "Made from pattern"
+msgstr "Dibuat dari pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/schedule_patch.js:0
+msgid "Made from the pattern %(name)s"
+msgstr "Dibuat dari pola %(name)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Make draft shifts"
+msgstr "Buat draf shift"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/schedule_patch.xml:0
+msgid "Make draft shifts from a rotating pattern"
+msgstr "Buat draf shift dari pola bergilir"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Make draft shifts from this pattern"
+msgstr "Buat draf shift dari pola ini"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Make drafts"
+msgstr "Buat draf"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+msgid "Make shifts from a pattern"
+msgstr "Buat shift dari pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Make them again at any time: nothing is doubled and your own changes are "
+"kept."
+msgstr ""
+"Buat ulang kapan saja: tidak ada yang ganda dan perubahan Anda tetap "
+"disimpan."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Making shifts from a pattern is for attendance managers."
+msgstr "Membuat shift dari pola hanya untuk manajer kehadiran."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+msgid "Mission Control"
+msgstr "Mission Control"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Monday to Friday, one team"
+msgstr "Senin sampai Jumat, satu tim"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Name, A to Z"
+msgstr "Nama, A ke Z"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Near the overtime limit"
+msgstr "Mendekati batas lembur"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "New pattern"
+msgstr "Pola baru"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Newest first"
+msgstr "Terbaru dulu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Night work not allowed"
+msgstr "Kerja malam tidak diizinkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "No drafts made yet"
+msgstr "Belum ada draf"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "No patterns match these filters"
+msgstr "Tidak ada pola yang cocok dengan filter ini"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "No patterns yet."
+msgstr "Belum ada pola."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "No working days yet"
+msgstr "Belum ada hari kerja"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Nobody on it yet"
+msgstr "Belum ada orang"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Nobody yet"
+msgstr "Belum ada orang"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__note
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Notes"
+msgstr "Catatan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Nothing is published. Check the drafts in the Schedule, then press Publish "
+"there."
+msgstr ""
+"Belum ada yang diterbitkan. Periksa draf di Jadwal, lalu tekan Terbitkan di "
+"sana."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid ""
+"Nothing is published. You check the drafts in the Schedule, then publish "
+"them there."
+msgstr ""
+"Belum ada yang diterbitkan. Anda memeriksa draf di Jadwal, lalu "
+"menerbitkannya di sana."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__member_count
+msgid "Number of people"
+msgstr "Jumlah orang"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__team_count
+msgid "Number of teams"
+msgstr "Jumlah tim"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Number of weeks"
+msgstr "Jumlah minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Off"
+msgstr "Libur"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern__work_on_holidays
+msgid ""
+"Off: no shift is made on a public holiday and the day is listed in the "
+"report. On: holidays are worked like any other day."
+msgstr ""
+"Mati: tidak ada shift di hari libur dan harinya dicantumkan di laporan. "
+"Hidup: hari libur dikerjakan seperti hari lain."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Off: public holidays are left empty and listed in the report."
+msgstr "Mati: hari libur dibiarkan kosong dan dicantumkan di laporan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "On approved leave"
+msgstr "Sedang cuti yang disetujui"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Open the Schedule"
+msgstr "Buka Jadwal"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__pattern_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__pattern_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__pattern_id
+msgid "Pattern"
+msgstr "Pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Pattern archived. Shifts it made are kept."
+msgstr "Pola diarsipkan. Shift yang sudah dibuat tetap disimpan."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__pb_pattern_sig
+msgid "Pattern fingerprint"
+msgstr "Sidik pola"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__name
+msgid "Pattern name"
+msgstr "Nama pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Pattern restored."
+msgstr "Pola dipulihkan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Pattern saved."
+msgstr "Pola disimpan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/schedule_patch.xml:0
+msgid "Patterns"
+msgstr "Pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__member_ids
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__member_ids
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "People"
+msgstr "Orang"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__employee_id
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_member
+msgid "Person on a shift pattern"
+msgstr "Orang di pola shift"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Pick a shift, then press the days it is worked."
+msgstr "Pilih shift, lalu tekan hari-hari shift itu dikerjakan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Public holiday"
+msgstr "Hari libur nasional"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Read the patterns again"
+msgstr "Muat ulang pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Reading the patterns…"
+msgstr "Memuat pola…"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Refused"
+msgstr "Ditolak"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Remove a filter, or start again from every pattern."
+msgstr "Hapus satu filter, atau mulai lagi dari semua pola."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Remove this team"
+msgstr "Hapus tim ini"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Remove unpublished drafts"
+msgstr "Hapus draf yang belum diterbitkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Repeats every"
+msgstr "Berulang setiap"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every %s days"
+msgstr "Berulang setiap %s hari"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every %s weeks"
+msgstr "Berulang setiap %s minggu"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__cycle_days
+msgid "Repeats every (days)"
+msgstr "Berulang setiap (hari)"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every day"
+msgstr "Berulang setiap hari"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every week"
+msgstr "Berulang setiap minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Restore"
+msgstr "Pulihkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Rotas that repeat, set once"
+msgstr "Jadwal bergilir, atur sekali"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern
+msgid "Rotating shift pattern"
+msgstr "Pola shift bergilir"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_engine
+msgid "Rotating shift pattern engine"
+msgstr "Mesin pola shift bergilir"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_patterns
+msgid "Rotating shift patterns board"
+msgstr "Papan pola shift bergilir"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Same every week"
+msgstr "Sama setiap minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Save the pattern"
+msgstr "Simpan pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+msgid "Schedule"
+msgstr "Jadwal"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Set the cycle once. Each team follows it from its own start."
+msgstr "Atur siklus sekali. Setiap tim mengikutinya dari awal masing-masing."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__template_id
+msgid "Shift"
+msgstr "Shift"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_hr_shift_planning
+msgid "Shift Planning"
+msgstr "Perencanaan shift"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_hr_shift_planning_grid
+msgid "Shift Planning Grid API"
+msgstr "Grid perencanaan shift"
+
+#. module: pb_shift_patterns
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Shift pattern"
+msgstr "Pola shift"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.actions.act_window,name:pb_shift_patterns.action_pb_shift_pattern_records
+#: model:ir.actions.client,name:pb_shift_patterns.action_pb_shift_patterns
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_list
+msgid "Shift patterns"
+msgstr "Pola shift"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid ""
+"Shift patterns are for the people who plan the schedule. Ask your "
+"administrator for the attendance officer role."
+msgstr ""
+"Pola shift untuk orang yang menyusun jadwal. Minta peran petugas kehadiran "
+"kepada administrator Anda."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Shift to paint"
+msgstr "Shift untuk diwarnai"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__shift_ids
+msgid "Shifts made from this pattern"
+msgstr "Shift yang dibuat dari pola ini"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Show every pattern"
+msgstr "Tampilkan semua pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Show more"
+msgstr "Tampilkan lagi"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Somebody on the list is not in this company."
+msgstr "Ada orang di daftar yang tidak di perusahaan ini."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Space the teams evenly"
+msgstr "Atur jarak tim merata"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Start from"
+msgstr "Mulai dari"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Starting the week of"
+msgstr "Mulai minggu tanggal"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__offset_days
+msgid "Starts this many days after Team A"
+msgstr "Mulai sekian hari setelah Tim A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Take off the pattern"
+msgstr "Keluarkan dari pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__team_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__name
+msgid "Team"
+msgstr "Tim"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Team %(l)s"
+msgstr "Tim %(l)s"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Team %s"
+msgstr "Tim %s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Team A"
+msgstr "Tim A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Team B"
+msgstr "Tim B"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Team name"
+msgstr "Nama tim"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_team
+msgid "Team of a shift pattern"
+msgstr "Tim pola shift"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__team_ids
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Teams"
+msgstr "Tim"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "That department is not in this company."
+msgstr "Departemen itu tidak di perusahaan ini."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "That did not work."
+msgstr "Itu tidak berhasil."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The basics"
+msgstr "Dasar"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The check could not run."
+msgstr "Pemeriksaan tidak dapat dijalankan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap disimpan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The cycle"
+msgstr "Siklus"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The drafts could not be made."
+msgstr "Draf tidak dapat dibuat."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The first %(n)s are listed."
+msgstr "%(n)s yang pertama dicantumkan."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern__start_date
+msgid ""
+"The first day of the cycle for Team A. Other teams start a number of days "
+"later."
+msgstr ""
+"Hari pertama siklus untuk Tim A. Tim lain mulai beberapa hari kemudian."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The next two weeks"
+msgstr "Dua minggu ke depan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The pattern could not be opened."
+msgstr "Pola tidak dapat dibuka."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The pattern could not be saved."
+msgstr "Pola tidak dapat disimpan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The patterns could not be read just now."
+msgstr "Pola tidak dapat dibaca saat ini."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The patterns could not load"
+msgstr "Pola tidak dapat dimuat"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid ""
+"The patterns could not load. Check your connection, then press Try again."
+msgstr "Pola tidak dapat dimuat. Periksa koneksi Anda, lalu tekan Coba lagi."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"There are no shift templates yet. Add them from Templates in the Schedule "
+"first."
+msgstr "Belum ada templat shift. Tambahkan dulu dari Templat di Jadwal."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "This one is for the people who plan the schedule"
+msgstr "Ini untuk orang yang menyusun jadwal"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "This pattern is no longer there."
+msgstr "Pola ini sudah tidak ada."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Two teams swap every week"
+msgstr "Dua tim bertukar setiap minggu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__date_to
+msgid "Until"
+msgstr "Sampai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Weekdays"
+msgstr "Hari kerja"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern__department_id
+msgid ""
+"Where the pattern is used. People from other departments can still be added."
+msgstr ""
+"Tempat pola dipakai. Orang dari departemen lain tetap bisa ditambahkan."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Which patterns"
+msgstr "Pola mana"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Which weeks"
+msgstr "Minggu mana"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__work_on_holidays
+msgid "Work on public holidays"
+msgstr "Bekerja di hari libur nasional"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Working…"
+msgstr "Sedang diproses…"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "You can look at this pattern. Attendance managers change it."
+msgstr "Anda bisa melihat pola ini. Manajer kehadiran yang mengubahnya."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "already there"
+msgstr "sudah ada"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "changed by hand, kept"
+msgstr "diubah manual, disimpan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "days"
+msgstr "hari"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "days after Team A"
+msgstr "hari setelah Tim A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "drafts to publish"
+msgstr "draf untuk diterbitkan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "not filled"
+msgstr "tidak terisi"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "old drafts replaced"
+msgstr "draf lama diganti"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "on %(names)s"
+msgstr "di %(names)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "patterns"
+msgstr "pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "people on a pattern"
+msgstr "orang di pola"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "published, kept"
+msgstr "sudah diterbitkan, disimpan"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "starts"
+msgstr "mulai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "starts on day 1"
+msgstr "mulai hari ke-1"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "to"
+msgstr "ke"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "with nobody yet"
+msgstr "belum ada orang"

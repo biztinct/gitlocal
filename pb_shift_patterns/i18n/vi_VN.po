@@ -1,0 +1,1444 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_shift_patterns
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 12:04+0000\n"
+"PO-Revision-Date: 2026-11-15 12:04+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s days"
+msgstr "%(n)s ngày"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s draft shifts for %(p)s people"
+msgstr "%(n)s ca nháp cho %(p)s người"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s draft shifts made"
+msgstr "Đã tạo %(n)s ca nháp"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s draft shifts made from patterns are waiting to be published."
+msgstr "%(n)s ca nháp tạo từ lịch xoay ca đang chờ công khai."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s drafts to publish"
+msgstr "%(n)s ca nháp chờ công khai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s on this pattern"
+msgstr "%(n)s người trong lịch xoay ca này"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s people"
+msgstr "%(n)s người"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s teams"
+msgstr "%(n)s nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid ""
+"%(n)s unpublished drafts removed. Shifts changed by hand and published "
+"shifts are kept."
+msgstr ""
+"Đã xóa %(n)s ca nháp chưa công khai. Ca đã sửa tay và ca đã công khai được "
+"giữ lại."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s weeks"
+msgstr "%(n)s tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(n)s working days in %(cycle)s"
+msgstr "%(n)s ngày làm việc trong %(cycle)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "%(p)s patterns, %(n)s people on them. Nothing waiting to be published."
+msgstr "%(p)s lịch xoay ca, %(n)s người. Không có gì chờ công khai."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "%(team)s must start 0 to %(n)s days after Team A."
+msgstr "%(team)s phải bắt đầu từ 0 đến %(n)s ngày sau Nhóm A."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "%s is a public holiday."
+msgstr "%s là ngày lễ."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid ""
+"%s is in this pattern twice for the same days. Give each team row its own "
+"dates."
+msgstr ""
+"%s có mặt hai lần trong lịch xoay ca này cho cùng những ngày. Hãy đặt ngày "
+"riêng cho từng dòng nhóm."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "%s is not a date."
+msgstr "%s không phải là ngày."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "%s: the end date is before the start date."
+msgstr "%s: ngày kết thúc trước ngày bắt đầu."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern_slot__day_index
+msgid "0 is day 1 of the cycle."
+msgstr "0 là ngày 1 của chu kỳ."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 pattern, %(n)s people on it. Nothing waiting to be published."
+msgstr "1 lịch xoay ca, %(n)s người. Không có gì chờ công khai."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 team"
+msgstr "1 nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "1 week"
+msgstr "1 tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "4 on, 4 off"
+msgstr "Làm 4, nghỉ 4"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "A pattern has at most %s teams."
+msgstr "Một lịch xoay ca có tối đa %s nhóm."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "A pattern needs at least one team."
+msgstr "Một lịch xoay ca cần ít nhất một nhóm."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "A pattern repeats every 1 to %s days."
+msgstr "Một lịch xoay ca lặp lại sau mỗi 1 đến %s ngày."
+
+#. module: pb_shift_patterns
+#: model:ir.model.constraint,message:pb_shift_patterns.constraint_pb_shift_pattern_cycle_bounds
+msgid "A pattern repeats every 1 to 56 days."
+msgstr "Một lịch xoay ca lặp lại sau mỗi 1 đến 56 ngày."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "A person's team must belong to the same pattern."
+msgstr "Nhóm của một người phải thuộc cùng lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "A shift in the cycle is not available in this company."
+msgstr "Một ca trong chu kỳ không có ở công ty này."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "A team must start 0 to %s days after Team A."
+msgstr "Một nhóm phải bắt đầu từ 0 đến %s ngày sau Nhóm A."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__active
+msgid "Active"
+msgstr "Đang dùng"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Add a team"
+msgstr "Thêm nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Added"
+msgstr "Đã thêm"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "All patterns"
+msgstr "Tất cả lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Already has a shift"
+msgstr "Đã có ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Also on %(names)s"
+msgstr "Cũng có trong %(names)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Any department"
+msgstr "Mọi phòng ban"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Archive"
+msgstr "Lưu trữ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Archived patterns"
+msgstr "Lịch xoay ca đã lưu trữ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Attendance managers make patterns. You can look at them once they exist."
+msgstr ""
+"Quản lý chấm công tạo lịch xoay ca. Bạn có thể xem khi đã có lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Changed by hand, so it is left as it is."
+msgstr "Đã được sửa tay nên giữ nguyên."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Check first"
+msgstr "Kiểm tra trước"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Checked like Copy week: leave, public holidays, shifts people already have "
+"and night work rules."
+msgstr ""
+"Kiểm tra như Sao chép tuần: nghỉ phép, ngày lễ, ca đã có và quy định làm "
+"đêm."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Choose 1 to %s weeks."
+msgstr "Chọn từ 1 đến %s tuần."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Choose at least one pattern."
+msgstr "Chọn ít nhất một lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Choose day 1 of the cycle."
+msgstr "Chọn ngày 1 của chu kỳ."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Choose the first week to fill."
+msgstr "Chọn tuần đầu tiên cần xếp."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Clear"
+msgstr "Xóa hết"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__company_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__company_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__company_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__create_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__create_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__create_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__create_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__create_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__create_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__create_date
+msgid "Created on"
+msgstr "Tạo lúc"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/shift_pattern.py:0
+msgid "Day %(day)s is outside a %(n)s-day cycle."
+msgstr "Ngày %(day)s nằm ngoài chu kỳ %(n)s ngày."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__start_date
+msgid "Day 1 of the cycle"
+msgstr "Ngày 1 của chu kỳ"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_slot
+msgid "Day of a shift pattern cycle"
+msgstr "Ngày trong chu kỳ lịch xoay ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__day_index
+msgid "Day of the cycle"
+msgstr "Ngày trong chu kỳ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days after Team A"
+msgstr "Số ngày sau Nhóm A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days and nights"
+msgstr "Ngày và đêm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Days and nights, swap weekly"
+msgstr "Ngày và đêm, đổi mỗi tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days before today are never filled."
+msgstr "Những ngày trước hôm nay không bao giờ được xếp."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Days in the cycle"
+msgstr "Số ngày trong chu kỳ"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__slot_ids
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Days of the cycle"
+msgstr "Các ngày trong chu kỳ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Describe the cycle once: which shift on which day, and when each team starts"
+" it. Payobook then fills the next weeks with draft shifts for everybody on "
+"the pattern."
+msgstr ""
+"Mô tả chu kỳ một lần: ca nào vào ngày nào và mỗi nhóm bắt đầu khi nào. "
+"Payobook sẽ xếp ca nháp cho những tuần tới cho mọi người trong lịch xoay ca."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning_grid__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_engine__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__display_name
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_patterns__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__last_made_by
+msgid "Drafts last made by"
+msgstr "Người tạo ca nháp gần nhất"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__last_made_on
+msgid "Drafts last made on"
+msgstr "Lần tạo ca nháp gần nhất"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__last_made_to
+msgid "Drafts made up to"
+msgstr "Đã tạo ca nháp đến"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Drafts made up to %(d)s"
+msgstr "Đã tạo ca nháp đến %(d)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Drafts only. Nobody sees them until you publish them in the Schedule."
+msgstr ""
+"Chỉ là ca nháp. Không ai thấy cho đến khi bạn công khai trong Lịch ca."
+
+#. module: pb_shift_patterns
+#: model:ir.model.constraint,message:pb_shift_patterns.constraint_pb_shift_pattern_slot_day_uniq
+msgid "Each day of the cycle has one shift at most."
+msgstr "Mỗi ngày trong chu kỳ có tối đa một ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Each team works the same cycle, starting some days after Team A."
+msgstr "Mỗi nhóm làm cùng chu kỳ, bắt đầu sau Nhóm A vài ngày."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern_slot__template_id
+msgid "Empty means the day is off."
+msgstr "Để trống nghĩa là ngày nghỉ."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Every day the patterns ask for is covered."
+msgstr "Mọi ngày mà lịch xoay ca yêu cầu đều đã được xếp."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Fill Monday to Friday"
+msgstr "Xếp thứ Hai đến thứ Sáu"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Filled least far ahead"
+msgstr "Xếp trước ít nhất"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Find a pattern, a department or a person…"
+msgstr "Tìm lịch xoay ca, phòng ban hoặc một người…"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Find a person to add"
+msgstr "Tìm người để thêm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "For"
+msgstr "Trong"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "For example: Packing, days and nights"
+msgstr "Ví dụ: Đóng gói, ngày và đêm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Four teams cover every day and night"
+msgstr "Bốn nhóm phủ kín mọi ngày và đêm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__date_from
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Give the pattern a name."
+msgstr "Đặt tên cho lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Has people"
+msgstr "Có người"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning_grid__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_engine__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_patterns__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "In use"
+msgstr "Đang dùng"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__write_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__write_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__write_uid
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__write_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__write_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__write_date
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối lúc"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Loading"
+msgstr "Đang tải"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Made by"
+msgstr "Người tạo"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__pb_pattern_id
+msgid "Made from pattern"
+msgstr "Tạo từ lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/schedule_patch.js:0
+msgid "Made from the pattern %(name)s"
+msgstr "Tạo từ lịch xoay ca %(name)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Make draft shifts"
+msgstr "Tạo ca nháp"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/schedule_patch.xml:0
+msgid "Make draft shifts from a rotating pattern"
+msgstr "Tạo ca nháp từ một lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Make draft shifts from this pattern"
+msgstr "Tạo ca nháp từ lịch xoay ca này"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Make drafts"
+msgstr "Tạo ca nháp"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+msgid "Make shifts from a pattern"
+msgstr "Tạo ca từ lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Make them again at any time: nothing is doubled and your own changes are "
+"kept."
+msgstr ""
+"Tạo lại bất cứ lúc nào: không có ca nào bị trùng và các thay đổi của bạn "
+"được giữ."
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+msgid "Making shifts from a pattern is for attendance managers."
+msgstr "Chỉ quản lý chấm công mới được tạo ca từ lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+msgid "Mission Control"
+msgstr "Mission Control"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Monday to Friday, one team"
+msgstr "Thứ Hai đến thứ Sáu, một nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Name, A to Z"
+msgstr "Tên, A đến Z"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Near the overtime limit"
+msgstr "Gần giới hạn tăng ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "New pattern"
+msgstr "Lịch xoay ca mới"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Newest first"
+msgstr "Mới nhất trước"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Night work not allowed"
+msgstr "Không được làm đêm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "No drafts made yet"
+msgstr "Chưa tạo ca nháp"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "No patterns match these filters"
+msgstr "Không có lịch xoay ca nào khớp bộ lọc"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "No patterns yet."
+msgstr "Chưa có lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "No working days yet"
+msgstr "Chưa có ngày làm việc"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Nobody on it yet"
+msgstr "Chưa có ai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Nobody yet"
+msgstr "Chưa có ai"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__note
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"Nothing is published. Check the drafts in the Schedule, then press Publish "
+"there."
+msgstr ""
+"Chưa có gì được công khai. Hãy kiểm tra ca nháp trong Lịch ca, rồi bấm Công "
+"khai ở đó."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid ""
+"Nothing is published. You check the drafts in the Schedule, then publish "
+"them there."
+msgstr ""
+"Chưa có gì được công khai. Bạn kiểm tra ca nháp trong Lịch ca, rồi công khai"
+" ở đó."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__member_count
+msgid "Number of people"
+msgstr "Số người"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__team_count
+msgid "Number of teams"
+msgstr "Số nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Number of weeks"
+msgstr "Số tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Off"
+msgstr "Nghỉ"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern__work_on_holidays
+msgid ""
+"Off: no shift is made on a public holiday and the day is listed in the "
+"report. On: holidays are worked like any other day."
+msgstr ""
+"Tắt: không xếp ca vào ngày lễ và ngày đó được liệt kê trong báo cáo. Bật: "
+"ngày lễ làm như ngày thường."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Off: public holidays are left empty and listed in the report."
+msgstr "Tắt: ngày lễ được để trống và liệt kê trong báo cáo."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "On approved leave"
+msgstr "Đang nghỉ phép đã duyệt"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Open the Schedule"
+msgstr "Mở Lịch ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Other"
+msgstr "Khác"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__pattern_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__pattern_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__pattern_id
+msgid "Pattern"
+msgstr "Lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Pattern archived. Shifts it made are kept."
+msgstr "Đã lưu trữ lịch xoay ca. Các ca đã tạo được giữ lại."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_hr_shift_planning__pb_pattern_sig
+msgid "Pattern fingerprint"
+msgstr "Dấu nhận diện lịch xoay ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__name
+msgid "Pattern name"
+msgstr "Tên lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Pattern restored."
+msgstr "Đã khôi phục lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Pattern saved."
+msgstr "Đã lưu lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/schedule_patch.xml:0
+msgid "Patterns"
+msgstr "Xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__member_ids
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__member_ids
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "People"
+msgstr "Nhân sự"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__employee_id
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_member
+msgid "Person on a shift pattern"
+msgstr "Người trong lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Pick a shift, then press the days it is worked."
+msgstr "Chọn một ca, rồi bấm vào những ngày làm ca đó."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/pattern_engine.py:0
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Public holiday"
+msgstr "Ngày lễ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Read the patterns again"
+msgstr "Tải lại các lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Reading the patterns…"
+msgstr "Đang tải các lịch xoay ca…"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Refused"
+msgstr "Bị từ chối"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Remove a filter, or start again from every pattern."
+msgstr "Bỏ một bộ lọc, hoặc bắt đầu lại từ tất cả lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Remove this team"
+msgstr "Xóa nhóm này"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Remove unpublished drafts"
+msgstr "Xóa ca nháp chưa công khai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Repeats every"
+msgstr "Lặp lại mỗi"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every %s days"
+msgstr "Lặp lại mỗi %s ngày"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every %s weeks"
+msgstr "Lặp lại mỗi %s tuần"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__cycle_days
+msgid "Repeats every (days)"
+msgstr "Lặp lại mỗi (ngày)"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every day"
+msgstr "Lặp lại mỗi ngày"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Repeats every week"
+msgstr "Lặp lại mỗi tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Restore"
+msgstr "Khôi phục"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Rotas that repeat, set once"
+msgstr "Lịch xoay ca lặp lại, thiết lập một lần"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern
+msgid "Rotating shift pattern"
+msgstr "Lịch xoay ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_engine
+msgid "Rotating shift pattern engine"
+msgstr "Bộ tạo ca từ lịch xoay ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_patterns
+msgid "Rotating shift patterns board"
+msgstr "Bảng lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Same every week"
+msgstr "Giống nhau mỗi tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Save the pattern"
+msgstr "Lưu lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+msgid "Schedule"
+msgstr "Lịch ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Set the cycle once. Each team follows it from its own start."
+msgstr ""
+"Thiết lập chu kỳ một lần. Mỗi nhóm theo chu kỳ từ ngày bắt đầu của mình."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_slot__template_id
+msgid "Shift"
+msgstr "Ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_hr_shift_planning
+msgid "Shift Planning"
+msgstr "Xếp ca"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_hr_shift_planning_grid
+msgid "Shift Planning Grid API"
+msgstr "Bảng xếp ca"
+
+#. module: pb_shift_patterns
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Shift pattern"
+msgstr "Lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_palette.js:0
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.actions.act_window,name:pb_shift_patterns.action_pb_shift_pattern_records
+#: model:ir.actions.client,name:pb_shift_patterns.action_pb_shift_patterns
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_list
+msgid "Shift patterns"
+msgstr "Lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid ""
+"Shift patterns are for the people who plan the schedule. Ask your "
+"administrator for the attendance officer role."
+msgstr ""
+"Lịch xoay ca dành cho người lập lịch làm việc. Hãy xin quản trị viên vai trò"
+" cán bộ chấm công."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Shift to paint"
+msgstr "Ca để tô"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__shift_ids
+msgid "Shifts made from this pattern"
+msgstr "Các ca tạo từ lịch xoay ca này"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Show every pattern"
+msgstr "Hiện tất cả lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Show more"
+msgstr "Xem thêm"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Somebody on the list is not in this company."
+msgstr "Có người trong danh sách không thuộc công ty này."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Space the teams evenly"
+msgstr "Chia đều các nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Start from"
+msgstr "Bắt đầu từ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Starting the week of"
+msgstr "Bắt đầu từ tuần có ngày"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__offset_days
+msgid "Starts this many days after Team A"
+msgstr "Bắt đầu sau Nhóm A bấy nhiêu ngày"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Take off the pattern"
+msgstr "Bỏ khỏi lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__team_id
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_team__name
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Team %(l)s"
+msgstr "Nhóm %(l)s"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "Team %s"
+msgstr "Nhóm %s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Team A"
+msgstr "Nhóm A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Team B"
+msgstr "Nhóm B"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Team name"
+msgstr "Tên nhóm"
+
+#. module: pb_shift_patterns
+#: model:ir.model,name:pb_shift_patterns.model_pb_shift_pattern_team
+msgid "Team of a shift pattern"
+msgstr "Nhóm trong lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__team_ids
+#: model_terms:ir.ui.view,arch_db:pb_shift_patterns.view_pb_shift_pattern_form
+msgid "Teams"
+msgstr "Nhóm"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "That department is not in this company."
+msgstr "Phòng ban đó không thuộc công ty này."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "That did not work."
+msgstr "Không thực hiện được."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The basics"
+msgstr "Thông tin cơ bản"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The check could not run."
+msgstr "Không chạy được bước kiểm tra."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Có thể kết nối đã bị ngắt. Bộ lọc của bạn vẫn được giữ."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The cycle"
+msgstr "Chu kỳ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The drafts could not be made."
+msgstr "Không tạo được ca nháp."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The first %(n)s are listed."
+msgstr "Chỉ liệt kê %(n)s dòng đầu."
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern__start_date
+msgid ""
+"The first day of the cycle for Team A. Other teams start a number of days "
+"later."
+msgstr ""
+"Ngày đầu tiên của chu kỳ cho Nhóm A. Các nhóm khác bắt đầu sau vài ngày."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The next two weeks"
+msgstr "Hai tuần tới"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The pattern could not be opened."
+msgstr "Không mở được lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The pattern could not be saved."
+msgstr "Không lưu được lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "The patterns could not be read just now."
+msgstr "Hiện không đọc được các lịch xoay ca."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "The patterns could not load"
+msgstr "Không tải được các lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid ""
+"The patterns could not load. Check your connection, then press Try again."
+msgstr "Không tải được các lịch xoay ca. Kiểm tra kết nối rồi bấm Thử lại."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid ""
+"There are no shift templates yet. Add them from Templates in the Schedule "
+"first."
+msgstr "Chưa có mẫu ca. Hãy thêm từ mục Mẫu ca trong Lịch ca trước."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "This one is for the people who plan the schedule"
+msgstr "Mục này dành cho người lập lịch làm việc"
+
+#. module: pb_shift_patterns
+#. odoo-python
+#: code:addons/pb_shift_patterns/models/patterns_board.py:0
+msgid "This pattern is no longer there."
+msgstr "Lịch xoay ca này không còn nữa."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Two teams swap every week"
+msgstr "Hai nhóm đổi ca mỗi tuần"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern_member__date_to
+msgid "Until"
+msgstr "Đến"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "Weekdays"
+msgstr "Ngày thường"
+
+#. module: pb_shift_patterns
+#: model:ir.model.fields,help:pb_shift_patterns.field_pb_shift_pattern__department_id
+msgid ""
+"Where the pattern is used. People from other departments can still be added."
+msgstr "Nơi dùng lịch xoay ca. Vẫn có thể thêm người từ phòng ban khác."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Which patterns"
+msgstr "Những lịch xoay ca nào"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Which weeks"
+msgstr "Những tuần nào"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+#: model:ir.model.fields,field_description:pb_shift_patterns.field_pb_shift_pattern__work_on_holidays
+msgid "Work on public holidays"
+msgstr "Làm vào ngày lễ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "Working…"
+msgstr "Đang xử lý…"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "You can look at this pattern. Attendance managers change it."
+msgstr "Bạn có thể xem lịch xoay ca này. Quản lý chấm công mới thay đổi được."
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "already there"
+msgstr "đã có"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "changed by hand, kept"
+msgstr "sửa tay, được giữ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "days after Team A"
+msgstr "ngày sau Nhóm A"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "drafts to publish"
+msgstr "ca nháp chờ công khai"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "not filled"
+msgstr "không xếp được"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "old drafts replaced"
+msgstr "ca nháp cũ được thay"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "on %(names)s"
+msgstr "trong %(names)s"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "patterns"
+msgstr "lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "people on a pattern"
+msgstr "người trong lịch xoay ca"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "published, kept"
+msgstr "đã công khai, được giữ"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "starts"
+msgstr "bắt đầu"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "starts on day 1"
+msgstr "bắt đầu ngày 1"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/xml/patterns_board.xml:0
+msgid "to"
+msgstr "vào"
+
+#. module: pb_shift_patterns
+#. odoo-javascript
+#: code:addons/pb_shift_patterns/static/src/js/patterns_board.js:0
+msgid "with nobody yet"
+msgstr "chưa có ai"

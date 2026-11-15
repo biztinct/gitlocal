@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Patterns lens.
+
+       Comments ruled with `=`, never a doubled hyphen. No `t-as` variable is
+       named lt / gt / lte / gte / and / or / not / in: rows `rw`, cells `ce`,
+       weeks `wk`, teams `tm`, members `mb`, people found `pf`, templates
+       `tp`, days `dy`, preview rows `pr`, choices `ch`, departments `dp`,
+       reasons `rc`, skipped rows `sk`, archived `ar`, glance `gi`.
+       Every sentence a person reads sits on one line (ledger PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_shift_patterns.PbShiftPatterns">
+    <div class="pbim pbim-page pbsp" t-att-class="{ 'pbsp--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the patterns…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbsp-locked">
+          <div class="pbsp-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for the people who plan the schedule</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+          <!-- ============================ head ============================ -->
+          <div class="pbsp-head">
+            <div class="pbsp-head-id">
+              <h1 class="pbim-h1" t-if="!props.embedded">Shift patterns</h1>
+              <p class="pbsp-headline">
+                <span class="pbsp-headline-ic" t-out="icon('repeat', 18)"/>
+                <span t-esc="headline"/>
+              </p>
+            </div>
+            <div class="pbsp-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the patterns again" aria-label="Read the patterns again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <button t-if="state.canEdit and state.total" class="pbim-btn ghost" t-on-click="() => this.openMake()">
+                <t t-out="icon('calendarClock', 15)"/> <span>Make drafts</span>
+              </button>
+              <button t-if="state.canEdit" class="pbim-btn primary" t-on-click="() => this.newPattern()">
+                <t t-out="icon('plus', 15)"/> <span>New pattern</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ======================== the first start ===================== -->
+          <div t-if="!state.total" class="pbsp-start">
+            <div class="pbsp-start-ic"><t t-out="icon('repeat', 30)"/></div>
+            <div class="pbsp-start-tx">
+              <h2>Rotas that repeat, set once</h2>
+              <p>Describe the cycle once: which shift on which day, and when each team starts it. Payobook then fills the next weeks with draft shifts for everybody on the pattern.</p>
+              <ul class="pbsp-start-list">
+                <li><t t-out="icon('shieldCheck', 15)"/> <span>Checked like Copy week: leave, public holidays, shifts people already have and night work rules.</span></li>
+                <li><t t-out="icon('eye', 15)"/> <span>Drafts only. Nobody sees them until you publish them in the Schedule.</span></li>
+                <li><t t-out="icon('refresh', 15)"/> <span>Make them again at any time: nothing is doubled and your own changes are kept.</span></li>
+              </ul>
+              <div t-if="state.canEdit" class="pbsp-presets">
+                <span class="pbsp-presets-l">Start from</span>
+                <button class="pbsp-preset" t-on-click="() => this.newPattern('swap')">
+                  <t t-out="icon('arrowLeftRight', 16)"/>
+                  <span class="pbsp-preset-tx"><b>Days and nights</b><small>Two teams swap every week</small></span>
+                </button>
+                <button class="pbsp-preset" t-on-click="() => this.newPattern('four')">
+                  <t t-out="icon('layoutGrid', 16)"/>
+                  <span class="pbsp-preset-tx"><b>4 on, 4 off</b><small>Four teams cover every day and night</small></span>
+                </button>
+                <button class="pbsp-preset" t-on-click="() => this.newPattern('week')">
+                  <t t-out="icon('calendar', 16)"/>
+                  <span class="pbsp-preset-tx"><b>Same every week</b><small>Monday to Friday, one team</small></span>
+                </button>
+              </div>
+              <p t-else="" class="pbsp-muted">Attendance managers make patterns. You can look at them once they exist.</p>
+            </div>
+          </div>
+
+          <t t-else="">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+
+            <PbFilterLayout kit="kit" coach="'pattern-filters'" searchPlaceholder="searchLabel">
+              <div t-if="state.listError" class="pbim-empty pbsp-empty">
+                <div class="pbsp-empty-ic"><t t-out="icon('alert', 30)"/></div>
+                <h3>The patterns could not load</h3>
+                <p>The connection may have dropped. Your filters are kept.</p>
+                <button class="pbim-btn primary" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+              </div>
+
+              <div t-elif="state.rows.length" class="pbsp-list">
+                <article t-foreach="state.rows" t-as="rw" t-key="rw.id" class="pbsp-card" tabindex="0"
+                         t-on-click="() => this.openPattern(rw.id)"
+                         t-on-keydown="(ev) => ev.key === 'Enter' and this.openPattern(rw.id)">
+                  <div class="pbsp-card-top">
+                    <span class="pbsp-card-ic"><t t-out="icon('repeat', 16)"/></span>
+                    <div class="pbsp-card-id">
+                      <b t-esc="rw.name"/>
+                      <small><t t-esc="rw.cycle_label"/><t t-if="rw.department"> · <t t-esc="rw.department"/></t></small>
+                    </div>
+                    <span t-if="rw.need" class="pbim-badge pbsp-need" t-esc="needLabel(rw)"/>
+                    <button t-if="state.canEdit and !rw.need" class="pbim-btn ghost pbim-btn-sm pbsp-card-make"
+                            t-on-click.stop="() => this.openMake([rw.id])" title="Make draft shifts from this pattern">
+                      <t t-out="icon('calendarClock', 14)"/> <span>Make drafts</span>
+                    </button>
+                  </div>
+                  <div class="pbsp-strip" t-att-style="'--pbsp-n:' + Math.min(rw.strip.length, 28)" aria-hidden="true">
+                    <span t-foreach="rw.strip" t-as="ce" t-key="ce.i" class="pbsp-cell"
+                          t-att-class="ce.off ? 'is-off' : 'is-' + tone(ce.color)" t-att-title="ce.name">
+                      <t t-esc="ce.off ? '' : ce.code"/>
+                    </span>
+                  </div>
+                  <div class="pbsp-card-foot">
+                    <span><t t-out="icon('users', 13)"/> <t t-esc="teamsLabel(rw)"/> · <t t-esc="peopleLabel(rw)"/></span>
+                    <span t-if="rw.drafts" class="pbsp-amber"><t t-out="icon('pencil', 13)"/> <t t-esc="draftsLabel(rw.drafts)"/></span>
+                    <span class="pbsp-muted"><t t-out="icon('calendar', 13)"/> <t t-esc="madeLabel(rw)"/></span>
+                  </div>
+                </article>
+              </div>
+
+              <div t-elif="!state.listLoaded" class="pbsp-skeleton" aria-label="Loading">
+                <div t-foreach="[1,2,3]" t-as="i" t-key="i" class="pbsp-skel-row"/>
+              </div>
+
+              <div t-else="" class="pbim-empty pbsp-empty">
+                <div class="pbsp-empty-ic"><t t-out="icon('search', 30)"/></div>
+                <h3>No patterns match these filters</h3>
+                <p>Remove a filter, or start again from every pattern.</p>
+                <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show every pattern</button>
+              </div>
+
+              <div t-if="state.rows.length and hasMore and !state.listError" class="pbsp-foot">
+                <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">Show more</button>
+              </div>
+            </PbFilterLayout>
+          </t>
+
+          <div t-if="state.archived.length" class="pbsp-archived">
+            <button class="pbsp-link" t-on-click="() => state.showArchived = !state.showArchived">
+              <t t-out="icon('archive', 13)"/> <span>Archived patterns</span> (<t t-esc="state.archived.length"/>)
+            </button>
+            <ul t-if="state.showArchived" class="pbsp-archived-list">
+              <li t-foreach="state.archived" t-as="ar" t-key="ar.id">
+                <span t-esc="ar.name"/>
+                <button t-if="state.canEdit" class="pbsp-link" t-on-click="() => this.archive(false, ar.id)">Restore</button>
+              </li>
+            </ul>
+          </div>
+        </t>
+      </div>
+
+      <!-- ============================== edit drawer ============================== -->
+      <WfDrawer t-if="state.edit" title="editTitle" subtitle="editSubtitle" onClose.bind="closeEdit">
+        <t t-set="E" t-value="state.edit"/>
+        <t t-set="F" t-value="state.edit.form"/>
+        <div class="pbsp-dr">
+          <fieldset class="pbsp-sec" t-att-disabled="!state.canEdit">
+            <h4><span class="pbsp-num">1</span> <span>The basics</span></h4>
+            <label class="pbsp-field">
+              <span>Name</span>
+              <input class="pbim-input" type="text" t-model="F.name" placeholder="For example: Packing, days and nights"/>
+            </label>
+            <div class="pbsp-row2">
+              <label class="pbsp-field">
+                <span>Department</span>
+                <select class="pbim-input" t-on-change="(ev) => F.department_id = parseInt(ev.target.value, 10) || false">
+                  <option value="" t-att-selected="!F.department_id">Any department</option>
+                  <option t-foreach="state.departments" t-as="dp" t-key="dp.id" t-att-value="dp.id" t-att-selected="dp.id === F.department_id" t-esc="dp.name"/>
+                </select>
+              </label>
+              <label class="pbsp-field">
+                <span>Day 1 of the cycle</span>
+                <input class="pbim-input" type="date" t-model="F.start_date"/>
+              </label>
+            </div>
+            <div class="pbsp-field">
+              <span>Repeats every</span>
+              <div class="pbsp-chips" role="group" aria-label="Repeats every">
+                <button t-foreach="cycleChoices" t-as="ch" t-key="ch" type="button" class="pbsp-chip"
+                        t-att-class="{ 'is-on': F.cycle_days === ch }" t-on-click="() => this.setCycle(ch)" t-esc="cycleLabel(ch)"/>
+                <label class="pbsp-chip-in">
+                  <input type="number" min="1" t-att-max="state.maxCycle" t-att-value="F.cycle_days" t-on-change="(ev) => this.setCycle(ev.target.value)" aria-label="Days in the cycle"/>
+                  <span>days</span>
+                </label>
+              </div>
+            </div>
+            <label class="pbsp-toggle">
+              <input type="checkbox" t-model="F.work_on_holidays"/>
+              <span>Work on public holidays</span>
+              <small>Off: public holidays are left empty and listed in the report.</small>
+            </label>
+          </fieldset>
+
+          <fieldset class="pbsp-sec" t-att-disabled="!state.canEdit">
+            <h4><span class="pbsp-num">2</span> <span>The cycle</span> <small class="pbsp-muted" t-esc="cycleSummary"/></h4>
+            <p class="pbsp-hint" t-if="state.canEdit">Pick a shift, then press the days it is worked.</p>
+            <div t-if="!state.templates.length" class="pbsp-warnbox">
+              <t t-out="icon('alert', 14)"/> <span>There are no shift templates yet. Add them from Templates in the Schedule first.</span>
+            </div>
+            <div class="pbsp-brushes" t-if="state.canEdit" role="group" aria-label="Shift to paint">
+              <button t-foreach="state.templates" t-as="tp" t-key="tp.id" type="button" class="pbsp-brush"
+                      t-att-class="'is-' + tone(tp.color) + (E.brush === tp.id ? ' is-on' : '')" t-on-click="() => this.setBrush(tp.id)">
+                <b t-esc="tp.code"/> <span t-esc="tp.name"/> <small><t t-esc="tp.start"/>–<t t-esc="tp.end"/></small>
+              </button>
+              <button type="button" class="pbsp-brush is-off" t-att-class="{ 'is-on': E.brush === 'off' }" t-on-click="() => this.setBrush('off')">
+                <span>Off</span>
+              </button>
+              <span class="pbsp-brush-tools">
+                <button type="button" class="pbsp-link" t-on-click="fillWeekdays">Fill Monday to Friday</button>
+                <button type="button" class="pbsp-link" t-on-click="clearCycle">Clear</button>
+              </span>
+            </div>
+            <div class="pbsp-cycle">
+              <div t-foreach="cycleWeeks" t-as="wk" t-key="wk.w" class="pbsp-week">
+                <button t-foreach="wk.cells" t-as="ce" t-key="ce.i" type="button" class="pbsp-day"
+                        t-att-class="ce.t ? 'is-' + tone(ce.t.color) : 'is-off'" t-on-click="() => this.paint(ce.i)"
+                        t-att-aria-label="ce.t ? ce.t.name : offLabel">
+                  <small><t t-esc="ce.n"/> · <t t-esc="ce.weekday"/></small>
+                  <b t-if="ce.t" t-esc="ce.t.code"/>
+                  <span t-else="" class="pbsp-off">Off</span>
+                </button>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="pbsp-sec" t-att-disabled="!state.canEdit">
+            <h4><span class="pbsp-num">3</span> <span>Teams</span></h4>
+            <p class="pbsp-hint">Each team works the same cycle, starting some days after Team A.</p>
+            <div class="pbsp-teams">
+              <div t-foreach="F.teams" t-as="tm" t-key="tm.key" class="pbsp-team">
+                <input class="pbim-input pbsp-team-n" type="text" t-model="tm.name" aria-label="Team name"/>
+                <label class="pbsp-team-o" t-if="tm_index">
+                  <span>starts</span>
+                  <input type="number" min="0" t-att-max="F.cycle_days - 1" t-att-value="tm.offset" t-on-change="(ev) => this.setOffset(tm, ev.target.value)" aria-label="Days after Team A"/>
+                  <span>days after Team A</span>
+                </label>
+                <span t-else="" class="pbsp-team-o pbsp-muted">starts on day 1</span>
+                <span class="pbsp-team-c" t-esc="countPeople(teamCount(tm.key))"/>
+                <button t-if="F.teams.length > 1 and state.canEdit" type="button" class="pbsp-x" t-on-click="() => this.removeTeam(tm.key)" title="Remove this team" aria-label="Remove this team">
+                  <t t-out="icon('x', 13)"/>
+                </button>
+              </div>
+            </div>
+            <div class="pbsp-team-tools" t-if="state.canEdit">
+              <button type="button" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="F.teams.length >= state.maxTeams" t-on-click="addTeam">
+                <t t-out="icon('plus', 13)"/> <span>Add a team</span>
+              </button>
+              <button type="button" class="pbsp-link" t-if="F.teams.length > 1" t-on-click="spaceTeams">Space the teams evenly</button>
+            </div>
+
+            <div class="pbsp-preview" aria-label="The next two weeks">
+              <div class="pbsp-preview-h">
+                <span class="pbsp-preview-l">The next two weeks</span>
+                <span t-foreach="previewRows.days" t-as="dy" t-key="dy.iso" class="pbsp-pv-d" t-att-class="{ 'is-we': dy.weekend }">
+                  <small t-esc="dy.weekday"/><b t-esc="dy.day"/>
+                </span>
+              </div>
+              <div t-foreach="previewRows.rows" t-as="pr" t-key="pr.key" class="pbsp-preview-r">
+                <span class="pbsp-preview-l"><b t-esc="pr.name"/> <small><t t-esc="pr.people"/></small></span>
+                <span t-foreach="pr.cells" t-as="ce" t-key="ce.iso" class="pbsp-pv-c"
+                      t-att-class="(ce.t ? 'is-' + tone(ce.t.color) : 'is-off') + (ce.weekend ? ' is-we' : '')"
+                      t-att-title="ce.t ? ce.t.name : ''">
+                  <t t-esc="ce.t ? ce.t.code : ''"/>
+                </span>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="pbsp-sec" t-att-disabled="!state.canEdit">
+            <h4><span class="pbsp-num">4</span> <span>People</span> <small class="pbsp-muted" t-esc="onPatternLabel"/></h4>
+            <div class="pbsp-people-add" t-if="state.canEdit">
+              <input class="pbim-input" type="search" placeholder="Find a person to add" t-att-value="E.peopleQuery"
+                     t-on-input="onPeopleInput" t-on-focus="() => !E.peopleRows.length and this.findPeople()"/>
+              <label class="pbsp-field-inline">
+                <span>to</span>
+                <select class="pbim-input" t-on-change="(ev) => E.peopleTeam = ev.target.value">
+                  <option t-foreach="F.teams" t-as="tm" t-key="tm.key" t-att-value="tm.key" t-att-selected="tm.key === E.peopleTeam" t-esc="tm.name"/>
+                </select>
+              </label>
+            </div>
+            <ul t-if="state.canEdit and E.peopleRows.length" class="pbsp-found">
+              <li t-foreach="E.peopleRows" t-as="pf" t-key="pf.employee_id">
+                <button type="button" class="pbsp-found-b" t-att-disabled="isMember(pf.employee_id)" t-on-click="() => this.addPerson(pf)">
+                  <img t-att-src="pf.avatar" alt="" class="pbsp-av"/>
+                  <span class="pbsp-found-tx"><b t-esc="pf.name"/><small><t t-esc="pf.job or pf.department"/><t t-if="pf.also_on.length"> · <t t-esc="alsoOnLabel(pf.also_on)"/></t></small></span>
+                  <span t-if="isMember(pf.employee_id)" class="pbsp-muted">Added</span>
+                  <span t-else="" class="pbsp-found-add"><t t-out="icon('plus', 13)"/></span>
+                </button>
+              </li>
+            </ul>
+            <div class="pbsp-crews">
+              <div t-foreach="F.teams" t-as="tm" t-key="tm.key" class="pbsp-crew">
+                <div class="pbsp-crew-h"><b t-esc="tm.name"/> <small><t t-esc="teamCount(tm.key)"/></small></div>
+                <div t-if="!teamCount(tm.key)" class="pbsp-crew-empty">Nobody yet</div>
+                <div t-foreach="teamMembers(tm.key)" t-as="mb" t-key="mb.employee_id + '-' + mb_index" class="pbsp-mb">
+                  <img t-att-src="mb.avatar" alt="" class="pbsp-av"/>
+                  <span class="pbsp-mb-tx">
+                    <b t-esc="mb.name"/>
+                    <small t-if="mb.also_on and mb.also_on.length" class="pbsp-amber" t-esc="alsoOnLabel(mb.also_on, true)"/>
+                    <small t-elif="mb.job" t-esc="mb.job"/>
+                  </span>
+                  <span class="pbsp-mb-dates">
+                    <input type="date" t-model="mb.date_from" aria-label="From" title="From"/>
+                    <input type="date" t-model="mb.date_to" aria-label="Until" title="Until"/>
+                  </span>
+                  <select t-if="F.teams.length > 1" class="pbsp-mb-team" t-on-change="(ev) => this.moveTeam(mb, ev.target.value)" aria-label="Team">
+                    <option t-foreach="F.teams" t-as="tm2" t-key="tm2.key" t-att-value="tm2.key" t-att-selected="tm2.key === mb.team_key" t-esc="tm2.name"/>
+                  </select>
+                  <button t-if="state.canEdit" type="button" class="pbsp-x" t-on-click="() => this.removePerson(mb)" title="Take off the pattern" aria-label="Take off the pattern">
+                    <t t-out="icon('x', 13)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div t-if="E.error" class="pbsp-err"><t t-out="icon('alert', 14)"/> <span t-esc="E.error"/></div>
+
+          <div class="pbsp-dr-foot" t-if="state.canEdit">
+            <button class="pbim-btn primary" t-att-disabled="E.busy" t-on-click="save">
+              <t t-out="icon('save', 14)"/> <span>Save the pattern</span>
+            </button>
+            <button t-if="F.id" class="pbim-btn ghost" t-on-click="makeFromEdit">
+              <t t-out="icon('calendarClock', 14)"/> <span>Make drafts</span>
+            </button>
+            <span class="pbsp-spacer"/>
+            <button t-if="F.id and F.drafts" class="pbsp-link" t-on-click="clearDrafts">Remove unpublished drafts</button>
+            <button t-if="F.id" class="pbsp-link" t-on-click="() => this.archive(true)">Archive</button>
+          </div>
+        </div>
+      </WfDrawer>
+
+      <!-- ============================== make drafts ============================== -->
+      <WfDrawer t-if="state.make" title="makeTitle" subtitle="makeSubtitle" onClose.bind="closeMake">
+        <t t-set="M" t-value="state.make"/>
+        <div class="pbsp-dr">
+          <t t-if="!M.result">
+            <fieldset class="pbsp-sec">
+              <h4><span class="pbsp-num">1</span> <span>Which patterns</span></h4>
+              <label t-foreach="state.rows" t-as="rw" t-key="rw.id" class="pbsp-pick" t-att-class="{ 'is-dim': rw.need }">
+                <input type="checkbox" t-att-checked="isPicked(rw.id)" t-att-disabled="rw.need" t-on-change="() => this.togglePick(rw.id)"/>
+                <span class="pbsp-pick-tx"><b t-esc="rw.name"/><small><t t-esc="rw.cycle_label"/> · <t t-esc="peopleLabel(rw)"/><t t-if="rw.need"> · <t t-esc="needLabel(rw)"/></t></small></span>
+              </label>
+            </fieldset>
+            <fieldset class="pbsp-sec">
+              <h4><span class="pbsp-num">2</span> <span>Which weeks</span></h4>
+              <div class="pbsp-row2">
+                <label class="pbsp-field">
+                  <span>Starting the week of</span>
+                  <input class="pbim-input" type="date" t-att-value="M.start" t-on-change="setStart"/>
+                </label>
+                <div class="pbsp-field">
+                  <span>For</span>
+                  <div class="pbsp-chips" role="group" aria-label="Number of weeks">
+                    <button t-foreach="weekChoices" t-as="ch" t-key="ch" type="button" class="pbsp-chip"
+                            t-att-class="{ 'is-on': M.weeks === ch }" t-on-click="() => this.setWeeks(ch)">
+                      <t t-esc="weekChoiceLabel(ch)"/>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p class="pbsp-hint">Days before today are never filled.</p>
+            </fieldset>
+
+            <div t-if="M.error" class="pbsp-err"><t t-out="icon('alert', 14)"/> <span t-esc="M.error"/></div>
+
+            <div t-if="M.preview" class="pbsp-report">
+              <t t-set="R" t-value="M.preview"/>
+              <div class="pbsp-report-h">
+                <span class="pbsp-report-ic"><t t-out="icon('listChecks', 18)"/></span>
+                <div>
+                  <b t-esc="reportHeadline(R)"/>
+                  <small><t t-esc="R.first_label"/> – <t t-esc="R.last_label"/></small>
+                </div>
+              </div>
+              <t t-call="pb_shift_patterns.Report"/>
+            </div>
+
+            <div class="pbsp-dr-foot">
+              <button class="pbim-btn" t-att-class="M.preview ? 'ghost' : 'primary'" t-att-disabled="M.busy or !pickedIds.length" t-on-click="check">
+                <t t-out="icon('eye', 14)"/> <span>Check first</span>
+              </button>
+              <button class="pbim-btn" t-att-class="M.preview ? 'primary' : 'ghost'" t-att-disabled="M.busy or !pickedIds.length" t-on-click="makeDrafts">
+                <t t-out="icon('calendarClock', 14)"/> <span>Make drafts</span>
+              </button>
+              <span t-if="M.busy" class="pbsp-muted"><span class="pbim-spin pbsp-spin-sm"/> Working…</span>
+            </div>
+          </t>
+
+          <t t-else="">
+            <t t-set="R" t-value="M.result"/>
+            <div class="pbsp-done">
+              <span class="pbsp-done-ic"><t t-out="icon('checkCircle', 26)"/></span>
+              <div>
+                <h3 t-esc="doneTitle(R)"/>
+                <p>Nothing is published. Check the drafts in the Schedule, then press Publish there.</p>
+                <small class="pbsp-muted"><t t-esc="R.first_label"/> – <t t-esc="R.last_label"/></small>
+              </div>
+            </div>
+            <div class="pbsp-report">
+              <t t-call="pb_shift_patterns.Report"/>
+            </div>
+            <div class="pbsp-dr-foot">
+              <button class="pbim-btn primary" t-on-click="openSchedule"><t t-out="icon('calendar', 14)"/> <span>Open the Schedule</span></button>
+              <button class="pbim-btn ghost" t-on-click="closeMake">Close</button>
+            </div>
+          </t>
+        </div>
+      </WfDrawer>
+    </div>
+  </t>
+
+  <!-- The skip report, shared by the check and the result. -->
+  <t t-name="pb_shift_patterns.Report">
+    <div class="pbsp-tiles">
+      <div class="pbsp-tile" t-att-class="{ 'is-zero': !R.kept_same }"><b t-esc="fmtInt(R.kept_same)"/><span>already there</span></div>
+      <div class="pbsp-tile" t-att-class="{ 'is-zero': !R.removed }"><b t-esc="fmtInt(R.removed)"/><span>old drafts replaced</span></div>
+      <div class="pbsp-tile" t-att-class="{ 'is-zero': !R.kept_edited_total }"><b t-esc="fmtInt(R.kept_edited_total)"/><span>changed by hand, kept</span></div>
+      <div class="pbsp-tile" t-att-class="{ 'is-zero': !R.kept_published }"><b t-esc="fmtInt(R.kept_published)"/><span>published, kept</span></div>
+      <div class="pbsp-tile" t-att-class="R.skipped_total ? 'is-amber' : 'is-zero'"><b t-esc="fmtInt(R.skipped_total)"/><span>not filled</span></div>
+    </div>
+    <div t-if="R.skipped_total" class="pbsp-skips">
+      <div class="pbsp-reasons">
+        <span t-foreach="reasonChips(R)" t-as="rc" t-key="rc.code" class="pbsp-reason" t-att-class="'is-' + rc.code">
+          <b t-esc="rc.n"/> <span t-esc="rc.label"/>
+        </span>
+      </div>
+      <ul class="pbsp-skip-list">
+        <li t-foreach="R.skipped" t-as="sk" t-key="sk_index" t-att-class="'is-' + sk.severity">
+          <span class="pbsp-skip-who"><b t-esc="sk.employee_name"/><small><t t-esc="dayLabel(sk.date)"/> · <t t-esc="sk.template"/></small></span>
+          <span class="pbsp-skip-why" t-esc="sk.reasons.join(' ')"/>
+        </li>
+      </ul>
+      <p t-if="R.skipped_total > R.skipped.length" class="pbsp-muted" t-esc="listedNote(R)"/>
+    </div>
+    <p t-else="" class="pbsp-muted">Every day the patterns ask for is covered.</p>
+  </t>
+
+</templates>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- The Schedule, extended by inheritance (no pb_schedule file is edited):
+       a Patterns button beside Copy week, and a repeat mark on every card a
+       pattern made. -->
+  <t t-inherit="pb_schedule.PbSchedule" t-inherit-mode="extension">
+    <xpath expr="//button[@t-on-click='() => this.openCopy()']" position="before">
+      <button t-if="pbspCanMake" class="pbsc-btn ghost pbsp-sched-btn" t-on-click="() => this.pbspOpenPatterns()"
+              title="Make draft shifts from a rotating pattern">
+        <span t-out="ic('repeat', 14)"/><span>Patterns</span>
+      </button>
+    </xpath>
+    <xpath expr="//span[hasclass('nm')][@t-esc='sh.template_name']" position="after">
+      <span class="pbsp-mark" t-if="sh.pattern" t-att-title="pbspMark(sh)" t-att-aria-label="pbspMark(sh)"
+            t-out="ic('repeat', 10)"/>
+    </xpath>
+  </t>
+
+</templates>
