@@ -3,8 +3,8 @@
     # The name and summary are what the Apps list prints: user-visible, so
     # plain words and no vendor name.
     'name': 'Payobook Past-Month Re-work',
-    'summary': 'Re-work finished payslips with today\'s figures and see exactly '
-               'what would change. Nothing is paid or changed.',
+    'summary': 'Re-work finished payslips with today\'s figures, see exactly '
+               'what would change, and pay the difference in the next pay run.',
     'description': """
 WDGAP W2-D1 — re-work a past month, read-only.
 
@@ -35,8 +35,22 @@ is the engine of true re-working, and it stops before any money:
 Nothing is posted to any pay run, no payslip, line, input, loan instalment or
 one-off is written or reserved, no run is reopened, no formula changes. No
 demo data, no scheduled job, no email.
+
+WDGAP W2-D2 — pay the difference (owner ruling R1, 2026-11-15):
+
+  * "Pay the difference in the next pay run": a check per person (cannot be
+    compared exactly / has left / moved scheme or currency -> not paid
+    automatically; no difference -> skipped), then ONE approval step, the
+    Head of pay (process `backpay`, one Approvals inbox).
+  * On approval: back-pay entries (`pb.retro.backpay`, person x pay item x
+    past month) from the stored result lines — never worked out again.
+  * The next REGULAR pay run of the scheme appends them as fixed lines
+    ("Back pay · Income tax · Aug–Oct 2026") after the formulas, carrying the
+    past months' own tax and insurance; this month's formulas never see them.
+    Paid once (reserved / paid / released, like loan instalments); take-home
+    never below zero (whole months wait for the next run).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
@@ -50,10 +64,16 @@ demo data, no scheduled job, no email.
         'pb_hub',                  # the palette
         'pb_import_kit',           # icons + quiet board pieces
         'pb_filter_kit',           # the shared filter panel
+        'biz_approval_workflow',   # W2-D2: the one approval engine
+        'pb_approval_config',      # W2-D2: the catalogue's roles + the one inbox
+        'pb_pay_delivery',         # W2-D2: pb.money.approval.mixin (money base)
+        'pb_fund_payments',        # W2-D2: what is owed to funds reads back pay
     ],
     'data': [
         'security/ir.model.access.csv',
         'security/retro_security.xml',
+        'security/backpay_security.xml',
+        'data/approval_process.xml',
         'views/retro_views.xml',
     ],
     'assets': {
@@ -64,6 +84,7 @@ demo data, no scheduled job, no email.
             'pb_retro/static/src/xml/retro_board.xml',
         ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
 }

@@ -323,7 +323,51 @@
     }
     .pbrw-foot-note { margin-right: auto; color: var(--pbim-muted, #64748B); font-size: 13px; }
 
+    // ================================================ WDGAP W2-D2: the payment
+    .pbrw-paybadge { margin-left: 6px;
+        &.is-pay-waiting { background: var(--pbim-amber-soft, #FEF3C7); color: #8A4B02; }
+        &.is-pay-approved, &.is-pay-partly { background: #E5EDFD; color: #1E40AF; }
+        &.is-pay-paid { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); }
+        &.is-pay-cancelled { background: var(--pbim-slate-soft, #EEF1F5); color: var(--pbim-slate, #64748B); } }
+    .pbrw-next.is-pay .pbrw-next-ic { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+    .pbrw-next-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .pbrw-pay { padding: 16px 18px; border-radius: var(--pbim-r, 14px); background: var(--pbim-surface, #fff);
+        border: 1px solid var(--pbim-line, #E2E8F0); animation: pbrw-in .25s ease-out both;
+        &.is-pay-waiting { border-color: #F6D58E; }
+        &.is-pay-approved, &.is-pay-partly { border-color: var(--pbim-primary-light, #CBC2EE); } }
+    .pbrw-pay-head { display: flex; gap: 12px; align-items: flex-start;
+        h3 { margin: 0 0 4px; display: flex; align-items: center; gap: 4px; }
+        p { margin: 0; font-size: 13.5px; color: var(--pbim-text, #1B1733); } }
+    .pbrw-pay-ic { flex: 0 0 auto; display: grid; place-items: center; width: 36px; height: 36px;
+        border-radius: 11px; background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
+    .pbrw-pay-tx { flex: 1 1 auto; min-width: 0;
+        p > * + * { margin-left: 6px; } }
+    .pbrw-next { flex-wrap: wrap; }
+    .pbrw-next-tx { min-width: 220px; }
+    .pbrw-pay-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbrw-pay-cancel { margin: 12px 0 4px; padding: 12px 14px; border-radius: var(--pbim-r-sm, 10px);
+        background: #FDECF2; border: 1px solid #F7C6D7; display: grid; gap: 8px;
+        animation: pbrw-in .2s ease-out both;
+        p { margin: 0; } .pbrw-in { width: 100%; } }
+    .pbrw-pay-cancel-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .pbrw-pay-list { margin-top: 10px; display: grid; gap: 2px; }
+    .pbrw-pay-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 220px) 32px;
+        gap: 10px; align-items: center; padding: 8px 4px; border-top: 1px solid var(--pbim-line-2, #F1F5F9);
+        font-size: 13.5px;
+        &.is-muted { color: var(--pbim-muted, #64748B); grid-template-columns: minmax(0, 1fr) auto minmax(0, 320px); }
+        .pbrw-chip { justify-self: start; max-width: 100%; white-space: normal; }
+        .pbrw-chip.is-blue { background: #E5EDFD; color: #1E40AF; }
+        .pbrw-chip.is-green { background: var(--pbim-green-soft, #E3F2E9); color: var(--pbim-green, #2E7D4F); } }
+    .pbrw-pay-who { min-width: 0; display: flex; flex-direction: column;
+        b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        small { color: var(--pbim-muted, #64748B); font-size: 12px; } }
+    .pbrw-pay-net { font-variant-numeric: tabular-nums; text-align: right; }
+    .pbrw-pay-others { margin-top: 10px; }
+
     @media (max-width: 760px) {
+        .pbrw-pay-head { flex-direction: column; }
+        .pbrw-next-actions { flex: 1 1 100%; justify-content: flex-start; }
+        .pbrw-pay-row, .pbrw-pay-row.is-muted { grid-template-columns: minmax(0, 1fr) auto; }
         .pbrw-hero { flex-direction: column; gap: 12px; }
         .pbrw-start, .pbrw-draft { flex-direction: column; }
         .pbrw-find, .pbrw-people-tools .pbrw-in { width: 100%; }
@@ -333,7 +377,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
         .pbrw-hero, .pbrw-banner, .pbrw-start, .pbrw-draft, .pbrw-progress, .pbrw-rhead,
-        .pbrw-issues-body, .pbrw-person-body, .pbrw-wbody, .pbrw-skel-row { animation: none; }
+        .pbrw-issues-body, .pbrw-person-body, .pbrw-wbody, .pbrw-skel-row,
+        .pbrw-pay, .pbrw-pay-cancel { animation: none; }
         .pbrw-progress-tx svg { animation: none; }
         .pbrw-bar span { transition: none; }
     }

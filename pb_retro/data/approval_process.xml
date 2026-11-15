@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP W2-D2: the catalogue row back pay for past months is approved
+         under. It puts money into a pay run, so it is a money process and is
+         never one of an "approve selected" batch in the Approvals inbox
+         (biz_approval_workflow refuses bulk_ok on a money process). -->
+    <record id="process_backpay" model="biz.approval.process">
+        <field name="key">backpay</field>
+        <field name="name">Back pay for past months</field>
+        <field name="area">pay</field>
+        <field name="model_name">pb.retro.review</field>
+        <field name="money" eval="True"/>
+        <field name="bulk_ok" eval="False"/>
+        <field name="description">A difference worked out for past months, paid in the next pay run.</field>
+        <field name="sequence">46</field>
+    </record>
+</odoo>
