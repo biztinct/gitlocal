@@ -2016,6 +2016,8 @@ msgstr "≈ không so sánh chính xác được"
 #. odoo-python
 #: code:addons/pb_retro/models/retro_backpay.py:0
 
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Back pay is made from an approved re-work, never typed."
 msgstr "Truy lĩnh được lập từ một lần tính lại đã duyệt, không bao giờ nhập tay."
 
@@ -2655,8 +2657,9 @@ msgstr "Truy lĩnh tính trong tổng của nó"
 msgid "Difference counted in its total"
 msgstr "Chênh lệch tính trong tổng của nó"
 
-
 #. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__already
+
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__already
 msgid "Already paid by another re-work"
 msgstr "Đã được trả bởi lần tính lại khác"
@@ -2666,3 +2669,17 @@ msgstr "Đã được trả bởi lần tính lại khác"
 #: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Already paid as back pay by another re-work — add a one-off in Updates if more is owed"
 msgstr "Đã được trả thành truy lĩnh bởi lần tính lại khác — thêm khoản một lần trong Cập nhật nếu còn thiếu"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+
+msgid "Paid in"
+msgstr "Trả trong"
+
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work finished payslips out again with today's figures, see exactly what would change, and pay the difference in the next pay run once it is approved."
+msgstr "Tính lại các phiếu lương đã hoàn tất với số liệu hôm nay, xem chính xác điều gì sẽ thay đổi, và trả phần chênh lệch trong đợt lương tới sau khi được duyệt."

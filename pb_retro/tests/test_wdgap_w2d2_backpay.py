@@ -236,7 +236,7 @@ class TestW2d2Backpay(TransactionCase):
                           lambda self, fresh=True: None):
             self._compute(slip2, {'BASICPAY': 10_000_000})
         self.assertEqual(snap, self._snap(slip2))
-        self.assertFalse(self.Entry.search_count([]))
+        self.assertFalse(self.Entry.search_count([('company_id', '=', self.company.id)]))
 
     # =====================================================================
     # B02 — a pay rise paid as back pay in November
@@ -912,7 +912,8 @@ class TestW2d2Backpay(TransactionCase):
     # =====================================================================
     def test_B20_silent_install(self):
         self.assertFalse(self.Entry.sudo().search_count([('company_id', '=', self.company.id)]))
-        self.assertFalse(self.env['pb.retro.person'].sudo().search_count([]))
+        self.assertFalse(self.env['pb.retro.person'].sudo().search_count(
+            [('company_id', '=', self.company.id)]))
         self.assertFalse(self.env['ir.cron'].sudo().search_count(
             [('model_id.model', 'in', ('pb.retro.backpay', 'pb.retro.review',
                                        'pb.retro.person'))]))

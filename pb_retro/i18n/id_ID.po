@@ -2032,6 +2032,8 @@ msgstr "≈ tidak dapat dibandingkan dengan tepat"
 #. odoo-python
 #: code:addons/pb_retro/models/retro_backpay.py:0
 
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Back pay is made from an approved re-work, never typed."
 msgstr "Rapel dibuat dari perhitungan ulang yang disetujui, tidak pernah diketik."
 
@@ -2671,8 +2673,9 @@ msgstr "Rapel dihitung dalam totalnya"
 msgid "Difference counted in its total"
 msgstr "Selisih dihitung dalam totalnya"
 
-
 #. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__already
+
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__already
 msgid "Already paid by another re-work"
 msgstr "Sudah dibayar oleh perhitungan ulang lain"
@@ -2682,3 +2685,17 @@ msgstr "Sudah dibayar oleh perhitungan ulang lain"
 #: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Already paid as back pay by another re-work — add a one-off in Updates if more is owed"
 msgstr "Sudah dibayar sebagai rapel oleh perhitungan ulang lain — tambahkan pembayaran sekali di Pembaruan bila masih kurang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+
+msgid "Paid in"
+msgstr "Dibayar di"
+
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Work finished payslips out again with today's figures, see exactly what would change, and pay the difference in the next pay run once it is approved."
+msgstr "Hitung ulang slip gaji yang sudah selesai dengan angka hari ini, lihat persis apa yang berubah, dan bayar selisihnya di penggajian berikutnya setelah disetujui."

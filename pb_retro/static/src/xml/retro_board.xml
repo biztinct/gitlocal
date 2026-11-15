@@ -32,7 +32,7 @@
           <div class="pbrw-head">
             <div class="pbrw-head-id" t-if="!props.embedded">
               <h1 class="pbim-h1">Past-month re-work</h1>
-              <p class="pbim-sub">Work finished payslips out again with today's figures and see exactly what would change. Nothing is paid or changed.</p>
+              <p class="pbim-sub">Work finished payslips out again with today's figures, see exactly what would change, and pay the difference in the next pay run once it is approved.</p>
             </div>
             <div class="pbrw-head-actions">
               <button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again" aria-label="Read the board again">

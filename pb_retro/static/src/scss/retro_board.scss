@@ -340,7 +340,10 @@
         p { margin: 0; font-size: 13.5px; color: var(--pbim-text, #1B1733); } }
     .pbrw-pay-ic { flex: 0 0 auto; display: grid; place-items: center; width: 36px; height: 36px;
         border-radius: 11px; background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary, #5A4BB0); }
-    .pbrw-pay-tx { flex: 1 1 auto; min-width: 0; }
+    .pbrw-pay-tx { flex: 1 1 auto; min-width: 0;
+        p > * + * { margin-left: 6px; } }
+    .pbrw-next { flex-wrap: wrap; }
+    .pbrw-next-tx { min-width: 220px; }
     .pbrw-pay-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .pbrw-pay-cancel { margin: 12px 0 4px; padding: 12px 14px; border-radius: var(--pbim-r-sm, 10px);
         background: #FDECF2; border: 1px solid #F7C6D7; display: grid; gap: 8px;
@@ -363,6 +366,7 @@
 
     @media (max-width: 760px) {
         .pbrw-pay-head { flex-direction: column; }
+        .pbrw-next-actions { flex: 1 1 100%; justify-content: flex-start; }
         .pbrw-pay-row, .pbrw-pay-row.is-muted { grid-template-columns: minmax(0, 1fr) auto; }
         .pbrw-hero { flex-direction: column; gap: 12px; }
         .pbrw-start, .pbrw-draft { flex-direction: column; }

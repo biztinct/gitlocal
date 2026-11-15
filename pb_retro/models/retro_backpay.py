@@ -662,7 +662,7 @@ class PbRetroReviewPay(models.Model):
         ]
         return {
             'title': _('Back pay in the next pay run'),
-            'columns': [_('Take-home difference'), _('Paid')],
+            'columns': [_('Take-home difference'), _('Paid in')],
             'rows': rows[:200],
             'chips': chips,
             'note': _("Each person's tax and insurance are the figures worked out for "
