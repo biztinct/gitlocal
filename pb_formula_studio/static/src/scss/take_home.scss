@@ -133,7 +133,12 @@
 .pbth-safe { margin: 4px 0 0; font-size: 11px; color: var(--th-faint); text-align: center; }
 
 /* ---------------- the answer ---------------- */
-.pbth-out { padding: 18px 20px; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 14px; }
+.pbth-out {
+    padding: 18px 20px; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 14px;
+    // A flex column that scrolls must not squeeze its boxes: the totals table
+    // was cut to one row on the first walk.
+    > * { flex-shrink: 0; }
+}
 @media (max-width: 760px) { .pbth-out { overflow: visible; } }
 .pbth-idle {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;

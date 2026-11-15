@@ -55,6 +55,7 @@ BAD_TARGET = 'bad_target'
 WHY_FLAT = 'flat'              # take-home does not move with this item
 WHY_NEVER = 'never'            # it moves, but never as far as the target
 WHY_ABOVE = 'already_above'    # even at 0 take-home is above the target
+WHY_DOWN = 'goes_down'         # take-home FALLS as the item rises (a deduction)
 
 
 class _OutOfTries(Exception):
@@ -166,7 +167,10 @@ def solve(net_of, target, decimals=0, max_evals=MAX_EVALS):
             if reached(n_lo):
                 if equal(n_lo):
                     return result(EXACT, value=lo, net=n_lo)
-                return result(NOT_POSSIBLE, why=WHY_ABOVE, value=lo, net=n_lo)
+                # Higher at 0 than at the target: this item takes money OFF
+                # take-home. "Net does not rise with this item" (handover).
+                why = WHY_DOWN if n_lo > n_hi + half else WHY_ABOVE
+                return result(NOT_POSSIBLE, why=why, value=lo, net=n_lo)
         else:
             hi = f.snap(t * START_FACTOR)
             n_hi = f(hi)
@@ -179,11 +183,15 @@ def solve(net_of, target, decimals=0, max_evals=MAX_EVALS):
             if not reached(n_hi):
                 # "Does not move" must be true below the target too: a capped
                 # take-home is flat up here and moves further down.
-                f(0.0)
+                n_zero = f(0.0)
                 seen = list(f.cache.values())
-                flat = (max(seen) - min(seen)) < half
-                return result(NOT_POSSIBLE, why=WHY_FLAT if flat else WHY_NEVER,
-                              value=hi, net=n_hi)
+                if (max(seen) - min(seen)) < half:
+                    why = WHY_FLAT
+                elif n_hi < n_zero - half:
+                    why = WHY_DOWN
+                else:
+                    why = WHY_NEVER
+                return result(NOT_POSSIBLE, why=why, value=hi, net=n_hi)
         state['lo'], state['hi'] = (lo, n_lo), (hi, n_hi)
 
         # ------------------------------------------- 2. the non-monotonic guard

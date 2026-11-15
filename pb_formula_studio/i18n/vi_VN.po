@@ -16997,3 +16997,9 @@ msgstr "Hãy chọn một nhân viên thật trước — máy tính làm việc
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Find the pay that gives a take-home figure, for this person"
 msgstr "Tìm mức lương cho ra một mức thực nhận, cho người này"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home goes down when %(item)s goes up, so a take-home figure cannot be worked back from %(item)s. Pick a pay item that adds to take-home."
+msgstr "Lương thực nhận giảm khi %(item)s tăng, nên không thể tính ngược mức thực nhận từ %(item)s. Hãy chọn một khoản lương làm tăng lương thực nhận."

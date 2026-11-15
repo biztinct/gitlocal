@@ -224,6 +224,22 @@ class TestW2cTakeHome(TransactionCase):
         self.assertEqual(out['outcome'], 'not_possible')
         self.assertIn('never reaches', out['sentence'])
 
+    def test_04d_a_deduction_item_is_not_possible(self):
+        # Built whole: a formula of a live scheme cannot be edited in place.
+        cfg = self._scheme('VN')
+        basic = self._rule(cfg, 'BASICPAY', 'Basic pay', 'input', role='earning', seq=10)
+        loan = self._rule(cfg, 'LOANREPAY', 'Loan repayment', 'input', role='deduction', seq=15)
+        tax = self._rule(cfg, 'PITAX', 'Income tax', 'formula', '=%s*0.1' % basic.column_letter,
+                         role='deduction', seq=20)
+        self._rule(cfg, 'NETPAY', 'Take-home', 'formula',
+                   '=%s-%s-%s' % (basic.column_letter, tax.column_letter, loan.column_letter),
+                   role='net', seq=30)
+        _e, _c, slip = self._person(cfg, {'BASICPAY': 20000000, 'LOANREPAY': 1000000})
+        for target in (30000000, 10000000):     # above and below today's take-home
+            out = self._solve(cfg, slip, target, item='LOANREPAY')
+            self.assertEqual(out['outcome'], 'not_possible', out)
+            self.assertIn('goes down when Loan repayment goes up', out['sentence'])
+
     def test_04c_already_above_at_zero(self):
         cfg = self._scheme('VN')
         basic = self._rule(cfg, 'BASICPAY', 'Basic pay', 'input', role='earning')
@@ -311,6 +327,10 @@ class TestW2cTakeHome(TransactionCase):
             out = solver.solve(lambda x, bad=bad: bad, 1000, 0)
             self.assertEqual(out['outcome'], 'garbage', bad)
             self.assertEqual(out['evals'], 1)
+        down = solver.solve(lambda x: 20000000 - x, 30000000, 0)
+        self.assertEqual(down['why'], 'goes_down')
+        down = solver.solve(lambda x: 20000000 - x, 10000000, 0)
+        self.assertEqual(down['why'], 'goes_down')
         out = solver.solve(lambda x: 5000000.0, 6000000, 0)
         self.assertEqual(out['outcome'], 'not_possible')
         self.assertEqual(out['why'], 'flat')
@@ -528,9 +548,13 @@ class TestW2cTakeHome(TransactionCase):
             ('name', 'ilike', 'Payobook'), ('rule_ids', '!=', False)])
         checked = 0
         for cfg in configs:
+            # The latest payslip with stored inputs; the advance schemes of the
+            # demo world store none, and the Studio preview then reads the
+            # scheme's own defaults — the same reading is checked here.
             slip = Slip.search([('formula_config_id', '=', cfg.id),
-                                ('formula_input_values', '!=', False),
-                                ('state', 'in', ('done', 'paid', 'verify', 'draft'))],
+                                ('formula_input_values', '!=', False)],
+                               order='date_to desc, id desc', limit=1) \
+                or Slip.search([('formula_config_id', '=', cfg.id)],
                                order='date_to desc, id desc', limit=1)
             if not slip:
                 continue
@@ -542,7 +566,7 @@ class TestW2cTakeHome(TransactionCase):
             self.assertTrue(out.get('ok'), (cfg.name, out))
             if out['outcome'] not in ('exact', 'closest'):
                 continue
-            inputs = json.loads(slip.formula_input_values)
+            inputs = json.loads(slip.formula_input_values or '{}')
             inputs[ctx['item']] = out['value']
             probe = self.env['hr.formula.sample.data'].new({'config_id': cfg.id})
             values = probe._evaluate_rules_with_dependencies(inputs, readonly=True)
@@ -552,3 +576,4 @@ class TestW2cTakeHome(TransactionCase):
             checked += 1
         if not checked:
             self.skipTest("no demo-world scheme with payslips on this database")
+        self.assertGreaterEqual(checked, 12, "every Payobook demo scheme is checked")

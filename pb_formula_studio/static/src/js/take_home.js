@@ -22,7 +22,7 @@
  *
  * W96: every expression the template evaluates lives in a method here.
  */
-import { Component, useState, useRef, onWillStart, onMounted, useExternalListener } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onPatched, useExternalListener } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -83,10 +83,21 @@ export class TakeHomeCard extends Component {
             down: ic("trendingDown", 15), user: ic("user", 14), layers: ic("layers", 14),
             copy: ic("arrowUpRight", 15), file: ic("fileText", 14),
         };
-        onWillStart(() => this.load());
-        onMounted(() => {
+        // Mounted at once, read after: the card is on screen with its
+        // "Reading this person's pay…" line instead of the click seeming to do
+        // nothing while the first read runs (found on the walk).
+        onMounted(async () => {
             this.state.shown = true;
-            if (this.targetRef.el) { this.targetRef.el.focus(); }
+            this._focusPending = true;
+            await this.load();
+        });
+        // The amount box exists only once the read is back, i.e. after the
+        // NEXT render: focus it there, once.
+        onPatched(() => {
+            if (this._focusPending && this.targetRef.el) {
+                this._focusPending = false;
+                this.targetRef.el.focus();
+            }
         });
         // Capture phase: the card owns Escape while it is up, so a host that
         // also listens for it (the contract drawer) never closes underneath.

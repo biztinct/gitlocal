@@ -611,6 +611,11 @@ class PbFormulaStudioTakeHome(models.AbstractModel):
                     "Take-home does not change when %(item)s changes, so it "
                     "cannot be worked back from %(item)s. Pick the pay item "
                     "that feeds take-home.", item=item_name)
+            elif why == solver.WHY_DOWN:
+                out['sentence'] = _(
+                    "Take-home goes down when %(item)s goes up, so a take-home "
+                    "figure cannot be worked back from %(item)s. Pick a pay "
+                    "item that adds to take-home.", item=item_name)
             elif why == solver.WHY_ABOVE:
                 out['sentence'] = _(
                     "Take-home is already %(net)s with %(item)s at 0, which is "

@@ -3508,7 +3508,11 @@ export class PbFormulaStudio extends Component {
             this.openPersonPicker();
             return;
         }
-        openTakeHome(this.overlay, { configId: cfg.id, payslipId: this.state.personPayslipId });
+        // One card at a time: a double click must not stack two.
+        if (this._takeHomeOpen) { return; }
+        this._takeHomeOpen = true;
+        openTakeHome(this.overlay, { configId: cfg.id, payslipId: this.state.personPayslipId },
+            () => { this._takeHomeOpen = false; });
     }
 
     async pickPersonRun(runId) {
