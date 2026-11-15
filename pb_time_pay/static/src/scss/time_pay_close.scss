@@ -77,6 +77,10 @@
         line-height: 1.5;
         color: var(--pbim-muted, #64748B);
     }
+    // Sentences are separate spans (one translatable sentence each, PRD-3);
+    // the template's line breaks between them collapse, so the gap is here.
+    .pbtp-card__p > span + span,
+    .pbtp-file p > span + span { margin-left: .3em; }
     .pbtp-count {
         min-width: 22px;
         padding: 1px 8px;
