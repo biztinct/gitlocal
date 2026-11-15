@@ -1066,3 +1066,85 @@ msgstr "Một đợt lương thêm nháp sẽ được tạo và tính — có t
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Compute the extra payslips"
 msgstr "Tính các phiếu lương thêm"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%(names)s and %(more)s more"
+msgstr "%(names)s và %(more)s người khác"
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s are not in this file. Their payslips are worked out without it, from their contracts and records — the same as a regular run does for anybody the file leaves out."
+msgstr "%s không có trong tệp này. Phiếu lương của họ được tính không dùng tệp, từ hợp đồng và hồ sơ của họ — giống như kỳ lương thông thường làm với bất kỳ ai không có trong tệp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s is not in this file. Their payslip is worked out without it, from their contract and records — the same as a regular run does for anybody the file leaves out."
+msgstr "%s không có trong tệp này. Phiếu lương được tính không dùng tệp, từ hợp đồng và hồ sơ của người này — giống như kỳ lương thông thường làm với bất kỳ ai không có trong tệp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "%s payslips in this extra run also take the mid-month advance off. Check it has not been taken already."
+msgstr "%s phiếu lương trong kỳ lương bổ sung này cũng trừ khoản tạm ứng giữa tháng. Hãy kiểm tra khoản này chưa bị trừ trước đó."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "1 payslip in this extra run also takes the mid-month advance off. Check it has not been taken already."
+msgstr "1 phiếu lương trong kỳ lương bổ sung này cũng trừ khoản tạm ứng giữa tháng. Hãy kiểm tra khoản này chưa bị trừ trước đó."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "Nobody you picked is in it."
+msgstr "Không ai bạn đã chọn có trong tệp."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This extra run does not say who it is for, so the pay data file cannot be loaded into it. Start the extra run again and pick the people."
+msgstr "Kỳ lương bổ sung này không ghi rõ dành cho ai, nên không thể tải tệp dữ liệu lương vào. Hãy bắt đầu lại kỳ lương bổ sung và chọn người."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This extra run keeps the %s you picked."
+msgstr "Kỳ lương bổ sung này chỉ giữ %s người bạn đã chọn."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This extra run keeps the 1 you picked."
+msgstr "Kỳ lương bổ sung này chỉ giữ 1 người bạn đã chọn."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This file has %s people."
+msgstr "Tệp này có %s người."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "This file has 1 person."
+msgstr "Tệp này có 1 người."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/extra_run_file.py:0
+msgid "This file also takes the mid-month advance; check it has not been taken already"
+msgstr "Tệp này cũng trừ khoản tạm ứng giữa tháng; hãy kiểm tra khoản này chưa bị trừ trước đó"
+
+#. module: pb_payrun_wizard
+#: model:ir.model.fields,field_description:pb_payrun_wizard.field_hr_payslip_run__pb_extra_employee_ids
+msgid "People picked for this extra run"
+msgstr "Những người được chọn cho kỳ lương bổ sung này"
+
+#. module: pb_payrun_wizard
+#: model:ir.model.fields,help:pb_payrun_wizard.field_hr_payslip_run__pb_extra_employee_ids
+msgid "The people this extra run is for. A pay data file loaded into the run keeps only their rows."
+msgstr "Những người mà kỳ lương bổ sung này dành cho. Tệp dữ liệu lương tải vào kỳ lương chỉ giữ các dòng của họ."
