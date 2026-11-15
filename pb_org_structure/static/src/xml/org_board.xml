@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People, the Jobs tab (WDGAP S8-C).
+
+       No doubled hyphen inside a comment (R35). Loop variables avoid OWL's
+       operator words (R1): jb, lv, cc, tm, mv, co, rl, pp. Every sentence a
+       translator sees sits on ONE line (PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_org_structure.PbOrgJobs">
+    <div class="pbim pbim-page pbos" t-att-class="{ 'pbos--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading the jobs…</span></div>
+
+      <div t-elif="!state.allowed" class="pbim-wrap">
+        <div class="pbim-panel pbos-empty">
+          <span class="pbos-empty-ic" t-out="ic('lock', 28)"/>
+          <h2>Jobs are looked after by the HR team</h2>
+          <p>This is where jobs, their levels, cost centres and hiring pauses are kept. Ask your HR administrator if you should see it.</p>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+        <div t-if="!props.embedded" class="pbos-head">
+          <h1 class="pbim-h1">Jobs</h1>
+          <p class="pbim-sub">Every job and its level, the cost centres people are paid from, and where hiring is paused.</p>
+        </div>
+
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="'Jobs, levels, cost centres and hiring pause'"/>
+        </t>
+
+        <!-- ============================== JOBS ============================== -->
+        <div t-if="state.tab === 'jobs'" class="pbos-sec">
+          <PbFilterLayout kit="kit" searchPlaceholder="searchHint">
+            <t t-set="ek" t-value="emptyKind"/>
+            <div t-if="!state.listLoaded" class="pbos-skel" aria-busy="true"><span/><span/><span/></div>
+            <div t-elif="kit.failed" class="pbos-empty">
+              <span class="pbos-empty-ic" t-out="ic('lock', 26)"/>
+              <h3>Jobs are not open to you</h3>
+              <p t-if="kit.refusal" t-esc="kit.refusal"/>
+            </div>
+            <div t-elif="ek === 'none'" class="pbos-empty">
+              <span class="pbos-empty-ic" t-out="ic('briefcase', 26)"/>
+              <h3>No jobs yet</h3>
+              <p>Jobs appear here when people are given a job, or when a hiring request opens a role.</p>
+            </div>
+            <div t-elif="ek === 'filters'" class="pbos-empty">
+              <span class="pbos-empty-ic" t-out="ic('filter', 26)"/>
+              <h3>No job matches these filters</h3>
+              <button type="button" class="pbim-btn ghost" t-on-click="() => kit.home()">Start again</button>
+            </div>
+            <t t-else="">
+              <div class="pbos-table" role="table" aria-label="Jobs">
+                <div class="pbos-tr pbos-th" role="row">
+                  <span role="columnheader">Job</span>
+                  <span role="columnheader">Level</span>
+                  <span role="columnheader">Team</span>
+                  <span role="columnheader" class="num">People</span>
+                  <span role="columnheader" class="num">To hire</span>
+                  <span t-if="state.head.has_pay_bands" role="columnheader">Pay band</span>
+                  <span role="columnheader">Hiring</span>
+                </div>
+                <div t-foreach="state.rows" t-as="jb" t-key="jb.id" class="pbos-tr" role="row" tabindex="0"
+                     t-on-click="() => this.openJob(jb.id)" t-on-keydown="(ev) => this.onJobKey(ev, jb)">
+                  <span role="cell" class="pbos-name"><b t-esc="jb.name"/><small t-if="multiCompany" t-esc="jb.company"/></span>
+                  <span role="cell"><t t-if="jb.level" t-esc="jb.level"/><i t-else="" class="pbos-muted">No level yet</i></span>
+                  <span role="cell" t-esc="jb.team"/>
+                  <span role="cell" class="num" t-esc="jb.people"/>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !jb.to_hire }" t-esc="jb.to_hire"/>
+                  <span t-if="state.head.has_pay_bands" role="cell"><t t-esc="jb.band"/><small t-if="jb.family" t-esc="jb.family"/></span>
+                  <span role="cell">
+                    <span t-if="jb.paused" class="pbos-pill is-amber" t-att-title="jb.paused_reason"><t t-out="ic('pause', 12)"/> Paused</span>
+                    <span t-else="" class="pbos-muted">Open</span>
+                  </span>
+                </div>
+              </div>
+              <div t-if="hasMore" class="pbos-more"><button type="button" class="pbim-btn ghost" t-att-disabled="state.loadingMore" t-on-click="loadMore">Show more</button></div>
+            </t>
+          </PbFilterLayout>
+        </div>
+
+        <!-- ============================== LEVELS ============================== -->
+        <div t-if="state.tab === 'levels'" class="pbos-sec">
+          <div class="pbim-panel pbos-panel">
+            <div class="pbos-panel-h">
+              <h2 class="pbim-h2">The ladder of job levels</h2>
+              <p class="pbos-hint">Lowest first. Each job is given one level on its job page. Levels are names, not pay: nobody's pay changes when a level does.</p>
+            </div>
+            <div t-if="!levels.length" class="pbos-none">No levels yet. Add the first one below, for example Associate, Senior, Lead and Head of.</div>
+            <ol class="pbos-ladder">
+              <li t-foreach="levels" t-as="lv" t-key="lv.id" class="pbos-rung">
+                <span class="pbos-rung-n" t-esc="lv_index + 1"/>
+                <span class="pbos-rung-tx">
+                  <b t-esc="lv.name"/>
+                  <small t-if="lv.description" t-esc="lv.description"/>
+                  <small t-if="lv.company and multiCompany" class="pbos-muted"><t t-esc="lv.company"/> only</small>
+                </span>
+                <span class="pbos-rung-jobs"><t t-esc="lv.jobs"/> jobs</span>
+                <span t-if="canManage" class="pbos-rung-acts">
+                  <button type="button" class="pbos-icon" title="Move up" t-att-disabled="lv_first" t-on-click="() => this.moveLevel(lv, -1)"><t t-out="ic('arrowUp', 14)"/></button>
+                  <button type="button" class="pbos-icon" title="Move down" t-att-disabled="lv_last" t-on-click="() => this.moveLevel(lv, 1)"><t t-out="ic('arrowDown', 14)"/></button>
+                  <button type="button" class="pbos-icon" title="Change" t-on-click="() => this.editLevel(lv)"><t t-out="ic('pencil', 14)"/></button>
+                  <button type="button" class="pbos-icon" title="Archive" t-att-disabled="lv.jobs" t-on-click="() => this.archiveLevel(lv)"><t t-out="ic('archive', 14)"/></button>
+                </span>
+              </li>
+            </ol>
+            <div t-if="canManage" class="pbos-form">
+              <h3 class="pbos-h3"><t t-if="state.levelForm.id">Change the level</t><t t-else="">Add a level</t></h3>
+              <div class="pbos-grid">
+                <label>Name<input class="pbos-in" t-model="state.levelForm.name" placeholder="Senior"/></label>
+                <label>What it means<input class="pbos-in" t-model="state.levelForm.description" placeholder="Works without day-to-day guidance"/></label>
+                <label t-if="multiCompany">Company
+                  <select class="pbos-in" t-model="state.levelForm.company_id">
+                    <option value="0">Every company</option>
+                    <option t-foreach="state.head.companies" t-as="co" t-key="co.id" t-att-value="co.id" t-esc="co.name"/>
+                  </select>
+                </label>
+              </div>
+              <div class="pbos-acts">
+                <button type="button" class="pbim-btn primary" t-att-disabled="state.busy or !state.levelForm.name" t-on-click="saveLevel"><t t-out="ic('save', 14)"/> Save the level</button>
+                <button t-if="state.levelForm.id" type="button" class="pbim-btn ghost" t-on-click="resetLevel">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================== COST CENTRES ============================== -->
+        <div t-if="state.tab === 'cost'" class="pbos-sec">
+          <div t-if="!state.cc" class="pbim-busy"><div class="pbim-spin"/><span>Loading the cost centres…</span></div>
+          <t t-else="">
+            <div class="pbos-note">
+              <t t-out="ic('history', 16)"/>
+              <span>A change of cost centre always starts on a date, today or later. Payslips already made keep the cost centre they were paid under.</span>
+            </div>
+
+            <div t-if="state.cc.unlisted.length" class="pbim-panel pbos-panel is-amber">
+              <div class="pbos-panel-h">
+                <h2 class="pbim-h2">On contracts, but not on the list</h2>
+                <p class="pbos-hint">These cost centres are typed on contracts and are not on the list yet. Adding them to the list changes no contract.</p>
+              </div>
+              <div class="pbos-chips">
+                <span t-foreach="state.cc.unlisted" t-as="un" t-key="un_index" class="pbos-pill"><b t-esc="un.text"/> · <t t-esc="un.contracts"/> contracts<t t-if="multiCompany"> · <t t-esc="un.company"/></t></span>
+              </div>
+              <div t-if="state.cc.can_manage" class="pbos-acts"><button type="button" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="makeList"><t t-out="ic('listChecks', 14)"/> Add them to the list</button></div>
+            </div>
+
+            <div class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h"><h2 class="pbim-h2">The list</h2></div>
+              <div t-if="!state.cc.rows.length" class="pbos-none">No cost centres yet. Add one below.</div>
+              <div t-else="" class="pbos-table" role="table" aria-label="Cost centres">
+                <div class="pbos-tr pbos-th pbos-cc" role="row">
+                  <span role="columnheader">Code</span><span role="columnheader">Name</span>
+                  <span role="columnheader" class="num">Contracts</span><span role="columnheader" class="num">Teams</span>
+                  <span role="columnheader" class="num">Waiting</span><span role="columnheader"/>
+                </div>
+                <div t-foreach="state.cc.rows" t-as="cc" t-key="cc.id" class="pbos-tr pbos-cc" t-att-class="{ 'is-off': !cc.active }" role="row">
+                  <span role="cell" class="pbos-code" t-esc="cc.code"/>
+                  <span role="cell"><t t-esc="cc.name"/><small t-if="multiCompany" t-esc="cc.company"/></span>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.contracts }" t-esc="cc.contracts"/>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.teams }" t-esc="cc.teams"/>
+                  <span role="cell" class="num" t-att-class="{ 'pbos-zero': !cc.waiting }" t-esc="cc.waiting"/>
+                  <span role="cell" class="pbos-rowacts">
+                    <t t-if="state.cc.can_manage">
+                      <button type="button" class="pbos-icon" title="Change" t-on-click="() => this.editCost(cc)"><t t-out="ic('pencil', 14)"/></button>
+                      <button type="button" class="pbos-icon" t-att-title="cc.active ? 'Archive' : 'Use again'" t-on-click="() => this.toggleCost(cc)"><t t-out="ic(cc.active ? 'archive' : 'rotate', 14)"/></button>
+                    </t>
+                  </span>
+                </div>
+              </div>
+              <div t-if="state.cc.can_manage" class="pbos-form">
+                <h3 class="pbos-h3"><t t-if="state.ccForm.id">Change the cost centre</t><t t-else="">Add a cost centre</t></h3>
+                <div class="pbos-grid">
+                  <label>Code<input class="pbos-in" t-model="state.ccForm.code" placeholder="CC-100"/></label>
+                  <label>Name<input class="pbos-in" t-model="state.ccForm.name" placeholder="Head office"/></label>
+                  <label t-if="multiCompany and !state.ccForm.id">Company
+                    <select class="pbos-in" t-model="state.ccForm.company_id">
+                      <option value="0">This company</option>
+                      <option t-foreach="state.head.companies" t-as="co" t-key="co.id" t-att-value="co.id" t-esc="co.name"/>
+                    </select>
+                  </label>
+                </div>
+                <div class="pbos-acts">
+                  <button type="button" class="pbim-btn primary" t-att-disabled="state.busy or !state.ccForm.code" t-on-click="saveCost"><t t-out="ic('save', 14)"/> Save the cost centre</button>
+                  <button t-if="state.ccForm.id" type="button" class="pbim-btn ghost" t-on-click="resetCost">Cancel</button>
+                </div>
+              </div>
+            </div>
+
+            <div t-if="state.cc.can_manage and state.cc.rows.length" class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h">
+                <h2 class="pbim-h2">Move people to a cost centre</h2>
+                <p class="pbos-hint">From a date. A change dated today is made at once; a later one waits and is made on the day.</p>
+              </div>
+              <div class="pbos-grid">
+                <label>Cost centre
+                  <select class="pbos-in" t-att-value="state.move.cost_centre_id" t-on-change="(ev) => this.setMove('cost_centre_id', ev.target.value)">
+                    <option value="0">Choose…</option>
+                    <option t-foreach="costChoices(0)" t-as="cc" t-key="cc.id" t-att-value="cc.id"><t t-esc="cc.code"/> · <t t-esc="cc.name"/></option>
+                  </select>
+                </label>
+                <label>From<input type="date" class="pbos-in" t-att-min="state.head.today" t-att-value="state.move.date" t-on-change="(ev) => this.setMove('date', ev.target.value)"/></label>
+                <label>Why<input class="pbos-in" t-model="state.move.note" placeholder="New site opened"/></label>
+              </div>
+              <div class="pbos-seg" role="radiogroup" aria-label="Who moves">
+                <button type="button" t-att-class="{ on: state.move.who === 'team' }" t-on-click="() => this.setMove('who', 'team')"><t t-out="ic('network', 14)"/> A whole team</button>
+                <button type="button" t-att-class="{ on: state.move.who === 'people' }" t-on-click="() => this.setMove('who', 'people')"><t t-out="ic('users', 14)"/> Chosen people</button>
+              </div>
+              <div t-if="state.move.who === 'team'" class="pbos-grid">
+                <label>Team (and the teams under it)
+                  <select class="pbos-in" t-att-value="state.move.department_id" t-on-change="(ev) => this.setMove('department_id', ev.target.value)">
+                    <option value="0">Choose…</option>
+                    <option t-foreach="moveTeams" t-as="tm" t-key="tm.id" t-att-value="tm.id" t-esc="tm.name"/>
+                  </select>
+                </label>
+              </div>
+              <div t-else="" class="pbos-people">
+                <input class="pbos-in" t-att-value="state.move.query" placeholder="Type a name" t-on-input="(ev) => this.findPeople(ev)"/>
+                <div t-if="state.move.found.length" class="pbos-found">
+                  <button t-foreach="state.move.found" t-as="pp" t-key="pp.id" type="button" t-on-click="() => this.addPerson(pp)"><b t-esc="pp.name"/> <small t-esc="pp.team"/></button>
+                </div>
+                <div class="pbos-chips">
+                  <span t-foreach="state.move.people" t-as="pp" t-key="pp.id" class="pbos-pill"><t t-esc="pp.name"/> <button type="button" class="pbos-x" title="Remove" t-on-click="() => this.removePerson(pp)"><t t-out="ic('x', 12)"/></button></span>
+                </div>
+              </div>
+              <div t-if="state.move.preview" class="pbos-preview">
+                <t t-out="ic('info', 16)"/>
+                <span>
+                  <b><t t-esc="state.move.preview.moving"/> people</b> move to <b t-esc="moveCostCentre and moveCostCentre.code"/> from <b t-esc="state.move.preview.from"/>.
+                  <t t-if="state.move.preview.already"> <t t-esc="state.move.preview.already"/> are already there.</t>
+                  <t t-if="state.move.preview.names.length"> <span class="pbos-muted" t-esc="state.move.preview.names.join(', ')"/></t>
+                </span>
+              </div>
+              <div class="pbos-acts">
+                <button t-if="!state.move.preview" type="button" class="pbim-btn primary" t-att-disabled="state.busy or !moveCostCentre" t-on-click="previewMove"><t t-out="ic('eye', 14)"/> See who moves</button>
+                <t t-else="">
+                  <button type="button" class="pbim-btn primary" t-att-disabled="state.busy or !state.move.preview.moving" t-on-click="confirmMove"><t t-out="ic('check', 14)"/> Move them</button>
+                  <button type="button" class="pbim-btn ghost" t-on-click="() => this.setMove('preview', null)">Change</button>
+                </t>
+              </div>
+            </div>
+
+            <div t-if="state.cc.rows.length" class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h">
+                <h2 class="pbim-h2">Each team's usual cost centre</h2>
+                <p class="pbos-hint">Filled in on new contracts in that team that have no cost centre. It changes nobody who is already there.</p>
+              </div>
+              <div class="pbos-table" role="table" aria-label="Teams">
+                <div t-foreach="state.cc.teams" t-as="tm" t-key="tm.id" class="pbos-tr pbos-team" role="row">
+                  <span role="cell" t-esc="tm.name"/>
+                  <span role="cell">
+                    <select t-if="state.cc.can_manage" class="pbos-in" t-att-value="tm.cost_centre_id" t-on-change="(ev) => this.setTeamCost(tm, ev)">
+                      <option value="0">None</option>
+                      <option t-foreach="costChoices(tm.company_id)" t-as="cc" t-key="cc.id" t-att-value="cc.id" t-att-selected="cc.id === tm.cost_centre_id"><t t-esc="cc.code"/> · <t t-esc="cc.name"/></option>
+                    </select>
+                    <t t-else="" t-esc="tm.cost_centre"/>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div t-if="state.cc.moves.length" class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h"><h2 class="pbim-h2">Changes, waiting and recent</h2></div>
+              <div class="pbos-table" role="table" aria-label="Cost centre changes">
+                <div t-foreach="state.cc.moves" t-as="mv" t-key="mv.id" class="pbos-tr pbos-mv" role="row">
+                  <span role="cell"><b t-esc="mv.person"/></span>
+                  <span role="cell"><t t-esc="mv.before or '—'"/> <t t-out="ic('arrowRight', 12)"/> <t t-esc="mv.cost_centre"/></span>
+                  <span role="cell">from <t t-esc="mv.from"/></span>
+                  <span role="cell"><span class="pbos-pill" t-att-class="mv.state === 'scheduled' ? 'is-blue' : ''" t-esc="mv.state_label"/><small t-if="mv.problem" class="pbos-err" t-esc="mv.problem"/></span>
+                  <span role="cell" class="pbos-rowacts"><button t-if="mv.state === 'scheduled' and state.cc.can_manage" type="button" class="pbim-btn ghost" t-on-click="() => this.cancelMove(mv)">Cancel</button></span>
+                </div>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <!-- ============================== HIRING PAUSE ============================== -->
+        <div t-if="state.tab === 'pause'" class="pbos-sec">
+          <div t-if="!state.pauses" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+          <t t-else="">
+            <div class="pbos-explain">
+              <div><b><t t-out="ic('pause', 15)"/> A pause stops</b><span>new hiring requests, sending one in, opening a role, adverts, the careers page and new open roles on the org chart.</span></div>
+              <div><b><t t-out="ic('play', 15)"/> It does not stop</b><span>candidates already in progress, interviews and offers. They carry on, with a warning that hiring is paused.</span></div>
+              <div><b><t t-out="ic('rotate', 15)"/> Restarting</b><span>puts everything back as it was. Nothing is changed while hiring is paused.</span></div>
+            </div>
+
+            <div t-if="showCompanies" class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h"><h2 class="pbim-h2">Companies</h2></div>
+              <t t-foreach="state.pauses.companies" t-as="co" t-key="co.id">
+                <t t-call="pb_org_structure.PauseRow"><t t-set="pr" t-value="co"/><t t-set="kind" t-value="'company'"/></t>
+              </t>
+            </div>
+
+            <div class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h">
+                <h2 class="pbim-h2">Teams</h2>
+                <p class="pbos-hint">A pause covers the team and every team under it.</p>
+              </div>
+              <div t-if="!state.pauses.teams.length" class="pbos-none">No teams yet.</div>
+              <t t-foreach="state.pauses.teams" t-as="tm" t-key="tm.id">
+                <t t-call="pb_org_structure.PauseRow"><t t-set="pr" t-value="tm"/><t t-set="kind" t-value="'team'"/></t>
+              </t>
+            </div>
+
+            <div t-if="state.pauses.roles.length" class="pbim-panel pbos-panel">
+              <div class="pbos-panel-h"><h2 class="pbim-h2">Roles paused one by one</h2></div>
+              <t t-foreach="state.pauses.roles" t-as="rl" t-key="rl.id">
+                <t t-call="pb_org_structure.PauseRow"><t t-set="pr" t-value="Object.assign({ paused: true }, rl)"/><t t-set="kind" t-value="'role'"/></t>
+              </t>
+            </div>
+          </t>
+        </div>
+
+        <!-- ============================== THE JOB PAGE ============================== -->
+        <div t-if="state.job" class="pbos-scrim" t-on-click.self="closeJob">
+          <aside class="pbos-drawer" role="dialog" aria-label="Job">
+            <header class="pbos-drawer-h">
+              <span class="pbos-drawer-ic" t-out="ic('briefcase', 20)"/>
+              <div>
+                <h2 t-esc="state.job.name"/>
+                <p><t t-esc="state.job.team or ''"/><t t-if="multiCompany"> · <t t-esc="state.job.company"/></t></p>
+              </div>
+              <button type="button" class="pbos-icon" title="Close" t-on-click="closeJob"><t t-out="ic('x', 16)"/></button>
+            </header>
+            <div class="pbos-drawer-b">
+              <div class="pbos-facts">
+                <div><b t-esc="state.job.people"/><span>people in this job</span></div>
+                <div t-att-class="{ 'pbos-zero': !state.job.to_hire }"><b t-esc="state.job.to_hire"/><span>to hire</span></div>
+                <div t-if="state.job.band"><b t-esc="state.job.band"/><span><t t-if="state.job.family" t-esc="state.job.family"/><t t-else="">pay band</t></span></div>
+              </div>
+
+              <div t-if="state.job.paused" class="pbos-warn"><t t-out="ic('pause', 16)"/><span t-esc="state.job.paused_reason"/></div>
+
+              <label class="pbos-lbl">Level
+                <select class="pbos-in" t-att-disabled="!state.job.can_manage" t-model="state.jobForm.level_id">
+                  <option value="0">No level yet</option>
+                  <option t-foreach="state.job.levels" t-as="lv" t-key="lv.id" t-att-value="lv.id" t-esc="lv.name"/>
+                </select>
+              </label>
+              <p t-if="!state.job.levels.length" class="pbos-hint">No levels are set yet. Add them on the Levels part of this tab.</p>
+              <label class="pbos-lbl">What the job is
+                <textarea class="pbos-in" rows="6" t-att-disabled="!state.job.can_manage" t-model="state.jobForm.description" placeholder="A few lines a new colleague would understand"/>
+              </label>
+              <div t-if="state.job.can_manage" class="pbos-acts"><button type="button" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="saveJob"><t t-out="ic('save', 14)"/> Save</button></div>
+
+              <h3 class="pbos-h3">Hiring for this role</h3>
+              <div t-if="state.job.requests.length" class="pbos-chips">
+                <span t-foreach="state.job.requests" t-as="rq" t-key="rq.id" class="pbos-pill"><t t-esc="rq.name"/> · <t t-esc="rq.state"/></span>
+              </div>
+              <t t-if="state.job.can_pause">
+                <div t-if="state.job.pause_self" class="pbos-acts">
+                  <button type="button" class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.restart('role', state.job)"><t t-out="ic('play', 14)"/> Restart hiring for this role</button>
+                </div>
+                <div t-elif="isAsking('role', state.job.id)" class="pbos-ask">
+                  <label class="pbos-lbl">Why is hiring paused?<input class="pbos-in" t-model="state.pauseAsk.reason" placeholder="Budget review until March"/></label>
+                  <div class="pbos-acts">
+                    <button type="button" class="pbim-btn primary" t-att-disabled="state.busy or !state.pauseAsk.reason" t-on-click="confirmPause"><t t-out="ic('pause', 14)"/> Pause hiring</button>
+                    <button type="button" class="pbim-btn ghost" t-on-click="cancelPause">Cancel</button>
+                  </div>
+                </div>
+                <div t-else="" class="pbos-acts">
+                  <button type="button" class="pbim-btn ghost" t-on-click="() => this.askPause('role', state.job)"><t t-out="ic('pause', 14)"/> Pause hiring for this role</button>
+                </div>
+              </t>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- One switch row: a company, a team or a role. -->
+  <t t-name="pb_org_structure.PauseRow">
+    <div class="pbos-pause" t-att-class="{ 'is-paused': pr.paused, 'is-under': pr.inherited }">
+      <span class="pbos-pause-ic" t-out="ic(pr.paused or pr.inherited ? 'pause' : 'play', 14)"/>
+      <span class="pbos-pause-tx">
+        <b t-esc="pr.name"/>
+        <small t-if="pr.team" t-esc="pr.team"/>
+        <small t-if="pr.paused and pr.reason"><t t-esc="pr.reason"/><t t-if="pr.by"> · <t t-esc="pr.by"/></t><t t-if="pr.on"> · <t t-esc="pr.on"/></t></small>
+        <small t-if="pr.inherited">Paused with <t t-esc="pr.inherited_from"/></small>
+      </span>
+      <span t-if="pr.open_roles" class="pbos-pause-n"><t t-esc="pr.open_roles"/> roles with somebody to hire</span>
+      <span class="pbos-pause-acts" t-if="state.pauses.can_pause">
+        <t t-if="pr.paused">
+          <button type="button" class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.restart(kind, pr)"><t t-out="ic('play', 14)"/> Restart hiring</button>
+        </t>
+        <t t-elif="isAsking(kind, pr.id)">
+          <input class="pbos-in" t-model="state.pauseAsk.reason" placeholder="Why is hiring paused?"/>
+          <button type="button" class="pbim-btn primary" t-att-disabled="state.busy or !state.pauseAsk.reason" t-on-click="confirmPause">Pause</button>
+          <button type="button" class="pbim-btn ghost" t-on-click="cancelPause">Cancel</button>
+        </t>
+        <t t-elif="!pr.inherited">
+          <button type="button" class="pbim-btn ghost" t-on-click="() => this.askPause(kind, pr)"><t t-out="ic('pause', 14)"/> Pause hiring</button>
+        </t>
+      </span>
+    </div>
+  </t>
+
+</templates>

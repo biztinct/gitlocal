@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Pause hiring on the Hiring board (S8-C). Extensions only: no file of
+       pb_hiring is edited. The server sends `pb_paused_reason` on every role
+       row (pb.hiring._row) and on the role page (pb.hiring._board). -->
+
+  <!-- The role card on the board: a quiet chip beside the request chip. -->
+  <t t-inherit="pb_hiring.PbHiringBoard" t-inherit-mode="extension">
+    <xpath expr="//span[@data-coach='hi-reqchip']" position="after">
+      <span t-if="row.pb_paused" class="pbim-badge pbhr-reqchip is-amber" t-att-title="row.pb_paused_reason"><t t-out="ic('pause',12)"/> Hiring paused</span>
+    </xpath>
+  </t>
+
+  <!-- The role page: the banner, right under the section tabs. -->
+  <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
+    <xpath expr="//nav[hasclass('pbhr-workspace-nav')]" position="after">
+      <div t-if="state.drawer and state.drawer.pb_paused_reason" class="pbos-hp" role="status">
+        <t t-out="ic('pause',16)"/>
+        <span><b t-esc="state.drawer.pb_paused_reason"/> <span>People already in progress carry on, and offers can still be sent. Nothing new can be started for this role.</span></span>
+      </div>
+    </xpath>
+    <!-- beside the offer: a warning, never a stop (J6) -->
+    <xpath expr="//div[hasclass('pbhr-p3-rule')][@t-if=&quot;journey.offer_block_reason and !['sent', 'accepted', 'signed', 'joined', 'dropped'].includes(offer.state)&quot;]" position="before">
+      <div t-if="state.drawer and state.drawer.pb_paused_reason and !['accepted', 'signed', 'joined', 'dropped'].includes(offer.state)" class="pbhr-p3-rule is-info pbos-hp-offer">
+        <t t-out="ic('pause',15)"/>
+        <span><b>Hiring is paused.</b> <span>This offer can still be sent.</span></span>
+      </div>
+    </xpath>
+  </t>
+
+</templates>
