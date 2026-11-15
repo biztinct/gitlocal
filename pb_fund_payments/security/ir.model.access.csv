@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_fund_payee_hr,pb.fund.payee payroll,model_pb_fund_payee,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_fund_payee_mgr,pb.fund.payee payroll manager,model_pb_fund_payee,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_pb_fund_payee_system,pb.fund.payee system,model_pb_fund_payee,base.group_system,1,1,1,1
+access_pb_fund_payee_item_hr,pb.fund.payee.item payroll,model_pb_fund_payee_item,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_fund_payee_item_mgr,pb.fund.payee.item payroll manager,model_pb_fund_payee_item,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_fund_payee_item_system,pb.fund.payee.item system,model_pb_fund_payee_item,base.group_system,1,1,1,1
+access_pb_fund_payment_hr,pb.fund.payment payroll,model_pb_fund_payment,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_fund_payment_mgr,pb.fund.payment payroll manager,model_pb_fund_payment,om_hr_payroll.group_hr_payroll_manager,1,1,1,0
+access_pb_fund_payment_seat,pb.fund.payment anyone asked to decide,model_pb_fund_payment,base.group_user,1,0,0,0
+access_pb_fund_payment_system,pb.fund.payment system,model_pb_fund_payment,base.group_system,1,1,1,1

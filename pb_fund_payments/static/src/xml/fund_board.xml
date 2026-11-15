@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The Fund & tax payments lens.
+
+       Comments ruled with `=`, never a doubled hyphen. No `t-as` variable is
+       named lt / gt / lte / gte / and / or / not / in: the payment loop is
+       `fp`, items `fi`, people `pr`, trail `tx`, payees `pe`, options `op`,
+       chosen items `ci`, proposals `pp`, proposal items `pi`, totals `tt`,
+       warnings `wn`, currencies `cu`, merge targets `mt`.
+       Every sentence a person reads sits on one line (ledger PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_fund_payments.PbFundPaymentsBoard">
+    <div class="pbim pbim-page pbfp" t-att-class="{ 'pbfp--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading what is owed…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbfp-locked">
+          <div class="pbfp-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for the pay team</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+
+          <!-- ===================== header ===================== -->
+          <div class="pbfp-head">
+            <div class="pbfp-head-id" t-if="!props.embedded">
+              <h1 class="pbim-h1">Fund and tax payments</h1>
+              <p class="pbim-sub">What the pay runs owe insurance funds and the tax office, what was paid, and the receipt.</p>
+            </div>
+            <div class="pbfp-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again" aria-label="Read the board again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <button class="pbim-btn ghost pbfp-setup-btn" t-on-click="openSetup">
+                <t t-out="icon('landmark', 15)"/> Who we pay
+                <span t-if="!state.payees" class="pbfp-dot" aria-label="Needs attention"/>
+              </button>
+              <button class="pbim-btn ghost" t-on-click="exportXlsx" t-att-disabled="!state.total" title="Download this month as an Excel file">
+                <t t-out="icon('fileSpreadsheet', 15)"/> Excel
+              </button>
+              <button t-if="state.canWrite" class="pbim-btn" t-att-disabled="state.working" t-on-click="workOut">
+                <t t-out="icon('calculator', 15)"/>
+                <t t-if="state.working"> Working it out…</t>
+                <t t-else=""> Work out what we owe for <t t-esc="state.monthLabel"/></t>
+              </button>
+            </div>
+          </div>
+
+          <!-- ===================== the month ===================== -->
+          <div class="pbfp-month" role="group" aria-label="Pay month">
+            <button class="pbim-btn-sm ghost" t-on-click="() => this.goMonth(state.prev)" aria-label="Previous month">
+              <t t-out="icon('chevronLeft', 16)"/>
+            </button>
+            <label class="pbfp-month-pick">
+              <t t-out="icon('calendar', 15)"/>
+              <b t-esc="state.monthLabel"/>
+              <input type="month" t-att-value="monthValue" t-on-change="onMonthInput" aria-label="Pick a pay month"/>
+            </label>
+            <button class="pbim-btn-sm ghost" t-on-click="() => this.goMonth(state.next)" aria-label="Next month">
+              <t t-out="icon('chevron', 16)"/>
+            </button>
+            <span class="pbfp-month-note">
+              <t t-if="state.slips === 1">1 finished payslip this month</t>
+              <t t-elif="state.slips"><t t-esc="fmtInt(state.slips)"/> finished payslips this month</t>
+              <t t-else="">No finished payslips this month yet</t>
+            </span>
+            <span t-foreach="state.totals" t-as="tt" t-key="tt.currency" class="pbfp-total">
+              <span class="pbfp-total-k">Owed</span> <b t-esc="tt.owed"/>
+              <span class="pbfp-total-sep">·</span>
+              <span class="pbfp-total-k">Paid</span> <b t-esc="tt.paid"/>
+              <span class="pbfp-total-sep">·</span>
+              <span class="pbfp-total-k">Left to pay</span> <b t-att-class="{ 'is-zero': tt.left_zero }" t-esc="tt.left"/>
+            </span>
+          </div>
+
+          <!-- ============ past their due date (the one board line) ============ -->
+          <div t-if="lateSentence" class="pbfp-alert is-late" role="status">
+            <span class="pbfp-alert-ic"><t t-out="icon('calendarClock', 18)"/></span>
+            <div class="pbfp-alert-tx">
+              <b t-esc="lateSentence"/>
+              <span t-if="state.kpis.late_month and state.kpis.late_month !== state.month">The oldest is from <t t-esc="state.kpis.late_month_label"/>.</span>
+            </div>
+            <button class="pbim-btn-sm" t-on-click="showLate">Show them</button>
+          </div>
+
+          <!-- ======================= nobody set up yet ======================= -->
+          <div t-if="!state.payees" class="pbfp-start">
+            <div class="pbfp-start-ic"><t t-out="icon('landmark', 30)"/></div>
+            <div class="pbfp-start-tx">
+              <h2>Who does the company pay after payroll?</h2>
+              <p>Name the insurance funds and the tax office once, with the pay items that belong to each. Payobook can read your pay schemes and suggest them — you check them before anything is saved.</p>
+              <div class="pbfp-start-acts">
+                <button t-if="state.canWrite" class="pbim-btn" t-on-click="openSuggest"><t t-out="icon('sparkles', 15)"/> Suggest from my pay schemes</button>
+                <button class="pbim-btn ghost" t-on-click="openSetup"><t t-out="icon('plus', 15)"/> Add one myself</button>
+              </div>
+            </div>
+          </div>
+
+          <t t-else="">
+            <!-- ======================= the numbers ======================= -->
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+
+            <!-- ======================= the steps ======================= -->
+            <t t-call="pb_import_kit.QuietSteps">
+              <t t-set="qSteps" t-value="steps"/>
+              <t t-set="qStepsLabel" t-value="stepsLabel"/>
+              <t t-set="qStepPick" t-value="(k) => this.pickStep(k)"/>
+            </t>
+          </t>
+
+          <!-- ================ the shared filter panel ================ -->
+          <PbFilterLayout t-if="state.payees" kit="kit" coach="'fund-payments-filters'" searchPlaceholder="searchLabel">
+
+          <div t-if="state.listError" class="pbim-empty pbfp-empty">
+            <div class="pbfp-empty-ic"><t t-out="icon('alert', 30)"/></div>
+            <h3>The payments could not load</h3>
+            <p>The connection may have dropped. Your filters are kept.</p>
+            <button class="pbim-btn" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+          </div>
+
+          <div t-elif="state.rows.length" class="pbim-tablewrap pbfp-tablewrap">
+            <table class="pbim-table pbfp-table">
+              <thead>
+                <tr>
+                  <th>Pay to</th>
+                  <th>Due by</th>
+                  <th class="num">People</th>
+                  <th class="num pbfp-col-split">Employee share</th>
+                  <th class="num pbfp-col-split">Employer share</th>
+                  <th class="num">Owed</th>
+                  <th class="num">Paid</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="state.rows" t-as="fp" t-key="fp.id" class="pbfp-row"
+                    t-att-class="{ 'is-open': state.pay and state.pay.id === fp.id, 'is-cancelled': fp.state === 'cancelled' }"
+                    tabindex="0" t-on-click="() => this.openPay(fp)"
+                    t-on-keydown="(ev) => ev.key === 'Enter' and this.openPay(fp)">
+                  <td>
+                    <span class="pbfp-who">
+                      <span class="pbfp-av"><t t-out="icon('landmark', 15)"/></span>
+                      <span class="pbfp-who-tx">
+                        <b t-esc="fp.payee"/>
+                        <small><t t-esc="fp.month_label"/> · <t t-esc="fp.currency"/></small>
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    <span t-esc="fp.due_label"/>
+                    <span t-if="fp.late and fp.state !== 'paid'" class="pbfp-chip is-rose">Past due</span>
+                    <span t-elif="fp.paid_late" class="pbfp-chip is-slate">Paid late</span>
+                  </td>
+                  <td class="num" t-esc="fmtInt(fp.people)"/>
+                  <td class="num pbfp-col-split" t-esc="fp.employee_label"/>
+                  <td class="num pbfp-col-split" t-esc="fp.employer_label"/>
+                  <td class="num">
+                    <b t-esc="fp.owed_label"/>
+                    <span t-if="fp.changed" class="pbfp-chip is-amber pbfp-chip-block" title="The payslips changed after this payment was sent for approval">Figures changed since approval: <t t-esc="fp.changed_label"/></span>
+                  </td>
+                  <td class="num">
+                    <span t-if="fp.paid_label" t-esc="fp.paid_label"/>
+                    <span t-else="" class="pbfp-dash">—</span>
+                    <small t-if="fp.diff_label" class="pbfp-diff" t-esc="fp.diff_label"/>
+                  </td>
+                  <td>
+                    <span class="pbim-badge pbfp-badge" t-att-class="'is-' + fp.state" t-esc="fp.state_label"/>
+                    <span t-if="fp.has_receipt" class="pbfp-clip" title="Receipt attached" aria-label="Receipt attached"><t t-out="icon('paperclip', 13)"/></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div t-elif="!state.listLoaded" class="pbfp-skeleton" aria-label="Loading payments">
+            <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="pbfp-skel-row"/>
+          </div>
+
+          <div t-elif="!state.total" class="pbim-empty pbfp-empty">
+            <div class="pbfp-empty-ic"><t t-out="icon('calculator', 30)"/></div>
+            <h3>Nothing worked out for <t t-esc="state.monthLabel"/> yet</h3>
+            <p t-if="state.slips">Press the button to add up what the finished payslips of the month owe each fund and the tax office.</p>
+            <p t-else="">When the month's payslips are finished, press the button to add up what they owe.</p>
+            <button t-if="state.canWrite" class="pbim-btn" t-att-disabled="state.working" t-on-click="workOut"><t t-out="icon('calculator', 14)"/> Work out what we owe for <t t-esc="state.monthLabel"/></button>
+          </div>
+
+          <div t-else="" class="pbim-empty pbfp-empty">
+            <div class="pbfp-empty-ic"><t t-out="icon('search', 30)"/></div>
+            <h3>No payments match these filters</h3>
+            <p t-if="!kit.search">Remove a filter above, or start again from every payment of the month.</p>
+            <p t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the spelling, or search by a fund or a payment reference.</p>
+            <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show every payment</button>
+          </div>
+
+          <div t-if="state.rows.length and !state.listError" class="pbfp-foot">
+            Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+            <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+              <t t-if="state.loadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="nextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
+
+          <!-- ======================== the drawer ======================== -->
+          <div t-if="state.pay" class="pbfp-scrim" t-on-click="closePay"/>
+          <aside t-if="state.pay" class="pbfp-drawer" role="dialog" aria-modal="true"
+                 aria-label="Payment" t-att-class="{ 'is-busy': state.payBusy }">
+            <t t-set="P" t-value="state.pay"/>
+            <header class="pbfp-dr-head">
+              <div class="pbfp-dr-id">
+                <span class="pbfp-av lg"><t t-out="icon('landmark', 20)"/></span>
+                <div>
+                  <h2 t-esc="P.payee"/>
+                  <p><t t-esc="P.month_label"/> · <t t-esc="P.currency"/></p>
+                </div>
+              </div>
+              <div class="pbfp-dr-tools">
+                <span class="pbim-badge pbfp-badge" t-att-class="'is-' + P.state" t-esc="P.state_label"/>
+                <button class="pbim-btn-sm ghost" t-on-click="closePay" aria-label="Close"><t t-out="icon('x', 15)"/></button>
+              </div>
+            </header>
+
+            <div t-if="P.loading" class="pbim-busy"><div class="pbim-spin"/></div>
+            <div t-else="" class="pbfp-dr-body">
+              <!-- what is owed, in one look -->
+              <section class="pbfp-dr-hero">
+                <span class="pbfp-k">Owed</span>
+                <b class="pbfp-dr-big" t-esc="P.owed_label"/>
+                <div class="pbfp-split">
+                  <div><span>Employee share</span><b t-esc="P.employee_label"/></div>
+                  <div><span>Employer share</span><b t-esc="P.employer_label"/></div>
+                  <div><span>People</span><b t-esc="fmtInt(P.people)"/></div>
+                  <div><span>Due by</span><b t-esc="P.due_full"/></div>
+                </div>
+                <p t-if="P.changed" class="pbfp-dr-next is-amber"><t t-out="icon('triangleAlert', 14)"/> Figures changed since approval: <t t-esc="P.changed_label"/>. The payslips now add up to <t t-esc="P.live_owed_label"/>; the approved figure was not changed. Reopen it to use the new figure.</p>
+                <p t-if="P.late and P.state !== 'paid'" class="pbfp-dr-next is-rose"><t t-out="icon('calendarClock', 14)"/> Past its due date.</p>
+                <p t-if="P.state === 'waiting'" class="pbfp-dr-next is-amber"><t t-out="icon('clock', 14)"/> Waiting for approval<t t-if="P.waiting_on"> — with <t t-esc="P.waiting_on"/></t>.</p>
+                <p t-if="P.state === 'approved'" class="pbfp-dr-next"><t t-out="icon('checkCircle', 14)"/> Approved. Pay it, then record the payment with its receipt.</p>
+                <p t-if="P.state === 'paid'" class="pbfp-dr-next is-green"><t t-out="icon('checkCheck', 14)"/> Paid <t t-esc="P.paid_label"/> on <t t-esc="P.paid_on"/><t t-if="P.reference"> · <t t-esc="P.reference"/></t>.</p>
+                <p t-if="P.state === 'cancelled'" class="pbfp-dr-next is-soft"><t t-out="icon('ban', 14)"/> Cancelled — nothing is owed on it any more.</p>
+              </section>
+
+              <!-- the moves -->
+              <div class="pbfp-dr-acts" t-if="!state.act">
+                <button t-if="P.can.submit" class="pbim-btn" t-att-disabled="state.payBusy" t-on-click="() => this.move('submit')"><t t-out="icon('send', 14)"/> Send for approval</button>
+                <button t-if="P.can.pay" class="pbim-btn" t-att-disabled="state.payBusy" t-on-click="() => this.startAct('pay')"><t t-out="icon('receipt', 14)"/> Record the payment</button>
+                <button t-if="P.state === 'waiting' and P.request_id" class="pbim-btn ghost" t-on-click="openRequest"><t t-out="icon('inbox', 14)"/> Open in Approvals</button>
+                <button t-if="P.can.withdraw" class="pbim-btn ghost" t-att-disabled="state.payBusy" t-on-click="() => this.move('withdraw')"><t t-out="icon('undo', 14)"/> Withdraw</button>
+                <button t-if="P.can.reopen" class="pbim-btn ghost danger" t-att-disabled="state.payBusy" t-on-click="() => this.startAct('reopen')"><t t-out="icon('rotate', 14)"/> Reopen</button>
+                <button t-if="P.can.lines" class="pbim-btn ghost" t-on-click="openLines"><t t-out="icon('list', 14)"/> See the payslip lines</button>
+              </div>
+              <form t-elif="state.act.verb === 'pay'" class="pbfp-act" t-on-submit.prevent="doAct">
+                <h3>Record the payment</h3>
+                <p class="pbfp-muted">Marked as paid only with its proof: the receipt or the bank's confirmation.</p>
+                <div class="pbfp-two">
+                  <label>
+                    <span>Paid on</span>
+                    <input type="date" class="pbfp-in" t-att-value="state.act.paid_on" t-on-input="(ev) => this.onAct('paid_on', ev)"/>
+                  </label>
+                  <label>
+                    <span>Amount paid (<t t-esc="P.currency"/>)</span>
+                    <input type="number" min="0" step="any" class="pbfp-in" t-att-value="state.act.paid_amount" t-on-input="(ev) => this.onAct('paid_amount', ev)"/>
+                  </label>
+                </div>
+                <label>
+                  <span>Payment reference (optional)</span>
+                  <input type="text" class="pbfp-in" t-att-value="state.act.reference" t-on-input="(ev) => this.onAct('reference', ev)" placeholder="What the bank or the fund called the payment"/>
+                </label>
+                <div class="pbfp-upload" t-att-class="{ 'is-done': state.act.attachment }">
+                  <t t-if="state.act.attachment">
+                    <t t-out="icon('paperclip', 15)"/> <b t-esc="state.act.attachment.name"/>
+                    <span class="pbfp-muted">attached</span>
+                  </t>
+                  <label t-else="" class="pbfp-upload-pick">
+                    <t t-out="icon('upload', 16)"/>
+                    <span t-if="state.act.uploading">Attaching…</span>
+                    <span t-else="">Attach the receipt</span>
+                    <input type="file" t-on-change="onReceipt" accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.xlsx,.xls,.csv,.doc,.docx"/>
+                  </label>
+                </div>
+                <label t-if="actDiffers">
+                  <span>Why the amount differs</span>
+                  <textarea class="pbfp-in" rows="2" t-att-value="state.act.note" t-on-input="(ev) => this.onAct('note', ev)" placeholder="A few words the next person will understand."/>
+                  <small class="pbfp-warn">The amount paid is not <t t-esc="P.owed_label"/>, so a note is needed.</small>
+                </label>
+                <div class="pbfp-act-foot">
+                  <button type="button" class="pbim-btn ghost" t-on-click="cancelAct">Back</button>
+                  <button type="submit" class="pbim-btn" t-att-disabled="state.payBusy or state.act.uploading or !state.act.attachment"><t t-out="icon('check', 14)"/> Mark as paid</button>
+                </div>
+              </form>
+              <form t-else="" class="pbfp-act" t-on-submit.prevent="doAct">
+                <h3>Reopen this payment</h3>
+                <p class="pbfp-muted">It goes back to “To pay”, is worked out again from the payslips, and needs a new approval.</p>
+                <label>
+                  <span>Why</span>
+                  <textarea class="pbfp-in" rows="2" t-att-value="state.act.reason" t-on-input="(ev) => this.onAct('reason', ev)" placeholder="A few words the next person will understand."/>
+                </label>
+                <div class="pbfp-act-foot">
+                  <button type="button" class="pbim-btn ghost" t-on-click="cancelAct">Back</button>
+                  <button type="submit" class="pbim-btn danger-solid" t-att-disabled="state.payBusy">Reopen</button>
+                </div>
+              </form>
+
+              <!-- the proof -->
+              <section t-if="P.receipt or P.note" class="pbfp-dr-sec">
+                <h3>The proof</h3>
+                <a t-if="P.receipt" class="pbfp-receipt" t-att-href="P.receipt.url" target="_blank" rel="noopener"><t t-out="icon('paperclip', 14)"/> <t t-esc="P.receipt.name"/></a>
+                <p t-if="P.diff_label" class="pbfp-why">Paid <t t-esc="P.diff_label"/> against what was owed.</p>
+                <p t-if="P.note" class="pbfp-why"><t t-out="icon('messageSquare', 13)"/> <t t-esc="P.note"/></p>
+              </section>
+
+              <!-- how to pay them -->
+              <section t-if="P.bank_details or P.reference_text" class="pbfp-dr-sec">
+                <h3>How to pay them</h3>
+                <p t-if="P.bank_details" class="pbfp-bank" t-esc="P.bank_details"/>
+                <p t-if="P.reference_text" class="pbfp-muted">Reference to quote: <b t-esc="P.reference_text"/></p>
+              </section>
+
+              <!-- the pay items -->
+              <section class="pbfp-dr-sec">
+                <h3>Pay items</h3>
+                <p t-if="!P.items.length" class="pbfp-muted">Nothing was found on the payslips for this fund.</p>
+                <table t-else="" class="pbfp-mini">
+                  <tbody>
+                    <tr t-foreach="P.items" t-as="fi" t-key="fi.key">
+                      <td><b t-esc="fi.name"/><small t-esc="fi.scheme"/></td>
+                      <td><span class="pbfp-chip" t-att-class="fi.share === 'employer' ? 'is-blue' : 'is-slate'" t-esc="fi.share_label"/></td>
+                      <td class="num"><t t-esc="fi.amount"/><small><t t-esc="fi.people"/> people</small></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="pbfp-muted pbfp-src">Worked out from <t t-esc="fmtInt(P.slips)"/> finished payslips<t t-if="P.worked_out"> · <t t-esc="P.worked_out"/></t>.</p>
+              </section>
+
+              <!-- the people -->
+              <section t-if="P.people_rows and P.people_rows.rows and P.people_rows.rows.length" class="pbfp-dr-sec">
+                <h3>The people behind it</h3>
+                <table class="pbfp-mini">
+                  <tbody>
+                    <tr t-foreach="P.people_rows.rows" t-as="pr" t-key="pr.id">
+                      <td><b t-esc="pr.name"/><small t-esc="pr.code"/></td>
+                      <td class="num"><t t-esc="pr.total"/><small><t t-esc="pr.employee"/> · <t t-esc="pr.employer"/></small></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p t-if="P.people_rows.more" class="pbfp-muted">and <t t-esc="P.people_rows.more"/> more — see the payslip lines for everybody.</p>
+              </section>
+
+              <section t-if="P.trail.length" class="pbfp-dr-sec">
+                <h3>What happened</h3>
+                <ul class="pbfp-trail">
+                  <li t-foreach="P.trail" t-as="tx" t-key="tx_index">
+                    <span class="pbfp-trail-dot"/>
+                    <div><p t-esc="tx.body"/><small><t t-esc="tx.who"/> · <t t-esc="tx.when"/></small></div>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </aside>
+
+          <!-- ======================== who we pay ======================== -->
+          <div t-if="state.setupOpen" class="pbim-modal-scrim" t-on-click="closeSetup">
+            <div class="pbim-modal pbfp-modal" t-on-click.stop="() => {}" role="dialog" aria-label="Who we pay">
+              <div class="pbfp-modal-head">
+                <h3 t-if="!state.editing">Who we pay</h3>
+                <h3 t-elif="state.editing.id">Change <t t-esc="state.editing.name"/></h3>
+                <h3 t-else="">A new fund or office</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeSetup" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+              </div>
+
+              <div t-if="!state.setup" class="pbim-busy"><div class="pbim-spin"/></div>
+
+              <!-- the list -->
+              <t t-elif="!state.editing">
+                <p class="pbfp-muted pbfp-pad">Each fund or office has the pay items that belong to it. What is owed is added up from those items on the month's finished payslips — never typed in.</p>
+                <div class="pbfp-pad pbfp-setup-acts" t-if="state.setup.can_write">
+                  <button class="pbim-btn ghost" t-on-click="openSuggest"><t t-out="icon('sparkles', 14)"/> Suggest from my pay schemes</button>
+                  <button class="pbim-btn ghost" t-on-click="() => this.editPayee(null)"><t t-out="icon('plus', 14)"/> Add one</button>
+                </div>
+                <p t-if="!state.setup.payees.length" class="pbfp-muted pbfp-pad">Nobody yet.</p>
+                <div class="pbfp-payees">
+                  <div t-foreach="state.setup.payees" t-as="pe" t-key="pe.id" class="pbfp-payee" t-att-class="{ 'has-warn': pe.warnings.length }">
+                    <div class="pbfp-payee-top">
+                      <span class="pbfp-av"><t t-out="icon('landmark', 15)"/></span>
+                      <div class="pbfp-payee-id">
+                        <b t-esc="pe.name"/>
+                        <small>Due by day <t t-esc="pe.due_day"/> of the next month · <t t-esc="pe.employee_items"/> employee, <t t-esc="pe.employer_items"/> employer items</small>
+                      </div>
+                      <button t-if="state.setup.can_write" class="pbim-btn-sm ghost" t-on-click="() => this.editPayee(pe)"><t t-out="icon('pencil', 13)"/> Change</button>
+                    </div>
+                    <div class="pbfp-itemchips">
+                      <span t-foreach="pe.items" t-as="ci" t-key="ci.rule_id" class="pbfp-chip" t-att-class="ci.share === 'employer' ? 'is-blue' : 'is-slate'" t-att-title="ci.scheme">
+                        <t t-esc="ci.label"/> · <t t-esc="ci.scheme"/>
+                      </span>
+                    </div>
+                    <p t-foreach="pe.warnings" t-as="wn" t-key="wn_index" class="pbfp-warn"><t t-out="icon('triangleAlert', 12)"/> <t t-esc="wn"/></p>
+                  </div>
+                </div>
+                <p t-if="!state.setup.can_write" class="pbfp-muted pbfp-pad">Only a payroll manager or a finance role can change these.</p>
+                <div class="pbfp-modal-foot">
+                  <button class="pbim-btn" t-on-click="closeSetup">Done</button>
+                </div>
+              </t>
+
+              <!-- one payee -->
+              <t t-else="">
+                <t t-set="E" t-value="state.editing"/>
+                <div class="pbfp-edit">
+                  <div class="pbfp-edit-form">
+                    <label>
+                      <span>Pay to</span>
+                      <input type="text" class="pbfp-in" t-att-value="E.name" t-on-input="(ev) => this.onEdit('name', ev)" placeholder="For example Social insurance office"/>
+                    </label>
+                    <div class="pbfp-two">
+                      <label>
+                        <span>Due by day</span>
+                        <input type="number" min="1" max="31" class="pbfp-in" t-att-value="E.due_day" t-on-input="(ev) => this.onEdit('due_day', ev)"/>
+                        <small class="pbfp-muted">of the month after the pay month</small>
+                      </label>
+                      <label>
+                        <span>Usual currency</span>
+                        <select class="pbfp-in" t-on-change="(ev) => this.onEdit('currency_id', ev)">
+                          <option t-foreach="state.setup.currencies" t-as="cu" t-key="cu.id" t-att-value="cu.id" t-att-selected="cu.id == E.currency_id" t-esc="cu.name"/>
+                        </select>
+                      </label>
+                    </div>
+                    <label>
+                      <span>How to pay them (optional)</span>
+                      <textarea class="pbfp-in" rows="3" t-att-value="E.bank_details" t-on-input="(ev) => this.onEdit('bank_details', ev)" placeholder="Bank, account number, anything the person paying needs"/>
+                    </label>
+                    <label>
+                      <span>Reference to quote (optional)</span>
+                      <input type="text" class="pbfp-in" t-att-value="E.reference_text" t-on-input="(ev) => this.onEdit('reference_text', ev)" placeholder="For example the company's code at the fund"/>
+                    </label>
+                  </div>
+                  <div class="pbfp-edit-items">
+                    <span class="pbfp-k">Pay items that belong to it</span>
+                    <p t-if="!E.items.length" class="pbfp-muted">None yet. Pick them from the list below.</p>
+                    <div t-foreach="E.items" t-as="ci" t-key="ci.rule_id" class="pbfp-pick is-on">
+                      <div class="pbfp-pick-id"><b t-esc="ci.label"/><small><t t-esc="ci.scheme"/><t t-if="ci.currency"> · <t t-esc="ci.currency"/></t></small></div>
+                      <div class="pbim-seg pbfp-seg">
+                        <button type="button" class="pbim-segbtn" t-att-class="{ 'on': ci.share === 'employee' }" t-on-click="() => this.setShare(ci, 'employee')">Employee</button>
+                        <button type="button" class="pbim-segbtn" t-att-class="{ 'on': ci.share === 'employer' }" t-on-click="() => this.setShare(ci, 'employer')">Employer</button>
+                      </div>
+                      <button type="button" class="pbim-btn-sm ghost" t-on-click="() => this.removeItem(ci)" aria-label="Remove"><t t-out="icon('x', 13)"/></button>
+                    </div>
+                    <input type="search" class="pbfp-in pbfp-find" placeholder="Find a pay item by name or code" t-att-value="state.optionTerm" t-on-input="onOptionSearch"/>
+                    <div class="pbfp-options">
+                      <p t-if="!state.options.length" class="pbfp-muted">No pay item found<t t-if="state.optionTerm"> for “<t t-esc="state.optionTerm"/>”</t>.</p>
+                      <button t-foreach="state.options" t-as="op" t-key="op.rule_id" type="button" class="pbfp-pick"
+                              t-att-class="{ 'is-taken': op.taken_by, 'is-had': hasItem(op) }"
+                              t-att-disabled="op.taken_by or hasItem(op)" t-on-click="() => this.addItem(op)">
+                        <div class="pbfp-pick-id">
+                          <b t-esc="op.label"/>
+                          <small><t t-esc="op.scheme"/><t t-if="roleLabel(op.role)"> · <t t-esc="roleLabel(op.role)"/></t><t t-if="op.detail"> · included in another total</t></small>
+                          <small t-if="op.taken_by" class="pbfp-warn">Already paid to <t t-esc="op.taken_by"/></small>
+                        </div>
+                        <t t-if="!op.taken_by and !hasItem(op)"><t t-out="icon('plus', 14)"/></t>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="pbfp-modal-foot">
+                  <button t-if="E.id" class="pbim-btn ghost danger pbfp-left" t-on-click="() => this.archivePayee(E)"><t t-out="icon('trash', 14)"/> Remove</button>
+                  <button class="pbim-btn ghost" t-on-click="cancelEdit">Back</button>
+                  <button class="pbim-btn" t-att-disabled="state.saving" t-on-click="savePayee"><t t-out="icon('check', 14)"/> Save</button>
+                </div>
+              </t>
+            </div>
+          </div>
+
+          <!-- ======================== suggest ======================== -->
+          <div t-if="state.suggestOpen" class="pbim-modal-scrim pbfp-scrim-top" t-on-click="closeSuggest">
+            <div class="pbim-modal pbfp-modal" t-on-click.stop="() => {}" role="dialog" aria-label="Suggested funds">
+              <div class="pbfp-modal-head">
+                <h3>Suggested from your pay schemes</h3>
+                <button class="pbim-btn-sm ghost" t-on-click="closeSuggest" aria-label="Close"><t t-out="icon('x', 14)"/></button>
+              </div>
+              <p class="pbfp-muted pbfp-pad">Read from what each pay item does to net pay: taken off pay is the employee share, an employer cost is the employer share. Rename them, put two together if one office collects both, untick anything that is not paid to an outside office.</p>
+              <div t-if="state.suggestBusy and !state.proposals.length" class="pbim-busy"><div class="pbim-spin"/></div>
+              <div t-elif="!state.proposals.length" class="pbim-empty pbfp-empty">
+                <div class="pbfp-empty-ic"><t t-out="icon('checkCircle', 28)"/></div>
+                <h3>Nothing left to suggest</h3>
+                <p>Every pay item taken off pay or paid by the employer already belongs to a fund — or no active pay scheme has one.</p>
+              </div>
+              <div t-else="" class="pbfp-proposals">
+                <div t-foreach="state.proposals" t-as="pp" t-key="pp.key" class="pbfp-proposal" t-att-class="{ 'is-merged': pp.into }">
+                  <div class="pbfp-proposal-head">
+                    <input type="text" class="pbfp-in" t-att-value="pp.name" t-on-input="(ev) => this.onProposal(pp, 'name', ev)" t-att-disabled="pp.into" aria-label="Name"/>
+                    <select class="pbfp-in pbfp-into" t-on-change="(ev) => this.onProposal(pp, 'into', ev)" aria-label="Pay together with">
+                      <option value="" t-att-selected="!pp.into">Its own payment</option>
+                      <option t-foreach="intoOptions(pp)" t-as="mt" t-key="mt.key" t-att-value="mt.key" t-att-selected="pp.into === mt.key">Pay together with <t t-esc="mt.name"/></option>
+                    </select>
+                  </div>
+                  <div class="pbfp-itemchips">
+                    <button t-foreach="pp.items" t-as="pi" t-key="pi.rule_id" type="button" class="pbfp-chip pbfp-chip-toggle"
+                            t-att-class="(pi.on ? (pi.share === 'employer' ? 'is-blue' : 'is-slate') : 'is-off')"
+                            t-att-aria-pressed="pi.on ? 'true' : 'false'" t-on-click="() => this.toggleItem(pi)">
+                      <t t-if="pi.on"><t t-out="icon('check', 11)"/></t>
+                      <t t-esc="pi.label"/> · <t t-esc="pi.scheme"/>
+                    </button>
+                  </div>
+                  <p t-if="pp.note" class="pbfp-muted pbfp-note"><t t-out="icon('info', 12)"/> <t t-esc="pp.note"/></p>
+                </div>
+              </div>
+              <div class="pbfp-modal-foot">
+                <button class="pbim-btn ghost" t-on-click="closeSuggest">Cancel</button>
+                <button class="pbim-btn" t-att-disabled="state.suggestBusy or !suggestCount" t-on-click="acceptSuggestions">
+                  <t t-out="icon('check', 14)"/>
+                  <t t-if="suggestCount === 1"> Add 1 fund</t>
+                  <t t-else=""> Add <t t-esc="suggestCount"/> funds</t>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>
