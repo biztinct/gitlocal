@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Settings › HR › Review forms.
+
+       Comments ruled with `=` (a doubled hyphen breaks the file). No `not`
+       in an expression (OWL leaves it alone and the file dies): every
+       negation is `!`. Each translatable sentence sits on ONE line (PRD-3).
+       ==================================================================== -->
+
+  <t t-name="pb_review_forms.Studio">
+    <div class="pbim pbim-page pbrf-st">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the goal years…</span>
+      </div>
+
+      <div t-elif="!state.ok" class="pbim-wrap">
+        <div class="pbim-empty pbrf-st-empty">
+          <div class="pbrf-st-empty-ic"><t t-out="ic('listChecks',30)"/></div>
+          <h3>Review forms are set up by the HR team</h3>
+          <p t-esc="state.why"/>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap pbrf-st-wrap">
+
+        <!-- ========================== the header ========================== -->
+        <div class="pbrf-st-head">
+          <HubBackChip t-if="back" back="back" tone="'light'"/>
+          <h2 class="pbrf-st-h">Review forms</h2>
+          <p class="pbrf-st-s">One form for each goal year. The employee gives their own view first, then the manager answers and writes the overall comment.</p>
+        </div>
+
+        <div t-if="!state.years.length" class="pbim-empty pbrf-st-empty">
+          <div class="pbrf-st-empty-ic"><t t-out="ic('calendar',30)"/></div>
+          <h3>No goal year yet</h3>
+          <p>A review form belongs to a goal year. Open a goal year in Goals first.</p>
+        </div>
+
+        <div t-else="" class="pbrf-st-grid">
+
+          <!-- ======================== the goal years ======================== -->
+          <aside class="pbrf-st-years">
+            <t t-foreach="state.years" t-as="yr" t-key="yr.id">
+              <button t-attf-class="pbrf-st-year {{yr.id === state.cycleId ? 'is-on' : ''}}"
+                      t-on-click="() => this.pickYear(yr.id)">
+                <span class="pbrf-st-year-n" t-esc="yr.name"/>
+                <span class="pbrf-st-year-d" t-esc="yr.dates"/>
+                <span t-attf-class="pbrf-chip pbrf-chip--{{yearTone(yr)}}">
+                  <t t-if="yr.locked" t-out="ic('lock',11)"/>
+                  <t t-esc="yr.status"/>
+                </span>
+              </button>
+            </t>
+          </aside>
+
+          <!-- ========================= one year's form ========================= -->
+          <main t-if="state.draft" class="pbrf-st-main">
+
+            <div class="pbrf-st-top">
+              <div>
+                <h3 class="pbrf-st-title"><t t-esc="state.form.cycle"/></h3>
+                <p class="pbrf-st-sub">
+                  <t t-if="!state.form.exists">No form yet. Fill in the five steps and put it in use.</t>
+                  <t t-elif="state.form.state === 'published'"><span>In use since</span> <t t-esc="state.form.published_on"/>.</t>
+                  <t t-else="">Being written. Nothing changes for anybody until you put it in use.</t>
+                </p>
+              </div>
+              <div class="pbrf-st-top-acts">
+                <button t-if="state.form.exists" class="pbim-btn ghost" t-on-click="preview">
+                  <t t-out="ic('eye',15)"/> Preview as the employee
+                </button>
+                <button t-if="state.mayEdit and state.form.state === 'published' and !state.form.locked"
+                        class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="unpublish">
+                  <t t-out="ic('undo',15)"/> Stop using it
+                </button>
+              </div>
+            </div>
+
+            <div t-if="state.form.locked" class="pbrf-st-note">
+              <t t-out="ic('lock',16)"/>
+              <span>Locked since <t t-esc="state.form.locked_on"/>, when the first review was sent in. Only when the manager's part is shown can still change. For a new version, copy it to another year.</span>
+            </div>
+            <div t-elif="state.form.cycle_closed" class="pbrf-st-note">
+              <t t-out="ic('archive',16)"/>
+              <span>This goal year is closed.</span>
+            </div>
+
+            <!-- ======================= how far it has got ======================= -->
+            <div t-if="state.form.state === 'published'" class="pbrf-st-progress">
+              <div t-attf-class="pbrf-tile {{state.form.progress.reviews ? '' : 'is-zero'}}">
+                <strong t-esc="state.form.progress.reviews"/><span>End-of-year reviews</span>
+              </div>
+              <div t-attf-class="pbrf-tile {{state.form.progress.self_sent ? '' : 'is-zero'}}">
+                <strong t-esc="state.form.progress.self_sent"/><span>Own views sent</span>
+              </div>
+              <div t-attf-class="pbrf-tile {{state.form.progress.manager_done ? '' : 'is-zero'}}">
+                <strong t-esc="state.form.progress.manager_done"/><span>Managers finished</span>
+              </div>
+              <div t-attf-class="pbrf-tile {{state.form.progress.waiting_to_show ? 'is-act' : 'is-zero'}}">
+                <strong t-esc="state.form.progress.waiting_to_show"/><span>Waiting to be shown</span>
+              </div>
+              <div t-attf-class="pbrf-tile {{state.form.progress.read ? '' : 'is-zero'}}">
+                <strong t-esc="state.form.progress.read"/><span>Read by them</span>
+              </div>
+              <div t-attf-class="pbrf-tile {{state.form.progress.talk ? 'is-act' : 'is-zero'}}">
+                <strong t-esc="state.form.progress.talk"/><span>Want to talk</span>
+              </div>
+            </div>
+
+            <!-- ============================ the steps ============================ -->
+            <nav class="pbrf-st-steps">
+              <t t-foreach="steps" t-as="sp" t-key="sp.key">
+                <button t-attf-class="pbrf-st-step {{sp.key === state.step ? 'is-on' : ''}}"
+                        t-on-click="() => this.goStep(sp.key)">
+                  <span class="pbrf-st-step-n" t-esc="sp_index + 1"/>
+                  <span t-esc="sp.label"/>
+                </button>
+              </t>
+            </nav>
+
+            <section class="pbrf-st-card">
+
+              <!-- ============ 1. how the overall result is mixed ============ -->
+              <t t-if="state.step === 'shares'">
+                <h4>How the overall result is worked out</h4>
+                <p class="pbrf-st-help">The manager's ratings are mixed by these shares into one result out of 5. Once the form is in use, the pay review starts from this result.</p>
+                <label class="pbrf-st-f">
+                  <span>Name of the form</span>
+                  <input class="pbrf-in" type="text" maxlength="120" t-att-value="state.draft.name"
+                         t-att-disabled="readOnly" t-on-change="(ev) => this.setField('name', ev)"/>
+                </label>
+                <div class="pbrf-st-shares">
+                  <label class="pbrf-st-share">
+                    <span>Goals score</span>
+                    <input class="pbrf-in pbrf-in--num" type="number" min="0" max="100"
+                           t-att-value="state.draft.share_goals" t-att-disabled="readOnly"
+                           t-on-input="(ev) => this.setField('share_goals', ev)"/>
+                    <em>%</em>
+                  </label>
+                  <label class="pbrf-st-share">
+                    <span>Skills and values</span>
+                    <input class="pbrf-in pbrf-in--num" type="number" min="0" max="100"
+                           t-att-value="state.draft.share_skills" t-att-disabled="readOnly"
+                           t-on-input="(ev) => this.setField('share_skills', ev)"/>
+                    <em>%</em>
+                  </label>
+                  <label class="pbrf-st-share">
+                    <span>Rated questions</span>
+                    <input class="pbrf-in pbrf-in--num" type="number" min="0" max="100"
+                           t-att-value="state.draft.share_questions" t-att-disabled="readOnly"
+                           t-on-input="(ev) => this.setField('share_questions', ev)"/>
+                    <em>%</em>
+                  </label>
+                </div>
+                <div t-attf-class="pbrf-st-total {{shareTotal === 100 ? 'is-ok' : 'is-off'}}">
+                  <t t-out="ic(shareTotal === 100 ? 'checkCircle' : 'alert', 15)"/>
+                  <span>Together: <t t-esc="shareTotal"/>%.</span>
+                  <span t-if="shareTotal !== 100">The three shares must add up to 100.</span>
+                </div>
+              </t>
+
+              <!-- ================= 2. skills and values ================= -->
+              <t t-if="state.step === 'skills'">
+                <h4>Skills and values</h4>
+                <p class="pbrf-st-help">A few things both the employee and the manager rate from Well below to Well above. At most <t t-esc="state.limits.skills"/>.</p>
+                <t t-foreach="state.draft.skills" t-as="ln" t-key="ln_index">
+                  <div class="pbrf-st-line">
+                    <span class="pbrf-st-line-n" t-esc="ln_index + 1"/>
+                    <div class="pbrf-st-line-f">
+                      <input class="pbrf-in" type="text" maxlength="120" placeholder="Takes ownership"
+                             t-att-value="ln.name" t-att-disabled="readOnly"
+                             t-on-change="(ev) => this.setLine(ln, 'name', ev)"/>
+                      <input class="pbrf-in pbrf-in--soft" type="text" maxlength="200" placeholder="What good looks like, in a sentence"
+                             t-att-value="ln.description" t-att-disabled="readOnly"
+                             t-on-change="(ev) => this.setLine(ln, 'description', ev)"/>
+                    </div>
+                    <div t-if="!readOnly" class="pbrf-st-line-acts">
+                      <button class="pbim-btn ghost" title="Move up" t-on-click="() => this.moveLine('skill', ln_index, -1)"><t t-out="ic('arrowUp',14)"/></button>
+                      <button class="pbim-btn ghost" title="Move down" t-on-click="() => this.moveLine('skill', ln_index, 1)"><t t-out="ic('arrowDown',14)"/></button>
+                      <button class="pbim-btn ghost" title="Remove" t-on-click="() => this.removeLine('skill', ln_index)"><t t-out="ic('trash',14)"/></button>
+                    </div>
+                  </div>
+                </t>
+                <p t-if="!state.draft.skills.length" class="pbrf-st-none">None yet.</p>
+                <div t-if="!readOnly" class="pbrf-st-adds">
+                  <button class="pbim-btn ghost" t-att-disabled="state.draft.skills.length >= state.limits.skills"
+                          t-on-click="() => this.addLine('skill')">
+                    <t t-out="ic('plus',14)"/> Add a skill or value
+                  </button>
+                  <button t-if="state.hasValues" class="pbim-btn ghost" t-on-click="fillValues">
+                    <t t-out="ic('award',14)"/> Add the company values
+                  </button>
+                </div>
+              </t>
+
+              <!-- ======================= 3. HR's questions ======================= -->
+              <t t-if="state.step === 'questions'">
+                <h4>Your questions</h4>
+                <p class="pbrf-st-help">Up to <t t-esc="state.limits.questions"/> questions. Choose who answers each one.</p>
+                <t t-foreach="state.draft.questions" t-as="ln" t-key="ln_index">
+                  <div class="pbrf-st-line">
+                    <span class="pbrf-st-line-n" t-esc="ln_index + 1"/>
+                    <div class="pbrf-st-line-f">
+                      <input class="pbrf-in" type="text" maxlength="200" placeholder="What are you most proud of this year?"
+                             t-att-value="ln.name" t-att-disabled="readOnly"
+                             t-on-change="(ev) => this.setLine(ln, 'name', ev)"/>
+                      <div class="pbrf-st-line-row">
+                        <select class="pbrf-in pbrf-in--sel" t-att-disabled="readOnly"
+                                t-on-change="(ev) => this.setLine(ln, 'qtype', ev)">
+                          <t t-foreach="state.questionTypes" t-as="qt" t-key="qt.key">
+                            <option t-att-value="qt.key" t-att-selected="ln.qtype === qt.key" t-esc="qt.label"/>
+                          </t>
+                        </select>
+                        <select class="pbrf-in pbrf-in--sel" t-att-disabled="readOnly"
+                                t-on-change="(ev) => this.setLine(ln, 'who', ev)">
+                          <t t-foreach="state.whoAnswers" t-as="wa" t-key="wa.key">
+                            <option t-att-value="wa.key" t-att-selected="ln.who === wa.key" t-esc="wa.label"/>
+                          </t>
+                        </select>
+                        <label class="pbrf-st-check">
+                          <input type="checkbox" t-att-checked="ln.required" t-att-disabled="readOnly"
+                                 t-on-change="(ev) => this.setLine(ln, 'required', ev)"/>
+                          <span>Must be answered</span>
+                        </label>
+                      </div>
+                      <textarea t-if="ln.qtype === 'choice'" class="pbrf-in" rows="3"
+                                placeholder="One answer per line" t-att-disabled="readOnly"
+                                t-on-change="(ev) => this.setLine(ln, 'choices', ev)" t-att-value="ln.choices"/>
+                    </div>
+                    <div t-if="!readOnly" class="pbrf-st-line-acts">
+                      <button class="pbim-btn ghost" title="Move up" t-on-click="() => this.moveLine('question', ln_index, -1)"><t t-out="ic('arrowUp',14)"/></button>
+                      <button class="pbim-btn ghost" title="Move down" t-on-click="() => this.moveLine('question', ln_index, 1)"><t t-out="ic('arrowDown',14)"/></button>
+                      <button class="pbim-btn ghost" title="Remove" t-on-click="() => this.removeLine('question', ln_index)"><t t-out="ic('trash',14)"/></button>
+                    </div>
+                  </div>
+                </t>
+                <p t-if="!state.draft.questions.length" class="pbrf-st-none">None yet. Questions are optional.</p>
+                <div t-if="!readOnly" class="pbrf-st-adds">
+                  <button class="pbim-btn ghost" t-att-disabled="state.draft.questions.length >= state.limits.questions"
+                          t-on-click="() => this.addLine('question')">
+                    <t t-out="ic('plus',14)"/> Add a question
+                  </button>
+                </div>
+              </t>
+
+              <!-- ================== 4. when the employee sees it ================== -->
+              <t t-if="state.step === 'reveal'">
+                <h4>When the employee sees the manager's part</h4>
+                <p class="pbrf-st-help">Until then the employee sees only their own answers, and their goals score is not shown on their page. Closing the goal year shows every finished review.</p>
+                <div class="pbrf-st-radios">
+                  <t t-foreach="state.revealModes" t-as="rm" t-key="rm.key">
+                    <label t-attf-class="pbrf-st-radio {{state.draft.reveal === rm.key ? 'is-on' : ''}}">
+                      <input type="radio" name="pbrf_reveal" t-att-value="rm.key"
+                             t-att-checked="state.draft.reveal === rm.key"
+                             t-att-disabled="readOnly and !revealOnly"
+                             t-on-change="(ev) => this.setField('reveal', ev)"/>
+                      <span t-esc="rm.label"/>
+                    </label>
+                  </t>
+                </div>
+                <label t-if="state.draft.reveal === 'date'" class="pbrf-st-f">
+                  <span>Shown from</span>
+                  <input class="pbrf-in pbrf-in--date" type="date" t-att-value="state.draft.reveal_date"
+                         t-att-disabled="readOnly and !revealOnly"
+                         t-on-change="(ev) => this.setField('reveal_date', ev)"/>
+                </label>
+                <label class="pbrf-st-f">
+                  <span>A word to the employee, shown at the top of the form</span>
+                  <textarea class="pbrf-in" rows="3" t-att-value="state.draft.intro" t-att-disabled="readOnly"
+                            t-on-change="(ev) => this.setField('intro', ev)"/>
+                </label>
+                <div t-if="state.form.state === 'published' and state.form.progress.waiting_to_show and state.mayEdit"
+                     class="pbrf-st-note pbrf-st-note--act">
+                  <t t-out="ic('eye',16)"/>
+                  <span><t t-esc="state.form.progress.waiting_to_show"/> finished, not shown yet.</span>
+                  <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="showNow">Show them now</button>
+                </div>
+              </t>
+
+              <!-- ======================= 5. check and use ======================= -->
+              <t t-if="state.step === 'check'">
+                <h4>Check and put it in use</h4>
+                <div t-if="state.form.problems.length" class="pbrf-st-problems">
+                  <t t-foreach="state.form.problems" t-as="pr" t-key="pr_index">
+                    <div class="pbrf-st-problem"><t t-out="ic('alert',14)"/><span t-esc="pr"/></div>
+                  </t>
+                </div>
+                <div t-elif="state.form.exists" class="pbrf-st-total is-ok">
+                  <t t-out="ic('checkCircle',15)"/><span>Everything is in place.</span>
+                </div>
+                <ul class="pbrf-st-summary">
+                  <li><strong t-esc="state.draft.skills.length"/> skills or values, <strong t-esc="state.draft.questions.length"/> questions.</li>
+                  <li>Goals <t t-esc="state.draft.share_goals"/>% · skills and values <t t-esc="state.draft.share_skills"/>% · rated questions <t t-esc="state.draft.share_questions"/>%.</li>
+                  <li>Used at the end-of-year review. The half-way review stays as it is.</li>
+                  <li>Once the first review is sent in, the form is locked for this year.</li>
+                </ul>
+                <div class="pbrf-st-final">
+                  <button t-if="state.mayEdit and state.form.state !== 'published' and !state.form.cycle_closed"
+                          class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="publish">
+                    <t t-out="ic('checkCheck',15)"/> Put it in use
+                  </button>
+                  <div t-if="state.mayEdit and state.form.exists and copyTargets.length" class="pbrf-st-copy">
+                    <select class="pbrf-in pbrf-in--sel" t-model="state.copyTo">
+                      <option value="0">Copy to another goal year…</option>
+                      <t t-foreach="copyTargets" t-as="ct" t-key="ct.id">
+                        <option t-att-value="ct.id" t-esc="ct.name"/>
+                      </t>
+                    </select>
+                    <button class="pbim-btn ghost" t-att-disabled="!hasCopyTo or state.busy" t-on-click="copy">
+                      <t t-out="ic('copy',14)"/> Copy
+                    </button>
+                  </div>
+                </div>
+              </t>
+
+            </section>
+
+            <div class="pbrf-st-foot">
+              <button class="pbim-btn ghost" t-att-disabled="state.step === 'shares'" t-on-click="prev">
+                <t t-out="ic('chevronLeft',14)"/> Back
+              </button>
+              <button t-if="!readOnly or revealOnly" class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.save(true)">
+                <t t-out="ic('save',14)"/> Save
+              </button>
+              <button t-if="state.step !== 'check'" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="next">
+                Next <t t-out="ic('chevron',14)"/>
+              </button>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

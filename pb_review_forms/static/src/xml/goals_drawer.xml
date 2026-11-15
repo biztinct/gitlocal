@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The review form in the Goals drawer (extension of pb_goals'
+       `GoalsDrawerYear`). Comments ruled with `=`; no `not`; one-line
+       sentences. The old "Write it up" button is HIDDEN on a form review,
+       never removed (QF4-W4: buttons can be anchors).
+       ==================================================================== -->
+
+  <t t-name="pb_review_forms.GoalsDrawerYear" t-inherit="pb_goals.GoalsDrawerYear" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbgl-rv-top')]/button" position="attributes">
+      <attribute name="t-if">rv.state === 'planned' and state.mayScore and !rv.form</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbgl-rv-top')]" position="after">
+      <div t-if="rv.form" class="pbrf-dr">
+        <div class="pbrf-dr-head">
+          <span class="pbrf-dr-ic"><t t-out="ic('listChecks',15)"/></span>
+          <strong>Review form</strong>
+          <span t-attf-class="pbgl-state pbgl-state--{{rfTone(rv.form.self_state)}}" t-esc="rfSelfWord(rv.form)"/>
+          <span t-attf-class="pbgl-state pbgl-state--{{rfTone(rv.form.mgr_state)}}" t-esc="rfMgrWord(rv.form)"/>
+          <span t-if="rv.form.released" class="pbgl-state pbgl-state--ok">Shown to them</span>
+          <span t-if="rv.form.ack_state === 'read'" class="pbgl-state pbgl-state--ok">Read by them</span>
+          <span t-if="rv.form.ack_state === 'talk'" class="pbgl-state pbgl-state--bad">Wants to talk</span>
+          <a t-if="rv.form.is_self" class="pbim-btn ghost" t-att-href="rv.form.url" target="_blank">
+            <t t-out="ic('external',14)"/> Open my own page
+          </a>
+          <button t-else="" class="pbim-btn ghost" t-on-click="() => this.rfToggle(rv.id)">
+            <t t-out="ic(state.rfOpen === rv.id ? 'chevronUp' : 'chevronDown',14)"/>
+            <t t-if="state.rfOpen === rv.id">Close the form</t>
+            <t t-else="">Open the form</t>
+          </button>
+        </div>
+
+        <div t-if="state.rfOpen === rv.id and state.rf" class="pbrf-dr-body">
+          <p t-if="state.rf.self_state !== 'sent'" class="pbrf-dr-note">
+            <t t-out="ic('clock',13)"/>
+            <span>They have not sent their own view yet. Their answers appear here once they do.</span>
+          </p>
+          <p t-if="state.rf.mgr_state === 'done'" class="pbrf-dr-note">
+            <t t-out="ic('checkCircle',13)"/>
+            <span>Finished on <t t-esc="state.rf.done_on"/>.</span>
+            <span t-if="state.rf.released">Shown to them on <t t-esc="state.rf.shown_on"/>.</span>
+            <span t-else="" t-esc="state.rf.reveal_words"/>
+          </p>
+
+          <!-- ============ skills, values and questions ============ -->
+          <t t-foreach="[['skills', state.rf.skills], ['questions', state.rf.questions]]" t-as="grp" t-key="grp[0]">
+            <div t-if="grp[1].length" class="pbrf-dr-sec">
+              <h5 t-if="grp[0] === 'skills'">Skills and values</h5>
+              <h5 t-else="">Questions</h5>
+              <t t-foreach="grp[1]" t-as="ln" t-key="ln.id">
+                <div class="pbrf-dr-line">
+                  <div class="pbrf-dr-q">
+                    <strong t-esc="ln.name"/>
+                    <span t-if="ln.description" class="pbrf-dr-hint" t-esc="ln.description"/>
+                  </div>
+                  <div t-if="ln.asks_them" class="pbrf-dr-theirs">
+                    <span class="pbrf-dr-who">Their view</span>
+                    <span t-esc="ln.theirs || '-'"/>
+                  </div>
+                  <div t-if="ln.asks_me" class="pbrf-dr-mine">
+                    <span class="pbrf-dr-who pbrf-dr-who--me">Manager</span>
+                    <div t-if="ln.kind === 'rating'" class="pbrf-dr-scale">
+                      <t t-foreach="state.rf.ratings" t-as="op" t-key="op.key">
+                        <button t-attf-class="pbrf-dr-pill {{state.rfAnswers[ln.id] === op.key ? 'is-on' : ''}}"
+                                t-att-disabled="!state.rf.may_edit"
+                                t-on-click="() => this.rfPick(ln.id, op.key)" t-esc="op.label"/>
+                      </t>
+                    </div>
+                    <select t-elif="ln.kind === 'choice'" class="pbgl-in pbgl-in--sel"
+                            t-att-disabled="!state.rf.may_edit" t-on-change="(ev) => this.rfInput(ln.id, ev)">
+                      <option value="">Choose one</option>
+                      <t t-foreach="ln.choices" t-as="ch" t-key="ch_index">
+                        <option t-att-value="ch" t-att-selected="state.rfAnswers[ln.id] === ch" t-esc="ch"/>
+                      </t>
+                    </select>
+                    <textarea t-else="" class="pbgl-in pbgl-in--area" rows="2"
+                              t-att-disabled="!state.rf.may_edit"
+                              t-att-value="state.rfAnswers[ln.id]"
+                              t-on-change="(ev) => this.rfInput(ln.id, ev)"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+          </t>
+
+          <!-- ======================== the overall ======================== -->
+          <div class="pbrf-dr-sec">
+            <h5>Overall comment</h5>
+            <textarea class="pbgl-in pbgl-in--area" rows="4"
+                      placeholder="What the year came to, and what happens next. This is the part people read first."
+                      t-att-disabled="!state.rf.may_edit" t-model="state.rfComment"/>
+          </div>
+          <div class="pbrf-dr-result">
+            <div class="pbrf-dr-overall">
+              <span>Overall result</span>
+              <strong>
+                <t t-if="state.rf.overall !== null and state.rf.overall !== undefined" t-esc="state.rf.overall"/>
+                <t t-else="">-</t>
+              </strong>
+              <em>out of 5</em>
+            </div>
+            <t t-foreach="state.rf.parts" t-as="pt" t-key="pt.key">
+              <div class="pbrf-dr-part">
+                <span t-esc="pt.label"/>
+                <strong>
+                  <t t-if="pt.value !== null and pt.value !== undefined" t-esc="pt.value"/>
+                  <t t-else="">-</t>
+                </strong>
+                <em><t t-esc="pt.share"/>%</em>
+              </div>
+            </t>
+          </div>
+          <p t-if="state.rf.may_edit and !state.rf.goals_scored" class="pbrf-dr-note">
+            <t t-out="ic('alert',13)"/>
+            <span>Score every key result above before you finish: the goals score is part of the result.</span>
+          </p>
+          <div t-if="state.rf.may_edit" class="pbrf-dr-acts">
+            <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.rfSave(false)">
+              <t t-out="ic('save',14)"/> Save
+            </button>
+            <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="() => this.rfSave(true)">
+              <t t-out="ic('checkCheck',14)"/> Finish the review
+            </button>
+          </div>
+        </div>
+      </div>
+    </xpath>
+  </t>
+
+</templates>
