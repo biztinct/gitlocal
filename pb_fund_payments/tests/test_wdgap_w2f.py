@@ -115,3 +115,78 @@ class TestW2fOneSignature(FundFixture):
                          'changed by the business')
         self.assertEqual(D.fingerprint(wf.published_version_id.definition),
                          D.fingerprint(old_fund_definition()))
+
+
+@tagged('post_install', '-at_install', 'pb_fund_payments', 'wdgap_w2f')
+class TestW2fSuggestLeavesOut(FundFixture):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cfg = cls.env['hr.formula.config'].create({
+            'name': 'W2F End-Month', 'code': 'W2FEND', 'cycle_type': 'end_cycle',
+            'country_code': 'VN', 'company_id': cls.company.id, 'state': 'active'})
+        cls.cfg = cfg
+        cls.w = {}
+        for name, code, role, kind, formula in (
+                ('Basic salary', 'BASIC', 'earning', 'input', None),
+                ('Loan instalment', 'INLOAN', 'deduction', 'input', None),
+                ('Mid-Month Advance (received)', 'ADVPAY', 'deduction', 'input', None),
+                ('Union rate', 'UNIONRATE', 'info', 'constant', None),
+                ('Loan repayment', 'LOANREP', 'deduction', 'formula', '=-INLOAN'),
+                ('Loan fee', 'LOANFEE', 'deduction', 'formula', '=-ROUND(INLOAN*UNIONRATE)'),
+                ('Union fee', 'UNIONFEE', 'deduction', 'formula',
+                 '=-ROUND((BASIC+INLOAN)*UNIONRATE)'),
+                ('Personal Income Tax', 'PIT', 'deduction', 'input', None),
+                ('Net pay', 'NETPAY', 'net', 'formula', '=BASIC+LOANREP-ADVPAY+PIT'),
+        ):
+            vals = {'config_id': cfg.id, 'name': name, 'code': code,
+                    'column_type': kind, 'sequence': 10 + len(cls.w),
+                    'default_value': 0.0, 'value_kind': 'money', 'net_role': role,
+                    'appears_on_payslip': kind != 'constant',
+                    'category_id': cls.category.id}
+            if kind == 'constant':
+                vals['constant_value'] = 0.01
+            if formula:
+                vals['excel_formula'] = formula
+            cls.w[code] = cls.env['hr.formula.rule'].create(vals)
+        cls.mid = cls.env['hr.formula.config'].create({
+            'name': 'W2F Mid-Month', 'code': 'W2FMID', 'cycle_type': 'mid_cycle',
+            'country_code': 'VN', 'company_id': cls.company.id, 'state': 'active'})
+        cls.mid_adv = cls.env['hr.formula.rule'].create({
+            'config_id': cls.mid.id, 'code': 'ADVPAY', 'name': 'Mid-Month Advance',
+            'column_type': 'input', 'sequence': 1, 'default_value': 0.0,
+            'value_kind': 'money', 'net_role': 'net', 'appears_on_payslip': True,
+            'category_id': cls.category.id})
+        cls.mapping = cls.env['hr.payroll.cycle.component.mapping'].create({
+            'mid_cycle_config_id': cls.mid.id, 'end_cycle_config_id': cfg.id,
+            'mid_component_id': cls.mid_adv.id, 'end_component_id': cls.w['ADVPAY'].id})
+        cls.has_loans = 'pb_loan_rule_id' in cfg._fields
+        if cls.has_loans:
+            cfg.pb_loan_rule_id = cls.w['INLOAN']
+
+    def _offered(self):
+        return {(i['code'], i['scheme']) for p in self.Payee._pb_suggest(self.company)
+                for i in p['items']}
+
+    def test_F3_1_loans_and_the_advance_are_not_funds(self):
+        offered = self._offered()
+        mine = {code for code, scheme in offered if scheme == 'W2F End-Month'}
+        self.assertIn('PIT', mine, 'a real tax is still a fund')
+        self.assertNotIn('ADVPAY', mine, 'the mid-month advance is not a fund')
+        if self.has_loans:
+            for code in ('INLOAN', 'LOANREP', 'LOANFEE'):
+                self.assertNotIn(code, mine, code)
+        # no "untick it" note anywhere
+        self.assertFalse([p for p in self.Payee._pb_suggest(self.company) if p['note']])
+
+    def test_F3_2_without_the_settings_they_are_offered(self):
+        self.mapping.active = False
+        if self.has_loans:
+            self.cfg.pb_loan_rule_id = False
+        mine = {code for code, scheme in self._offered() if scheme == 'W2F End-Month'}
+        self.assertTrue({'ADVPAY', 'INLOAN', 'LOANREP', 'PIT'} <= mine, mine)
+
+    def test_F3_3_a_component_reading_more_than_the_loan_stays(self):
+        mine = {code for code, scheme in self._offered() if scheme == 'W2F End-Month'}
+        self.assertIn('UNIONFEE', mine)

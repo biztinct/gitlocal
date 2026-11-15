@@ -230,7 +230,9 @@ class TestFundPayments(FundFixture):
         self.assertTrue(by_name['Health Insurance']['paired'])
         pit = by_name['Personal Income Tax']
         self.assertFalse(pit['paired'])
-        self.assertTrue(pit['note'], "a lone deduction says it may not be an outside office")
+        # WDGAP W2-F (F-3): the "untick it" note is gone — loan repayments and
+        # the advance are left out by the schemes' own settings instead
+        self.assertFalse(pit['note'])
         codes = {i['code'] for p in props for i in p['items']}
         for never in ('UNIONPART', 'INSBASE', 'HIDDEN', 'BASIC', 'NETPAY'):
             self.assertNotIn(never, codes, never)
