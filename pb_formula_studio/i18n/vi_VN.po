@@ -3262,6 +3262,7 @@ msgstr "(Các) ánh xạ có độ tin cậy cao %s được chấp nhận."
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:2240
 #: code:addons/pb_formula_studio/static/src/xml/mapping_studio.xml:1
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/models/take_home.py:0
 msgid "Employee"
 msgstr "Nhân viên"
 
@@ -4270,6 +4271,7 @@ msgstr "Con số mọi thứ khác cộng lại."
 #. odoo-python
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:1921
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
 msgid "Information"
 msgstr "Thông tin"
 
@@ -7099,6 +7101,7 @@ msgstr "Bỏ qua bây giờ"
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/category_review.xml:1
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
 msgid "Close"
 msgstr "Đóng"
 
@@ -14208,6 +14211,7 @@ msgstr "Đầu vào/thông tin"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:1
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
 msgid "Earning"
 msgstr "Thu nhập"
 
@@ -14831,7 +14835,9 @@ msgid "Earnings"
 msgstr "Thu nhập"
 
 #. module: pb_formula_studio
+#. odoo-javascript
 #: model_terms:ir.ui.view,arch_db:pb_formula_studio.formula_review_page
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
 msgid "Deductions"
 msgstr "Khấu trừ"
 
@@ -16601,3 +16607,393 @@ msgstr "Tất cả hàm"
 #: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
 msgid "Fewer functions"
 msgstr "Ít hàm hơn"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "it cannot be worked out"
+msgstr "không tính được"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Everything else from the contract and the scheme's usual values"
+msgstr "Mọi số liệu khác lấy từ hợp đồng và các giá trị thường dùng của chế độ lương"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "it divides by zero"
+msgstr "có phép chia cho 0"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "the formula cannot be read"
+msgstr "không đọc được công thức"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "To take home %(target)s, %(item)s must be %(value)s."
+msgstr "Để thực nhận %(target)s, %(item)s phải là %(value)s."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home goes down at one point as %(item)s rises (between %(x1)s and %(x2)s), so this is the lowest %(item)s found that reaches the target."
+msgstr "Lương thực nhận giảm xuống ở một điểm khi %(item)s tăng (giữa %(x1)s và %(x2)s), nên đây là mức %(item)s thấp nhất tìm được đạt mục tiêu."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "This scheme has no pay item that can be changed, so there is nothing to work back."
+msgstr "Chế độ lương này không có khoản lương nào thay đổi được, nên không có gì để tính ngược."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Everything else as on the payslip of %s"
+msgstr "Mọi số liệu khác như trên phiếu lương ngày %s"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Everything else as on the latest payslip"
+msgstr "Mọi số liệu khác như trên phiếu lương gần nhất"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Pick the pay item to change."
+msgstr "Chọn khoản lương cần thay đổi."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "This scheme has no take-home line, so there is nothing to work back from."
+msgstr "Chế độ lương này không có dòng lương thực nhận, nên không có gì để tính ngược."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home cannot be worked back: the formula for “%(name)s” has an error for this person (%(why)s). Fix it in Formula Studio first."
+msgstr "Không thể tính ngược lương thực nhận: công thức của “%(name)s” bị lỗi với người này (%(why)s). Hãy sửa trong Xưởng công thức trước."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "%(target)s cannot be reached exactly — the scheme's rounding or a tax step jumps over it. Closest: %(item)s %(v1)s gives %(n1)s; %(item)s %(v2)s gives %(n2)s."
+msgstr "Không thể đạt đúng %(target)s — cách làm tròn hoặc một bậc thuế của chế độ lương nhảy qua mức này. Gần nhất: %(item)s %(v1)s cho %(n1)s; %(item)s %(v2)s cho %(n2)s."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Working back from take-home is for the pay team. Ask an administrator for a payroll role."
+msgstr "Tính ngược từ lương thực nhận dành cho nhóm tính lương. Hãy nhờ quản trị viên cấp vai trò tính lương."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Type the take-home you want, as an amount above zero."
+msgstr "Nhập mức lương thực nhận mong muốn, là một số tiền lớn hơn 0."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "This scheme does not give a take-home that is a number for this person, so nothing can be worked back."
+msgstr "Chế độ lương này không cho ra lương thực nhận là một con số với người này, nên không thể tính ngược."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home cannot be worked back: the formula for “%(name)s” has an error at %(value)s (%(why)s). Fix it in Formula Studio first."
+msgstr "Không thể tính ngược lương thực nhận: công thức của “%(name)s” bị lỗi ở mức %(value)s (%(why)s). Hãy sửa trong Xưởng công thức trước."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Stopped after %(n)s tries without settling on a figure."
+msgstr "Đã dừng sau %(n)s lần thử mà chưa chốt được con số."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "This person belongs to a company you do not work in."
+msgstr "Người này thuộc một công ty mà bạn không làm việc."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "No pay scheme pays this person yet, so there is no take-home to work back from."
+msgstr "Chưa có chế độ lương nào trả lương cho người này, nên chưa có lương thực nhận để tính ngược."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "This pay scheme belongs to a company you do not work in."
+msgstr "Chế độ lương này thuộc một công ty mà bạn không làm việc."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "You cannot see this person's pay."
+msgstr "Bạn không xem được lương của người này."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "That payslip is no longer there."
+msgstr "Phiếu lương đó không còn nữa."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "That contract is no longer there."
+msgstr "Hợp đồng đó không còn nữa."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "The closest found: %(item)s %(value)s gives %(net)s."
+msgstr "Gần nhất tìm được: %(item)s %(value)s cho %(net)s."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home does not change when %(item)s changes, so it cannot be worked back from %(item)s. Pick the pay item that feeds take-home."
+msgstr "Lương thực nhận không đổi khi %(item)s thay đổi, nên không thể tính ngược từ %(item)s. Hãy chọn khoản lương có ảnh hưởng đến lương thực nhận."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home is already %(net)s with %(item)s at 0, which is above %(target)s."
+msgstr "Lương thực nhận đã là %(net)s khi %(item)s bằng 0, cao hơn %(target)s."
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/take_home.py:0
+msgid "Take-home never reaches %(target)s: even with %(item)s at %(value)s, take-home is %(net)s."
+msgstr "Lương thực nhận không bao giờ đạt %(target)s: ngay cả khi %(item)s là %(value)s, lương thực nhận chỉ là %(net)s."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "This cannot be worked out just now."
+msgstr "Hiện chưa tính được."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "This cannot be worked out just now. Try again in a moment."
+msgstr "Hiện chưa tính được. Vui lòng thử lại sau giây lát."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "%s must be"
+msgstr "%s phải là"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Worked out in %(n)s tries · %(s)s s"
+msgstr "Tính trong %(n)s lần thử · %(s)s giây"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Gross pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Take-home"
+msgstr "Thực nhận"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Employer contributions"
+msgstr "Phần doanh nghiệp đóng"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "1 line changed"
+msgstr "1 dòng thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "%s lines changed"
+msgstr "%s dòng thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Deduction"
+msgstr "Khấu trừ"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Employer"
+msgstr "Doanh nghiệp"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "This scheme does not take %s from the contract wage, so the figure cannot be copied into it."
+msgstr "Chế độ lương này không lấy %s từ mức lương trong hợp đồng, nên không thể chép con số vào đó."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Use this amount"
+msgstr "Dùng số tiền này"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/take_home.js:0
+msgid "Nothing came back."
+msgstr "Không nhận được kết quả."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Work back from take-home"
+msgstr "Tính ngược từ lương thực nhận"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Reading this person's pay…"
+msgstr "Đang đọc lương của người này…"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Take-home wanted"
+msgstr "Lương thực nhận mong muốn"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Pay item to change"
+msgstr "Khoản lương cần thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Choose a pay item…"
+msgstr "Chọn một khoản lương…"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Pay scheme"
+msgstr "Chế độ lương"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Now"
+msgstr "Hiện tại"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Work it out"
+msgstr "Tính"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Nothing is saved. This only works the figure out."
+msgstr "Không có gì được lưu. Đây chỉ là phép tính."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Type the take-home agreed with this person and press Work it out."
+msgstr "Nhập mức lương thực nhận đã thỏa thuận với người này rồi bấm Tính."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "The scheme's own tax and insurance formulas do the work."
+msgstr "Các công thức thuế và bảo hiểm của chính chế độ lương sẽ tính."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Take-home at this figure:"
+msgstr "Lương thực nhận ở mức này:"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Just under"
+msgstr "Ngay dưới"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Just over"
+msgstr "Ngay trên"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Worked back"
+msgstr "Tính ngược"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Payslip at this figure"
+msgstr "Phiếu lương ở mức này"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "Only what changed"
+msgstr "Chỉ phần thay đổi"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/take_home.xml:0
+msgid "No line on this payslip changes."
+msgstr "Không dòng nào trên phiếu lương này thay đổi."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Take-home calculator"
+msgstr "Máy tính lương thực nhận"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Work back from a take-home figure to the pay that gives it"
+msgstr "Tính ngược từ mức lương thực nhận ra mức lương tạo ra nó"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/formula_studio.js:0
+msgid "Pick a real employee first — the calculator works from their own pay."
+msgstr "Hãy chọn một nhân viên thật trước — máy tính làm việc từ lương của chính họ."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/xml/studio.xml:0
+msgid "Find the pay that gives a take-home figure, for this person"
+msgstr "Tìm mức lương cho ra một mức thực nhận, cho người này"

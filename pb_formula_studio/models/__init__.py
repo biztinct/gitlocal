@@ -9,3 +9,5 @@ from . import mapping_experience
 from . import learn_right_now
 # FILLIN P2 C3 — usual answer for a new contract + words for each value.
 from . import studio_fillin
+# WDGAP W2-C — work back from take-home (a read-only calculator).
+from . import take_home

@@ -11,6 +11,8 @@ import { GridStudio } from "./grid/grid_studio";
 import { FindReplace } from "./grid/find_replace";
 import { CommandPalette } from "./palette/command_palette";
 import { HoverCard } from "./hover_card";
+// WDGAP W2-C — "Work back from take-home", opened at the root.
+import { openTakeHome } from "./take_home";
 import { parseFormula as parseFlowFormula, evalFlowNode } from "./formula_flow_eval";
 import { DocDrop } from "@biz_doc_ocr/js/doc_drop";
 import { detectDocumentCells } from './payslip_document_tools';
@@ -133,6 +135,7 @@ export class PbFormulaStudio extends Component {
         this.notif = useService("notification");
         this.action = useService("action");
         this.dialog = useService("dialog");
+        this.overlay = useService("overlay");
         // Read ONCE, from props, never written back — the arrival protocol's
         // rule since Cycle 1. Null unless a caller passed `pb_back`.
         this.back = hubBack(this.props);
@@ -1215,6 +1218,7 @@ export class PbFormulaStudio extends Component {
         add("view.compare", _t("Views"), _t("Compare periods"), "compare periods payrun delta difference month", () => this.openCompare());
         add("view.budget", _t("Views"), _t("Compare vs budget"), "budget variance vs actual target plan compare", () => this.openCompareBudget());
         add("act.offer", _t("Actions"), _t("Offer calculator"), "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
+        add("act.takehome", _t("Actions"), _t("Take-home calculator"), "take-home net to gross gross up work back salary agreed net", () => this.openTakeHome());
         add("view.settings", _t("Views"), _t("Settings"), "settings configuration setup", () => this.openSettings());
         add("view.health", _t("Views"), _t("Health"), "health order unused circular execution intelligence lifecycle", () => this.openHealth());
         add("view.shortcuts", _t("Views"), _t("Keyboard shortcuts"), "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
@@ -1298,6 +1302,7 @@ export class PbFormulaStudio extends Component {
                 T("depmap", _t("Dependency map"), _t("The whole configuration as a graph"), "depmap", "blue", () => this.openDepMap()),
                 T("simulate", _t("Simulate"), _t("Run this configuration against last period's real payslips before putting it live"), "simulate", "amber", () => this.openSimulate()),
                 T("offer", _t("Offer calculator"), _t("Type hypothetical inputs, see the full breakdown"), "offer", "green", () => this.openOfferCalc()),
+                T("takehome", _t("Take-home calculator"), _t("Work back from a take-home figure to the pay that gives it"), "offer", "indigo", () => this.openTakeHome()),
             ] },
             { id: "design", label: _t("Design"), tools: [
                 T("payslip", _t("Payslip Studio"), _t("Design the payslip layout"), "payslip", "indigo", () => this.openPayslip()),
@@ -3485,6 +3490,26 @@ export class PbFormulaStudio extends Component {
         }
     }
     closePersonPicker() { this.state.personPicker = false; }
+
+    // WDGAP W2-C — work back from take-home, for the real person on screen.
+    // The card is a calculator: it reads this person's payslip inputs and
+    // writes nothing. Without a person there is nobody's pay to work from,
+    // so the picker opens instead of an empty card.
+    openTakeHome() {
+        const cfg = this.state.config;
+        if (!cfg || !cfg.id) { return; }
+        this.state.cmdOpen = false;
+        this.state.paletteOpen = false;
+        if (!this.state.personPayslipId) {
+            this.notif.add(_t("Pick a real employee first — the calculator works from their own pay."),
+                { type: "info" });
+            this.state.previewDrawer = true;
+            this.state.previewCollapsed = false;
+            this.openPersonPicker();
+            return;
+        }
+        openTakeHome(this.overlay, { configId: cfg.id, payslipId: this.state.personPayslipId });
+    }
 
     async pickPersonRun(runId) {
         this.state.personBusy = true;

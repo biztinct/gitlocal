@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP W2-C — "Work back from take-home". One card, opened from Formula
+     Studio's real-pay preview and from the contract drawer. Every sentence a
+     person reads sits on one line, so its translation matches (ledger PRD-3). -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_formula_studio.TakeHomeCard">
+    <div class="pbth-scrim" t-att-class="{ shown: state.shown }" t-on-click="close">
+      <div class="pbth" role="dialog" aria-modal="true" aria-labelledby="pbth-title"
+           t-att-class="{ shown: state.shown }" t-on-click.stop="">
+
+        <!-- ============ head ============ -->
+        <div class="pbth-head">
+          <span class="pbth-badge" t-out="icons.calc"/>
+          <div class="pbth-titles">
+            <b id="pbth-title">Work back from take-home</b>
+            <small t-if="who">
+              <span class="pbth-who"><t t-out="icons.user"/> <t t-esc="who"/></span>
+              <span class="pbth-dot">·</span>
+              <span class="pbth-who"><t t-out="icons.layers"/> <t t-esc="schemeName"/></span>
+            </small>
+          </div>
+          <button class="pbth-x" t-on-click="close" title="Close" aria-label="Close"><t t-out="icons.x"/></button>
+        </div>
+
+        <div t-if="state.loading" class="pbth-busy"><span class="pbth-spin"/><span>Reading this person's pay…</span></div>
+
+        <div t-elif="state.error" class="pbth-empty">
+          <t t-out="icons.alert"/>
+          <p t-esc="state.error"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbth-body">
+            <!-- ============ ask ============ -->
+            <div class="pbth-ask">
+              <label class="pbth-lbl" for="pbth-target">Take-home wanted</label>
+              <div class="pbth-amount" t-att-class="{ before: symbolBefore }">
+                <span class="pbth-sym" t-if="currencySymbol" t-esc="currencySymbol"/>
+                <input id="pbth-target" t-ref="target" class="pbth-in" type="text" inputmode="decimal"
+                       autocomplete="off" placeholder="0"
+                       t-att-value="state.target" t-on-input="onTarget" t-on-blur="onTargetBlur"
+                       t-on-keydown="onTargetKey"/>
+              </div>
+
+              <label class="pbth-lbl" for="pbth-item">Pay item to change</label>
+              <select id="pbth-item" class="pbth-sel" t-on-change="onItem">
+                <option value="" t-att-selected="!state.item">Choose a pay item…</option>
+                <t t-foreach="items" t-as="it" t-key="it.code">
+                  <option t-att-value="it.code" t-att-selected="itemSelected(it)" t-esc="it.name"/>
+                </t>
+              </select>
+
+              <t t-if="hasSchemeChoice">
+                <label class="pbth-lbl" for="pbth-scheme">Pay scheme</label>
+                <select id="pbth-scheme" class="pbth-sel" t-on-change="onScheme">
+                  <t t-foreach="schemes" t-as="s" t-key="s.id">
+                    <option t-att-value="s.id" t-att-selected="schemeSelected(s)" t-esc="s.name"/>
+                  </t>
+                </select>
+              </t>
+
+              <div class="pbth-now" t-if="currentItem">
+                <span class="k">Now</span>
+                <span class="v"><t t-esc="currentItem.name"/> <b t-esc="currentItemValue"/></span>
+                <span class="v">Take-home <b t-esc="currentNet"/></span>
+              </div>
+              <div class="pbth-src" t-if="sourceLabel"><t t-out="icons.file"/> <span t-esc="sourceLabel"/></div>
+              <div class="pbth-warn" t-if="!ctx.has_net"><t t-out="icons.alert"/> <span t-esc="noNetLine"/></div>
+              <div class="pbth-hint" t-elif="!state.item"><t t-out="icons.info"/> <span t-esc="pickLine"/></div>
+
+              <button class="pbth-go" t-att-disabled="!canSolve" t-on-click="solve">
+                <span t-if="state.busy" class="pbth-spin sm"/>
+                <t t-else="" t-out="icons.sparkles"/>
+                <span>Work it out</span>
+              </button>
+              <p class="pbth-safe">Nothing is saved. This only works the figure out.</p>
+            </div>
+
+            <!-- ============ answer ============ -->
+            <div class="pbth-out">
+              <div t-if="!hasResult" class="pbth-idle">
+                <t t-out="icons.target"/>
+                <p>Type the take-home agreed with this person and press Work it out.</p>
+                <p class="sub">The scheme's own tax and insurance formulas do the work.</p>
+              </div>
+
+              <t t-else="">
+                <div t-attf-class="pbth-hero tone-{{ resultTone }}" t-key="state.runKey">
+                  <span class="pbth-hero-ic" t-out="resultIcon"/>
+                  <div class="pbth-hero-tx">
+                    <t t-if="hasFigure">
+                      <span class="pbth-fig-l" t-esc="figureLabel"/>
+                      <span class="pbth-fig" t-esc="figure"/>
+                      <span class="pbth-fig-n">Take-home at this figure: <b t-esc="figureNet"/></span>
+                    </t>
+                    <p class="pbth-sentence" t-esc="sentence"/>
+                  </div>
+                </div>
+
+                <div class="pbth-pair" t-if="hasBelow">
+                  <div class="pbth-nb">
+                    <span class="k">Just under</span>
+                    <span class="v"><t t-esc="belowValue"/> <t t-out="icons.arrow"/> <b t-esc="belowNet"/></span>
+                  </div>
+                  <div class="pbth-nb on">
+                    <span class="k">Just over</span>
+                    <span class="v"><t t-esc="figure"/> <t t-out="icons.arrow"/> <b t-esc="figureNet"/></span>
+                  </div>
+                </div>
+
+                <div class="pbth-note" t-if="r.note"><t t-out="icons.down"/> <span t-esc="r.note"/></div>
+
+                <t t-if="hasFigure">
+                  <div class="pbth-totals">
+                    <div class="pbth-trow head"><span/><span>Now</span><span>Worked back</span></div>
+                    <t t-foreach="totals" t-as="t" t-key="t.key">
+                      <div class="pbth-trow" t-att-class="totalClass(t)">
+                        <span class="l" t-esc="t.label"/>
+                        <span class="b" t-esc="money(t.before)"/>
+                        <span class="a"><t t-esc="money(t.after)"/><small t-if="delta(t)" t-esc="delta(t)"/></span>
+                      </div>
+                    </t>
+                  </div>
+
+                  <div class="pbth-slip">
+                    <div class="pbth-slip-h">
+                      <span class="t">Payslip at this figure</span>
+                      <span class="c" t-esc="changedLabel"/>
+                      <button class="pbth-chip" t-att-class="{ on: state.onlyChanged }" t-on-click="toggleOnlyChanged">Only what changed</button>
+                    </div>
+                    <div t-if="!lines.length" class="pbth-slip-empty">No line on this payslip changes.</div>
+                    <t t-foreach="lines" t-as="line" t-key="line.code">
+                      <div class="pbth-line" t-att-class="lineClass(line)">
+                        <span class="nm"><t t-esc="line.name"/><small t-esc="kindLabel(line)"/></span>
+                        <span class="b" t-esc="money(line.before)"/>
+                        <span class="a" t-esc="money(line.after)"/>
+                      </div>
+                    </t>
+                  </div>
+                </t>
+              </t>
+            </div>
+          </div>
+
+          <div class="pbth-foot">
+            <span class="pbth-tries" t-if="hasFigure" t-esc="tries"/>
+            <span class="pbth-usehint" t-if="showUseHint"><t t-out="icons.info"/> <span t-esc="useHint"/></span>
+            <span class="pbth-spacer"/>
+            <button class="pbth-btn ghost" t-on-click="close">Close</button>
+            <button t-if="canUse" class="pbth-btn primary" t-on-click="use">
+              <t t-out="icons.copy"/> <span t-esc="useLabel"/>
+            </button>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>
