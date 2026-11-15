@@ -244,6 +244,7 @@ msgstr "Hủy"
 #. odoo-python
 #: code:addons/pb_retro/models/retro_board.py:0
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__cancelled
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__cancelled
 msgid "Cancelled"
 msgstr "Đã hủy"
 
@@ -260,6 +261,7 @@ msgstr "Đã hủy."
 
 #. module: pb_retro
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__drift
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__drift
 msgid "Cannot be compared exactly"
 msgstr "Không so sánh chính xác được"
 
@@ -359,8 +361,11 @@ msgstr "Thay đổi hợp đồng được bỏ qua"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__error
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__error
 msgid "Could not be worked out"
 msgstr "Không tính lại được"
 
@@ -724,6 +729,7 @@ msgstr "Tháng"
 #: code:addons/pb_retro/models/retro_board.py:0
 #: code:addons/pb_retro/static/src/js/retro_board.js:0
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Months"
 msgstr "Tháng"
 
@@ -765,8 +771,11 @@ msgstr "Không đổi"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__same
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__zero
 msgid "No difference"
 msgstr "Không chênh lệch"
 
@@ -1023,6 +1032,7 @@ msgstr "Đợt lương"
 #: code:addons/pb_retro/models/retro_board.py:0
 #: code:addons/pb_retro/static/src/js/retro_board.js:0
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__config_id
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Pay scheme"
 msgstr "Chế độ lương"
 
@@ -1056,9 +1066,11 @@ msgstr "Phiếu lương"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/js/retro_board.js:0
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__people
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "People"
 msgstr "Người"
 
@@ -1306,7 +1318,9 @@ msgstr "Thực nhận"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Take-home difference"
 msgstr "Chênh lệch thực nhận"
 
@@ -1606,6 +1620,7 @@ msgstr "Phiếu lương của chế độ lương nào cần tính lại?"
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__cause
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__reason
 #: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Why"
 msgstr "Lý do"
 
@@ -1996,3 +2011,658 @@ msgstr "” bị lỗi với người này ("
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 msgid "≈ cannot be compared exactly"
 msgstr "≈ không so sánh chính xác được"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+
+msgid "Back pay is made from an approved re-work, never typed."
+msgstr "Truy lĩnh được lập từ một lần tính lại đã duyệt, không bao giờ nhập tay."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay changes only through its pay run or its re-work."
+msgstr "Truy lĩnh chỉ thay đổi qua đợt lương hoặc lần tính lại của nó."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay is never deleted. Cancel it from its re-work, with a reason."
+msgstr "Truy lĩnh không bao giờ bị xóa. Hãy hủy từ lần tính lại, kèm lý do."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work has been sent for payment, so it cannot be changed or worked out again. Cancel the payment first, or start a new re-work."
+msgstr "Lần tính lại này đã được gửi để chi trả nên không thể sửa hoặc tính lại. Hãy hủy chi trả trước, hoặc bắt đầu một lần tính lại mới."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work's back pay is not paid yet, so it cannot be closed."
+msgstr "Truy lĩnh của lần tính lại này chưa được trả nên chưa thể đóng."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "A re-work sent for payment stays as a record."
+msgstr "Lần tính lại đã gửi chi trả được giữ lại làm hồ sơ."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "sending back pay for approval"
+msgstr "gửi truy lĩnh để duyệt"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Only a worked-out re-work can be sent for payment."
+msgstr "Chỉ lần tính lại đã tính xong mới gửi chi trả được."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work has already been sent for payment."
+msgstr "Lần tính lại này đã được gửi để chi trả."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "The scheme changed after this was worked out. Work it out again, then send it for payment."
+msgstr "Bảng lương đã thay đổi sau khi tính. Hãy tính lại rồi gửi chi trả."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Nobody in this re-work can be paid automatically. The list says why for each person; a one-off in Updates is still possible."
+msgstr "Không ai trong lần tính lại này được trả tự động. Danh sách ghi lý do cho từng người; vẫn có thể thêm khoản một lần trong Cập nhật."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This back pay is not waiting for approval."
+msgstr "Khoản truy lĩnh này không chờ duyệt."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Withdrawn from the re-work"
+msgstr "Đã rút lại từ lần tính lại"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "cancelling back pay"
+msgstr "hủy truy lĩnh"
+
+#. module: pb_retro
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Say why this back pay is cancelled, in a few words."
+msgstr "Ghi ngắn gọn lý do hủy khoản truy lĩnh này."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Only approved back pay can be cancelled."
+msgstr "Chỉ truy lĩnh đã duyệt mới hủy được."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Part of it is already paid in %s. Reopen that pay run first."
+msgstr "Một phần đã được trả trong %s. Hãy mở lại đợt lương đó trước."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "There is no back pay left to cancel here."
+msgstr "Không còn truy lĩnh nào để hủy ở đây."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Nobody in this re-work can be paid automatically."
+msgstr "Không ai trong lần tính lại này được trả tự động."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay · %(scheme)s · %(months)s"
+msgstr "Truy lĩnh · %(scheme)s · %(months)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Worked out from finished payslips"
+msgstr "Tính từ các phiếu lương đã hoàn tất"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "%s payslips"
+msgstr "%s phiếu lương"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Next pay run"
+msgstr "Đợt lương tới"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "People paid"
+msgstr "Số người được trả"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay in the next pay run"
+msgstr "Truy lĩnh trong đợt lương tới"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__paid
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__paid
+msgid "Paid"
+msgstr "Đã trả"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Each person's tax and insurance are the figures worked out for those months; this month's formulas do not tax them again."
+msgstr "Thuế và bảo hiểm của từng người là số đã tính cho các tháng đó; công thức của tháng này không tính thuế lại."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Cannot be compared exactly — add a one-off in Updates if needed"
+msgstr "Không so sánh chính xác được — thêm khoản một lần trong Cập nhật nếu cần"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Has left — not paid automatically"
+msgstr "Đã nghỉ việc — không trả tự động"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Now paid by another pay scheme — not paid automatically"
+msgstr "Nay được trả theo bảng lương khác — không trả tự động"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "The pay scheme pays in another currency now"
+msgstr "Bảng lương nay trả bằng loại tiền khác"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "The pay scheme has no take-home line"
+msgstr "Bảng lương không có dòng thực nhận"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This back pay is no longer waiting for approval."
+msgstr "Khoản truy lĩnh này không còn chờ duyệt."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work already has back pay."
+msgstr "Lần tính lại này đã có truy lĩnh."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Head of pay"
+msgstr "Trưởng bộ phận lương"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay · %(item)s · %(months)s"
+msgstr "Truy lĩnh · %(item)s · %(months)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Take-home from back pay"
+msgstr "Thực nhận từ truy lĩnh"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: model:biz.approval.process,name:pb_retro.process_backpay
+msgid "Back pay for past months"
+msgstr "Truy lĩnh các tháng trước"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %(months)s: %(net)s take-home"
+msgstr "Truy lĩnh %(months)s: thực nhận %(net)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %s waits: this payslip has no take-home line"
+msgstr "Truy lĩnh %s phải chờ: phiếu lương này không có dòng thực nhận"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %s waits for the next pay run so take-home is not below zero"
+msgstr "Truy lĩnh %s chờ đợt lương tới để thực nhận không dưới 0"
+
+#. module: pb_retro
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__pay_state
+msgid "Payment"
+msgstr "Chi trả"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Waiting to be paid"
+msgstr "Chờ được trả"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Not sent for payment"
+msgstr "Chưa gửi chi trả"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Sent for approval — with %s."
+msgstr "Đã gửi duyệt — đang chờ %s."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Sent for approval."
+msgstr "Đã gửi duyệt."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Approved. The next pay run of this scheme pays the difference."
+msgstr "Đã duyệt. Đợt lương tới của bảng lương này sẽ trả phần chênh lệch."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Withdrawn. Nothing will be paid."
+msgstr "Đã rút lại. Sẽ không trả gì."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Cancelled. It will not be paid."
+msgstr "Đã hủy. Khoản này sẽ không được trả."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Nothing was cancelled."
+msgstr "Không có gì bị hủy."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__waiting
+msgid "Waiting for approval"
+msgstr "Chờ duyệt"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Will be paid in the next pay run"
+msgstr "Sẽ được trả trong đợt lương tới"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Paid in %s"
+msgstr "Đã trả trong %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "In pay run %s"
+msgstr "Trong đợt lương %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Part waits for the next pay run (take-home would go below zero)"
+msgstr "Một phần chờ đợt lương tới (thực nhận sẽ dưới 0)"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Part paid, the rest in the next pay run"
+msgstr "Đã trả một phần, phần còn lại ở đợt lương tới"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Take-home %s for 1 person"
+msgstr "Thực nhận %s cho 1 người"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Take-home %(net)s for %(n)s people"
+msgstr "Thực nhận %(net)s cho %(n)s người"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "With %s."
+msgstr "Đang ở %s."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "In %s"
+msgstr "Trong %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Cancelled: %s"
+msgstr "Đã hủy: %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__status__payable
+msgid "Can be paid"
+msgstr "Được trả"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Why not"
+msgstr "Vì sao không"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__month
+msgid "Past month"
+msgstr "Tháng trước"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "waiting to be paid"
+msgstr "chờ được trả"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Sent for approval. Nothing is paid until the Head of pay approves it."
+msgstr "Đã gửi duyệt. Chưa trả gì cho đến khi Trưởng bộ phận lương duyệt."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Approved. The next regular pay run of this scheme adds the difference as back-pay lines, with the tax and insurance worked out for those months."
+msgstr "Đã duyệt. Đợt lương thường kỳ tới của bảng lương này thêm phần chênh lệch thành các dòng truy lĩnh, với thuế và bảo hiểm đã tính cho các tháng đó."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Part of the back pay is paid. The rest goes into the next regular pay run of this scheme."
+msgstr "Một phần truy lĩnh đã được trả. Phần còn lại vào đợt lương thường kỳ tới của bảng lương này."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The back pay is paid. Those months stay as they were; the difference was paid in a later pay run."
+msgstr "Truy lĩnh đã được trả. Các tháng đó giữ nguyên; phần chênh lệch được trả ở đợt lương sau."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The payment was cancelled. Nothing more will be paid from this re-work."
+msgstr "Khoản chi trả đã bị hủy. Sẽ không trả thêm gì từ lần tính lại này."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Nothing has been paid or changed. Pay the difference in the next pay run, or add it as a one-off in Updates."
+msgstr "Chưa trả hay thay đổi gì. Trả phần chênh lệch trong đợt lương tới, hoặc thêm thành khoản một lần trong Cập nhật."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Cancel the back pay of %s?"
+msgstr "Hủy truy lĩnh của %s?"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Cancel every back pay of this re-work that is not paid yet?"
+msgstr "Hủy mọi khoản truy lĩnh chưa trả của lần tính lại này?"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 person not paid automatically or with nothing to pay"
+msgstr "1 người không được trả tự động hoặc không có gì để trả"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s people not paid automatically or with nothing to pay"
+msgstr "%s người không được trả tự động hoặc không có gì để trả"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Pay the difference in the next pay run"
+msgstr "Trả phần chênh lệch trong đợt lương tới"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Withdraw"
+msgstr "Rút lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Cancel the back pay"
+msgstr "Hủy truy lĩnh"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Back pay already in a payslip that is not finished is taken out of it. Paid back pay stays paid."
+msgstr "Truy lĩnh đã nằm trong phiếu lương chưa hoàn tất sẽ được lấy ra. Truy lĩnh đã trả vẫn giữ nguyên."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Why, in a few words"
+msgstr "Lý do, ngắn gọn"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Cancel this person's back pay"
+msgstr "Hủy truy lĩnh của người này"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "A difference that is not paid automatically can still be paid as a one-off in Updates."
+msgstr "Phần chênh lệch không được trả tự động vẫn có thể trả thành khoản một lần trong Cập nhật."
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__approved
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__partly
+msgid "Partly paid"
+msgstr "Đã trả một phần"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__cancelled
+msgid "Payment cancelled"
+msgstr "Đã hủy chi trả"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__open
+msgid "Waiting for a pay run"
+msgstr "Chờ đợt lương"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__reserved
+msgid "In a pay run"
+msgstr "Trong một đợt lương"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__status__not_payable
+msgid "Not paid automatically"
+msgstr "Không trả tự động"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__status__nothing
+msgid "Nothing to pay"
+msgstr "Không có gì để trả"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__left
+msgid "Has left"
+msgstr "Đã nghỉ việc"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__moved
+msgid "Moved to another pay scheme"
+msgstr "Đã chuyển sang bảng lương khác"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__currency
+msgid "Paid in another currency now"
+msgstr "Nay trả bằng loại tiền khác"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__no_net
+msgid "No take-home line"
+msgstr "Không có dòng thực nhận"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_hr_payslip_line__pb_backpay
+msgid "Back pay"
+msgstr "Truy lĩnh"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_hr_payslip__pb_backpay_net
+msgid "Back pay in take-home"
+msgstr "Truy lĩnh trong thực nhận"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_backpay
+msgid "Back pay for a past month"
+msgstr "Truy lĩnh cho một tháng trước"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_person
+msgid "Past-month re-work: one person sent for payment"
+msgstr "Tính lại tháng trước: một người gửi chi trả"
+
+#. module: pb_retro
+#: model:biz.approval.process,description:pb_retro.process_backpay
+msgid "A difference worked out for past months, paid in the next pay run."
+msgstr "Phần chênh lệch tính cho các tháng trước, trả trong đợt lương tới."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__person_ids
+msgid "People sent for payment"
+msgstr "Những người gửi chi trả"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__seat_user_ids
+msgid "Asked to decide"
+msgstr "Được đề nghị quyết định"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__payslip_id
+msgid "Payslip that took it"
+msgstr "Phiếu lương đã nhận"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__run_id
+msgid "Pay run that took it"
+msgstr "Đợt lương đã nhận"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__source_payslip_id
+msgid "Past payslip"
+msgstr "Phiếu lương tháng trước"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__waited
+msgid "Waited for a later pay run"
+msgstr "Đã chờ đợt lương sau"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_hr_payslip_line__pb_backpay_band_amount
+msgid "Back pay counted in its total"
+msgstr "Truy lĩnh tính trong tổng của nó"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__band_amount
+msgid "Difference counted in its total"
+msgstr "Chênh lệch tính trong tổng của nó"
+
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__already
+msgid "Already paid by another re-work"
+msgstr "Đã được trả bởi lần tính lại khác"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Already paid as back pay by another re-work — add a one-off in Updates if more is owed"
+msgstr "Đã được trả thành truy lĩnh bởi lần tính lại khác — thêm khoản một lần trong Cập nhật nếu còn thiếu"

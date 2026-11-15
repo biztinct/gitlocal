@@ -34,6 +34,8 @@ WHERE_DOMAINS = {
     'done': [('state', '=', 'done')],
     'closed': [('state', '=', 'closed')],
     'cancelled': [('state', '=', 'cancelled')],
+    # WDGAP W2-D2: sent for payment, not paid yet
+    'topay': [('pay_state', 'in', ('waiting', 'approved', 'partly'))],
 }
 
 
@@ -185,6 +187,16 @@ class PbRetroBoard(models.AbstractModel):
                  {'value': 'cancelled', 'label': _('Cancelled'), 'tone': 'rose',
                   'domain': WHERE_DOMAINS['cancelled']},
              ]},
+            {'key': 'payment', 'label': _('Payment'), 'icon': 'wallet', 'group': 'pay',
+             'type': 'choice', 'pinned': True, 'requires': ['pay_state'],
+             'options': [
+                 {'value': 'topay', 'label': _('Waiting to be paid'), 'tone': 'amber',
+                  'domain': WHERE_DOMAINS['topay']},
+                 {'value': 'paid', 'label': _('Paid'), 'tone': 'green',
+                  'domain': [('pay_state', '=', 'paid')]},
+                 {'value': 'none', 'label': _('Not sent for payment'), 'tone': 'slate',
+                  'domain': [('pay_state', '=', False)]},
+             ]},
             {'key': 'scheme', 'label': _('Pay scheme'), 'icon': 'layers', 'group': 'pay',
              'type': 'many2one', 'path': 'config_id', 'pinned': True, 'label_sudo': True},
             {'key': 'currency', 'label': _('Currency'), 'icon': 'coins', 'group': 'pay',
@@ -198,6 +210,8 @@ class PbRetroBoard(models.AbstractModel):
             {'key': 'all', 'label': _('All re-works'), 'icon': 'history', 'filters': {}},
             {'key': 'open', 'label': _('Open'), 'filters': {'where': ['draft', 'done']}},
             {'key': 'closed', 'label': _('Closed'), 'filters': {'where': ['closed']}},
+            {'key': 'topay', 'label': _('Waiting to be paid'),
+             'filters': {'payment': ['topay']}},
         ]
 
     @api.model
@@ -252,7 +266,16 @@ class PbRetroBoard(models.AbstractModel):
             'when': format_datetime(self.env, rec.worked_out_on, dt_format='d MMM y, HH:mm')
             if rec.worked_out_on else '',
             'by': rec.create_uid.sudo().name or '',
+            'pay_state': rec.pay_state or '',
+            'pay_label': self._pay_state_label(rec),
         }
+
+    @api.model
+    def _pay_state_label(self, rec):
+        if not rec.pay_state:
+            return ''
+        return dict(rec._fields['pay_state']._description_selection(self.env)).get(
+            rec.pay_state, '')
 
     # ============================================================ new re-work
     @api.model
@@ -536,7 +559,111 @@ class PbRetroBoard(models.AbstractModel):
         if verb == 'cancel':
             rec.action_cancel()
             return {'ok': True, 'msg': _("Cancelled.")}
+        if verb == 'send':
+            rec.action_send_for_payment()
+            rec.invalidate_recordset()
+            if rec.pay_state == 'waiting':
+                who = rec.sudo()._waiting_for()
+                return {'ok': True, 'msg': _("Sent for approval — with %s.", who) if who
+                        else _("Sent for approval.")}
+            return {'ok': True, 'msg': _("Approved. The next pay run of this scheme pays "
+                                         "the difference.")}
+        if verb == 'withdraw':
+            rec.action_withdraw_payment()
+            return {'ok': True, 'msg': _("Withdrawn. Nothing will be paid.")}
         raise UserError(_("That cannot be done here."))
+
+    @api.model
+    def cancel_backpay(self, review_id, reason, employee_ids=None):
+        """Undo approved back pay no finished pay run has paid (reason required)."""
+        rec = self._review(review_id)
+        res = rec.action_cancel_backpay(reason, employee_ids=employee_ids)
+        return {'ok': True, 'msg': _("Cancelled. It will not be paid.") if res.get('cancelled')
+                else _("Nothing was cancelled.")}
+
+    # ============================================================ the payment
+    @api.model
+    def _payment(self, rec):
+        """The Payment strip: where the back pay is, per person, in words."""
+        cur = self._cur(rec.currency_id)
+        sudo = rec.sudo()
+        people = []
+        entries_by_emp = {}
+        for e in sudo.backpay_ids:
+            entries_by_emp.setdefault(e.employee_id.id, []).append(e)
+        totals = {'payable': 0, 'not_payable': 0, 'nothing': 0}
+        for p in sudo.person_ids:
+            totals[p.status] = totals.get(p.status, 0) + 1
+            mine = entries_by_emp.get(p.employee_id.id, [])
+            where, tone = self._where_words(rec, p, mine)
+            people.append({
+                'id': p.id, 'employee_id': p.employee_id.id, 'name': p.employee_name or '',
+                'status': p.status, 'why': sudo._pb_why_text(p.why) if p.why else '',
+                'net': self._signed(p.net, cur), 'net_sign': self._sign(p.net),
+                'months': p.months_label or '', 'where': where, 'tone': tone,
+                'can_cancel': any(e.state == 'open' or (e.state == 'reserved' and
+                                  e.payslip_id.state not in ('done', 'paid'))
+                                  for e in mine),
+            })
+        order = {'payable': 0, 'not_payable': 1, 'nothing': 2}
+        people.sort(key=lambda x: (order.get(x['status'], 3), x['name'].lower()))
+        payable = sudo.person_ids.filtered(lambda p: p.status == 'payable')
+        live = sudo.backpay_ids.filtered(lambda e: e.state != 'cancelled')
+        runs = sorted({e.run_id.name for e in live if e.run_id and e.run_id.name})
+        state = rec.pay_state or ''
+        locked = state in ('waiting', 'approved', 'partly', 'paid')
+        n = len(payable)
+        net_label = self._signed(sum(payable.mapped('net')), cur)
+        who = rec.sudo()._waiting_for() if state == 'waiting' else ''
+        return {
+            'state': state, 'state_label': self._pay_state_label(rec),
+            'summary': _("Take-home %s for 1 person", net_label) if n == 1 else
+            _("Take-home %(net)s for %(n)s people", net=net_label, n=n),
+            'with_line': _("With %s.", who) if who else '',
+            'runs_line': _("In %s", ', '.join(runs)) if runs else '',
+            'cancel_line': _("Cancelled: %s", rec.pay_cancel_reason)
+            if rec.pay_cancel_reason else '',
+            'waiting_with': rec.sudo()._waiting_for() if state == 'waiting' else '',
+            'people': people[:300], 'more': max(0, len(people) - 300), 'counts': totals,
+            'net': self._signed(sum(payable.mapped('net')), cur),
+            'net_sign': self._sign(sum(payable.mapped('net'))),
+            'runs': runs,
+            'open': len(live.filtered(lambda e: e.state == 'open')),
+            'reserved': len(live.filtered(lambda e: e.state == 'reserved')),
+            'paid': len(live.filtered(lambda e: e.state == 'paid')),
+            'cancel_reason': rec.pay_cancel_reason or '',
+            'can_send': rec.state == 'done' and not locked and rec._pay_groups_held(),
+            'can_withdraw': state == 'waiting',
+            'can_cancel': state in ('approved', 'partly') and any(
+                x['can_cancel'] for x in people),
+        }
+
+    @api.model
+    def _where_words(self, rec, person, entries):
+        """Where one person's back pay is, in a few words, and its tone."""
+        if person.status != 'payable':
+            return '', ''
+        state = rec.pay_state or ''
+        if state == 'waiting':
+            return _("Waiting for approval"), 'amber'
+        if not entries:
+            return (_("Will be paid in the next pay run"), 'blue') if state == 'approved' \
+                else ('', '')
+        live = [e for e in entries if e.state != 'cancelled']
+        if not live:
+            return _("Cancelled"), 'rose'
+        if all(e.state == 'paid' for e in live):
+            run = live[0].run_id.name or ''
+            return (_("Paid in %s", run) if run else _("Paid")), 'green'
+        reserved = [e for e in live if e.state == 'reserved']
+        waiting = [e for e in live if e.state == 'open']
+        if reserved and not waiting:
+            return _("In pay run %s", reserved[0].run_id.name or ''), 'blue'
+        if waiting and any(e.waited for e in waiting):
+            return _("Part waits for the next pay run (take-home would go below zero)"), 'amber'
+        if any(e.state == 'paid' for e in live) or reserved:
+            return _("Part paid, the rest in the next pay run"), 'amber'
+        return _("Will be paid in the next pay run"), 'blue'
 
     # ============================================================ the result
     @api.model
@@ -582,6 +709,7 @@ class PbRetroBoard(models.AbstractModel):
             'skipped': [self._issue(s, cur) for s in slips.filtered(lambda s: s.status == 'skipped')[:60]],
         }
         updates = self.env.ref('pb_updates.action_pb_updates_desk', raise_if_not_found=False)
+        locked = rec.pay_state in ('waiting', 'approved', 'partly', 'paid')
         return {
             'id': rec.id, 'name': rec.name or '', 'state': rec.state,
             'state_label': self._state_label(rec),
@@ -614,11 +742,13 @@ class PbRetroBoard(models.AbstractModel):
             'whatifs': whatifs,
             'issues': issues,
             'updates_xmlid': 'pb_updates.action_pb_updates_desk' if updates else '',
+            'payment': self._payment(rec),
             'can': {
-                'work': rec.state in ('draft', 'done'),
-                'edit': rec.state in ('draft', 'done'),
-                'close': rec.state == 'done',
-                'cancel': rec.state in ('draft', 'done'),
+                'work': rec.state in ('draft', 'done') and not locked,
+                'edit': rec.state in ('draft', 'done') and not locked,
+                'close': rec.state == 'done' and rec.pay_state not in (
+                    'waiting', 'approved', 'partly'),
+                'cancel': rec.state in ('draft', 'done') and not locked,
                 'export': rec.state in ('done', 'closed'),
             },
         }
@@ -918,6 +1048,46 @@ class PbRetroBoard(models.AbstractModel):
             i += 1
         for col, width in zip('ABCDE', (28, 12, 30, 26, 90)):
             ws2.column_dimensions[col].width = width
+        # WDGAP W2-D2: third sheet — the payment, per person and pay item
+        if rec.pay_state or rec.sudo().person_ids:
+            ws3 = wb.create_sheet((_('Payment'))[:31])
+            head3 = [_('Person'), _('Can be paid'), _('Why not'), _('Past month'),
+                     _('Pay item'), _('Difference'), _('Where it is'), _('Pay run')]
+            for j, label in enumerate(head3, start=1):
+                cell = ws3.cell(1, j, label)
+                cell.font = head_font
+                cell.fill = head_fill
+            entry_labels = dict(self.env['pb.retro.backpay']._fields['state']
+                                ._description_selection(self.env))
+            status_labels = dict(self.env['pb.retro.person']._fields['status']
+                                 ._description_selection(self.env))
+            i = 2
+            by_emp = {}
+            for e in rec.sudo().backpay_ids:
+                by_emp.setdefault(e.employee_id.id, []).append(e)
+            for p in rec.sudo().person_ids:
+                mine = by_emp.get(p.employee_id.id, [])
+                if not mine:
+                    ws3.cell(i, 1, p.employee_name or '')
+                    ws3.cell(i, 2, status_labels.get(p.status, ''))
+                    ws3.cell(i, 3, rec.sudo()._pb_why_text(p.why) if p.why else '')
+                    ws3.cell(i, 6, float(p.net or 0.0))
+                    i += 1
+                    continue
+                for e in sorted(mine, key=lambda x: (x.month, x.sequence, x.id)):
+                    places = e.currency_id.decimal_places or 0
+                    fmt = '#,##0' if not places else '#,##0.' + '0' * places
+                    ws3.cell(i, 1, p.employee_name or '')
+                    ws3.cell(i, 2, status_labels.get(p.status, ''))
+                    ws3.cell(i, 4, self._date(e.month, 'MMM y'))
+                    ws3.cell(i, 5, e.name or e.code)
+                    cell = ws3.cell(i, 6, float(e.amount or 0.0))
+                    cell.number_format = fmt
+                    ws3.cell(i, 7, entry_labels.get(e.state, ''))
+                    ws3.cell(i, 8, e.run_id.name or '')
+                    i += 1
+            for col, width in zip('ABCDEFGH', (28, 18, 44, 12, 30, 16, 22, 30)):
+                ws3.column_dimensions[col].width = width
         buf = io.BytesIO()
         wb.save(buf)
         stamp = fields.Date.to_string(rec.month_from)[:7]

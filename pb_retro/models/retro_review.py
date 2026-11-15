@@ -121,6 +121,14 @@ def _num(value):
         return 0.0
 
 
+def _loads_list(text):
+    try:
+        data = json.loads(text or '[]')
+    except (TypeError, ValueError):
+        return []
+    return data if isinstance(data, list) else []
+
+
 def _loads(text):
     try:
         data = json.loads(text or '{}')
@@ -303,10 +311,12 @@ class PbRetroReview(models.Model):
         out = {s.id: s.write_date for s in slips}
         if not slips:
             return out
-        self.env['hr.payslip.line'].flush_model(['slip_id'])
+        self.env['hr.payslip.line'].flush_model(['slip_id', 'pb_backpay'])
+        # WDGAP W2-D2: a back-pay line can be re-made without the payslip being
+        # computed again (a cancelled back pay) — it never says "computed".
         self.env.cr.execute("""
             SELECT slip_id, MAX(create_date) FROM hr_payslip_line
-             WHERE slip_id IN %s GROUP BY slip_id
+             WHERE slip_id IN %s AND pb_backpay IS NOT TRUE GROUP BY slip_id
         """, (tuple(slips.ids),))
         for slip_id, when in self.env.cr.fetchall():
             if when:
@@ -354,6 +364,19 @@ class PbRetroReview(models.Model):
                                  ('advantage_change_id', 'in', changes.ids),
                                  ('state', '!=', 'cancelled')]):
             paid_back[(adj.original_payslip_id.id, adj.advantage_change_id.id)] = adj
+        # WDGAP W2-D2: a change another re-work already paid as back pay for a
+        # payslip is never paid again for that payslip.
+        paid_bp = {}
+        if 'pb.retro.backpay' in self.env:
+            mine = self._origin.id if self._origin else 0
+            live = self.env['pb.retro.backpay'].sudo().search([
+                ('source_payslip_id', 'in', slips.ids), ('state', '!=', 'cancelled'),
+                ('review_id', '!=', mine or 0)])
+            for other in live.mapped('review_id'):
+                for row in other.slip_ids.filtered(lambda r: r.payslip_id.id in slips.ids):
+                    for item in _loads_list(row.overlay_json):
+                        if item.get('kind') == 'contract' and item.get('applied'):
+                            paid_bp[(row.payslip_id.id, item.get('change_id'))] = other
         left_out = set(self.sudo().excluded_change_ids.ids)
         by_emp = {}
         for change in changes:
@@ -383,6 +406,20 @@ class PbRetroReview(models.Model):
                     continue
                 rule = codes.get(change.advantage_template_code)
                 adj = paid_back.get((slip.id, change.id))
+                other_bp = paid_bp.get((slip.id, change.id))
+                if other_bp and not adj:
+                    rows.append({
+                        'kind': 'contract', 'change_id': change.id, 'code': rule.code,
+                        'name': rule.name or rule.code, 'old': change.old_amount or 0.0,
+                        'new': change.new_amount or 0.0,
+                        'effective': fields.Date.to_string(change.effective_date),
+                        'entered': fields.Datetime.to_string(change.changed_at)
+                        if change.changed_at else '',
+                        'covered': covered, 'period': period, 'delta': delta,
+                        'paid_back': True, 'paid_back_in': other_bp.name or '',
+                        'left_out': change.id in left_out, 'note': change.notes or '',
+                    })
+                    continue
                 rows.append({
                     'kind': 'contract',
                     'change_id': change.id,
@@ -749,13 +786,23 @@ class _RetroWork:
             'overlay': rows,
         }
         # -- what the payslip says today (stored lines, per code)
+        # WDGAP W2-D2: back pay for EARLIER months that this payslip paid is
+        # not part of what its own month's formulas worked out — leave the
+        # back-pay lines out, and take the back pay out of its take-home.
+        own = slip.line_ids.filtered(lambda l: not l.pb_backpay) \
+            if 'pb_backpay' in slip.line_ids._fields else slip.line_ids
+        backpay_net = slip.pb_backpay_net if 'pb_backpay_net' in slip._fields else 0.0
+        net_code = own.pb_net_line().code if backpay_net else False
         stored = {}
         stored_meta = {}
-        for line in slip.line_ids:
+        for line in own:
             stored[line.code] = stored.get(line.code, 0.0) + (line.total or 0.0)
             stored_meta.setdefault(line.code, line)
-        was_totals = slip.line_ids.pb_pay_totals() if slip.line_ids else \
-            dict.fromkeys(TOTAL_KEYS, 0.0)
+        if net_code:
+            stored[net_code] = stored.get(net_code, 0.0) - backpay_net
+        was_totals = own.pb_pay_totals() if own else dict.fromkeys(TOTAL_KEYS, 0.0)
+        if backpay_net and was_totals:
+            was_totals = dict(was_totals, net=(was_totals.get('net') or 0.0) - backpay_net)
         for key in TOTAL_KEYS:
             out['was_%s' % key] = self.r(was_totals.get(key))
 

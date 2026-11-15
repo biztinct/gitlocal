@@ -98,7 +98,10 @@
                       <td><span t-esc="rw.months"/><small class="pbrw-sub" t-if="rw.when"><t t-esc="rw.when"/> · <t t-esc="rw.by"/></small></td>
                       <td class="num"><t t-if="rw.people" t-esc="fmtInt(rw.people)"/><span t-else="" class="pbrw-dash">—</span></td>
                       <td class="num"><b t-if="rw.net_label" t-att-class="signClass(rw.net_sign)" t-esc="rw.net_label"/><span t-else="" class="pbrw-dash">—</span></td>
-                      <td><span class="pbim-badge pbrw-badge" t-att-class="'is-' + rw.state" t-esc="rw.state_label"/></td>
+                      <td>
+                        <span class="pbim-badge pbrw-badge" t-att-class="'is-' + rw.state" t-esc="rw.state_label"/>
+                        <span t-if="rw.pay_label" class="pbim-badge pbrw-badge pbrw-paybadge" t-att-class="'is-pay-' + rw.pay_state" t-esc="rw.pay_label"/>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -226,14 +229,69 @@
                 </div>
               </section>
 
-              <!-- what happens next -->
-              <section class="pbrw-next">
-                <span class="pbrw-next-ic"><t t-out="icon('shieldCheck', 20)"/></span>
+              <!-- what happens next (WDGAP W2-D2: follows the payment) -->
+              <t t-set="PY" t-value="R.payment"/>
+              <section class="pbrw-next" t-att-class="{ 'is-pay': PY and PY.state }">
+                <span class="pbrw-next-ic"><t t-out="icon(PY and PY.state ? 'wallet' : 'shieldCheck', 20)"/></span>
                 <div class="pbrw-next-tx">
                   <b>What happens next</b>
-                  <p>Nothing has been paid or changed. To pay a difference today, add it as a one-off in Updates.</p>
+                  <p t-esc="nextWords"/>
                 </div>
-                <button t-if="R.updates_xmlid" class="pbim-btn ghost" t-on-click="openUpdates"><t t-out="icon('arrowRight', 14)"/> Open Updates</button>
+                <div class="pbrw-next-actions">
+                  <button t-if="PY and PY.can_send" class="pbim-btn primary" t-att-disabled="state.pay.busy" t-on-click="() => this.payMove('send')"><t t-out="icon('wallet', 14)"/> Pay the difference in the next pay run</button>
+                  <button t-if="R.updates_xmlid and !(PY and PY.state)" class="pbim-btn ghost" t-on-click="openUpdates"><t t-out="icon('arrowRight', 14)"/> Open Updates</button>
+                </div>
+              </section>
+
+              <!-- the payment strip -->
+              <section t-if="PY and PY.state" class="pbrw-sec pbrw-pay" t-att-class="'is-pay-' + PY.state">
+                <div class="pbrw-pay-head">
+                  <span class="pbrw-pay-ic"><t t-out="icon('wallet', 18)"/></span>
+                  <div class="pbrw-pay-tx">
+                    <h3><span>Payment</span> <span class="pbim-badge pbrw-badge pbrw-paybadge" t-att-class="'is-pay-' + PY.state" t-esc="PY.state_label"/></h3>
+                    <p>
+                      <span t-if="PY.with_line" t-esc="PY.with_line"/>
+                      <b t-att-class="signClass(PY.net_sign)" t-esc="PY.summary"/>
+                      <span t-if="PY.runs_line" class="pbrw-muted" t-esc="PY.runs_line"/>
+                    </p>
+                    <p t-if="PY.cancel_line" class="pbrw-muted" t-esc="PY.cancel_line"/>
+                  </div>
+                  <div class="pbrw-pay-actions">
+                    <button t-if="PY.can_withdraw" class="pbim-btn ghost" t-att-disabled="state.pay.busy" t-on-click="() => this.payMove('withdraw')"><t t-out="icon('undo', 14)"/> Withdraw</button>
+                    <button t-if="PY.can_cancel" class="pbim-btn ghost danger" t-att-disabled="state.pay.busy" t-on-click="() => this.askCancelPay(null)"><t t-out="icon('ban', 14)"/> Cancel the back pay</button>
+                  </div>
+                </div>
+                <div t-if="state.pay.cancelFor !== null" class="pbrw-pay-cancel" role="dialog" aria-label="Cancel back pay">
+                  <b t-esc="cancelQuestion"/>
+                  <p class="pbrw-muted">Back pay already in a payslip that is not finished is taken out of it. Paid back pay stays paid.</p>
+                  <input type="text" class="pbrw-in" placeholder="Why, in a few words" t-att-value="state.pay.reason" t-on-input="onPayReason" t-on-keydown="(ev) => ev.key === 'Enter' and this.confirmCancelPay()"/>
+                  <div class="pbrw-pay-cancel-actions">
+                    <button class="pbim-btn ghost" t-on-click="closeCancelPay">Keep it</button>
+                    <button class="pbim-btn primary danger" t-att-disabled="state.pay.busy or !state.pay.reason.trim()" t-on-click="confirmCancelPay">Cancel the back pay</button>
+                  </div>
+                </div>
+                <div class="pbrw-pay-list">
+                  <div t-foreach="payPayable" t-as="pp" t-key="pp.id" class="pbrw-pay-row">
+                    <span class="pbrw-pay-who"><b t-esc="pp.name"/><small t-esc="pp.months"/></span>
+                    <b class="pbrw-pay-net" t-att-class="signClass(pp.net_sign)" t-esc="pp.net"/>
+                    <span class="pbrw-chip" t-att-class="pp.tone ? 'is-' + pp.tone : ''" t-esc="pp.where"/>
+                    <button t-if="pp.can_cancel and PY.can_cancel" class="pbim-btn-sm ghost" t-on-click="() => this.askCancelPay(pp)" title="Cancel this person's back pay" aria-label="Cancel this person's back pay"><t t-out="icon('ban', 13)"/></button>
+                  </div>
+                </div>
+                <div t-if="payOthers.length" class="pbrw-pay-others">
+                  <button class="pbrw-issues-head" t-on-click="togglePayPeople" t-att-aria-expanded="state.pay.open ? 'true' : 'false'">
+                    <span t-esc="othersLabel"/>
+                    <t t-out="icon(state.pay.open ? 'chevronUp' : 'chevronDown', 16)"/>
+                  </button>
+                  <div t-if="state.pay.open" class="pbrw-pay-list">
+                    <div t-foreach="payOthers" t-as="po" t-key="po.id" class="pbrw-pay-row is-muted">
+                      <span class="pbrw-pay-who"><b t-esc="po.name"/><small t-esc="po.months"/></span>
+                      <b class="pbrw-pay-net" t-esc="po.net"/>
+                      <span class="pbrw-chip" t-esc="po.why"/>
+                    </div>
+                    <p class="pbrw-muted">A difference that is not paid automatically can still be paid as a one-off in Updates.</p>
+                  </div>
+                </div>
               </section>
 
               <!-- what changed -->

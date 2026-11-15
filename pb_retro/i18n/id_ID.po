@@ -248,6 +248,7 @@ msgstr "Batalkan"
 #. odoo-python
 #: code:addons/pb_retro/models/retro_board.py:0
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__state__cancelled
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__cancelled
 msgid "Cancelled"
 msgstr "Dibatalkan"
 
@@ -264,6 +265,7 @@ msgstr "Dibatalkan."
 
 #. module: pb_retro
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__drift
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__drift
 msgid "Cannot be compared exactly"
 msgstr "Tidak dapat dibandingkan dengan tepat"
 
@@ -364,8 +366,11 @@ msgstr "Perubahan kontrak yang dikecualikan"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__error
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__error
 msgid "Could not be worked out"
 msgstr "Tidak dapat dihitung"
 
@@ -732,6 +737,7 @@ msgstr "Bulan"
 #: code:addons/pb_retro/models/retro_board.py:0
 #: code:addons/pb_retro/static/src/js/retro_board.js:0
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Months"
 msgstr "Bulan"
 
@@ -773,8 +779,11 @@ msgstr "Tidak berubah"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 #: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_slip__status__same
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__zero
 msgid "No difference"
 msgstr "Tidak ada selisih"
 
@@ -1034,6 +1043,7 @@ msgstr "Penggajian"
 #: code:addons/pb_retro/models/retro_board.py:0
 #: code:addons/pb_retro/static/src/js/retro_board.js:0
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__config_id
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Pay scheme"
 msgstr "Skema gaji"
 
@@ -1067,9 +1077,11 @@ msgstr "Slip gaji"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/js/retro_board.js:0
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__people
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "People"
 msgstr "Orang"
 
@@ -1317,7 +1329,9 @@ msgstr "Gaji bersih"
 
 #. module: pb_retro
 #. odoo-javascript
+#. odoo-python
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Take-home difference"
 msgstr "Selisih gaji bersih"
 
@@ -1621,6 +1635,7 @@ msgstr "Slip gaji dari skema gaji mana yang harus dihitung ulang?"
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_line__cause
 #: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__reason
 #: model_terms:ir.ui.view,arch_db:pb_retro.view_pb_retro_review_form
+#: code:addons/pb_retro/models/retro_backpay.py:0
 msgid "Why"
 msgstr "Alasan"
 
@@ -2012,3 +2027,658 @@ msgstr "” bermasalah untuk orang ini ("
 #: code:addons/pb_retro/static/src/xml/retro_board.xml:0
 msgid "≈ cannot be compared exactly"
 msgstr "≈ tidak dapat dibandingkan dengan tepat"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+
+msgid "Back pay is made from an approved re-work, never typed."
+msgstr "Rapel dibuat dari perhitungan ulang yang disetujui, tidak pernah diketik."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay changes only through its pay run or its re-work."
+msgstr "Rapel hanya berubah melalui penggajiannya atau perhitungan ulangnya."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay is never deleted. Cancel it from its re-work, with a reason."
+msgstr "Rapel tidak pernah dihapus. Batalkan dari perhitungan ulangnya, dengan alasan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work has been sent for payment, so it cannot be changed or worked out again. Cancel the payment first, or start a new re-work."
+msgstr "Perhitungan ulang ini sudah dikirim untuk dibayar, jadi tidak bisa diubah atau dihitung lagi. Batalkan pembayarannya dulu, atau mulai perhitungan ulang baru."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work's back pay is not paid yet, so it cannot be closed."
+msgstr "Rapel dari perhitungan ulang ini belum dibayar, jadi belum bisa ditutup."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "A re-work sent for payment stays as a record."
+msgstr "Perhitungan ulang yang sudah dikirim untuk dibayar disimpan sebagai catatan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "sending back pay for approval"
+msgstr "mengirim rapel untuk disetujui"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Only a worked-out re-work can be sent for payment."
+msgstr "Hanya perhitungan ulang yang sudah dihitung yang bisa dikirim untuk dibayar."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work has already been sent for payment."
+msgstr "Perhitungan ulang ini sudah dikirim untuk dibayar."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "The scheme changed after this was worked out. Work it out again, then send it for payment."
+msgstr "Skema berubah setelah ini dihitung. Hitung ulang, lalu kirim untuk dibayar."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Nobody in this re-work can be paid automatically. The list says why for each person; a one-off in Updates is still possible."
+msgstr "Tidak ada orang dalam perhitungan ulang ini yang bisa dibayar otomatis. Daftar menyebut alasannya per orang; pembayaran sekali di Pembaruan tetap bisa."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This back pay is not waiting for approval."
+msgstr "Rapel ini tidak sedang menunggu persetujuan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Withdrawn from the re-work"
+msgstr "Ditarik dari perhitungan ulang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "cancelling back pay"
+msgstr "membatalkan rapel"
+
+#. module: pb_retro
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Say why this back pay is cancelled, in a few words."
+msgstr "Tulis singkat mengapa rapel ini dibatalkan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Only approved back pay can be cancelled."
+msgstr "Hanya rapel yang disetujui yang bisa dibatalkan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Part of it is already paid in %s. Reopen that pay run first."
+msgstr "Sebagian sudah dibayar di %s. Buka kembali penggajian itu dulu."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "There is no back pay left to cancel here."
+msgstr "Tidak ada rapel tersisa untuk dibatalkan di sini."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Nobody in this re-work can be paid automatically."
+msgstr "Tidak ada orang dalam perhitungan ulang ini yang bisa dibayar otomatis."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay · %(scheme)s · %(months)s"
+msgstr "Rapel · %(scheme)s · %(months)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Worked out from finished payslips"
+msgstr "Dihitung dari slip gaji yang sudah selesai"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "%s payslips"
+msgstr "%s slip gaji"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "1 person"
+msgstr "1 orang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "%s people"
+msgstr "%s orang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Next pay run"
+msgstr "Penggajian berikutnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "People paid"
+msgstr "Orang yang dibayar"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay in the next pay run"
+msgstr "Rapel di penggajian berikutnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__paid
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__paid
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Each person's tax and insurance are the figures worked out for those months; this month's formulas do not tax them again."
+msgstr "Pajak dan asuransi tiap orang adalah angka yang dihitung untuk bulan-bulan itu; rumus bulan ini tidak memajakinya lagi."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Cannot be compared exactly — add a one-off in Updates if needed"
+msgstr "Tidak bisa dibandingkan persis — tambahkan pembayaran sekali di Pembaruan bila perlu"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Has left — not paid automatically"
+msgstr "Sudah keluar — tidak dibayar otomatis"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Now paid by another pay scheme — not paid automatically"
+msgstr "Kini dibayar oleh skema gaji lain — tidak dibayar otomatis"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "The pay scheme pays in another currency now"
+msgstr "Skema gaji kini membayar dengan mata uang lain"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "The pay scheme has no take-home line"
+msgstr "Skema gaji tidak punya baris gaji bersih"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This back pay is no longer waiting for approval."
+msgstr "Rapel ini tidak lagi menunggu persetujuan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "This re-work already has back pay."
+msgstr "Perhitungan ulang ini sudah punya rapel."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Head of pay"
+msgstr "Kepala penggajian"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay · %(item)s · %(months)s"
+msgstr "Rapel · %(item)s · %(months)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Take-home from back pay"
+msgstr "Gaji bersih dari rapel"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+#: model:biz.approval.process,name:pb_retro.process_backpay
+msgid "Back pay for past months"
+msgstr "Rapel bulan-bulan lalu"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %(months)s: %(net)s take-home"
+msgstr "Rapel %(months)s: gaji bersih %(net)s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %s waits: this payslip has no take-home line"
+msgstr "Rapel %s menunggu: slip gaji ini tidak punya baris gaji bersih"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Back pay for %s waits for the next pay run so take-home is not below zero"
+msgstr "Rapel %s menunggu penggajian berikutnya agar gaji bersih tidak di bawah nol"
+
+#. module: pb_retro
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_retro/models/retro_board.py:0
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__pay_state
+msgid "Payment"
+msgstr "Pembayaran"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Waiting to be paid"
+msgstr "Menunggu dibayar"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Not sent for payment"
+msgstr "Belum dikirim untuk dibayar"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Sent for approval — with %s."
+msgstr "Dikirim untuk disetujui — di %s."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Sent for approval."
+msgstr "Dikirim untuk disetujui."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Approved. The next pay run of this scheme pays the difference."
+msgstr "Disetujui. Penggajian berikutnya dari skema ini membayar selisihnya."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Withdrawn. Nothing will be paid."
+msgstr "Ditarik. Tidak ada yang akan dibayar."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Cancelled. It will not be paid."
+msgstr "Dibatalkan. Tidak akan dibayar."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Nothing was cancelled."
+msgstr "Tidak ada yang dibatalkan."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__waiting
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Will be paid in the next pay run"
+msgstr "Akan dibayar di penggajian berikutnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Paid in %s"
+msgstr "Dibayar di %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "In pay run %s"
+msgstr "Di penggajian %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Part waits for the next pay run (take-home would go below zero)"
+msgstr "Sebagian menunggu penggajian berikutnya (gaji bersih akan di bawah nol)"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Part paid, the rest in the next pay run"
+msgstr "Sebagian dibayar, sisanya di penggajian berikutnya"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Take-home %s for 1 person"
+msgstr "Gaji bersih %s untuk 1 orang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Take-home %(net)s for %(n)s people"
+msgstr "Gaji bersih %(net)s untuk %(n)s orang"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "With %s."
+msgstr "Ada di %s."
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "In %s"
+msgstr "Di %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Cancelled: %s"
+msgstr "Dibatalkan: %s"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__status__payable
+msgid "Can be paid"
+msgstr "Bisa dibayar"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+msgid "Why not"
+msgstr "Mengapa tidak"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_board.py:0
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__month
+msgid "Past month"
+msgstr "Bulan lalu"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "waiting to be paid"
+msgstr "menunggu dibayar"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Sent for approval. Nothing is paid until the Head of pay approves it."
+msgstr "Dikirim untuk disetujui. Belum ada yang dibayar sampai Kepala penggajian menyetujuinya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Approved. The next regular pay run of this scheme adds the difference as back-pay lines, with the tax and insurance worked out for those months."
+msgstr "Disetujui. Penggajian reguler berikutnya dari skema ini menambahkan selisihnya sebagai baris rapel, dengan pajak dan asuransi yang dihitung untuk bulan-bulan itu."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Part of the back pay is paid. The rest goes into the next regular pay run of this scheme."
+msgstr "Sebagian rapel sudah dibayar. Sisanya masuk ke penggajian reguler berikutnya dari skema ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The back pay is paid. Those months stay as they were; the difference was paid in a later pay run."
+msgstr "Rapel sudah dibayar. Bulan-bulan itu tetap seperti semula; selisihnya dibayar di penggajian berikutnya."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "The payment was cancelled. Nothing more will be paid from this re-work."
+msgstr "Pembayaran dibatalkan. Tidak ada lagi yang dibayar dari perhitungan ulang ini."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Nothing has been paid or changed. Pay the difference in the next pay run, or add it as a one-off in Updates."
+msgstr "Belum ada yang dibayar atau diubah. Bayar selisihnya di penggajian berikutnya, atau tambahkan sebagai pembayaran sekali di Pembaruan."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Cancel the back pay of %s?"
+msgstr "Batalkan rapel %s?"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "Cancel every back pay of this re-work that is not paid yet?"
+msgstr "Batalkan semua rapel dari perhitungan ulang ini yang belum dibayar?"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "1 person not paid automatically or with nothing to pay"
+msgstr "1 orang tidak dibayar otomatis atau tidak ada yang dibayar"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/js/retro_board.js:0
+msgid "%s people not paid automatically or with nothing to pay"
+msgstr "%s orang tidak dibayar otomatis atau tidak ada yang dibayar"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Pay the difference in the next pay run"
+msgstr "Bayar selisihnya di penggajian berikutnya"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Withdraw"
+msgstr "Tarik"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Cancel the back pay"
+msgstr "Batalkan rapel"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Back pay already in a payslip that is not finished is taken out of it. Paid back pay stays paid."
+msgstr "Rapel yang sudah ada di slip gaji yang belum selesai akan dikeluarkan. Rapel yang sudah dibayar tetap dibayar."
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Why, in a few words"
+msgstr "Alasannya, singkat saja"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Keep it"
+msgstr "Biarkan"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "Cancel this person's back pay"
+msgstr "Batalkan rapel orang ini"
+
+#. module: pb_retro
+#. odoo-javascript
+#: code:addons/pb_retro/static/src/xml/retro_board.xml:0
+msgid "A difference that is not paid automatically can still be paid as a one-off in Updates."
+msgstr "Selisih yang tidak dibayar otomatis tetap bisa dibayar sebagai pembayaran sekali di Pembaruan."
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__approved
+msgid "Approved"
+msgstr "Disetujui"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__partly
+msgid "Partly paid"
+msgstr "Dibayar sebagian"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_review__pay_state__cancelled
+msgid "Payment cancelled"
+msgstr "Pembayaran dibatalkan"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__open
+msgid "Waiting for a pay run"
+msgstr "Menunggu penggajian"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_backpay__state__reserved
+msgid "In a pay run"
+msgstr "Dalam penggajian"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__status__not_payable
+msgid "Not paid automatically"
+msgstr "Tidak dibayar otomatis"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__status__nothing
+msgid "Nothing to pay"
+msgstr "Tidak ada yang dibayar"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__left
+msgid "Has left"
+msgstr "Sudah keluar"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__moved
+msgid "Moved to another pay scheme"
+msgstr "Pindah ke skema gaji lain"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__currency
+msgid "Paid in another currency now"
+msgstr "Kini dibayar dengan mata uang lain"
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__no_net
+msgid "No take-home line"
+msgstr "Tidak ada baris gaji bersih"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_hr_payslip_line__pb_backpay
+msgid "Back pay"
+msgstr "Rapel"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_hr_payslip__pb_backpay_net
+msgid "Back pay in take-home"
+msgstr "Rapel dalam gaji bersih"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_backpay
+msgid "Back pay for a past month"
+msgstr "Rapel untuk satu bulan lalu"
+
+#. module: pb_retro
+#: model:ir.model,name:pb_retro.model_pb_retro_person
+msgid "Past-month re-work: one person sent for payment"
+msgstr "Perhitungan ulang bulan lalu: satu orang dikirim untuk dibayar"
+
+#. module: pb_retro
+#: model:biz.approval.process,description:pb_retro.process_backpay
+msgid "A difference worked out for past months, paid in the next pay run."
+msgstr "Selisih yang dihitung untuk bulan-bulan lalu, dibayar di penggajian berikutnya."
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__person_ids
+msgid "People sent for payment"
+msgstr "Orang yang dikirim untuk dibayar"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_review__seat_user_ids
+msgid "Asked to decide"
+msgstr "Diminta memutuskan"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__payslip_id
+msgid "Payslip that took it"
+msgstr "Slip gaji yang mengambilnya"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__run_id
+msgid "Pay run that took it"
+msgstr "Penggajian yang mengambilnya"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__source_payslip_id
+msgid "Past payslip"
+msgstr "Slip gaji bulan lalu"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__waited
+msgid "Waited for a later pay run"
+msgstr "Menunggu penggajian berikutnya"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_hr_payslip_line__pb_backpay_band_amount
+msgid "Back pay counted in its total"
+msgstr "Rapel dihitung dalam totalnya"
+
+#. module: pb_retro
+#: model:ir.model.fields,field_description:pb_retro.field_pb_retro_backpay__band_amount
+msgid "Difference counted in its total"
+msgstr "Selisih dihitung dalam totalnya"
+
+
+#. module: pb_retro
+#: model:ir.model.fields.selection,name:pb_retro.selection__pb_retro_person__why__already
+msgid "Already paid by another re-work"
+msgstr "Sudah dibayar oleh perhitungan ulang lain"
+
+#. module: pb_retro
+#. odoo-python
+#: code:addons/pb_retro/models/retro_backpay.py:0
+msgid "Already paid as back pay by another re-work — add a one-off in Updates if more is owed"
+msgstr "Sudah dibayar sebagai rapel oleh perhitungan ulang lain — tambahkan pembayaran sekali di Pembaruan bila masih kurang"
