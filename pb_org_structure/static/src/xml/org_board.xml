@@ -96,9 +96,9 @@
                 <span class="pbos-rung-tx">
                   <b t-esc="lv.name"/>
                   <small t-if="lv.description" t-esc="lv.description"/>
-                  <small t-if="lv.company and multiCompany" class="pbos-muted"><t t-esc="lv.company"/> only</small>
+                  <small t-if="lv.company and multiCompany" class="pbos-muted" t-esc="companyOnly(lv.company)"/>
                 </span>
-                <span class="pbos-rung-jobs"><t t-esc="lv.jobs"/> jobs</span>
+                <span class="pbos-rung-jobs" t-esc="nJobs(lv.jobs)"/>
                 <span t-if="canManage" class="pbos-rung-acts">
                   <button type="button" class="pbos-icon" title="Move up" t-att-disabled="lv_first" t-on-click="() => this.moveLevel(lv, -1)"><t t-out="ic('arrowUp', 14)"/></button>
                   <button type="button" class="pbos-icon" title="Move down" t-att-disabled="lv_last" t-on-click="() => this.moveLevel(lv, 1)"><t t-out="ic('arrowDown', 14)"/></button>
@@ -142,7 +142,7 @@
                 <p class="pbos-hint">These cost centres are typed on contracts and are not on the list yet. Adding them to the list changes no contract.</p>
               </div>
               <div class="pbos-chips">
-                <span t-foreach="state.cc.unlisted" t-as="un" t-key="un_index" class="pbos-pill"><b t-esc="un.text"/> · <t t-esc="un.contracts"/> contracts<t t-if="multiCompany"> · <t t-esc="un.company"/></t></span>
+                <span t-foreach="state.cc.unlisted" t-as="un" t-key="un_index" class="pbos-pill"><b t-esc="un.text"/> · <t t-esc="nContracts(un.contracts)"/><t t-if="multiCompany"> · <t t-esc="un.company"/></t></span>
               </div>
               <div t-if="state.cc.can_manage" class="pbos-acts"><button type="button" class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="makeList"><t t-out="ic('listChecks', 14)"/> Add them to the list</button></div>
             </div>
@@ -228,8 +228,8 @@
               <div t-if="state.move.preview" class="pbos-preview">
                 <t t-out="ic('info', 16)"/>
                 <span>
-                  <b><t t-esc="state.move.preview.moving"/> people</b> move to <b t-esc="moveCostCentre and moveCostCentre.code"/> from <b t-esc="state.move.preview.from"/>.
-                  <t t-if="state.move.preview.already"> <t t-esc="state.move.preview.already"/> are already there.</t>
+                  <b t-esc="previewLine"/>
+                  <t t-if="state.move.preview.already"> <span t-esc="alreadyLine"/></t>
                   <t t-if="state.move.preview.names.length"> <span class="pbos-muted" t-esc="state.move.preview.names.join(', ')"/></t>
                 </span>
               </div>
@@ -267,7 +267,7 @@
                 <div t-foreach="state.cc.moves" t-as="mv" t-key="mv.id" class="pbos-tr pbos-mv" role="row">
                   <span role="cell"><b t-esc="mv.person"/></span>
                   <span role="cell"><t t-esc="mv.before or '—'"/> <t t-out="ic('arrowRight', 12)"/> <t t-esc="mv.cost_centre"/></span>
-                  <span role="cell">from <t t-esc="mv.from"/></span>
+                  <span role="cell" t-esc="fromDate(mv.from)"/>
                   <span role="cell"><span class="pbos-pill" t-att-class="mv.state === 'scheduled' ? 'is-blue' : ''" t-esc="mv.state_label"/><small t-if="mv.problem" class="pbos-err" t-esc="mv.problem"/></span>
                   <span role="cell" class="pbos-rowacts"><button t-if="mv.state === 'scheduled' and state.cc.can_manage" type="button" class="pbim-btn ghost" t-on-click="() => this.cancelMove(mv)">Cancel</button></span>
                 </div>
@@ -379,9 +379,9 @@
         <b t-esc="pr.name"/>
         <small t-if="pr.team" t-esc="pr.team"/>
         <small t-if="pr.paused and pr.reason"><t t-esc="pr.reason"/><t t-if="pr.by"> · <t t-esc="pr.by"/></t><t t-if="pr.on"> · <t t-esc="pr.on"/></t></small>
-        <small t-if="pr.inherited">Paused with <t t-esc="pr.inherited_from"/></small>
+        <small t-if="pr.inherited" t-esc="pausedWith(pr.inherited_from)"/>
       </span>
-      <span t-if="pr.open_roles" class="pbos-pause-n"><t t-esc="pr.open_roles"/> roles with somebody to hire</span>
+      <span t-if="pr.open_roles" class="pbos-pause-n" t-esc="nOpenRoles(pr.open_roles)"/>
       <span class="pbos-pause-acts" t-if="state.pauses.can_pause">
         <t t-if="pr.paused">
           <button type="button" class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.restart(kind, pr)"><t t-out="ic('play', 14)"/> Restart hiring</button>

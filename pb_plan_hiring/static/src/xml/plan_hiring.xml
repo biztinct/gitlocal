@@ -14,7 +14,7 @@
   <!-- The role page on the Hiring board names the plan the request came from. -->
   <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
     <xpath expr="//nav[hasclass('pbhr-workspace-nav')]" position="after">
-      <div t-if="state.drawer and state.drawer.pb_plan" class="phr-from"><t t-out="ic('trendingUp',14)"/> <span>From the approved plan <b t-esc="state.drawer.pb_plan.name"/></span></div>
+      <div t-if="state.drawer and state.drawer.pb_plan" class="phr-from"><t t-out="ic('trendingUp',14)"/> <span>From the approved plan:</span> <b t-esc="state.drawer.pb_plan.name"/></div>
     </xpath>
   </t>
 
@@ -25,7 +25,7 @@
         <t t-else="">
           <p class="phr-lead">
             <b t-esc="props.planName"/> ·
-            <span><t t-esc="made"/> of <t t-esc="hires.length"/> hires already have a request.</span>
+            <span t-esc="madeLine"/>
           </p>
           <p class="phr-hint">Each line you tick becomes a draft hiring request for that team, with the month as the date wanted. Nothing is sent in: the manager finishes each request and sends it in as usual.</p>
           <div t-if="state.data and !state.data.can_raise" class="phr-warn"><t t-out="ic('lock',15)"/> <span t-esc="state.data.cannot_raise"/></div>
@@ -53,13 +53,13 @@
 
           <div t-if="leavers.length" class="phr-leavers">
             <b>Not handled here</b>
-            <span t-foreach="leavers" t-as="ln" t-key="ln.key"><t t-esc="-ln.n"/> leaving · <t t-esc="ln.team_name or ''"/> · <t t-esc="ln.month_name"/></span>
+            <span t-foreach="leavers" t-as="ln" t-key="ln.key"><t t-esc="leavingLine(ln)"/> · <t t-esc="ln.team_name or ''"/> · <t t-esc="ln.month_name"/></span>
           </div>
         </t>
       </div>
       <t t-set-slot="footer">
         <button class="btn btn-primary" t-att-disabled="state.busy or !picked.length or missingTitle or (state.data and !state.data.can_raise)" t-on-click="make">
-          <t t-if="picked.length">Make <t t-esc="picked.length"/> draft requests</t>
+          <t t-if="picked.length" t-esc="makeLabel"/>
           <t t-else="">Nothing to make</t>
         </button>
         <button class="btn btn-secondary" t-on-click="props.close">Close</button>

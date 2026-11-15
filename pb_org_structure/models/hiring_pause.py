@@ -20,6 +20,7 @@ Nothing in `pb_hiring` or `pb_orgchart` is edited: every stop is an override.
 from odoo import _, api, models
 from odoo.exceptions import UserError
 
+from odoo.addons.pb_hiring.models.hiring_common import as_id
 from odoo.addons.pb_orgchart.models.pb_orgchart_write import _Refused
 
 from .hiring_pause_fields import pause_sentence, team_pause
@@ -74,7 +75,7 @@ class HiringPostingPause(models.Model):
 
     def publish_for(self, requisition_id):
         req = self.env['pb.hiring.requisition'].browse(
-            int(requisition_id or 0)).exists()
+            as_id(requisition_id)).exists()
         if req:
             req._pb_refuse_if_paused()
         return super().publish_for(requisition_id)
@@ -105,7 +106,7 @@ class OrgChartPause(models.AbstractModel):
     @api.model
     def _do_add_open_role(self, manager_id, title, reason=False):
         mgr = self.env['hr.employee'].sudo().browse(
-            int(manager_id or 0)).exists()
+            as_id(manager_id)).exists()
         if mgr:
             name = (title or '').strip()
             job = self.env['hr.job'].sudo().search([

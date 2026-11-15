@@ -117,6 +117,23 @@ export class PbOrgJobs extends Component {
         }
     }
 
+    // ------------------------------------------- whole sentences (PRD-3)
+    nContracts(n) { return _t("%s contracts", n); }
+    nJobs(n) { return _t("%s jobs", n); }
+    nOpenRoles(n) { return _t("%s roles with somebody to hire", n); }
+    companyOnly(name) { return _t("%s only", name); }
+    fromDate(d) { return _t("from %s", d); }
+    pausedWith(name) { return _t("Paused with %s", name); }
+    get previewLine() {
+        const p = this.state.move.preview || {};
+        const cc = this.moveCostCentre;
+        return _t("%(n)s people move to %(code)s from %(date)s.",
+                  { n: p.moving || 0, code: (cc && cc.code) || "", date: p.from || "" });
+    }
+    get alreadyLine() {
+        return _t("%s are already there.", (this.state.move.preview || {}).already || 0);
+    }
+
     // --------------------------------------------------------------- steps
     get k() { return this.state.head.kpis || {}; }
     get canManage() { return !!this.state.head.can_manage; }

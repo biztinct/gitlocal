@@ -94,8 +94,6 @@ class PbOrgStructure(models.AbstractModel):
             },
             'levels': self._level_rows(),
             'companies': [{'id': c.id, 'name': c.name} for c in self._companies()],
-            'teams': [{'id': d.id, 'name': d.display_name, 'company_id': d.company_id.id}
-                      for d in self._teams()],
             'today': str(fields.Date.context_today(self)),
             'has_pay_bands': 'pb.pay.band.job' in self.env,
         }

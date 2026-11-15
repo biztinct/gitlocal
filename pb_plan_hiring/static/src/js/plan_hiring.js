@@ -62,6 +62,11 @@ export class PlanHiringDialog extends Component {
     get missingTitle() {
         return this.picked.some((l) => l.needs_title && !(this.state.titles[l.key] || "").trim());
     }
+    get madeLine() {
+        return _t("%(made)s of %(all)s hires already have a request.", { made: this.made, all: this.hires.length });
+    }
+    get makeLabel() { return _t("Make %s draft requests", this.picked.length); }
+    leavingLine(line) { return _t("%s leaving", -line.n); }
     toggle(line) { this.state.picks[line.key] = !this.state.picks[line.key]; }
     setTitle(line, ev) { this.state.titles[line.key] = ev.target.value; }
 

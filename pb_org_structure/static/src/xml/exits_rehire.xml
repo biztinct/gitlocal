@@ -15,7 +15,7 @@
                     t-on-click="() => this.pbRehirePick(op.key)" t-esc="op.label"/>
           </div>
           <textarea class="pbos-in" rows="2" placeholder="Why (seen by HR only)" t-att-value="state.drawer.pb_rehire.note" t-on-change="(ev) => this.pbRehireNote(ev.target.value)"/>
-          <small t-if="state.drawer.pb_rehire.by" class="pbos-muted">Answered by <t t-esc="state.drawer.pb_rehire.by"/> on <t t-esc="state.drawer.pb_rehire.on"/>. Seen by HR only.</small>
+          <small t-if="state.drawer.pb_rehire.by" class="pbos-muted"><span>Seen by HR only.</span> <t t-esc="state.drawer.pb_rehire.by"/> · <t t-esc="state.drawer.pb_rehire.on"/></small>
           <small t-else="" class="pbos-muted">Seen by HR only. It shows on the Hiring board if they apply again.</small>
         </div>
       </t>
