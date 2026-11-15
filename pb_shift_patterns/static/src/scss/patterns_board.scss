@@ -159,7 +159,10 @@ $pbsp-tones: (
         display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; min-width: 0;
         > span { font-size: 12px; font-weight: 600; color: var(--pbim-muted, #64748B); }
     }
-    .pbsp-field-inline { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
+    .pbsp-field-inline {
+        display: flex; align-items: center; gap: 6px; font-size: 12.5px;
+        select { width: auto; min-width: 110px; }
+    }
     .pbsp-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .pbsp-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
     .pbsp-chip {
@@ -229,6 +232,10 @@ $pbsp-tones: (
         align-items: center; min-width: 420px;
     }
     .pbsp-preview-r { margin-top: 3px; }
+    .pbsp-preview-h .pbsp-preview-l {
+        white-space: normal; font-weight: 700; font-size: 11px; line-height: 1.2;
+        color: var(--pbim-muted, #64748B);
+    }
     .pbsp-preview-l {
         font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         small { color: var(--pbim-muted, #64748B); }

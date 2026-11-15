@@ -79,17 +79,26 @@ export class PbShiftPatterns extends Component {
             await this.load();
             if (!this.state.allowed) { this.state.listLoaded = true; }
         });
-        onMounted(() => {
-            // ⌘K "Make shifts from a pattern" arrives with pb_focus = "make".
-            // Consumed once per action: switching lens and back must not pop
-            // the panel up again.
-            const act = this.action.currentController?.action;
-            const ctx = act?.context || {};
-            if (act && ctx.pb_focus === "make" && !ARRIVALS_SEEN.has(act)) {
+        onMounted(() => this._arrival(0));
+    }
+
+    /**
+     * ⌘K "Make shifts from a pattern" arrives with pb_focus = "make". The
+     * action service makes the new action "current" only after the screen
+     * has mounted, so this looks a few times, briefly. Consumed once per
+     * action: switching lens and back must not pop the panel up again.
+     */
+    _arrival(tries) {
+        const act = this.action.currentController?.action;
+        const ctx = act?.context || {};
+        if (act && ctx.pb_focus === "make") {
+            if (!ARRIVALS_SEEN.has(act)) {
                 ARRIVALS_SEEN.add(act);
                 if (this.state.canEdit && this.state.total) { this.openMake(); }
             }
-        });
+            return;
+        }
+        if (tries < 10) { setTimeout(() => this._arrival(tries + 1), 100); }
     }
 
     icon(name, size = 16) { return pbfIcon(name, size); }
