@@ -29,7 +29,7 @@
       <div class="pbu-seg" role="radiogroup" aria-label="Tax year">
         <button t-foreach="ytdYears" t-as="yr" t-key="yr" type="button" role="radio"
                 t-att-aria-checked="ytdYear === yr ? 'true' : 'false'"
-                t-on-click="() => this.setYtdYear(yr)" t-esc="yr"/>
+                t-on-click="() => this.setYtdYear(yr)" t-esc="ytdYearLabel(ytdInfo, yr)"/>
       </div>
       <label for="pbu-ytd-covers" class="pbu-label">Figures cover up to</label>
       <input id="pbu-ytd-covers" type="date" class="pbu-input pbu-date" t-att-value="state.ytdCovers"
@@ -91,7 +91,7 @@
         <div class="pbu-seg" role="radiogroup" aria-label="Tax year">
           <button t-foreach="ytdView ? [ytdView.this_year, ytdView.last_year] : []" t-as="yr" t-key="yr" type="button" role="radio"
                   t-att-aria-checked="state.ytd.year === yr ? 'true' : 'false'"
-                  t-on-click="() => this.setViewYear(yr)" t-esc="yr"/>
+                  t-on-click="() => this.setViewYear(yr)" t-esc="ytdYearLabel(ytdView, yr)"/>
         </div>
         <label class="pbu-ytd-search">
           <t t-out="icon('search', 14)"/>

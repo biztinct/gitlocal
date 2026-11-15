@@ -1857,3 +1857,8 @@ msgstr ""
 #: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Waiting for approval"
 msgstr "Đang chờ duyệt"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "Tax year"
+msgstr "Năm tính thuế"

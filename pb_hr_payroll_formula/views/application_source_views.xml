@@ -14,6 +14,9 @@
                             <field name="application_data_enabled"/>
                             <field name="application_effective_from" required="application_data_enabled"/>
                             <field name="payroll_basis"/>
+                            <!-- WDGAP W2-A: the running totals (year / quarter
+                                 to date) count from this month. -->
+                            <field name="tax_year_start_month"/>
                         </group>
                         <group string="Standard month days">
                             <field name="standard_day_basis"/>

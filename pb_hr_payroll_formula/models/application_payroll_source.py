@@ -873,6 +873,7 @@ class ApplicationFormulaConfig(models.Model):
             return self._application_preflight_rows(employees, start, end, certifications)
 
     def _application_preflight_rows(self, employees, start, end, certifications):
+        self._pb_history_prefetch(employees.ids)   # WDGAP W2-A: one batch read
         rows = [self._application_employee_inputs(e, start, end, certifications or {}) for e in employees]
         blockers = [dict(b, employee_id=r['employee_id'], employee=r['name']) for r in rows for b in r['blockers']]
         all_inputs = [v for r in rows for v in r['inputs']]
@@ -1108,6 +1109,9 @@ class ApplicationPayrollPayslip(models.Model):
             return self._application_assert_current_memo()
 
     def _application_assert_current_memo(self):
+        for config in self.formula_config_id:      # WDGAP W2-A: one batch read
+            config._pb_history_prefetch(self.filtered(
+                lambda s, c=config: s.formula_config_id == c).employee_id.ids)
         for slip in self.filtered(lambda s: s._application_mode()):
             slip._application_check_scope(slip.formula_config_id)
             snapshot = slip.application_snapshot_id

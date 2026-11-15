@@ -158,6 +158,11 @@ class HrPayslipFormula(models.Model):
         # PDR D4 — one request memo for the whole batch (scheme-level answers
         # are shared between payslips; a rule write empties it).
         with self.formula_config_id._application_memo():
+            # WDGAP W2-A — the running totals (`history.*`) of everyone in
+            # this batch are read in one go, not one search per person.
+            for config in self.formula_config_id:
+                config._pb_history_prefetch(self.filtered(
+                    lambda s, c=config: s.formula_config_id == c).employee_id.ids)
             return self._pb_compute_sheet_with_formulas()
 
     def _pb_compute_sheet_with_formulas(self):

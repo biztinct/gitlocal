@@ -263,6 +263,18 @@ class PbUpdatesYtdLine(models.Model):
     undone_by_id = fields.Many2one('res.users', string='Undone by', readonly=True)
     note = fields.Text(string='History', readonly=True)
     use_ids = fields.One2many('pb.updates.ytd.use', 'line_id', string='Used by payslips')
+    #: WDGAP W2-A — the month the tax year of `tax_year` starts in, for a row
+    #: written under a scheme whose tax year does not start in January. Empty
+    #: (every row written before W2-A, and every calendar row) = January: the
+    #: row means exactly what it meant before. Nothing is migrated.
+    tax_year_start_month = fields.Integer(string='Tax year starts in (month)', readonly=True)
+    tax_year_label = fields.Char(string='Tax year', compute='_compute_tax_year_label')
+
+    @api.depends('tax_year', 'tax_year_start_month')
+    def _compute_tax_year_label(self):
+        for row in self:
+            row.tax_year_label = self._ty_label(row.tax_year_start_month, row.tax_year) \
+                if row.tax_year else ''
 
     _one_set = models.UniqueIndex(
         "(employee_id, tax_year, figure) WHERE state = 'set'",
@@ -326,7 +338,7 @@ class PbUpdatesYtdLine(models.Model):
             'field_id': card_id(self.figure),
             'field_label': _("%(figure)s · %(year)s, up to %(date)s",
                              figure=self.label or self._figure_label(self.figure),
-                             year=self.tax_year, date=day_label(self.env, self.covers_to)),
+                             year=self.tax_year_label, date=day_label(self.env, self.covers_to)),
             'old_label': self._value_label(old.figure, old.amount, cur) if old else '',
             'new_label': _("Removed") if self.action == 'clear' else
             self._value_label(self.figure, self.amount, cur),
@@ -394,6 +406,116 @@ class PbUpdatesYtdLine(models.Model):
                 old._log(_("Back in place: “%s” was undone.") % (row.batch_id.name or ''))
             undone += 1
         return undone, kept
+
+    # ------------------------------------------------------------ the tax year (WDGAP W2-A)
+    #
+    # A figure's `tax_year` is the calendar year its tax year STARTS in, under
+    # the start month of the person's pay scheme (`hr.formula.config.
+    # tax_year_start_month`, the engine's one helper). With January — every
+    # scheme until someone changes one — every year below is the calendar
+    # year exactly as before (ledger U42), and none of the extra reads run.
+
+    @api.model
+    def _ty_month(self, month):
+        """1..12; 0 / None / unreadable = January."""
+        try:
+            month = int(month or 1)
+        except (TypeError, ValueError):
+            return 1
+        return month if 1 <= month <= 12 else 1
+
+    @api.model
+    def _ty_key(self, month, day):
+        return self.env['hr.formula.config']._pb_tax_year_key_for(self._ty_month(month), day)
+
+    @api.model
+    def _ty_bounds(self, month, key):
+        return self.env['hr.formula.config']._pb_tax_year_bounds_for(self._ty_month(month), key)
+
+    @api.model
+    def _ty_label(self, month, key):
+        return self.env['hr.formula.config']._pb_tax_year_label_for(self._ty_month(month), key)
+
+    @api.model
+    def _ty_stored(self, month):
+        """What a row stores for `month`: nothing for January."""
+        month = self._ty_month(month)
+        return month if month != 1 else 0
+
+    @api.model
+    def _ty_domain(self, month):
+        """The rows of tax years that start in `month` (January: the rows
+        that store no month, i.e. every row written before W2-A)."""
+        month = self._ty_month(month)
+        if month == 1:
+            return [('tax_year_start_month', 'not in', list(range(2, 13)))]
+        return [('tax_year_start_month', '=', month)]
+
+    @api.model
+    def _ty_months_in_use(self, company_ids=None):
+        """The start months of the schemes of `company_ids` (default: the
+        companies in use). `{1}` on every database until a scheme changes."""
+        company_ids = list(company_ids or self.env.companies.ids)
+        self.env['hr.formula.config'].flush_model(['tax_year_start_month', 'company_id'])
+        self.env.cr.execute(
+            "SELECT DISTINCT COALESCE(tax_year_start_month, '1') FROM hr_formula_config "
+            "WHERE company_id = ANY(%s)", [company_ids])
+        return {self._ty_month(r[0]) for r in self.env.cr.fetchall()} or {1}
+
+    @api.model
+    def _ty_desk_month(self, company_ids=None):
+        """The month the Updates screens count "this tax year" in: the one
+        month every scheme of the companies in use shares; January when they
+        differ (each person's own figures still follow their own scheme)."""
+        months = self._ty_months_in_use(company_ids)
+        return months.pop() if len(months) == 1 else 1
+
+    @api.model
+    def _ty_months_of(self, emp_ids, on_date=None):
+        """`{employee id: start month}` — the month of each person's pay scheme
+        (the scheme map's answer, else the scheme of their latest finished
+        payslip), January when neither says. One cheap query and no scheme
+        map lookup while every scheme is on January."""
+        emp_ids = sorted({int(e) for e in (emp_ids or []) if e})
+        out = {e: 1 for e in emp_ids}
+        if not emp_ids:
+            return out
+        emps = self.env['hr.employee'].sudo().browse(emp_ids)
+        if self._ty_months_in_use(sorted(set(emps.mapped('company_id').ids))) == {1}:
+            return out
+        Config = self.env['hr.formula.config'].sudo()
+        configs = {}
+        try:
+            answers = self.env['pb.scheme.map'].sudo().resolve_many(
+                emp_ids, 'any', on_date=fields.Date.to_string(on_date) if on_date else None)
+        except Exception:   # noqa: BLE001 — a scheme map fault falls back below
+            _logger.warning('pb_updates: the scheme map could not say whose tax year is whose')
+            answers = {}
+        for emp_id in emp_ids:
+            config_id = (answers.get(emp_id) or {}).get('config_id')
+            if config_id:
+                configs[emp_id] = config_id
+        rest = [e for e in emp_ids if e not in configs]
+        if rest:
+            self._flush_for_sql()
+            self.env.cr.execute("""
+                SELECT DISTINCT ON (employee_id) employee_id, formula_config_id
+                  FROM hr_payslip
+                 WHERE employee_id = ANY(%s) AND state IN %s AND formula_config_id IS NOT NULL
+                 ORDER BY employee_id, date_to DESC, id DESC""", [rest, DONE_SLIP_STATES])
+            configs.update(dict(self.env.cr.fetchall()))
+        months = {c.id: c._pb_tax_year_month() for c in Config.browse(sorted(set(configs.values())))}
+        for emp_id, config_id in configs.items():
+            out[emp_id] = months.get(config_id, 1)
+        return out
+
+    @api.model
+    def _ty_joined(self, joined, year, month=1):
+        """True when `joined` falls in tax year `year` (start `month`)."""
+        if not joined or not year:
+            return False
+        first, last = self._ty_bounds(month, year)
+        return first <= joined <= last
 
     # ------------------------------------------------------------ the numbers
     @api.model
@@ -550,29 +672,40 @@ class PbUpdatesYtdLine(models.Model):
                   FROM hr_payroll_cycle_component_mapping
                  WHERE mid_cycle_config_id = ANY(%s)""", [advances])
             out['links'] = set(cr.fetchall())
-        out['conv'] = self._conventions(configs, codes, out, last.year)
+        out['conv'] = self._conventions(configs, codes, out, last)
         return out
 
     @api.model
-    def _conventions(self, configs, codes, ledger, year):
+    def _conventions(self, configs, codes, ledger, last):
         """`{(scheme, code): +1 | -1}` — the usual sign of a pay item that is
         money taken off or paid on top: the sign most of the scheme's latest
         `CONV_SAMPLE` finished payslips of the tax year carry for it, whoever
         they belong to (so the view, the downloads and a pay run all read the
         same answer). Absent when the scheme has no clear usual sign; such an
-        amount counts as its size (the one pay-band rule)."""
+        amount counts as its size (the one pay-band rule).
+
+        WDGAP W2-A: "the tax year" is the one of each scheme that contains
+        `last` (the calendar year for a January scheme, as before)."""
         wanted = sorted({c for (cfg, c), r in ledger['roles'].items() if r in MAGNITUDE_ROLES}
                         | {c for (_s, c), v in ledger['values'].items()
                            if v[1] in MAGNITUDE_ROLES})
         if not configs or not wanted:
             return {}
+        months = {c.id: c._pb_tax_year_month()
+                  for c in self.env['hr.formula.config'].sudo().browse(configs).exists()}
+        window = {}
+        for cfg in configs:
+            month = months.get(cfg, 1)
+            window[cfg] = (month,) + tuple(self._ty_bounds(month, self._ty_key(month, last)))
         cache = self.env.cr.cache.setdefault(CONV_CACHE, {})
-        todo = [(cfg, c) for cfg in configs for c in wanted if (year, cfg, c) not in cache]
-        if todo:
-            todo_cfgs = sorted({t[0] for t in todo})
-            todo_codes = sorted({t[1] for t in todo})
+        todo = [(cfg, c) for cfg in configs for c in wanted
+                if (window[cfg], cfg, c) not in cache]
+        for win in sorted({window[t[0]] for t in todo}):
+            todo_cfgs = sorted({t[0] for t in todo if window[t[0]] == win})
+            todo_codes = sorted({t[1] for t in todo if window[t[0]] == win})
             for key in todo:
-                cache[(year, key[0], key[1])] = 0
+                if window[key[0]] == win:
+                    cache[(win, key[0], key[1])] = 0
             # The scheme's latest finished payslips of the tax year (a sample
             # of CONV_SAMPLE each: a whole year of lines would cost a second
             # per page), then their lines through the payslip index.
@@ -584,8 +717,7 @@ class PbUpdatesYtdLine(models.Model):
                       FROM hr_payslip
                      WHERE formula_config_id = ANY(%s) AND state IN %s
                        AND date_to >= %s AND date_to <= %s) recent
-                 WHERE rn <= %s""", [todo_cfgs, DONE_SLIP_STATES, first_of_year(year),
-                                     last_of_year(year), CONV_SAMPLE])
+                 WHERE rn <= %s""", [todo_cfgs, DONE_SLIP_STATES, win[1], win[2], CONV_SAMPLE])
             config_of = dict(self.env.cr.fetchall())
             counts = {}
             if config_of:
@@ -597,9 +729,9 @@ class PbUpdatesYtdLine(models.Model):
                     pair = counts.setdefault((config_of[sid], code), [0, 0])
                     pair[0 if total > 0 else 1] += 1
             for (cfg, code), (pos, neg) in counts.items():
-                cache[(year, cfg, code)] = 1 if pos > neg else (-1 if neg > pos else 0)
-        return {(cfg, c): cache[(year, cfg, c)] for cfg in configs for c in wanted
-                if cache.get((year, cfg, c))}
+                cache[(win, cfg, code)] = 1 if pos > neg else (-1 if neg > pos else 0)
+        return {(cfg, c): cache[(window[cfg], cfg, c)] for cfg in configs for c in wanted
+                if cache.get((window[cfg], cfg, c))}
 
     @api.model
     def _slip_amount(self, ledger, slip, codes):
@@ -756,14 +888,18 @@ class PbUpdatesYtdLine(models.Model):
         date_from = fields.Date.to_date(date_from) if date_from else None
         date_to = fields.Date.to_date(date_to)
         date_from = date_from or month_floor(date_to)
-        year = date_to.year
+        # WDGAP W2-A — the tax year of THIS scheme (the calendar year when it
+        # starts in January, as before). A figure counts only for a tax year
+        # that starts in the same month.
+        month = config._pb_tax_year_month()
+        year = self._ty_key(month, date_to)
         lines = self.sudo().search([
             ('employee_id', '=', employee.id), ('tax_year', '=', year), ('state', '=', 'set'),
-            ('figure', 'in', list({m[1] for m in maps}))])
+            ('figure', 'in', list({m[1] for m in maps}))] + self._ty_domain(month))
         # UPDATES P5d (D31) — a person who joined this tax year (the employee
         # record's joining date, never the contract start) and has no figure
         # before Payobook may still receive "paid in Payobook" alone.
-        joined = self._joined_in(employee, year)
+        joined = self._joined_in(employee, year, month)
         if joined and joined > date_to:
             joined = None       # a pay period before the person joined: nothing
         if not lines and not joined:
@@ -776,7 +912,7 @@ class PbUpdatesYtdLine(models.Model):
             if not line:
                 if joined:
                     if ledger is None:
-                        ledger = self._plan_ledger(employee, maps, year, date_from)
+                        ledger = self._plan_ledger(employee, maps, year, date_from, month)
                     info = self._joiner_plan(employee, joined, ledger, code, figure, basis,
                                              map_id, date_from)
                     if info:
@@ -793,7 +929,7 @@ class PbUpdatesYtdLine(models.Model):
                 start = line.covers_to + timedelta(days=1)
                 end = date_from - timedelta(days=1)
                 if ledger is None:
-                    ledger = self._plan_ledger(employee, maps, year, date_from)
+                    ledger = self._plan_ledger(employee, maps, year, date_from, month)
                 window = self._person_window(ledger, employee.id, line.covers_to, date_from)
                 info['gap'] = [fields.Date.to_string(m) for m in months_between(start, end)
                                if m not in window['months']]
@@ -831,16 +967,17 @@ class PbUpdatesYtdLine(models.Model):
         return out
 
     @api.model
-    def _plan_ledger(self, employee, maps, year, date_from):
+    def _plan_ledger(self, employee, maps, year, date_from, month=1):
         """One ledger read for every mapped figure of one payslip: the
-        person's finished payslips from 1 January to the day before the pay
-        period, and the pay items of every mapped money figure."""
+        person's finished payslips from the first day of the tax year (1
+        January for a calendar tax year) to the day before the pay period,
+        and the pay items of every mapped money figure."""
         wanted = set()
         for _c, fig, bas, _m in maps:
             if bas != 'opening' and not self._is_count(fig):
                 wanted |= set(self._figure_codes(employee.company_id, fig))
-        return self._ledger([employee.id], first_of_year(year), date_from - timedelta(days=1),
-                            wanted)
+        return self._ledger([employee.id], self._ty_bounds(month, year)[0],
+                            date_from - timedelta(days=1), wanted)
 
     # ------------------------------------------------------------ joined this year (P5d)
     #
@@ -860,13 +997,14 @@ class PbUpdatesYtdLine(models.Model):
     # nothing reaches a pay run).
 
     @api.model
-    def _joined_in(self, employee, year):
-        """The joining date on the employee record when it falls in `year`,
-        else None. Never the contract start (D27)."""
+    def _joined_in(self, employee, year, month=1):
+        """The joining date on the employee record when it falls in tax year
+        `year` (start `month`; January = the calendar year), else None. Never
+        the contract start (D27)."""
         if not employee or 'date_of_joining' not in employee._fields:
             return None
         joined = employee.date_of_joining
-        return joined if joined and year and joined.year == int(year) else None
+        return joined if self._ty_joined(joined, year, month) else None
 
     @api.model
     def _joiner_covered(self, joined, window, upto=None):
@@ -944,7 +1082,10 @@ class PbUpdatesYtdLine(models.Model):
         if not emp or not year or not codes or not rows:
             return qcontext
         page = {r['id']: r for r in rows}
-        ledger = self._ledger([emp.id], first_of_year(year), last_of_year(year), codes)
+        # WDGAP W2-A — the page's own tax year (the calendar year unless the
+        # scheme of the latest payslip starts it in another month).
+        first, last = self._ty_bounds(qcontext.get('ytd_start_month') or 1, year)
+        ledger = self._ledger([emp.id], first, last, codes)
         if not any(ledger['slips'].get(sid, {}).get('cycle') == ADVANCE_CYCLE for sid in page):
             return qcontext
         # Only what the page itself shows: its own payslips, and amounts read
@@ -1034,11 +1175,17 @@ class PbUpdatesYtdLine(models.Model):
         year = qcontext.get('ytd_year')
         domain = [('employee_id', '=', emp.id), ('state', '=', 'set')]
         if year:
-            domain.append(('tax_year', '=', year))
+            # WDGAP W2-A — only figures of the page's own tax year (same start month).
+            domain += [('tax_year', '=', year)] + self._ty_domain(
+                qcontext.get('ytd_start_month') or 1)
         lines = self.sudo().search(domain, order='tax_year desc, id')
         if not year and lines:
             year = lines[0].tax_year
-            lines = lines.filtered(lambda l: l.tax_year == year)
+            month = lines[0].tax_year_start_month
+            lines = lines.filtered(lambda l: l.tax_year == year
+                                   and self._ty_month(l.tax_year_start_month) == self._ty_month(month))
+            if lines and self._ty_month(month) != 1:
+                qcontext['ytd_label'] = lines[0].tax_year_label
         lines = lines.filtered(lambda l: l.figure not in COUNT_FIGURES and l.amount)
         if not lines:
             return qcontext
@@ -1335,7 +1482,7 @@ class PbRecordsApplyYtd(models.Model):
         n = len(rows)
         first = rows[:1]
         return _("Year-to-date figures for %(year)s, up to %(date)s · %(n)s",
-                 year=first.tax_year or '', date=day_label(self.env, first.covers_to),
+                 year=first.tax_year_label or '', date=day_label(self.env, first.covers_to),
                  n=_("1 figure") if n == 1 else _("%s figures") % n)
 
     def _approval_detail(self, request):

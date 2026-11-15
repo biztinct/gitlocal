@@ -35,8 +35,8 @@ from odoo.addons.pb_updates.models.updates_desk import GUESS_RATIO, IDENTITY_KEY
 from odoo.addons.pb_updates.models.updates_batch import heading_fingerprint
 from odoo.addons.pb_updates.models.updates_ytd import (
     AHEAD_DAYS, BASES, COUNT_FIGURES, DONE_SLIP_STATES, FIGURES, GROUP, LIVE, PREFIX,
-    READ_GROUPS, SETUP_GROUPS, SOURCE_ID, card_id, day_label, key_of, last_of_year,
-    first_of_year, may, month_floor, months_between, number_text, parse_amount)
+    READ_GROUPS, SETUP_GROUPS, SOURCE_ID, card_id, day_label, key_of,
+    may, month_floor, months_between, number_text, parse_amount)
 
 #: The hidden sheet's cell that says which date a sheet's figures cover up to.
 DATE_KEY = 'ytd_covers_to'
@@ -86,10 +86,15 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             return None, _("Pick the date these figures cover up to: the last day before your "
                            "first pay period on Payobook.")
         today = self._ytd_today()
-        if day.year not in (today.year, today.year - 1):
+        # WDGAP W2-A — "this tax year" of the companies in use (the calendar
+        # year unless every scheme starts its tax year in another month).
+        Line = self.env['pb.updates.ytd.line']
+        month = Line._ty_desk_month()
+        this = Line._ty_key(month, today)
+        if Line._ty_key(month, day) not in (this, this - 1):
             return None, _("Figures can be for this tax year (%(this)s) or last year (%(last)s). "
-                           "%(date)s is outside both.", this=today.year, last=today.year - 1,
-                           date=day_label(self.env, day))
+                           "%(date)s is outside both.", this=Line._ty_label(month, this),
+                           last=Line._ty_label(month, this - 1), date=day_label(self.env, day))
         if day > today + timedelta(days=AHEAD_DAYS):
             return None, _("%s is too far ahead. Pick the last day before your first pay period "
                            "on Payobook.") % day_label(self.env, day)
@@ -138,13 +143,26 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         people = self._ytd_people(emp_ids)
         companies = sorted({p['company_id'] for p in people.values()} | set(self.env.companies.ids))
         figures = self._ytd_figures(companies)
-        year = covers_to.year
         Line = self.env['pb.updates.ytd.line'].sudo()
+        # WDGAP W2-A — each person's figures belong to the tax year of their
+        # own pay scheme that contains "Figures cover up to" (the calendar
+        # year for everyone on a January scheme, exactly as before).
+        month = Line._ty_desk_month(companies)
+        year = Line._ty_key(month, covers_to)
+        months = Line._ty_months_of(list(people), covers_to)
+        for emp_id, person in people.items():
+            person['ty_month'] = months.get(emp_id, 1)
+            person['ty_year'] = Line._ty_key(person['ty_month'], covers_to)
         current, waiting, used = {}, {}, {}
         if people:
-            for line in Line.search([('employee_id', 'in', list(people)), ('tax_year', '=', year),
+            years = sorted({p['ty_year'] for p in people.values()})
+            for line in Line.search([('employee_id', 'in', list(people)), ('tax_year', 'in', years),
                                      ('state', 'in', LIVE),
                                      ('id', 'not in', list(skip_line_ids or []))], order='id'):
+                person = people[line.employee_id.id]
+                if line.tax_year != person['ty_year'] or Line._ty_month(
+                        line.tax_year_start_month) != person['ty_month']:
+                    continue
                 key = (line.employee_id.id, line.figure)
                 if line.state == 'waiting':
                     waiting[key] = line
@@ -244,28 +262,61 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         today = self._ytd_today()
         readable = self._ytd_may_read()
         figures = self._ytd_figures()
+        # WDGAP W2-A — "this tax year" of the companies in use; January (every
+        # database until a scheme changes) gives exactly the calendar answers.
+        Line = self.env['pb.updates.ytd.line']
+        month = Line._ty_desk_month()
+        this = Line._ty_key(month, today)
         last_month_end = month_floor(today) - timedelta(days=1)
-        default = last_month_end if last_month_end.year == today.year else today
+        default = last_month_end if Line._ty_key(month, last_month_end) == this else today
         people = 0
         if readable:
             self.env['pb.updates.ytd.line'].flush_model()
             self.env.cr.execute(
                 "SELECT count(DISTINCT employee_id) FROM pb_updates_ytd_line "
                 "WHERE state = 'set' AND tax_year = %s AND company_id = ANY(%s)",
-                [today.year, self.env.companies.ids])
+                [this, self.env.companies.ids])
             people = self.env.cr.fetchone()[0] or 0
         maps = self.env['pb.updates.ytd.map'].sudo().search_count(
             [('company_id', 'in', self.env.companies.ids)]) if readable else 0
-        return {
+        return dict({
             'available': readable, 'may_send': self._ytd_may_send(), 'may_setup': self._ytd_may_setup(),
             'figures': [{'key': f['key'], 'label': f['label'], 'count': f['count'], 'item': f['item']}
                         for f in figures.values()],
-            'this_year': today.year, 'last_year': today.year - 1,
+            'this_year': this, 'last_year': this - 1,
             'today': fields.Date.to_string(today), 'default': fields.Date.to_string(default),
             'max': fields.Date.to_string(min(today + timedelta(days=AHEAD_DAYS),
-                                             last_of_year(today.year))),
-            'min': fields.Date.to_string(first_of_year(today.year - 1)),
+                                             Line._ty_bounds(month, this)[1])),
+            'min': fields.Date.to_string(Line._ty_bounds(month, this - 1)[0]),
             'people': people, 'maps': maps,
+        }, **self._ytd_year_words(month, this))
+
+    @api.model
+    def _ytd_tax_year_of(self, covers_to, rows=None):
+        """`{'tax_year', 'tax_year_label'}` of a sheet whose figures cover up
+        to `covers_to`: the rows' own tax year when they were written (they
+        all share one), else the companies' (WDGAP W2-A; the calendar year as
+        before for January)."""
+        Line = self.env['pb.updates.ytd.line']
+        if rows:
+            keys = {(r.tax_year, Line._ty_month(r.tax_year_start_month)) for r in rows}
+            if len(keys) == 1:
+                year, month = keys.pop()
+                return {'tax_year': year, 'tax_year_label': Line._ty_label(month, year)}
+        month = Line._ty_desk_month()
+        year = Line._ty_key(month, covers_to)
+        return {'tax_year': year, 'tax_year_label': Line._ty_label(month, year)}
+
+    @api.model
+    def _ytd_year_words(self, month, this):
+        """WDGAP W2-A — what the screens need to name and pick a tax year:
+        its label ("2026", or "2026–27" for one that starts in April) and the
+        last day of last tax year (the date "Last year" picks)."""
+        Line = self.env['pb.updates.ytd.line']
+        return {
+            'start_month': month,
+            'year_labels': {str(y): Line._ty_label(month, y) for y in (this, this - 1)},
+            'last_year_end': fields.Date.to_string(Line._ty_bounds(month, this - 1)[1]),
         }
 
     @api.model
@@ -361,13 +412,25 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         meta.sheet_state = 'hidden'
         guide = wb.create_sheet(title=_("Read me")[:31])
         guide.column_dimensions['A'].width = 110
+        # WDGAP W2-A — the tax year of the companies in use (calendar: as before).
+        Line = self.env['pb.updates.ytd.line']
+        month = Line._ty_desk_month()
+        year = Line._ty_key(month, covers_to)
+        if month == 1:
+            since = _("Each number is what the person was paid, or had taken off, from 1 January "
+                      "%(year)s up to %(date)s — before your company ran payroll on %(product)s. "
+                      "Take them from the previous payroll's year-to-date report.",
+                      year=covers_to.year, date=when, product=product_label(self.env))
+        else:
+            since = _("Each number is what the person was paid, or had taken off, from %(first)s "
+                      "(the start of the tax year) up to %(date)s — before your company ran "
+                      "payroll on %(product)s. Take them from the previous payroll's year-to-date "
+                      "report.", first=day_label(self.env, Line._ty_bounds(month, year)[0]),
+                      date=when, product=product_label(self.env))
         lines = [
             _("Year-to-date figures before %(product)s, tax year %(year)s, up to %(date)s",
-              product=product_label(self.env), year=covers_to.year, date=when),
-            _("Each number is what the person was paid, or had taken off, from 1 January %(year)s "
-              "up to %(date)s — before your company ran payroll on %(product)s. Take them from "
-              "the previous payroll's year-to-date report.", year=covers_to.year, date=when,
-              product=product_label(self.env)),
+              product=product_label(self.env), year=Line._ty_label(month, year), date=when),
+            since,
             _("Nothing here changes how tax is calculated. The figures are kept beside the "
               "payslips: they show on each person's tax summary, and a pay run receives one only "
               "where a payroll manager has chosen which pay item gets it."),
@@ -387,7 +450,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         wb.save(out)
         return {'ok': True, 'file_b64': base64.b64encode(out.getvalue()).decode(),
                 'filename': _("%(product)s year-to-date figures %(year)s.xlsx") % {
-                    'product': product_label(self.env), 'year': covers_to.year},
+                    'product': product_label(self.env), 'year': Line._ty_label(month, year)},
                 'mimetype': XLSX_MIME, 'rows': len(people), 'total': total,
                 'columns': len(cards), 'truncated': total > MAX_ROWS}
 
@@ -635,7 +698,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         return {
             'ok': True, 'kind': GROUP, 'ytd': True, 'filename': name,
             'covers_to': fields.Date.to_string(covers_to),
-            'covers_label': day_label(self.env, covers_to), 'tax_year': covers_to.year,
+            'covers_label': day_label(self.env, covers_to),
+            **self._ytd_tax_year_of(covers_to),
             'summary': {'rows': len(body), 'columns_ignored': ignored},
             'identity': max(methods, key=methods.get) if methods else '',
             'truncated': truncated, 'columns': out_columns, 'pay_items': False,
@@ -747,13 +811,19 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             if cell['status'] != 'ok':
                 continue
             fig = ctx['figures'][key]
-            lines.append({
+            vals = {}
+            if person.get('ty_month', 1) != 1:
+                # WDGAP W2-A — a row of a tax year that does not start in
+                # January says so; a calendar row stores nothing, as before.
+                vals['tax_year_start_month'] = person['ty_month']
+            lines.append(dict(vals, **{
                 'employee_id': change['emp_id'], 'company_id': person['company_id'],
-                'tax_year': covers_to.year, 'figure': key, 'label': fig['label'],
+                'tax_year': person.get('ty_year') or covers_to.year, 'figure': key,
+                'label': fig['label'],
                 'amount': cell['amount'] if cell['action'] == 'set' else 0.0,
                 'covers_to': covers_to, 'action': cell['action'],
                 'source_note': change['source'] or False,
-            })
+            }))
         self._remember_ytd_layout(columns)
         when = day_label(self.env, covers_to)
         if not lines:
@@ -813,7 +883,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             'values': len(rows), 'people': len(rows.mapped('employee_id')),
             'refused': refused, 'off_scheme': 0, 'skipped_off_scheme': 0, 'not_set': len(late),
             'covers_to': fields.Date.to_string(covers_to), 'covers_label': when,
-            'tax_year': covers_to.year,
+            **self._ytd_tax_year_of(covers_to),
             'cleared': len(rows.filtered(lambda r: r.action == 'clear')),
             'replaced': len(rows.filtered(lambda r: r.replaces_id and r.action == 'set')),
         }
@@ -875,7 +945,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             'state_reason': note if state == 'blocked' else '',
             'covers_to': fields.Date.to_string(batch.ytd_covers_to) if batch.ytd_covers_to else '',
             'covers_label': day_label(self.env, batch.ytd_covers_to) if batch.ytd_covers_to else '',
-            'tax_year': batch.ytd_covers_to.year if batch.ytd_covers_to else 0,
+            **(self._ytd_tax_year_of(batch.ytd_covers_to, rows) if batch.ytd_covers_to
+               else {'tax_year': 0, 'tax_year_label': ''}),
             'with_whom': apply_rec._waiting_for() if apply_rec and state == 'pending' else '',
             'can_undo': bool(may_write and self._ytd_may_read() and (standing - used)),
             'can_cancel': bool(may_write and apply_rec and apply_rec.state == 'pending'
@@ -1060,7 +1131,12 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         visible = desk._matching({}, ctx={})
         if not visible:
             return []
-        self.env['pb.updates.ytd.line']._flush_for_sql()
+        Line = self.env['pb.updates.ytd.line']
+        Line._flush_for_sql()
+        # WDGAP W2-A — tax year `year` of every start month the schemes use
+        # (only January, i.e. the calendar year, until a scheme changes).
+        bounds = [Line._ty_bounds(m, year) for m in sorted(Line._ty_months_in_use())]
+        first, last = min(b[0] for b in bounds), max(b[1] for b in bounds)
         cr = self.env.cr
         cr.execute("""
             SELECT employee_id FROM pb_updates_ytd_line
@@ -1068,8 +1144,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             UNION
             SELECT employee_id FROM hr_payslip
              WHERE state IN %s AND date_to >= %s AND date_to <= %s AND employee_id = ANY(%s)
-        """, [year, visible.ids, DONE_SLIP_STATES, first_of_year(year), last_of_year(year),
-              visible.ids])
+        """, [year, visible.ids, DONE_SLIP_STATES, first, last, visible.ids])
         ids = {r[0] for r in cr.fetchall()}
         emps = self.env['hr.employee'].sudo().browse(sorted(ids))
         search = (search or '').strip().lower()
@@ -1082,6 +1157,33 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         before = {r[0] for r in self.env.cr.fetchall()}
         # People with figures before Payobook first, then everyone by name.
         return emps.sorted(lambda e: (e.id not in before, (e.name or '').lower(), e.id)).ids
+
+    @api.model
+    def _ytd_ledger_by_month(self, emp_ids, months, year, codes):
+        """`_ledger` over tax year `year` of each person's scheme: ONE read
+        when everyone shares a start month (always so while every scheme is
+        on January), one per start month otherwise, merged."""
+        Line = self.env['pb.updates.ytd.line']
+        groups = {}
+        for emp_id in emp_ids:
+            groups.setdefault(months.get(emp_id, 1), []).append(emp_id)
+        if len(groups) <= 1:
+            month = next(iter(groups), 1)
+            first, last = Line._ty_bounds(month, year)
+            return Line._ledger(emp_ids, first, last, codes)
+        merged = None
+        for month in sorted(groups):
+            first, last = Line._ty_bounds(month, year)
+            part = Line._ledger(groups[month], first, last, codes)
+            if merged is None:
+                merged = part
+                continue
+            for key in ('slips', 'by_emp', 'values', 'roles', 'conv'):
+                merged[key].update(part[key])
+            for cfg, have in part['scheme_codes'].items():
+                merged['scheme_codes'].setdefault(cfg, set()).update(have)
+            merged['links'] |= part['links']
+        return merged
 
     @api.model
     def _ytd_rows(self, year, emp_ids, detail=None):
@@ -1105,20 +1207,27 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         if labels is None:
             labels = {}
             self = self.with_context(pb_ytd_labels=labels)
+        # WDGAP W2-A — tax year `year` of each person's own pay scheme (the
+        # calendar year for everyone on a January scheme, exactly as before).
+        ty_months = Line._ty_months_of(emps.ids)
         lines = Line.search([('employee_id', 'in', emps.ids), ('tax_year', '=', year),
                              ('state', '=', 'set')])
         by = {}
         for line in lines:
+            if Line._ty_month(line.tax_year_start_month) != ty_months.get(line.employee_id.id, 1):
+                continue
             by.setdefault(line.employee_id.id, {})[line.figure] = line
         codes_by_company = {}
         for company in emps.mapped('company_id'):
             codes_by_company[company.id] = {k: ([] if f['count'] else Line._figure_codes(company, k))
                                             for k, f in figures.items()}
         all_codes = sorted({c for d in codes_by_company.values() for cs in d.values() for c in cs})
-        ledger = Line._ledger(emps.ids, first_of_year(year), last_of_year(year), all_codes)
+        ledger = self._ytd_ledger_by_month(emps.ids, ty_months, year, all_codes)
         has_doj = 'date_of_joining' in emps._fields
         rows, kept = [], None
         for emp in emps:
+            ty_month = ty_months.get(emp.id, 1)
+            ty_first = Line._ty_bounds(ty_month, year)[0]
             mine = by.get(emp.id, {})
             covers = max((l.covers_to for l in mine.values()), default=None)
             cur = emp.company_id.currency_id
@@ -1140,13 +1249,13 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             if covers:
                 cover_from = month_floor(covers + timedelta(days=1))
             else:
-                cover_from = first_of_year(year)
-                if joined and joined.year == year:
+                cover_from = ty_first
+                if joined and Line._ty_joined(joined, year, ty_month):
                     cover_from = month_floor(joined)
             # UPDATES P5d (D31) — joined this tax year and covered by
             # Payobook payslips alone from the joining month: a figure with no
             # figure before Payobook is paid in Payobook alone, a year total.
-            joined_in = Line._joined_in(emp, year) if len(mine) < len(figures) else None
+            joined_in = Line._joined_in(emp, year, ty_month) if len(mine) < len(figures) else None
             all_window = window_for(None) if joined_in else None
             joiner = joined_in if joined_in and Line._joiner_covered(
                 joined_in, all_window) else None
@@ -1349,12 +1458,15 @@ class PbUpdatesYtdDesk(models.AbstractModel):
     def get_ytd_view(self, year=None, search='', offset=0, limit=VIEW_PAGE):
         self._ytd_gate()
         today = self._ytd_today()
+        Line = self.env['pb.updates.ytd.line']
+        month = Line._ty_desk_month()
+        this = Line._ty_key(month, today)       # WDGAP W2-A (calendar: today.year)
         try:
-            year = int(year or today.year)
+            year = int(year or this)
         except (TypeError, ValueError):
-            year = today.year
-        if year not in (today.year, today.year - 1):
-            year = today.year
+            year = this
+        if year not in (this, this - 1):
+            year = this
         ids = self._ytd_view_people(year, search)
         try:
             offset, limit = max(0, int(offset or 0)), max(1, min(200, int(limit or VIEW_PAGE)))
@@ -1376,8 +1488,9 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                             'application': bool(getattr(config, 'application_data_enabled', False))})
         uncounted = [f['label'] for k, f in figures.items()
                      if not f['count'] and not Line._figure_codes(self.env.company, k)]
-        return {
-            'ok': True, 'year': year, 'this_year': today.year, 'last_year': today.year - 1,
+        return dict({
+            'ok': True, 'year': year, 'this_year': this, 'last_year': this - 1,
+            'year_label': Line._ty_label(month, year),
             'search': search or '', 'offset': offset, 'limit': limit, 'total': len(ids),
             'figures': [{'key': f['key'], 'label': f['label'], 'count': f['count'],
                          'item': f['item']} for f in figures.values()],
@@ -1391,7 +1504,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             'schemes': schemes, 'uncounted': uncounted,
             'may_setup': self._ytd_may_setup(),
             'months': self._ytd_months(today),
-        }
+        }, **self._ytd_year_words(month, this))
 
     @api.model
     def get_ytd_cell_detail(self, year=None, emp_id=0, key=''):
@@ -1401,12 +1514,14 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         view itself stays one fast page."""
         self._ytd_gate()
         today = self._ytd_today()
+        Line = self.env['pb.updates.ytd.line']
+        this = Line._ty_key(Line._ty_desk_month(), today)   # WDGAP W2-A
         try:
-            year = int(year or today.year)
+            year = int(year or this)
             emp_id = int(emp_id or 0)
         except (TypeError, ValueError):
             return {'ok': False, 'msg': _("This figure could not be read. Try again.")}
-        if year not in (today.year, today.year - 1) or not emp_id or not \
+        if year not in (this, this - 1) or not emp_id or not \
                 self._desk()._matching({'employee_ids': [emp_id]}, ctx={}):
             return {'ok': False, 'msg': _("This figure could not be read. Try again.")}
         figures, rows, kept = self._ytd_rows(year, [emp_id], detail=(emp_id, str(key or '')))
@@ -1463,7 +1578,8 @@ class PbUpdatesYtdDesk(models.AbstractModel):
                 names.setdefault(rec['code'], rec['name'] or rec['code'])
         return {
             'ok': True, 'emp': kept['emp'].name or '', 'figure': f['label'], 'count': f['count'],
-            'year': year, 'before_label': cell['before_label'], 'paid_label': cell['paid_label'],
+            'year': year, 'year_label': Line._ty_label(Line._ty_desk_month(), year),
+            'before_label': cell['before_label'], 'paid_label': cell['paid_label'],
             'total_label': cell['total_label'], 'year_total': cell['year_total'],
             'note': cell['note'], 'state': cell['state'],
             'items': [names.get(c) or c for c in kept['codes']], 'counted': counted, 'left': left,
@@ -1498,7 +1614,9 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             return {'ok': False, 'msg': _(
                 "Downloading needs permission to export employee records. Ask an administrator.")}
         today = self._ytd_today()
-        year = int(year or today.year)
+        Line = self.env['pb.updates.ytd.line']
+        month = Line._ty_desk_month()                     # WDGAP W2-A
+        year = int(year or Line._ty_key(month, today))
         ids = self._ytd_view_people(year, search)[:MAX_ROWS]
         figures, rows = self._ytd_rows(year, ids)
         import openpyxl
@@ -1536,7 +1654,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         wb.save(out)
         return {'ok': True, 'file_b64': base64.b64encode(out.getvalue()).decode(),
                 'filename': _("%(product)s year to date %(year)s.xlsx") % {
-                    'product': product_label(self.env), 'year': year},
+                    'product': product_label(self.env), 'year': Line._ty_label(month, year)},
                 'mimetype': XLSX_MIME, 'rows': len(rows)}
 
     @api.model
@@ -1564,8 +1682,12 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             start = month_floor(self._ytd_today())
         end = (start.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
         Line = self.env['pb.updates.ytd.line'].sudo()
-        with_figures = Line.search([('tax_year', '=', end.year), ('state', '=', 'set'),
-                                    ('company_id', '=', config.company_id.id)]).mapped('employee_id')
+        # WDGAP W2-A — the tax year of THIS scheme (calendar: end.year, as before).
+        ty_month = config._pb_tax_year_month()
+        ty_year = Line._ty_key(ty_month, end)
+        with_figures = Line.search([('tax_year', '=', ty_year), ('state', '=', 'set'),
+                                    ('company_id', '=', config.company_id.id)]
+                                   + Line._ty_domain(ty_month)).mapped('employee_id')
         # UPDATES P5c — everyone the scheme pays this month is listed, people
         # without figures before Payobook too (with a sentence instead of a
         # value), so nobody is left out of the sheet without a word.
@@ -1600,7 +1722,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
         for emp in people:
             # UPDATES P5d (D31) — a person with no figures who joined this tax
             # year may be paid in Payobook alone (`_joiner_plan`).
-            joined = Line._joined_in(emp, end.year) if emp.id not in has_figures else None
+            joined = Line._joined_in(emp, ty_year, ty_month) if emp.id not in has_figures else None
             plan = Line._plan_for_slip(emp, config, start, end) \
                 if emp.id in has_figures or joined else {}
             row = [emp.barcode or emp.employee_id or '', emp.name or '']
@@ -1609,7 +1731,7 @@ class PbUpdatesYtdDesk(models.AbstractModel):
             if emp.id not in has_figures and not joined_items:
                 notes.append(_("No figures before Payobook for %s, so nothing is worked out. If "
                                "this person joined this year, load 0 for each figure so paid in "
-                               "Payobook can be counted.") % end.year)
+                               "Payobook can be counted.") % Line._ty_label(ty_month, ty_year))
             elif emp.id not in has_figures:
                 notes.append(Line._joiner_label(joined))
                 rest = [names.get(c) or c for c in items if c not in joined_items]

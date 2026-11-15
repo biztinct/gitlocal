@@ -20,3 +20,8 @@ msgstr ""
 #: code:addons/pb_me_portal/models/pb_me_home.py:0
 msgid "Waiting for approval"
 msgstr "Menunggu persetujuan"
+
+#. module: pb_me_portal
+#: model_terms:ir.ui.view,arch_db:pb_me_portal.portal_my_taxsheet
+msgid "Tax year"
+msgstr "Tahun pajak"

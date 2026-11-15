@@ -15586,6 +15586,7 @@ msgstr "Tháng tính thuế cuối của người này (%(when)s). Đặt %(name
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_preparation.py:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__12
 msgid "December"
 msgstr "Tháng 12"
 
@@ -15928,3 +15929,80 @@ msgstr "%(name)s không phải là hàm mà công thức có thể dùng. Danh s
 #: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 msgid "%(code)s is the name of a formula function, so a component can't use it as its code. Choose another code, for example %(suggestion)s."
 msgstr "%(code)s là tên của một hàm công thức, nên thành phần không thể dùng làm mã. Hãy chọn mã khác, ví dụ %(suggestion)s."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__1
+msgid "January"
+msgstr "Tháng 1"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__2
+msgid "February"
+msgstr "Tháng 2"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__3
+msgid "March"
+msgstr "Tháng 3"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__4
+msgid "April"
+msgstr "Tháng 4"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__5
+msgid "May"
+msgstr "Tháng 5"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__6
+msgid "June"
+msgstr "Tháng 6"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__7
+msgid "July"
+msgstr "Tháng 7"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__8
+msgid "August"
+msgstr "Tháng 8"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__9
+msgid "September"
+msgstr "Tháng 9"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__10
+msgid "October"
+msgstr "Tháng 10"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__tax_year_start_month__11
+msgid "November"
+msgstr "Tháng 11"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__tax_year_start_month
+msgid "Tax year starts in"
+msgstr "Năm tính thuế bắt đầu từ"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__tax_year_start_month
+msgid "The month this scheme's tax year starts in. Year-to-date figures (earlier this year, earlier this quarter) are counted from it. January means the calendar year."
+msgstr "Tháng bắt đầu năm tính thuế của bảng lương này. Các số liệu lũy kế (từ đầu năm, từ đầu quý) được tính từ tháng này. Tháng 1 nghĩa là năm dương lịch."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/tax_year.py:0
+msgid "Year-to-date figures for this scheme will be counted from %(month)s from now on. Finished payslips are not changed."
+msgstr "Từ nay, các số liệu lũy kế của bảng lương này sẽ được tính từ %(month)s. Các phiếu lương đã hoàn tất không bị thay đổi."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/tax_year.py:0
+msgid "Tax year"
+msgstr "Năm tính thuế"
