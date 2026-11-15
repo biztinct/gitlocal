@@ -91,6 +91,6 @@ class TestPortalHttp(HttpCase):
         self.assertEqual(res.status_code, 200)
         html = res.text
         self.assertIn('S5A Http builds', html)
-        self.assertIn('pbls-earn', html)
+        self.assertIn('pblk-earn', html)
         self.assertIn('earned so far this year', html)
         self.assertNotIn('S5A Http hidden', html)

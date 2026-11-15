@@ -33,21 +33,11 @@ msgstr "Đã dùng %(taken)s/%(allocated)s ngày"
 #. odoo-python
 #: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid ""
-"%(year)s days a year: %(month)s days are added after each month worked."
+"%(year)s days a year, built up each month: %(month)s added after each month "
+"worked."
 msgstr ""
-"%(year)s ngày mỗi năm: cộng thêm %(month)s ngày sau mỗi tháng làm việc."
-
-#. module: pb_leave_setup
-#. odoo-python
-#: code:addons/pb_leave_setup/models/leave_setup.py:0
-msgid "%s a year, all at once"
-msgstr "%s mỗi năm, cấp một lần"
-
-#. module: pb_leave_setup
-#. odoo-python
-#: code:addons/pb_leave_setup/models/leave_setup.py:0
-msgid "%s a year, built up monthly"
-msgstr "%s mỗi năm, tích lũy hằng tháng"
+"%(year)s ngày mỗi năm, tích lũy mỗi tháng: cộng %(month)s sau mỗi tháng làm "
+"việc."
 
 #. module: pb_leave_setup
 #. odoo-python
@@ -58,6 +48,7 @@ msgstr "%s mục chưa cộng được; lần chạy sau sẽ thử lại."
 #. module: pb_leave_setup
 #. odoo-python
 #: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid "%s days"
 msgstr "%s ngày"
 
@@ -69,12 +60,14 @@ msgstr "%s ngày mỗi năm, cộng vào đầu mỗi năm."
 
 #. module: pb_leave_setup
 #. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 #: code:addons/pb_leave_setup/models/starters.py:0
 msgid "%s days a year, all at once"
 msgstr "%s ngày mỗi năm, cấp một lần"
 
 #. module: pb_leave_setup
 #. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 #: code:addons/pb_leave_setup/models/starters.py:0
 msgid "%s days a year, built up each month"
 msgstr "%s ngày mỗi năm, tích lũy mỗi tháng"
@@ -90,6 +83,12 @@ msgstr "%s loại"
 #: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid "%s kinds added, switched off. Review each one, then switch it on."
 msgstr "Đã thêm %s loại, đang tắt. Hãy xem lại từng loại rồi bật lên."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s people have days of it"
+msgstr "%s người có ngày của loại này"
 
 #. module: pb_leave_setup
 #. odoo-python
@@ -124,6 +123,7 @@ msgstr "0 nghĩa là không hết hạn."
 #. module: pb_leave_setup
 #. odoo-python
 #: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid "1 day"
 msgstr "1 ngày"
 
@@ -144,6 +144,12 @@ msgstr "Đã thêm 1 loại, đang tắt. Hãy xem lại rồi bật lên."
 #: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
 msgid "1 kind that is switched on has no pay decision yet."
 msgstr "1 loại đang bật chưa quyết định cách trả lương."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 person has days of it"
+msgstr "1 người có ngày của loại này"
 
 #. module: pb_leave_setup
 #. odoo-javascript
@@ -1882,12 +1888,6 @@ msgstr "hưởng một phần lương"
 #: code:addons/pb_leave_setup/models/starters.py:0
 msgid "pay to decide"
 msgstr "chưa quyết định lương"
-
-#. module: pb_leave_setup
-#. odoo-javascript
-#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
-msgid "people have days of it"
-msgstr "người có ngày của loại này"
 
 #. module: pb_leave_setup
 #. odoo-javascript

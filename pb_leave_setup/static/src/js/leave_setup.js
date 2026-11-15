@@ -41,7 +41,7 @@ const FIELDS = [
 function blankKind(board) {
     return {
         id: 0, name: "", names: { en: "", vi: "", id: "" },
-        company_id: board.default_company_id || 0, country: board.default_country || "",
+        company_id: board.default_company_id || 0, country: "",
         unit: "day", counted: true, approval: "hr", hr_only: false, backdate_ok: false,
         backdate_alert: true, document: false, carry_cap: 0, pay: "paid", pay_pct: 100,
         funding: "employer", employer_pct: 0, earning: "none", days_per_year: 0,

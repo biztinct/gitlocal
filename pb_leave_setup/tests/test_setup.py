@@ -20,6 +20,8 @@ import re
 from datetime import date
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
+
 from odoo.exceptions import AccessError, UserError
 from odoo.tests.common import tagged
 from odoo.tools import file_open
@@ -117,6 +119,18 @@ class TestSetup(LeaveSetupCase):
                          ('partial', 0.75, 'external'))
         with self.assertRaises(UserError):
             self._new(name='S5A Bad', pay='paid', funding='none')
+        # "Every country" stays every country when the drawer is saved again
+        # (found in the browser walk: core recomputed it from the company)
+        TO = self.env['pb.timeoff']
+        k3 = self._new(name='S5A Everywhere', country='', company_id=self.company.id)
+        kind3 = self.env['hr.leave.type'].with_context(active_test=False).browse(k3['id'])
+        self.assertEqual(TO._type_country(kind3), '')
+        hr.save_kind(k3['id'], {'country': '', 'company_id': self.company.id, 'name': 'S5A Everywhere'})
+        self.assertEqual(TO._type_country(kind3), '')
+        hr.save_kind(k3['id'], {'country': 'ID'})
+        self.assertEqual(TO._type_country(kind3), 'ID')
+        hr.save_kind(k3['id'], {'country': ''})
+        self.assertEqual(TO._type_country(kind3), '')
 
     # ============================================================== S4
     def test_s4_what_cannot_change(self):
@@ -222,6 +236,25 @@ class TestSetup(LeaveSetupCase):
         # this month has not ended: nothing for anybody yet
         self.assertFalse(self.Earn.search_count([('employee_id', '=', emp.id),
                                                  ('leave_type_id', '=', kind.id)]))
+
+    def test_s8b_post_now_by_an_hr_manager_without_time_off_rights(self):
+        """Found in the browser walk: the attendance add-on refuses a change
+        to an approved allocation's days unless the USER is a Time Off
+        officer, sudo or not. The tenant HR manager is not one."""
+        self.assertFalse(self.hr_user.has_group('hr_holidays.group_hr_holidays_user'))
+        emp = self._emp('S5A Walk person', joined=date(2019, 6, 1))
+        start = date.today().replace(day=1) - relativedelta(months=2)
+        kind = self._kind('S5A Walk kind', pb_ls_earning='monthly', pb_ls_days_per_year=12,
+                          pb_ls_earn_from=start)
+        self.Earn._run_kind(kind, date.today(), employees=emp)
+        alloc = self._year_alloc(emp, kind, start.year)
+        before = alloc.number_of_days
+        kind.pb_ls_take_ahead = True
+        res = self._as(self.hr_user).post_now(kind.id)
+        self.assertFalse(res['result'].get('failed'), res['msg'])
+        alloc.invalidate_recordset()
+        if start.year == date.today().year and date.today().month < 12:
+            self.assertGreater(alloc.number_of_days, before, 'the rest of the year is there now')
 
     # ============================================================== S9
     def test_s9_set_up_check(self):

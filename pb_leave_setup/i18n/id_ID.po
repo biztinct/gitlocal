@@ -33,22 +33,11 @@ msgstr "%(taken)s dari %(allocated)s hari terpakai"
 #. odoo-python
 #: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid ""
-"%(year)s days a year: %(month)s days are added after each month worked."
+"%(year)s days a year, built up each month: %(month)s added after each month "
+"worked."
 msgstr ""
-"%(year)s hari setahun: %(month)s hari ditambahkan setelah setiap bulan "
-"bekerja."
-
-#. module: pb_leave_setup
-#. odoo-python
-#: code:addons/pb_leave_setup/models/leave_setup.py:0
-msgid "%s a year, all at once"
-msgstr "%s setahun, sekaligus"
-
-#. module: pb_leave_setup
-#. odoo-python
-#: code:addons/pb_leave_setup/models/leave_setup.py:0
-msgid "%s a year, built up monthly"
-msgstr "%s setahun, bertambah tiap bulan"
+"%(year)s hari setahun, bertambah tiap bulan: %(month)s ditambahkan setelah "
+"setiap bulan bekerja."
 
 #. module: pb_leave_setup
 #. odoo-python
@@ -59,6 +48,7 @@ msgstr "%s tidak dapat ditambahkan; proses berikutnya mencoba lagi."
 #. module: pb_leave_setup
 #. odoo-python
 #: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid "%s days"
 msgstr "%s hari"
 
@@ -70,12 +60,14 @@ msgstr "%s hari setahun, ditambahkan di awal setiap tahun."
 
 #. module: pb_leave_setup
 #. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 #: code:addons/pb_leave_setup/models/starters.py:0
 msgid "%s days a year, all at once"
 msgstr "%s hari setahun, sekaligus"
 
 #. module: pb_leave_setup
 #. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 #: code:addons/pb_leave_setup/models/starters.py:0
 msgid "%s days a year, built up each month"
 msgstr "%s hari setahun, bertambah tiap bulan"
@@ -93,6 +85,12 @@ msgid "%s kinds added, switched off. Review each one, then switch it on."
 msgstr ""
 "%s jenis ditambahkan, dalam keadaan mati. Tinjau satu per satu, lalu "
 "aktifkan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s people have days of it"
+msgstr "%s orang memiliki hari jenis ini"
 
 #. module: pb_leave_setup
 #. odoo-python
@@ -129,6 +127,7 @@ msgstr "0 berarti tidak hangus."
 #. module: pb_leave_setup
 #. odoo-python
 #: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
 msgid "1 day"
 msgstr "1 hari"
 
@@ -149,6 +148,12 @@ msgstr "1 jenis ditambahkan, dalam keadaan mati. Tinjau, lalu aktifkan."
 #: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
 msgid "1 kind that is switched on has no pay decision yet."
 msgstr "1 jenis yang aktif belum ditentukan pembayarannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 person has days of it"
+msgstr "1 orang memiliki hari jenis ini"
 
 #. module: pb_leave_setup
 #. odoo-javascript
@@ -1906,12 +1911,6 @@ msgstr "dibayar sebagian"
 #: code:addons/pb_leave_setup/models/starters.py:0
 msgid "pay to decide"
 msgstr "pembayaran belum ditentukan"
-
-#. module: pb_leave_setup
-#. odoo-javascript
-#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
-msgid "people have days of it"
-msgstr "orang memiliki hari jenis ini"
 
 #. module: pb_leave_setup
 #. odoo-javascript

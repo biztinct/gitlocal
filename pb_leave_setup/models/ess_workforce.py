@@ -70,7 +70,8 @@ class PbEssWorkforce(models.AbstractModel):
     def _pb_ls_tile_lines(self, Earn, kind, emp, today):
         """What a building-up kind adds to its tile, in plain words."""
         posted = Earn._posted(kind, emp, today.year)
-        earned = round(sum(posted.mapped('days')), 2)
+        earned_raw = sum(posted.mapped('days'))
+        earned = round(earned_raw, 2)
         out = {'pb_earned': earned, 'pb_earned_label': '', 'pb_next_label': ''}
         if kind.pb_ls_earning == 'monthly':
             out['pb_earned_label'] = _('%(days)s days earned so far this year', days=_num(earned))
@@ -81,7 +82,7 @@ class PbEssWorkforce(models.AbstractModel):
                                            else _('%s days', _num(days))),
                                      date=self._pb_ls_date(when))
         alloc = Earn._year_allocation(kind, emp, today.year)
-        ahead = round((alloc.number_of_days or 0.0) - earned, 2) if alloc else 0.0
+        ahead = round((alloc.number_of_days or 0.0) - earned_raw, 2) if alloc else 0.0
         if kind.pb_ls_take_ahead and ahead > 0:
             out['pb_ahead_label'] = _('Includes %(days)s days not earned yet', days=_num(ahead))
         return out

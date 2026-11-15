@@ -40,7 +40,7 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -285,11 +285,16 @@ class PbLeaveEarning(models.Model):
         """Make the year's allocation hold `target` days. Created the first
         time there is something to hold; approved at once (the job is the
         authority, there is nobody to ask)."""
-        Alloc = self.env['hr.leave.allocation'].sudo().with_context(**QUIET)
+        # AS the system user, not merely sudo: hr_holidays_attendance refuses a
+        # change to an approved allocation's days unless env.USER is a Time
+        # Off officer, sudo or not — and "Add the finished months now" is
+        # pressed by an HR manager who need not be one (found in the walk).
+        Alloc = self.env['hr.leave.allocation'].with_user(SUPERUSER_ID).with_context(
+            allowed_company_ids=[emp.company_id.id], **QUIET).sudo()
         alloc = self._year_allocation(kind, emp, year)
         if alloc:
             if target > 0 and abs((alloc.number_of_days or 0.0) - target) > 0.00001:
-                alloc.with_context(**QUIET).write({'number_of_days': target})
+                Alloc.browse(alloc.id).write({'number_of_days': target})
             return alloc
         if target <= 0:
             return alloc

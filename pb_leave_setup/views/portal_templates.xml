@@ -7,10 +7,10 @@
   <template id="portal_my_work_leave_earning" inherit_id="pb_ess_workforce.portal_my_work_leave"
             name="My Leave: earned so far">
     <xpath expr="//div[hasclass('pbme-tile-y')]" position="after">
-      <div t-if="b.get('pb_earned_label') or b.get('pb_next_label') or b.get('pb_ahead_label')" class="pbls-earn">
-        <span t-if="b.get('pb_earned_label')" class="pbls-earn-l" t-esc="b['pb_earned_label']"/>
-        <span t-if="b.get('pb_next_label')" class="pbls-earn-n" t-esc="b['pb_next_label']"/>
-        <span t-if="b.get('pb_ahead_label')" class="pbls-earn-a" t-esc="b['pb_ahead_label']"/>
+      <div t-if="b.get('pb_earned_label') or b.get('pb_next_label') or b.get('pb_ahead_label')" class="pblk-earn">
+        <span t-if="b.get('pb_earned_label')" class="pblk-earn-l" t-esc="b['pb_earned_label']"/>
+        <span t-if="b.get('pb_next_label')" class="pblk-earn-n" t-esc="b['pb_next_label']"/>
+        <span t-if="b.get('pb_ahead_label')" class="pblk-earn-a" t-esc="b['pb_ahead_label']"/>
       </div>
     </xpath>
   </template>

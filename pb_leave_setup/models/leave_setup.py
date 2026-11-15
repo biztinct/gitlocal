@@ -175,9 +175,9 @@ class PbLeaveSetup(models.AbstractModel):
         if not kind.requires_allocation:
             return _('Not counted')
         if kind.pb_ls_earning == 'monthly':
-            return _('%s a year, built up monthly', _num(kind.pb_ls_days_per_year))
+            return _('%s days a year, built up each month', _num(kind.pb_ls_days_per_year))
         if kind.pb_ls_earning == 'yearly':
-            return _('%s a year, all at once', _num(kind.pb_ls_days_per_year))
+            return _('%s days a year, all at once', _num(kind.pb_ls_days_per_year))
         return _('Given by HR')
 
     @api.model
@@ -193,6 +193,10 @@ class PbLeaveSetup(models.AbstractModel):
             return _('Partly paid (%(pct)s%%) %(who)s',
                      pct=_num((kind.pb_paid_fraction or 0.0) * 100), who=who)
         return _('Paid %s', who)
+
+    @api.model
+    def _days_label(self, days):
+        return _('1 day') if round(days or 0.0, 2) == 1 else _('%s days', _num(days))
 
     @api.model
     def _state(self, kind):
@@ -478,6 +482,9 @@ class PbLeaveSetup(models.AbstractModel):
                 'used': used,
             },
             'holders': holders,
+            'holders_label': ('' if not holders else
+                              _('1 person has days of it') if holders == 1 else
+                              _('%s people have days of it', holders)),
             'recent': [self._posting_row(p) for p in recent],
             'can_write': self._can_write(),
         }
@@ -516,13 +523,17 @@ class PbLeaveSetup(models.AbstractModel):
             cid = int(vals.get('company_id') or 0)
             if cid and cid not in self._co_ids():
                 raise UserError(_('Pick one of your own companies.'))
-            out['company_id'] = cid or False
+            # written only when it changes: core recomputes the kind's
+            # country from its company on every company write
+            if not kind or cid != kind.company_id.id:
+                out['company_id'] = cid or False
         if 'country' in vals:
             code = (vals.get('country') or '').upper()
             country = self.env['res.country'].sudo().search([('code', '=', code)], limit=1) if code else False
-            out['pb_policy_country_id'] = country.id if country else False
-            if country:
-                out['country_id'] = country.id
+            if not kind or code != self.env['pb.timeoff'].sudo()._type_country(kind):
+                # "Every country" clears both country fields the offer rule reads
+                out['pb_policy_country_id'] = country.id if country else False
+                out['country_id'] = country.id if country else False
         used = bool(kind and self.env['hr.leave'].sudo().search_count(
             [('holiday_status_id', '=', kind.id)], limit=1))
         if 'unit' in vals:
@@ -669,6 +680,11 @@ class PbLeaveSetup(models.AbstractModel):
                     if 'company_id' not in out:
                         out['company_id'] = self.env.company.id
                     kind = Kind.create(out)
+                if 'country_id' in out and not out['country_id'] and kind.country_id:
+                    # core computes the country from the company on create
+                    # (a False in the same values does not stop it): "Every
+                    # country" is written again on its own
+                    kind.write({'country_id': False})
                 self._write_names(kind, names)
         except ValidationError as e:
             raise UserError(e.args[0] if e.args else str(e))
@@ -748,8 +764,9 @@ class PbLeaveSetup(models.AbstractModel):
             rules.append(_('HR gives the days by hand; nothing is added automatically.'))
         else:
             if earning == 'monthly':
-                rules.append(_('%(year)s days a year: %(month)s days are added after each month '
-                               'worked.', year=_num(per_year), month=_num(per_year / 12.0)))
+                rules.append(_('%(year)s days a year, built up each month: %(month)s added '
+                               'after each month worked.', year=_num(per_year),
+                               month=self._days_label(per_year / 12.0)))
                 rules.append(_('Somebody who joins or leaves part-way through a month gets that '
                                "part of the month's days."))
                 if vals.get('take_ahead'):
@@ -796,7 +813,7 @@ class PbLeaveSetup(models.AbstractModel):
                                 allocated=_num(sample)),
                 'earned_label': (_('%(days)s days earned so far this year', days=_num(sample))
                                  if builds and earning == 'monthly' else ''),
-                'next_label': (_('Next: %(days)s on %(date)s', days=_num(per_year / 12.0),
+                'next_label': (_('Next: %(days)s on %(date)s', days=self._days_label(per_year / 12.0),
                                  date=self.env['pb.ess.workforce']._pb_ls_date(
                                      month_start(fields.Date.context_today(self))
                                      + relativedelta(months=1)))
