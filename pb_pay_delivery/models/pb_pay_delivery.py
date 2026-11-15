@@ -200,7 +200,13 @@ class PbPayDelivery(models.AbstractModel):
             return {'exists': False, 'state': '', 'state_label': '',
                     'request_id': 0, 'with_whom': '', 'block_reason': '',
                     'route': []}
-        request = record.approval_request_id
+        # WDGAP W2 F1 (ledger PRE-3): an approval request is readable only by
+        # the people it involves, so a pay-team member outside the route got
+        # an access error on the whole screen. Anybody who may open Pay &
+        # deliver reads where each approval stands and who has it — the step
+        # titles, states and names below, nothing else. Deciding is unchanged.
+        self._require_access()
+        request = record.approval_request_id.sudo()
         steps = []
         if request:
             for step in request.step_ids.sorted('sequence'):
@@ -219,7 +225,7 @@ class PbPayDelivery(models.AbstractModel):
             'state_label': dict(
                 record._fields['state'].selection).get(record.state, ''),
             'request_id': request.id if request else 0,
-            'with_whom': record._waiting_for(),
+            'with_whom': record.sudo()._waiting_for(),
             'block_reason': request.block_reason or '' if request else '',
             'route': steps,
         }
