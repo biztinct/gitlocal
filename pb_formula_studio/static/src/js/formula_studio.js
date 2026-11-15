@@ -415,6 +415,10 @@ export class PbFormulaStudio extends Component {
             // The status + meta payload the Health tab reads. The five-sub-tab
             // settings panel that used to own it is gone (SCHEMECTX P3).
             settings: null,
+            // WDGAP W2-F — "Tax year starts in" on the Health tab: a change
+            // waiting for the "finished payslips are not changed" answer.
+            taxYearBusy: false,
+            taxYearPending: null,
             // W97 — period comparison view (state.view === 'compare')
             cmpRuns: [],
             cmpA: null,
@@ -739,8 +743,15 @@ export class PbFormulaStudio extends Component {
             this.state.previewExtra = {};
             this.state.folds = {};           // W8 — folds are per-config, client-session only
             this.state.peopleOpen = false;   // COLROLES — a new structure opens quiet
+            // WDGAP W2-F — the Health tab's status and tax year belong to the
+            // scheme they were read for; another scheme reads its own.
+            this.state.settings = null;
+            this.state.taxYearPending = null;
         }
         this.state.config = d.config;
+        if (!this.state.settings && this.state.view === "health") {
+            this.loadSettings();
+        }
         // Approval Matrix P4 — what the business published for changing THIS
         // scheme, so the buttons can say what pressing them will actually do.
         // Never awaited into the critical path: a studio that would not open
@@ -3726,6 +3737,51 @@ export class PbFormulaStudio extends Component {
         const d = await this.orm.call("pb.formula.studio", "get_config_settings", [this.state.config.id]);
         if (!d || !d.ok) { this.notif.add(_t("Could not read this configuration's health."), { type: "warning" }); return; }
         this.state.settings = d;
+    }
+
+    /**
+     * WDGAP W2-F (F-4) — "Tax year starts in", the scheme form's own field.
+     * The server answers with the scheme form's warning when finished
+     * payslips exist; nothing is saved until the person says "Change it".
+     */
+    async onTaxYearChange(ev) {
+        const ty = this.state.settings && this.state.settings.tax_year;
+        const month = ev.target.value;
+        if (!ty || !month || month === ty.month) { return; }
+        ev.target.value = ty.month;     // the select shows what is saved
+        await this._saveTaxYear(month, false);
+    }
+
+    async confirmTaxYear() {
+        const pending = this.state.taxYearPending;
+        if (pending) { await this._saveTaxYear(pending.month, true); }
+    }
+
+    cancelTaxYear() { this.state.taxYearPending = null; }
+
+    async _saveTaxYear(month, confirmed) {
+        if (!this.state.config || this.state.taxYearBusy) { return; }
+        this.state.taxYearBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "save_tax_year_start",
+                [this.state.config.id, month, confirmed]);
+            if (r && r.needs_confirm) {
+                this.state.taxYearPending = { month, label: r.month_label, warning: r.warning };
+                return;
+            }
+            this.state.taxYearPending = null;
+            if (r && r.ok) {
+                if (r.tax_year) { this.state.settings.tax_year = r.tax_year; }
+                if (r.msg) { this.notif.add(r.msg, { type: "success" }); }
+            } else {
+                this.notif.add((r && r.msg) || _t("The tax year could not be changed."), { type: "warning" });
+            }
+        } catch (e) {
+            this.state.taxYearPending = null;
+            this.notif.add(_t("The tax year could not be changed."), { type: "warning" });
+        } finally {
+            this.state.taxYearBusy = false;
+        }
     }
     // ---- W97 — period comparison view ----
     async openCompare() {

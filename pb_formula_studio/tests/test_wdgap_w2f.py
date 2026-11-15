@@ -48,6 +48,64 @@ class TestW2fStudio(TransactionCase):
             vals['excel_formula'] = formula
         return cls.env['hr.formula.rule'].create(vals)
 
+    # ============================================================ F-4
+    def test_F4_1_the_health_tab_carries_the_field(self):
+        ty = self.Studio.get_config_settings(self.cfg.id)['tax_year']
+        self.assertEqual(ty['label'], 'Tax year starts in')
+        self.assertEqual(ty['month'], '1')
+        self.assertEqual(len(ty['options']), 12)
+        self.assertEqual(ty['options'][3], ['4', 'April'])
+        self.assertTrue(ty['help'])
+        self.assertTrue(ty['can_edit'])
+        self.assertNotIn('Odoo', str(ty))
+
+    def test_F4_2_no_finished_payslips_saves_at_once(self):
+        before = len(self.cfg.message_ids)
+        r = self.Studio.save_tax_year_start(self.cfg.id, '4')
+        self.assertTrue(r['ok'], r)
+        self.assertEqual(self.cfg.tax_year_start_month, '4')
+        self.assertEqual(r['tax_year']['month'], '4')
+        self.assertEqual(r['msg'], 'The tax year now starts in April.')
+        # tracking is written when the transaction closes (precommit)
+        self.env.flush_all()
+        self.env.cr.precommit.run()
+        self.cfg.invalidate_recordset(['message_ids'])
+        self.assertGreater(len(self.cfg.message_ids), before, 'tracked like the form')
+        tracked = self.cfg.message_ids.mapped('tracking_value_ids.field_id.name')
+        self.assertIn('tax_year_start_month', tracked)
+
+    def test_F4_3_finished_payslips_ask_first(self):
+        emp = self.env['hr.employee'].create({'name': 'W2F Tia'})
+        slip = self.env['hr.payslip'].create({
+            'name': 'W2F Tia', 'employee_id': emp.id, 'formula_config_id': self.cfg.id,
+            'date_from': '2026-03-01', 'date_to': '2026-03-31'})
+        slip.write({'state': 'done'})
+        warning = self.cfg._pb_tax_year_change_warning('4')
+        self.assertTrue(warning)
+        r = self.Studio.save_tax_year_start(self.cfg.id, '4')
+        self.assertFalse(r['ok'])
+        self.assertTrue(r['needs_confirm'])
+        self.assertEqual(r['warning'], warning, "the scheme form's own words")
+        self.assertEqual(self.cfg.tax_year_start_month, '1', 'nothing saved yet')
+        r = self.Studio.save_tax_year_start(self.cfg.id, '4', True)
+        self.assertTrue(r['ok'], r)
+        self.assertEqual(self.cfg.tax_year_start_month, '4')
+
+    def test_F4_4_plain_refusals(self):
+        self.assertEqual(self.Studio.save_tax_year_start(self.cfg.id, '13')['msg'],
+                         'Pick a month.')
+        self.assertTrue(self.Studio.save_tax_year_start(self.cfg.id, '1')['unchanged'])
+        self.assertFalse(self.Studio.save_tax_year_start(0, '4')['ok'])
+        reader = new_test_user(self.env, login='w2f_reader', groups='base.group_user')
+        Studio = self.Studio.with_user(reader)
+        try:
+            r = Studio.save_tax_year_start(self.cfg.id, '4')
+        except Exception:       # noqa: BLE001 — a refusal by the rights layer is fine too
+            r = {'ok': False}
+        self.assertFalse(r['ok'])
+        self.cfg.invalidate_recordset()
+        self.assertEqual(self.cfg.tax_year_start_month, '1')
+
     # ============================================================ F-5
     def test_F5_1_offer_calculator_shows_earnings_and_deductions(self):
         Slip, Line = self.env['hr.payslip'], self.env['hr.payslip.line']
