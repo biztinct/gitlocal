@@ -46,8 +46,8 @@ no live server touched. Local database `wdgap_s6a_t` (copy of `upd_p6_t_tpl`, br
   self-service / support / demo login; named route with nobody else → waits with the
   "add a person to the bank details route" sentence; role route → the Updates second
   person. **Fail-closed**: a self-service change is never written without a second
-  person's approve decision. Staff-started requests keep the `bankchange` route; they only
-  gain "support/demo/self-service logins never decide".
+  person's approve decision. (Superseded by Follow-up BK1: staff-typed requests now follow
+  the same one-second-person route.)
 - Approve / send back / turn down / withdraw run under sudo (a named approver may hold only
   a read seat — found by test B11, ledger row S6A-1).
 
@@ -220,15 +220,80 @@ user-visible file and msgstr: none.
    people as the Updates sheet's bank route — ONE second person (on rize: ash, debalina, thao or
    wildan). Bank changes HR types on the staff bank screen keep their two-step route (HR lead,
    then Finance). Keep it so, or should both use the same one-person route?
+   **ANSWERED — ruling BK1 (2026-11-16): HR's screen also needs one second person. Built: see
+   "Follow-up BK1" below.**
 2. **Salary certificate figure.** It shows the agreed monthly salary on the running contract
    (before tax). Some banks ask for take-home pay of the last 3 months instead — add that as a
    second line, or keep one figure?
+   **ANSWERED — ruling CT1 (2026-11-16): keep the agreed monthly salary. No change.**
 3. **Before go-live: people whose two bank records disagree.** The check lists them (numbers
    masked). For each, which is right — the account the bank file pays today, or the one the
    Updates sheet shows? Nothing is changed until you say.
 4. **Privacy notice wording.** We ship a neutral starting text that names no law. Each customer
    (rize, sudima, payobook demo) must review and publish its own; until it does, nobody is asked.
    Who will write rize's?
+
+## Follow-up BK1 (owner ruling 2026-11-16) — HR's own bank screen needs a second person too
+
+**Ruling:** "nobody can change where pay goes alone, whichever screen they use." Also ruling
+CT1: the salary certificate keeps the agreed monthly salary (no change).
+
+**What changed** (only `pb_bank_ocr/models/pb_bank_self_service.py`, in lane; version
+19.0.1.3.0 → 19.0.1.3.1):
+- Every bank change made on the bank-document check — HR's staff screen (Bank Verification
+  cockpit, `pb.bank.ocr` → `pb.bank.change.request`) as well as My Payobook — now travels the
+  Updates bank route `records_bank`: ONE second person, the same approvers as the Updates
+  sheet (rize's named people), never the person who typed it (`proposed_by_id`) nor the
+  person whose account it is, never a self-service / support / demo login, and the route's own
+  independence setting as each database has it (no new rule). `_approval_process_key_for`,
+  `_engine_managed`, the second-person hooks and the fail-closed check no longer depend on
+  where the request started. `action_submit` lays the shipped "a second person" route for a
+  company that has none yet (as the My Payobook path already did).
+- Both stores are written only by the approval (`_apply_to_master` → the four fields + the
+  account, first). Before the yes, and after a send-back, nothing moves.
+- **Silent:** bank details already on record are untouched; nothing asks for re-approval. A
+  request that was already sent in on the old two-step `bankchange` route before this change
+  keeps the rules it was sent under (`_pb_second_person_rule`).
+- One new sentence (fail-closed refusal reworded so it fits HR's screen too), vi + id.
+- Found while testing: the fallback "find the second person" read users as the person sending
+  (a plain employee login could not read other users) → now read under sudo.
+
+**Which screens can change where pay goes, after BK1**
+
+| Screen | Store written | Approval |
+|---|---|---|
+| My Payobook › My details › Bank account | both, on approval | one second person (records_bank) |
+| HR's bank-document check (staff screen) | both, on approval | one second person (records_bank) — **BK1** |
+| Updates sheet / Records screen bank lane | both, on approval | one second person (records_bank, UPDATES D13) |
+| Native employee form "Bank accounts" field (a core screen) | the account only; never the four fields the bank file pays from | none — **not changed** (core file, outside the lane). It cannot redirect pay (the bank file does not read it) and the store check lists any difference it causes |
+| Old Vietnam employee import wizard (`pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:141`) and the pay data file import (`pb_hr_payroll_formula` `_sync_employee_bank_account`) | the four fields / the account | none — **left for later** (outside the lane; owner decision whether imports also need a second person) |
+
+No file outside the S6-A lane was touched for BK1.
+
+**Tests (BK1)**
+
+| # | Test | Result |
+|---|---|---|
+| K1 | HR's edit waits: request on `records_bank`, ONE approval step, a seat exists, neither store moved | PASS |
+| K2 | the typist is never seated — even as the company's Finance holder — and the engine refuses their approve | PASS |
+| K3 | the second person's yes writes BOTH stores; the history row names the approver | PASS |
+| K4 | sent back: draft, reason kept, old details in both stores | PASS |
+| K5 | fail-closed: no second person's yes → nothing written | PASS |
+| K6 | details already on record untouched, no request made for them | PASS |
+| B12 | (updated) the support login is never seated; the Updates second person stands in | PASS |
+
+Suites: baseline before BK1 (fresh `wdgap_s6a_t`, S6-A head): pb_bank_ocr 34 tests, 4 known
+errors (test_07, 07b, 09, 15). After BK1: pb_bank_ocr 42 tests, the same 4 errors and nothing
+else; pb_records 140 / 0; pb_me_details 26 / 0. The old staff-path tests that submit as the
+employee (test_05, test_12) pass on the new route.
+
+**Deploy note:** after go-live, HR's bank screen no longer moves a change to "Finance review":
+the one approval is in the Approvals inbox of the second person. Check on each database that
+the "Bank details — a second person" route has somebody other than a self-service, support or
+demo login (rize: ash/debalina/thao/wildan).
+
+**Owner question (new):** the two import paths in the table above still write bank details
+without a second person. Should pay-data-file and employee imports also need one?
 
 ## 8. Left for later
 
