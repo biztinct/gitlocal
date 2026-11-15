@@ -7,7 +7,7 @@ Stopped at a safe point on the coordinator's owner-pause message. Nothing is hal
 - **Done and committed** on branch `wdgap-s5a` (from `origin/19.1` @ `abc2259b6`):
   - `eed734399` pb_timeoff 19.0.1.12.0 — balance board ignores days that ran out; own companies' kinds only.
   - `8b138cb38` pb_leave_setup 19.0.1.0.0 — the whole module (screen, drawer, build-up job, ready-made kinds, My Leave overrides, vi/id `.po`, 36 tests).
-  - The WIP commit holding this report and two small test fixes made after the last run (S2 action-groups probe, S10 comment stripping).
+  - `8b138cb38` already holds two small test fixes made after the last run (S2 action-groups probe, S10 comment stripping); the WIP commit holds this report.
 - **Last test result** (`pb_leave_setup` alone, local copy `wdgap_s5a_t`): 36 tests, 2 left failing — both were TEST bugs, fixed after that run, not yet re-run:
   S2 (`ir.actions.client` has no `group_ids` here) and S10 (the scan read an XML comment that names the vendor in engineering text).
 - **Baseline recorded before any edit** (same copy, unchanged tree): pb_timeoff 129 + pb_ess_workforce 146 + pb_me_team 22 = 297 tests,
