@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-C: on the claim form, how it is paid back and where the money
+       is; the pay team's "Paid in the pay data file" for a claim of a person
+       whose scheme is paid from a pay data file. -->
+  <record id="pb_expense_claim_view_form_pay" model="ir.ui.view">
+    <field name="name">pb.expense.claim.form.pay</field>
+    <field name="model">pb.expense.claim</field>
+    <field name="inherit_id" ref="pb_me_expense.pb_expense_claim_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//header/field[@name='state']" position="before">
+        <button name="action_pb_paid_in_file" type="object"
+                string="Paid in the pay data file"
+                invisible="state != 'approved' or pb_pay_route != 'payrun'"
+                groups="pb_hr_payroll_base.group_payroll_base_officer,om_hr_payroll.group_hr_payroll_user"
+                confirm="Mark this claim as paid in this month's pay data file? Only do this once the amount is in the file."/>
+      </xpath>
+      <xpath expr="//field[@name='paid_on']" position="after">
+        <field name="pb_pay_route" invisible="not pb_pay_route"/>
+        <field name="pb_pay_words" invisible="not pb_pay_words"/>
+      </xpath>
+      <xpath expr="//notebook" position="inside">
+        <page string="Paid back in pay" name="pb_paid_in_pay" invisible="not pb_payline_ids">
+          <field name="pb_payline_ids" readonly="1">
+            <list create="0" delete="0">
+              <field name="kind"/>
+              <field name="run_id"/>
+              <field name="payslip_id"/>
+              <field name="pay_month"/>
+              <field name="amount"/>
+              <field name="currency_id" column_invisible="True"/>
+              <field name="state" widget="badge"/>
+              <field name="paid_on"/>
+              <field name="note"/>
+            </list>
+          </field>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+  <record id="pb_expense_claim_view_list_pay" model="ir.ui.view">
+    <field name="name">pb.expense.claim.list.pay</field>
+    <field name="model">pb.expense.claim</field>
+    <field name="inherit_id" ref="pb_me_expense.pb_expense_claim_view_list"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='state']" position="after">
+        <field name="pb_pay_route" optional="show"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

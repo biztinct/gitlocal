@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- WDGAP S6-C: a claim paid back in pay is seen only inside the companies
+       the reader works in. Employees hold no right on it at all: their own
+       pages read it under sudo after the ownership guard. -->
+  <record id="rule_pb_expense_payline_company" model="ir.rule">
+    <field name="name">Claims paid back in pay: own companies</field>
+    <field name="model_id" ref="model_pb_expense_payline"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+</odoo>
