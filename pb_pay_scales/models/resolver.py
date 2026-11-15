@@ -112,6 +112,8 @@ class PbPayScales(models.AbstractModel):
             out['why'] = _("%(job)s is not on a pay scale.", job=job.display_name)
             return out
         scale = grade.scale_id.sudo()
+        # Known from here on: the hire screen may say WHY the scale is not used.
+        out.update(grade=grade, scale=scale)
         version = scale.version_on(day)
         if not version:
             out['why'] = _("%(scale)s has no amounts in force on %(day)s.",

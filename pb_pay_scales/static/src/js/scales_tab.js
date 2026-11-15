@@ -187,6 +187,20 @@ export class PbPayScales extends Component {
             "is-edit": this.editable,
         };
     }
+    jobsLine(n) {
+        if (!n) { return _t("no job"); }
+        return n === 1 ? _t("1 job") : _t("%s jobs", n);
+    }
+    get keepTitle() {
+        return _t("Put them on step 1 of their grade, pinned at the pay they have now. Nothing about their pay changes.");
+    }
+    async keepUnplaced(row) {
+        try {
+            await this.orm.call(MODEL, "keep_unplaced", [row.contract_id, this.gradeIdOf(row)]);
+            await this.load();
+            await this.reloadPeople();
+        } catch (error) { this._fail(error, _t("This could not be saved just now.")); }
+    }
     peopleLine(n) {
         if (!n) { return _t("nobody"); }
         return n === 1 ? _t("1 person") : _t("%s people", n);

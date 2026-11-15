@@ -24,6 +24,12 @@
         </span>
       </div>
     </t>
+    <t t-elif="pbsHint and pbsHint.show_why">
+      <div class="pbs-hint is-quiet">
+        <span class="pbs-hint-ic" t-out="ic('info', 14)"/>
+        <span class="pbs-hint-t" t-esc="pbsHint.why"/>
+      </div>
+    </t>
   </t>
 
   <t t-inherit="pb_people_advanced.ContractWizard" t-inherit-mode="extension">

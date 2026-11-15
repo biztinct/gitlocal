@@ -167,7 +167,7 @@
                     <button type="button" class="pbs-gr-n" t-on-click="() => this.openGrade(grade)">
                       <span t-esc="grade.name"/>
                     </button>
-                    <span class="pbs-gr-s"><t t-esc="peopleLine(grade.people)"/> · <t t-esc="grade.jobs.length"/> <span>jobs</span></span>
+                    <span class="pbs-gr-s"><t t-esc="peopleLine(grade.people)"/> · <t t-esc="jobsLine(grade.jobs.length)"/></span>
                     <span class="pbs-gr-mv" t-if="canWrite">
                       <button type="button" class="pbs-ico" title="Move up" t-on-click="() => this.moveGrade(grade, 'up')" t-out="ic('chevronUp', 13)"/>
                       <button type="button" class="pbs-ico" title="Move down" t-on-click="() => this.moveGrade(grade, 'down')" t-out="ic('chevronDown', 13)"/>
@@ -252,6 +252,10 @@
             </div>
             <span t-att-class="stateTone(row)" t-esc="stateWord(row)"/>
             <div class="pbs-person-a" t-if="canWrite">
+              <button t-if="row.state === 'unplaced' and !row.step" class="pbim-btn ghost sm" t-att-title="keepTitle"
+                      t-on-click="() => this.keepUnplaced(row)">
+                <span>Keep this pay</span>
+              </button>
               <button t-if="row.state === 'unplaced' and row.step" class="pbim-btn ghost sm" t-on-click="() => this.placeRow(row)">
                 <span>Mark on step <t t-esc="row.step"/></span>
               </button>

@@ -21,17 +21,14 @@ import { OnboardWizard } from "@pb_people_advanced/js/onboard_wizard";
 
 const MODEL = "pb.pay.scales";
 
-/** Merge two patch objects KEEPING getters as getters (Object.assign would
- *  call them on the wrong object while this file loads). */
-function merge(base, extra) {
-    const out = {};
-    Object.defineProperties(out, Object.getOwnPropertyDescriptors(base));
-    Object.defineProperties(out, Object.getOwnPropertyDescriptors(extra));
-    return out;
-}
-
-/** What both screens share. `this` is the wizard. */
-const hintMethods = {
+/**
+ * What both screens share. `this` is the wizard. A FACTORY, so each class is
+ * patched with its own object: `patch()` re-parents the object it is given,
+ * and a method that calls `super` must be written in the very object literal
+ * that is patched (copying it to another object keeps its old `super`, which
+ * broke `setup` in the first walk).
+ */
+const hintMethods = () => ({
     get pbsHint() {
         return this.pbs.hint || null;
     },
@@ -77,9 +74,12 @@ const hintMethods = {
             this.pbs.hint = null;
         }
     },
-};
+});
 
-patch(ContractWizard.prototype, merge(hintMethods, {
+patch(ContractWizard.prototype, hintMethods());
+patch(OnboardWizard.prototype, hintMethods());
+
+patch(ContractWizard.prototype, {
     setup() {
         super.setup(...arguments);
         this.pbs = useState({ hint: null });
@@ -102,9 +102,9 @@ patch(ContractWizard.prototype, merge(hintMethods, {
             this.pbsAsk({ employee_id: this.empId, date_start: this.state.form.date_start || false });
         }
     },
-}));
+});
 
-patch(OnboardWizard.prototype, merge(hintMethods, {
+patch(OnboardWizard.prototype, {
     setup() {
         super.setup(...arguments);
         this.pbs = useState({ hint: null });
@@ -122,4 +122,4 @@ patch(OnboardWizard.prototype, merge(hintMethods, {
             this.pbsAsk({ job_id: Number(this.state.form.job_id), date_start: this.state.form.date_start || false });
         }
     },
-}));
+});

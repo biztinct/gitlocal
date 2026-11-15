@@ -74,6 +74,7 @@ class TestS8aPackage(TransactionCase):
         hra = self._rule(cfg, 'HRA', 'House rent allowance', 'formula', '=%s*0.4' % b,
                          role='earning', seq=20)
         spl = self._rule(cfg, 'SPECIAL', 'Special allowance', 'input', role='earning', seq=30)
+        spl.is_contract_component = True
         self._rule(cfg, 'BONUSIN', 'Joining bonus', 'input', role='info', seq=35, on_slip=False)
         gross = self._rule(cfg, 'GROSS', 'Gross pay', 'formula',
                            '=%s+%s+%s' % (b, hra.column_letter, spl.column_letter),
@@ -225,6 +226,14 @@ class TestS8aPackage(TransactionCase):
         self.assertEqual(out['use']['wage'], 50000.0, "BASIC is the item filled from the wage")
         self.assertEqual(out['use']['items'], [
             {'code': 'SPECIAL', 'name': 'Special allowance', 'amount': 28200.0}])
+
+    def test_p9b_an_item_the_contract_does_not_hold_is_not_offered(self):
+        cfg = self._india()
+        cfg.rule_ids.filtered(lambda r: r.code == 'SPECIAL').is_contract_component = False
+        out = self._solve(cfg, self._contract())
+        self.assertEqual(out['outcome'], 'exact')
+        self.assertFalse(out['can_use'])
+        self.assertIn('not kept on the contract', out['note'])
 
     # ----------------------------------------------------------------- P10
     def test_p10_white_label(self):

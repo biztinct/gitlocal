@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 12:09+0000\n"
-"PO-Revision-Date: 2026-11-15 12:09+0000\n"
+"POT-Creation-Date: 2026-11-15 16:20+0000\n"
+"PO-Revision-Date: 2026-11-15 16:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -29,6 +29,14 @@ msgid ""
 "%(basic)s at %(basic_value)s and what the scheme adds to it already cost "
 "%(now)s a month, more than %(month)s. Lower the share for basic pay."
 msgstr "%(basic)s sebesar %(basic_value)s dan yang ditambahkan skema di atasnya sudah menelan %(now)s per bulan, lebih dari %(month)s. Turunkan porsi gaji pokok."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"%(items)s is not kept on the contract in this pay scheme, so these figures "
+"cannot be filled in from here."
+msgstr "%(items)s tidak disimpan di kontrak pada skema gaji ini, jadi angka-angka ini tidak bisa diisi dari sini."
 
 #. module: pb_pay_package
 #. odoo-python
@@ -155,6 +163,14 @@ msgstr ""
 #: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
 msgid "New"
 msgstr "Baru"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"No pay scheme pays this person yet, so there is nothing to build the total "
+"with. Put their team on a pay scheme first."
+msgstr "Belum ada skema gaji yang membayar orang ini, jadi belum ada dasar untuk menyusun total. Masukkan timnya ke skema gaji dulu."
 
 #. module: pb_pay_package
 #. odoo-javascript

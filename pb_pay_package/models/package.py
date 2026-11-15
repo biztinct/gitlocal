@@ -86,7 +86,13 @@ class PbPayPackage(models.AbstractModel):
 
     @api.model
     def _subject(self, contract_id, config_id=False):
-        return self._studio()._th_subject(config_id or False, False, contract_id)
+        subject, refusal = self._studio()._th_subject(config_id or False, False, contract_id)
+        if refusal and refusal.get('reason') == 'no_scheme':
+            # The shared refusal speaks of take-home; this card builds a total.
+            refusal = dict(refusal, msg=_(
+                "No pay scheme pays this person yet, so there is nothing to build "
+                "the total with. Put their team on a pay scheme first."))
+        return subject, refusal
 
     # ================================================================ open
     @api.model
@@ -311,7 +317,16 @@ class PbPayPackage(models.AbstractModel):
             use_items = [{'code': balance.code, 'name': xname, 'amount': value}]
             if basic.code not in subject['wage_codes']:
                 use_items.insert(0, {'code': basic.code, 'name': bname, 'amount': basic_amount})
-            out['use'] = {'wage': wage, 'items': use_items}
-            out['can_use'] = True
+            # A pay item the contract does not hold (not a contract pay line in
+            # this scheme) cannot be put on the contract: say so, offer nothing.
+            off = [it['name'] for it in use_items
+                   if not getattr(items[it['code']], 'is_contract_component', True)]
+            if off:
+                out['note'] = ((out['note'] + ' ') if out['note'] else '') + _(
+                    "%(items)s is not kept on the contract in this pay scheme, so "
+                    "these figures cannot be filled in from here.", items=', '.join(off))
+            else:
+                out['use'] = {'wage': wage, 'items': use_items}
+                out['can_use'] = True
         out['ms'] = int((time.monotonic() - started) * 1000)
         return out

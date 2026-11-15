@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 12:09+0000\n"
-"PO-Revision-Date: 2026-11-15 12:09+0000\n"
+"POT-Creation-Date: 2026-11-15 16:20+0000\n"
+"PO-Revision-Date: 2026-11-15 16:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -29,6 +29,14 @@ msgid ""
 "%(basic)s at %(basic_value)s and what the scheme adds to it already cost "
 "%(now)s a month, more than %(month)s. Lower the share for basic pay."
 msgstr "%(basic)s ở mức %(basic_value)s cùng những khoản chế độ tính thêm đã tốn %(now)s một tháng, nhiều hơn %(month)s. Hãy giảm tỷ lệ lương cơ bản."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"%(items)s is not kept on the contract in this pay scheme, so these figures "
+"cannot be filled in from here."
+msgstr "%(items)s không được lưu trên hợp đồng trong chế độ lương này, nên không thể điền các con số này từ đây."
 
 #. module: pb_pay_package
 #. odoo-python
@@ -155,6 +163,14 @@ msgstr ""
 #: code:addons/pb_pay_package/static/src/xml/build_total.xml:0
 msgid "New"
 msgstr "Mới"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/package.py:0
+msgid ""
+"No pay scheme pays this person yet, so there is nothing to build the total "
+"with. Put their team on a pay scheme first."
+msgstr "Chưa có chế độ lương nào trả lương cho người này, nên chưa có gì để lập tổng. Hãy gắn nhóm của họ vào một chế độ lương trước."
 
 #. module: pb_pay_package
 #. odoo-javascript

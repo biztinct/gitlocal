@@ -765,6 +765,13 @@ class PbPayScalesScreen(models.AbstractModel):
         return {'ok': True, 'state': row.state, 'label': row.label()}
 
     @api.model
+    def keep_unplaced(self, contract_id, grade_id):
+        """A person whose pay is no step: put them on step 1 of the grade,
+        pinned "Paid this before the scale". Placement only, never the pay."""
+        self.place(contract_id, grade_id, 1)
+        return self.pin(contract_id, 'legacy')
+
+    @api.model
     def pin(self, contract_id, reason, note=''):
         self._require_write()
         contract = self._contract(contract_id)
@@ -812,6 +819,8 @@ class PbPayScalesScreen(models.AbstractModel):
         out = {'found': answer['found'], 'why': answer['why'] or '',
                'amount': answer['amount'], 'sentence': answer['sentence'],
                'steps': answer['steps'], 'reasons': self._pin_reasons(),
+               # A job on a grade whose scale cannot be used says why, quietly.
+               'show_why': bool(answer['grade']) and not answer['found'],
                'grade': answer['grade'].name if answer['grade'] else '',
                'scale': answer['scale'].name if answer['scale'] else ''}
         if answer['found'] and wage not in (None, '', False):

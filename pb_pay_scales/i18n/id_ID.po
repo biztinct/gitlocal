@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Payobook 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 12:09+0000\n"
-"PO-Revision-Date: 2026-11-15 12:09+0000\n"
+"POT-Creation-Date: 2026-11-15 16:20+0000\n"
+"PO-Revision-Date: 2026-11-15 16:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -120,6 +120,12 @@ msgstr "%(start)s sampai %(end)s"
 #. module: pb_pay_scales
 #. odoo-javascript
 #: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "%s jobs"
+msgstr "%s jabatan"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
 msgid "%s people"
 msgstr "%s orang"
 
@@ -134,6 +140,12 @@ msgstr "'%s' bukan angka."
 #: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
 msgid "+% all"
 msgstr "+% semua"
+
+#. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "1 job"
+msgstr "1 jabatan"
 
 #. module: pb_pay_scales
 #. odoo-javascript
@@ -1195,6 +1207,14 @@ msgid "Placed on"
 msgstr "Ditempatkan pada"
 
 #. module: pb_pay_scales
+#. odoo-javascript
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid ""
+"Put them on step 1 of their grade, pinned at the pay they have now. Nothing "
+"about their pay changes."
+msgstr "Tempatkan mereka di tingkat 1 golongannya, ditetapkan pada gaji mereka sekarang. Gaji mereka tidak berubah sama sekali."
+
+#. module: pb_pay_scales
 #. odoo-python
 #: code:addons/pb_pay_scales/models/screen.py:0
 msgid "Put this person on a grade and step first."
@@ -1782,9 +1802,9 @@ msgstr "berlaku"
 
 #. module: pb_pay_scales
 #. odoo-javascript
-#: code:addons/pb_pay_scales/static/src/xml/scales_tab.xml:0
-msgid "jobs"
-msgstr "jabatan"
+#: code:addons/pb_pay_scales/static/src/js/scales_tab.js:0
+msgid "no job"
+msgstr "belum ada jabatan"
 
 #. module: pb_pay_scales
 #. odoo-javascript
