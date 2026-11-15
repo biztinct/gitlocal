@@ -26,7 +26,7 @@ THE BALANCE IS DERIVED, never typed: amount minus what was paid. The loan
 closes itself at zero. The pay team works from a Loans board (a lens of the
 Payroll hub and a ⌘K entry); the person sees "My loans" on My Payobook.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',

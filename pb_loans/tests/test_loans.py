@@ -437,14 +437,17 @@ class TestLoans(LoansFixture):
             lambda r: r.code == 'PRBLOANIN')
         slip.compute_sheet()
         self.assertFalse(slip.pb_loan_issue)
-        # instalment bigger than the month's take-home
+        # instalment bigger than the month's take-home. WDGAP PR-E (owner
+        # ruling, E3): it is no longer taken in full — cut so take-home is
+        # not below zero, the rest stays in the balance, and the payslip says
+        # so (see test_wdgap_pre_floor for the whole rule).
         big = self.loan(self.bob, amount=30_000_000, each=15_000_000)
         bslip = self.slip(self.bob, run)
-        self.assertEqual(self.inputs(bslip)[0]['PRBLOANIN'], 15_000_000.0, "amount NOT changed")
+        self.assertEqual(self.inputs(bslip)[0]['PRBLOANIN'], 10_000_000.0, "cut to what fits")
         flags = run.pb_review_flags()
         self.assertTrue(flags[bslip.id]['flag'])
-        self.assertIn("more than this month's take-home", flags[bslip.id]['reason'])
-        self.assertEqual(big.in_payrun, 15_000_000)
+        self.assertIn("Loan instalment cut from", flags[bslip.id]['reason'])
+        self.assertEqual(big.in_payrun, 10_000_000)
 
     def test_T9b_currency_and_other_source(self):
         usd = self.env.ref('base.USD')

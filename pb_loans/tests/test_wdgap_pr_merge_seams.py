@@ -7,7 +7,8 @@
 2c  PR-B's loan flags and PR-C's "Pay on hold" flag on ONE run: both
     survive, including the case where the loan makes take-home negative
     (PR-B rewrites the generic "zero or below" reason there — it must keep
-    the hold PR-C appended to it).
+    the hold PR-C appended to it). Since WDGAP PR-E the instalment is cut so
+    take-home stays at zero, and the cut's sentence is the loan's reason.
 """
 from odoo.tests import new_test_user, tagged
 
@@ -61,7 +62,9 @@ class TestPrMergeSeams(LoansFixture):
         ann = self.slip(self.ann, run)
         bob = self.slip(self.bob, run)
         flags = run.pb_review_flags()
-        self.assertIn("more than this month's take-home", flags[bob.id]['reason'])
+        # WDGAP PR-E (E3): Bob's instalment is cut so take-home is not below
+        # zero; the loan's own sentence replaces the generic zero reason
+        self.assertIn("Loan instalment cut from", flags[bob.id]['reason'])
         self.assertNotIn('Pay on hold', flags[bob.id]['reason'])
         self.assertFalse(flags[ann.id]['flag'])
 
@@ -74,9 +77,9 @@ class TestPrMergeSeams(LoansFixture):
         self.assertEqual(flags[ann.id]['kind'], 'hold')
         self.assertEqual(flags[ann.id]['reason'], 'Pay on hold')
         self.assertIn('1,000,000', flags[ann.id]['loan_note'])
-        # Bob: take-home below zero because of the loan AND held → both said
+        # Bob: take-home at zero because of the loan cut AND held → both said
         self.assertTrue(flags[bob.id]['flag'])
         self.assertIn('Pay on hold', flags[bob.id]['reason'])
-        self.assertIn("more than this month's take-home", flags[bob.id]['reason'])
+        self.assertIn("Loan instalment cut from", flags[bob.id]['reason'])
         self.assertNotIn('zero or below', flags[bob.id]['reason'])
         self.assertEqual(run.pb_hold_summary()['count'], 2)

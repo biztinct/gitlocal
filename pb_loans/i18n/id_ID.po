@@ -2245,3 +2245,32 @@ msgstr "— dengan"
 #: code:addons/pb_loans/static/src/xml/loans_board.xml:0
 msgid "”. Check the spelling, or search by a person or a reason."
 msgstr "”. Periksa ejaannya, atau cari berdasarkan orang atau alasan."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "%(month)s: %(why)s. The rest stays in the balance and the plan runs on."
+msgstr "%(month)s: %(why)s. Sisanya tetap di saldo dan rencana berlanjut."
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_payroll.py:0
+msgid "Cut from %(planned)s to %(taken)s so take-home is not below zero"
+msgstr "Dipotong dari %(planned)s menjadi %(taken)s agar gaji bersih tidak di bawah nol"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "(newest loan cut first)"
+msgstr "(pinjaman terbaru dipotong lebih dulu)"
+
+#. module: pb_loans
+#. odoo-python
+#: code:addons/pb_loans/models/loan_review.py:0
+msgid "Loan instalment cut from %(planned)s to %(taken)s so take-home is not below zero · %(left)s left"
+msgstr "Cicilan pinjaman dipotong dari %(planned)s menjadi %(taken)s agar gaji bersih tidak di bawah nol · sisa %(left)s"
+
+#. module: pb_loans
+#: model:ir.model.fields,field_description:pb_loans.field_hr_payslip__pb_loan_cut
+msgid "Loan instalment cut"
+msgstr "Cicilan pinjaman dipotong"
