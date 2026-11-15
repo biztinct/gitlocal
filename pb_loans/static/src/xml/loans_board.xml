@@ -267,7 +267,10 @@
                 <table t-else="" class="pbln-hist">
                   <tbody>
                     <tr t-foreach="L.history" t-as="hx" t-key="hx.id" t-att-class="'is-' + hx.state">
-                      <td><b t-esc="hx.month"/><small t-esc="hx.how"/></td>
+                      <td><b t-esc="hx.month"/><small t-esc="hx.how"/>
+                        <!-- WDGAP PR-E: why this month's amount is what it is
+                             (an instalment cut so take-home stays above zero) -->
+                        <small t-if="hx.why" class="pbln-hist-why" t-esc="hx.why"/></td>
                       <td class="num"><span t-esc="hx.amount"/><small t-if="hx.reference" t-esc="hx.reference"/></td>
                       <td><span class="pbim-badge pbln-badge" t-att-class="'is-' + hx.state" t-esc="hx.state_label"/></td>
                     </tr>
