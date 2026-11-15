@@ -3801,6 +3801,12 @@ class HrPayrollImportBatch(models.Model):
             # nobody tested.
             'pb_sourced_inputs': self.env['hr.payslip'].pb_count_sourced(input_sources),
         }
+        # WDGAP W2-F (F-1): an Extra run's payslip records which payslip had
+        # already taken the advance it was not given (empty on every other run,
+        # so the key is only written when there is something to say).
+        kept_out = self._pb_advance_kept_out(employee)
+        if kept_out:
+            payslip_vals['pb_advance_taken_in_id'] = kept_out.id
         if 'journal_id' in self.env['hr.payslip']._fields:
             payslip_vals['journal_id'] = self._get_payroll_journal().id
 
@@ -4957,8 +4963,16 @@ class HrPayrollImportBatch(models.Model):
                 input_values, employee, contract))
 
         if config.cycle_type == 'end_cycle':
-            _run_adjustment('carryover', lambda: self._apply_mid_cycle_carryover(
-                input_values, employee))
+            # WDGAP W2-F (F-1): an Extra run whose person's advance another
+            # payslip of the month already took feeds 0 instead
+            # (`advance_once.py`). Every other run never reaches the branch.
+            kept_out = self._pb_advance_kept_out(employee)
+            if kept_out:
+                _run_adjustment('carryover', lambda: self._pb_feed_no_advance(
+                    input_values, employee, kept_out))
+            else:
+                _run_adjustment('carryover', lambda: self._apply_mid_cycle_carryover(
+                    input_values, employee))
 
         # GROUP P5 — people in two places, on THIS path too.
         #

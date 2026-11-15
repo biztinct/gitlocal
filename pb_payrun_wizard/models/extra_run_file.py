@@ -21,11 +21,18 @@ computes anybody the file leaves out: by the wizard's own compute, from their
 contract and records, without the file. They are named before the run is
 computed (the pay-data step's check) and again in the run's summary.
 
-THE MID-MONTH ADVANCE. On an end-of-month scheme the pay data file path adds
-the month's mid-month advance (`_apply_mid_cycle_carryover`) to every
-payslip it makes, whatever the kind of run — so a picked person's extra
-payslip takes it off again. Carry-over is not redesigned here (handover); the
-payslip is flagged on the run's review instead, with kind ``advance``.
+THE MID-MONTH ADVANCE (WDGAP W2-F, F-1 — owner ruling 2026-11-15: "An Extra
+run ignores the advance from the file when the month's regular run already
+took it, and says so on screen"). The pay data file path adds the month's
+mid-month advance to every payslip it makes. For an Extra run the engine now
+asks first (`pb_hr_payroll_formula/models/advance_once.py`): when another
+payslip of the month already carries it, the Extra run feeds 0 and the
+payslip records where it was taken (`pb_advance_taken_in_id`). The review
+then carries a NOTE, not a flag: "Advance not taken again (already in …)".
+Where the Extra run still takes it, it stays flagged: saying why when the
+rule could not tell (the month's regular payslip is not worked out yet) or
+when a payslip worked out later took it too; with PR-E's words, unchanged,
+when nothing else has taken it (the Extra run may be the one to take it).
 """
 import json
 import logging
@@ -61,23 +68,57 @@ class HrPayslipRunExtraPicks(models.Model):
         return out
 
     def _pb_extra_advance_flags(self, out):
-        """Flag an Extra run's payslip that the pay data file also took the
-        mid-month advance off. Appends to a reason already there (" · "), the
-        way every other module adds to the one shared answer (ledger PRM-1)."""
+        """What an Extra run's payslip did with the mid-month advance.
+
+        * kept out (another payslip of the month had taken it) — a NOTE, never
+          a flag: "Advance not taken again (already in <run>)";
+        * taken, and the rule could not tell (the regular payslip of the month
+          is not worked out yet) — FLAGGED, saying why;
+        * taken, and a payslip of the month worked out AFTER it took it too —
+          FLAGGED: it is taken twice;
+        * taken, nothing else has (the Extra run may be the one that takes
+          it), or a scheme the rule cannot read — the PR-E flag, unchanged
+          (handover: "behaviour is unchanged").
+
+        A flag appends to a reason already there (" · "), the way every other
+        module adds to the one shared answer (ledger PRM-1); a note appends to
+        a note the same way."""
         if not out or 'pb_run_kind' not in self._fields \
                 or (self.pb_run_kind or 'regular') != 'extra':
             return out
         slips = self.env['hr.payslip'].sudo().browse(list(out)).exists()
         if 'formula_input_sources' not in slips._fields:
             return out
-        words = _("This file also takes the mid-month advance; check it has "
-                  "not been taken already")
+        kept_field = 'pb_advance_taken_in_id' in slips._fields
+        taking = slips.filtered(lambda s: s.state != 'cancel' and not (
+            kept_field and s.pb_advance_taken_in_id) and self._pb_took_advance(s))
+        verdicts = self._pb_advance_verdicts_of(taking)
         for slip in slips:
             row = out.get(slip.id)
-            if row is None or slip.state == 'cancel' \
-                    or not self._pb_took_advance(slip):
+            if row is None or slip.state == 'cancel':
+                continue
+            if kept_field and slip.pb_advance_taken_in_id:
+                where = self._pb_advance_where(slip.pb_advance_taken_in_id)
+                row['advance_kept_out'] = True
+                self._pb_add_note(row, _("Advance not taken again (already in %s)", where))
+                continue
+            if slip not in taking:
                 continue
             row['advance'] = True
+            verdict = verdicts.get(slip.employee_id.id) or {}
+            if verdict.get('verdict') == 'undecided':
+                words = _(
+                    "Takes the mid-month advance: %s is not worked out yet, so "
+                    "it could not be told whether it takes it too",
+                    verdict.get('where') or _("the regular payslip"))
+            elif verdict.get('verdict') == 'taken':
+                # the month's regular payslip was worked out after this one
+                # and took it as well
+                words = _("Takes the mid-month advance, and %s took it too — it "
+                          "is taken twice", verdict.get('where') or '')
+            else:
+                words = _("This file also takes the mid-month advance; check it has "
+                          "not been taken already")
             if row.get('flag'):
                 row['reason'] = ' · '.join(
                     r for r in [row.get('reason') or '', words] if r)
@@ -86,10 +127,42 @@ class HrPayslipRunExtraPicks(models.Model):
         return out
 
     @staticmethod
+    def _pb_add_note(row, words):
+        row['note'] = ' · '.join(r for r in [row.get('note') or '', words] if r)
+
+    @staticmethod
+    def _pb_advance_where(slip):
+        """The pay run (else the payslip) that took the advance, by name."""
+        slip = slip.sudo()
+        return slip.payslip_run_id.name or slip.name or ''
+
+    def _pb_advance_verdicts_of(self, slips):
+        """The engine's verdicts for these payslips' people ({} without the
+        engine's rule — the old flag then stands)."""
+        if not slips or 'formula_config_id' not in slips._fields:
+            return {}
+        out = {}
+        for config in slips.mapped('formula_config_id'):
+            if not hasattr(config, '_pb_advance_verdicts'):
+                continue
+            mine = slips.filtered(lambda s, c=config: s.formula_config_id == c)
+            try:
+                out.update(config._pb_advance_verdicts(
+                    mine.mapped('employee_id'), self.date_start, self.date_end,
+                    exclude_run=self))
+            except Exception:   # noqa: BLE001 — a review line never breaks a screen
+                _logger.exception('pb_payrun_wizard: advance verdict failed on run %s',
+                                  self.id)
+        return out
+
+    @staticmethod
     def _pb_took_advance(slip):
         """Did the pay data file's carry-over change any of this payslip's
         values? Read from the payslip's own sources (the file path names the
-        adjustment that touched a value: ``adj: ['carryover']``)."""
+        adjustment that touched a value: ``adj: ['carryover']``). A payslip
+        the advance was kept out of (W2-F) did not take it."""
+        if 'pb_advance_taken_in_id' in slip._fields and slip.pb_advance_taken_in_id:
+            return False
         try:
             sources = json.loads(slip.formula_input_sources or '{}')
         except (TypeError, ValueError):

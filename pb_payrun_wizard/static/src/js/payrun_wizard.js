@@ -532,6 +532,12 @@ export class PayrunWizard extends Component {
 
     get missingHeading() { return notInPayobookHeading(this.missingPeople.length); }
 
+    /** WDGAP W2-F — review lines worth knowing that are not flags. */
+    get summaryNotes() {
+        return ((this.state.summary && this.state.summary.rows) || [])
+            .filter((r) => r.note && !r.flag);
+    }
+
     /** Every exception, however it is grouped — what "Need review" counts. */
     get needReview() {
         const s = this.state.summary || {};
@@ -1112,7 +1118,11 @@ export class PayrunWizard extends Component {
             // the file carries, so the step can say it before computing.
             const args = [configId, s.file_b64, s.file_name];
             if (this.isExtraRun && this.state.who.picked.length) {
-                args.push([...this.state.who.picked]);
+                // WDGAP W2-F — and the month, so the step can say for whom
+                // the mid-month advance was already taken.
+                args.push([...this.state.who.picked],
+                    this.state.form.date_start || false,
+                    this.state.form.date_end || false);
             }
             const res = await this.orm.silent.call(
                 "pb.payrun.wizard", "preflight_spreadsheet", args);

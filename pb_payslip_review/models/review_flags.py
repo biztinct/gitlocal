@@ -53,7 +53,9 @@ class HrPayslipRun(models.Model):
         ``prev_net`` / ``prev_date`` (the previous payslip's, or None),
         ``change_pct`` (signed, or None), ``flag`` (bool), ``kind``
         ('zero' | 'change' | '') and ``reason`` (a plain sentence in the
-        reader's language, '' when not flagged).
+        reader's language, '' when not flagged). Another module may add
+        ``note`` (WDGAP W2-F): a plain sentence worth knowing that is NOT a
+        flag — both screens show it quietly and never count it.
         """
         self.ensure_one()
         cr = self.env.cr

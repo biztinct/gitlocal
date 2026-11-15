@@ -79,6 +79,8 @@
                                 <div class="psr-card-nm" t-esc="s.emp"/>
                                 <div class="psr-card-meta" t-esc="s.title"/>
                                 <div t-if="s.flag and s.why" class="psr-card-why" data-coach="ps-why" t-esc="s.why"/>
+                                <!-- WDGAP W2-F — worth knowing, never counted as Need review -->
+                                <div t-if="!s.flag and s.note" class="psr-card-note" t-esc="s.note"/>
                             </div>
                             <div class="psr-card-r">
                                 <div class="psr-card-net" t-esc="vnd(s.net)"/>

@@ -20,3 +20,4 @@ from . import test_run_kind
 # WDGAP PR-D — the Extra run: only the people picked, never another run's.
 from . import test_wdgap_prd_extra_run
 from . import test_wdgap_pre_extra_file
+from . import test_wdgap_w2f_advance_once

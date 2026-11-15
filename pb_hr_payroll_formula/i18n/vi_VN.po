@@ -16006,3 +16006,13 @@ msgstr "Từ nay, các số liệu lũy kế của bảng lương này sẽ đư
 #: code:addons/pb_hr_payroll_formula/models/tax_year.py:0
 msgid "Tax year"
 msgstr "Năm tính thuế"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__pb_advance_taken_in_id
+msgid "Mid-month advance already taken in"
+msgstr "Tạm ứng giữa tháng đã trừ trong"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__pb_advance_taken_in_id
+msgid "This extra payslip did not take the mid-month advance, because this payslip of the same month already had."
+msgstr "Phiếu lương bổ sung này không trừ khoản tạm ứng giữa tháng, vì phiếu lương này của cùng tháng đã trừ rồi."

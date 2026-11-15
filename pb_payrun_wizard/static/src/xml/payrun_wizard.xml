@@ -585,6 +585,15 @@
                             </t>
                         </div>
                     </t>
+                    <!-- WDGAP W2-F — lines worth knowing that need nobody's
+                         action (the mid-month advance not taken again). -->
+                    <t t-if="summaryNotes.length">
+                        <div class="pw-list pw-notes">
+                            <t t-foreach="summaryNotes" t-as="r" t-key="r.id">
+                                <div class="pw-li"><span class="pw-note-chip"><t t-out="ic('info',13)"/> <t t-esc="r.note"/></span><span t-esc="r.emp"/></div>
+                            </t>
+                        </div>
+                    </t>
                     <t t-if="!exc.length and !state.summary.flagged and !missingPeople.length">
                         <div class="pw-result"><div class="pw-result-ic ok"><t t-out="ic('check',30)"/></div><h3>No exceptions</h3><p class="pw-muted">All <t t-esc="state.summary.count"/> payslips look clean.</p></div>
                     </t>
@@ -665,6 +674,11 @@
                 </div>
                 <div class="pw-extrafile-w" t-if="note.advance_sentence">
                     <t t-out="ic('alert',13)"/><span t-esc="note.advance_sentence"/>
+                </div>
+                <!-- WDGAP W2-F — the advance another payslip already took is
+                     not taken again; a calm line, not a warning. -->
+                <div class="pw-extrafile-w pw-extrafile-i" t-if="note.advance_kept_sentence">
+                    <t t-out="ic('info',13)"/><span t-esc="note.advance_kept_sentence"/>
                 </div>
             </div>
         </div>
