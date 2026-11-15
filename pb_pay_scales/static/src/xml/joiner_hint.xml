@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP S8-A — the line under the wage box on the hire screens. Inherited,
+     never edited. One sentence per line (PRD-3). No double hyphen here. -->
+<templates xml:space="preserve">
+
+  <t t-name="pb_pay_scales.WageHint">
+    <t t-if="pbsHint and pbsHint.found">
+      <div class="pbs-hint">
+        <span class="pbs-hint-ic" t-out="ic('layers', 14)"/>
+        <span class="pbs-hint-t">
+          <span>From the pay scale:</span> <b t-esc="pbsHint.sentence"/>
+          <span class="pbs-hint-s" t-if="pbsOnLine" t-esc="pbsOnLine"/>
+        </span>
+      </div>
+      <div class="pbs-hint is-off" t-if="pbsOff">
+        <span class="pbs-hint-t">
+          <span t-esc="pbsOffLine"/>
+          <select class="pplw-in pbs-hint-sel" t-on-change="onPbsReason">
+            <option value="">Choose a reason</option>
+            <option t-foreach="pbsReasons" t-as="r" t-key="r.value" t-att-value="r.value"
+                    t-att-selected="r.value === state.form.pb_scale_pin_reason" t-esc="r.label"/>
+          </select>
+          <button type="button" class="pbs-hint-use" t-on-click="() => this.pbsUseScale()">Use the scale amount</button>
+        </span>
+      </div>
+    </t>
+  </t>
+
+  <t t-inherit="pb_people_advanced.ContractWizard" t-inherit-mode="extension">
+    <xpath expr="//input[@t-on-change=&quot;(ev) =&gt; this.onField('wage', ev)&quot;]" position="after">
+      <t t-call="pb_pay_scales.WageHint"/>
+    </xpath>
+  </t>
+
+  <t t-inherit="pb_people_advanced.OnboardWizard" t-inherit-mode="extension">
+    <xpath expr="//input[@t-on-change=&quot;(ev) =&gt; this.onField('wage', ev)&quot;]" position="attributes">
+      <attribute name="t-att-value">state.form.wage</attribute>
+    </xpath>
+    <xpath expr="//input[@t-on-change=&quot;(ev) =&gt; this.onField('wage', ev)&quot;]" position="after">
+      <t t-call="pb_pay_scales.WageHint"/>
+    </xpath>
+  </t>
+
+</templates>
