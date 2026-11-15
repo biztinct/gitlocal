@@ -189,6 +189,16 @@
         &.tone-warn { border-color: var(--amber-s); background: var(--amber-s); .v { color: var(--amber); } }
     }
     .pbc-hint { font-size: 11.5px; color: var(--mut); }
+    // WDGAP W2-C — the quiet door beside the wage: a link, not a button.
+    .pbc-takehome {
+        align-self: flex-start; display: inline-flex; align-items: center; gap: 5px;
+        margin-top: 2px; padding: 0; border: none; background: none; cursor: pointer;
+        font: inherit; font-size: 11.5px; font-weight: 700; color: var(--p);
+        svg { flex: none; }
+        span { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 2px; transition: text-decoration-color .15s ease; }
+        &:hover span, &:focus-visible span { text-decoration-color: currentColor; }
+        &:focus-visible { outline: 2px solid var(--p); outline-offset: 2px; border-radius: 4px; }
+    }
 
     // ---- terms: readiness chips ----
     .pbc-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }

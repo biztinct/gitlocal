@@ -1607,6 +1607,12 @@
                       t-if="state.canEdit" title="Save these numbers as a reusable sample">Keep as sample</button>
               <button class="tp-personact" t-on-click="clearPerson" title="Back to sample data">Clear</button>
             </div>
+            <!-- WDGAP W2-C — the calculator beside the real-pay preview. -->
+            <button t-if="previewIsPerson" class="tp-takehome" t-on-click="openTakeHome"
+                    title="Find the pay that gives a take-home figure, for this person">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h4M8 18h.01M12 18h.01"/></svg>
+              <span>Work back from take-home</span>
+            </button>
 
             <!-- Two steps, run then person, because a scheme with 4,500
                  payslips cannot offer one flat list of people. -->
