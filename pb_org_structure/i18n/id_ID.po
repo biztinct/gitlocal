@@ -1,0 +1,1603 @@
+# Translation of the product server.
+# This file contains the translation of the following modules:
+# 	* pb_org_structure
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 15:25+0000\n"
+"PO-Revision-Date: 2026-11-15 15:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"\"%s\" is on contracts. Archive it instead, or move the people to another "
+"cost centre first."
+msgstr ""
+"\"%s\" ada di kontrak. Arsipkan saja, atau pindahkan orang-orangnya ke pusat"
+" biaya lain terlebih dahulu."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/job_level.py:0
+msgid ""
+"\"%s\" is used by a job. Move the job to another level first, or archive the"
+" level instead."
+msgstr ""
+"\"%s\" dipakai oleh sebuah jabatan. Pindahkan jabatan itu ke level lain "
+"dulu, atau arsipkan level ini."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid ""
+"%(n)s contracts carry the code \"%(code)s\", so it cannot be changed here — "
+"that would rewrite what they say. Add a new cost centre and move people to "
+"it from a date instead."
+msgstr ""
+"%(n)s kontrak memakai kode \"%(code)s\", jadi kode ini tidak bisa diubah di "
+"sini — itu akan mengubah isi kontrak tersebut. Tambahkan pusat biaya baru "
+"dan pindahkan orang ke sana mulai suatu tanggal."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "%(n)s jobs are at \"%(level)s\". Move them to another level first."
+msgstr ""
+"%(n)s jabatan berada di level \"%(level)s\". Pindahkan dulu ke level lain."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%(n)s people move to %(code)s from %(date)s."
+msgstr "%(n)s orang pindah ke %(code)s mulai %(date)s."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s are already there."
+msgstr "%s orang sudah ada di sana."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s changes are waiting for their date. They are made on the day."
+msgstr "%s perubahan menunggu tanggalnya. Perubahan dibuat pada hari itu."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s changes waiting for their date"
+msgstr "%s perubahan menunggu tanggalnya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s contracts"
+msgstr "%s kontrak"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s contracts not on the list"
+msgstr "%s kontrak belum ada di daftar"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s cost centres added to the list. No contract was changed."
+msgstr "%s pusat biaya ditambahkan ke daftar. Tidak ada kontrak yang diubah."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s jobs"
+msgstr "%s jabatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s only"
+msgstr "Hanya %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s people moved."
+msgstr "%s orang dipindahkan."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s roles with somebody to hire"
+msgstr "%s jabatan masih perlu diisi"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "%s without a level"
+msgstr "%s belum punya level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"A change of cost centre always starts on a date, today or later. Payslips "
+"already made keep the cost centre they were paid under."
+msgstr ""
+"Perubahan pusat biaya selalu mulai pada suatu tanggal, hari ini atau "
+"sesudahnya. Slip gaji yang sudah dibuat tetap memakai pusat biaya saat "
+"dibayar."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid ""
+"A cost centre change starts today or later. Payslips already made keep the "
+"cost centre they were paid under."
+msgstr ""
+"Perubahan pusat biaya mulai hari ini atau sesudahnya. Slip gaji yang sudah "
+"dibuat tetap memakai pusat biaya saat dibayar."
+
+#. module: pb_org_structure
+#: model:ir.model.constraint,message:pb_org_structure.constraint_pb_cost_centre_code_company_unique
+msgid "A cost centre code is used once per company."
+msgstr "Kode pusat biaya hanya dipakai sekali per perusahaan."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "A cost centre needs a code."
+msgstr "Pusat biaya perlu kode."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A few lines a new colleague would understand"
+msgstr "Beberapa baris yang mudah dipahami rekan baru"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A pause covers the team and every team under it."
+msgstr "Jeda berlaku untuk tim ini dan semua tim di bawahnya."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A pause stops"
+msgstr "Jeda menghentikan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "A whole team"
+msgstr "Seluruh tim"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__active
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add a cost centre"
+msgstr "Tambah pusat biaya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add a level"
+msgstr "Tambah level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Add them to the list"
+msgstr "Tambahkan ke daftar"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "All jobs"
+msgstr "Semua jabatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Archive"
+msgstr "Arsipkan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Budget review until March"
+msgstr "Tinjauan anggaran sampai Maret"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "CC-100"
+msgstr "CC-100"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__cancelled
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change the cost centre"
+msgstr "Ubah pusat biaya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Change the level"
+msgstr "Ubah level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Changes, waiting and recent"
+msgstr "Perubahan yang menunggu dan terbaru"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid ""
+"Changing jobs, levels and cost centres is for HR managers. Ask one of them "
+"to make the change."
+msgstr ""
+"Mengubah jabatan, level, dan pusat biaya adalah tugas manajer HR. Minta "
+"salah satu dari mereka untuk mengubahnya."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a cost centre from the list."
+msgstr "Pilih pusat biaya dari daftar."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "Choose a cost centre of the person's own company."
+msgstr "Pilih pusat biaya dari perusahaan orang tersebut."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a cost centre of the team's own company."
+msgstr "Pilih pusat biaya dari perusahaan tim tersebut."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a date within the next twelve months."
+msgstr "Pilih tanggal dalam dua belas bulan ke depan."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a level of this job's company."
+msgstr "Pilih level dari perusahaan jabatan ini."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose a team or the people to move."
+msgstr "Pilih tim atau orang yang akan dipindahkan."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose one of your companies."
+msgstr "Pilih salah satu perusahaan Anda."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Choose the date the new cost centre starts."
+msgstr "Pilih tanggal mulai pusat biaya yang baru."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Choose yes, no or not sure."
+msgstr "Pilih ya, tidak, atau belum yakin."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Choose…"
+msgstr "Pilih…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Chosen people"
+msgstr "Orang yang dipilih"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__code
+msgid "Code"
+msgstr "Kode"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model,name:pb_org_structure.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__company_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__company_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__contract_id
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__contract_ids
+msgid "Contracts"
+msgstr "Kontrak"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model,name:pb_org_structure.model_pb_cost_centre
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__cost_centre_id
+msgid "Cost centre"
+msgstr "Pusat biaya"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__pb_cost_centre_id
+msgid "Cost centre (from the list)"
+msgstr "Pusat biaya (dari daftar)"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__old_text
+msgid "Cost centre before"
+msgstr "Pusat biaya sebelumnya"
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_cost_centre_move
+msgid "Cost centre change from a date"
+msgstr "Perubahan pusat biaya mulai suatu tanggal"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cost centre changes"
+msgstr "Perubahan pusat biaya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Cost centres"
+msgstr "Pusat biaya"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__problem
+msgid "Could not be made"
+msgstr "Tidak bisa dibuat"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__create_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__create_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__create_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__create_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_exits__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_posting__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_requisition__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_org_structure__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_orgchart__display_name
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__done
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Each team's usual cost centre"
+msgstr "Pusat biaya biasa setiap tim"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Every company"
+msgstr "Semua perusahaan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Every job and its level, the cost centres people are paid from, and where "
+"hiring is paused."
+msgstr ""
+"Setiap jabatan dan levelnya, pusat biaya tempat gaji dibebankan, dan di mana"
+" rekrutmen dijeda."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Every job has a level"
+msgstr "Semua jabatan punya level"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_pb_cost_centre__code
+msgid "Exactly what contracts carry as their cost centre."
+msgstr "Persis seperti pusat biaya yang tertulis di kontrak."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Filled in on new contracts in that team that have no cost centre. It changes"
+" nobody who is already there."
+msgstr ""
+"Diisi pada kontrak baru di tim itu yang belum punya pusat biaya. Tidak "
+"mengubah siapa pun yang sudah ada."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_department__pb_cost_centre_id
+msgid ""
+"Filled in on new contracts in this team that have no cost centre. Moving "
+"people already here is done from a date, on the Jobs tab."
+msgstr ""
+"Diisi pada kontrak baru di tim ini yang belum punya pusat biaya. Memindahkan"
+" orang yang sudah ada dilakukan mulai suatu tanggal, di tab Jabatan."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Find a job, a team or a level"
+msgstr "Cari jabatan, tim, atau level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__date_start
+msgid "From"
+msgstr "Mulai"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"From a date. A change dated today is made at once; a later one waits and is "
+"made on the day."
+msgstr ""
+"Mulai suatu tanggal. Perubahan bertanggal hari ini langsung dibuat; yang "
+"lebih lambat menunggu dan dibuat pada harinya."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Give the cost centre a code."
+msgstr "Beri kode untuk pusat biaya."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Give the level a name."
+msgstr "Beri nama untuk level."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Head office"
+msgstr "Kantor pusat"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Hiring"
+msgstr "Rekrutmen"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Hiring for this role"
+msgstr "Rekrutmen untuk jabatan ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring is open everywhere"
+msgstr "Rekrutmen terbuka di semua tempat"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "Hiring is paused for %(where)s."
+msgstr "Rekrutmen dijeda untuk %(where)s."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "Hiring is paused for %(where)s: %(reason)s"
+msgstr "Rekrutmen dijeda untuk %(where)s: %(reason)s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid "Hiring is paused."
+msgstr "Rekrutmen dijeda."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring pause"
+msgstr "Jeda rekrutmen"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_paused
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_paused
+msgid "Hiring paused"
+msgstr "Rekrutmen dijeda"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring paused for %s."
+msgstr "Rekrutmen dijeda untuk %s."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause
+msgid "Hiring paused for the company"
+msgstr "Rekrutmen dijeda untuk perusahaan"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_self
+msgid "Hiring paused for this role"
+msgstr "Rekrutmen dijeda untuk jabatan ini"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause
+msgid "Hiring paused for this team"
+msgstr "Rekrutmen dijeda untuk tim ini"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Hiring restarted"
+msgstr "Rekrutmen dibuka kembali"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Hiring restarted for %s."
+msgstr "Rekrutmen dibuka kembali untuk %s."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_exits__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_posting__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_hiring_requisition__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_org_structure__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_orgchart__id
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_org_structure
+#: model_terms:ir.ui.view,arch_db:pb_org_structure.view_employee_form_pb_rehire
+msgid "If they leave"
+msgstr "Jika mereka keluar"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "It does not stop"
+msgstr "Tidak menghentikan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Job"
+msgstr "Jabatan"
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_job_level
+msgid "Job level"
+msgstr "Level jabatan"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Job, A to Z"
+msgstr "Jabatan, A sampai Z"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.actions.client,name:pb_org_structure.action_pb_org_jobs
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_count
+msgid "Jobs"
+msgstr "Jabatan"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid ""
+"Jobs and cost centres are looked after by the HR team. Ask them if you need "
+"something changed."
+msgstr ""
+"Jabatan dan pusat biaya diurus oleh tim HR. Tanyakan kepada mereka jika ada "
+"yang perlu diubah."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Jobs appear here when people are given a job, or when a hiring request opens"
+" a role."
+msgstr ""
+"Jabatan muncul di sini saat seseorang diberi jabatan, atau saat permintaan "
+"rekrutmen membuka posisi."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Jobs are looked after by the HR team"
+msgstr "Jabatan diurus oleh tim HR"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Jobs are looked after by the HR team."
+msgstr "Jabatan diurus oleh tim HR."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Jobs are not open to you"
+msgstr "Jabatan tidak terbuka untuk Anda"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__job_ids
+msgid "Jobs at this level"
+msgstr "Jabatan di level ini"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__write_uid
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__write_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__write_date
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_pb_job_level__company_id
+msgid "Leave empty to offer this level to every company."
+msgstr "Kosongkan agar level ini tersedia untuk semua perusahaan."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_level_id
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__name
+msgid "Level"
+msgstr "Level"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Level, lowest first"
+msgstr "Level, terendah dulu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Levels"
+msgstr "Level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading the cost centres…"
+msgstr "Memuat pusat biaya…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading the jobs…"
+msgstr "Memuat jabatan…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"Lowest first. Each job is given one level on its job page. Levels are names,"
+" not pay: nobody's pay changes when a level does."
+msgstr ""
+"Terendah dulu. Setiap jabatan diberi satu level di halaman jabatannya. Level"
+" hanyalah nama, bukan gaji: gaji siapa pun tidak berubah saat level berubah."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__done_on
+msgid "Made on"
+msgstr "Dibuat pada"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Most people to hire first"
+msgstr "Paling banyak yang perlu direkrut dulu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move down"
+msgstr "Pindah ke bawah"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move people to a cost centre"
+msgstr "Pindahkan orang ke pusat biaya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move them"
+msgstr "Pindahkan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Move up"
+msgstr "Pindah ke atas"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "New site opened"
+msgstr "Lokasi baru dibuka"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__no
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No cost centres yet. Add one below."
+msgstr "Belum ada pusat biaya. Tambahkan di bawah."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No job matches these filters"
+msgstr "Tidak ada jabatan yang cocok dengan filter ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No jobs yet"
+msgstr "Belum ada jabatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No level yet"
+msgstr "Belum ada level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No levels are set yet. Add them on the Levels part of this tab."
+msgstr "Belum ada level. Tambahkan di bagian Level pada tab ini."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"No levels yet. Add the first one below, for example Associate, Senior, Lead "
+"and Head of."
+msgstr ""
+"Belum ada level. Tambahkan yang pertama di bawah, misalnya Staf, Senior, "
+"Lead, dan Kepala."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "No team"
+msgstr "Tanpa tim"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "No teams yet."
+msgstr "Belum ada tim."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Nobody to hire"
+msgstr "Tidak ada yang perlu direkrut"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "None"
+msgstr "Tidak ada"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "None set yet"
+msgstr "Belum diatur"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Not paused"
+msgstr "Tidak dijeda"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__unsure
+msgid "Not sure"
+msgstr "Belum yakin"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre__note
+msgid "Notes"
+msgstr "Catatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "On contracts, but not on the list"
+msgstr "Ada di kontrak, tetapi belum di daftar"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Only a change still waiting for its date can be cancelled."
+msgstr "Hanya perubahan yang masih menunggu tanggalnya yang bisa dibatalkan."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Open"
+msgstr "Terbuka"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__sequence
+msgid "Order"
+msgstr "Urutan"
+
+#. module: pb_org_structure
+#: model:ir.actions.server,name:pb_org_structure.cron_pb_cost_centre_moves_ir_actions_server
+msgid "Organisation: make cost-centre changes on their date"
+msgstr "Organisasi: buat perubahan pusat biaya pada tanggalnya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause"
+msgstr "Jeda"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause hiring"
+msgstr "Jeda rekrutmen"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pause hiring for this role"
+msgstr "Jeda rekrutmen untuk jabatan ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Paused"
+msgstr "Dijeda"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_by
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_by
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_by
+msgid "Paused by"
+msgstr "Dijeda oleh"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_job__pb_hiring_paused
+msgid ""
+"Paused for this role, its team (or a team above it) or its company. New "
+"hiring requests and adverts stop; people already in progress carry on."
+msgstr ""
+"Dijeda untuk jabatan ini, timnya (atau tim di atasnya), atau perusahaannya. "
+"Permintaan rekrutmen dan iklan baru berhenti; kandidat yang sudah berjalan "
+"tetap lanjut."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_department__pb_hiring_paused
+msgid "Paused for this team, a team above it, or its company."
+msgstr "Dijeda untuk tim ini, tim di atasnya, atau perusahaannya."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_on
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_on
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_on
+msgid "Paused on"
+msgstr "Dijeda pada"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Paused with %s"
+msgstr "Dijeda bersama %s"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_common.py:0
+msgid "Pausing or restarting hiring is for the talent lead and HR managers."
+msgstr ""
+"Menjeda atau membuka kembali rekrutmen adalah tugas pimpinan rekrutmen dan "
+"manajer HR."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Pay band"
+msgstr "Rentang gaji"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_palette.js:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "People"
+msgstr "Karyawan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid ""
+"People already in progress carry on, and offers can still be sent. Nothing "
+"new can be started for this role."
+msgstr ""
+"Kandidat yang sudah berjalan tetap lanjut, dan penawaran masih bisa dikirim."
+" Tidak ada yang baru yang bisa dimulai untuk jabatan ini."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "People to hire"
+msgstr "Yang perlu direkrut"
+
+#. module: pb_org_structure
+#: model:ir.model,name:pb_org_structure.model_pb_org_structure
+msgid "People › Jobs (levels, cost centres, hiring pause)"
+msgstr "Karyawan › Jabatan (level, pusat biaya, jeda rekrutmen)"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__employee_id
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_by
+msgid "Rehire answer by"
+msgstr "Jawaban rekrut ulang oleh"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_on
+msgid "Rehire answer on"
+msgstr "Jawaban rekrut ulang pada"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restart hiring"
+msgstr "Buka kembali rekrutmen"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restart hiring for this role"
+msgstr "Buka kembali rekrutmen untuk jabatan ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Restarting"
+msgstr "Membuka kembali"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Roles paused one by one"
+msgstr "Jabatan yang dijeda satu per satu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save the cost centre"
+msgstr "Simpan pusat biaya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Save the level"
+msgstr "Simpan level"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/exits_rehire.js:0
+msgid "Saved. Seen by HR only."
+msgstr "Tersimpan. Hanya terlihat oleh HR."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Say why hiring is paused — people who try to hire will read it."
+msgstr ""
+"Tulis alasan rekrutmen dijeda — orang yang mencoba merekrut akan membacanya."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "See who moves"
+msgstr "Lihat siapa yang pindah"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Seen by HR only."
+msgstr "Hanya terlihat oleh HR."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Seen by HR only. It shows on the Hiring board if they apply again."
+msgstr ""
+"Hanya terlihat oleh HR. Muncul di papan Rekrutmen jika mereka melamar lagi."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Senior"
+msgstr "Senior"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Show more"
+msgstr "Tampilkan lagi"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "Somebody to hire"
+msgstr "Ada yang perlu direkrut"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Start again"
+msgstr "Mulai lagi"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Team"
+msgstr "Tim"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Team (and the teams under it)"
+msgstr "Tim (dan tim di bawahnya)"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Teams"
+msgstr "Tim"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That change is no longer there."
+msgstr "Perubahan itu sudah tidak ada."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That cost centre is no longer there."
+msgstr "Pusat biaya itu sudah tidak ada."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "That did not work. Try again in a moment."
+msgstr "Tidak berhasil. Coba lagi sebentar lagi."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That is more than %s people at once. Choose a smaller team."
+msgstr "Itu lebih dari %s orang sekaligus. Pilih tim yang lebih kecil."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That is not something this screen can do."
+msgstr "Layar ini tidak bisa melakukan itu."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That job is no longer there."
+msgstr "Jabatan itu sudah tidak ada."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "That leaving checklist is no longer there."
+msgstr "Daftar periksa keluar itu sudah tidak ada."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That level is no longer there."
+msgstr "Level itu sudah tidak ada."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/org_board.py:0
+msgid "That team is no longer there."
+msgstr "Tim itu sudah tidak ada."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "The contract was no longer running on that date."
+msgstr "Kontrak sudah tidak berjalan pada tanggal itu."
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_contract__pb_cost_centre_id
+msgid ""
+"The cost centre in the list that this contract's cost centre names. Empty "
+"when the text matches nothing in the list."
+msgstr ""
+"Pusat biaya di daftar yang disebut oleh pusat biaya kontrak ini. Kosong jika"
+" teksnya tidak cocok dengan apa pun di daftar."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "The ladder of job levels"
+msgstr "Tangga level jabatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "The list"
+msgstr "Daftar"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/job_level.py:0
+msgid "There is already a level called \"%s\"."
+msgstr "Sudah ada level bernama \"%s\"."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"These cost centres are typed on contracts and are not on the list yet. "
+"Adding them to the list changes no contract."
+msgstr ""
+"Pusat biaya ini tertulis di kontrak dan belum ada di daftar. Menambahkannya "
+"ke daftar tidak mengubah kontrak apa pun."
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "This change could not be made. Open it and try again."
+msgstr "Perubahan ini tidak bisa dibuat. Buka dan coba lagi."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "This company"
+msgstr "Perusahaan ini"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/cost_centre.py:0
+msgid "This company already has the cost centre \"%s\"."
+msgstr "Perusahaan ini sudah punya pusat biaya \"%s\"."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"This is where jobs, their levels, cost centres and hiring pauses are kept. "
+"Ask your HR administrator if you should see it."
+msgstr ""
+"Di sini tersimpan jabatan, levelnya, pusat biaya, dan jeda rekrutmen. "
+"Tanyakan administrator HR Anda jika Anda perlu melihatnya."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/hiring_pause.xml:0
+msgid "This offer can still be sent."
+msgstr "Penawaran ini masih bisa dikirim."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "To hire"
+msgstr "Perlu direkrut"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Type a name"
+msgstr "Ketik nama"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_cost_centre_id
+msgid "Usual cost centre"
+msgstr "Pusat biaya biasa"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Waiting"
+msgstr "Menunggu"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__pb_cost_centre_move__state__scheduled
+msgid "Waiting for its date"
+msgstr "Menunggu tanggalnya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "What it means"
+msgstr "Artinya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "What the job is"
+msgstr "Isi pekerjaan"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_job_level__description
+msgid "What this level means"
+msgstr "Arti level ini"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Whether somebody would be hired again is recorded by HR."
+msgstr "Apakah seseorang akan direkrut lagi dicatat oleh HR."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Who moves"
+msgstr "Siapa yang pindah"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+#: model:ir.model.fields,field_description:pb_org_structure.field_pb_cost_centre_move__note
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire_note
+msgid "Why (rehire)"
+msgstr "Alasan (rekrut ulang)"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Why (seen by HR only)"
+msgstr "Alasan (hanya terlihat oleh HR)"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_department__pb_hiring_pause_reason
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_job__pb_hiring_pause_reason_self
+#: model:ir.model.fields,field_description:pb_org_structure.field_res_company__pb_hiring_pause_reason
+msgid "Why hiring is paused"
+msgstr "Alasan rekrutmen dijeda"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Why is hiring paused?"
+msgstr "Mengapa rekrutmen dijeda?"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here %(years)s · would rehire: %(answer)s"
+msgstr "Pernah bekerja di sini %(years)s · rekrut ulang: %(answer)s"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here %s"
+msgstr "Pernah bekerja di sini %s"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here before"
+msgstr "Pernah bekerja di sini"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/rehire.py:0
+msgid "Worked here before · would rehire: %s"
+msgstr "Pernah bekerja di sini · rekrut ulang: %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "Works without day-to-day guidance"
+msgstr "Bekerja tanpa arahan harian"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,field_description:pb_org_structure.field_hr_employee__pb_rehire
+msgid "Would rehire"
+msgstr "Rekrut ulang"
+
+#. module: pb_org_structure
+#: model:ir.model.fields,help:pb_org_structure.field_hr_employee__pb_rehire
+msgid "Would the company hire this person again? Seen by HR only."
+msgstr ""
+"Apakah perusahaan akan merekrut orang ini lagi? Hanya terlihat oleh HR."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/exits_rehire.xml:0
+msgid "Would we hire them again?"
+msgstr "Apakah kita akan merekrut mereka lagi?"
+
+#. module: pb_org_structure
+#: model:ir.model.fields.selection,name:pb_org_structure.selection__hr_employee__pb_rehire__yes
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"candidates already in progress, interviews and offers. They carry on, with a"
+" warning that hiring is paused."
+msgstr ""
+"kandidat yang sudah berjalan, wawancara, dan penawaran. Semuanya tetap "
+"lanjut, dengan peringatan bahwa rekrutmen dijeda."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "from %s"
+msgstr "mulai %s"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "jobs"
+msgstr "jabatan"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "lowest first"
+msgstr "terendah dulu"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"new hiring requests, sending one in, opening a role, adverts, the careers "
+"page and new open roles on the org chart."
+msgstr ""
+"permintaan rekrutmen baru, mengirimkannya, membuka posisi, iklan, halaman "
+"karier, dan posisi kosong baru di bagan organisasi."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "on the list"
+msgstr "di daftar"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "pay band"
+msgstr "rentang gaji"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "people in this job"
+msgstr "orang di jabatan ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid ""
+"puts everything back as it was. Nothing is changed while hiring is paused."
+msgstr ""
+"mengembalikan semuanya seperti semula. Tidak ada yang diubah selama "
+"rekrutmen dijeda."
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/js/org_board.js:0
+msgid "roles paused"
+msgstr "jabatan dijeda"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this company"
+msgstr "perusahaan ini"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this role"
+msgstr "jabatan ini"
+
+#. module: pb_org_structure
+#. odoo-python
+#: code:addons/pb_org_structure/models/hiring_pause_fields.py:0
+msgid "this team"
+msgstr "tim ini"
+
+#. module: pb_org_structure
+#. odoo-javascript
+#: code:addons/pb_org_structure/static/src/xml/org_board.xml:0
+msgid "to hire"
+msgstr "perlu direkrut"
